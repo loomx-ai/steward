@@ -108,6 +108,9 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				if match[1] == "resourceUri" {
 					value = strings.TrimPrefix(resourceID(vmType, "monitored"), "/")
 				}
+				if kind.NativeType == defenderPricingType && match[1] == "scopeId" {
+					value = "subscriptions/" + testSubscription
+				}
 				if budget, _ := monitorBudgetKind(kind.NativeType); budget != "" && match[1] == "scope" {
 					value = "subscriptions/" + testSubscription
 				}

@@ -1,0 +1,38 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Security/pricings
+  class: security.security_center
+presentation:
+  displayNames:
+    en-US: Defender protection plan
+    zh-CN: Defender 防护计划
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: defender-plans
+  list:
+    operation: Azure.Microsoft.Security.Pricings_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Security.Pricings_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: pricingTier
+  subPlan: subPlan
+  scopeId: scope_id
+  inherited: inherited
+  inheritedFrom: inheritedFrom
+  enforce: enforce
+  coverage: resourcesCoverageStatus
+  trialRemaining: freeTrialRemainingTime
+  enabledAt: enablementTime
+  deprecated: deprecated
+  replacedBy: replacedBy
+  extensions: extensions
+extensions:
+  hook: azure.resource

@@ -493,6 +493,19 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	})
 	dnsOwners := map[string]asset.AssetID{}
 	for _, parent := range parents {
+		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == defenderPricingType {
+			refs, err := s.client.defenderRecordedReferences(parent)
+			if err != nil {
+				return result, err
+			}
+			contribution, err := s.client.contributeNativeReferences(parent, assets, refs, "azure:defender-plan-reference")
+			if err != nil {
+				return result, err
+			}
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+			continue
+		}
 		if batchOwners[parent.ID].ID != "" {
 			continue // Batch already contributed this VM's complete native tree.
 		}

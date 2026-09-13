@@ -2317,6 +2317,22 @@
       "operations": [
         "SqlVirtualMachines_Get"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/pricings.json",
+      "operations": [
+        "Pricings_List",
+        "Pricings_Get",
+        "Pricings_Update",
+        "Pricings_Delete"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/HybridCompute.json",
+      "operations": [
+        "Machines_Get",
+        "Machines_ListBySubscription"
+      ]
     }
   ],
   "resource_types": [
@@ -10387,6 +10403,23 @@
       ],
       "response_types": [
         "Microsoft.DataMigration/dataMigrations"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Security/pricings",
+      "class": "security.security_center",
+      "display_name": "Defender protection plan",
+      "scope_kinds": [
+        "subscription",
+        "global"
+      ],
+      "collection": "pricings",
+      "read_operations": [
+        "Azure.Microsoft.Security.Pricings_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Security.Pricings_List"
       ]
     }
   ]

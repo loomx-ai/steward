@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	defender := request.ResourceKind != nil && strings.EqualFold(request.ResourceKind.NativeType, defenderPricingType)
+	if request.Source == defenderInventorySource && !defender || defender && request.Source != "" && request.Source != inventorySource && request.Source != defenderInventorySource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_defender_inventory_source")
 	}
 	datamigration := request.ResourceKind != nil && dataMigrationKind(request.ResourceKind.NativeType) != ""
 	if request.Source == dataMigrationInventorySource && !datamigration || datamigration && request.Source != "" && request.Source != inventorySource && request.Source != dataMigrationInventorySource {
@@ -57,6 +61,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		}
 		request.Source = dataMigrationInventorySource
 		return r.listDataMigration(ctx, c, request)
+	}
+	if defender {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = defenderInventorySource
+		return r.listDefender(ctx, c, request)
 	}
 	if datafactory {
 		if request.Source == inventorySource {

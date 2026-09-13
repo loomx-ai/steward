@@ -1,0 +1,128 @@
+[
+  {
+    "file": "ListResourcePricings_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/ListResourcePricings_example.json",
+    "source_sha256": "f4863176df2e3d22defc71cb482b9938d276d1556bec5582594b47a187eb0618",
+    "operation": "Pricings_List",
+    "example": "Get pricings on resource"
+  },
+  {
+    "file": "ListPricings_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/ListPricings_example.json",
+    "source_sha256": "28ffb0cb6c6619f960ac82fb1ed3bcfaedc9debaaa9637ea0337d03e11754c5b",
+    "operation": "Pricings_List",
+    "example": "Get pricings on subscription"
+  },
+  {
+    "file": "ListPricingsWithPlanFilter_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/ListPricingsWithPlanFilter_example.json",
+    "source_sha256": "4e038a18a9fcf5c421605144761223dda9b136cf5bcc13dde804b87e8a34b5b0",
+    "operation": "Pricings_List",
+    "example": "Get pricings on subscription with plans filter"
+  },
+  {
+    "file": "GetResourcePricingByNameContainers_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/GetResourcePricingByNameContainers_example.json",
+    "source_sha256": "4f6dc98618395ba0d1c589e141e23d3538168f46bd14424c5323889dc544739a",
+    "operation": "Pricings_Get",
+    "example": "Get pricings on resource - Containers plan"
+  },
+  {
+    "file": "GetResourcePricingByNameVirtualMachines_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/GetResourcePricingByNameVirtualMachines_example.json",
+    "source_sha256": "b9dfd7fa1702cebb8103f11536b802bfe34c3a233ad3491d1dd474921e8dce59",
+    "operation": "Pricings_Get",
+    "example": "Get pricings on resource - VirtualMachines plan"
+  },
+  {
+    "file": "GetPricingByNameCloudPosture_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/GetPricingByNameCloudPosture_example.json",
+    "source_sha256": "8738e98be52149b20f6dbdeb0b36b3c46ae44b633fe433ae861399dfddae261b",
+    "operation": "Pricings_Get",
+    "example": "Get pricings on subscription - CloudPosture plan"
+  },
+  {
+    "file": "GetPricingByNameContainers_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/GetPricingByNameContainers_example.json",
+    "source_sha256": "a687a5215d8ffc53c9222e030dd3d395519ffc423ba96b4bce82dc25c300eebd",
+    "operation": "Pricings_Get",
+    "example": "Get pricings on subscription - Containers plan"
+  },
+  {
+    "file": "GetPricingByNameDns_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/GetPricingByNameDns_example.json",
+    "source_sha256": "8786bdc020dfb5e54aaf2d4d71a7a7403e22eda22d43a7ea4cebfd4957d627d0",
+    "operation": "Pricings_Get",
+    "example": "Get pricings on subscription - Dns plan"
+  },
+  {
+    "file": "GetPricingByNameStorageAccounts_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/GetPricingByNameStorageAccounts_example.json",
+    "source_sha256": "270c93c15ad2e47f95023626343d74e76f0a358704d845b94d4365b31b0aa327",
+    "operation": "Pricings_Get",
+    "example": "Get pricings on subscription - StorageAccounts plan"
+  },
+  {
+    "file": "GetPricingByNameVirtualMachines_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/GetPricingByNameVirtualMachines_example.json",
+    "source_sha256": "600fc7d5d04270be60d302bc9e11727cbfbd563558193463babcd6e209cc75db",
+    "operation": "Pricings_Get",
+    "example": "Get pricings on subscription - VirtualMachines plan"
+  },
+  {
+    "file": "PutResourcePricingByNameContainersACR_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/PutResourcePricingByNameContainersACR_example.json",
+    "source_sha256": "fca446fefc0183f40be02ac25a316d744939f8d3f18529a8ca7011d30671f206",
+    "operation": "Pricings_Update",
+    "example": "Update pricing on resource (Container Registry ACR)"
+  },
+  {
+    "file": "PutResourcePricingByNameContainers_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/PutResourcePricingByNameContainers_example.json",
+    "source_sha256": "e70cb7ed9af2b81cec0ded9ca1d93378001268ea821a3f0370ddc333db3d73ad",
+    "operation": "Pricings_Update",
+    "example": "Update pricing on resource (example for Containers plan)"
+  },
+  {
+    "file": "PutResourcePricingByNameVirtualMachines_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/PutResourcePricingByNameVirtualMachines_example.json",
+    "source_sha256": "d743721651a1f7ad5921db4bccb70ad329e4211d50baec2d3df6eb90a37fc241",
+    "operation": "Pricings_Update",
+    "example": "Update pricing on resource (example for VirtualMachines plan)"
+  },
+  {
+    "file": "PutPricingByName_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/PutPricingByName_example.json",
+    "source_sha256": "065f7bb450e88613eb6e5ff55d40d9f9f19d49038e7926cfaf095c7e1130a543",
+    "operation": "Pricings_Update",
+    "example": "Update pricing on subscription (example for CloudPosture plan)"
+  },
+  {
+    "file": "PutPricingByNamePartialSuccess_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/PutPricingByNamePartialSuccess_example.json",
+    "source_sha256": "d7bb09652791d2731d2faed4beae2cb386a362630b77a0f36a2ed1ca0d34a608",
+    "operation": "Pricings_Update",
+    "example": "Update pricing on subscription (example for CloudPosture plan) - partial success"
+  },
+  {
+    "file": "PutPricingVMsByName_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/PutPricingVMsByName_example.json",
+    "source_sha256": "c4004da17794cd9e71e5029119b8f7879413879ee41be33baf5ebdc3e06d83c2",
+    "operation": "Pricings_Update",
+    "example": "Update pricing on subscription (example for VirtualMachines plan)"
+  },
+  {
+    "file": "DeleteResourcePricing_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/DeleteResourcePricing_example.json",
+    "source_sha256": "d7d65af72d339310e5c412366c8390c19c6af9c85167bf61cb79c0d98dca0fd4",
+    "operation": "Pricings_Delete",
+    "example": "Delete a pricing on resource"
+  },
+  {
+    "file": "DeleteResourcePricingByNameContainers_example.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/examples/Pricings/DeleteResourcePricingByNameContainers_example.json",
+    "source_sha256": "9af16dae816b842c77b9776448bf2ffcb776e3af9ac7221dd4336826390dcbfa",
+    "operation": "Pricings_Delete",
+    "example": "Delete a pricing on resource (example for Containers plan)"
+  }
+]

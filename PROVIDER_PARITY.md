@@ -3366,3 +3366,56 @@ background evidence only, not acceptance evidence for this work.
   product scenarios affected by overly strict external connection/partition
   checks also passed after the native source context was bound independently;
   no existing blocker or mutation expectation was relaxed.
+
+### Defender for Cloud native service-state inventory
+
+- `Microsoft.Security/pricings` now models subscription protection plans and
+  resource-level plan state. The native fields preserve Free/Standard tier,
+  sub-plan, trial duration, enablement time, extension status, deprecated and
+  replacement plans, enforcement, inheritance and actual resource coverage.
+  Subscription Standard and partial coverage can coexist with a resource's Free
+  override. Trial countdown does not invalidate an otherwise stable scan.
+- This is the read-only service-state equivalent of Alibaba Cloud Security
+  Center's `DescribeVersionConfig`. No protection-tier write or resource override
+  removal is exposed as cleanup. The catalog retains all four native Pricing
+  operations plus supporting Arc machine GET/List for reproducibility. Arc
+  machine inventory/lifecycle remains an unfinished mapped family.
+- Native VM, VMSS, Arc, AKS and ACR indexes provide resource scopes; each source
+  gets its own native read. Pricing Lists cover subscriptions and the machine
+  scopes, while AKS/ACR use a named Containers GET. ACR read support is an
+  inference from its native configuration example and generic GET route, pending
+  original recording/live verification. Complete index discovery does not depend
+  on the broad ARM resource list. Parent continuation rejects filtering, version
+  changes, foreign hosts and duplicate members.
+- Known plans and omitted parents are reread individually. A typed inheritance
+  reference can recover an omitted subscription plan. Neither parent nor list
+  absence proves a known plan absent. Repeated observations and pagination bind
+  native configuration, parent creation context and the scan request. Signed
+  references contribute resource/inheritance `uses` edges without ownership or
+  cleanup prerequisites. Read-only plan graph construction does not require
+  unrelated incoming-deletion API permissions.
+- Private extension parameters, future authored settings and operation messages
+  stay out of public inventory and API logs; extension operation codes remain
+  visible. The [Defender evidence](providers/azure/fixtures/security/README.md)
+  retains 18 unchanged official examples with 26 responses/22 bodies. It records
+  the native wrong-case filter and eight non-nullable-schema/null-response
+  discrepancies explicitly, without modifying the retained examples.
+- Real SQLite global scan and graph workers produce seven generated plan assets
+  and five inheritance edges. Persisted read-only capabilities, native request
+  provenance, rejected forged references, repaired known-list omissions, failed
+  permission scans and own-404 reconciliation are covered. These remain protocol
+  and worker checks; Floci-AZ does not document Defender inheritance/coverage
+  emulation. Independent emulator and live-cloud verification stay open.
+- Azure now has 429 rules, 400 cleanup actions and 1,418 operations from 182 root
+  and 101 reference documents. All previous 1,412 operations and source fragments
+  are unchanged. Twenty mapped Azure types remain without rules; GCP still has
+  behavior gaps, including security-center service state. All eight overall
+  acceptance criteria remain open.
+- Verification: repository-wide `go test ./...` passed (Azure 303.743s).
+  Defender and catalog race tests passed (16.136s); the subsequently added
+  application network-closure check also passed under the race detector
+  (3.649s), preserving the selected resource's plan without pulling unrelated
+  subscription plans into its network. Final `go vet ./...`, six importer tests,
+  byte-identical catalog/506-shape Data Factory regeneration, all 18 online
+  pinned example reproductions, documentation checks (40 chapters / 10 original
+  screenshots) and whitespace validation passed.

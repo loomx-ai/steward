@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "ce5c68303da38ab2e67d51be41c3bedefc97536dbf1be43e8c13f22cde4820ae",
+    "checksum": "18cdd3ab9cd79fe3f92ea5ede5cc9db875ffe7572e5c04bb42332ca4e5cd1665",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "78a636f07508271cbec92821f5dd16508f940683a24a989aee5fc9f5e48853fe",
+  "content_checksum": "d21f76c5fa55f3d00febbc88aae5cd1335150f3b554abcf575f1d50509fec571",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -87227,6 +87227,174 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/SchemaRegistry.json"
     },
     {
+      "id": "Azure.Microsoft.HybridCompute.Machines_Get",
+      "name": "Machines_Get",
+      "service": "Microsoft.HybridCompute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The expand expression to apply on the operation.",
+            "enum": [
+              "instanceView"
+            ],
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "InstanceViewTypes"
+            }
+          },
+          "api-version": {
+            "enum": [
+              "2025-01-13"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "machineName": {
+            "description": "The name of the hybrid machine.",
+            "in": "path",
+            "maxLength": 54,
+            "minLength": 1,
+            "name": "machineName",
+            "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Describes a hybrid machine.",
+        "properties": {
+          "identity": {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/Identity"
+          },
+          "kind": {
+            "$ref": "#/definitions/ArcKindEnum"
+          },
+          "properties": {
+            "$ref": "#/definitions/MachineProperties",
+            "description": "Hybrid Compute Machine properties",
+            "x-ms-client-flatten": true
+          },
+          "resources": {
+            "description": "The list of extensions affiliated to the machine",
+            "items": {
+              "$ref": "#/definitions/MachineExtension"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.HybridCompute",
+        "version": "2025-01-13",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/HybridCompute.json"
+    },
+    {
+      "id": "Azure.Microsoft.HybridCompute.Machines_ListBySubscription",
+      "name": "Machines_ListBySubscription",
+      "service": "Microsoft.HybridCompute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/machines",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-01-13"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The List hybrid machine operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "The URI to fetch the next page of Machines. Call ListNext() with this URI to fetch the next page of hybrid machines.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of hybrid machines.",
+            "items": {
+              "$ref": "#/definitions/Machine"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.HybridCompute",
+        "version": "2025-01-13",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/machines",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/HybridCompute.json"
+    },
+    {
       "id": "Azure.Microsoft.Insights.APIKeys_Delete",
       "name": "APIKeys_Delete",
       "service": "Microsoft.Insights",
@@ -111191,6 +111359,263 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
     },
     {
+      "id": "Azure.Microsoft.Security.Pricings_Delete",
+      "name": "Pricings_Delete",
+      "service": "Microsoft.Security",
+      "method": "DELETE",
+      "path": "/{scopeId}/providers/Microsoft.Security/pricings/{pricingName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "pricingName": {
+            "description": "name of the pricing configuration",
+            "in": "path",
+            "name": "pricingName",
+            "required": true,
+            "type": "string"
+          },
+          "scopeId": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scopeId",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Security",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/{scopeId}/providers/Microsoft.Security/pricings/{pricingName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scopeId"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/pricings.json"
+    },
+    {
+      "id": "Azure.Microsoft.Security.Pricings_Get",
+      "name": "Pricings_Get",
+      "service": "Microsoft.Security",
+      "method": "GET",
+      "path": "/{scopeId}/providers/Microsoft.Security/pricings/{pricingName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "pricingName": {
+            "description": "name of the pricing configuration",
+            "in": "path",
+            "name": "pricingName",
+            "required": true,
+            "type": "string"
+          },
+          "scopeId": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scopeId",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Microsoft Defender for Cloud is provided in two pricing tiers: free and standard. The standard tier offers advanced security capabilities, while the free tier offers basic security features.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/PricingProperties",
+            "description": "Pricing data",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Security",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scopeId}/providers/Microsoft.Security/pricings/{pricingName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scopeId"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/pricings.json"
+    },
+    {
+      "id": "Azure.Microsoft.Security.Pricings_List",
+      "name": "Pricings_List",
+      "service": "Microsoft.Security",
+      "method": "GET",
+      "path": "/{scopeId}/providers/Microsoft.Security/pricings",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "OData filter. Optional.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "scopeId": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scopeId",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of pricing configurations response.",
+        "properties": {
+          "value": {
+            "description": "List of pricing configurations",
+            "items": {
+              "$ref": "#/definitions/Pricing"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Security",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scopeId}/providers/Microsoft.Security/pricings",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scopeId"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/pricings.json"
+    },
+    {
+      "id": "Azure.Microsoft.Security.Pricings_Update",
+      "name": "Pricings_Update",
+      "service": "Microsoft.Security",
+      "method": "PUT",
+      "path": "/{scopeId}/providers/Microsoft.Security/pricings/{pricingName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "pricing": {
+            "description": "Pricing object",
+            "in": "body",
+            "name": "pricing",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Pricing"
+            }
+          },
+          "pricingName": {
+            "description": "name of the pricing configuration",
+            "in": "path",
+            "name": "pricingName",
+            "required": true,
+            "type": "string"
+          },
+          "scopeId": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scopeId",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Microsoft Defender for Cloud is provided in two pricing tiers: free and standard. The standard tier offers advanced security capabilities, while the free tier offers basic security features.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/PricingProperties",
+            "description": "Pricing data",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Security",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "PUT",
+        "path": "/{scopeId}/providers/Microsoft.Security/pricings/{pricingName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scopeId"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/pricings.json"
+    },
+    {
       "id": "Azure.Microsoft.ServiceBus.DisasterRecoveryConfigs_BreakPairing",
       "name": "DisasterRecoveryConfigs_BreakPairing",
       "service": "Microsoft.ServiceBus",
@@ -131759,6 +132184,24 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Search.SharedPrivateLinkResources_ListByService"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Security/pricings",
+      "class": "security.security_center",
+      "display_name": "Defender protection plan",
+      "scope_kinds": [
+        "global",
+        "subscription"
+      ],
+      "rest": {
+        "collection": "pricings",
+        "read_operations": [
+          "Azure.Microsoft.Security.Pricings_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Security.Pricings_List"
         ]
       }
     },

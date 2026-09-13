@@ -7631,6 +7631,33 @@
             "title": "Error response",
             "type": "object"
           },
+          "Identity": {
+            "description": "Identity for the resource.",
+            "properties": {
+              "principalId": {
+                "description": "The principal ID of resource identity.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "tenantId": {
+                "description": "The tenant ID of resource.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "type": {
+                "description": "The identity type.",
+                "enum": [
+                  "SystemAssigned"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": false,
+                  "name": "ResourceIdentityType"
+                }
+              }
+            },
+            "type": "object"
+          },
           "ProxyResource": {
             "allOf": [
               {
@@ -7703,6 +7730,32 @@
               "location"
             ],
             "title": "Tracked Resource",
+            "type": "object"
+          },
+          "locationData": {
+            "description": "Metadata pertaining to the geographic location of the resource.",
+            "properties": {
+              "city": {
+                "description": "The city or locality where the resource is located.",
+                "type": "string"
+              },
+              "countryOrRegion": {
+                "description": "The country or region where the resource is located",
+                "type": "string"
+              },
+              "district": {
+                "description": "The district, state, or province where the resource is located.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A canonical name for the geographic or physical location.",
+                "maxLength": 256,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
             "type": "object"
           },
           "systemData": {
@@ -7863,6 +7916,108 @@
             },
             "title": "Error response",
             "type": "object"
+          },
+          "ProxyResource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Resource"
+              }
+            ],
+            "description": "The resource model definition for a Azure Resource Manager proxy resource. It will not have tags and a location",
+            "title": "Proxy Resource",
+            "type": "object"
+          },
+          "Resource": {
+            "description": "Common fields that are returned in the response for all Azure Resource Manager resources",
+            "properties": {
+              "id": {
+                "description": "Fully qualified resource ID for the resource. E.g. \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"",
+                "format": "arm-id",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "The name of the resource",
+                "readOnly": true,
+                "type": "string"
+              },
+              "systemData": {
+                "$ref": "#/definitions/systemData",
+                "description": "Azure Resource Manager metadata containing createdBy and modifiedBy information.",
+                "readOnly": true
+              },
+              "type": {
+                "description": "The type of the resource. E.g. \"Microsoft.Compute/virtualMachines\" or \"Microsoft.Storage/storageAccounts\"",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "title": "Resource",
+            "type": "object",
+            "x-ms-azure-resource": true
+          },
+          "systemData": {
+            "description": "Metadata pertaining to creation and last modification of the resource.",
+            "properties": {
+              "createdAt": {
+                "description": "The timestamp of resource creation (UTC).",
+                "format": "date-time",
+                "type": "string"
+              },
+              "createdBy": {
+                "description": "The identity that created the resource.",
+                "type": "string"
+              },
+              "createdByType": {
+                "description": "The type of identity that created the resource.",
+                "enum": [
+                  "User",
+                  "Application",
+                  "ManagedIdentity",
+                  "Key"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "createdByType"
+                }
+              },
+              "lastModifiedAt": {
+                "description": "The timestamp of resource last modification (UTC)",
+                "format": "date-time",
+                "type": "string"
+              },
+              "lastModifiedBy": {
+                "description": "The identity that last modified the resource.",
+                "type": "string"
+              },
+              "lastModifiedByType": {
+                "description": "The type of identity that last modified the resource.",
+                "enum": [
+                  "User",
+                  "Application",
+                  "ManagedIdentity",
+                  "Key"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "createdByType"
+                }
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          }
+        },
+        "parameters": {
+          "ApiVersionParameter": {
+            "description": "The API version to use for this operation.",
+            "in": "query",
+            "minLength": 1,
+            "name": "api-version",
+            "required": true,
+            "type": "string"
           }
         }
       },
@@ -54325,6 +54480,2044 @@
       },
       "source_sha256": "ccedcbfb48f08a9d757960adee34158a89f8ba1faf10bcd01c562a64e1ab5383",
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "AgentConfiguration": {
+            "description": "Configurable properties that the user can set locally via the azcmagent config command, or remotely via ARM.",
+            "properties": {
+              "configMode": {
+                "description": "Name of configuration mode to use. Modes are pre-defined configurations of security controls, extension allowlists and guest configuration, maintained by Microsoft.",
+                "enum": [
+                  "full",
+                  "monitor"
+                ],
+                "readOnly": true,
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "agent configuration mode"
+                }
+              },
+              "extensionsAllowList": {
+                "description": "Array of extensions that are allowed to be installed or updated.",
+                "items": {
+                  "$ref": "#/definitions/ConfigurationExtension"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "extensionsBlockList": {
+                "description": "Array of extensions that are blocked (cannot be installed or updated)",
+                "items": {
+                  "$ref": "#/definitions/ConfigurationExtension"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "extensionsEnabled": {
+                "description": "Specifies whether the extension service is enabled or disabled.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "guestConfigurationEnabled": {
+                "description": "Specified whether the guest configuration service is enabled or disabled.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "incomingConnectionsPorts": {
+                "description": "Specifies the list of ports that the agent will be able to listen on.",
+                "items": {
+                  "type": "string"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "proxyBypass": {
+                "description": "List of service names which should not use the specified proxy server.",
+                "items": {
+                  "type": "string"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "proxyUrl": {
+                "description": "Specifies the URL of the proxy to be used.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          },
+          "AgentUpgrade": {
+            "description": "The info w.r.t Agent Upgrade.",
+            "properties": {
+              "correlationId": {
+                "description": "The correlation ID associated with an agent upgrade operation.",
+                "type": "string"
+              },
+              "desiredVersion": {
+                "description": "Specifies the version info w.r.t AgentUpgrade for the machine.",
+                "type": "string"
+              },
+              "enableAutomaticUpgrade": {
+                "description": "Specifies if the machine's agent should be upgraded",
+                "type": "boolean"
+              },
+              "lastAttemptDesiredVersion": {
+                "description": "Specifies the version of the last attempt",
+                "readOnly": true,
+                "type": "string"
+              },
+              "lastAttemptMessage": {
+                "description": "Failure message of last upgrade attempt if any.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "lastAttemptStatus": {
+                "description": "Specifies the status of Agent Upgrade.",
+                "enum": [
+                  "Success",
+                  "Failed"
+                ],
+                "readOnly": true,
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "LastAttemptStatusEnum"
+                }
+              },
+              "lastAttemptTimestamp": {
+                "description": "Timestamp of last upgrade attempt",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ArcKindEnum": {
+            "description": "Indicates which kind of Arc machine placement on-premises, such as HCI, SCVMM or VMware etc.",
+            "enum": [
+              "AVS",
+              "HCI",
+              "SCVMM",
+              "VMware",
+              "EPS",
+              "GCP",
+              "AWS"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ArcKindEnum "
+            }
+          },
+          "CloudMetadata": {
+            "description": "The metadata of the cloud environment (Azure/GCP/AWS/OCI...).",
+            "properties": {
+              "provider": {
+                "description": "Specifies the cloud provider (Azure/AWS/GCP...).",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ConfigurationExtension": {
+            "description": "Describes properties that can identify extensions.",
+            "properties": {
+              "publisher": {
+                "description": "Publisher of the extension.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "type": {
+                "description": "Type of the extension.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "DetectedProperties": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Detected properties from the machine.",
+            "readOnly": true,
+            "type": "object"
+          },
+          "Disk": {
+            "description": "Describes a disk on the machine",
+            "properties": {
+              "diskType": {
+                "description": "The type of the disk.",
+                "type": "string"
+              },
+              "generatedId": {
+                "description": "The generated ID of the disk.",
+                "type": "string"
+              },
+              "id": {
+                "description": "The ID of the disk.",
+                "type": "string"
+              },
+              "maxSizeInBytes": {
+                "description": "The size of the disk, in bytes",
+                "format": "int64",
+                "type": "integer"
+              },
+              "name": {
+                "description": "The name of the disk.",
+                "type": "string"
+              },
+              "path": {
+                "description": "The path of the disk.",
+                "type": "string"
+              },
+              "usedSpaceInBytes": {
+                "description": "The amount of space used on the disk, in bytes",
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          },
+          "EsuEligibility": {
+            "description": "The ESU eligibility.",
+            "enum": [
+              "Eligible",
+              "Ineligible",
+              "Unknown"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "EsuEligibility"
+            }
+          },
+          "EsuKey": {
+            "description": "ESU key",
+            "properties": {
+              "licenseStatus": {
+                "description": "The current status of the license profile key. Represented by the same integer value that is presented on the machine itself when querying the license key status.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "sku": {
+                "description": "SKU number.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "EsuKeyState": {
+            "description": "The ESU key state.",
+            "enum": [
+              "Inactive",
+              "Active"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "EsuKeyState"
+            }
+          },
+          "EsuServerType": {
+            "description": "The server types for Esu.",
+            "enum": [
+              "Standard",
+              "Datacenter"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "EsuServerType"
+            }
+          },
+          "FirmwareProfile": {
+            "description": "Describes the firmware of the machine",
+            "properties": {
+              "serialNumber": {
+                "description": "The serial number of the firmware",
+                "readOnly": true,
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the firmware",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          },
+          "HardwareProfile": {
+            "description": "Describes the hardware of the machine",
+            "properties": {
+              "numberOfCpuSockets": {
+                "description": "The total number of CPU sockets available on the machine",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "processors": {
+                "description": "The physical processors of the machine.",
+                "items": {
+                  "$ref": "#/definitions/Processor"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "totalPhysicalMemoryInBytes": {
+                "description": "The total physical memory on the machine",
+                "format": "int64",
+                "readOnly": true,
+                "type": "integer"
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          },
+          "HotpatchEnablementStatus": {
+            "description": "Status of hotpatch enablement or disablement.",
+            "enum": [
+              "Unknown",
+              "PendingEvaluation",
+              "Disabled",
+              "ActionRequired",
+              "Enabled"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "HotpatchEnablementStatus"
+            }
+          },
+          "IpAddress": {
+            "description": "Describes properties of the IP address.",
+            "properties": {
+              "address": {
+                "description": "Represents the IP Address.",
+                "type": "string"
+              },
+              "ipAddressVersion": {
+                "description": "Represents the Ip Address Version.",
+                "type": "string"
+              },
+              "subnet": {
+                "$ref": "#/definitions/Subnet",
+                "description": "The subnet to which this IP address belongs.",
+                "type": "object"
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          },
+          "License": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "Describes a license in a hybrid machine.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/LicenseProperties",
+                "description": "Hybrid Compute License properties",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "LicenseCoreType": {
+            "description": "Describes the license core type (pCore or vCore).",
+            "enum": [
+              "pCore",
+              "vCore"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "LicenseCoreType"
+            }
+          },
+          "LicenseDetails": {
+            "description": "Describes the properties of a License.",
+            "properties": {
+              "assignedLicenses": {
+                "description": "Describes the number of assigned licenses.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "edition": {
+                "$ref": "#/definitions/LicenseEdition"
+              },
+              "immutableId": {
+                "description": "Describes the immutable id.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "processors": {
+                "description": "Describes the number of processors.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "state": {
+                "$ref": "#/definitions/LicenseState"
+              },
+              "target": {
+                "$ref": "#/definitions/LicenseTarget"
+              },
+              "type": {
+                "$ref": "#/definitions/LicenseCoreType"
+              },
+              "volumeLicenseDetails": {
+                "description": "A list of volume license details.",
+                "items": {
+                  "$ref": "#/definitions/VolumeLicenseDetails"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "LicenseEdition": {
+            "description": "Describes the edition of the license. The values are either Standard or Datacenter.",
+            "enum": [
+              "Standard",
+              "Datacenter"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "LicenseEdition"
+            }
+          },
+          "LicenseProfileArmEsuPropertiesWithoutAssignedLicense": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/LicenseProfileStorageModelEsuProperties"
+              }
+            ],
+            "description": "Describes the properties of a License Profile ARM model.",
+            "properties": {
+              "esuEligibility": {
+                "$ref": "#/definitions/EsuEligibility",
+                "description": "Indicates the eligibility state of Esu.",
+                "readOnly": true
+              },
+              "esuKeyState": {
+                "$ref": "#/definitions/EsuKeyState",
+                "description": "Indicates whether there is an ESU Key currently active for the machine.",
+                "readOnly": true
+              },
+              "serverType": {
+                "$ref": "#/definitions/EsuServerType",
+                "description": "The type of the Esu servers.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "LicenseProfileArmProductProfileProperties": {
+            "description": "Describes the properties of a Product License Profile ARM model.",
+            "properties": {
+              "billingEndDate": {
+                "description": "The timestamp in UTC when the billing ends.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "billingStartDate": {
+                "description": "The timestamp in UTC when the billing starts.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "disenrollmentDate": {
+                "description": "The timestamp in UTC when the user disenrolled the feature.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "enrollmentDate": {
+                "description": "The timestamp in UTC when the user enrolls the feature.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "error": {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorDetail",
+                "description": "The errors that were encountered during the feature enrollment or disenrollment.",
+                "readOnly": true
+              },
+              "productFeatures": {
+                "description": "The list of product features.",
+                "items": {
+                  "$ref": "#/definitions/ProductFeature"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "productType": {
+                "$ref": "#/definitions/LicenseProfileProductType",
+                "description": "Indicates the product type of the license."
+              },
+              "subscriptionStatus": {
+                "$ref": "#/definitions/LicenseProfileSubscriptionStatus",
+                "description": "Indicates the subscription status of the product."
+              }
+            },
+            "type": "object"
+          },
+          "LicenseProfileMachineInstanceView": {
+            "description": "License Profile Instance View in Machine Properties.",
+            "properties": {
+              "esuProfile": {
+                "$ref": "#/definitions/LicenseProfileMachineInstanceViewEsuProperties"
+              },
+              "licenseChannel": {
+                "description": "Indicates the license channel.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "licenseStatus": {
+                "$ref": "#/definitions/LicenseStatus",
+                "description": "Indicates the license status of the OS."
+              },
+              "productProfile": {
+                "$ref": "#/definitions/LicenseProfileArmProductProfileProperties",
+                "description": "Hybrid Compute Product Profile properties",
+                "readOnly": true,
+                "x-ms-client-flatten": true
+              },
+              "softwareAssurance": {
+                "properties": {
+                  "softwareAssuranceCustomer": {
+                    "description": "Specifies if this machine is licensed as part of a Software Assurance agreement.",
+                    "type": "boolean"
+                  }
+                },
+                "readOnly": true,
+                "type": "object",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "LicenseProfileMachineInstanceViewEsuProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/LicenseProfileArmEsuPropertiesWithoutAssignedLicense"
+              }
+            ],
+            "description": "Properties for the Machine ESU profile.",
+            "properties": {
+              "assignedLicense": {
+                "$ref": "#/definitions/License",
+                "description": "The assigned license resource."
+              },
+              "licenseAssignmentState": {
+                "description": "Describes the license assignment state (Assigned or NotAssigned).",
+                "enum": [
+                  "Assigned",
+                  "NotAssigned"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "licenseAssignmentState"
+                }
+              }
+            },
+            "type": "object"
+          },
+          "LicenseProfileProductType": {
+            "description": "The product type of the license.",
+            "enum": [
+              "WindowsServer",
+              "WindowsIoTEnterprise"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "LicenseProfileProductType"
+            }
+          },
+          "LicenseProfileStorageModelEsuProperties": {
+            "description": "License profile storage model for ESU properties.",
+            "properties": {
+              "assignedLicenseImmutableId": {
+                "description": "The guid id of the license.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "esuKeys": {
+                "description": "The list of ESU keys.",
+                "items": {
+                  "$ref": "#/definitions/EsuKey"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              }
+            },
+            "type": "object"
+          },
+          "LicenseProfileSubscriptionStatus": {
+            "description": "Subscription status of the OS or Product feature.",
+            "enum": [
+              "Unknown",
+              "Enabling",
+              "Enabled",
+              "Disabled",
+              "Disabling",
+              "Failed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "LicenseProfileSubscriptionStatus"
+            }
+          },
+          "LicenseProperties": {
+            "description": "Describes the properties of a License Profile.",
+            "properties": {
+              "licenseDetails": {
+                "$ref": "#/definitions/LicenseDetails",
+                "description": "Describes the properties of a License."
+              },
+              "licenseType": {
+                "$ref": "#/definitions/LicenseType",
+                "description": "The type of the license resource."
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/ProvisioningState",
+                "description": "The provisioning state, which only appears in the response."
+              },
+              "tenantId": {
+                "description": "Describes the tenant id.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "LicenseState": {
+            "description": "Describes the state of the license.",
+            "enum": [
+              "Activated",
+              "Deactivated"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "LicenseState"
+            }
+          },
+          "LicenseStatus": {
+            "description": "The license status.",
+            "enum": [
+              "Unlicensed",
+              "Licensed",
+              "OOBGrace",
+              "OOTGrace",
+              "NonGenuineGrace",
+              "Notification",
+              "ExtendedGrace"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "LicenseStatus"
+            }
+          },
+          "LicenseTarget": {
+            "description": "Describes the license target server.",
+            "enum": [
+              "Windows Server 2012",
+              "Windows Server 2012 R2"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "LicenseTarget"
+            }
+          },
+          "LicenseType": {
+            "description": "The type of the license resource.",
+            "enum": [
+              "ESU"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "LicenseType"
+            }
+          },
+          "Machine": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "Describes a hybrid machine.",
+            "properties": {
+              "identity": {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/Identity"
+              },
+              "kind": {
+                "$ref": "#/definitions/ArcKindEnum"
+              },
+              "properties": {
+                "$ref": "#/definitions/MachineProperties",
+                "description": "Hybrid Compute Machine properties",
+                "x-ms-client-flatten": true
+              },
+              "resources": {
+                "description": "The list of extensions affiliated to the machine",
+                "items": {
+                  "$ref": "#/definitions/MachineExtension"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "MachineExtension": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "Describes a Machine Extension.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/MachineExtensionProperties",
+                "description": "Describes Machine Extension Properties."
+              }
+            },
+            "type": "object"
+          },
+          "MachineExtensionInstanceView": {
+            "description": "Describes the Machine Extension Instance View.",
+            "properties": {
+              "name": {
+                "description": "The machine extension name.",
+                "type": "string"
+              },
+              "status": {
+                "description": "Instance view status.",
+                "properties": {
+                  "code": {
+                    "description": "The status code.",
+                    "type": "string"
+                  },
+                  "displayStatus": {
+                    "description": "The short localizable label for the status.",
+                    "type": "string"
+                  },
+                  "level": {
+                    "description": "The level code.",
+                    "enum": [
+                      "Info",
+                      "Warning",
+                      "Error"
+                    ],
+                    "type": "string",
+                    "x-ms-enum": {
+                      "modelAsString": true,
+                      "name": "StatusLevelTypes"
+                    }
+                  },
+                  "message": {
+                    "description": "The detailed status message, including for alerts and error messages.",
+                    "type": "string"
+                  },
+                  "time": {
+                    "description": "The time of the status.",
+                    "format": "date-time",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "type": {
+                "description": "Specifies the type of the extension; an example is \"CustomScriptExtension\".",
+                "type": "string"
+              },
+              "typeHandlerVersion": {
+                "description": "Specifies the version of the script handler.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "MachineExtensionProperties": {
+            "description": "Describes the properties of a Machine Extension.",
+            "properties": {
+              "autoUpgradeMinorVersion": {
+                "description": "Indicates whether the extension should use a newer minor version if one is available at deployment time. Once deployed, however, the extension will not upgrade minor versions unless redeployed, even with this property set to true.",
+                "type": "boolean"
+              },
+              "enableAutomaticUpgrade": {
+                "description": "Indicates whether the extension should be automatically upgraded by the platform if there is a newer version available.",
+                "type": "boolean"
+              },
+              "forceUpdateTag": {
+                "description": "How the extension handler should be forced to update even if the extension configuration has not changed.",
+                "type": "string"
+              },
+              "instanceView": {
+                "$ref": "#/definitions/MachineExtensionInstanceView",
+                "description": "The machine extension instance view."
+              },
+              "protectedSettings": {
+                "additionalProperties": {},
+                "description": "The extension can contain either protectedSettings or protectedSettingsFromKeyVault or no protected settings at all.",
+                "type": "object"
+              },
+              "provisioningState": {
+                "description": "The provisioning state, which only appears in the response.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "publisher": {
+                "description": "The name of the extension handler publisher.",
+                "type": "string"
+              },
+              "settings": {
+                "additionalProperties": {},
+                "description": "Json formatted public settings for the extension.",
+                "type": "object"
+              },
+              "type": {
+                "description": "Specifies the type of the extension; an example is \"CustomScriptExtension\".",
+                "type": "string"
+              },
+              "typeHandlerVersion": {
+                "description": "Specifies the version of the script handler.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "MachineListResult": {
+            "description": "The List hybrid machine operation response.",
+            "properties": {
+              "nextLink": {
+                "description": "The URI to fetch the next page of Machines. Call ListNext() with this URI to fetch the next page of hybrid machines.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The list of hybrid machines.",
+                "items": {
+                  "$ref": "#/definitions/Machine"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "MachineProperties": {
+            "description": "Describes the properties of a hybrid machine.",
+            "properties": {
+              "adFqdn": {
+                "description": "Specifies the AD fully qualified display name.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "agentConfiguration": {
+                "$ref": "#/definitions/AgentConfiguration",
+                "description": "Configurable properties that the user can set locally via the azcmagent config command, or remotely via ARM."
+              },
+              "agentUpgrade": {
+                "$ref": "#/definitions/AgentUpgrade",
+                "description": "The info of the machine w.r.t Agent Upgrade"
+              },
+              "agentVersion": {
+                "description": "The hybrid machine agent full version.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "clientPublicKey": {
+                "description": "Public Key that the client provides to be used during initial resource onboarding",
+                "type": "string"
+              },
+              "cloudMetadata": {
+                "$ref": "#/definitions/CloudMetadata",
+                "description": "The metadata of the cloud environment (Azure/GCP/AWS/OCI...)."
+              },
+              "detectedProperties": {
+                "$ref": "#/definitions/DetectedProperties",
+                "description": "Detected properties from the machine."
+              },
+              "displayName": {
+                "description": "Specifies the hybrid machine display name.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "dnsFqdn": {
+                "description": "Specifies the DNS fully qualified display name.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "domainName": {
+                "description": "Specifies the Windows domain name.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "errorDetails": {
+                "description": "Details about the error state.",
+                "items": {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorDetail"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "extensions": {
+                "description": "Machine Extensions information (deprecated field)",
+                "items": {
+                  "$ref": "#/definitions/MachineExtensionInstanceView"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "firmwareProfile": {
+                "$ref": "#/definitions/FirmwareProfile",
+                "description": "Information about the machine's firmware"
+              },
+              "hardwareProfile": {
+                "$ref": "#/definitions/HardwareProfile",
+                "description": "Information about the machine's hardware"
+              },
+              "identityKeyStore": {
+                "description": "Specifies the identity key store a machine is using.",
+                "enum": [
+                  "TPM",
+                  "Default"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "IdentityKeyStore"
+                }
+              },
+              "lastStatusChange": {
+                "description": "The time of the last status change.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "licenseProfile": {
+                "$ref": "#/definitions/LicenseProfileMachineInstanceView",
+                "description": "Specifies the License related properties for a machine."
+              },
+              "locationData": {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/locationData"
+              },
+              "machineFqdn": {
+                "description": "Specifies the hybrid machine FQDN.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "mssqlDiscovered": {
+                "description": "Specifies whether any MS SQL instance is discovered on the machine.",
+                "type": "string"
+              },
+              "networkProfile": {
+                "$ref": "#/definitions/NetworkProfile",
+                "description": "Information about the network the machine is on."
+              },
+              "osEdition": {
+                "description": "The edition of the Operating System.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "osName": {
+                "description": "The Operating System running on the hybrid machine.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "osProfile": {
+                "$ref": "#/definitions/OSProfile",
+                "description": "Specifies the operating system settings for the hybrid machine."
+              },
+              "osSku": {
+                "description": "Specifies the Operating System product SKU.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "osType": {
+                "description": "The type of Operating System (windows/linux).",
+                "type": "string"
+              },
+              "osVersion": {
+                "description": "The version of Operating System running on the hybrid machine.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "parentClusterResourceId": {
+                "description": "The resource id of the parent cluster (Azure HCI) this machine is assigned to, if any.",
+                "type": "string"
+              },
+              "privateLinkScopeResourceId": {
+                "description": "The resource id of the private link scope this machine is assigned to, if any.",
+                "type": "string"
+              },
+              "provisioningState": {
+                "description": "The provisioning state, which only appears in the response.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "serviceStatuses": {
+                "$ref": "#/definitions/ServiceStatuses",
+                "description": "Statuses of dependent services that are reported back to ARM."
+              },
+              "status": {
+                "description": "The status of the hybrid machine agent.",
+                "enum": [
+                  "Connected",
+                  "Disconnected",
+                  "Error"
+                ],
+                "readOnly": true,
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "StatusTypes"
+                }
+              },
+              "storageProfile": {
+                "$ref": "#/definitions/StorageProfile",
+                "description": "Information about the machine's storage"
+              },
+              "tpmEkCertificate": {
+                "description": "Endorsement Key Certificate of the Trusted Platform Module (TPM) that the client provides to be used during initial resource onboarding.",
+                "type": "string"
+              },
+              "vmId": {
+                "description": "Specifies the hybrid machine unique ID.",
+                "type": "string",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "vmUuid": {
+                "description": "Specifies the Arc Machine's unique SMBIOS ID",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "NetworkInterface": {
+            "description": "Describes a network interface.",
+            "properties": {
+              "id": {
+                "description": "Represents the ID of the network interface.",
+                "type": "string"
+              },
+              "ipAddresses": {
+                "description": "The list of IP addresses in this interface.",
+                "items": {
+                  "$ref": "#/definitions/IpAddress"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "macAddress": {
+                "description": "Represents MAC address of the network interface.",
+                "type": "string"
+              },
+              "name": {
+                "description": "Represents the name of the network interface.",
+                "type": "string"
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          },
+          "NetworkProfile": {
+            "description": "Describes the network information on this machine.",
+            "properties": {
+              "networkInterfaces": {
+                "description": "The list of network interfaces.",
+                "items": {
+                  "$ref": "#/definitions/NetworkInterface"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          },
+          "OSProfile": {
+            "description": "Specifies the operating system settings for the hybrid machine.",
+            "properties": {
+              "computerName": {
+                "description": "Specifies the host OS name of the hybrid machine.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "linuxConfiguration": {
+                "description": "Specifies the linux configuration for update management.",
+                "properties": {
+                  "patchSettings": {
+                    "$ref": "#/definitions/PatchSettings",
+                    "x-ms-client-flatten": true
+                  }
+                },
+                "type": "object"
+              },
+              "windowsConfiguration": {
+                "description": "Specifies the windows configuration for update management.",
+                "properties": {
+                  "patchSettings": {
+                    "$ref": "#/definitions/PatchSettings",
+                    "x-ms-client-flatten": true
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "PatchSettings": {
+            "description": "Specifies the patch settings.",
+            "properties": {
+              "assessmentMode": {
+                "description": "Specifies the assessment mode.",
+                "enum": [
+                  "ImageDefault",
+                  "AutomaticByPlatform"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "AssessmentModeTypes"
+                }
+              },
+              "enableHotpatching": {
+                "description": "Captures the hotpatch capability enrollment intent of the customers, which enables customers to patch their Windows machines without requiring a reboot.",
+                "type": "boolean"
+              },
+              "patchMode": {
+                "description": "Specifies the patch mode.",
+                "enum": [
+                  "ImageDefault",
+                  "AutomaticByPlatform",
+                  "AutomaticByOS",
+                  "Manual"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "PatchModeTypes"
+                }
+              },
+              "status": {
+                "description": "Status of the hotpatch capability enrollment or disenrollment.",
+                "properties": {
+                  "error": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorDetail",
+                    "description": "The errors that were encountered during the hotpatch capability enrollment or disenrollment.",
+                    "readOnly": true
+                  },
+                  "hotpatchEnablementStatus": {
+                    "$ref": "#/definitions/HotpatchEnablementStatus",
+                    "description": "Indicates the current status of the hotpatch being enabled or disabled."
+                  }
+                },
+                "readOnly": true,
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "Processor": {
+            "description": "Describes the firmware of the machine",
+            "properties": {
+              "name": {
+                "description": "The name of the processor.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "numberOfCores": {
+                "description": "The total number of physical cores on the processor.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          },
+          "ProductFeature": {
+            "description": "Product Feature",
+            "properties": {
+              "billingEndDate": {
+                "description": "The timestamp in UTC when the billing ends.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "billingStartDate": {
+                "description": "The timestamp in UTC when the billing starts.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "disenrollmentDate": {
+                "description": "The timestamp in UTC when the user disenrolled the feature.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "enrollmentDate": {
+                "description": "The timestamp in UTC when the user enrolls the feature.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "error": {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorDetail",
+                "description": "The errors that were encountered during the feature enrollment or disenrollment.",
+                "readOnly": true
+              },
+              "name": {
+                "description": "Product feature name.",
+                "type": "string"
+              },
+              "subscriptionStatus": {
+                "$ref": "#/definitions/LicenseProfileSubscriptionStatus",
+                "description": "Indicates the current status of the product features."
+              }
+            },
+            "type": "object"
+          },
+          "ProvisioningState": {
+            "description": "The provisioning state, which only appears in the response.",
+            "enum": [
+              "Creating",
+              "Updating",
+              "Deleting",
+              "Succeeded",
+              "Failed",
+              "Accepted",
+              "Canceled",
+              "Deleted"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ProvisioningState"
+            }
+          },
+          "ServiceStatus": {
+            "description": "Describes the status and behavior of a service.",
+            "properties": {
+              "startupType": {
+                "description": "The behavior of the service when the Arc-enabled machine starts up.",
+                "type": "string"
+              },
+              "status": {
+                "description": "The current status of the service.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ServiceStatuses": {
+            "description": "Reports the state and behavior of dependent services.",
+            "properties": {
+              "extensionService": {
+                "$ref": "#/definitions/ServiceStatus",
+                "description": "The state of the extension service on the Arc-enabled machine."
+              },
+              "guestConfigurationService": {
+                "$ref": "#/definitions/ServiceStatus",
+                "description": "The state of the guest configuration service on the Arc-enabled machine."
+              }
+            },
+            "type": "object"
+          },
+          "StorageProfile": {
+            "description": "Describes the storage configuration of the machine",
+            "properties": {
+              "disks": {
+                "description": "The disks on the machine.",
+                "items": {
+                  "$ref": "#/definitions/Disk"
+                },
+                "type": "array"
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          },
+          "Subnet": {
+            "description": "Describes the subnet.",
+            "properties": {
+              "addressPrefix": {
+                "description": "Represents address prefix.",
+                "type": "string"
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          },
+          "VolumeLicenseDetails": {
+            "properties": {
+              "invoiceId": {
+                "description": "The invoice id for the volume license.",
+                "type": "string"
+              },
+              "programYear": {
+                "description": "Describes the program year the volume license is for.",
+                "enum": [
+                  "Year 1",
+                  "Year 2",
+                  "Year 3"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ProgramYear"
+                }
+              }
+            },
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "The Hybrid Compute Management Client.",
+          "title": "HybridComputeManagementClient",
+          "version": "2025-01-13"
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/machines": {
+            "get": {
+              "description": "Lists all the hybrid machines in the specified subscription. Use the nextLink property in the response to get the next page of hybrid machines.",
+              "operationId": "Machines_ListBySubscription",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/MachineListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "machines"
+              ],
+              "x-ms-examples": {
+                "List Machines by resource group": {
+                  "$ref": "./examples/machine/Machines_ListBySubscription.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}": {
+            "get": {
+              "description": "Retrieves information about the model view or the instance view of a hybrid machine.",
+              "operationId": "Machines_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the hybrid machine.",
+                  "in": "path",
+                  "maxLength": 54,
+                  "minLength": 1,
+                  "name": "machineName",
+                  "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The expand expression to apply on the operation.",
+                  "enum": [
+                    "instanceView"
+                  ],
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-enum": {
+                    "modelAsString": true,
+                    "name": "InstanceViewTypes"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/Machine"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "machines"
+              ],
+              "x-ms-examples": {
+                "Get Machine": {
+                  "$ref": "./examples/machine/Machines_Get.json"
+                },
+                "Get Machine with License Profile Instance View": {
+                  "$ref": "./examples/machine/Machines_Get_LicenseProfileInstanceView.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "eecab3d393ce57ef584391b028c109e7066829d4e2bc3685e8e2918ade7cde66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/HybridCompute.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "Common.CloudError": {
+            "description": "Common error response for all Azure Resource Manager APIs to return error details for failed operations. (This also follows the OData error response format.).",
+            "properties": {
+              "error": {
+                "$ref": "#/definitions/Common.CloudErrorBody",
+                "description": "The error object.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-external": true
+          },
+          "Common.CloudErrorBody": {
+            "description": "The error detail.",
+            "properties": {
+              "additionalInfo": {
+                "description": "The error additional info.",
+                "items": {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorAdditionalInfo"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "code": {
+                "description": "The error code.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "details": {
+                "description": "The error details.",
+                "items": {
+                  "$ref": "#/definitions/Common.CloudErrorBody"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "message": {
+                "description": "The error message.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "target": {
+                "description": "The error target.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object",
+            "x-ms-external": true
+          },
+          "Common.OperationStatus": {
+            "description": "A status describing the success/failure of the enablement/disablement operation.",
+            "properties": {
+              "code": {
+                "description": "The operation status code.",
+                "type": "string"
+              },
+              "message": {
+                "description": "Additional information regarding the success/failure of the operation.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "Enforce": {
+            "description": "If set to \"False\", it allows the descendants of this scope to override the pricing configuration set on this scope (allows setting inherited=\"False\"). If set to \"True\", it prevents overrides and forces this pricing configuration on all the descendants of this scope. This field is only available for subscription-level pricing.",
+            "enum": [
+              "False",
+              "True"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "Enforce",
+              "values": [
+                {
+                  "description": "Allows the descendants of this scope to override the pricing configuration set on this scope (allows setting inherited=\"False\")",
+                  "name": "False",
+                  "value": "False"
+                },
+                {
+                  "description": "Prevents overrides and forces the current scope's pricing configuration to all descendants",
+                  "name": "True",
+                  "value": "True"
+                }
+              ]
+            }
+          },
+          "Extension": {
+            "description": "A plan's extension properties",
+            "properties": {
+              "additionalExtensionProperties": {
+                "additionalProperties": {},
+                "description": "Property values associated with the extension.",
+                "type": "object"
+              },
+              "isEnabled": {
+                "$ref": "#/definitions/IsEnabled",
+                "description": "Indicates whether the extension is enabled."
+              },
+              "name": {
+                "description": "The extension name. Supported values are: <br><br>**AgentlessDiscoveryForKubernetes** - Provides zero footprint, API-based discovery of Kubernetes clusters, their configurations and deployments. The collected data is used to create a contextualized security graph for Kubernetes clusters, provide risk hunting capabilities, and visualize risks and threats to  Kubernetes environments and workloads.<br>Available for CloudPosture plan and Containers plan.<br><br>**OnUploadMalwareScanning** - Limits the GB to be scanned per month for each storage account within the subscription. Once this limit reached on a given storage account, Blobs won't be scanned during current calendar month.<br>Available for StorageAccounts plan (DefenderForStorageV2 sub plans).<br><br>**SensitiveDataDiscovery** - Sensitive data discovery identifies Blob storage container with sensitive data such as credentials, credit cards, and more, to help prioritize and investigate security events.<br>Available for StorageAccounts plan (DefenderForStorageV2 sub plan) and CloudPosture plan.<br><br>**ContainerRegistriesVulnerabilityAssessments** - Provides vulnerability management for images stored in your container registries.<br>Available for CloudPosture plan and Containers plan.<br><br>**MdeDesignatedSubscription** - Direct onboarding is a seamless integration between Defender for Endpoint and Defender for Cloud that doesn't require extra software deployment on your servers. The onboarded resources will be presented under a designated Azure Subscription you configure<br>Available for VirtualMachines plan (P1 and P2 sub plans).<br><br>**AgentlessVmScanning** - Scans your machines for installed software, vulnerabilities, malware and secret scanning without relying on agents or impacting machine performance. Learn more here https://learn.microsoft.com/en-us/azure/defender-for-cloud/concept-agentless-data-collection.<br>Available for CloudPosture plan, VirtualMachines plan (P2 sub plan) and Containers plan.<br><br>**EntraPermissionsManagement** - Permissions Management provides Cloud Infrastructure Entitlement Management (CIEM) capabilities that helps organizations to manage and control user access and entitlements in their cloud infrastructure - important attack vector for cloud environments.<br>Permissions Management analyzes all permissions and active usage, and suggests recommendations to reduce permissions to enforce the principle of least privilege. Learn more here https://learn.microsoft.com/en-us/azure/defender-for-cloud/permissions-management.<br>Available for CloudPosture plan. <br><br>**FileIntegrityMonitoring** - File integrity monitoring (FIM), examines operating system files.<br>Windows registries, Linux system files, in real time, for changes that might indicate an attack.<br>Available for VirtualMachines plan (P2 sub plan). <br><br>**ContainerSensor** - The sensor is based on IG and provides a rich threat detection suite for Kubernetes clusters, nodes, and workloads, powered by Microsoft leading threat intelligence, provides mapping to MITRE ATT&CK framework.<br>Available for Containers plan. <br><br>**AIPromptEvidence** - Exposes the prompts passed between the user and the AI model as alert evidence. This helps classify and triage the alerts with relevant user context. The prompt snippets will include only segments of the user prompt or model response that were deemed suspicious and relevant for security classifications. The prompt evidence will be available through Defender portal as part of each alert.<br>Available for AI plan. <br><br>",
+                "type": "string"
+              },
+              "operationStatus": {
+                "$ref": "#/definitions/Common.OperationStatus",
+                "description": "Optional. A status describing the success/failure of the extension's enablement/disablement operation.",
+                "readOnly": true
+              }
+            },
+            "required": [
+              "name",
+              "isEnabled"
+            ],
+            "type": "object"
+          },
+          "Inherited": {
+            "description": "\"inherited\" = \"True\" indicates that the current scope inherits its pricing configuration from its parent. The ID of the parent scope that provides the inherited configuration is displayed in the \"inheritedFrom\" field. On the other hand, \"inherited\" = \"False\" indicates that the current scope has its own pricing configuration explicitly set, and does not inherit from its parent. This field is read only and available only for resource-level pricing.",
+            "enum": [
+              "True",
+              "False"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "Inherited",
+              "values": [
+                {
+                  "description": "Indicates that the current scope is inheriting its pricing configuration from its parent",
+                  "name": "True",
+                  "value": "True"
+                },
+                {
+                  "description": "Indicates that the current scope sets its own pricing configuration and does not inherit it from its parent",
+                  "name": "False",
+                  "value": "False"
+                }
+              ]
+            }
+          },
+          "IsEnabled": {
+            "description": "Indicates whether the extension is enabled.",
+            "enum": [
+              "True",
+              "False"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "IsEnabled",
+              "values": [
+                {
+                  "description": "Indicates the extension is enabled",
+                  "name": "True",
+                  "value": "True"
+                },
+                {
+                  "description": "Indicates the extension is disabled",
+                  "name": "False",
+                  "value": "False"
+                }
+              ]
+            }
+          },
+          "Pricing": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "Microsoft Defender for Cloud is provided in two pricing tiers: free and standard. The standard tier offers advanced security capabilities, while the free tier offers basic security features.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/PricingProperties",
+                "description": "Pricing data",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "PricingList": {
+            "description": "List of pricing configurations response.",
+            "properties": {
+              "value": {
+                "description": "List of pricing configurations",
+                "items": {
+                  "$ref": "#/definitions/Pricing"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "PricingProperties": {
+            "description": "Pricing properties for the relevant scope",
+            "properties": {
+              "deprecated": {
+                "description": "Optional. True if the plan is deprecated. If there are replacing plans they will appear in `replacedBy` property",
+                "readOnly": true,
+                "type": "boolean"
+              },
+              "enablementTime": {
+                "description": "Optional. If `pricingTier` is `Standard` then this property holds the date of the last time the `pricingTier` was set to `Standard`, when available (e.g 2023-03-01T12:42:42.1921106Z).",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "enforce": {
+                "$ref": "#/definitions/Enforce",
+                "description": "If set to \"False\", it allows the descendants of this scope to override the pricing configuration set on this scope (allows setting inherited=\"False\"). If set to \"True\", it prevents overrides and forces this pricing configuration on all the descendants of this scope. This field is only available for subscription-level pricing."
+              },
+              "extensions": {
+                "description": "Optional. List of extensions offered under a plan.",
+                "items": {
+                  "$ref": "#/definitions/Extension"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "freeTrialRemainingTime": {
+                "description": "The duration left for the subscriptions free trial period - in ISO 8601 format (e.g. P3Y6M4DT12H30M5S).",
+                "format": "duration",
+                "readOnly": true,
+                "type": "string"
+              },
+              "inherited": {
+                "$ref": "#/definitions/Inherited",
+                "description": "\"inherited\" = \"True\" indicates that the current scope inherits its pricing configuration from its parent. The ID of the parent scope that provides the inherited configuration is displayed in the \"inheritedFrom\" field. On the other hand, \"inherited\" = \"False\" indicates that the current scope has its own pricing configuration explicitly set, and does not inherit from its parent. This field is read only and available only for resource-level pricing.",
+                "readOnly": true
+              },
+              "inheritedFrom": {
+                "description": "The id of the scope inherited from. \"Null\" if not inherited. This field is only available for resource-level pricing.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "pricingTier": {
+                "$ref": "#/definitions/PricingTier",
+                "description": "Indicates whether the Defender plan is enabled on the selected scope. Microsoft Defender for Cloud is provided in two pricing tiers: free and standard. The standard tier offers advanced security capabilities, while the free tier offers basic security features."
+              },
+              "replacedBy": {
+                "description": "Optional. List of plans that replace this plan. This property exists only if this plan is deprecated.",
+                "items": {
+                  "type": "string"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "resourcesCoverageStatus": {
+                "$ref": "#/definitions/ResourcesCoverageStatus",
+                "description": "This field is available for subscription-level only, and reflects the coverage status of the resources under the subscription. Please note: The \"pricingTier\" field reflects the plan status of the subscription. However, since the plan status can also be defined at the resource level, there might be misalignment between the subscription's plan status and the resource status. This field helps indicate the coverage status of the resources.",
+                "readOnly": true
+              },
+              "subPlan": {
+                "description": "The sub-plan selected for a Standard pricing configuration, when more than one sub-plan is available. Each sub-plan enables a set of security features. When not specified, full plan is applied. For VirtualMachines plan, available sub plans are 'P1' & 'P2', where for resource level only 'P1' sub plan is supported.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "pricingTier"
+            ],
+            "type": "object"
+          },
+          "PricingTier": {
+            "description": "Indicates whether the Defender plan is enabled on the selected scope. Microsoft Defender for Cloud is provided in two pricing tiers: free and standard. The standard tier offers advanced security capabilities, while the free tier offers basic security features.",
+            "enum": [
+              "Free",
+              "Standard"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "PricingTier",
+              "values": [
+                {
+                  "description": "Get free Microsoft Defender for Cloud experience with basic security features",
+                  "name": "Free",
+                  "value": "Free"
+                },
+                {
+                  "description": "Get the standard Microsoft Defender for Cloud experience with advanced security features",
+                  "name": "Standard",
+                  "value": "Standard"
+                }
+              ]
+            }
+          },
+          "ResourcesCoverageStatus": {
+            "description": "This field is available for subscription-level only, and reflects the coverage status of the resources under the subscription. Please note: The \"pricingTier\" field reflects the plan status of the subscription. However, since the plan status can also be defined at the resource level, there might be misalignment between the subscription's plan status and the resource status. This field helps indicate the coverage status of the resources.",
+            "enum": [
+              "FullyCovered",
+              "PartiallyCovered",
+              "NotCovered"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ResourcesCoverageStatus",
+              "values": [
+                {
+                  "description": "This value indicates that all resources associated with the subscription have the Defender plan enabled.",
+                  "name": "FullyCovered",
+                  "value": "FullyCovered"
+                },
+                {
+                  "description": "This value indicates that some resources under the subscription have the Defender plan enabled, while others have it disabled. There is a mixed coverage status among resources.",
+                  "name": "PartiallyCovered",
+                  "value": "PartiallyCovered"
+                },
+                {
+                  "description": "This value indicates that the Defender plan is disabled for all resources under the subscription. None of the resources are protected by the Defender plan.",
+                  "name": "NotCovered",
+                  "value": "NotCovered"
+                }
+              ]
+            }
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "API spec for Microsoft.Security (Microsoft Defender for Cloud) resource provider",
+          "title": "Microsoft Defender for Cloud",
+          "version": "2024-01-01",
+          "x-typespec-generated": [
+            {
+              "emitter": "@azure-tools/typespec-autorest"
+            }
+          ]
+        },
+        "paths": {
+          "/{scopeId}/providers/Microsoft.Security/pricings": {
+            "get": {
+              "description": "Lists Microsoft Defender for Cloud pricing configurations of the scopeId, that match the optional given $filter. Valid scopes are: subscription id or a specific resource id (Supported resources are: 'VirtualMachines, VMSS and ARC Machines'). Valid $filter is: 'name in ({planName1},{planName2},...)'. If $filter is not provided, the unfiltered list will be returned. If '$filter=name in (planName1,planName2)' is provided, the returned list includes the pricings set for 'planName1' and 'planName2' only.",
+              "operationId": "Pricings_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "scopeId",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "OData filter. Optional.",
+                  "in": "query",
+                  "name": "$filter",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/PricingList"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/Common.CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "Pricings"
+              ],
+              "x-ms-examples": {
+                "Get pricings on resource": {
+                  "$ref": "./examples/Pricings/ListResourcePricings_example.json"
+                },
+                "Get pricings on subscription": {
+                  "$ref": "./examples/Pricings/ListPricings_example.json"
+                },
+                "Get pricings on subscription with plans filter": {
+                  "$ref": "./examples/Pricings/ListPricingsWithPlanFilter_example.json"
+                }
+              }
+            }
+          },
+          "/{scopeId}/providers/Microsoft.Security/pricings/{pricingName}": {
+            "delete": {
+              "description": "Deletes a provided Microsoft Defender for Cloud pricing configuration in a specific resource. Valid only for resource scope (Supported resources are: 'VirtualMachines, VMSS, ARC Machines, and Containers').",
+              "operationId": "Pricings_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "scopeId",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "name of the pricing configuration",
+                  "in": "path",
+                  "name": "pricingName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/Common.CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "Pricings"
+              ],
+              "x-ms-examples": {
+                "Delete a pricing on resource": {
+                  "$ref": "./examples/Pricings/DeleteResourcePricing_example.json"
+                },
+                "Delete a pricing on resource (example for Containers plan)": {
+                  "$ref": "./examples/Pricings/DeleteResourcePricingByNameContainers_example.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Get the Defender plans pricing configurations of the selected scope (valid scopes are resource id or a subscription id). At the resource level, supported resource types are 'VirtualMachines, VMSS and ARC Machines'.",
+              "operationId": "Pricings_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "scopeId",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "name of the pricing configuration",
+                  "in": "path",
+                  "name": "pricingName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/Pricing"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/Common.CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "Pricings"
+              ],
+              "x-ms-examples": {
+                "Get pricings on resource - Containers plan": {
+                  "$ref": "./examples/Pricings/GetResourcePricingByNameContainers_example.json"
+                },
+                "Get pricings on resource - VirtualMachines plan": {
+                  "$ref": "./examples/Pricings/GetResourcePricingByNameVirtualMachines_example.json"
+                },
+                "Get pricings on subscription - CloudPosture plan": {
+                  "$ref": "./examples/Pricings/GetPricingByNameCloudPosture_example.json"
+                },
+                "Get pricings on subscription - Containers plan": {
+                  "$ref": "./examples/Pricings/GetPricingByNameContainers_example.json"
+                },
+                "Get pricings on subscription - Dns plan": {
+                  "$ref": "./examples/Pricings/GetPricingByNameDns_example.json"
+                },
+                "Get pricings on subscription - StorageAccounts plan": {
+                  "$ref": "./examples/Pricings/GetPricingByNameStorageAccounts_example.json"
+                },
+                "Get pricings on subscription - VirtualMachines plan": {
+                  "$ref": "./examples/Pricings/GetPricingByNameVirtualMachines_example.json"
+                }
+              }
+            },
+            "put": {
+              "description": "Updates a provided Microsoft Defender for Cloud pricing configuration in the scope. Valid scopes are: subscription id or a specific resource id (Supported resources are: 'VirtualMachines, VMSS and ARC Machines' and only for plan='VirtualMachines' and subPlan='P1').",
+              "operationId": "Pricings_Update",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "scopeId",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "name of the pricing configuration",
+                  "in": "path",
+                  "name": "pricingName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "Pricing object",
+                  "in": "body",
+                  "name": "pricing",
+                  "required": true,
+                  "schema": {
+                    "$ref": "#/definitions/Pricing"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource 'Pricing' update operation succeeded",
+                  "schema": {
+                    "$ref": "#/definitions/Pricing"
+                  }
+                },
+                "201": {
+                  "description": "Resource 'Pricing' create operation succeeded",
+                  "schema": {
+                    "$ref": "#/definitions/Pricing"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/Common.CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "Pricings"
+              ],
+              "x-ms-examples": {
+                "Update pricing on resource (Container Registry ACR)": {
+                  "$ref": "./examples/Pricings/PutResourcePricingByNameContainersACR_example.json"
+                },
+                "Update pricing on resource (example for Containers plan)": {
+                  "$ref": "./examples/Pricings/PutResourcePricingByNameContainers_example.json"
+                },
+                "Update pricing on resource (example for VirtualMachines plan)": {
+                  "$ref": "./examples/Pricings/PutResourcePricingByNameVirtualMachines_example.json"
+                },
+                "Update pricing on subscription (example for CloudPosture plan)": {
+                  "$ref": "./examples/Pricings/PutPricingByName_example.json"
+                },
+                "Update pricing on subscription (example for CloudPosture plan) - partial success": {
+                  "$ref": "./examples/Pricings/PutPricingByNamePartialSuccess_example.json"
+                },
+                "Update pricing on subscription (example for VirtualMachines plan)": {
+                  "$ref": "./examples/Pricings/PutPricingVMsByName_example.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "5031087fb252e7243e0988d131da745ee755ec4e4ec2c7534573289ccb05be14",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/security/resource-manager/Microsoft.Security/Security/stable/2024-01-01/pricings.json"
     },
     {
       "dependency": false,
@@ -241443,6 +243636,25 @@
       },
       "scopeKinds": [
         "region"
+      ]
+    },
+    {
+      "class": "security.security_center",
+      "displayName": "Defender protection plan",
+      "nativeType": "Microsoft.Security/pricings",
+      "rest": {
+        "collection": "pricings",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Security.Pricings_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Security.Pricings_Get"
+        ]
+      },
+      "scopeKinds": [
+        "subscription",
+        "global"
       ]
     }
   ]

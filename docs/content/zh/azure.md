@@ -32,7 +32,7 @@ Communication Services 的电话号码、预留号码和房间使用独立的 Mi
 
 ## 盘点与清理范围
 
-Steward 识别 428 类资源，其中 400 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 429 类资源，其中 400 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -50,6 +50,7 @@ Steward 识别 428 类资源，其中 400 类具有原生清理操作（包括 B
 | Azure Data Explorer | Kusto 集群、数据库、跟随挂接、数据连接、主体、脚本与私有连接；自定义沙箱映像 | 先删除已审查的子资源及跟随挂接；只读数据库与活动映像随控制资源清理 |
 | Data Factory | 工厂、管道、数据集、数据流、链接服务、凭据、触发器、CDC、全局参数、集成运行时及节点、私有连接 | 审查工厂级联；先处理运行时及运行任务；托管虚拟网络随工厂清理 |
 | Data Migration | 经典服务、项目、任务/文件和服务任务；SQL/Mongo 迁移服务及面向 SQL、Cosmos DB 的迁移 | 审查子资源及迁移前置删除；先取消任务、处理运行时节点，再删除服务 |
+| Defender for Cloud | 订阅防护计划及支持的资源级计划状态 | 只读展示服务状态、覆盖率、扩展及继承关系 |
 | Stream Analytics | 作业、输入、输出、函数、转换、集群和集群私有终结点 | 作业定义随作业删除；集群关联作业须明确选中或先移出集群 |
 | Foundry / Cognitive Services | 账号、部署、项目、代理、连接、能力主机、托管网络、内容过滤与承诺计划 | 先删除部署及已审查的依赖，再软删除账号；不执行永久清除 |
 | Azure AI Search | 服务、专用终结点连接、共享私有链接与网络边界配置视图 | 先删除已审查的连接；边界配置视图随服务清理 |
@@ -83,6 +84,10 @@ Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难�
 Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
 
 ## 清理保护
+
+Defender for Cloud 计划展示原生 Free/Standard 等级、子计划、试用剩余时间、启用时间、扩展状态、继承关系及资源覆盖率。订阅计划为 Standard 并不代表所有资源均受保护，资源级覆盖配置可能不同。盘点读取订阅计划、VM/VMSS/Arc 机器范围，以及 AKS、ACR 上的 Containers 计划；需要相应范围内的订阅身份、原生父资源列表与读取、`Microsoft.Security/pricings/read` 权限。已知计划会逐项补读，父资源或列表中消失不能单独证明计划不存在。
+
+这些记录用于展示服务状态，与阿里云安全中心的只读基线一致。Steward 不修改防护等级，也不移除资源级覆盖配置。扩展参数和操作消息不会进入公开清单及日志。目前证据包含官方示例及协议、SQLite worker 测试；独立 Defender 模拟器和真实云验证仍待完成。参见[原生计划状态与继承说明](https://learn.microsoft.com/en-us/rest/api/defenderforcloud/pricings/list?view=rest-defenderforcloud-2024-01-01)。
 
 Data Migration 按迁移服务所在区域清点八类原生资源。经典服务和项目的子资源分别列为经过审查的删除步骤，运行中的任务先取消。架构文件须先清理使用它的任务。SQL/Mongo 服务要求明确选择其目标范围内的迁移，并先删除这些迁移。SQL 迁移先取消再删除；运行中的 Mongo 迁移使用原生强制删除。SQL 服务会等待节点任务结束，移除已审查的运行时注册并确认不存在后再删除。源/目标数据库、备份存储、身份、网络和运行时机器保持独立。
 

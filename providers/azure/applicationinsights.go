@@ -107,6 +107,12 @@ func applicationInsightsSafeValue(value any) any {
 
 func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 	u, err := url.Parse(endpoint)
+	if err == nil && u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.security" {
+		return safePayload(object(defenderSafeValue(value)))
+	}
+	if err == nil && u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.hybridcompute" {
+		return safePayload(object(dataMigrationSafeValue(value)))
+	}
 	if err == nil && u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.datamigration" {
 		cleaned := object(dataMigrationSafeValue(value))
 		if value["path"] == u.Path && (value["method"] == "GET" || value["method"] == "POST" || value["method"] == "DELETE") {

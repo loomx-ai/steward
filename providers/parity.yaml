@@ -2388,8 +2388,10 @@ resources:
     resources:
     - Microsoft.Security/pricings
   status: pending_verification
-  notes: Notification/pricing configuration alone is not full security-center instance parity; validate
-    platform service-state semantics.
+  notes: Azure reads native Defender protection tiers, sub-plans, trial and enablement times,
+    extension status, coverage and resource-level inheritance, matching the read-only
+    DescribeVersionConfig baseline. GCP notification configuration alone does not establish
+    security-center service-state parity. Independent behavior verification remains pending.
 - alicloud: ACS::TSDB::Instance
   spec: providers/alicloud/specs/tsdb-instance.yaml
   class: database.timeseries

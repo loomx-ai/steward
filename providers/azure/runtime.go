@@ -49,6 +49,7 @@ func (r *Runtime) CredentialSchemas() []contracts.CredentialSchema {
 }
 func (r *Runtime) InventorySources() []contracts.InventorySource {
 	return []contracts.InventorySource{
+		{Name: defenderInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeGlobal, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: inventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, NetworkClosure: true},
 		{Name: insightsAnnotationSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: insightsWorkbookSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},

@@ -138,6 +138,13 @@ func azureRequestID(key string) string {
 }
 
 func (c *client) resourceOperation(kind resourceType, nativeID, method string) (catalog.Operation, map[string]any, error) {
+	if kind.NativeType == defenderPricingType {
+		_, scope, err := c.defenderIdentity(nativeID)
+		if err != nil {
+			return catalog.Operation{}, nil, err
+		}
+		return c.defenderOperation(scope, last(nativeID), method)
+	}
 	if rbacResourceKind(kind.NativeType) != "" {
 		id, _, typ, err := rbacResourceID(nativeID)
 		wire, wireErr := c.rbacWireID(nativeID)

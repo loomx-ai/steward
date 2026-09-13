@@ -9,6 +9,11 @@ import (
 const monitorReceiverTargetProof = "_monitor_receiver_target_identity"
 
 func monitorARMTarget(value asset.Asset) bool {
+	// Defender plan records expose service state and have no cleanup driver.
+	// Their graph must not require unrelated incoming-deletion API permissions.
+	if value.Identity.NativeType == defenderPricingType {
+		return false
+	}
 	// Legacy component records retain case-sensitive opaque selectors. They are
 	// not ARM scope resources, even though their service URL includes a component.
 	if rbacResourceKind(value.Identity.NativeType) != "" {
