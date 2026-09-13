@@ -1,7 +1,8 @@
-import { audits, catalog, cleanupReview, connection, connectionID, graphEdges, initialAssets, kinds, regions, scan, scopes, topology } from './data.mjs';
+import { createDemoData } from './data.mjs';
 
 // This transport never falls through to fetch. No cloud account or API is used.
-export function createDemoTransport() {
+export function createDemoTransport(locale = typeof window === 'undefined' ? 'zh' : new URLSearchParams(window.location.search).get('locale')) {
+  const { audits, catalog, cleanupReview, connection, connectionID, graphEdges, initialAssets, kinds, regions, scan, scopes, topology } = createDemoData(locale);
   const assets = structuredClone(initialAssets);
   const json = (data, status = 200) => Response.json(data, { status });
   const page = items => json({ items, next_cursor: '' });
@@ -28,7 +29,7 @@ export function createDemoTransport() {
     if (path === '/api/connections') return page([connection]);
     if (path === `/api/connections/${connectionID}/regions`) return page(regions);
     if (path === '/api/providers/catalog') return json(catalog);
-    if (path === '/api/providers') return json([{ provider: 'alicloud', sites: [{ value: 'intl', label_key: 'provider.site.intl' }], inventory_sources: [{ name: 'product-api' }], credential_schemas: [] }]);
+    if (path === '/api/providers') return json([{ provider: connection.provider, sites: connection.site ? [{ value: 'intl', label_key: 'provider.site.intl' }] : [], inventory_sources: [{ name: 'product-api' }], credential_schemas: [] }]);
     if (path === '/api/topology') return json(topology(assets, params));
     if (path === '/api/scopes') return page(scopes);
     if (path === '/api/assets') {

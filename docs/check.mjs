@@ -12,6 +12,10 @@ const navigation=site.navigation.flatMap(entry=>{
   if(typeof entry === 'string')return [entry];
   assert.ok(Object.keys(site.locales).every(locale=>typeof entry.label?.[locale] === 'string' && entry.label[locale].trim()),'Navigation sections need translated labels');
   assert.ok(Array.isArray(entry.items) && entry.items.length,'Navigation sections need chapters');
+  for (const [locale,items] of Object.entries(entry.itemsByLocale ?? {})) {
+    assert.ok(site.locales[locale] && Array.isArray(items),'Invalid localized navigation');
+    assert.deepEqual([...items].sort(),[...entry.items].sort(),'Localized navigation must reorder the same chapters');
+  }
   return entry.items;
 });
 assert.ok(navigation.every(slug=>typeof slug === 'string' && /^[a-z0-9-]+(?:\/[a-z0-9-]+)*$/.test(slug)),'Invalid chapter path');

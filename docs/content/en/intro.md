@@ -4,7 +4,7 @@ description: "Understand how cloud connections, scans, resource relationships, a
 navTitle: "What is Steward?"
 ---
 
-Steward is a cloud resource inventory and cleanup tool. It brings existing resources into one interface so you can see what is running, how resources relate, and what a cleanup would affect. It supports Alibaba Cloud, AWS, Google Cloud (GCP), and Microsoft Azure. You can self-host it or sign up for Steward Cloud.
+Steward is a cloud resource inventory and cleanup tool. It brings existing resources into one interface so you can see what is running, how resources relate, and what a cleanup would affect. It supports AWS, Alibaba Cloud, Google Cloud (GCP), and Microsoft Azure. You can self-host it or sign up for Steward Cloud.
 
 Use it for three kinds of work:
 
@@ -30,9 +30,9 @@ Names are convenient labels, but they can change or be reused. Identify a resour
 
 | Concept | Question it answers | Example |
 | --- | --- | --- |
-| Cloud connection | Which identity and account are you using? | An Alibaba Cloud, AWS, Google Cloud, or Azure connection |
+| Cloud connection | Which identity and account are you using? | An AWS, Alibaba Cloud, Google Cloud, or Azure connection |
 | Region | Where is the resource? | `ap-southeast-1` |
-| Resource type | What kind of resource is it? | An ECS instance, VPC, or security group |
+| Resource type | What kind of resource is it? | An EC2 instance, VPC, or security group |
 | Native resource ID | Which specific resource is this? | `i-demo-api01` |
 | Scan scope | What does this scan actually inspect? | One region or a VPC within it |
 
@@ -55,9 +55,9 @@ A successful scan of a small scope does not prove that the entire account has be
 
 **Resource panorama** helps you locate resources by account, region, and network structure. **Relationship lines** show associations recognized by the current rules, such as a load balancer routing to instances or an instance using a security group.
 
-Sharing a VPC or vSwitch describes network placement. Assess specific dependencies using resource properties, relationship lines, and cleanup checks together. The absence of a line does not establish the absence of a dependency.
+Sharing a VPC or subnet describes network placement. Assess specific dependencies using resource properties, relationship lines, and cleanup checks together. The absence of a line does not establish the absence of a dependency.
 
-<figure class="docs-figure"><a href="../../assets/topology-en.png" target="_blank" rel="noreferrer" aria-label="Steward organizes resources by their network placement (open full size)"><img src="../../assets/topology-en.png" alt="Steward's VPC panorama groups application instances and databases into different vSwitches" width="1440" height="960"></a><figcaption>Sample application instances and databases occupy different vSwitches. Network grouping locates resources; relationship lines explain further associations.</figcaption></figure>
+<figure class="docs-figure"><a href="../../assets/topology-en.png" target="_blank" rel="noreferrer" aria-label="Steward organizes resources by their network placement (open full size)"><img src="../../assets/topology-en.png" alt="Steward's VPC panorama groups application instances and databases into different subnets" width="1440" height="960"></a><figcaption>Sample application instances and databases occupy different subnets. Network grouping locates resources; relationship lines explain further associations.</figcaption></figure>
 
 [Resource relationships](./topology.md) shows how to navigate through network scopes and then focus on one resource's connections.
 

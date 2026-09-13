@@ -4,7 +4,7 @@ description: "学习使用 LoomX 的 Steward：盘点阿里云、AWS、Azure 与
 navTitle: "文档首页"
 ---
 
-<div class="docs-start-links docs-entry-links"><a href="./installation.md"><strong>安装 Steward</strong><span aria-hidden="true">→</span><span>选择系统，安装或下载</span></a><a href="./tutorials.md"><strong>动手教程</strong><span aria-hidden="true">→</span><span>盘点 AWS 资源，审查清理依赖</span></a><a href="./guides.md"><strong>使用文档</strong><span aria-hidden="true">→</span><span>查阅连接、扫描、关系与清理操作</span></a></div>
+<div class="docs-start-links docs-entry-links"><a href="./installation.md"><strong>安装 Steward</strong><span aria-hidden="true">→</span><span>选择系统，安装或下载</span></a><a href="./tutorials.md"><strong>动手教程</strong><span aria-hidden="true">→</span><span>盘点阿里云资源，审查清理依赖</span></a><a href="./guides.md"><strong>使用文档</strong><span aria-hidden="true">→</span><span>查阅连接、扫描、关系与清理操作</span></a></div>
 
 ## 认识 Steward
 

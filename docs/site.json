@@ -31,7 +31,8 @@
     "intro",
     {
       "label": {"en": "Tutorials", "zh": "教程"},
-      "items": ["tutorials", "quick-start", "tutorials/first-inventory", "tutorials/aws-resource-inventory", "tutorials/review-cleanup-dependencies"]
+      "items": ["tutorials", "quick-start", "tutorials/first-inventory", "tutorials/aws-resource-inventory", "tutorials/alicloud-resource-inventory", "tutorials/review-cleanup-dependencies"],
+      "itemsByLocale": {"zh": ["tutorials", "quick-start", "tutorials/first-inventory", "tutorials/alicloud-resource-inventory", "tutorials/aws-resource-inventory", "tutorials/review-cleanup-dependencies"]}
     },
     {
       "label": {"en": "Documentation", "zh": "使用文档"},
@@ -39,7 +40,8 @@
     },
     {
       "label": {"en": "Cloud platforms", "zh": "云平台"},
-      "items": ["alicloud", "aws", "gcp", "azure"]
+      "items": ["alicloud", "aws", "gcp", "azure"],
+      "itemsByLocale": {"en": ["aws", "alicloud", "gcp", "azure"]}
     },
     {
       "label": {"en": "Operate Steward", "zh": "部署与配置"},

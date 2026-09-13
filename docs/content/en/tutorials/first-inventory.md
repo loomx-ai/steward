@@ -8,21 +8,21 @@ navTitle: "First resource inventory"
 
 This tutorial walks through a small inventory: connect a cloud account, scan one region, find a known resource, and inspect its network placement and related resources. By the end, you should be able to identify its account, explain when the data was observed, and name dependencies that still need verification.
 
-The steps connect, scan, and inspect resources. Screenshots use Alibaba Cloud sample data; substitute your actual region and resource ID when working in your own account. Steward does not automatically create the example resources such as `api-01`.
+The steps connect, scan, and inspect resources. Screenshots use AWS sample data; substitute your actual region and resource ID when working in your own account. Steward does not automatically create the example resources such as `api-01`.
 
 ## Before you start
 
 You will need:
 
 - Steward running through the [quick start](../quick-start.md), or an available Steward Cloud workspace.
-- An Alibaba Cloud, AWS, Google Cloud, or Azure account you can access, with credentials that have the required read permissions.
-- A regional resource you know exists and that Steward supports discovering, such as a cloud instance. Record its **region, resource type, and native resource ID**.
+- An AWS, Alibaba Cloud, Google Cloud, or Azure account you can access, with credentials that have the required read permissions.
+- A regional resource you know exists and that Steward supports discovering, such as an EC2 instance. Record its **region, resource type, and native resource ID**.
 
 Choose a small scope you know well. You do not need to create cloud resources or grant deletion permissions for this tutorial. Without a cloud account, explore the sample demo on the [LoomX homepage](https://loomx.ai/) to learn the inventory and relationship views; a real scan requires your own cloud connection.
 
 ## 1. Add and select a cloud connection
 
-Open the user menu → Settings → Cloud connections, add a connection, and validate its credentials. Give it a recognizable name and check that the discovered regions match your account. See [Cloud connections](../connections.md#credentials) for credential types.
+Open the user menu → Settings → Cloud connections, choose **AWS**, add a connection, and validate its credentials. Give it a recognizable name and check that the discovered regions match your account. See [Cloud connections](../connections.md#credentials) for credential types.
 
 Return to the main interface and select this connection.
 
@@ -54,7 +54,7 @@ Compare the record with your cloud console or the information you recorded earli
 
 ## 4. Inspect network placement and relationships
 
-For a resource in a VPC, use View in Resource panorama from its details. Check the region, VPC, and vSwitch or subnet. Enable Show relationship lines in the canvas toolbar, or open Relationships in the resource details.
+For a resource in a VPC, use View in Resource panorama from its details. Check the region, VPC, and subnet. Enable Show relationship lines in the canvas toolbar, or open Relationships in the resource details.
 
 <figure class="docs-figure"><a href="../../../assets/relationships-en.png" target="_blank" rel="noreferrer" aria-label="Two sample instances share a load balancer and security group (open full size)"><img src="../../../assets/relationships-en.png" alt="In the sample graph, public-gateway routes to api-01 and api-02, which both use the application-policy security group" width="1440" height="960"></a><figcaption>The sample instances share a load balancer and security group. Inspect shared relationships before deciding the scope of any later cleanup review.</figcaption></figure>
 

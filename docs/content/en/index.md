@@ -14,7 +14,7 @@ Steward by LoomX is an open-source multi-cloud resource inventory and cleanup to
 
 ## Connect a cloud platform
 
-<div class="docs-cloud-links"><a href="./alicloud.md"><strong>Alibaba Cloud</strong><span>RAM, STS, and browser authorization</span></a><a href="./aws.md"><strong>AWS</strong><span>IAM and resource discovery</span></a><a href="./gcp.md"><strong>Google Cloud</strong><span>Projects and service accounts</span></a><a href="./azure.md"><strong>Microsoft Azure</strong><span>Subscriptions and service principals</span></a></div>
+<div class="docs-cloud-links"><a href="./aws.md"><strong>AWS</strong><span>IAM and resource discovery</span></a><a href="./alicloud.md"><strong>Alibaba Cloud</strong><span>RAM, STS, and browser authorization</span></a><a href="./gcp.md"><strong>Google Cloud</strong><span>Projects and service accounts</span></a><a href="./azure.md"><strong>Microsoft Azure</strong><span>Subscriptions and service principals</span></a></div>
 
 ## Featured documentation
 

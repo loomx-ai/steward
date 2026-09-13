@@ -76,3 +76,5 @@ Creating a cleanup task does not delete resources. Cloud operations begin after 
 | Cleanup cannot finish | Inspect blockers, provider error codes, and request IDs; check dependencies, state, and operation permissions. |
 
 Next: [Scan resources](./scans.md) · [Query resources](./resources.md) · [Resource relationships](./topology.md)
+
+For account and region coverage checks, follow [Alibaba Cloud resource inventory](./tutorials/alicloud-resource-inventory.md).

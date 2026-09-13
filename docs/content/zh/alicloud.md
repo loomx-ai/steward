@@ -76,3 +76,5 @@ Steward 结合资源中心与各云产品的查询 API 获取数据。按实际�
 | 无法完成清理 | 查看具体阻断项、操作错误码和请求 ID，检查依赖、资源状态和所需操作权限。 |
 
 下一步：[扫描资源](./scans.md) · [查询资源](./resources.md) · [查看资源关系](./topology.md)
+
+跨地域核对账号覆盖与缺失资源，见[阿里云资源盘点教程](./tutorials/alicloud-resource-inventory.md)。

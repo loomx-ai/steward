@@ -24,14 +24,14 @@
   English / <a href="README.zh-CN.md">简体中文</a>
 </p>
 
-Steward by LoomX is an open-source tool for multi-cloud resource inventory, dependency visualization, and reviewed cleanup. It brings [Alibaba Cloud](https://loomx.ai/steward/docs/latest/en/alicloud/), [AWS](https://loomx.ai/steward/docs/latest/en/aws/), [Google Cloud](https://loomx.ai/steward/docs/latest/en/gcp/), and [Microsoft Azure](https://loomx.ai/steward/docs/latest/en/azure/) into one interface, so you can see what is running and review what a cleanup would affect.
+Steward by LoomX is an open-source tool for multi-cloud resource inventory, dependency visualization, and reviewed cleanup. It brings [AWS](https://loomx.ai/steward/docs/latest/en/aws/), [Alibaba Cloud](https://loomx.ai/steward/docs/latest/en/alicloud/), [Google Cloud](https://loomx.ai/steward/docs/latest/en/gcp/), and [Microsoft Azure](https://loomx.ai/steward/docs/latest/en/azure/) into one interface, so you can see what is running and review what a cleanup would affect.
 
 Get started in your browser with [Steward Cloud](https://steward.console.loomx.ai), or [install Steward](https://loomx.ai/steward/docs/latest/en/installation/) to run it yourself.
 
 <p align="center">
-  <a href="https://loomx.ai/steward/docs/latest/en/topology/"><img src="docs/assets/relationships-en.png" alt="Steward resource panorama showing instances, a load balancer, a security group, and their relationships in a sample Alibaba Cloud VPC" width="960"></a>
+  <a href="https://loomx.ai/steward/docs/latest/en/topology/"><img src="docs/assets/relationships-en.png" alt="Steward resource panorama showing instances, a load balancer, a security group, and their relationships in a sample AWS VPC" width="960"></a>
   <br>
-  <sub>Resource panorama · Alibaba Cloud sample data</sub>
+  <sub>Resource panorama · AWS sample data</sub>
 </p>
 
 ## What Steward does

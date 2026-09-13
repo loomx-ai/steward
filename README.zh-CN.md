@@ -48,7 +48,7 @@ Steward 是 LoomX 的开源多云资源盘点、依赖可视化与清理审查�
 
 [使用文档](https://loomx.ai/steward/docs/latest/zh/)涵盖云连接、资源盘点、关系分析、清理和部署。
 
-也可以从具体任务开始：[跨地域盘点 AWS 资源](https://loomx.ai/steward/docs/latest/zh/tutorials/aws-resource-inventory/)，或[审查云资源清理依赖](https://loomx.ai/steward/docs/latest/zh/tutorials/review-cleanup-dependencies/)。
+也可以从具体任务开始：[跨地域盘点阿里云资源](https://loomx.ai/steward/docs/latest/zh/tutorials/alicloud-resource-inventory/)，或[审查云资源清理依赖](https://loomx.ai/steward/docs/latest/zh/tutorials/review-cleanup-dependencies/)。
 
 ## 参与开发
 
