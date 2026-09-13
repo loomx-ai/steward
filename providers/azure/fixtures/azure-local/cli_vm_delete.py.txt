@@ -1,0 +1,19 @@
+def stackhcivm_virtualmachine_delete(cmd,
+                                    client,
+                                    resource_group_name,
+                                    name,
+                                    polling_interval=None):
+    vmclient = client.vmclient
+    hcrpclient = client.hybridclient
+
+    if polling_interval:
+        client._config.polling_interval=polling_interval
+    machine_id = get_resource_id(subscription_id=get_subscription_id(cmd.cli_ctx),
+                            resource_group_name=resource_group_name,
+                            provider_namespace=HYBRID_COMPUTE_RP_NAME,
+                            resource_type=HYBRID_COMPUTE_MACHINE_RT_NAME,
+                            resource_name=name)
+    poller = vmclient.begin_delete(resource_uri=machine_id)
+    # Wait till the vm delete operation is complete
+    poller.result()
+    return hcrpclient.begin_delete(resource_group_name=resource_group_name, machine_name=name)

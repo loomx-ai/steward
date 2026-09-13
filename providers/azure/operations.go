@@ -18,6 +18,16 @@ import (
 // by ARM use their ASCII/Punycode form.
 // https://learn.microsoft.com/azure/azure-resource-manager/management/resource-name-rules#microsoftweb
 func bindAzureREST(operation catalog.Operation, parameters map[string]any) (catalog.RESTRequest, error) {
+	// Azure Local extends a HybridCompute machine. Several native examples omit
+	// its /providers segment or pass the VM-instance suffix as the parent.
+	// Keep those examples unchanged; accept only the documented parent scope.
+	if operation.Call != nil && strings.HasPrefix(operation.Call.Path, "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances") {
+		parent, ok := parameters["resourceUri"].(string)
+		id, kind, err := parseID("/" + parent)
+		if !ok || parent != strings.TrimSpace(parent) || err != nil || kind != strings.ToLower(hybridMachineType) || len(strings.Split(id, "/")) != 9 {
+			return catalog.RESTRequest{}, serviceDenied("invalid_azure_local_machine_scope")
+		}
+	}
 	if operation.Call != nil && operation.Call.Version == "2025-05-01" && strings.HasPrefix(operation.ID, "Azure.Microsoft.Web.SiteCertificates_") {
 		properties := object(operation.InputSchema["properties"])
 		if object(properties["name"])["pattern"] == "^[A-z][A-z0-9]*$" {

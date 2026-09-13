@@ -3679,3 +3679,45 @@ background evidence only, not acceptance evidence for this work.
   reproduce byte-for-byte. Shared-workspace integration passed (Azure 5.627s;
   cleanup 0.269s), along with frontend type checking. Existing translation edits
   were verified separately and preserved outside this commit.
+
+
+### Azure Local controller contracts and corrected ENS scope
+
+- ENS releases edge VMs; ordinary Arc registration removal is not equivalent.
+  The parity matrix now includes the Azure Local VM instance, guest agent and
+  identity metadata, plus NIC, disk, logical network, storage path and image
+  resource families. These nine additions expose 28 missing mapped Azure types;
+  they do not count as implemented rules or cleanup actions.
+- Seven pinned native StackHCIVM 2024-01-01 documents add 33 operations with
+  unchanged official examples: 24 GETs, eight DELETEs and VM Stop. Identity
+  metadata has no separate DELETE. Counts are 434 rules, 405 actions and 1,468
+  operations, with 189 root and 102 reference documents. All 1,435 prior
+  operations remain unchanged.
+- Offline checks cover 42 declared responses and schema-validate 25 bodies.
+  Original examples retain nine malformed extension parents, the Stop suffix
+  mistake, two NIC list parameter mistakes and 18 unsafe callback placeholders.
+  Tests distinguish these source defects from canonical runtime requests.
+  Extension binding requires a direct HybridCompute machine parent in the
+  connection subscription; public invocation results and logs exclude private
+  OS, SSH, proxy and unknown nested configuration.
+- A checksum-verified function extracted from Microsoft's published stack-hci-vm
+  1.15.1 wheel independently establishes VM-instance DELETE plus poll completion
+  before Arc machine DELETE. Stubbed execution verifies ordering and failure
+  boundaries without importing the CLI package. The source manifest, original
+  fragment, license and reproduction instructions are retained in
+  `providers/azure/fixtures/azure-local/`. The management guide confirms NICs
+  and data disks remain independent resources.
+- Native Azure Local inventory, reference reconciliation, controller ownership,
+  cleanup execution/recovery and final readback remain unfinished. No emulator,
+  live controller, physical VM removal or billing outcome is claimed. Bilingual
+  capability notes describe this boundary. All eight acceptance criteria remain
+  open.
+- Verification: isolated `b58e73f` plus this milestone passed `go test ./...`
+  (Azure 311.124s; GCP 163.579s), Azure Local/Arc/catalog race checks
+  (Azure 52.366s), `go vet ./...`, seven offline native-CLI/importer tests
+  and documentation checks (30 chapters, 10 original screenshots). Both
+  generated artifacts reproduce byte-for-byte; the downloaded CLI archive,
+  source member and exact function extraction match their retained hashes.
+  Shared-workspace Azure Local/Arc/catalog integration also passed (4.999s).
+  The 49 milestone files do not overlap existing work, whose file hashes were
+  verified unchanged before commit.

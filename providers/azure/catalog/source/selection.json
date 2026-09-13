@@ -2350,6 +2350,74 @@
         "Machines_ListBySubscription",
         "NetworkProfile_Get"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/galleryImages.json",
+      "operations": [
+        "GalleryImages_Delete",
+        "GalleryImages_Get",
+        "GalleryImages_List",
+        "GalleryImages_ListAll"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json",
+      "operations": [
+        "LogicalNetworks_Delete",
+        "LogicalNetworks_Get",
+        "LogicalNetworks_List",
+        "LogicalNetworks_ListAll"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/marketplaceGalleryImages.json",
+      "operations": [
+        "MarketplaceGalleryImages_Delete",
+        "MarketplaceGalleryImages_Get",
+        "MarketplaceGalleryImages_List",
+        "MarketplaceGalleryImages_ListAll"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/networkInterfaces.json",
+      "operations": [
+        "NetworkInterfaces_Delete",
+        "NetworkInterfaces_Get",
+        "NetworkInterfaces_List",
+        "NetworkInterfaces_ListAll"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/storageContainers.json",
+      "operations": [
+        "StorageContainers_Delete",
+        "StorageContainers_Get",
+        "StorageContainers_List",
+        "StorageContainers_ListAll"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualHardDisks.json",
+      "operations": [
+        "VirtualHardDisks_Delete",
+        "VirtualHardDisks_Get",
+        "VirtualHardDisks_List",
+        "VirtualHardDisks_ListAll"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualMachineInstances.json",
+      "operations": [
+        "GuestAgent_Delete",
+        "GuestAgent_Get",
+        "GuestAgents_List",
+        "HybridIdentityMetadata_Get",
+        "HybridIdentityMetadata_List",
+        "VirtualMachineInstances_Delete",
+        "VirtualMachineInstances_Get",
+        "VirtualMachineInstances_List",
+        "VirtualMachineInstances_Stop"
+      ]
     }
   ],
   "resource_types": [

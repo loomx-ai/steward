@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "0a28285848b9e9653dc525c940af4856005c94359e5326ee69ad73c3aee7a5fc",
+    "checksum": "a013b814484c976fb24f49200c1c63ccc61bfc3634ab5f8f4a9279b7abae3a11",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "20d12cd6feb8491df41b1911e74607307c253da162fdc0f032655c65e3500476",
+  "content_checksum": "d63c4725bad9832f7ae46f020c9affe8b3ba4d27cb68bbaeb643c3efda59ce6d",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -34608,6 +34608,2186 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleEligibilitySchedule.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.GalleryImages_Delete",
+      "name": "GalleryImages_Delete",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/galleryImages/{galleryImageName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "galleryImageName": {
+            "description": "Name of the gallery image",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "galleryImageName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/galleryImages/{galleryImageName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/galleryImages.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.GalleryImages_Get",
+      "name": "GalleryImages_Get",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/galleryImages/{galleryImageName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "galleryImageName": {
+            "description": "Name of the gallery image",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "galleryImageName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The gallery images resource definition.",
+        "properties": {
+          "extendedLocation": {
+            "$ref": "./common.json#/definitions/ExtendedLocation",
+            "description": "The extendedLocation of the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/GalleryImageProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object",
+        "x-ms-azure-resource": true,
+        "x-ms-client-flatten": true
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/galleryImages/{galleryImageName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/galleryImages.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.GalleryImages_List",
+      "name": "GalleryImages_List",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/galleryImages",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of gallery images.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next set of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/GalleryImages"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/galleryImages",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/galleryImages.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.GalleryImages_ListAll",
+      "name": "GalleryImages_ListAll",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/galleryImages",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of gallery images.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next set of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/GalleryImages"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/galleryImages",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/galleryImages.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.GuestAgent_Delete",
+      "name": "GuestAgent_Delete",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "DELETE",
+      "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/guestAgents/default",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the Hybrid Compute machine resource to be extended.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/guestAgents/default",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualMachineInstances.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.GuestAgent_Get",
+      "name": "GuestAgent_Get",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/guestAgents/default",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the Hybrid Compute machine resource to be extended.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource",
+            "description": "The resource model definition for an Azure Resource Manager proxy resource. It will have everything other than required location and tags."
+          }
+        ],
+        "description": "Defines the GuestAgent.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/GuestAgentProperties",
+            "description": "Resource properties.",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/systemData",
+            "description": "The system data."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object",
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/guestAgents/default",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualMachineInstances.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.GuestAgents_List",
+      "name": "GuestAgents_List",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/guestAgents",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the Hybrid Compute machine resource to be extended.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of GuestAgent.",
+        "properties": {
+          "nextLink": {
+            "description": "Url to follow for getting next page of GuestAgent.",
+            "type": "string"
+          },
+          "value": {
+            "description": "Array of GuestAgent",
+            "items": {
+              "$ref": "#/definitions/GuestAgent"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/guestAgents",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualMachineInstances.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.HybridIdentityMetadata_Get",
+      "name": "HybridIdentityMetadata_Get",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/hybridIdentityMetadata/default",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the Hybrid Compute machine resource to be extended.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource",
+            "description": "The resource model definition for an Azure Resource Manager proxy resource. It will have everything other than required location and tags."
+          }
+        ],
+        "description": "Defines the HybridIdentityMetadata.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/HybridIdentityMetadataProperties",
+            "description": "Resource properties.",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/systemData",
+            "description": "The system data."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object",
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/hybridIdentityMetadata/default",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualMachineInstances.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.HybridIdentityMetadata_List",
+      "name": "HybridIdentityMetadata_List",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/hybridIdentityMetadata",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the Hybrid Compute machine resource to be extended.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of HybridIdentityMetadata.",
+        "properties": {
+          "nextLink": {
+            "description": "Url to follow for getting next page of HybridIdentityMetadata.",
+            "type": "string"
+          },
+          "value": {
+            "description": "Array of HybridIdentityMetadata",
+            "items": {
+              "$ref": "#/definitions/HybridIdentityMetadata"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/hybridIdentityMetadata",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualMachineInstances.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.LogicalNetworks_Delete",
+      "name": "LogicalNetworks_Delete",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "logicalNetworkName": {
+            "description": "Name of the logical network",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 2,
+            "name": "logicalNetworkName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[_a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.LogicalNetworks_Get",
+      "name": "LogicalNetworks_Get",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "logicalNetworkName": {
+            "description": "Name of the logical network",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 2,
+            "name": "logicalNetworkName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[_a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The logical network resource definition.",
+        "properties": {
+          "extendedLocation": {
+            "$ref": "./common.json#/definitions/ExtendedLocation",
+            "description": "The extendedLocation of the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/LogicalNetworkProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object",
+        "x-ms-azure-resource": true,
+        "x-ms-client-flatten": true
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.LogicalNetworks_List",
+      "name": "LogicalNetworks_List",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/LogicalNetworks"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.LogicalNetworks_ListAll",
+      "name": "LogicalNetworks_ListAll",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/LogicalNetworks"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_Delete",
+      "name": "MarketplaceGalleryImages_Delete",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages/{marketplaceGalleryImageName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "marketplaceGalleryImageName": {
+            "description": "Name of the marketplace gallery image",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "marketplaceGalleryImageName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages/{marketplaceGalleryImageName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/marketplaceGalleryImages.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_Get",
+      "name": "MarketplaceGalleryImages_Get",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages/{marketplaceGalleryImageName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "marketplaceGalleryImageName": {
+            "description": "Name of the marketplace gallery image",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "marketplaceGalleryImageName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The marketplace gallery image resource definition.",
+        "properties": {
+          "extendedLocation": {
+            "$ref": "./common.json#/definitions/ExtendedLocation",
+            "description": "The extendedLocation of the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/MarketplaceGalleryImageProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object",
+        "x-ms-azure-resource": true,
+        "x-ms-client-flatten": true
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages/{marketplaceGalleryImageName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/marketplaceGalleryImages.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_List",
+      "name": "MarketplaceGalleryImages_List",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/MarketplaceGalleryImages"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/marketplaceGalleryImages.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_ListAll",
+      "name": "MarketplaceGalleryImages_ListAll",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/MarketplaceGalleryImages"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/marketplaceGalleryImages.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_Delete",
+      "name": "NetworkInterfaces_Delete",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/networkInterfaces/{networkInterfaceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "networkInterfaceName": {
+            "description": "Name of the network interface",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "networkInterfaceName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/networkInterfaces/{networkInterfaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/networkInterfaces.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_Get",
+      "name": "NetworkInterfaces_Get",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/networkInterfaces/{networkInterfaceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "networkInterfaceName": {
+            "description": "Name of the network interface",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "networkInterfaceName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The network interface resource definition.",
+        "properties": {
+          "extendedLocation": {
+            "$ref": "./common.json#/definitions/ExtendedLocation",
+            "description": "The extendedLocation of the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/NetworkInterfaceProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object",
+        "x-ms-azure-resource": true,
+        "x-ms-client-flatten": true
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/networkInterfaces/{networkInterfaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/networkInterfaces.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_List",
+      "name": "NetworkInterfaces_List",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/networkInterfaces",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/NetworkInterfaces"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/networkInterfaces",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/networkInterfaces.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_ListAll",
+      "name": "NetworkInterfaces_ListAll",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/networkInterfaces",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/NetworkInterfaces"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/networkInterfaces",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/networkInterfaces.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.StorageContainers_Delete",
+      "name": "StorageContainers_Delete",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/storageContainers/{storageContainerName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "storageContainerName": {
+            "description": "Name of the storage container",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "storageContainerName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/storageContainers/{storageContainerName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/storageContainers.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.StorageContainers_Get",
+      "name": "StorageContainers_Get",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/storageContainers/{storageContainerName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "storageContainerName": {
+            "description": "Name of the storage container",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "storageContainerName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The storage container resource definition.",
+        "properties": {
+          "extendedLocation": {
+            "$ref": "./common.json#/definitions/ExtendedLocation",
+            "description": "The extendedLocation of the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/StorageContainerProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object",
+        "x-ms-azure-resource": true,
+        "x-ms-client-flatten": true
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/storageContainers/{storageContainerName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/storageContainers.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.StorageContainers_List",
+      "name": "StorageContainers_List",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/storageContainers",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/StorageContainers"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/storageContainers",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/storageContainers.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.StorageContainers_ListAll",
+      "name": "StorageContainers_ListAll",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/storageContainers",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/StorageContainers"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/storageContainers",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/storageContainers.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_Delete",
+      "name": "VirtualHardDisks_Delete",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/virtualHardDisks/{virtualHardDiskName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "virtualHardDiskName": {
+            "description": "Name of the virtual hard disk",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "virtualHardDiskName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/virtualHardDisks/{virtualHardDiskName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualHardDisks.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_Get",
+      "name": "VirtualHardDisks_Get",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/virtualHardDisks/{virtualHardDiskName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "virtualHardDiskName": {
+            "description": "Name of the virtual hard disk",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "virtualHardDiskName",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The virtual hard disk resource definition.",
+        "properties": {
+          "extendedLocation": {
+            "$ref": "./common.json#/definitions/ExtendedLocation",
+            "description": "The extendedLocation of the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/VirtualHardDiskProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object",
+        "x-ms-azure-resource": true,
+        "x-ms-client-flatten": true
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/virtualHardDisks/{virtualHardDiskName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualHardDisks.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_List",
+      "name": "VirtualHardDisks_List",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/virtualHardDisks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/VirtualHardDisks"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/virtualHardDisks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualHardDisks.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_ListAll",
+      "name": "VirtualHardDisks_ListAll",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/virtualHardDisks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/VirtualHardDisks"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/virtualHardDisks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualHardDisks.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_Delete",
+      "name": "VirtualMachineInstances_Delete",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "DELETE",
+      "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the Hybrid Compute machine resource to be extended.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualMachineInstances.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_Get",
+      "name": "VirtualMachineInstances_Get",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the Hybrid Compute machine resource to be extended.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "The virtual machine instance resource definition.",
+        "properties": {
+          "extendedLocation": {
+            "$ref": "./common.json#/definitions/ExtendedLocation",
+            "description": "The extendedLocation of the resource."
+          },
+          "identity": {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/Identity"
+          },
+          "properties": {
+            "$ref": "#/definitions/VirtualMachineInstanceProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object",
+        "x-ms-azure-resource": true,
+        "x-ms-client-flatten": true
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualMachineInstances.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_List",
+      "name": "VirtualMachineInstances_List",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the Hybrid Compute machine resource to be extended.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/VirtualMachineInstance"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualMachineInstances.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_Stop",
+      "name": "VirtualMachineInstances_Stop",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "POST",
+      "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/stop",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the Hybrid Compute machine resource to be extended.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "The virtual machine instance resource definition.",
+        "properties": {
+          "extendedLocation": {
+            "$ref": "./common.json#/definitions/ExtendedLocation",
+            "description": "The extendedLocation of the resource."
+          },
+          "identity": {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/Identity"
+          },
+          "properties": {
+            "$ref": "#/definitions/VirtualMachineInstanceProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object",
+        "x-ms-azure-resource": true,
+        "x-ms-client-flatten": true
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/stop",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualMachineInstances.json"
     },
     {
       "id": "Azure.Microsoft.Batch.ApplicationPackage_Delete",

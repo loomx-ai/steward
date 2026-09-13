@@ -96,6 +96,8 @@ Azure Arc 通过原生接口盘点机器和许可证，并在每台机器下枚�
 
 共享 Arc ESU 许可证清理需要 `Microsoft.HybridCompute/licenses/delete`、许可证读取、订阅范围的机器列表和读取、机器许可证配置列表和读取，以及上述资源组、锁和引用依赖读取权限。关联配置必须显式选中清理，或先单独解除关联；仅删除配置或机器会保留共享许可证。删除前，许可证原生分配计数必须存在且为零。许可证可覆盖同一租户的其他订阅，因此本地配置列表为空不足以证明无关联；外部分配需在对应订阅中处理。计划会提示删除将移除许可权益，计费可能继续最多五个日历日。许可证返回 404 后仍会检查已知和已审查配置的关联，残留关联会阻止完成。参见[许可范围](https://learn.microsoft.com/en-us/azure/azure-arc/servers/license-extended-security-updates)及[计费行为](https://learn.microsoft.com/en-us/azure/azure-arc/servers/billing-extended-security-updates)。测试覆盖微软 CLI 原始删除响应及 SQLite 恢复执行，不能据此确认真实计费已经终止。
 
+Azure Local 虚拟机清理尚未支持。其 VM 实例、访客代理、身份元数据、网卡、磁盘、网络、存储路径与镜像仍属于待完成的控制器集成。移除普通 Arc 注册不会释放虚拟机。官方 Azure Local CLI 先删除 VM 实例，再删除 Arc 注册；关联网卡和数据盘仍保留，需要单独清理。参见 [Azure Local 虚拟机管理](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)。已保留原生接口契约和离线测试，控制器盘点、安全清理与真实后端验证仍待完成。
+
 Defender for Cloud 计划展示原生 Free/Standard 等级、子计划、试用剩余时间、启用时间、扩展状态、继承关系及资源覆盖率。订阅计划为 Standard 并不代表所有资源均受保护，资源级覆盖配置可能不同。盘点读取订阅计划、VM/VMSS/Arc 机器范围，以及 AKS、ACR 上的 Containers 计划；需要相应范围内的订阅身份、原生父资源列表与读取、`Microsoft.Security/pricings/read` 权限。已知计划会逐项补读，父资源或列表中消失不能单独证明计划不存在。
 
 这些记录用于展示服务状态，与阿里云安全中心的只读基线一致。Steward 不修改防护等级，也不移除资源级覆盖配置。扩展参数和操作消息不会进入公开清单及日志。目前证据包含官方示例及协议、SQLite worker 测试；独立 Defender 模拟器和真实云验证仍待完成。参见[原生计划状态与继承说明](https://learn.microsoft.com/en-us/rest/api/defenderforcloud/pricings/list?view=rest-defenderforcloud-2024-01-01)。

@@ -1,0 +1,13 @@
+{
+  "index_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/index.json",
+  "version": "1.15.1",
+  "wheel_uri": "https://hciarcvmsstorage.z13.web.core.windows.net/cli-extensions/stack_hci_vm-1.15.1-py3-none-any.whl",
+  "wheel_sha256": "383dd0504cd32345dc1570b67f434943a48d775423bacc6537bc6012639338d0",
+  "member": "azext_stack_hci_vm/generated/custom.py",
+  "member_sha256": "a4247c476d8747b7eee1c9e85eeaa0870a0d73d78f3bce327efba36e4e91920c",
+  "function": "stackhcivm_virtualmachine_delete",
+  "start_line": 1385,
+  "end_line": 1403,
+  "file": "cli_vm_delete.py.txt",
+  "sha256": "e2dea7b34681a06e9f1058a14b8438222fc124f1fc53aed2e580e21046dd1829"
+}

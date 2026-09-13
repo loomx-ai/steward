@@ -1196,7 +1196,24 @@ resources:
   azure:
     resources:
     - Microsoft.HybridCompute/machines
+    - Microsoft.AzureStackHCI/virtualMachineInstances
+    - Microsoft.AzureStackHCI/virtualMachineInstances/guestAgents
+    - Microsoft.AzureStackHCI/virtualMachineInstances/hybridIdentityMetadata
+    - Microsoft.AzureStackHCI/networkInterfaces
+    - Microsoft.AzureStackHCI/virtualHardDisks
+    - Microsoft.AzureStackHCI/logicalNetworks
+    - Microsoft.AzureStackHCI/storageContainers
+    - Microsoft.AzureStackHCI/galleryImages
+    - Microsoft.AzureStackHCI/marketplaceGalleryImages
   status: pending_verification
+  notes: ENS releases prepaid or postpaid edge virtual machines. Ordinary Arc machine
+    deletion only unregisters an external host, so it is not VM-release parity.
+    Azure Local VM instances supply the controller lifecycle and reference separate
+    local NICs, disks, logical networks, storage paths and images. The native CLI
+    deletes the VM instance before its Arc machine. These Azure Local contracts
+    are pinned; inventory, ownership, cleanup and live controller verification
+    remain unfinished. Native guest identity metadata is read-only, not a separate
+    destructive operation. See providers/azure/fixtures/azure-local/README.md.
 - alicloud: ACS::ESA::Site
   spec: providers/alicloud/specs/esa-site.yaml
   class: network.edge_site

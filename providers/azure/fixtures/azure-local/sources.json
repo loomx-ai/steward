@@ -1,0 +1,266 @@
+[
+  {
+    "file": "DeleteGalleryImage.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/DeleteGalleryImage.json",
+    "operation": "GalleryImages_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/galleryImages/{galleryImageName}",
+    "source_sha256": "885b209f8469e6b9d1132977651d02d94e5bddf7e416814cad653392261f895c"
+  },
+  {
+    "file": "DeleteGuestAgent.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/DeleteGuestAgent.json",
+    "operation": "GuestAgent_Delete",
+    "method": "DELETE",
+    "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/guestAgents/default",
+    "source_sha256": "b8c5a7bb9da995041e7f28dc753df72ad0811692d1d0082a1bb83589bd7219c5"
+  },
+  {
+    "file": "DeleteLogicalNetwork.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/DeleteLogicalNetwork.json",
+    "operation": "LogicalNetworks_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
+    "source_sha256": "4c4223bf541bf5a830f9fef372d0224a0553a3b72a12fc2b1c45596a024f119b"
+  },
+  {
+    "file": "DeleteMarketplaceGalleryImage.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/DeleteMarketplaceGalleryImage.json",
+    "operation": "MarketplaceGalleryImages_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages/{marketplaceGalleryImageName}",
+    "source_sha256": "ed5d2d1fcf2eb8553ee5faff8a51d2354dc9aa7c68a8465e68f728aadfc3c4da"
+  },
+  {
+    "file": "DeleteNetworkInterface.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/DeleteNetworkInterface.json",
+    "operation": "NetworkInterfaces_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/networkInterfaces/{networkInterfaceName}",
+    "source_sha256": "be3f6457a3437a989b3edf5e2fab8f575607be420e99f67727af1cb5b3b1e526"
+  },
+  {
+    "file": "DeleteStorageContainer.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/DeleteStorageContainer.json",
+    "operation": "StorageContainers_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/storageContainers/{storageContainerName}",
+    "source_sha256": "a53f68b7429e0501351b7e018f19edbf9f184c568cbbbc5c5eef6f8097ecee42"
+  },
+  {
+    "file": "DeleteVirtualHardDisk.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/DeleteVirtualHardDisk.json",
+    "operation": "VirtualHardDisks_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/virtualHardDisks/{virtualHardDiskName}",
+    "source_sha256": "e133871ff5575f7dabc81facc1d2172dd98430e77ac465b05e9b6f40dd53de42"
+  },
+  {
+    "file": "DeleteVirtualMachineInstance.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/DeleteVirtualMachineInstance.json",
+    "operation": "VirtualMachineInstances_Delete",
+    "method": "DELETE",
+    "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default",
+    "source_sha256": "b8c5a7bb9da995041e7f28dc753df72ad0811692d1d0082a1bb83589bd7219c5"
+  },
+  {
+    "file": "GetGalleryImage.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GetGalleryImage.json",
+    "operation": "GalleryImages_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/galleryImages/{galleryImageName}",
+    "source_sha256": "1c31bc4da26e83caad880d3ebcfe1ed5a4e9b8a2c602e3b3052d895628ba7d37"
+  },
+  {
+    "file": "GetGuestAgent.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GetGuestAgent.json",
+    "operation": "GuestAgent_Get",
+    "method": "GET",
+    "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/guestAgents/default",
+    "source_sha256": "5205c20a5cba7b9d35e6499d18b5e21d68e682a24974c7d61044f428058055c5"
+  },
+  {
+    "file": "GetHybridIdentityMetadata.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GetHybridIdentityMetadata.json",
+    "operation": "HybridIdentityMetadata_Get",
+    "method": "GET",
+    "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/hybridIdentityMetadata/default",
+    "source_sha256": "a24959aaf1470c40f1bbaa2eb059752c6c84f7eedf1553cc60bd263c6cc0c95b"
+  },
+  {
+    "file": "GetLogicalNetwork.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GetLogicalNetwork.json",
+    "operation": "LogicalNetworks_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
+    "source_sha256": "cb912075508cc5f48ffb52f331f4587199cc164436ac19515fcdb6ae7e2c36a5"
+  },
+  {
+    "file": "GetMarketplaceGalleryImage.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GetMarketplaceGalleryImage.json",
+    "operation": "MarketplaceGalleryImages_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages/{marketplaceGalleryImageName}",
+    "source_sha256": "74fa0a7a7750d10a1fee163f9c65dcf87c28a5ad51282a1cd29df0248c6df2f1"
+  },
+  {
+    "file": "GetNetworkInterface.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GetNetworkInterface.json",
+    "operation": "NetworkInterfaces_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/networkInterfaces/{networkInterfaceName}",
+    "source_sha256": "ea0574bcb3372d308f5421e935800ea25cf21b63596910a5ff9e0481e3ecc1c7"
+  },
+  {
+    "file": "GetStorageContainer.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GetStorageContainer.json",
+    "operation": "StorageContainers_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/storageContainers/{storageContainerName}",
+    "source_sha256": "6a761194e34079ef6f1dfa4357df0e88ef865566914a1b3e75601a4b3d2fd1d0"
+  },
+  {
+    "file": "GetVirtualHardDisk.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GetVirtualHardDisk.json",
+    "operation": "VirtualHardDisks_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/virtualHardDisks/{virtualHardDiskName}",
+    "source_sha256": "86f15e21cb6dd6ed4c66ccba4b2f62dbb85f349e7ffa28e8384bac3167da4631"
+  },
+  {
+    "file": "GetVirtualMachineInstance.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GetVirtualMachineInstance.json",
+    "operation": "VirtualMachineInstances_Get",
+    "method": "GET",
+    "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default",
+    "source_sha256": "0170f9521d06fdcf8e2eaeea324663722dbd3e8eaea1a96d4dda1eb1bd695baa"
+  },
+  {
+    "file": "GuestAgent_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GuestAgent_List.json",
+    "operation": "GuestAgents_List",
+    "method": "GET",
+    "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/guestAgents",
+    "source_sha256": "7e8136f0835e72680724c0ef4c3976b1941aa88bc7df8ba38b17ae2e95127090"
+  },
+  {
+    "file": "HybridIdentityMetadata_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/HybridIdentityMetadata_List.json",
+    "operation": "HybridIdentityMetadata_List",
+    "method": "GET",
+    "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/hybridIdentityMetadata",
+    "source_sha256": "8eef3ac27f147c26788d1d3bc7cc50dd8adc4470b76184ab8427e151681db6b1"
+  },
+  {
+    "file": "ListGalleryImageByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListGalleryImageByResourceGroup.json",
+    "operation": "GalleryImages_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/galleryImages",
+    "source_sha256": "a071316cdf741681aca30073c911b513ca36ad167e359fd53d7ca2a79f6acb0a"
+  },
+  {
+    "file": "ListGalleryImageBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListGalleryImageBySubscription.json",
+    "operation": "GalleryImages_ListAll",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/galleryImages",
+    "source_sha256": "b86cf00ba50a6c59d1b05b248acefd9a775e93e47b234a5d78a0a4fb809bdd54"
+  },
+  {
+    "file": "ListLogicalNetworkByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListLogicalNetworkByResourceGroup.json",
+    "operation": "LogicalNetworks_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+    "source_sha256": "1683dd911cfb12e78cff925b8996d45c0c939ff7ec65e7b54ee485005fb9ad74"
+  },
+  {
+    "file": "ListLogicalNetworkBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListLogicalNetworkBySubscription.json",
+    "operation": "LogicalNetworks_ListAll",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+    "source_sha256": "4610d72392ff5a95207a66f13df7ff2999ef707382c42b3ee7a6fce47c86f1f7"
+  },
+  {
+    "file": "ListMarketplaceGalleryImageByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListMarketplaceGalleryImageByResourceGroup.json",
+    "operation": "MarketplaceGalleryImages_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages",
+    "source_sha256": "92f6b5ab8c421073c63279671d7576de939bb52557f4c6d87b4bc439a885dde3"
+  },
+  {
+    "file": "ListMarketplaceGalleryImageBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListMarketplaceGalleryImageBySubscription.json",
+    "operation": "MarketplaceGalleryImages_ListAll",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages",
+    "source_sha256": "619311fe6e05a5d2b8375e9928c12ede9506f65635cea4a8943ca22446c46d84"
+  },
+  {
+    "file": "ListNetworkInterfaceByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListNetworkInterfaceByResourceGroup.json",
+    "operation": "NetworkInterfaces_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/networkInterfaces",
+    "source_sha256": "934c9aae50c996d66bf1f41746b13b307e5235889a6548ec315cdabd8833dc8d"
+  },
+  {
+    "file": "ListNetworkInterfaceBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListNetworkInterfaceBySubscription.json",
+    "operation": "NetworkInterfaces_ListAll",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/networkInterfaces",
+    "source_sha256": "934c9aae50c996d66bf1f41746b13b307e5235889a6548ec315cdabd8833dc8d"
+  },
+  {
+    "file": "ListStorageContainerByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListStorageContainerByResourceGroup.json",
+    "operation": "StorageContainers_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/storageContainers",
+    "source_sha256": "39499b2c6c399b4bdc0006dfa3ccf0f2d0f64bef09e2bc014c5e53efa1d844b6"
+  },
+  {
+    "file": "ListStorageContainerBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListStorageContainerBySubscription.json",
+    "operation": "StorageContainers_ListAll",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/storageContainers",
+    "source_sha256": "f350c54099efcfe70570757561176042b8b394bc70cff4f8827e8163f2928b92"
+  },
+  {
+    "file": "ListVirtualHardDiskByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListVirtualHardDiskByResourceGroup.json",
+    "operation": "VirtualHardDisks_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/virtualHardDisks",
+    "source_sha256": "819f858231bcdefaebe16d7ba9ebef0154607123be9a4ef016fc4c5d168d215b"
+  },
+  {
+    "file": "ListVirtualHardDiskBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListVirtualHardDiskBySubscription.json",
+    "operation": "VirtualHardDisks_ListAll",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/virtualHardDisks",
+    "source_sha256": "6e18337e4ceb47bcbcbb7d5ae1b825da215bb1ab64805057f943ab048bb99009"
+  },
+  {
+    "file": "ListVirtualMachineInstances.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListVirtualMachineInstances.json",
+    "operation": "VirtualMachineInstances_List",
+    "method": "GET",
+    "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances",
+    "source_sha256": "47e1f4b474b1e2d35ad8316b81ae2661d3147572fdb6235554545d2d36cffdd5"
+  },
+  {
+    "file": "StopVirtualMachineInstance.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/StopVirtualMachineInstance.json",
+    "operation": "VirtualMachineInstances_Stop",
+    "method": "POST",
+    "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/stop",
+    "source_sha256": "73f5a86a4aef57d035419d330263bdfd9c4a615d11bed56f527f14c6ef19b068"
+  }
+]

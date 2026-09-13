@@ -7559,6 +7559,3611 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/subscriptionDiagnosticsSettings_API.json"
     },
     {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/common.json",
+      "source_sha256": "a63b40b10a55847e1fd2e9e7ff123de98bd99944b6d74e967e8c97b41431b295",
+      "dependency": true,
+      "document": {
+        "definitions": {
+          "ExtendedLocation": {
+            "description": "The complex type of the extended location.",
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "The name of the extended location."
+              },
+              "type": {
+                "$ref": "#/definitions/ExtendedLocationType",
+                "description": "The type of the extended location."
+              }
+            }
+          },
+          "ExtendedLocationType": {
+            "type": "string",
+            "description": "The type of extendedLocation.",
+            "enum": [
+              "CustomLocation"
+            ],
+            "x-ms-enum": {
+              "name": "ExtendedLocationTypes",
+              "modelAsString": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/galleryImages.json",
+      "source_sha256": "83c119ccad9de8851ab4b4359782a6436f4f3fbb3432f6711291c8aff9115705",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "title": "AzureStackHCI",
+          "description": "The Microsoft.AzureStackHCI Rest API spec.",
+          "version": "2024-01-01"
+        },
+        "host": "management.azure.com",
+        "schemes": [
+          "https"
+        ],
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/galleryImages/{galleryImageName}": {
+            "get": {
+              "operationId": "GalleryImages_Get",
+              "description": "Gets a gallery image",
+              "x-ms-examples": {
+                "GetGalleryImage": {
+                  "$ref": "./examples/GetGalleryImage.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/GalleryImageNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/GalleryImages"
+                  }
+                }
+              }
+            },
+            "delete": {
+              "operationId": "GalleryImages_Delete",
+              "description": "The operation to delete a gallery image.",
+              "x-ms-examples": {
+                "DeleteGalleryImage": {
+                  "$ref": "./examples/DeleteGalleryImage.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "azure-async-operation"
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/GalleryImageNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Location": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No content"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/galleryImages": {
+            "get": {
+              "operationId": "GalleryImages_List",
+              "description": "Lists all of the gallery images in the specified resource group. Use the nextLink property in the response to get the next page of gallery images.",
+              "x-ms-examples": {
+                "ListGalleryImageByResourceGroup": {
+                  "$ref": "./examples/ListGalleryImageByResourceGroup.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/GalleryImagesListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/galleryImages": {
+            "get": {
+              "operationId": "GalleryImages_ListAll",
+              "description": "Lists all of the gallery images in the specified subscription. Use the nextLink property in the response to get the next page of gallery images.",
+              "x-ms-examples": {
+                "ListGalleryImageBySubscription": {
+                  "$ref": "./examples/ListGalleryImageBySubscription.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/GalleryImagesListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          }
+        },
+        "definitions": {
+          "GalleryImagesListResult": {
+            "type": "object",
+            "description": "List of gallery images.",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/GalleryImages"
+                }
+              },
+              "nextLink": {
+                "type": "string",
+                "description": "Link to the next set of results.",
+                "readOnly": true
+              }
+            }
+          },
+          "GalleryImages": {
+            "type": "object",
+            "description": "The gallery images resource definition.",
+            "x-ms-azure-resource": true,
+            "x-ms-client-flatten": true,
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/GalleryImageProperties"
+              },
+              "extendedLocation": {
+                "$ref": "./common.json#/definitions/ExtendedLocation",
+                "description": "The extendedLocation of the resource."
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ]
+          },
+          "GalleryImageProperties": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "properties": {
+              "containerId": {
+                "type": "string",
+                "format": "arm-id",
+                "x-ms-arm-id-details": {
+                  "allowedResources": [
+                    {
+                      "type": "Microsoft.AzureStackHCI/storageContainers"
+                    }
+                  ]
+                },
+                "description": "Storage ContainerID of the storage container to be used for gallery image"
+              },
+              "imagePath": {
+                "type": "string",
+                "x-ms-secret": true,
+                "description": "location of the image the gallery image should be created from"
+              },
+              "osType": {
+                "type": "string",
+                "enum": [
+                  "Windows",
+                  "Linux"
+                ],
+                "x-ms-enum": {
+                  "name": "OperatingSystemTypes",
+                  "modelAsString": false
+                },
+                "description": "Operating system type that the gallery image uses [Windows, Linux]"
+              },
+              "cloudInitDataSource": {
+                "type": "string",
+                "description": "Datasource for the gallery image when provisioning with cloud-init [NoCloud, Azure]",
+                "enum": [
+                  "NoCloud",
+                  "Azure"
+                ],
+                "x-ms-enum": {
+                  "name": "CloudInitDataSource",
+                  "modelAsString": true
+                }
+              },
+              "hyperVGeneration": {
+                "type": "string",
+                "description": "The hypervisor generation of the Virtual Machine [V1, V2]",
+                "enum": [
+                  "V1",
+                  "V2"
+                ],
+                "x-ms-enum": {
+                  "name": "HyperVGeneration",
+                  "modelAsString": true
+                }
+              },
+              "identifier": {
+                "$ref": "#/definitions/GalleryImageIdentifier"
+              },
+              "version": {
+                "$ref": "#/definitions/GalleryImageVersion"
+              },
+              "provisioningState": {
+                "type": "string",
+                "description": "Provisioning state of the gallery image.",
+                "readOnly": true,
+                "enum": [
+                  "Succeeded",
+                  "Failed",
+                  "InProgress",
+                  "Accepted",
+                  "Deleting",
+                  "Canceled"
+                ],
+                "x-ms-enum": {
+                  "name": "ProvisioningStateEnum",
+                  "modelAsString": true
+                }
+              },
+              "status": {
+                "$ref": "#/definitions/GalleryImageStatus"
+              }
+            },
+            "required": [
+              "osType"
+            ],
+            "description": "Properties under the gallery image resource"
+          },
+          "GalleryImageStatus": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "readOnly": true,
+            "properties": {
+              "errorCode": {
+                "type": "string",
+                "description": "GalleryImage provisioning error code"
+              },
+              "errorMessage": {
+                "type": "string",
+                "description": "Descriptive error message"
+              },
+              "provisioningStatus": {
+                "type": "object",
+                "properties": {
+                  "operationId": {
+                    "type": "string",
+                    "description": "The ID of the operation performed on the gallery image"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The status of the operation performed on the gallery image [Succeeded, Failed, InProgress]",
+                    "enum": [
+                      "Succeeded",
+                      "Failed",
+                      "InProgress"
+                    ],
+                    "x-ms-enum": {
+                      "name": "Status",
+                      "modelAsString": true
+                    }
+                  }
+                }
+              },
+              "downloadStatus": {
+                "type": "object",
+                "properties": {
+                  "downloadSizeInMB": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "The downloaded sized of the image in MB"
+                  }
+                },
+                "description": "The download status of the gallery image"
+              },
+              "progressPercentage": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The progress of the operation in percentage"
+              }
+            },
+            "description": "The observed state of gallery images"
+          },
+          "GalleryImageVersion": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "This is the version of the gallery image."
+              },
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/GalleryImageVersionProperties"
+              }
+            },
+            "description": "Specifies information about the gallery image version that you want to create or update."
+          },
+          "GalleryImageVersionProperties": {
+            "type": "object",
+            "properties": {
+              "storageProfile": {
+                "$ref": "#/definitions/GalleryImageVersionStorageProfile"
+              }
+            },
+            "required": [
+              "storageProfile"
+            ],
+            "description": "Describes the properties of a gallery image version."
+          },
+          "GalleryImageVersionStorageProfile": {
+            "type": "object",
+            "properties": {
+              "osDiskImage": {
+                "$ref": "#/definitions/GalleryOSDiskImage"
+              }
+            },
+            "description": "This is the storage profile of a Gallery Image Version."
+          },
+          "GalleryOSDiskImage": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/GalleryDiskImage"
+              }
+            ],
+            "description": "This is the OS disk image."
+          },
+          "GalleryDiskImage": {
+            "type": "object",
+            "properties": {
+              "sizeInMB": {
+                "type": "integer",
+                "format": "int64",
+                "readOnly": true,
+                "description": "This property indicates the size of the VHD to be created."
+              }
+            },
+            "description": "This is the disk image base class."
+          },
+          "GalleryImageIdentifier": {
+            "type": "object",
+            "properties": {
+              "publisher": {
+                "type": "string",
+                "description": "The name of the gallery image definition publisher."
+              },
+              "offer": {
+                "type": "string",
+                "description": "The name of the gallery image definition offer."
+              },
+              "sku": {
+                "type": "string",
+                "description": "The name of the gallery image definition SKU."
+              }
+            },
+            "required": [
+              "publisher",
+              "offer",
+              "sku"
+            ],
+            "description": "This is the gallery image definition identifier."
+          }
+        },
+        "parameters": {
+          "GalleryImageNameParameter": {
+            "name": "galleryImageName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[a-zA-Z0-9]$",
+            "x-ms-parameter-location": "method",
+            "maxLength": 80,
+            "minLength": 1,
+            "description": "Name of the gallery image"
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json",
+      "source_sha256": "bd4291f68be2168f5ad3734f823af76d500554b2ef93acac46e42f9900b7b9a9",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "title": "AzureStackHCI",
+          "description": "The Microsoft.AzureStackHCI Rest API spec.",
+          "version": "2024-01-01"
+        },
+        "host": "management.azure.com",
+        "schemes": [
+          "https"
+        ],
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}": {
+            "get": {
+              "operationId": "LogicalNetworks_Get",
+              "x-ms-examples": {
+                "GetLogicalNetwork": {
+                  "$ref": "./examples/GetLogicalNetwork.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/LogicalNetworkNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/LogicalNetworks"
+                  }
+                }
+              }
+            },
+            "delete": {
+              "operationId": "LogicalNetworks_Delete",
+              "description": "The operation to delete a logical network.",
+              "x-ms-examples": {
+                "DeleteLogicalNetwork": {
+                  "$ref": "./examples/DeleteLogicalNetwork.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "azure-async-operation"
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/LogicalNetworkNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Location": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No content"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks": {
+            "get": {
+              "operationId": "LogicalNetworks_List",
+              "description": "Lists all of the logical networks in the specified resource group. Use the nextLink property in the response to get the next page of logical networks.",
+              "x-ms-examples": {
+                "ListLogicalNetworkByResourceGroup": {
+                  "$ref": "./examples/ListLogicalNetworkByResourceGroup.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/LogicalNetworksListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/logicalNetworks": {
+            "get": {
+              "operationId": "LogicalNetworks_ListAll",
+              "description": "Lists all of the logical networks in the specified subscription. Use the nextLink property in the response to get the next page of logical networks.",
+              "x-ms-examples": {
+                "ListLogicalNetworkBySubscription": {
+                  "$ref": "./examples/ListLogicalNetworkBySubscription.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/LogicalNetworksListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          }
+        },
+        "definitions": {
+          "LogicalNetworksListResult": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/LogicalNetworks"
+                }
+              },
+              "nextLink": {
+                "type": "string"
+              }
+            }
+          },
+          "LogicalNetworks": {
+            "type": "object",
+            "description": "The logical network resource definition.",
+            "x-ms-azure-resource": true,
+            "x-ms-client-flatten": true,
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/LogicalNetworkProperties"
+              },
+              "extendedLocation": {
+                "$ref": "./common.json#/definitions/ExtendedLocation",
+                "description": "The extendedLocation of the resource."
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ]
+          },
+          "LogicalNetworkProperties": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "properties": {
+              "dhcpOptions": {
+                "type": "object",
+                "description": "DhcpOptions contains an array of DNS servers available to VMs deployed in the logical network. Standard DHCP option for a subnet overrides logical network DHCP options.",
+                "properties": {
+                  "dnsServers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "The list of DNS servers IP addresses."
+                  }
+                }
+              },
+              "subnets": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Subnet"
+                },
+                "description": "Subnet - list of subnets under the logical network",
+                "x-ms-identifiers": []
+              },
+              "provisioningState": {
+                "type": "string",
+                "description": "Provisioning state of the logical network.",
+                "readOnly": true,
+                "enum": [
+                  "Succeeded",
+                  "Failed",
+                  "InProgress",
+                  "Accepted",
+                  "Deleting",
+                  "Canceled"
+                ],
+                "x-ms-enum": {
+                  "name": "ProvisioningStateEnum",
+                  "modelAsString": true
+                }
+              },
+              "vmSwitchName": {
+                "type": "string",
+                "description": "name of the network switch to be used for VMs"
+              },
+              "status": {
+                "$ref": "#/definitions/LogicalNetworkStatus"
+              }
+            },
+            "description": "Properties under the logical network resource"
+          },
+          "LogicalNetworkStatus": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "readOnly": true,
+            "properties": {
+              "errorCode": {
+                "type": "string",
+                "description": "LogicalNetwork provisioning error code"
+              },
+              "errorMessage": {
+                "type": "string",
+                "description": "Descriptive error message"
+              },
+              "provisioningStatus": {
+                "type": "object",
+                "properties": {
+                  "operationId": {
+                    "type": "string",
+                    "description": "The ID of the operation performed on the logical network"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The status of the operation performed on the logical network [Succeeded, Failed, InProgress]",
+                    "enum": [
+                      "Succeeded",
+                      "Failed",
+                      "InProgress"
+                    ],
+                    "x-ms-enum": {
+                      "name": "Status",
+                      "modelAsString": true
+                    }
+                  }
+                }
+              }
+            },
+            "description": "The observed state of logical networks"
+          },
+          "Subnet": {
+            "type": "object",
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/SubnetPropertiesFormat",
+                "description": "Properties of the subnet."
+              },
+              "name": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$",
+                "description": "Name - The name of the resource that is unique within a resource group. This name can be used to access the resource."
+              }
+            }
+          },
+          "SubnetPropertiesFormat": {
+            "type": "object",
+            "properties": {
+              "addressPrefix": {
+                "type": "string",
+                "description": "The address prefix for the subnet: Cidr for this subnet - IPv4, IPv6."
+              },
+              "addressPrefixes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of address prefixes for the subnet."
+              },
+              "ipAllocationMethod": {
+                "type": "string",
+                "description": "IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'",
+                "enum": [
+                  "Dynamic",
+                  "Static"
+                ],
+                "x-ms-enum": {
+                  "name": "IpAllocationMethodEnum",
+                  "modelAsString": true
+                }
+              },
+              "ipConfigurationReferences": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "ID": {
+                      "type": "string",
+                      "description": "IPConfigurationID"
+                    }
+                  },
+                  "description": "IPConfigurationReference - Describes a IPConfiguration under the virtual network"
+                },
+                "x-ms-identifiers": [],
+                "description": "IPConfigurationReferences - list of IPConfigurationReferences"
+              },
+              "routeTable": {
+                "type": "object",
+                "$ref": "#/definitions/RouteTable"
+              },
+              "ipPools": {
+                "type": "array",
+                "description": "network associated pool of IP Addresses",
+                "items": {
+                  "$ref": "#/definitions/IPPool"
+                },
+                "x-ms-identifiers": []
+              },
+              "vlan": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Vlan to use for the subnet"
+              }
+            },
+            "description": "Properties of the subnet."
+          },
+          "IPPool": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the IP-Pool"
+              },
+              "ipPoolType": {
+                "type": "string",
+                "enum": [
+                  "vm",
+                  "vippool"
+                ],
+                "x-ms-enum": {
+                  "name": "IPPoolTypeEnum",
+                  "modelAsString": false
+                },
+                "description": "Type of the IP Pool [vm, vippool]"
+              },
+              "start": {
+                "type": "string",
+                "description": "Start of the IP address pool"
+              },
+              "end": {
+                "type": "string",
+                "description": "End of the IP address pool"
+              },
+              "info": {
+                "$ref": "#/definitions/IPPoolInfo"
+              }
+            }
+          },
+          "IPPoolInfo": {
+            "type": "object",
+            "properties": {
+              "used": {
+                "type": "string",
+                "readOnly": true,
+                "description": "Number of IP addresses allocated from the IP Pool"
+              },
+              "available": {
+                "type": "string",
+                "readOnly": true,
+                "description": "Number of IP addresses available in the IP Pool"
+              }
+            }
+          },
+          "RouteTable": {
+            "type": "object",
+            "properties": {
+              "etag": {
+                "readOnly": true,
+                "type": "string",
+                "description": "A unique read-only string that changes whenever the resource is updated."
+              },
+              "name": {
+                "readOnly": true,
+                "type": "string",
+                "description": "Resource name."
+              },
+              "type": {
+                "readOnly": true,
+                "type": "string",
+                "description": "Resource type."
+              },
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/RouteTablePropertiesFormat",
+                "description": "Properties of the route table."
+              }
+            },
+            "description": "Route table resource."
+          },
+          "RouteTablePropertiesFormat": {
+            "type": "object",
+            "properties": {
+              "routes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Route"
+                },
+                "description": "Collection of routes contained within a route table.",
+                "x-ms-identifiers": []
+              }
+            },
+            "description": "RouteTablePropertiesFormat - Route Table resource."
+          },
+          "Route": {
+            "type": "object",
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/RoutePropertiesFormat",
+                "description": "Properties of the route."
+              },
+              "name": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$",
+                "description": "Name - name of the subnet"
+              }
+            },
+            "description": "Route - Route resource."
+          },
+          "RoutePropertiesFormat": {
+            "type": "object",
+            "properties": {
+              "addressPrefix": {
+                "type": "string",
+                "description": "The destination CIDR to which the route applies."
+              },
+              "nextHopIpAddress": {
+                "type": "string",
+                "description": "The IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is VirtualAppliance."
+              }
+            },
+            "description": "RoutePropertiesFormat - Route resource."
+          }
+        },
+        "parameters": {
+          "LogicalNetworkNameParameter": {
+            "name": "logicalNetworkName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[_a-zA-Z0-9]$",
+            "x-ms-parameter-location": "method",
+            "maxLength": 64,
+            "minLength": 2,
+            "description": "Name of the logical network"
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/marketplaceGalleryImages.json",
+      "source_sha256": "a370658621d144ac5ef29ad5efb08e63764543dd51f25f220dc4552827116568",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "title": "AzureStackHCI",
+          "description": "The Microsoft.AzureStackHCI Rest API spec.",
+          "version": "2024-01-01"
+        },
+        "host": "management.azure.com",
+        "schemes": [
+          "https"
+        ],
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages/{marketplaceGalleryImageName}": {
+            "get": {
+              "operationId": "MarketplaceGalleryImages_Get",
+              "description": "Gets a marketplace gallery image",
+              "x-ms-examples": {
+                "GetMarketplaceGalleryImage": {
+                  "$ref": "./examples/GetMarketplaceGalleryImage.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/MarketplaceGalleryImageNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/MarketplaceGalleryImages"
+                  }
+                }
+              }
+            },
+            "delete": {
+              "operationId": "MarketplaceGalleryImages_Delete",
+              "description": "The operation to delete a marketplace gallery image.",
+              "x-ms-examples": {
+                "DeleteMarketplaceGalleryImage": {
+                  "$ref": "./examples/DeleteMarketplaceGalleryImage.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "azure-async-operation"
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/MarketplaceGalleryImageNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Location": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No content"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages": {
+            "get": {
+              "operationId": "MarketplaceGalleryImages_List",
+              "description": "Lists all of the marketplace gallery images in the specified resource group. Use the nextLink property in the response to get the next page of marketplace gallery images.",
+              "x-ms-examples": {
+                "ListMarketplaceGalleryImageByResourceGroup": {
+                  "$ref": "./examples/ListMarketplaceGalleryImageByResourceGroup.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "Lists all marketplace gallery images under the resource group.",
+                  "schema": {
+                    "$ref": "#/definitions/MarketplaceGalleryImagesListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/marketplaceGalleryImages": {
+            "get": {
+              "operationId": "MarketplaceGalleryImages_ListAll",
+              "description": "Lists all of the marketplace gallery images in the specified subscription. Use the nextLink property in the response to get the next page of marketplace gallery images.",
+              "x-ms-examples": {
+                "ListMarketplaceGalleryImageBySubscription": {
+                  "$ref": "./examples/ListMarketplaceGalleryImageBySubscription.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "Lists all marketplace gallery images under the subscription.",
+                  "schema": {
+                    "$ref": "#/definitions/MarketplaceGalleryImagesListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          }
+        },
+        "definitions": {
+          "MarketplaceGalleryImagesListResult": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/MarketplaceGalleryImages"
+                }
+              },
+              "nextLink": {
+                "type": "string"
+              }
+            }
+          },
+          "MarketplaceGalleryImages": {
+            "type": "object",
+            "description": "The marketplace gallery image resource definition.",
+            "x-ms-azure-resource": true,
+            "x-ms-client-flatten": true,
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/MarketplaceGalleryImageProperties"
+              },
+              "extendedLocation": {
+                "$ref": "./common.json#/definitions/ExtendedLocation",
+                "description": "The extendedLocation of the resource."
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ]
+          },
+          "MarketplaceGalleryImageProperties": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "properties": {
+              "containerId": {
+                "type": "string",
+                "format": "arm-id",
+                "x-ms-arm-id-details": {
+                  "allowedResources": [
+                    {
+                      "type": "Microsoft.AzureStackHCI/storageContainers"
+                    }
+                  ]
+                },
+                "description": "Storage ContainerID of the storage container to be used for marketplace gallery image"
+              },
+              "osType": {
+                "type": "string",
+                "enum": [
+                  "Windows",
+                  "Linux"
+                ],
+                "x-ms-enum": {
+                  "name": "OperatingSystemTypes",
+                  "modelAsString": false
+                },
+                "description": "Operating system type that the gallery image uses [Windows, Linux]"
+              },
+              "cloudInitDataSource": {
+                "type": "string",
+                "description": "Datasource for the gallery image when provisioning with cloud-init [NoCloud, Azure]",
+                "enum": [
+                  "NoCloud",
+                  "Azure"
+                ],
+                "x-ms-enum": {
+                  "name": "CloudInitDataSource",
+                  "modelAsString": true
+                }
+              },
+              "hyperVGeneration": {
+                "type": "string",
+                "description": "The hypervisor generation of the Virtual Machine [V1, V2]",
+                "enum": [
+                  "V1",
+                  "V2"
+                ],
+                "x-ms-enum": {
+                  "name": "HyperVGeneration",
+                  "modelAsString": true
+                }
+              },
+              "identifier": {
+                "$ref": "#/definitions/GalleryImageIdentifier"
+              },
+              "version": {
+                "$ref": "#/definitions/GalleryImageVersion"
+              },
+              "provisioningState": {
+                "type": "string",
+                "description": "Provisioning state of the marketplace gallery image.",
+                "readOnly": true,
+                "enum": [
+                  "Succeeded",
+                  "Failed",
+                  "InProgress",
+                  "Accepted",
+                  "Deleting",
+                  "Canceled"
+                ],
+                "x-ms-enum": {
+                  "name": "ProvisioningStateEnum",
+                  "modelAsString": true
+                }
+              },
+              "status": {
+                "$ref": "#/definitions/MarketplaceGalleryImageStatus"
+              }
+            },
+            "required": [
+              "osType"
+            ],
+            "description": "Properties under the marketplace gallery image resource"
+          },
+          "MarketplaceGalleryImageStatus": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "readOnly": true,
+            "properties": {
+              "errorCode": {
+                "type": "string",
+                "description": "MarketplaceGalleryImage provisioning error code"
+              },
+              "errorMessage": {
+                "type": "string",
+                "description": "Descriptive error message"
+              },
+              "provisioningStatus": {
+                "type": "object",
+                "properties": {
+                  "operationId": {
+                    "type": "string",
+                    "description": "The ID of the operation performed on the gallery image"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The status of the operation performed on the gallery image [Succeeded, Failed, InProgress]",
+                    "enum": [
+                      "Succeeded",
+                      "Failed",
+                      "InProgress"
+                    ],
+                    "x-ms-enum": {
+                      "name": "Status",
+                      "modelAsString": true
+                    }
+                  }
+                }
+              },
+              "downloadStatus": {
+                "type": "object",
+                "properties": {
+                  "downloadSizeInMB": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "The downloaded sized of the image in MB"
+                  }
+                },
+                "description": "The download status of the gallery image"
+              },
+              "progressPercentage": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The progress of the operation in percentage"
+              }
+            },
+            "description": "The observed state of marketplace gallery images"
+          },
+          "GalleryImageVersion": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "This is the version of the gallery image."
+              },
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/GalleryImageVersionProperties"
+              }
+            },
+            "description": "Specifies information about the gallery image version that you want to create or update."
+          },
+          "GalleryImageVersionProperties": {
+            "type": "object",
+            "properties": {
+              "storageProfile": {
+                "$ref": "#/definitions/GalleryImageVersionStorageProfile"
+              }
+            },
+            "required": [
+              "storageProfile"
+            ],
+            "description": "Describes the properties of a gallery image version."
+          },
+          "GalleryImageVersionStorageProfile": {
+            "type": "object",
+            "properties": {
+              "osDiskImage": {
+                "$ref": "#/definitions/GalleryOSDiskImage"
+              }
+            },
+            "description": "This is the storage profile of a Gallery Image Version."
+          },
+          "GalleryOSDiskImage": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/GalleryDiskImage"
+              }
+            ],
+            "description": "This is the OS disk image."
+          },
+          "GalleryDiskImage": {
+            "type": "object",
+            "properties": {
+              "sizeInMB": {
+                "type": "integer",
+                "format": "int64",
+                "readOnly": true,
+                "description": "This property indicates the size of the VHD to be created."
+              }
+            },
+            "description": "This is the disk image base class."
+          },
+          "GalleryImageIdentifier": {
+            "type": "object",
+            "properties": {
+              "publisher": {
+                "type": "string",
+                "description": "The name of the gallery image definition publisher."
+              },
+              "offer": {
+                "type": "string",
+                "description": "The name of the gallery image definition offer."
+              },
+              "sku": {
+                "type": "string",
+                "description": "The name of the gallery image definition SKU."
+              }
+            },
+            "required": [
+              "publisher",
+              "offer",
+              "sku"
+            ],
+            "description": "This is the gallery image definition identifier."
+          }
+        },
+        "parameters": {
+          "MarketplaceGalleryImageNameParameter": {
+            "name": "marketplaceGalleryImageName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[a-zA-Z0-9]$",
+            "x-ms-parameter-location": "method",
+            "maxLength": 80,
+            "minLength": 1,
+            "description": "Name of the marketplace gallery image"
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/networkInterfaces.json",
+      "source_sha256": "01b0749414b5644f18997c0e0b49ce96394a08222f8c37dcb0293ed8752293cb",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "title": "AzureStackHCI",
+          "description": "The Microsoft.AzureStackHCI Rest API spec.",
+          "version": "2024-01-01"
+        },
+        "host": "management.azure.com",
+        "schemes": [
+          "https"
+        ],
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/networkInterfaces/{networkInterfaceName}": {
+            "get": {
+              "operationId": "NetworkInterfaces_Get",
+              "description": "Gets a network interface",
+              "x-ms-examples": {
+                "GetNetworkInterface": {
+                  "$ref": "./examples/GetNetworkInterface.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/NetworkInterfaceNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/NetworkInterfaces"
+                  }
+                }
+              }
+            },
+            "delete": {
+              "operationId": "NetworkInterfaces_Delete",
+              "description": "The operation to delete a network interface.",
+              "x-ms-examples": {
+                "DeleteNetworkInterface": {
+                  "$ref": "./examples/DeleteNetworkInterface.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "azure-async-operation"
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/NetworkInterfaceNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Location": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No content"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/networkInterfaces": {
+            "get": {
+              "operationId": "NetworkInterfaces_List",
+              "description": "Lists all of the network interfaces in the specified resource group. Use the nextLink property in the response to get the next page of network interfaces.",
+              "x-ms-examples": {
+                "ListNetworkInterfaceByResourceGroup": {
+                  "$ref": "./examples/ListNetworkInterfaceByResourceGroup.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/NetworkInterfacesListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/networkInterfaces": {
+            "get": {
+              "operationId": "NetworkInterfaces_ListAll",
+              "description": "Lists all of the network interfaces in the specified subscription. Use the nextLink property in the response to get the next page of network interfaces.",
+              "x-ms-examples": {
+                "ListNetworkInterfaceBySubscription": {
+                  "$ref": "./examples/ListNetworkInterfaceBySubscription.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/NetworkInterfacesListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          }
+        },
+        "definitions": {
+          "NetworkInterfacesListResult": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/NetworkInterfaces"
+                }
+              },
+              "nextLink": {
+                "type": "string"
+              }
+            }
+          },
+          "NetworkInterfaces": {
+            "type": "object",
+            "description": "The network interface resource definition.",
+            "x-ms-azure-resource": true,
+            "x-ms-client-flatten": true,
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/NetworkInterfaceProperties"
+              },
+              "extendedLocation": {
+                "$ref": "./common.json#/definitions/ExtendedLocation",
+                "description": "The extendedLocation of the resource."
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ]
+          },
+          "NetworkInterfaceProperties": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "properties": {
+              "ipConfigurations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/IPConfiguration"
+                },
+                "description": "IPConfigurations - A list of IPConfigurations of the network interface.",
+                "x-ms-identifiers": []
+              },
+              "macAddress": {
+                "type": "string",
+                "description": "MacAddress - The MAC address of the network interface."
+              },
+              "dnsSettings": {
+                "$ref": "#/definitions/InterfaceDNSSettings",
+                "description": "DNS Settings for the interface"
+              },
+              "provisioningState": {
+                "type": "string",
+                "description": "Provisioning state of the network interface.",
+                "readOnly": true,
+                "enum": [
+                  "Succeeded",
+                  "Failed",
+                  "InProgress",
+                  "Accepted",
+                  "Deleting",
+                  "Canceled"
+                ],
+                "x-ms-enum": {
+                  "name": "ProvisioningStateEnum",
+                  "modelAsString": true
+                }
+              },
+              "status": {
+                "$ref": "#/definitions/NetworkInterfaceStatus"
+              }
+            },
+            "description": "Properties under the network interface resource"
+          },
+          "NetworkInterfaceStatus": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "readOnly": true,
+            "properties": {
+              "errorCode": {
+                "type": "string",
+                "description": "NetworkInterface provisioning error code"
+              },
+              "errorMessage": {
+                "type": "string",
+                "description": "Descriptive error message"
+              },
+              "provisioningStatus": {
+                "type": "object",
+                "properties": {
+                  "operationId": {
+                    "type": "string",
+                    "description": "The ID of the operation performed on the network interface"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The status of the operation performed on the network interface [Succeeded, Failed, InProgress]",
+                    "enum": [
+                      "Succeeded",
+                      "Failed",
+                      "InProgress"
+                    ],
+                    "x-ms-enum": {
+                      "name": "Status",
+                      "modelAsString": true
+                    }
+                  }
+                }
+              }
+            },
+            "description": "The observed state of network interfaces"
+          },
+          "InterfaceDNSSettings": {
+            "type": "object",
+            "properties": {
+              "dnsServers": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of DNS server IP Addresses for the interface"
+              }
+            }
+          },
+          "IPConfiguration": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ],
+                "description": "Name - The name of the resource that is unique within a resource group. This name can be used to access the resource."
+              },
+              "properties": {
+                "type": "object",
+                "properties": {
+                  "gateway": {
+                    "type": "string",
+                    "readOnly": true,
+                    "description": "Gateway for network interface"
+                  },
+                  "prefixLength": {
+                    "type": "string",
+                    "readOnly": true,
+                    "description": "prefixLength for network interface"
+                  },
+                  "privateIPAddress": {
+                    "type": "string",
+                    "description": "PrivateIPAddress - Private IP address of the IP configuration."
+                  },
+                  "subnet": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID - The ARM resource id in the form of /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/..."
+                      }
+                    },
+                    "description": "Subnet - Name of Subnet bound to the IP configuration."
+                  }
+                },
+                "description": "InterfaceIPConfigurationPropertiesFormat properties of IP configuration."
+              }
+            },
+            "description": "InterfaceIPConfiguration iPConfiguration in a network interface."
+          }
+        },
+        "parameters": {
+          "NetworkInterfaceNameParameter": {
+            "name": "networkInterfaceName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$",
+            "x-ms-parameter-location": "method",
+            "maxLength": 80,
+            "minLength": 1,
+            "description": "Name of the network interface"
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/storageContainers.json",
+      "source_sha256": "815e7a7e2b7adb34cb3c0af331f4ef0f74391bd4a4d40e8f5098f456f0e236bc",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "title": "AzureStackHCI",
+          "description": "The Microsoft.AzureStackHCI Rest API spec.",
+          "version": "2024-01-01"
+        },
+        "host": "management.azure.com",
+        "schemes": [
+          "https"
+        ],
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/storageContainers/{storageContainerName}": {
+            "get": {
+              "operationId": "StorageContainers_Get",
+              "description": "Gets a storage container",
+              "x-ms-examples": {
+                "GetStorageContainer": {
+                  "$ref": "./examples/GetStorageContainer.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/StorageContainerNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/StorageContainers"
+                  }
+                }
+              }
+            },
+            "delete": {
+              "operationId": "StorageContainers_Delete",
+              "description": "The operation to delete a storage container.",
+              "x-ms-examples": {
+                "DeleteStorageContainer": {
+                  "$ref": "./examples/DeleteStorageContainer.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "azure-async-operation"
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/StorageContainerNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Location": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No content"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/storageContainers": {
+            "get": {
+              "operationId": "StorageContainers_List",
+              "description": "Lists all of the storage containers in the specified resource group. Use the nextLink property in the response to get the next page of storage containers.",
+              "x-ms-examples": {
+                "ListStorageContainerByResourceGroup": {
+                  "$ref": "./examples/ListStorageContainerByResourceGroup.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/StorageContainersListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/storageContainers": {
+            "get": {
+              "operationId": "StorageContainers_ListAll",
+              "description": "Lists all of the storage containers in the specified subscription. Use the nextLink property in the response to get the next page of storage containers.",
+              "x-ms-examples": {
+                "ListStorageContainerBySubscription": {
+                  "$ref": "./examples/ListStorageContainerBySubscription.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/StorageContainersListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          }
+        },
+        "definitions": {
+          "StorageContainersListResult": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/StorageContainers"
+                }
+              },
+              "nextLink": {
+                "type": "string"
+              }
+            }
+          },
+          "StorageContainers": {
+            "type": "object",
+            "description": "The storage container resource definition.",
+            "x-ms-azure-resource": true,
+            "x-ms-client-flatten": true,
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/StorageContainerProperties"
+              },
+              "extendedLocation": {
+                "$ref": "./common.json#/definitions/ExtendedLocation",
+                "description": "The extendedLocation of the resource."
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ]
+          },
+          "StorageContainerProperties": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Path of the storage container on the disk"
+              },
+              "provisioningState": {
+                "type": "string",
+                "description": "Provisioning state of the storage container.",
+                "readOnly": true,
+                "enum": [
+                  "Succeeded",
+                  "Failed",
+                  "InProgress",
+                  "Accepted",
+                  "Deleting",
+                  "Canceled"
+                ],
+                "x-ms-enum": {
+                  "name": "ProvisioningStateEnum",
+                  "modelAsString": true
+                }
+              },
+              "status": {
+                "$ref": "#/definitions/StorageContainerStatus"
+              }
+            },
+            "required": [
+              "path"
+            ],
+            "description": "Properties under the storage container resource"
+          },
+          "StorageContainerStatus": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "readOnly": true,
+            "properties": {
+              "errorCode": {
+                "type": "string",
+                "description": "StorageContainer provisioning error code"
+              },
+              "errorMessage": {
+                "type": "string",
+                "description": "Descriptive error message"
+              },
+              "availableSizeMB": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Amount of space available on the disk in MB"
+              },
+              "containerSizeMB": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Total size of the disk in MB"
+              },
+              "provisioningStatus": {
+                "type": "object",
+                "properties": {
+                  "operationId": {
+                    "type": "string",
+                    "description": "The ID of the operation performed on the storage container"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The status of the operation performed on the storage container [Succeeded, Failed, InProgress]",
+                    "enum": [
+                      "Succeeded",
+                      "Failed",
+                      "InProgress"
+                    ],
+                    "x-ms-enum": {
+                      "name": "Status",
+                      "modelAsString": true
+                    }
+                  }
+                }
+              }
+            },
+            "description": "The observed state of storage containers"
+          }
+        },
+        "parameters": {
+          "StorageContainerNameParameter": {
+            "name": "storageContainerName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$",
+            "x-ms-parameter-location": "method",
+            "maxLength": 80,
+            "minLength": 1,
+            "description": "Name of the storage container"
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualHardDisks.json",
+      "source_sha256": "cfb1902f467e8bd84cd67a10da1dbc5af9a2ebf312a943ba28e4dce47f0419ba",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "title": "AzureStackHCI",
+          "description": "The Microsoft.AzureStackHCI Rest API spec.",
+          "version": "2024-01-01"
+        },
+        "host": "management.azure.com",
+        "schemes": [
+          "https"
+        ],
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/virtualHardDisks/{virtualHardDiskName}": {
+            "get": {
+              "operationId": "VirtualHardDisks_Get",
+              "description": "Gets a virtual hard disk",
+              "x-ms-examples": {
+                "GetVirtualHardDisk": {
+                  "$ref": "./examples/GetVirtualHardDisk.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/VirtualHardDiskNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualHardDisks"
+                  }
+                }
+              }
+            },
+            "delete": {
+              "operationId": "VirtualHardDisks_Delete",
+              "description": "The operation to delete a virtual hard disk.",
+              "x-ms-examples": {
+                "DeleteVirtualHardDisk": {
+                  "$ref": "./examples/DeleteVirtualHardDisk.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "azure-async-operation"
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/VirtualHardDiskNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Location": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No content"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/virtualHardDisks": {
+            "get": {
+              "operationId": "VirtualHardDisks_List",
+              "description": "Lists all of the virtual hard disks in the specified resource group. Use the nextLink property in the response to get the next page of virtual hard disks.",
+              "x-ms-examples": {
+                "ListVirtualHardDiskByResourceGroup": {
+                  "$ref": "./examples/ListVirtualHardDiskByResourceGroup.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualHardDisksListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/virtualHardDisks": {
+            "get": {
+              "operationId": "VirtualHardDisks_ListAll",
+              "description": "Lists all of the virtual hard disks in the specified subscription. Use the nextLink property in the response to get the next page of virtual hard disks.",
+              "x-ms-examples": {
+                "ListVirtualHardDiskBySubscription": {
+                  "$ref": "./examples/ListVirtualHardDiskBySubscription.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualHardDisksListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          }
+        },
+        "definitions": {
+          "VirtualHardDisksListResult": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/VirtualHardDisks"
+                }
+              },
+              "nextLink": {
+                "type": "string"
+              }
+            }
+          },
+          "VirtualHardDisks": {
+            "type": "object",
+            "description": "The virtual hard disk resource definition.",
+            "x-ms-azure-resource": true,
+            "x-ms-client-flatten": true,
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/VirtualHardDiskProperties"
+              },
+              "extendedLocation": {
+                "$ref": "./common.json#/definitions/ExtendedLocation",
+                "description": "The extendedLocation of the resource."
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ]
+          },
+          "VirtualHardDiskProperties": {
+            "type": "object",
+            "properties": {
+              "blockSizeBytes": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "diskSizeGB": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Size of the disk in GB"
+              },
+              "dynamic": {
+                "type": "boolean",
+                "description": "Boolean for enabling dynamic sizing on the virtual hard disk"
+              },
+              "logicalSectorBytes": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "physicalSectorBytes": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "hyperVGeneration": {
+                "type": "string",
+                "description": "The hypervisor generation of the Virtual Machine [V1, V2]",
+                "enum": [
+                  "V1",
+                  "V2"
+                ],
+                "x-ms-enum": {
+                  "name": "HyperVGeneration",
+                  "modelAsString": true
+                }
+              },
+              "diskFileFormat": {
+                "type": "string",
+                "description": "The format of the actual VHD file [vhd, vhdx]",
+                "enum": [
+                  "vhdx",
+                  "vhd"
+                ],
+                "x-ms-enum": {
+                  "name": "DiskFileFormat",
+                  "modelAsString": true
+                }
+              },
+              "provisioningState": {
+                "type": "string",
+                "description": "Provisioning state of the virtual hard disk.",
+                "readOnly": true,
+                "enum": [
+                  "Succeeded",
+                  "Failed",
+                  "InProgress",
+                  "Accepted",
+                  "Deleting",
+                  "Canceled"
+                ],
+                "x-ms-enum": {
+                  "name": "ProvisioningStateEnum",
+                  "modelAsString": true
+                }
+              },
+              "containerId": {
+                "type": "string",
+                "format": "arm-id",
+                "x-ms-arm-id-details": {
+                  "allowedResources": [
+                    {
+                      "type": "Microsoft.AzureStackHCI/storageContainers"
+                    }
+                  ]
+                },
+                "description": "Storage ContainerID of the storage container to be used for VHD"
+              },
+              "status": {
+                "$ref": "#/definitions/VirtualHardDiskStatus"
+              }
+            },
+            "description": "Properties under the virtual hard disk resource"
+          },
+          "VirtualHardDiskStatus": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "readOnly": true,
+            "properties": {
+              "errorCode": {
+                "type": "string",
+                "description": "VirtualHardDisk provisioning error code"
+              },
+              "errorMessage": {
+                "type": "string",
+                "description": "Descriptive error message"
+              },
+              "provisioningStatus": {
+                "type": "object",
+                "properties": {
+                  "operationId": {
+                    "type": "string",
+                    "description": "The ID of the operation performed on the virtual hard disk"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The status of the operation performed on the virtual hard disk [Succeeded, Failed, InProgress]",
+                    "enum": [
+                      "Succeeded",
+                      "Failed",
+                      "InProgress"
+                    ],
+                    "x-ms-enum": {
+                      "name": "Status",
+                      "modelAsString": true
+                    }
+                  }
+                }
+              }
+            },
+            "description": "The observed state of virtual hard disks"
+          }
+        },
+        "parameters": {
+          "VirtualHardDiskNameParameter": {
+            "name": "virtualHardDiskName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[a-zA-Z0-9]$",
+            "x-ms-parameter-location": "method",
+            "maxLength": 80,
+            "minLength": 1,
+            "description": "Name of the virtual hard disk"
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/virtualMachineInstances.json",
+      "source_sha256": "452a283d5f6c99fa4523e1c3e769c29d6c272bb44cc74f42615e002f1c7ac264",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "title": "AzureStackHCI",
+          "description": "The Microsoft.AzureStackHCI Rest API spec.",
+          "version": "2024-01-01"
+        },
+        "host": "management.azure.com",
+        "schemes": [
+          "https"
+        ],
+        "paths": {
+          "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default": {
+            "get": {
+              "operationId": "VirtualMachineInstances_Get",
+              "description": "Gets a virtual machine instance",
+              "x-ms-examples": {
+                "GetVirtualMachineInstance": {
+                  "$ref": "./examples/GetVirtualMachineInstance.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ResourceUriParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualMachineInstance"
+                  }
+                }
+              }
+            },
+            "delete": {
+              "operationId": "VirtualMachineInstances_Delete",
+              "description": "The operation to delete a virtual machine instance.",
+              "x-ms-examples": {
+                "DeleteVirtualMachine": {
+                  "$ref": "./examples/DeleteVirtualMachineInstance.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "azure-async-operation"
+              },
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ResourceUriParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Location": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No content"
+                }
+              }
+            }
+          },
+          "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/stop": {
+            "post": {
+              "operationId": "VirtualMachineInstances_Stop",
+              "description": "The operation to stop a virtual machine instance.",
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              },
+              "x-ms-examples": {
+                "StopVirtualMachine": {
+                  "$ref": "./examples/StopVirtualMachineInstance.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ResourceUriParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualMachineInstance"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Location": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances": {
+            "get": {
+              "operationId": "VirtualMachineInstances_List",
+              "description": "Lists all of the virtual machine instances within the specified parent resource.",
+              "x-ms-examples": {
+                "ListVirtualMachineInstances": {
+                  "$ref": "./examples/ListVirtualMachineInstances.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ResourceUriParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                },
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualMachineInstanceListResult"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/hybridIdentityMetadata/default": {
+            "get": {
+              "tags": [
+                "HybridIdentityMetadata"
+              ],
+              "operationId": "HybridIdentityMetadata_Get",
+              "summary": "Gets HybridIdentityMetadata.",
+              "description": "Implements HybridIdentityMetadata GET method.",
+              "x-ms-examples": {
+                "GetHybridIdentityMetadata": {
+                  "$ref": "./examples/GetHybridIdentityMetadata.json"
+                }
+              },
+              "produces": [
+                "application/json"
+              ],
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ResourceUriParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/HybridIdentityMetadata"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              }
+            }
+          },
+          "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/hybridIdentityMetadata": {
+            "get": {
+              "tags": [
+                "HybridIdentityMetadata"
+              ],
+              "operationId": "HybridIdentityMetadata_List",
+              "summary": "Implements GET HybridIdentityMetadata in a vm.",
+              "description": "Returns the list of HybridIdentityMetadata of the given vm.",
+              "x-ms-examples": {
+                "HybridIdentityMetadataListByVirtualMachineInstances": {
+                  "$ref": "./examples/HybridIdentityMetadata_List.json"
+                }
+              },
+              "produces": [
+                "application/json"
+              ],
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ResourceUriParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/HybridIdentityMetadataList"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/guestAgents/default": {
+            "get": {
+              "tags": [
+                "GuestAgents"
+              ],
+              "operationId": "GuestAgent_Get",
+              "summary": "Gets GuestAgent.",
+              "description": "Implements GuestAgent GET method.",
+              "x-ms-examples": {
+                "GetGuestAgent": {
+                  "$ref": "./examples/GetGuestAgent.json"
+                }
+              },
+              "produces": [
+                "application/json"
+              ],
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ResourceUriParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/GuestAgent"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "delete": {
+              "tags": [
+                "GuestAgents"
+              ],
+              "operationId": "GuestAgent_Delete",
+              "summary": "Deleted an GuestAgent.",
+              "description": "Implements GuestAgent DELETE method.",
+              "x-ms-examples": {
+                "DeleteGuestAgent": {
+                  "$ref": "./examples/DeleteGuestAgent.json"
+                }
+              },
+              "produces": [
+                "application/json"
+              ],
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ResourceUriParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Location": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No Content"
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-long-running-operation": true
+            }
+          },
+          "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/guestAgents": {
+            "get": {
+              "tags": [
+                "GuestAgents"
+              ],
+              "operationId": "GuestAgents_List",
+              "summary": "Implements GET GuestAgent in a vm.",
+              "description": "Returns the list of GuestAgent of the given vm.",
+              "x-ms-examples": {
+                "GuestAgentListByVirtualMachineInstances": {
+                  "$ref": "./examples/GuestAgent_List.json"
+                }
+              },
+              "produces": [
+                "application/json"
+              ],
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ResourceUriParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/GuestAgentList"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          }
+        },
+        "definitions": {
+          "GuestAgentList": {
+            "type": "object",
+            "description": "List of GuestAgent.",
+            "properties": {
+              "nextLink": {
+                "description": "Url to follow for getting next page of GuestAgent.",
+                "type": "string"
+              },
+              "value": {
+                "description": "Array of GuestAgent",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/GuestAgent"
+                }
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "GuestAgent": {
+            "description": "Defines the GuestAgent.",
+            "required": [
+              "properties"
+            ],
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource",
+                "description": "The resource model definition for an Azure Resource Manager proxy resource. It will have everything other than required location and tags."
+              }
+            ],
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "description": "Resource properties.",
+                "$ref": "#/definitions/GuestAgentProperties"
+              },
+              "systemData": {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/systemData",
+                "description": "The system data."
+              }
+            },
+            "x-ms-azure-resource": true
+          },
+          "GuestAgentProperties": {
+            "description": "Defines the resource properties.",
+            "type": "object",
+            "properties": {
+              "credentials": {
+                "description": "Username / Password Credentials to provision guest agent.",
+                "$ref": "#/definitions/GuestCredential"
+              },
+              "provisioningAction": {
+                "description": "The guest agent provisioning action.",
+                "$ref": "#/definitions/ProvisioningAction",
+                "type": "string"
+              },
+              "status": {
+                "description": "The guest agent status.",
+                "type": "string",
+                "readOnly": true
+              },
+              "provisioningState": {
+                "description": "The provisioning state.",
+                "type": "string",
+                "readOnly": true
+              }
+            }
+          },
+          "ProvisioningAction": {
+            "description": "Defines the different types of operations for guest agent.",
+            "enum": [
+              "install",
+              "uninstall",
+              "repair"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ProvisioningAction"
+            }
+          },
+          "GuestCredential": {
+            "description": "Username / Password Credentials to connect to guest.",
+            "type": "object",
+            "properties": {
+              "username": {
+                "description": "The username to connect with the guest.",
+                "type": "string"
+              },
+              "password": {
+                "description": "The password to connect with the guest.",
+                "type": "string",
+                "x-ms-mutability": [
+                  "create",
+                  "update"
+                ],
+                "x-ms-secret": true
+              }
+            }
+          },
+          "HybridIdentityMetadataList": {
+            "description": "List of HybridIdentityMetadata.",
+            "type": "object",
+            "properties": {
+              "nextLink": {
+                "description": "Url to follow for getting next page of HybridIdentityMetadata.",
+                "type": "string"
+              },
+              "value": {
+                "description": "Array of HybridIdentityMetadata",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/HybridIdentityMetadata"
+                }
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "HybridIdentityMetadata": {
+            "description": "Defines the HybridIdentityMetadata.",
+            "required": [
+              "properties"
+            ],
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource",
+                "description": "The resource model definition for an Azure Resource Manager proxy resource. It will have everything other than required location and tags."
+              }
+            ],
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "description": "Resource properties.",
+                "$ref": "#/definitions/HybridIdentityMetadataProperties"
+              },
+              "systemData": {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/systemData",
+                "description": "The system data."
+              }
+            },
+            "x-ms-azure-resource": true
+          },
+          "HybridIdentityMetadataProperties": {
+            "description": "Defines the resource properties.",
+            "type": "object",
+            "properties": {
+              "resourceUid": {
+                "description": "The unique identifier for the resource.",
+                "type": "string"
+              },
+              "publicKey": {
+                "description": "The Public Key.",
+                "type": "string"
+              },
+              "identity": {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/Identity",
+                "readOnly": true
+              },
+              "provisioningState": {
+                "description": "The provisioning state.",
+                "type": "string",
+                "readOnly": true
+              }
+            }
+          },
+          "VirtualMachineInstanceListResult": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/VirtualMachineInstance"
+                }
+              },
+              "nextLink": {
+                "type": "string"
+              }
+            }
+          },
+          "VirtualMachineInstance": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "x-ms-azure-resource": true,
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/VirtualMachineInstanceProperties"
+              },
+              "extendedLocation": {
+                "$ref": "./common.json#/definitions/ExtendedLocation",
+                "description": "The extendedLocation of the resource."
+              },
+              "identity": {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/Identity"
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "The virtual machine instance resource definition."
+          },
+          "VirtualMachineInstanceProperties": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "properties": {
+              "hardwareProfile": {
+                "type": "object",
+                "properties": {
+                  "vmSize": {
+                    "type": "string",
+                    "enum": [
+                      "Default",
+                      "Standard_A2_v2",
+                      "Standard_A4_v2",
+                      "Standard_D2s_v3",
+                      "Standard_D4s_v3",
+                      "Standard_D8s_v3",
+                      "Standard_D16s_v3",
+                      "Standard_D32s_v3",
+                      "Standard_DS2_v2",
+                      "Standard_DS3_v2",
+                      "Standard_DS4_v2",
+                      "Standard_DS5_v2",
+                      "Standard_DS13_v2",
+                      "Standard_K8S_v1",
+                      "Standard_K8S2_v1",
+                      "Standard_K8S3_v1",
+                      "Standard_K8S4_v1",
+                      "Standard_NK6",
+                      "Standard_NK12",
+                      "Standard_NV6",
+                      "Standard_NV12",
+                      "Standard_K8S5_v1",
+                      "Custom"
+                    ],
+                    "default": "Default",
+                    "x-ms-enum": {
+                      "name": "VmSizeEnum",
+                      "modelAsString": true
+                    }
+                  },
+                  "processors": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "number of processors for the virtual machine instance"
+                  },
+                  "memoryMB": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "RAM in MB for the virtual machine instance"
+                  },
+                  "dynamicMemoryConfig": {
+                    "type": "object",
+                    "properties": {
+                      "maximumMemoryMB": {
+                        "type": "integer",
+                        "format": "int64"
+                      },
+                      "minimumMemoryMB": {
+                        "type": "integer",
+                        "format": "int64"
+                      },
+                      "targetMemoryBuffer": {
+                        "type": "integer",
+                        "description": "Defines the amount of extra memory that should be reserved for a virtual machine instance at runtime, as a percentage of the total memory that the virtual machine instance is thought to need. This only applies to virtual systems with dynamic memory enabled. This property can be in the range of 5 to 2000.",
+                        "format": "int32"
+                      }
+                    }
+                  }
+                },
+                "description": "HardwareProfile - Specifies the hardware settings for the virtual machine instance."
+              },
+              "networkProfile": {
+                "type": "object",
+                "properties": {
+                  "networkInterfaces": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "ID - Resource Id of the network interface"
+                        }
+                      }
+                    },
+                    "description": "NetworkInterfaces - list of network interfaces to be attached to the virtual machine instance"
+                  }
+                },
+                "description": "NetworkProfile - describes the network configuration the virtual machine instance"
+              },
+              "osProfile": {
+                "type": "object",
+                "properties": {
+                  "adminPassword": {
+                    "type": "string",
+                    "x-ms-secret": true,
+                    "description": "AdminPassword - admin password",
+                    "x-ms-mutability": [
+                      "create"
+                    ]
+                  },
+                  "adminUsername": {
+                    "type": "string",
+                    "description": "AdminUsername - admin username"
+                  },
+                  "computerName": {
+                    "type": "string",
+                    "description": "ComputerName - name of the compute"
+                  },
+                  "linuxConfiguration": {
+                    "type": "object",
+                    "properties": {
+                      "disablePasswordAuthentication": {
+                        "type": "boolean",
+                        "description": "DisablePasswordAuthentication - whether password authentication should be disabled"
+                      },
+                      "ssh": {
+                        "$ref": "#/definitions/SshConfiguration",
+                        "description": "Specifies the ssh key configuration for a Linux OS."
+                      },
+                      "provisionVMAgent": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Used\u202fto indicate whether Arc for Servers agent onboarding should be triggered during the virtual machine instance creation process."
+                      },
+                      "provisionVMConfigAgent": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Used\u202fto indicate whether the VM Config Agent should be installed during the virtual machine creation process."
+                      }
+                    },
+                    "description": "LinuxConfiguration - linux specific configuration values for the virtual machine instance"
+                  },
+                  "windowsConfiguration": {
+                    "type": "object",
+                    "properties": {
+                      "enableAutomaticUpdates": {
+                        "type": "boolean",
+                        "description": "Whether to EnableAutomaticUpdates on the machine"
+                      },
+                      "ssh": {
+                        "$ref": "#/definitions/SshConfiguration",
+                        "description": "Specifies the ssh key configuration for Windows OS."
+                      },
+                      "timeZone": {
+                        "type": "string",
+                        "description": "TimeZone for the virtual machine instance"
+                      },
+                      "provisionVMAgent": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Used\u202fto indicate whether Arc for Servers agent onboarding should be triggered during the virtual machine instance creation process."
+                      },
+                      "provisionVMConfigAgent": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Used\u202fto indicate whether the VM Config Agent should be installed during the virtual machine creation process."
+                      }
+                    },
+                    "description": "Windows Configuration for the virtual machine instance "
+                  }
+                },
+                "description": "OsProfile - describes the configuration of the operating system and sets login data"
+              },
+              "securityProfile": {
+                "type": "object",
+                "properties": {
+                  "enableTPM": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "uefiSettings": {
+                    "type": "object",
+                    "properties": {
+                      "secureBootEnabled": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Specifies whether secure boot should be enabled on the virtual machine instance."
+                      }
+                    }
+                  },
+                  "securityType": {
+                    "type": "string",
+                    "description": "Specifies the SecurityType of the virtual machine. EnableTPM and SecureBootEnabled must be set to true for SecurityType to function.",
+                    "enum": [
+                      "TrustedLaunch",
+                      "ConfidentialVM"
+                    ],
+                    "x-ms-enum": {
+                      "name": "SecurityTypes",
+                      "modelAsString": true
+                    }
+                  }
+                },
+                "description": "SecurityProfile - Specifies the security settings for the virtual machine instance."
+              },
+              "storageProfile": {
+                "type": "object",
+                "properties": {
+                  "dataDisks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Resource ID of the data disk"
+                        }
+                      }
+                    },
+                    "description": "adds data disks to the virtual machine instance"
+                  },
+                  "imageReference": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "x-ms-mutability": [
+                          "create",
+                          "read"
+                        ],
+                        "description": "Resource ID of the image"
+                      }
+                    },
+                    "description": "Which Image to use for the virtual machine instance"
+                  },
+                  "osDisk": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Resource ID of the OS disk"
+                      },
+                      "osType": {
+                        "type": "string",
+                        "description": "This property allows you to specify the type of the OS that is included in the disk if creating a VM from user-image or a specialized VHD. Possible values are: **Windows,** **Linux.**",
+                        "enum": [
+                          "Linux",
+                          "Windows"
+                        ],
+                        "x-ms-enum": {
+                          "name": "OperatingSystemTypes",
+                          "modelAsString": false
+                        }
+                      }
+                    },
+                    "description": "VHD to attach as OS disk"
+                  },
+                  "vmConfigStoragePathId": {
+                    "type": "string",
+                    "format": "arm-id",
+                    "x-ms-arm-id-details": {
+                      "allowedResources": [
+                        {
+                          "type": "Microsoft.AzureStackHCI/storageContainers"
+                        }
+                      ]
+                    },
+                    "description": "Id of the storage container that hosts the VM configuration file"
+                  }
+                },
+                "description": "StorageProfile - contains information about the disks and storage information for the virtual machine instance"
+              },
+              "httpProxyConfig": {
+                "description": "HTTP Proxy configuration for the VM.",
+                "$ref": "#/definitions/HttpProxyConfiguration"
+              },
+              "provisioningState": {
+                "type": "string",
+                "description": "Provisioning state of the virtual machine instance.",
+                "readOnly": true,
+                "enum": [
+                  "Succeeded",
+                  "Failed",
+                  "InProgress",
+                  "Accepted",
+                  "Deleting",
+                  "Canceled"
+                ],
+                "x-ms-enum": {
+                  "name": "ProvisioningStateEnum",
+                  "modelAsString": true
+                }
+              },
+              "instanceView": {
+                "$ref": "#/definitions/VirtualMachineInstanceView",
+                "readOnly": true,
+                "description": "The virtual machine instance view."
+              },
+              "status": {
+                "$ref": "#/definitions/VirtualMachineInstanceStatus"
+              },
+              "guestAgentInstallStatus": {
+                "description": "Guest agent install status.",
+                "$ref": "#/definitions/GuestAgentInstallStatus"
+              },
+              "vmId": {
+                "description": "Unique identifier for the vm resource.",
+                "type": "string",
+                "readOnly": true
+              },
+              "resourceUid": {
+                "description": "Unique identifier defined by ARC to identify the guest of the VM.",
+                "type": "string"
+              }
+            },
+            "description": "Properties under the virtual machine instance resource"
+          },
+          "GuestAgentInstallStatus": {
+            "description": "Defines the status of a guest agent installation.",
+            "type": "object",
+            "properties": {
+              "vmUuid": {
+                "readOnly": true,
+                "type": "string",
+                "description": "Specifies the VM's unique SMBIOS ID."
+              },
+              "status": {
+                "readOnly": true,
+                "type": "string",
+                "description": "The installation status of the hybrid machine agent installation.",
+                "enum": [
+                  "Succeeded",
+                  "InProgress",
+                  "Failed"
+                ],
+                "x-ms-enum": {
+                  "name": "StatusTypes",
+                  "modelAsString": true
+                }
+              },
+              "lastStatusChange": {
+                "readOnly": true,
+                "type": "string",
+                "format": "date-time",
+                "description": "The time of the last status change."
+              },
+              "agentVersion": {
+                "readOnly": true,
+                "type": "string",
+                "description": "The hybrid machine agent full version."
+              },
+              "errorDetails": {
+                "readOnly": true,
+                "type": "array",
+                "items": {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorDetail"
+                },
+                "x-ms-identifiers": [],
+                "description": "Details about the error state."
+              }
+            }
+          },
+          "VirtualMachineInstanceStatus": {
+            "type": "object",
+            "x-ms-client-flatten": true,
+            "readOnly": true,
+            "properties": {
+              "errorCode": {
+                "type": "string",
+                "description": "VirtualMachine provisioning error code"
+              },
+              "errorMessage": {
+                "type": "string",
+                "description": "Descriptive error message"
+              },
+              "powerState": {
+                "type": "string",
+                "description": "The power state of the virtual machine instance",
+                "enum": [
+                  "Deallocated",
+                  "Deallocating",
+                  "Running",
+                  "Starting",
+                  "Stopped",
+                  "Stopping",
+                  "Unknown"
+                ],
+                "x-ms-enum": {
+                  "name": "PowerStateEnum",
+                  "modelAsString": true
+                }
+              },
+              "provisioningStatus": {
+                "type": "object",
+                "properties": {
+                  "operationId": {
+                    "type": "string",
+                    "description": "The ID of the operation performed on the virtual machine instance"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The status of the operation performed on the virtual machine instance [Succeeded, Failed, InProgress]",
+                    "enum": [
+                      "Succeeded",
+                      "Failed",
+                      "InProgress"
+                    ],
+                    "x-ms-enum": {
+                      "name": "Status",
+                      "modelAsString": true
+                    }
+                  }
+                }
+              }
+            },
+            "description": "The observed state of virtual machine instances"
+          },
+          "VirtualMachineInstanceView": {
+            "type": "object",
+            "properties": {
+              "vmAgent": {
+                "$ref": "#/definitions/VirtualMachineConfigAgentInstanceView",
+                "description": "The VM Config Agent running on the virtual machine."
+              }
+            },
+            "description": "The instance view of a virtual machine."
+          },
+          "VirtualMachineConfigAgentInstanceView": {
+            "type": "object",
+            "properties": {
+              "vmConfigAgentVersion": {
+                "type": "string",
+                "description": "The VM Config Agent full version."
+              },
+              "statuses": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/InstanceViewStatus"
+                },
+                "x-ms-identifiers": [],
+                "description": "The resource status information."
+              }
+            },
+            "description": "The instance view of the VM Config Agent running on the virtual machine."
+          },
+          "InstanceViewStatus": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "The status code."
+              },
+              "level": {
+                "type": "string",
+                "description": "The level code.",
+                "enum": [
+                  "Info",
+                  "Warning",
+                  "Error"
+                ],
+                "x-ms-enum": {
+                  "name": "StatusLevelTypes",
+                  "modelAsString": true
+                }
+              },
+              "displayStatus": {
+                "type": "string",
+                "description": "The short localizable label for the status."
+              },
+              "message": {
+                "type": "string",
+                "description": "The detailed status message, including for alerts and error messages."
+              },
+              "time": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The time of the status."
+              }
+            },
+            "description": "Instance view status."
+          },
+          "HttpProxyConfiguration": {
+            "description": "HTTP Proxy configuration for the VM.",
+            "type": "object",
+            "properties": {
+              "httpProxy": {
+                "type": "string",
+                "x-ms-secret": true,
+                "description": "The HTTP proxy server endpoint to use."
+              },
+              "httpsProxy": {
+                "type": "string",
+                "x-ms-secret": true,
+                "description": "The HTTPS proxy server endpoint to use."
+              },
+              "noProxy": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The endpoints that should not go through proxy."
+              },
+              "trustedCa": {
+                "type": "string",
+                "description": "Alternative CA cert to use for connecting to proxy servers."
+              }
+            }
+          },
+          "SshConfiguration": {
+            "type": "object",
+            "properties": {
+              "publicKeys": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/SshPublicKey"
+                },
+                "x-ms-identifiers": [
+                  "path"
+                ],
+                "description": "The list of SSH public keys used to authenticate with linux based VMs."
+              }
+            },
+            "description": "SSH configuration for Linux based VMs running on Azure"
+          },
+          "SshPublicKey": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Specifies the full path on the created VM where ssh public key is stored. If the file already exists, the specified key is appended to the file. Example: /home/user/.ssh/authorized_keys"
+              },
+              "keyData": {
+                "type": "string",
+                "description": "SSH public key certificate used to authenticate with the VM through ssh. The key needs to be at least 2048-bit and in ssh-rsa format. <br><br> For creating ssh keys, see [Create SSH keys on Linux and Mac for Linux VMs in Azure]https://docs.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed)."
+              }
+            },
+            "description": "Contains information about SSH certificate public key and the path on the Linux VM where the public key is placed."
+          }
+        },
+        "parameters": {
+          "ResourceUriParameter": {
+            "in": "path",
+            "name": "resourceUri",
+            "description": "The fully qualified Azure Resource manager identifier of the Hybrid Compute machine resource to be extended.",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true,
+            "x-ms-parameter-location": "method"
+          }
+        }
+      }
+    },
+    {
       "dependency": true,
       "document": {
         "definitions": {
