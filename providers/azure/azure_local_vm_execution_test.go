@@ -17,6 +17,11 @@ import (
 )
 
 func TestAzureLocalVMRegisteredExecutionRecovery(t *testing.T) {
+	t.Run("vm", func(t *testing.T) { azureLocalWorkerRecovery(t, false) })
+	t.Run("registration", func(t *testing.T) { azureLocalWorkerRecovery(t, true) })
+}
+
+func azureLocalWorkerRecovery(t *testing.T, registration bool) {
 	f := newLocalVMFixture(t)
 	f.holdVM, f.holdMeta, f.holdDisk = true, true, true
 	logs := []execution.JobLogEntry{}
@@ -24,8 +29,11 @@ func TestAzureLocalVMRegisteredExecutionRecovery(t *testing.T) {
 	repository, registry, path := azureNativeWorkerRepository(t, f.runtime)
 	azureNativeWorkerScan(t, f.runtime, azureLocalSource, repository, registry, []string{azureLocalVMType, azureLocalAgentType, azureLocalIdentityType, azureLocalNICType, azureLocalDiskType, azureLocalNetworkType, azureLocalStorageType, azureLocalImageType, azureLocalMarketplaceType}, false, true)
 	values := azureNativeWorkerScan(t, f.runtime, hybridComputeSource, repository, registry, []string{hybridMachineType, hybridExtensionType, hybridCommandType, hybridProfileType, hybridLicenseType}, false, true)
-	var vm, metadata asset.Asset
+	var vm, metadata, machine asset.Asset
 	for _, value := range values {
+		if value.Identity.NativeType == hybridMachineType {
+			machine = value
+		}
 		if value.Identity.NativeType == azureLocalVMType {
 			vm = value
 		}
@@ -33,24 +41,34 @@ func TestAzureLocalVMRegisteredExecutionRecovery(t *testing.T) {
 			metadata = value
 		}
 	}
+	selected, steps, arcDeletes := vm, 5, 3
+	if registration {
+		selected, steps, arcDeletes = machine, 6, 4
+	}
 	planner := cleanup.NewService(repository, registry)
-	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: vm.ID}}, CreatedBy: "operator"})
-	if err != nil || task.Task.Status != plan.StatusReady || len(task.Steps) != 5 || len(task.ImpactItems) != 2 {
+	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: selected.ID}}, CreatedBy: "operator"})
+	if err != nil || task.Task.Status != plan.StatusReady || len(task.Steps) != steps || len(task.ImpactItems) != 2 {
 		t.Fatal("VM plan", err, task.Task.Status, task.Task.Blockers, len(task.Steps), task.ImpactItems)
 	}
-	if task.Steps[len(task.Steps)-1].AssetID != vm.ID {
+	if task.Steps[len(task.Steps)-1].AssetID != selected.ID {
 		t.Fatal("VM controller ordering or metadata outcome", task.Steps, task.ImpactItems)
 	}
-	warned := false
+	warned, registrationWarned := false, false
 	for _, warning := range task.Task.Warnings {
-		if warning.Code == plan.WarningAzureLocalVMRemoval && warning.AssetID == vm.ID && warning.Evidence["operation"] == "delete" && strings.Contains(warning.Message, "Arc registration, NICs and data disks remain") {
+		if warning.AssetID == machine.ID && warning.Code == plan.WarningArcMachineRegistrationRemoval {
+			t.Fatal("Local registration warning describes an external host")
+		}
+		if warning.AssetID == machine.ID && warning.Code == plan.WarningAzureLocalRegistrationRemoval {
+			registrationWarned = true
+		}
+		if warning.Code == plan.WarningAzureLocalVMRemoval && warning.AssetID == vm.ID && warning.Evidence["operation"] == "delete" && strings.Contains(warning.Message, "Arc registration, NICs and data disks have separate cleanup steps") {
 			warned = true
 		}
 		if warning.Code == plan.WarningAzureLocalGuestRemoval && strings.Contains(warning.Message, "VM and Arc registration remain") {
 			t.Fatal("guest warning contradicts planned VM deletion")
 		}
 	}
-	if !warned {
+	if !warned || registrationWarned != registration {
 		t.Fatal("VM deletion consequences missing from review")
 	}
 	attempt, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{ConnectionID: "connection", CleanupTaskID: task.Task.ID, RequestedBy: "operator", IdempotencyKey: "vm-worker", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}})
@@ -155,11 +173,11 @@ func TestAzureLocalVMRegisteredExecutionRecovery(t *testing.T) {
 		}
 	}
 	remaining, err := repository.ListActiveAssetsByConnection(ctx, "connection", "")
-	if err != nil || len(remaining) != 8 || f.vmDeletes != 1 || f.deleted != 1 || len(f.arc.deleted) != 3 {
+	if err != nil || len(remaining) != 11-arcDeletes || f.vmDeletes != 1 || f.deleted != 1 || len(f.arc.deleted) != arcDeletes {
 		t.Fatal("VM recovery coverage", err, len(remaining), f.vmDeletes, f.deleted, f.arc.deleted)
 	}
 	for _, value := range remaining {
-		if value.Identity.NativeType == azureLocalVMType || value.Identity.NativeType == azureLocalAgentType || value.Identity.NativeType == azureLocalIdentityType || hybridComputeChild(value.Identity.NativeType) {
+		if registration && value.Identity.NativeType == hybridMachineType || value.Identity.NativeType == azureLocalVMType || value.Identity.NativeType == azureLocalAgentType || value.Identity.NativeType == azureLocalIdentityType || hybridComputeChild(value.Identity.NativeType) {
 			t.Fatal("unexpected remaining VM resource")
 		}
 	}

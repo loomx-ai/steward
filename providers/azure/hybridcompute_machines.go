@@ -47,8 +47,14 @@ func (c *client) hybridComputeMachineRecorded(id string, connection asset.Connec
 	members, memberMap := state["members"].(map[string]any)
 	location := text(state["location"])
 	inventory := text(state["inventory"])
-	if err != nil || canonical != id || connection == "" || len(state) != 7 || !protected || !memberMap || location == "" || location != strings.ToLower(location) || text(state["resource"]) == "" || text(state["registration"]) == "" || text(state["etag"]) == "" || inventory != text(normalized["_hybrid_compute_configuration"]) || !strings.HasPrefix(inventory, hybridComputeMachinePrefix) || normalized["cleanup_protected"] != state["protected"] || normalized[hybridComputeCleanupProof] != c.hybridComputeMachineBinding(id, connection, state) {
+	if err != nil || canonical != id || connection == "" || (len(state) != 7 && len(state) != 8) || !protected || !memberMap || location == "" || location != strings.ToLower(location) || text(state["resource"]) == "" || text(state["registration"]) == "" || text(state["etag"]) == "" || inventory != text(normalized["_hybrid_compute_configuration"]) || !strings.HasPrefix(inventory, hybridComputeMachinePrefix) || normalized["cleanup_protected"] != state["protected"] || normalized[hybridComputeCleanupProof] != c.hybridComputeMachineBinding(id, connection, state) {
 		return serviceDenied("invalid_hybrid_compute_machine_record")
+	}
+	if (len(state) == 8) != (state["local_vm"] != nil) {
+		return serviceDenied("invalid_hybrid_compute_machine_context")
+	}
+	if err := c.azureLocalRegistrationRecorded(id, state); err != nil {
+		return err
 	}
 	for childID, value := range members {
 		entry := object(value)
@@ -123,8 +129,18 @@ func (a *hybridComputeAction) machineRequest(request contracts.ActionRequest) er
 	seen, assets := map[string]bool{a.id: true}, map[asset.AssetID]bool{a.planned.ID: true}
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		child := prerequisite.Asset
-		if !prerequisite.Delete || prerequisite.ControllerID != a.planned.ID || seen[child.Identity.NativeID] || assets[child.ID] || !hybridComputeChild(child.Identity.NativeType) || child.Identity.ConnectionID != request.Asset.Identity.ConnectionID || child.Identity.Partition != request.Asset.Identity.Partition || child.Location != request.Asset.Location {
+		if !prerequisite.Delete || prerequisite.ControllerID != a.planned.ID || seen[child.Identity.NativeID] || assets[child.ID] || (!hybridComputeChild(child.Identity.NativeType) && child.Identity.NativeType != azureLocalVMType) || child.Identity.ConnectionID != request.Asset.Identity.ConnectionID || child.Identity.Partition != request.Asset.Identity.Partition || child.Location != request.Asset.Location {
 			return serviceDenied("invalid_hybrid_compute_machine_prerequisite")
+		}
+		if child.Identity.NativeType == azureLocalVMType {
+			if err := a.client.azureLocalRegistrationVM(request.Asset, child); err != nil {
+				return err
+			}
+			if child.Normalized["cleanup_protected"] != false {
+				return serviceDenied("azure_local_registration_vm_protected")
+			}
+			seen[child.Identity.NativeID], assets[child.ID] = true, true
+			continue
 		}
 		if err := a.client.hybridComputeCleanupRecord(child); err != nil {
 			return err
@@ -141,6 +157,9 @@ func (a *hybridComputeAction) machineKnown(request contracts.ActionRequest) map[
 	out := maps.Clone(object(object(request.Asset.Normalized[hybridComputeCleanup])["members"]))
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		child := prerequisite.Asset
+		if child.Identity.NativeType == azureLocalVMType {
+			continue
+		}
 		out[child.Identity.NativeID] = map[string]any{"kind": child.Identity.NativeType, "configuration": object(child.Normalized[hybridComputeCleanup])["resource"]}
 	}
 	return out
@@ -170,6 +189,11 @@ func (a *hybridComputeAction) machineObserve(ctx context.Context, request contra
 			return raw, children, serviceDenied("hybrid_compute_machine_children_changed")
 		}
 	}
+	local, err := a.client.azureLocalRegistrationObserve(ctx, object(object(request.Asset.Normalized[hybridComputeCleanup])["local_vm"]), request.Asset.Location)
+	if err != nil {
+		return raw, children, err
+	}
+	maps.Copy(children, local)
 	return raw, children, nil
 }
 
@@ -185,13 +209,13 @@ func (a *hybridComputeAction) machinePreflight(ctx context.Context, request cont
 		if len(children) != 0 {
 			return contracts.PreflightResult{}, serviceDenied("hybrid_compute_machine_prerequisite_still_exists")
 		}
-		if reason := hybridComputeMachineProtection(raw); reason != "" {
+		if reason := hybridComputeRegistrationProtection(raw, object(request.Asset.Normalized[hybridComputeCleanup])); reason != "" {
 			return contracts.PreflightResult{}, serviceDenied(reason)
 		}
 		state := object(request.Asset.Normalized[hybridComputeCleanup])
 		// Reviewed/previously known child removal can update the parent's ETag.
 		// Its immutable registration and authored configuration stay bound above.
-		if len(a.machineKnown(request)) == 0 && a.client.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}) != state["etag"] {
+		if len(a.machineKnown(request)) == 0 && state["local_vm"] == nil && a.client.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}) != state["etag"] {
 			return contracts.PreflightResult{}, serviceDenied("hybrid_compute_machine_etag_changed")
 		}
 		if err := a.protection(ctx, raw, raw); err != nil {

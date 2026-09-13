@@ -26,6 +26,9 @@ func (s *serviceCascades) contributeHybridComputeMachines(ctx context.Context, v
 	}
 	for _, id := range slices.Sorted(maps.Keys(parents)) {
 		parent := parents[id]
+		if err := s.contributeAzureLocalRegistration(ctx, parent, values, result); err != nil {
+			return err
+		}
 		state := object(parent.Normalized[hybridComputeCleanup])
 		known := maps.Clone(object(state["members"]))
 		selected := map[string]asset.Asset{}

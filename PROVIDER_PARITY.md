@@ -3918,3 +3918,41 @@ background evidence only, not acceptance evidence for this work.
   3.889s), TypeScript checking passed, and all 39 frontend contract tests plus
   92 cleanup/localization UI tests passed. The 24 milestone files preserve all
   65 pre-existing file contents, including unrelated edits in the translation file.
+
+
+### Azure Local registration controller completion
+
+- The native Arc registration action now accepts a verified Local VM context.
+  Inventory binds the native VM configuration, two Local guest singletons and
+  registered OS disk to the exact HCI registration. Signed context survives the
+  VM's own 404 only while that registration is unchanged. Bare HCI hosts and
+  unsupported controller variants remain protected. Existing ordinary Arc records
+  and durable receipts keep their previous representation.
+- Selecting the registration produces the original CLI order: guest/Arc
+  prerequisites, VM deletion and identity/OS-disk own absence, then registration
+  DELETE and own readback. The Local VM is a direct lifecycle child of the
+  registration; Arc extensions/commands/license profiles retain their existing
+  ownership and required-before-VM order. VM-only selection retains registration.
+- The Arc driver rereads the VM, guest, identity metadata and registered OS disk
+  before mutation and after parent disappearance. Surviving or changed resources,
+  denied reads, retention/protection, registration replacement and inherited
+  locks prevent an unsafe transition. Synchronous responses and DELETE 404 cannot
+  stand in for own absence. The existing receipt avoids replay across restarts.
+- SQLite tests now exercise both the five-step VM-only and six-step complete
+  registration plans, each with two managed impacts and restarted runtimes/
+  repositories. Standalone history tests cover a later scan after VM deletion.
+  Bilingual warnings and permission/capability documentation describe the full
+  sequence and separate retained NIC/data-disk cleanup.
+- Counts remain 443 rules, 407 actions and 1,468 operations. Native operation
+  definitions and pinned original SDK/CLI extractions are unchanged. Independent
+  Local root cleanup, real controller callback compatibility, physical removal
+  and billing outcomes remain unfinished. All eight acceptance criteria remain
+  open; composed tests do not establish live-cloud parity.
+- Validation: full isolated `go test ./...` passed (Azure 318.592s, GCP
+  164.019s); focused race tests passed (Azure 112.674s), and `go vet ./...`
+  passed. The 12 retained CLI/catalog Python checks and documentation validation
+  (30 chapters, 10 original screenshots) passed. Shared-workspace integration
+  passed for Azure/cleanup/plan (12.045s / 1.475s / 1.794s), along with TypeScript
+  checking, 39 frontend contract tests and 92 cleanup/localization UI tests.
+  The 15 milestone files preserve all 65 pre-existing file contents, including
+  unrelated translation edits. No live controller/backend was used.

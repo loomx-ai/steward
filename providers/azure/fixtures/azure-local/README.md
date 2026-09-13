@@ -1,10 +1,10 @@
 # Azure Local native contracts and CLI ordering
 
-These are contracts for the missing ENS-equivalent VM controller lifecycle.
+These contracts support the native Local VM controller lifecycle.
 Ordinary Arc machine deletion unregisters an external host. Azure Local has a
 separate VM controller operation, and [Microsoft's management guide](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)
 says NICs and data disks remain after deleting the VM. They need independent
-reference checks and cleanup. Native inventory, reference graphs, VM/guest cleanup and managed-resource readback are implemented; the final Arc-registration controller step and independent-resource cleanup remain unfinished.
+reference checks and cleanup. Native inventory, reference graphs, VM/guest cleanup and managed-resource readback are implemented; reviewed Arc-registration cleanup follows VM removal; independent-resource cleanup remains unfinished.
 
 ## Original Swagger examples
 
@@ -235,4 +235,27 @@ then identity absence, each leave the task pending while the OS disk survives.
 Only the final disk own absence completes the controller action. The test
 verifies retained data disk/registration assets and private-log sanitization.
 Real backend behavior, guest/physical removal and billing outcomes are not proved
-by these composed transports; the final Arc-registration cleanup step remains open.
+by these composed transports.
+
+## Arc registration after Local VM removal
+
+The retained original CLI function calls the Local VM delete, waits for it, then
+calls HybridCompute machine delete. The implementation now expresses that sequence
+as a Local VM direct lifecycle under its Arc registration. A registration scan
+binds the VM configuration, guest/identity singletons and registered OS disk.
+Signed history is preserved only for the same registration when the VM's own GET
+is 404; bare HCI hosts without this evidence stay protected. Ordinary Arc machine
+records and pending receipts keep their existing representation.
+
+The registration driver requires each Local resource's own absence before native
+Arc DELETE and before completion, including after registration disappearance.
+It reuses the native Arc receipt, independent readback, protection and lock checks.
+VM-only selection still leaves the registration active. Retention/protection of
+the VM or OS disk blocks the complete registration plan. The expanded SQLite test
+reviews six direct steps and two managed impacts, restarts between worker polls,
+and checks that only the reviewed registration/VM family is closed. Tests also
+exercise history recovery, substituted registration, denied reads, changed VM/
+disk/identity configuration, synchronous responses and DELETE 404.
+
+This implements the reviewed native API sequence; the composed transport does
+not prove physical removal, production callback shapes or billing termination.

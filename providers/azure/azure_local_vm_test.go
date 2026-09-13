@@ -82,6 +82,13 @@ func newLocalVMFixture(t *testing.T) *localVMFixture {
 			f.values[path]["etag"] = "after-vm-delete"
 			return &http.Response{StatusCode: 202, Header: http.Header{"Azure-Asyncoperation": {endpoint}, "X-Ms-Request-Id": {"vm-delete"}}, Body: http.NoBody}, true
 		}
+		if path == f.ids[hybridMachineType] && req.Method == "DELETE" {
+			for _, kind := range []string{azureLocalVMType, azureLocalAgentType, azureLocalIdentityType, azureLocalDiskType} {
+				if f.values[f.ids[kind]] != nil {
+					t.Fatal("Arc deletion preceded native Local absence", kind)
+				}
+			}
+		}
 		if armPathProvider(path) == "microsoft.hybridcompute" {
 			return f.arc.override(req)
 		}

@@ -146,11 +146,13 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 		}
 		if kind == hybridMachineType {
 			hints := map[string]any{}
+			priorState := map[string]any{}
 			if prior := request.KnownNativeMetadata[id]; strings.HasPrefix(text(prior["_hybrid_compute_configuration"]), hybridComputeMachinePrefix) || prior[hybridComputeCleanup] != nil || prior[hybridComputeCleanupProof] != nil {
 				if err := c.hybridComputeMachineRecorded(id, request.ConnectionID, prior); err != nil {
 					return nil, nil, "", err
 				}
-				hints = object(object(prior[hybridComputeCleanup])["members"])
+				priorState = object(prior[hybridComputeCleanup])
+				hints = object(priorState["members"])
 			}
 			children, err := c.hybridComputeMachineChildren(ctx, id, hints, true)
 			if err != nil {
@@ -158,6 +160,15 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 			}
 			reason := hybridComputeMachineProtection(raw)
 			state := map[string]any{"resource": c.privateConfiguration(hybridComputeMachineSnapshot(raw)), "registration": c.privateConfiguration(hybridComputeParentStamp(raw)), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "members": c.hybridComputeMachineMembers(children), "protected": reason != "", "inventory": configuration, "location": location}
+			local, err := c.azureLocalRegistrationInventory(ctx, raw, priorState)
+			if err != nil {
+				return nil, nil, "", err
+			}
+			if local != nil {
+				state["local_vm"] = local
+			}
+			reason = hybridComputeRegistrationProtection(raw, state)
+			state["protected"] = reason != ""
 			normalized[hybridComputeCleanup], normalized[hybridComputeCleanupProof] = state, c.hybridComputeMachineBinding(id, request.ConnectionID, state)
 			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
 			bindings[id], actionable = c.privateConfiguration(state), reason == ""

@@ -1778,6 +1778,10 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if value.Identity.NativeType == "Microsoft.HybridCompute/machines" {
 				message = "Deleting this Arc machine removes its cloud registration after reviewed child cleanup; the external host and local agent require separate removal."
 				code = plan.WarningArcMachineRegistrationRemoval
+				if state, ok := value.Normalized["_hybrid_compute_cleanup"].(map[string]any); ok && state["local_vm"] != nil {
+					message = "Deleting this Azure Local registration first requires removal of its VM and OS disk. NICs and data disks need separate cleanup; verify physical removal separately."
+					code = plan.WarningAzureLocalRegistrationRemoval
+				}
 			}
 			if value.Identity.NativeType == "Microsoft.HybridCompute/machines/runCommands" {
 				message = "Deleting this Arc Run Command terminates its script if it is still executing."
@@ -1792,7 +1796,7 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			}
 		case "Microsoft.AzureStackHCI/virtualMachineInstances":
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningAzureLocalVMRemoval, value.ID) {
-				result = append(result, plan.Warning{Code: plan.WarningAzureLocalVMRemoval, AssetID: value.ID, Message: "Deleting this Azure Local VM removes the virtual machine and its OS disk after reviewed child cleanup. Arc registration, NICs and data disks remain for separate cleanup; verify the physical VM result separately.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+				result = append(result, plan.Warning{Code: plan.WarningAzureLocalVMRemoval, AssetID: value.ID, Message: "Deleting this Azure Local VM removes the virtual machine and its OS disk after reviewed child cleanup. Arc registration, NICs and data disks have separate cleanup steps; verify the physical VM result separately.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
 		case "Microsoft.AzureStackHCI/virtualMachineInstances/guestAgents":
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningAzureLocalGuestRemoval, value.ID) {

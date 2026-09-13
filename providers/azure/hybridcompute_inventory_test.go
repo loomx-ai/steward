@@ -59,6 +59,9 @@ func newHybridInventoryFixture(t *testing.T) *hybridInventoryFixture {
 				return res, nil
 			}
 		}
+		if armPathProvider(req.URL.Path) == "microsoft.azurestackhci" && req.Method == "GET" && req.URL.Query().Get("api-version") == azureLocalVersion && strings.HasSuffix(strings.ToLower(req.URL.Path), "/virtualmachineinstances/default") {
+			return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceNotFound"}}, nil), nil
+		}
 		if armPathProvider(req.URL.Path) != "microsoft.hybridcompute" {
 			if res, ok := fleetGraphEmptyIndexes(t, req); ok {
 				return res, nil
