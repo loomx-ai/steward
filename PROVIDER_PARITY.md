@@ -4444,3 +4444,55 @@ background evidence only, not acceptance evidence for this work.
   passed (4.517s); docs checks passed for 30 isolated and 42 main chapters and
   10 original screenshots. Staged diff checks passed. All 65 preexisting
   worktree hashes and all original fixture bytes remained unchanged.
+
+### Elastic SAN active volume-group cleanup
+
+- Registered native VolumeGroups_Delete and signed cleanup state against the
+  existing membership context. Catalog operations remain 1,489 and kinds/specs
+  remain 448; deletion actions increase to 417. Active volume cleanup orders its
+  own snapshots, while orphan group snapshots remain direct group prerequisites.
+  Incoming private endpoint connections require separate selection rather than
+  automatic expansion. Existing retained volumes are explicit retained impacts.
+- Native preflight verifies both group populations, own creation/configuration,
+  complete child indexes, signed known own reads, retention, protection and locks.
+  New or live active members block deletion; retained members must match reviewed
+  GUID/configuration. No group force/permanent flag or host-side command is added.
+  Groups with retained members require Enabled retention; retained-group purge
+  and SAN cleanup remain unfinished, without asserting that the cloud lacks them.
+- Signed Location receipts and outcomes distinguish same-ID group soft deletion
+  from absence, including an addressable retained GET. A missing snapshot index
+  after terminal group verification requires every known snapshot's own absence;
+  missing volume populations remain incomplete. Existing retained members must
+  remain present. Callback success/expiry cannot hide live or recreated groups.
+- A child-only rescan can leave frozen parent membership stale. Graph contribution
+  records a group-specific unresolved refresh requirement without failing unrelated
+  reconciliation; stale context still cannot authorize group deletion.
+- SQLite tests review four ordered delete steps plus a retained impact, require
+  independent PEC selection, persist translated retention warnings, restart fresh
+  runtimes/databases, verify one mutation per step and rediscover the retained group
+  under its original asset ID. Protocol tests cover denied/incomplete reads, changed
+  membership, locks/protection, changed policy and native same-ID outcomes. Original
+  pinned CLI group identities remain evidence; no populated-group cloud execution
+  or independent Elastic SAN ARM emulator was verified. All eight criteria stay open.
+
+- Remaining shared-plan gap discovered during regression: governance returns
+  unresolved diagnostics, but ReplaceGraph persists only relationships/bindings
+  and cleanup planning does not consume unresolved references. A stale group
+  can therefore still have a Ready draft. Native signed request/preflight checks
+  reject its changed boundary before group DELETE; a fresh full family scan
+  restores reviewable membership. Persisting executable unresolved constraints
+  and exposing them in plan blockers remains part of the broader parity work.
+
+- Validation: final full Azure tests passed (348.462s), cleanup service tests
+  passed (5.214s), and plan tests passed (3.259s). Elastic SAN/catalog race
+  tests passed (62.364s); the final stale-membership regression also passed
+  under race (7.747s). Azure/cleanup/plan vet passed in both workspaces.
+  Main Elastic SAN/catalog tests passed (6.468s). Six catalog-sync tests,
+  17 locale UI cases in each workspace, 39 frontend contracts, TypeScript
+  checking and the isolated production build passed. Documentation checks
+  passed 30 isolated/42 main chapters and 10 original screenshots. The final
+  catalog exactly preserves all 1,489 operation definitions and original
+  fixture bytes. Earlier generated-checksum failures were corrected by
+  regenerating from the minimally edited source before the final full run.
+  All 64 unrelated WIP hashes remained unchanged; original localization edits
+  were preserved exactly around two new translated entries and not staged.

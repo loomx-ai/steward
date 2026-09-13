@@ -73,8 +73,8 @@ func TestElasticSanGroupNativeMembershipAndPersistence(t *testing.T) {
 			t.Fatal("group context did not survive SQLite/runtime restart", err)
 		}
 	}
-	if _, err := f.runtime.ResolveAction(t.Context(), "connection", elasticSanTestAsset(item)); err == nil {
-		t.Fatal("membership context implicitly enabled parent mutation")
+	if _, err := f.runtime.ResolveAction(t.Context(), "connection", elasticSanTestAsset(item)); err != nil {
+		t.Fatal("verified active group did not resolve parent action", err)
 	}
 }
 

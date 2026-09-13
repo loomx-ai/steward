@@ -39,6 +39,7 @@ func newElasticSanFixture(t *testing.T) *elasticSanFixture {
 		raw["etag"] = "generation-one"
 	}
 	group := f.values[f.ids[elasticSanGroupType]]
+	group["systemData"] = map[string]any{"createdAt": "2026-02-11T09:51:01.7803283Z"}
 	subnet := strings.ToLower(resourceID(vnetType, "vnet")) + "/subnets/subnet"
 	f.ids[subnetType] = subnet
 	object(group["properties"])["networkAcls"] = map[string]any{"virtualNetworkRules": []any{map[string]any{"id": subnet, "action": "Allow"}}}
@@ -144,7 +145,7 @@ func TestElasticSanInventoryNativePopulationsAndSQLite(t *testing.T) {
 			t.Fatal("native population", kind, len(batch.Items), err)
 		}
 		for _, item := range batch.Items {
-			if item.Location != "eastus" || item.Actionable == nil || *item.Actionable != (elasticSanIndependentChild(kind)) || item.Normalized["retained"] != f.retained[item.NativeID] {
+			if item.Location != "eastus" || item.Actionable == nil || *item.Actionable != (elasticSanIndependentChild(kind) && !(kind == elasticSanGroupType && f.retained[item.NativeID])) || item.Normalized["retained"] != f.retained[item.NativeID] {
 				t.Fatal("region, retention or actionability changed", item.NativeID)
 			}
 			if _, err := f.client.elasticSanRecorded(elasticSanTestAsset(item)); err != nil {
@@ -153,7 +154,7 @@ func TestElasticSanInventoryNativePopulationsAndSQLite(t *testing.T) {
 			if kind == elasticSanEndpointType && (object(item.Normalized["privateLinkServiceConnectionState"])["status"] != "Pending" || !slices.Equal(stringValues(item.Normalized["groupIds"]), []string{f.ids[elasticSanGroupType]})) {
 				t.Fatal("private endpoint operational status lost")
 			}
-			if _, err := f.runtime.ResolveAction(ctx, "connection", elasticSanTestAsset(item)); (err == nil) != (elasticSanIndependentChild(kind)) {
+			if _, err := f.runtime.ResolveAction(ctx, "connection", elasticSanTestAsset(item)); (err == nil) != (elasticSanIndependentChild(kind) && !(kind == elasticSanGroupType && f.retained[item.NativeID])) {
 				t.Fatal("wrong cleanup capability", kind, err)
 			}
 		}
@@ -173,12 +174,12 @@ func TestElasticSanInventoryNativePopulationsAndSQLite(t *testing.T) {
 		t.Fatal("SQLite inventory", len(values))
 	}
 	relations, err := repo.ListRelationshipsByConnection(t.Context(), "connection")
-	if err != nil || len(relations) != 10 {
+	if err != nil || len(relations) != 13 {
 		t.Fatal("native parent/source references", len(relations), err)
 	}
 	for _, relation := range relations {
-		if relation.Type != graph.RelationshipUses && relation.Type != graph.RelationshipAttachedTo {
-			t.Fatal("ordinary reference became ownership", relation)
+		if relation.Type != graph.RelationshipUses && relation.Type != graph.RelationshipAttachedTo && relation.Type != graph.RelationshipDependsOn {
+			t.Fatal("unexpected native relationship", relation)
 		}
 	}
 	idsByNative := map[string]asset.AssetID{}

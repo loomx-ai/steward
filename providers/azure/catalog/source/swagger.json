@@ -253020,7 +253020,9 @@
       "nativeType": "Microsoft.ElasticSan/elasticSans/volumegroups",
       "rest": {
         "collection": "volumegroups",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.ElasticSan.VolumeGroups_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ElasticSan.VolumeGroups_ListByElasticSan"
         ],

@@ -3,7 +3,7 @@
 This directory supports registered Elastic SAN inventory for SANs, volume groups,
 volumes, snapshots, private endpoint connections and retained resources.
 Verified snapshot, volume and private-endpoint connection deletion are registered.
-Group and SAN cleanup remain pending; this family does not yet close the parity gap.
+Active group cleanup is now registered; SAN cleanup and retained-group purge remain pending. This family does not yet close the parity gap.
 
 ## Pinned REST source
 
@@ -267,3 +267,22 @@ populated-group cascade behavior or retained-group purge semantics. Protocol
 tests and reopened SQLite inventory validate signed context, counters, omitted
 children, changed cursors and rejected forged history. Group/SAN deletion is
 not registered by this milestone; no live service or independent emulator ran.
+
+## Active group cleanup and retained outcomes
+
+Group DELETE uses the same pinned native Location contract. Reviewed active
+volumes and snapshots run as direct prerequisites; incoming private endpoint
+connections require independent selection. Existing retained volumes are retained
+impacts, not automatically selected permanent deletes. A verified Enabled policy
+is required when retained members exist. Retained-group purge remains unverified.
+
+Composed tests exercise same-ID group soft deletion with both addressable own
+GET and retained-index fallback, absent outcomes, changed creation identity,
+permissions, missing volume indexes, new members, protection, locks and expired
+callbacks. Only after a terminal group outcome can a snapshot-list 404 fall back
+to every known snapshot's own read; a live known snapshot still blocks closure.
+SQLite integration scans all five kinds, reviews four ordered delete steps and
+one retained impact, reopens runtimes/databases between jobs, verifies one DELETE
+per step, preserves the retained volume and reopens the same-ID retained group.
+This is offline protocol/application evidence, not a live preview deployment or
+an independent ARM emulator. Original fixture bytes remain unchanged.

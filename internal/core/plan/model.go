@@ -135,6 +135,7 @@ const (
 	WarningScalingGroupForceDelete       WarningCode = "scaling_group_force_delete"
 	WarningArcMachineRegistrationRemoval WarningCode = "arc_machine_registration_removal"
 	WarningArcExtensionRemoval           WarningCode = "arc_extension_removal"
+	WarningElasticSanGroupDelete         WarningCode = "elastic_san_group_delete"
 	WarningElasticSanVolumeSoftDelete    WarningCode = "elastic_san_volume_soft_delete"
 	WarningElasticSanVolumeDelete        WarningCode = "elastic_san_volume_delete"
 	WarningElasticSanVolumeForceDelete   WarningCode = "elastic_san_volume_force_delete"

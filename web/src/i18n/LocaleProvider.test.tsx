@@ -150,6 +150,7 @@ describe("LocaleProvider error formatting", () => {
   );
 
   it.each([
+    ["elastic_san_group_delete", "保留资源可能继续计费"],
     ["elastic_san_volume_soft_delete", "需要单独清理"],
     ["elastic_san_volume_delete", "数据将被永久移除"],
     ["elastic_san_volume_force_delete", "可能中断工作负载"],

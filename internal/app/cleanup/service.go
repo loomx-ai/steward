@@ -1794,6 +1794,10 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if !selectionWarningExists(result, code, value.ID) {
 				result = append(result, plan.Warning{Code: code, AssetID: value.ID, Message: message, Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
+		case "Microsoft.ElasticSan/elasticSans/volumegroups":
+			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningElasticSanGroupDelete, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningElasticSanGroupDelete, AssetID: value.ID, Message: "Deleting this volume group first cleans up reviewed volumes, snapshots and independently selected private connections. Native retention remains in effect; retained resources may continue billing.", Evidence: map[string]any{"operation": "delete", "retained_volume_count": value.Normalized["retained_volume_count"]}})
+			}
 		case "Microsoft.ElasticSan/elasticSans/volumegroups/volumes":
 			if value.Identity.Provider != asset.ProviderAzure {
 				continue
