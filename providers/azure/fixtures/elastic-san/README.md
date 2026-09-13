@@ -249,3 +249,21 @@ SHA-256 against the pinned index, extract the recorded ZIP member and select its
 inclusive `start_line`–`end_line` range without changing whitespace. Verify both
 the member and fragment hashes. Never execute a newly downloaded package as a
 substitute for checking its provenance.
+
+## Volume-group membership context
+
+Group inventory signs active/retained volume and snapshot membership, retention
+policy and incoming SAN private endpoint connection evidence. Known child own
+reads recover list omissions. Unresolved connection mappings remain possible
+dependencies; no consumer Network endpoint ownership is inferred. Retained
+groups preserve signed historical membership without claiming current counts.
+Creating volumes without their optional GUID keep the group visible with
+unverified membership. A retained group's unavailable snapshot index (404) keeps
+discoverable volumes visible but cleanup-protected; 403 remains a scan failure.
+
+Unchanged CLI interactions 23 and 28 demonstrate a soft-deleted empty group
+keeping the same ARM ID and creation/configuration identity. This does not prove
+populated-group cascade behavior or retained-group purge semantics. Protocol
+tests and reopened SQLite inventory validate signed context, counters, omitted
+children, changed cursors and rejected forged history. Group/SAN deletion is
+not registered by this milestone; no live service or independent emulator ran.

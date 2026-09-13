@@ -4412,3 +4412,35 @@ background evidence only, not acceptance evidence for this work.
   All 1,489 operations and original fixtures remain unchanged. The 64 unrelated
   WIP hashes stayed unchanged; the existing localization edits were preserved
   exactly around the six new translated entries and excluded from the commit.
+
+### Elastic SAN volume-group membership verification
+
+- Group inventory now captures signed active/retained volume, snapshot and
+  incoming private endpoint connection context, including retention policy and
+  child incarnation/configuration hashes. Known signed child IDs are recovered
+  through own reads when indexes omit them. Context changes invalidate cursors;
+  forged prior context is rejected before native reads.
+- Verified groups expose member counts. Unresolved connection mappings remain
+  explicit possible dependencies, without consumer endpoint ownership. Retained
+  groups retain historical membership without claiming current counts; creating
+  volumes with an absent optional GUID leave membership unverified and visible.
+- When a retained group's snapshot collection is unavailable (404), discoverable
+  volumes remain visible but cleanup-protected. Permission failures still fail
+  the scan. This does not reinterpret a missing collection as verified absence.
+- Tests reopen real SQLite observations with a fresh runtime and cover omission
+  recovery, cursor drift, forged history, unresolved mappings and retained
+  history. Original CLI interactions 23/28 preserve the same group ARM ID and
+  creation/configuration identity across soft deletion. That empty-group recording
+  does not establish populated cascades or retained-group purge behavior.
+- This milestone enables no new parent DELETE: 1,489 operations, 448 kinds/specs
+  and 416 deletion actions remain unchanged. Group/SAN cleanup and all eight
+  parity acceptance criteria remain open. Evidence is offline; no live cloud or
+  independent Elastic SAN ARM emulator has been verified.
+
+- Validation: full isolated Azure tests passed (343.764s), followed by a final
+  optional-GUID visibility fix verified by Elastic SAN/catalog tests (4.557s),
+  focused group race tests (6.182s) and Azure go vet. Earlier Elastic SAN/catalog
+  race tests also passed (44.285s). Main-workspace Elastic SAN/catalog tests
+  passed (4.517s); docs checks passed for 30 isolated and 42 main chapters and
+  10 original screenshots. Staged diff checks passed. All 65 preexisting
+  worktree hashes and all original fixture bytes remained unchanged.

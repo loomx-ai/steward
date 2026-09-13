@@ -22,6 +22,12 @@ discovery:
     itemsPath: $
     identityPath: id
 fields:
+  membersVerified: members_verified
+  activeVolumeCount: active_volume_count
+  retainedVolumeCount: retained_volume_count
+  snapshotCount: snapshot_count
+  privateConnectionCount: connection_count
+  unverifiedConnectionCount: unverified_connection_count
   state: state
   retained: retained
   protocolType: protocolType

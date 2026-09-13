@@ -57,6 +57,8 @@ func (c *client) elasticSanRecordedReferences(value asset.Asset) (map[string][]s
 func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request contracts.InventoryRequest) ([]contracts.InventoryItem, map[string]any, string, error) {
 	kind := elasticSanKind(request.ResourceKind.NativeType)
 	nodes, reads := map[string]elasticSanObservation{}, map[string]map[string]any{}
+	groupHistory := map[string]map[string]any{}
+	snapshotUnavailable := map[string]bool{}
 	prior, roots, groups := map[string]map[string]any{}, map[string]bool{}, map[string]bool{}
 	known, requestID := map[string]bool{}, ""
 	read := func(id, typ string) (map[string]any, error) {
@@ -89,6 +91,12 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 				state := object(metadata[elasticSanSnapshotCleanup])
 				if len(state) != 0 && metadata[elasticSanSnapshotCleanupProof] != c.elasticSanChildBinding(value, state) {
 					return nil, nil, "", serviceDenied("elastic_san_volume_history_changed")
+				}
+			}
+			if kind == elasticSanGroupType && metadata[elasticSanGroupContext] != nil {
+				groupHistory[id], err = c.elasticSanGroupRecorded(value)
+				if err != nil {
+					return nil, nil, "", err
 				}
 			}
 			prior[id], err = c.elasticSanRecorded(value)
@@ -206,6 +214,35 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			groups[id] = true
 		}
 	}
+	if kind == elasticSanGroupType {
+		for _, group := range slices.Sorted(maps.Keys(groups)) {
+			if nodes[group].retained {
+				continue
+			}
+			for _, childKind := range []string{elasticSanVolumeType, elasticSanSnapshotType} {
+				if err := collect(childKind, group); err != nil {
+					return nil, nil, "", err
+				}
+			}
+			for child, entry := range object(groupHistory[group]["members"]) {
+				if err := recoverKnown(child, text(object(entry)["kind"])); err != nil {
+					return nil, nil, "", err
+				}
+			}
+		}
+		for _, root := range slices.Sorted(maps.Keys(roots)) {
+			if err := collect(elasticSanEndpointType, root); err != nil {
+				return nil, nil, "", err
+			}
+		}
+		for _, history := range groupHistory {
+			for child := range object(history["connections"]) {
+				if err := recoverKnown(child, elasticSanEndpointType); err != nil {
+					return nil, nil, "", err
+				}
+			}
+		}
+	}
 	if kind == elasticSanVolumeType || kind == elasticSanSnapshotType {
 		for _, group := range slices.Sorted(maps.Keys(groups)) {
 			if err := recoverKnown(group, elasticSanGroupType); err != nil {
@@ -216,7 +253,11 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			}
 			if kind == elasticSanVolumeType {
 				if err := collect(elasticSanSnapshotType, group); err != nil {
-					return nil, nil, "", err
+					if nodes[group].retained && isNotFound(err) {
+						snapshotUnavailable[group] = true
+					} else {
+						return nil, nil, "", err
+					}
 				}
 			}
 		}
@@ -338,11 +379,45 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 		for key, value := range object(raw["tags"]) {
 			tags[key] = value.(string)
 		}
+		if kind == elasticSanGroupType {
+			state, err := c.elasticSanGroupState(id, raw, observation.retained, nodes, groupHistory[id])
+			if err != nil {
+				return nil, nil, "", err
+			}
+			value := asset.Asset{Identity: asset.Identity{NativeID: id, ConnectionID: request.ConnectionID}, Location: location, Normalized: normalized}
+			normalized[elasticSanGroupContext], normalized[elasticSanGroupContextProof] = state, c.elasticSanGroupBinding(value, state)
+			normalized["members_verified"] = state["complete"]
+			if state["complete"] == true {
+				active, retained, snapshots, unresolved := 0, 0, 0, 0
+				for _, entry := range object(state["members"]) {
+					member := object(entry)
+					if member["kind"] == elasticSanSnapshotType {
+						snapshots++
+					} else if member["retained"] == true {
+						retained++
+					} else {
+						active++
+					}
+				}
+				for _, entry := range object(state["connections"]) {
+					if object(entry)["mapped"] != true {
+						unresolved++
+					}
+				}
+				normalized["active_volume_count"], normalized["retained_volume_count"], normalized["snapshot_count"] = active, retained, snapshots
+				normalized["connection_count"], normalized["unverified_connection_count"] = len(object(state["connections"])), unresolved
+			}
+			bindings[id] = c.privateConfiguration(map[string]any{"inventory": record, "context": state})
+		}
 		actionable := false
 		if kind == elasticSanVolumeType {
 			state, reason, err := c.elasticSanVolumeCleanup(raw, nodes[parent].raw, object(request.KnownNativeMetadata[id][elasticSanSnapshotCleanup]), snapshotsByVolume[id], observation.retained)
 			if err != nil {
 				return nil, nil, "", err
+			}
+			if snapshotUnavailable[parent] {
+				reason = "elastic_san_retained_group_snapshot_index_unavailable"
+				state["protected"] = true
 			}
 			value := asset.Asset{Identity: asset.Identity{NativeID: id, ConnectionID: request.ConnectionID}, Location: location, Normalized: normalized}
 			normalized[elasticSanSnapshotCleanup], normalized[elasticSanSnapshotCleanupProof] = state, c.elasticSanChildBinding(value, state)
