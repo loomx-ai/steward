@@ -84,11 +84,10 @@ on the same router. It uses the existing topological order and durable worker
 prerequisites; no fictitious inventory dependency is added. Connection-locked
 execution creation and continuation reject overlapping router updates from another
 unresolved task. A completed matching action releases its scope even if other
-actions failed. Failed/canceled tasks without verified completion conservatively
-retain scope. Failed tasks can be continued; canceled-task reconciliation/release
-is still unfinished, and cancellation before invocation can conservatively retain
-scope as well. This limitation is not claimed as completed recovery. This coordination
-covers Steward tasks, not independent external writers; native PATCH lacks CAS.
+actions failed. At this removal milestone, failed/canceled tasks without verified
+completion conservatively retained scope, including cancellation before invocation.
+The recovery milestone below narrows that restriction. Coordination covers Steward
+tasks, not independent external writers; native PATCH lacks CAS.
 
 The shared protocol action matrix now covers NATs alongside policies and named
 sets: receipt tampering, operation scope/target/request errors, native errors,
@@ -107,3 +106,53 @@ flag on `compute.routers.patch` change. Updated catalog SHA-256:
 The importer tests ensure a PATCH becomes destructive only when explicitly bound
 as a resource deletion; GET cannot gain destructive classification this way.
 Parent cascade, independent backend/live acceptance and broader parity remain open.
+
+## Terminal mutation settlement
+
+The native [regional operation GET](https://docs.cloud.google.com/compute/docs/reference/rest/v1/regionOperations/get)
+and [regional operation LIST](https://docs.cloud.google.com/compute/docs/reference/rest/v1/regionOperations/list)
+expose operation status, target incarnation/link and the original client request
+ID. Recovery first reads the bound receipt. With no receipt or an expired GET,
+it uses the existing catalog LIST operation, filtered by the original request
+UUID, and consumes every page. LIST requires `compute.regionOperations.list`;
+a valid receipt only needs the existing `compute.regionOperations.get` permission.
+An empty/expired lookup does not prove the previous write has stopped.
+
+Only failed/canceled executions with exclusively terminal jobs can recover an
+unresolved action. Missing actions or fresh uninvoked intents prove no invocation;
+pending/resumed intents and runnable, paused or expired-lease jobs do not.
+Otherwise a read-only provider capability must verify the original native
+operation is DONE. A genuine operation error still means it has stopped writing;
+settlement neither retries PATCH nor declares resource absence or deletion success.
+Strict receipt/identity checks remain shared with normal execution. Lookup rejects
+foreign/duplicate operations, changed parent incarnation, missing request echoes,
+partial/denied pages, malformed errors and pagination cycles/null tokens.
+
+The connection and execution locks cover the check. The entire recovery guard
+has a ten-second deadline. A persisted digest binds the proof to the execution,
+reviewed step and action history, so a later update invalidates it. Proofs survive
+database reopening and are committed even when another router still blocks new
+execution. Original action/execution state, timestamps and deletion outcomes are
+preserved. Active or paused executions continue to reserve scope.
+
+Tests allow only operation GET/LIST during settlement, verify lost/expired receipt
+recovery across pages, and reject uncertain results without a second write. Actual
+SQLite scan/graph/cleanup task creation tests release a competing task only after
+native DONE, including failed operations and lost receipts, while retaining the
+old terminal status and the still-present NAT. Additional SQLite tests reopen the
+database, reuse valid proofs, invalidate them after action updates, and cover
+no-invocation and nonterminal job histories.
+
+Runnable checks:
+
+```sh
+go test ./...
+go test -race ./providers/gcp ./internal/app/cleanup -run 'TestCloudNat|TestRoutePolicy|TestNamedSet' -count=1
+go vet ./providers/gcp ./internal/...
+node docs/check.mjs
+```
+
+This milestone leaves all native source documents and generated catalog bytes
+unchanged (200 rules, 785 operations, SHA-256 above). Unprovable operation history,
+external writer races, parent cascade and independent backend/live acceptance
+remain open; no live-cloud or independent-emulator result is claimed.

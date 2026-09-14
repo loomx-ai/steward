@@ -152,7 +152,7 @@ func (a *action) routerComponentOperationURL(name string) (string, error) {
 	return bound.URL, err
 }
 
-func (a *action) routerComponentOperationResult(request contracts.ActionRequest, data map[string]any, operationType, requestID, stage string) (string, error) {
+func (a *action) routerComponentOperationIdentity(request contracts.ActionRequest, data map[string]any, operationType, stage string) (string, error) {
 	operation, err := a.routerComponentOperationURL(text(data["name"]))
 	if err != nil {
 		return "", err
@@ -179,6 +179,14 @@ func (a *action) routerComponentOperationResult(request contracts.ActionRequest,
 	}
 	if text(data["operationType"]) == "" || operationType != "" && data["operationType"] != operationType || !slices.Contains([]string{"PENDING", "RUNNING", "DONE"}, text(data["status"])) {
 		return "", groupDenied("route_policy_operation_state_invalid")
+	}
+	return operation, nil
+}
+
+func (a *action) routerComponentOperationResult(request contracts.ActionRequest, data map[string]any, operationType, requestID, stage string) (string, error) {
+	operation, err := a.routerComponentOperationIdentity(request, data, operationType, stage)
+	if err != nil {
+		return "", err
 	}
 	if _, exists := data["error"]; exists {
 		if err := operationError(data, requestID); err != nil {

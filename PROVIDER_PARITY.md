@@ -5673,8 +5673,9 @@ background evidence only, not acceptance evidence for this work.
   including paused/failed/canceled runs. Matching verified action success releases
   scope. SQLite tests cover scope persistence and actual competing task creation,
   alongside native scan/graph/cleanup checkpoints, tombstones and retained router.
-- This guard is deliberately conservative: canceled-task reconciliation and release
-  are not implemented, and even cancellation before invocation can retain scope.
+- At this milestone the guard was deliberately conservative: canceled-task
+  reconciliation was not implemented, including cancellation before invocation.
+  The subsequent settlement milestone below narrows this restriction.
   Failed tasks can be continued in their original task. Native PATCH has no CAS
   precondition; external concurrent writers remain outside Steward coordination.
   These recovery limitations, parent Router cascade, independent mock-server/live
@@ -5694,3 +5695,39 @@ background evidence only, not acceptance evidence for this work.
   Focused race checks passed (GCP 60.443s, cleanup 6.865s, catalog 6.349s),
   GCP/internal vet passed, and documentation checks passed for 30 chapters and
   10 screenshots. No runtime dependency or external cloud resource was added.
+
+### Cloud NAT terminal mutation settlement and lost-receipt recovery
+
+- Failed/canceled executions with terminal jobs can release a same-router mutation
+  reservation after durable no-invocation evidence or a verified native DONE
+  operation. Active/paused executions, resumed pending actions and runnable jobs
+  (including expired leases) remain blocked. Original action/task status and
+  deletion outcomes are preserved; an operation error can be terminal without
+  proving deletion succeeded.
+- A read-only optional provider capability checks the bound regional operation.
+  Missing/expired receipts use the existing native regional operation LIST with
+  the original request UUID and complete pagination. Exact request/parent/operation
+  bindings reject ambiguous, foreign, malformed, partial or denied responses.
+  Empty operation history is uncertainty, never proof of no outstanding update.
+  Recovery never calls normal mutation/wait hooks or repeats PATCH.
+- Connection/execution locks and a ten-second guard deadline bound recovery.
+  Persistent proofs bind execution, reviewed step and action history; later worker
+  updates invalidate them. Proofs survive database reopening and a different
+  router's unresolved update blocking the new execution request.
+- Native protocol tests cover pending/DONE/failed operations, lost/expired receipts,
+  pagination, duplicates, malformed scalar/error shapes and request/identity drift.
+  Actual SQLite task creation verifies scope release without a second mutation,
+  changing old terminal states or tombstoning a still-present NAT. Additional
+  SQLite cases cover no-invocation, pending/resumed actions, job leases and proof
+  persistence/invalidation. Evidence and native API links are in
+  [Cloud NAT evidence](providers/gcp/fixtures/cloud-nat/README.md).
+- All 60 native documents, runtime dependencies and generated catalog bytes remain
+  unchanged: 200 resource rules, 785 operations, SHA-256
+  `f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`.
+  Bilingual documentation explains operation lookup permissions and remaining blocks.
+- Unprovable operation history, native external-writer races, parent Router cascade,
+  independent mock-server/live acceptance and the remaining provider families are
+  still unfinished. All eight overall acceptance criteria remain open.
+- Focused native/SQLite checks passed (GCP 26.441s, cleanup 0.397s). Focused
+  race checks passed (GCP 76.327s, cleanup 8.573s), GCP/internal vet passed,
+  and isolated documentation checks passed for 30 chapters and 10 screenshots.

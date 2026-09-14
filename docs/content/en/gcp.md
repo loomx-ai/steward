@@ -356,11 +356,18 @@ configurations and leaves BGP peers, interfaces, keys and the router intact.
 Manual address resources are not explicitly deleted by this action.
 
 Steward runs same-router NAT deletions in sequence. An unresolved update in
-another cleanup task blocks a new update on that router. Failed tasks can be
-continued in their original task. Canceled tasks with unresolved updates remain
-blocked; cancellation recovery is not yet implemented. Native PATCH has no
-configuration revision precondition, so concurrent
-external writers can still race the final read/update. Avoid changing that
+another cleanup task blocks a new update on that router. For failed or canceled
+tasks with no runnable jobs, Steward releases the block when it can verify that
+no update was invoked or the original cloud operation has finished. This does
+not mark the old task or deletion as successful. Paused tasks and uncertain
+updates remain blocked; failed tasks can still be continued in their original task.
+
+If the operation receipt is missing or expired, recovery also needs
+`compute.regionOperations.list` to find the original request's operation. Missing
+records, incomplete results and denied reads keep the block in place. See the
+[native operation lookup contract](https://docs.cloud.google.com/compute/docs/reference/rest/v1/regionOperations/list).
+Native PATCH has no configuration revision precondition, so concurrent external
+writers can still race the final read/update. Avoid changing that
 router's NAT configuration externally while cleanup runs. See the
 [native PATCH and request-ID contract](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/patch).
 Parent-router cascade review remains unfinished.

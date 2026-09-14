@@ -1739,6 +1739,8 @@ resources:
     independently removes a reviewed NAT while retaining other router/NAT configuration.
     Same-router deletes are serialized; unresolved cross-task updates block new writes.
     Regional operation receipts and native absence readback survive worker restarts.
+    Terminal tasks release scope only after verified no-invocation or native operation
+    settlement; missing receipts use complete request-ID lookup without repeating writes.
     Parent cascade review and independent/live backend acceptance remain unfinished.
 - alicloud: ACS::NAT::NatIp
   spec: providers/alicloud/specs/nat-ip.yaml

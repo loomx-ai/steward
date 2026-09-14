@@ -80,6 +80,14 @@ type ExecutionAttempt struct {
 	FailureReason          string             `json:"failure_reason,omitempty"`
 }
 
+// MutationSettlementProof is bound to the exact persisted action and reviewed
+// step. Later action updates invalidate its digest before another scope release.
+type MutationSettlementProof struct {
+	Digest     string    `json:"digest"`
+	Operation  string    `json:"operation"`
+	VerifiedAt time.Time `json:"verified_at"`
+}
+
 type ActionAttempt struct {
 	ID                     ActionAttemptID `json:"id"`
 	ExecutionID            ExecutionID     `json:"execution_id"`
@@ -105,6 +113,8 @@ type ActionAttempt struct {
 	CreatedAt              time.Time       `json:"created_at"`
 	UpdatedAt              time.Time       `json:"updated_at"`
 	FinishedAt             *time.Time      `json:"finished_at,omitempty"`
+
+	MutationSettlement *MutationSettlementProof `json:"mutation_settlement,omitempty"`
 }
 
 type AuditEvent struct {

@@ -286,10 +286,15 @@ REST 接口或 CAI 资产类型。参阅[原生 Router 架构](https://docs.clou
 对等连接、接口、密钥和路由器；该动作不会显式删除手动分配的地址资源。
 
 同一路由器的 NAT 删除按顺序执行。其他清理任务存在未确认完成的更新时，会阻止
-新任务更新该路由器。失败的任务可在原任务中继续；已取消但更新状态未确认的
-任务仍会保持阻塞，这类取消后的恢复尚未实现。原生 PATCH 没有配置版本条件，
-最后一次读取与更新之间仍可能
-受到外部并发写入影响；清理期间应避免在外部修改该路由器的 NAT 配置。参阅
+新任务更新该路由器。对于已失败或取消且没有可运行作业的任务，Steward 在确认
+尚未发起更新，或原云端操作已结束后，会解除阻塞。此过程不会将原任务或删除
+标记为成功。暂停的任务和无法确认状态的更新仍保持阻塞；失败任务也可在原任务中继续。
+
+操作回执丢失或过期时，恢复还需要 `compute.regionOperations.list` 权限，以查找
+原请求对应的操作。记录缺失、结果不完整或读取被拒绝时，仍会保持阻塞。参阅
+[原生操作查询契约](https://docs.cloud.google.com/compute/docs/reference/rest/v1/regionOperations/list)。
+原生 PATCH 没有配置版本条件，最后一次读取与更新之间仍可能受到外部并发写入
+影响；清理期间应避免在外部修改该路由器的 NAT 配置。参阅
 [原生 PATCH 与请求 ID 契约](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/patch)。
 父路由器的级联清理审查仍待完成。
 Google 明确说明，[删除路由器也会删除其中的 Cloud NAT 网关](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers)。

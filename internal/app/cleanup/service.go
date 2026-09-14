@@ -684,8 +684,11 @@ func (s *Service) CreateExecution(ctx context.Context, request CreateExecutionRe
 		if err := connectionapp.GuardActiveWork(ctx, repositories, aggregate.Task.ConnectionID, now); err != nil {
 			return err
 		}
-		if err := guardSharedConfiguration(ctx, repositories, aggregate); err != nil {
-			return err
+		if err := s.guardSharedConfiguration(ctx, repositories, aggregate); err != nil {
+			// Preserve completed-operation proofs even when another scope still
+			// blocks this request. No execution or jobs have been created yet.
+			semanticErr = err
+			return nil
 		}
 		created = execution.ExecutionAttempt{
 			ID: executionID, ConnectionID: aggregate.Task.ConnectionID, CleanupTaskID: string(request.CleanupTaskID), Status: execution.ExecutionPending,
@@ -769,6 +772,7 @@ func (s *Service) ContinueExecution(ctx context.Context, request ContinueExecuti
 		return execution.ExecutionAttempt{}, err
 	}
 
+	var semanticErr error
 	var continued execution.ExecutionAttempt
 	err = s.repositories.WithTx(ctx, func(repositories persistence.Repositories) error {
 		aggregate, err := repositories.CleanupTasks().GetTask(ctx, request.CleanupTaskID)
@@ -858,8 +862,11 @@ func (s *Service) ContinueExecution(ctx context.Context, request ContinueExecuti
 		if err := connectionapp.GuardActiveWork(ctx, repositories, aggregate.Task.ConnectionID, now); err != nil {
 			return err
 		}
-		if err := guardSharedConfiguration(ctx, repositories, aggregate); err != nil {
-			return err
+		if err := s.guardSharedConfiguration(ctx, repositories, aggregate); err != nil {
+			// Preserve completed-operation proofs even when another scope still
+			// blocks this request. No execution or jobs have been created yet.
+			semanticErr = err
+			return nil
 		}
 
 		jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "cleanup_task", string(aggregate.Task.ID))
@@ -1033,6 +1040,9 @@ func (s *Service) ContinueExecution(ctx context.Context, request ContinueExecuti
 		continued = attempt
 		return nil
 	})
+	if err == nil && semanticErr != nil {
+		return execution.ExecutionAttempt{}, semanticErr
+	}
 	return continued, err
 }
 

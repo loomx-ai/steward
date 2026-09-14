@@ -41,7 +41,18 @@ func TestNamedSetSQLiteScanCleanupRestartAndReconciliation(t *testing.T) {
 func TestNamedSetSQLitePolicyBeforeSetDeletion(t *testing.T) {
 	routerComponentSQLiteCleanup(t, routePolicyType, true, true, true)
 }
-func routerComponentSQLiteCleanup(t *testing.T, nativeType string, bgp, setReferences, deleteSet bool) {
+
+type routerCleanupCheckpoint struct {
+	Repositories    persistence.Repositories
+	Planner         *cleanup.Service
+	Runtime         *Runtime
+	Fixture         *routePolicyActionFixture
+	Task, Competing persistence.CleanupTaskAggregate
+	Attempt         execution.ExecutionAttempt
+	Job             execution.Job
+}
+
+func routerComponentSQLiteCleanup(t *testing.T, nativeType string, bgp, setReferences, deleteSet bool, checkpoints ...func(routerCleanupCheckpoint)) {
 	ctx := t.Context()
 	r, request, fixture := routerComponentActionRuntime(t, nativeType)
 	if bgp {
@@ -303,6 +314,10 @@ func routerComponentSQLiteCleanup(t *testing.T, nativeType string, bgp, setRefer
 		}
 		if fixture.deletes != deletes || bgp && fixture.patches != 1 {
 			t.Fatal("restart repeated mutation", round, fixture.deletes, fixture.patches)
+		}
+		if round == 0 && len(checkpoints) > 0 {
+			checkpoints[0](routerCleanupCheckpoint{repositories, planner, fresh, fixture, task, competing, attempt, job})
+			return
 		}
 		now = now.Add(3 * time.Second)
 	}
