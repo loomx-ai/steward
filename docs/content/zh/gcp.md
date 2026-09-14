@@ -253,6 +253,14 @@ Steward 在各路由器所属地域分页列举策略，并逐条读取详情；
 如果新增依赖涉及尚未结束的工作作业，或已发起但未确认完成的云端操作，会阻止继续。
 策略解除引用的操作结束本身不能解除路由器占用，因为后续原生删除阶段的结果也需确认。
 
+对于已失败或取消、所有作业均已结束的执行，Steward 可通过只读核验所有可能发起的
+修改阶段已结束，解除路由器占用。已关联策略需要同时确认原 BGP 解绑与策略删除操作，
+包括请求已发出但新回执尚未保存的删除；未关联策略或命名集合只需确认单个删除操作。
+回执丢失或过期时，除 `compute.regionOperations.get` 外还需
+`compute.regionOperations.list` 权限。操作历史缺失、有歧义、不完整或不可读取时，
+仍保持阻塞。恢复保留原执行状态，不会重发删除或将资源标为已删除。参阅
+[操作查询 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/regionOperations/list)。
+
 ## Cloud Router 命名集合
 
 扫描命名集合需要目标项目的 `compute.routers.list`、`compute.routers.listNamedSets`

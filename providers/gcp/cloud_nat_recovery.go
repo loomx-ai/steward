@@ -3,13 +3,14 @@ package gcp
 import (
 	"context"
 	"encoding/json"
+	"strings"
 
 	"github.com/loomx-ai/steward/internal/provider/catalog"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 func (a *action) MutationSettled(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.MutationSettlement, error) {
-	if a.kind.NativeType != cloudNatType {
+	if !isRouterComponent(a.kind.NativeType) {
 		return contracts.MutationSettlement{}, groupDenied("mutation_settlement_unsupported")
 	}
 	if err := a.routerComponentActionIdentity(request); err != nil {
@@ -19,13 +20,45 @@ func (a *action) MutationSettled(ctx context.Context, request contracts.ActionRe
 	if err != nil {
 		return contracts.MutationSettlement{}, err
 	}
+	// Every phase that the frozen review could have invoked needs terminal proof.
+	// Wait may have sent deletion after detach before its new cursor was durable.
+	stages := []string{a.routerComponentDeletePhase()}
+	if a.kind.NativeType == routePolicyType {
+		before, after, err := routePolicyBGPReview(request.Asset.Normalized, last(a.identity.NativeID))
+		if err != nil {
+			return contracts.MutationSettlement{}, err
+		}
+		if firewallDigest(before) != firewallDigest(after) {
+			stages = append([]string{routePolicyDetach}, stages...)
+		} else if result.Data["phase"] == routePolicyDetach || result.ProviderOperationID != "" && result.ProviderOperationID != operation {
+			return contracts.MutationSettlement{}, groupDenied("route_policy_unreviewed_detach")
+		}
+	}
+	operations := make([]string, 0, len(stages))
+	for _, stage := range stages {
+		expected, operationType := "", ""
+		if result.Data["phase"] == stage {
+			expected, operationType = operation, text(result.Data["operation_type"])
+		} else if stage == routePolicyDetach && result.ProviderOperationID != operation {
+			expected = result.ProviderOperationID
+		}
+		settled, err := a.routerMutationStageSettled(ctx, request, stage, expected, operationType)
+		if err != nil || !settled.Settled {
+			return contracts.MutationSettlement{}, err
+		}
+		operations = append(operations, settled.Operation)
+	}
+	return contracts.MutationSettlement{Settled: true, Operation: strings.Join(operations, "\n")}, nil
+}
+
+func (a *action) routerMutationStageSettled(ctx context.Context, request contracts.ActionRequest, stage, operation, operationType string) (contracts.MutationSettlement, error) {
 	if operation != "" {
 		data, err := a.client.request(ctx, "GET", operation, nil)
 		if err != nil && !isNotFound(err) {
 			return contracts.MutationSettlement{}, err
 		}
 		if err == nil {
-			return a.cloudNatOperationSettled(request, data, operation, text(result.Data["operation_type"]))
+			return a.routerMutationOperationSettled(request, data, operation, operationType, stage, operationType == "")
 		}
 	}
 	// A lost/expired receipt may still have a native operation indexed by its
@@ -38,9 +71,8 @@ func (a *action) MutationSettled(ctx context.Context, request contracts.ActionRe
 	if !ok {
 		return contracts.MutationSettlement{}, groupDenied("cloud_nat_operation_list_missing")
 	}
-	parameters := cloneParameters(a.deleteParameters)
-	delete(parameters, "router")
-	parameters["filter"] = "clientOperationId = \"" + a.routerComponentRequestID(request) + "\""
+	parameters := map[string]any{"project": a.client.project, "region": a.deleteParameters["region"]}
+	parameters["filter"] = "clientOperationId = \"" + a.routePolicyNativeRequestID(request, stage) + "\""
 	parameters["maxResults"] = 500
 	seen := map[string]bool{}
 	var found map[string]any
@@ -62,7 +94,7 @@ func (a *action) MutationSettled(ctx context.Context, request contracts.ActionRe
 		}
 		for _, item := range items {
 			// LIST recovery has no trusted operation name yet: require full native echoes.
-			if found != nil || item["clientOperationId"] != a.routerComponentRequestID(request) || item["targetId"] != request.Asset.Normalized[cloudNatRouterID] || a.client.canonicalName(text(item["targetLink"])) != a.client.canonicalName(a.routerComponentParent()) {
+			if found != nil || !a.routerMutationEchoes(request, item, stage) {
 				return contracts.MutationSettlement{}, groupDenied("cloud_nat_operation_lookup_ambiguous")
 			}
 			found = item
@@ -87,10 +119,10 @@ func (a *action) MutationSettled(ctx context.Context, request contracts.ActionRe
 			return contracts.MutationSettlement{}, groupDenied("cloud_nat_operation_lookup_changed")
 		}
 	}
-	return a.cloudNatOperationSettled(request, found, operation, text(result.Data["operation_type"]))
+	return a.routerMutationOperationSettled(request, found, operation, operationType, stage, true)
 }
 
-func (a *action) cloudNatOperationSettled(request contracts.ActionRequest, data map[string]any, expected, operationType string) (contracts.MutationSettlement, error) {
+func (a *action) routerMutationOperationSettled(request contracts.ActionRequest, data map[string]any, expected, operationType, stage string, requireEchoes bool) (contracts.MutationSettlement, error) {
 	if name, ok := data["name"].(string); !ok || name == "" {
 		return contracts.MutationSettlement{}, groupDenied("cloud_nat_operation_name_invalid")
 	}
@@ -98,9 +130,12 @@ func (a *action) cloudNatOperationSettled(request contracts.ActionRequest, data 
 		return contracts.MutationSettlement{}, groupDenied("cloud_nat_operation_type_invalid")
 	}
 
-	operation, err := a.routerComponentOperationIdentity(request, data, operationType, a.routerComponentDeletePhase())
+	operation, err := a.routerComponentOperationIdentity(request, data, operationType, stage)
 	if err != nil {
 		return contracts.MutationSettlement{}, err
+	}
+	if requireEchoes && !a.routerMutationEchoes(request, data, stage) {
+		return contracts.MutationSettlement{}, groupDenied("router_operation_echoes_missing")
 	}
 	if expected != "" && expected != operation {
 		return contracts.MutationSettlement{}, groupDenied("cloud_nat_operation_lookup_changed")
@@ -136,4 +171,11 @@ func (a *action) cloudNatOperationSettled(request contracts.ActionRequest, data 
 		}
 	}
 	return contracts.MutationSettlement{Settled: data["status"] == "DONE", Operation: operation}, nil
+}
+
+// A lookup or reconstructed phase has no trusted receipt for this operation:
+// require native request, resource and incarnation echoes, then validate scope.
+func (a *action) routerMutationEchoes(request contracts.ActionRequest, data map[string]any, stage string) bool {
+	target := a.client.canonicalName(text(data["targetLink"]))
+	return data["clientOperationId"] == a.routePolicyNativeRequestID(request, stage) && data["targetId"] == request.Asset.Normalized[a.routerComponentIncarnationKey()] && (target == a.client.canonicalName(a.routerComponentParent()) || stage != routePolicyDetach && target == a.client.canonicalName(a.endpoint))
 }

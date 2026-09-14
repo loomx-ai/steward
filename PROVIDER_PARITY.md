@@ -5868,3 +5868,32 @@ against a still-occupied same-task scope while allowing the bound continuation.
   focused race checks (106.756s), additional disappearance/recreation race cases
   (11.734s), static vet and bilingual documentation/screenshot checks. These are
   locally authored protocol/application tests, not independent or live acceptance.
+
+
+### Router component recovery across lost policy phase receipts
+
+- Extended the existing read-only operation settlement to native route policies
+  and named sets. Attached policies require terminal proof for both original BGP
+  detach and deletion UUIDs, including deletion sent before its cursor was saved.
+  Unattached policies and named sets have one possible deletion phase. Native
+  GET/LIST recovery retains strict identity/configuration/receipt/scope checks;
+  reconstructed operations require request, target and incarnation echoes.
+- Reused connection/execution locking, terminal job checks, context deadline and
+  durable action-bound proof. Only complete all-phase proof releases a competing
+  execution. Missing/expired/ambiguous history is not proof of no invocation.
+  The recovery path never calls mutation-capable Wait, repeats deletion, rewrites
+  original statuses or declares resource absence. No schema/dependency changes.
+- Added native protocol and actual SQLite scan/plan/execution recovery tests. The
+  latter issues native deletion after detach, deliberately discards the new cursor,
+  terminates execution/jobs, and reopens SQLite/runtime between checks. Missing or
+  pending phases block; both terminal operations release scope and persist proof,
+  leaving original history and inventory outcomes unchanged. Single-phase policy
+  and named-set recovery also runs through actual execution creation.
+- Bilingual permissions/recovery guidance and policy/set evidence updated. Native
+  catalog/source bytes remain unchanged (200 rules, 785 operations; SHA-256
+  `f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`).
+- Parent Router legacy receipts, absent native history, safe upgrades around old
+  already-issued unordered actions, independent backend/live acceptance and the
+  remaining provider families are still open. All eight overall acceptance
+  criteria remain unfinished; these locally authored tests do not prove cloud
+  acceptance.

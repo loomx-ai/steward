@@ -316,6 +316,17 @@ unsettled cloud actions, continuation is blocked. A completed policy-detachment
 operation alone does not release the router: policy deletion has a second native
 phase whose outcome must also be accounted for.
 
+For failed or canceled executions with only terminal worker jobs, Steward can
+release the router after read-only verification that every possible mutation
+phase has ended. An attached policy requires both its original BGP-detachment
+and deletion operations, including a deletion sent before its receipt was saved.
+An unattached policy or named set requires its single deletion operation. Lost
+or expired receipts need `compute.regionOperations.list` in addition to
+`compute.regionOperations.get`. Missing, ambiguous, incomplete or inaccessible
+operation history keeps the router blocked. Recovery preserves the old execution
+status and does not retry deletion or mark resources as deleted. See the
+[operation lookup API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/regionOperations/list).
+
 ## Cloud Router named sets
 
 Named-set scans need `compute.routers.list`, `compute.routers.listNamedSets` and

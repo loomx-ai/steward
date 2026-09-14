@@ -122,3 +122,11 @@ The IAM permission sections of the official REST pages were checked for
 `routers.get`, `routers.getNamedSet`, `routers.listRoutePolicies`,
 `routers.getRoutePolicy`, `routers.deleteNamedSet` and `regionOperations.get`.
 Their published `compute.*` permission names match the bilingual setup guidance.
+
+
+Failed/canceled executions with terminal jobs now use the shared read-only
+[Router component settlement](../route-policy/README.md#read-only-settlement-of-all-native-phases)
+path. A named set has one native deletion operation. Receipt GET or complete
+UUID-filtered LIST must prove it terminal; missing history stays unresolved.
+The original execution and resource deletion outcome remain unchanged. Native
+and SQLite tests cover lost receipts, pending operations and release after DONE.

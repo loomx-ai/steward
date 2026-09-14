@@ -179,9 +179,9 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 	if reviewed.Identity.ConnectionID != attempt.ConnectionID || reviewed.Identity.Provider != asset.ProviderGCP {
 		return false, fmt.Errorf("mutation recovery identity changed")
 	}
-	// Only NAT currently provides proof covering every possible native write.
-	// A policy's DONE detach receipt cannot rule out a later, unrecorded delete.
-	if reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" {
+	// Router components prove every possible phase, including an unrecorded policy
+	// delete after detach. Parent Router recovery still requires lifecycle impacts.
+	if reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" && reviewed.Identity.NativeType != "compute.googleapis.com/RoutePolicy" && reviewed.Identity.NativeType != "compute.googleapis.com/NamedSet" {
 		return false, nil
 	}
 	// ponytail: retain the database locks during rare recovery reads so a second

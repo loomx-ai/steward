@@ -180,10 +180,9 @@ router. Metadata-only upgrades do not block already correctly ordered work.
 The connection/execution locks and durable worker dependencies are reused; no new
 scheduler, runtime dependency, database schema or native CAS is introduced.
 
-The existing read-only terminal-operation recovery remains NAT-only. In a policy
-flow, an old detach receipt can coexist with an already-issued native deletion
-whose later receipt was not saved. A DONE detach operation cannot release scope;
-full recovery for uncertain legacy multi-phase writes remains unfinished.
+An old detach receipt can coexist with an already-issued native deletion whose
+later receipt was not saved. A DONE detach operation alone cannot release scope.
+The all-phase recovery extension below accounts for both native operations.
 
 `route_policy_multi_worker_test.go` now uses concurrency two, claims both worker
 jobs and repeatedly tries the dependent policy before its predecessor settles.
@@ -207,3 +206,44 @@ in [Router evidence](../router/README.md).
 Execution coordination excludes only the exact attempt being continued, not all
 attempts belonging to the same task. Regression coverage rejects a fresh attempt
 against a still-occupied same-task scope while allowing the bound continuation.
+
+
+## Read-only settlement of all native phases
+
+The [regional operation GET](https://docs.cloud.google.com/compute/docs/reference/rest/v1/regionOperations/get)
+and [LIST](https://docs.cloud.google.com/compute/docs/reference/rest/v1/regionOperations/list)
+provide the native operation name, request UUID, target URL/incarnation and status.
+The frozen peer review determines the possible write set: attached policies can
+issue both BGP PATCH and policy deletion; unattached policies can issue only the
+native policy deletion. The two original request UUIDs are unchanged.
+
+Recovery validates saved receipts and reads each possible phase. A saved deletion
+cursor can retain the original detach operation name; a detach-only receipt may
+have lost the later deletion cursor. Missing/expired receipts use UUID-filtered
+native LIST, consuming all pages. Reconstructed or listed operations require full
+native request/target/incarnation echoes, in addition to regional scope, state,
+receipt-name and error-shape checks. Both operations must be DONE, even when one
+reports a failure. An empty lookup cannot prove a phase was never invoked.
+
+The existing connection/execution locks, terminal execution/job eligibility,
+context deadline and persisted action-bound proof are reused. Proofs contain the
+ordered operation URLs for every phase. No normal Wait call, cloud mutation,
+resource absence inference, action status rewrite or tombstone is used to settle
+scope. Missing/ambiguous/partial/denied history remains unresolved. Parent Router
+legacy receipts and migration of already-issued unordered legacy work remain open.
+
+`route_policy_recovery_test.go` actually invokes detach and the subsequent policy
+delete, then discards the returned cursor to model the persistence gap. It covers
+both/lost/expired receipts, missing or running phases, errors, wrong targets/UUIDs,
+missing echoes, partial/duplicate lists, changed review and malformed receipts.
+Single-phase policy/set tests use the same native recovery mechanism.
+`route_policy_recovery_worker_test.go` runs real SQLite scan/plan/execution, issues
+the second native write without saving its cursor, terminates the worker/execution,
+and reopens SQLite/runtime at each recovery checkpoint. No competing execution is
+created until both operations end; both URLs persist in the settlement proof and
+the original action, execution status and retained inventory remain unchanged.
+
+Checks: `go test ./providers/gcp ./internal/...`, focused `go test -race`, `go vet`
+and `node docs/check.mjs`. These are authored protocol/application tests; the
+pinned mockgcp backend still lacks policy/set handlers. Independent backend/live
+acceptance and all eight overall provider parity criteria remain open.

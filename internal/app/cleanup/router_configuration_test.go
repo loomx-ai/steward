@@ -147,8 +147,14 @@ func TestRouterScopeGuardsAllNativeFamiliesAndLegacySnapshots(t *testing.T) {
 				}
 				registry := &mutationProofRegistry{}
 				err = guardSharedConfiguration(ctx, repos, current, registry, "")
-				if mode == "failed-detach" && kind != "RouterNat" && registry.calls != 0 {
-					t.Fatal("two-phase/parent settlement delegated to single-write proof", registry.calls)
+				if mode == "failed-detach" {
+					expected := 1 // Component providers must verify every possible phase.
+					if kind == "Router" {
+						expected = 0
+					} // Parent recovery still needs impacts.
+					if registry.calls != expected {
+						t.Fatal("incorrect settlement capability", kind, registry.calls)
+					}
 				}
 				allowed := mode == "different-router" || mode == "succeeded"
 				if allowed && err != nil || !allowed && !errors.Is(err, persistence.ErrConflict) {
