@@ -6542,3 +6542,29 @@ live Azure or independent Elastic SAN emulation.
 Explicit public snapshot filters remain supported, and every nextLink must preserve
 the original filter. The inventory path remains unfiltered. Regression cases cover
 filter preservation, replacement and removal.
+
+
+### Full matrix scope audit and implementation backlog correction
+
+Parsed the entire parity matrix against the current 159 Alibaba Cloud, 204 GCP and
+448 Azure specification files. The matrix previously contained invalid YAML in a
+multiline SCC note, so it could not serve as a machine-readable acceptance scope.
+After repairing that syntax, source comparisons exposed 28 Azure mapping references
+to 18 missing specifications and one unexplained empty Azure multicast mapping.
+All baseline source paths, classes, inventory scopes/sources, actions, hooks,
+enrichment and parent-discovery declarations match their current specifications.
+
+Absent Azure candidates now remain explicitly tracked in unimplemented_resources,
+separate from existing mapped specifications. GCP service-account keys were removed
+from the SSH-key-pair mapping; project/instance SSH metadata and OS Login behavior
+remain unimplemented mapping work. Six provider mapping slots still require research.
+No baseline row or missing capability was removed from the requested scope.
+
+The new providers package test validates YAML, full baseline coverage, duplicate
+identities, baseline drift, implemented-resource references and stale backlogs. It
+runs in the existing go test ./... and provider race CI commands. Its initial run
+detected every absent reference and the unexplained empty mapping. Passing it means
+source consistency, not functional parity. All 159 statuses and all eight acceptance
+criteria remain open. [The gap report](providers/PARITY_GAPS.md) names each absent
+candidate and affected baseline and prioritizes Synapse, deployment stacks and
+backup/recovery implementations ahead of further localized polishing.
