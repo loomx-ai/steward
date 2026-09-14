@@ -162,8 +162,7 @@ func cloudNatScalars(data map[string]any, strings, booleans, integers, arrays []
 	return nil
 }
 
-// Only explicit native IP/subnetwork fields become dependencies. CEL rule text
-// is retained as configuration; an embedded string is not treated as a URI.
+// Native IP/subnetwork fields complement the separately parsed CEL Hub references.
 func (c *client) cloudNatReferences(data map[string]any) map[string][]string {
 	subnets, ips := []any{}, []any{}
 	for _, key := range []string{"subnetworks", "nat64Subnetworks"} {

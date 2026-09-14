@@ -142,7 +142,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
-	if nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
+	if nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -430,6 +430,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				item.NetworkReferences = append(item.NetworkReferences, networks...)
 				if len(networks) == 1 {
 					item.Normalized["vpc_id"] = networks[0]
+				}
+				if err := c.enrichCloudNatHubs(ctx, &item, record.Data, result.Data, target.ParentID); err != nil {
+					return contracts.InventoryBatch{}, err
 				}
 			}
 			if nativeType == namedSetType {

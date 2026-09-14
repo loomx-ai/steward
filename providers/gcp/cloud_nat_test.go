@@ -1,6 +1,7 @@
 package gcp
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"os"
@@ -8,10 +9,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/loomx-ai/steward/internal/app/cleanup"
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/core/graph"
+	"github.com/loomx-ai/steward/internal/core/plan"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -110,6 +113,9 @@ func TestCloudNatNativeInventoryAndNetworkScope(t *testing.T) {
 					}
 					if item.Name == "nat-a" && !slices.Contains(item.NetworkReferences, "//compute.googleapis.com/projects/sample-project/regions/us-central1/addresses/rule-ip") {
 						t.Fatal("rule IP dependency missing", item.NetworkReferences)
+					}
+					if item.Name == "nat-b" && !slices.Contains(item.NetworkReferences, "//networkconnectivity.googleapis.com/projects/sample-project/locations/global/hubs/hub-a") {
+						t.Fatal("CEL Hub dependency missing", item.NetworkReferences)
 					}
 					value := asset.Asset{Identity: asset.Identity{NativeType: cloudNatType, NativeID: item.NativeID}, Normalized: item.Normalized}
 					assertGCPPropertyQuery(t, r, []asset.Asset{value}, cloudNatType, "/nats/"+item.Name, `properties.enableDynamicPortAllocation = true AND properties.minPortsPerVm = 64`)
@@ -277,19 +283,69 @@ func assertCloudNatSQLiteParentGraph(t *testing.T, repositories persistence.Repo
 	if err := repositories.Inventory().PutAsset(ctx, parent); err != nil {
 		t.Fatal(err)
 	}
-	if err := governance.NewGraphHandler(repositories, identityRegistry(t, r), nil).Handle(ctx, execution.Job{Type: execution.JobGraph, Payload: map[string]any{"scan_run_id": "first"}}); err != nil {
+	hubKind := r.resourceKind(cloudNatHubType)
+	hub := asset.Asset{ID: "nat-hub", ScopeID: "hub-global", ResourceKindID: hubKind.ID, Identity: value.Identity, Name: "hub-a", Normalized: map[string]any{"name": "projects/sample-project/locations/global/hubs/hub-a"}, Capabilities: value.Capabilities, FirstSeenAt: value.FirstSeenAt, LastSeenAt: value.LastSeenAt}
+	hub.Identity.NativeType, hub.Identity.NativeID = cloudNatHubType, natHubA
+	hub.Identity.ScopeKey = "global:sample-project/global"
+	for _, write := range []func() error{
+		func() error {
+			return repositories.Inventory().PutScope(ctx, asset.Scope{ID: hub.ScopeID, ParentID: "project", ConnectionID: value.Identity.ConnectionID, Kind: asset.ScopeGlobal, NativeID: "sample-project/global", CreatedAt: value.FirstSeenAt, UpdatedAt: value.LastSeenAt})
+		},
+		func() error { return repositories.Inventory().PutResourceKind(ctx, hubKind) },
+		func() error { return repositories.Inventory().PutAsset(ctx, hub) },
+	} {
+		if err := write(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := governance.NewGraphHandler(repositories, identityRegistry(t, r), cloudNatHubContributors{}).Handle(ctx, execution.Job{Type: execution.JobGraph, Payload: map[string]any{"scan_run_id": "first"}}); err != nil {
 		t.Fatal(err)
 	}
 	relations, err := repositories.Graph().ListRelationshipsForAsset(ctx, value.Identity.ConnectionID, value.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, relation := range relations {
-		if relation.SourceAssetID == value.ID && relation.TargetAssetID == parent.ID && relation.Type == graph.RelationshipDependsOn {
-			return
+	for _, target := range []asset.AssetID{parent.ID, hub.ID} {
+		found := false
+		for _, relation := range relations {
+			if relation.SourceAssetID == value.ID && relation.TargetAssetID == target && relation.Type == graph.RelationshipDependsOn {
+				found = true
+			}
+		}
+		if !found {
+			t.Fatal("native NAT dependency was not persisted", target, relations)
 		}
 	}
-	t.Fatal("native NAT parent dependency was not persisted", relations)
+	planner := cleanup.NewService(repositories, identityRegistry(t, r))
+	for _, selection := range [][]asset.AssetID{{hub.ID}, {value.ID}, {value.ID, hub.ID}} {
+		selectors := []plan.CleanupSelector{}
+		for _, id := range selection {
+			selectors = append(selectors, plan.CleanupSelector{Kind: plan.SelectorAsset, AssetID: id})
+		}
+		task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: value.Identity.ConnectionID, Selectors: selectors, CreatedBy: "test"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(selection) == 1 && selection[0] == hub.ID {
+			blocked := false
+			for _, blocker := range task.Task.Blockers {
+				if blocker.Code == plan.BlockCrossScopeDependency && blocker.AssetID == hub.ID {
+					blocked = true
+				}
+			}
+			if !blocked {
+				t.Fatal("retained NAT did not block Hub deletion", task)
+			}
+			continue
+		}
+		if len(task.Steps) != len(selection) || task.Steps[0].AssetID != value.ID {
+			t.Fatal("NAT plan changed its dependency scope", task.Steps)
+		}
+		if len(selection) == 2 && (task.Steps[1].AssetID != hub.ID || !slices.Contains(task.Steps[1].DependsOn, task.Steps[0].ID)) {
+			t.Fatal("Hub can run before referring NAT", task.Steps)
+		}
+	}
+
 }
 
 func TestCloudNatCursorBindsParentIncarnations(t *testing.T) {
@@ -322,4 +378,10 @@ func TestCloudNatCursorBindsParentIncarnations(t *testing.T) {
 	if _, err := r.List(t.Context(), request); err == nil {
 		t.Fatal("changed parent accepted old NAT cursor")
 	}
+}
+
+type cloudNatHubContributors struct{}
+
+func (cloudNatHubContributors) ResolveContributors(_ context.Context, _ asset.CloudConnection, _ []asset.Asset) ([]governance.Contributor, error) {
+	return []governance.Contributor{NewCloudNatHubs()}, nil
 }

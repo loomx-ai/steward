@@ -5925,3 +5925,32 @@ against a still-occupied same-task scope while allowing the bound continuation.
   backend/live acceptance and the remaining provider families stay open. All eight
   overall acceptance criteria remain unfinished. Protocol/SQLite evidence is not
   independent cloud acceptance.
+
+
+### Cloud NAT CEL Hub references and regional/global cleanup ordering
+
+- Parse native CEL Hub comparisons with the existing AST parser. Literal/raw/triple/
+  escaped/reversed references are canonicalized without losing foreign-project Hubs;
+  ordinary strings/comments do not create dependencies. Unbound or computed Hub
+  selectors resolve potential targets from complete native source-project NCC VPC
+  spoke membership, matching GETs, repeated membership and a final Router recheck.
+- The static GCP graph contributor matches full native identities across regional
+  NAT/global Hub scopes within a connection/partition. Ambiguity and old unbound
+  observations without membership proof fail. Missing targets stay unresolved.
+  Hub-only cleanup is blocked by retained NAT references; selected NATs precede
+  selected Hubs, and NAT-only cleanup keeps its Hub.
+- Native protocol and actual SQLite scan/graph/planning tests cover permission and
+  pagination failures, malformed/CEL inputs, changed membership and Router identity,
+  prior-history preservation, global dependencies, retained resources and deletion
+  ordering. Bilingual guidance documents extra spoke permissions and rescan needs.
+  See [Cloud NAT evidence](providers/gcp/fixtures/cloud-nat/README.md).
+- Native source/catalog bytes and dependencies stay unchanged: 200 rules, 785
+  operations, SHA-256 `f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`.
+  Computed route-policy named sets, missing operation history, unsafe legacy ordering
+  migration, remaining provider families and independent backend/live acceptance
+  remain open. All eight overall acceptance criteria are unfinished; repeated native
+  reads are not an atomic snapshot and local fixtures do not prove cloud acceptance.
+- Milestone validation passed in the isolated checkout: full GCP (240.948s), all
+  internal packages including architecture (25.397s) and cleanup (7.708s); focused
+  race GCP (38.594s), cleanup (5.165s), server (5.912s); final parser/list-shape race
+  (5.132s); vet and bilingual documentation checks (30 chapters, 10 screenshots).

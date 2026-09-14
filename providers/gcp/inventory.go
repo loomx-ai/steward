@@ -324,6 +324,11 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	refs := references(c, data)
 	if nativeType == cloudNatType {
 		refs = c.cloudNatReferences(data)
+		hubs, _, err := c.cloudNatHubReferences(data)
+		if err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		refs[cloudNatHubType] = hubs
 	}
 	if nativeType == securityServiceType {
 		refs = map[string][]string{}

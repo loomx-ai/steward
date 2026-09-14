@@ -414,11 +414,24 @@ NAT64 selection, rules, port allocation and logging. Filter with
 name; the inventory identity is not a separate REST endpoint or CAI asset type.
 See the [native Router schema](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers).
 
-Explicit router, VPC, subnet and address references form graph relationships when
-the related resources are also scanned. Hub references embedded in rule CEL are
-retained as configuration but are not yet resolved into graph edges. Incomplete,
-denied, missing or mismatched router responses fail the shard and preserve prior
-observations. Only a complete matching router response can establish NAT absence.
+Router, VPC, subnet, address and NCC Hub references form graph relationships when
+the related resources are also scanned. Native CEL equality expressions identify
+literal `nexthop.hub` targets; comments and ordinary strings do not create references.
+For a bare or computed Hub selector, scans list the source project's NCC spokes,
+read matching VPC spokes, repeat the membership read and recheck the Router.
+This requires `networkconnectivity.spokes.list` and `networkconnectivity.spokes.get`
+in addition to Router reads. All matching Hub candidates are retained as potential
+dependencies; packet predicates are never executed. A complete empty membership
+list adds no Hub. Rereads detect observed changes but provide no atomic snapshot.
+See the [Private NAT configuration guide](https://docs.cloud.google.com/nat/docs/set-up-private-nat).
+
+Regional NATs resolve global Hubs by complete native identity within the same
+connection and partition. Missing or foreign-project Hubs remain unresolved references.
+Keeping a referring NAT blocks Hub deletion; selecting both orders NAT before Hub.
+Selecting only the NAT retains its Hub. Rescan older NAT records before rebuilding
+relationships for unbound Hub expressions. Malformed CEL or incomplete, denied,
+missing or changed Router/spoke responses fail the shard and preserve prior
+observations. Only a complete matching Router response can establish NAT absence.
 NAT cleanup removes the reviewed configuration through the native Router PATCH
 API, waits for its regional operation and confirms absence in a complete router
 read. It needs `compute.routers.get`, `compute.routers.update` and

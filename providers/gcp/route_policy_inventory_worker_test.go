@@ -30,7 +30,11 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 		fixture = namedSetFixture
 	}
 	if nativeType == cloudNatType {
-		fixture = cloudNatFixture
+		fixture = func(name string) map[string]any {
+			data := natHubFixture("nexthop.hub")
+			data["name"] = name
+			return data
+		}
 		field = "rules"
 		reviewField, firstReview, recoveredReview = "sourceSubnetworkIpRangesToNat", "LIST_OF_SUBNETWORKS", "ALL_SUBNETWORKS_ALL_IP_RANGES"
 	}
@@ -46,6 +50,22 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 	ctx := t.Context()
 	phase := "first"
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if nativeType == cloudNatType && req.Method == "GET" && req.URL.Host == "networkconnectivity.googleapis.com" {
+			if phase == "hub-denied" {
+				return apiResponse(req, 403, `{}`), nil
+			}
+			if phase == "hub-partial" {
+				return apiResponse(req, 200, `{"unreachable":["us-central1"]}`), nil
+			}
+			spoke := map[string]any{"name": "projects/sample-project/locations/global/spokes/spoke-a", "hub": natHubA, "linkedVpcNetwork": map[string]any{"uri": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/network-a"}}
+			if strings.HasSuffix(req.URL.Path, "/spokes") {
+				return dataformResponse(req, 200, map[string]any{"spokes": []any{spoke}}), nil
+			}
+			if phase == "hub-drift" {
+				spoke["hub"] = natHubForeign
+			}
+			return dataformResponse(req, 200, spoke), nil
+		}
 		if req.Method != "GET" || req.URL.Host != "compute.googleapis.com" {
 			t.Fatal("unexpected API", req.URL)
 		}
@@ -84,6 +104,9 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 			}
 			if phase != "absent" {
 				data := fixture("policy-a")
+				if phase == "invalid-cel" {
+					object(array(data["rules"])[0])["match"] = "nexthop.hub =="
+				}
 				if phase == "recovered" {
 					data[reviewField] = recoveredReview
 					delete(data, "subnetworks")
@@ -127,7 +150,15 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 	}
 	now := time.Now().UTC()
 	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP, Partition: "gcp", Status: asset.ConnectionActive, CreatedAt: now, UpdatedAt: now}
+	if nativeType == cloudNatType {
+		if err := repositories.Inventory().PutScope(ctx, asset.Scope{ID: "project", ConnectionID: connection.ID, Kind: asset.ScopeProject, NativeID: "sample-project", CreatedAt: now, UpdatedAt: now}); err != nil {
+			t.Fatal(err)
+		}
+	}
 	scope := asset.Scope{ID: "region", ConnectionID: connection.ID, Kind: asset.ScopeRegion, NativeID: "us-central1", CreatedAt: now, UpdatedAt: now}
+	if nativeType == cloudNatType {
+		scope.ParentID = "project"
+	}
 	kind := r.resourceKind(nativeType)
 	for _, write := range []func() error{
 		func() error { return repositories.Connections().PutConnection(ctx, connection) },
@@ -151,6 +182,9 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 	if nativeType == routePolicyType {
 		steps = append(steps, "unresolved-set")
 	}
+	if nativeType == cloudNatType {
+		steps = append(steps, "hub-denied", "hub-partial", "hub-drift", "invalid-cel")
+	}
 	steps = append(steps, "absent", "recovered")
 	for _, step := range steps {
 		phase = step
@@ -169,7 +203,7 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 		if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
 			t.Fatal(err)
 		}
-		failed := step == "denied" || step == "missing" || step == "changed" || step == "unresolved-set"
+		failed := step == "denied" || step == "missing" || step == "changed" || step == "unresolved-set" || strings.HasPrefix(step, "hub-") || step == "invalid-cel"
 		err := handler.Handle(ctx, execution.Job{ID: execution.JobID(step), Type: execution.JobScan, Payload: map[string]any{"scan_shard_id": string(shard.ID)}})
 		if (err != nil) != failed {
 			t.Fatalf("%s scan: %v", step, err)

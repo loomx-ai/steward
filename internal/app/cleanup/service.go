@@ -2007,7 +2007,8 @@ func isNetworkFoundation(value asset.Asset) bool {
 		"ACS::CEN::TransitRouter",
 		"AWS::EC2::VPC",
 		"AWS::EC2::Subnet",
-		"compute.googleapis.com/NamedSet":
+		"compute.googleapis.com/NamedSet",
+		"networkconnectivity.googleapis.com/Hub":
 		return true
 	default:
 		return false

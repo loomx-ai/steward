@@ -119,6 +119,14 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 				}
 			}
 		}
+		if operation.ID == "networkconnectivity.projects.locations.spokes.list" {
+			if _, err := cloudNatObjects(response.Data, "spokes"); err != nil {
+				return nil, err
+			}
+			if err := cloudNatScalars(response.Data, []string{"nextPageToken"}, nil, nil, []string{"unreachable"}); err != nil {
+				return nil, err
+			}
+		}
 		if operation.Call.Product == "config" {
 			if err := infraListShape(response.Data, itemsPath); err != nil {
 				return nil, err

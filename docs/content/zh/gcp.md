@@ -330,10 +330,19 @@ IP 分配与排空、子网和 NAT64 选择、规则、端口分配及日志设�
 筛选。资源身份包含项目、地域、路由器和 NAT 名称；该盘点身份不代表独立的
 REST 接口或 CAI 资产类型。参阅[原生 Router 架构](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers)。
 
-同时扫描相关资源后，可查看路由器、VPC、子网和地址的显式引用关系。规则 CEL
-中的 Hub 引用保留在配置中，尚未解析为关系边。路由器响应不完整、权限不足、
-缺失或身份不符时，扫描分片失败并保留历史记录；只有完整且身份匹配的路由器响应
-才能确认 NAT 已不存在。
+同时扫描相关资源后，可查看路由器、VPC、子网、地址和 NCC Hub 的引用关系。
+扫描从原生 CEL 等式提取 `nexthop.hub` 的字符串字面量目标，不把注释或普通字符串
+当作引用。对于未指定 Hub 或使用计算表达式的选择器，扫描会完整列举源项目的 NCC
+spoke，逐项读取匹配的 VPC spoke，重复成员查询并重新核验 Router。除 Router 读取
+权限外，还需要 `networkconnectivity.spokes.list` 和 `networkconnectivity.spokes.get`。
+所有匹配 Hub 都保留为可能依赖，不执行数据包匹配表达式；完整空成员清单不添加 Hub。
+重复读取可发现已观测到的变化，但不提供原子快照。参阅[Private NAT 配置指南](https://docs.cloud.google.com/nat/docs/set-up-private-nat)。
+
+地域 NAT 按完整云资源身份连接同一连接、同一分区中的全局 Hub；缺失或跨项目 Hub
+保留为待解析引用。保留引用 Hub 的 NAT 会阻止删除 Hub；同时选择两者时先清理 NAT，
+只选 NAT 则保留 Hub。旧 NAT 记录中的未绑定 Hub 表达式需要重新扫描后才能重建关系。
+CEL 语法错误、Router/spoke 响应不完整、权限不足、缺失或状态变化时，扫描分片失败
+并保留历史记录；只有完整且身份匹配的 Router 响应才能确认 NAT 已不存在。
 
 清理 NAT 通过原生 Router PATCH 移除已审查的配置，等待地域操作完成，再从完整的
 路由器响应确认删除。需要 `compute.routers.get`、`compute.routers.update` 和

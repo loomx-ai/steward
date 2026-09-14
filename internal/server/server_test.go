@@ -17,6 +17,7 @@ import (
 	httptransport "github.com/loomx-ai/steward/internal/transport/http"
 	"github.com/loomx-ai/steward/providers/alicloud"
 	provideraws "github.com/loomx-ai/steward/providers/aws"
+	"github.com/loomx-ai/steward/providers/gcp"
 )
 
 func TestServerSupportsOnlyTerminalDatabases(t *testing.T) {
@@ -491,5 +492,19 @@ func TestAzureIndependentResourcesReceiveNativeReferenceDiscovery(t *testing.T) 
 				t.Fatal("missing native dependency discovery was silently accepted")
 			}
 		})
+	}
+}
+
+func TestGCPCloudNatHubContributorIsConnectedWithoutCascade(t *testing.T) {
+	runtime := &serviceContributorRuntime{}
+	resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})
+	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP}
+	nat := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: connection.ID, NativeType: "compute.googleapis.com/RouterNat"}}
+	contributors, err := resolver.ResolveContributors(t.Context(), connection, []asset.Asset{nat, nat})
+	if err != nil || len(contributors) != 2 || len(runtime.connections) != 0 {
+		t.Fatal(contributors, err, runtime.connections)
+	}
+	if _, ok := contributors[1].(*gcp.CloudNatHubs); !ok {
+		t.Fatalf("missing NAT Hub contributor: %T", contributors[1])
 	}
 }

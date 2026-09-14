@@ -18,7 +18,7 @@ The logical inventory type is `compute.googleapis.com/RouterNat`, with identity
 This is neither a public REST endpoint nor a claimed CAI asset type. Native NAT
 configuration is preserved separately from parent BGP peers/authentication keys.
 Explicit subnet/NAT64 references, active/draining IPs and private source ranges
-become dependencies. Hub references in CEL are not yet resolved.
+become dependencies. CEL Hub references are covered by the extension below.
 
 `cloud_nat_test.go` supplies native-shaped protocol fixtures. Tests cover regional,
 project, global and network scopes, parent pagination, distinct same-name NATs,
@@ -157,3 +157,42 @@ This milestone leaves all native source documents and generated catalog bytes
 unchanged (200 rules, 785 operations, SHA-256 above). Unprovable operation history,
 external writer races and independent backend/live acceptance remain open;
 reviewed parent cascade is covered in [Router evidence](../router/README.md); no live-cloud or independent-emulator result is claimed.
+
+
+## Private NAT NCC Hub dependencies
+
+The native [Router schema](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers)
+and [gcloud rule reference](https://docs.cloud.google.com/sdk/gcloud/reference/compute/routers/nats/rules/create)
+specify literal Hub URI equality. The [Private NAT setup guide](https://docs.cloud.google.com/nat/docs/set-up-private-nat)
+also describes bare `nexthop.hub` and mixed hybrid rules. The
+[VPC spoke guide](https://docs.cloud.google.com/network-connectivity/docs/network-connectivity-center/how-to/vpc-propose-a-spoke)
+requires the spoke and its VPC to share a project; the Hub may be in another project.
+
+The existing CEL parser extracts actual selector/literal equality nodes, including
+reversed operands, raw/triple/escaped strings and multiple Hub comparisons. It
+ignores textual decoys and never executes predicates. Syntax failures fail scans.
+Unbound selectors use the native project-wide `locations/-/spokes` LIST with full
+pagination and GET of each matching `linkedVpcNetwork.uri`. LIST/GET snapshots
+must agree, the complete membership read is repeated, and a final Router GET binds
+the original incarnation and full configuration. Empty membership is valid;
+multiple candidate Hubs are preserved without assuming a one-Hub limit. Native
+Spoke list/get permissions are needed only for these unbound rules. Unknown native
+configuration stays intact; extra dependency metadata is outside the NAT review.
+
+The static GCP contributor resolves regional NATs to global Hubs by full native
+identity, with connection/partition checks and rejection of duplicate identities.
+Missing targets remain ordinary unresolved references. Old unbound-rule records
+need a new membership scan. The cleanup foundation guard blocks Hub-only deletion
+while a referring NAT is kept, and orders selected NATs before selected Hubs.
+
+Protocol tests cover syntax and URI variants, complete empty and paged membership,
+unrelated/hybrid spokes, foreign and multiple Hubs, denied/partial/malformed lists,
+cycles, duplicate/foreign identities, missing or changed detail and Router drift
+or recreation. SQLite workers verify prior observations survive membership/CEL
+failures and recover after complete reads; the real graph and planner verify
+regional/global relationships, retained dependencies, order and NAT-only scope.
+Server tests verify the contributor is connected even without a cascade resource.
+These are locally authored fixtures, not independent backend or live-cloud acceptance.
+The reads do not provide an atomic snapshot or protect against an external writer.
+Native source/catalog bytes remain unchanged (200 rules, 785 operations; SHA-256
+`f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`).

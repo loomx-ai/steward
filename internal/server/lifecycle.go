@@ -90,6 +90,12 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 			contributors = append(contributors, contributor)
 			break
 		}
+		for _, value := range assets {
+			if value.Identity.Provider == asset.ProviderGCP && value.Identity.NativeType == "compute.googleapis.com/RouterNat" {
+				contributors = append(contributors, gcp.NewCloudNatHubs())
+				break
+			}
+		}
 		return contributors, nil
 	case asset.ProviderAzure:
 		contributors := []governance.Contributor{azure.NewResourceAttachments()}
