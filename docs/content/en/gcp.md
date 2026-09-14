@@ -100,6 +100,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
 | Hyperdisk Storage Pools | Native pools, capacity/performance usage, provisioning modes and disk members | Inventory and reviewed cleanup |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
+| Cloud NAT | Per-router public/private NAT configurations, rules, subnet and address references | Inventory; independent deletion pending |
 | Cloud Router named sets | Per-router prefix/community sets, CEL elements and fingerprint | Reviewed deletion after referring policies |
 | Cloud Router BGP policies | Per-router import/export policies, CEL terms and fingerprint | Independent native policy deletion with BGP reference detachment |
 | Cloud Identity | Groups and member relationships in the configured directory | Reviewed group deletion; ordinary member links can also be removed independently |
@@ -330,3 +331,22 @@ router identity, waits for the regional operation, and confirms the set is absen
 Incomplete policy reads, unresolved references, changed resources or provider
 conflicts stop cleanup. See the [native deletion API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteNamedSet).
 Parent-router cascade review remains unfinished.
+
+## Cloud NAT gateways
+
+Cloud NAT scans need `compute.routers.list` and `compute.routers.get` in the
+selected project. Each router's native `nats` array supplies independent gateway
+records, including public/private type, IP allocation and draining, subnet and
+NAT64 selection, rules, port allocation and logging. Filter with
+`type = "compute.googleapis.com/RouterNat"` and, for example,
+`properties.type = "PRIVATE"`. Identities include project, region, router and NAT
+name; the inventory identity is not a separate REST endpoint or CAI asset type.
+See the [native Router schema](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers).
+
+Explicit router, VPC, subnet and address references form graph relationships when
+the related resources are also scanned. Hub references embedded in rule CEL are
+retained as configuration but are not yet resolved into graph edges. Incomplete,
+denied, missing or mismatched router responses fail the shard and preserve prior
+observations. Only a complete matching router response can establish NAT absence.
+Independent NAT deletion and parent-router cascade review remain unfinished.
+Google documents that [deleting a router also deletes its Cloud NAT gateways](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers).

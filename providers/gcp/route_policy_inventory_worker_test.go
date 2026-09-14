@@ -23,9 +23,15 @@ func TestRoutePolicySQLiteFailureAbsenceAndRecovery(t *testing.T) {
 func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 	list, get, field := "listRoutePolicies", "getRoutePolicy", "terms"
 	fixture := routePolicyFixture
+	reviewField, firstReview, recoveredReview := "fingerprint", "ZnAx", "ZnAy"
 	if nativeType == namedSetType {
 		list, get, field = "listNamedSets", "getNamedSet", "elements"
 		fixture = namedSetFixture
+	}
+	if nativeType == cloudNatType {
+		fixture = cloudNatFixture
+		field = "rules"
+		reviewField, firstReview, recoveredReview = "sourceSubnetworkIpRangesToNat", "LIST_OF_SUBNETWORKS", "ALL_SUBNETWORKS_ALL_IP_RANGES"
 	}
 	ctx := t.Context()
 	phase := "first"
@@ -35,6 +41,27 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 		}
 		if strings.HasSuffix(req.URL.Path, "/routers") {
 			return dataformResponse(req, 200, map[string]any{"items": []any{map[string]any{"name": "router-a", "id": "1001", "selfLink": "https://www.googleapis.com" + req.URL.Path + "/router-a"}}}), nil
+		}
+		if nativeType == cloudNatType && strings.HasSuffix(req.URL.Path, "/router-a") {
+			if phase == "denied" {
+				return apiResponse(req, 403, `{}`), nil
+			}
+			if phase == "missing" {
+				return apiResponse(req, 404, `{}`), nil
+			}
+			parent := cloudNatParent(req.URL.Path)
+			if phase == "changed" {
+				parent["id"] = "2000"
+			}
+			if phase != "absent" {
+				data := fixture("policy-a")
+				if phase == "recovered" {
+					data[reviewField] = recoveredReview
+					delete(data, "subnetworks")
+				}
+				parent["nats"] = []any{data}
+			}
+			return dataformResponse(req, 200, parent), nil
 		}
 		if strings.HasSuffix(req.URL.Path, "/"+list) {
 			if phase == "absent" {
@@ -141,12 +168,15 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 		value := page.Items[0]
 		if step == "first" {
 			first = value
+			if nativeType == cloudNatType {
+				assertCloudNatSQLiteParentGraph(t, repositories, r, value)
+			}
 		}
-		fingerprint := "ZnAx"
+		fingerprint := firstReview
 		if step == "recovered" {
-			fingerprint = "ZnAy"
+			fingerprint = recoveredReview
 		}
-		if value.ID != first.ID || value.ClosedAt != nil || value.Normalized["fingerprint"] != fingerprint || len(array(value.Normalized[field])) != 1 {
+		if value.ID != first.ID || value.ClosedAt != nil || value.Normalized[reviewField] != fingerprint || len(array(value.Normalized[field])) != 1 {
 			t.Fatal("policy observation changed incorrectly", step, value)
 		}
 		if failed && !value.LastSeenAt.Equal(first.LastSeenAt) || step == "recovered" && !value.LastSeenAt.After(first.LastSeenAt) {

@@ -5610,3 +5610,42 @@ background evidence only, not acceptance evidence for this work.
   Official REST IAM sections confirm every named-set cleanup permission listed
   in the setup guide. Only 23 milestone files are included; all 65 original WIP
   hashes are preserved. No runtime dependency or external cloud resource was added.
+
+### Native Cloud NAT inventory prerequisite
+
+- The official [router management guide](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers)
+  explicitly states that Router deletion also deletes its Cloud NAT gateways.
+  Added independent inventory of native embedded `Router.nats` before completing
+  parent cascade review. `compute.googleapis.com/RouterNat` identities include
+  project, region, router and NAT name; they do not claim an independent REST
+  endpoint or CAI asset type. No delete action is exposed in this milestone.
+- One native `routers.get` returns all NAT configurations for a listed router.
+  Existing parent pagination/scope fanout is reused. The scan validates parent
+  name/selfLink/incarnation, complete native array shapes and unique NAT names,
+  retaining unknown fields and enum values. Denied/missing/partial or malformed
+  responses fail the shard rather than establishing absence. Fresh parent identity
+  is recorded without copying BGP peer or authentication-key data into NAT assets.
+- Native public/private settings, allocation/draining, subnet/NAT64 selection,
+  rules, logging and ports are queryable. Explicit subnet and rule source ranges,
+  active/draining IPs, Router and VPC references are retained as relationships.
+  Rule CEL Hub references are not yet resolved. The Alibaba NAT gateway mapping
+  now points to the actual NAT component and remains pending verification.
+- Protocol tests cover scope isolation, parent pagination and cursor incarnation
+  binding, same-name components, malformed responses and pinned JSON Schema
+  shape validation. SQLite scan/history jobs verify failure retention,
+  authoritative absence and recovery; the real graph worker persists the scanned
+  NAT's dependency on a seeded matching Router asset. These tests are not
+  independent mock-server or live-cloud acceptance.
+- All 60 native source documents, all 785 operations and the prior 199 resource
+  rules are unchanged. The catalog now contains 200 resource rules with SHA-256
+  `2c96b58da0d7f550d427f170bbcce6d0f96f6e37c4d21c556c683c26ab2080c3`.
+  Native schema provenance and runnable checks are recorded in
+  [Cloud NAT evidence](providers/gcp/fixtures/cloud-nat/README.md).
+- Independent NAT removal, parent Router cascade review, independent/live
+  acceptance and broader provider work remain unfinished. All eight overall
+  acceptance criteria remain open.
+- Verification: `go test ./providers/gcp ./internal/...` passed (GCP 196.708s);
+  focused NAT/policy/set/catalog/property tests passed in 17.091s. Focused race
+  checks passed in 46.790s and GCP/internal vet passed. Isolated documentation
+  checks passed for 30 chapters and 10 screenshots. All 65 original WIP file
+  hashes were verified unchanged before application to the main workspace.

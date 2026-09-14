@@ -136182,6 +136182,24 @@
           "compute.routers.deleteNamedSet"
         ]
       }
+    },
+    {
+      "nativeType": "compute.googleapis.com/RouterNat",
+      "class": "network.nat_gateway",
+      "displayName": "Cloud NAT gateway",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "nats",
+        "read_operations": [
+          "compute.routers.get"
+        ],
+        "list_operations": [
+          "compute.routers.get"
+        ],
+        "delete_operations": []
+      }
     }
   ]
 }

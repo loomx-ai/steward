@@ -1729,13 +1729,15 @@ resources:
     - delete
   gcp:
     resources:
-    - compute.googleapis.com/Router
+    - compute.googleapis.com/RouterNat
   azure:
     resources:
     - Microsoft.Network/natGateways
   status: pending_verification
-  notes: GCP Cloud NAT is a named configuration in Cloud Router. The component must be discovered and
-    removed without deleting unrelated router/NAT configuration.
+  notes: GCP Cloud NAT configurations are independently inventoried from native Router.nats,
+    including public/private settings and explicit subnet/IP dependencies. Independent
+    removal preserving other router/NAT configuration, parent cascade review and
+    independent/live backend acceptance remain unfinished.
 - alicloud: ACS::NAT::NatIp
   spec: providers/alicloud/specs/nat-ip.yaml
   class: network.nat_ip

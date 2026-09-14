@@ -7,6 +7,9 @@ const namedSetList = "compute.routers.listNamedSets"
 const namedSetRouterID = "_named_set_router_id"
 
 func routerComponentData(kind string, data map[string]any, name string) error {
+	if kind == cloudNatType {
+		return cloudNatData(data, name)
+	}
 	if kind == routePolicyType {
 		return routePolicyData(data, name)
 	}

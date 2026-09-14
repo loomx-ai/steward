@@ -65,6 +65,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
 | Hyperdisk 存储池 | 原生池、容量与性能用量、预配模式和磁盘成员 | 支持盘点和经审查的清理 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
+| Cloud NAT | 各路由器的公共/私有 NAT 配置、规则及子网/IP 引用 | 支持盘点；独立删除待实现 |
 | Cloud Router 命名集合 | 各路由器的前缀/社区集合、CEL 元素和指纹 | 审查引用后删除，先清理引用它的策略 |
 | Cloud Router BGP 策略 | 各路由器的导入/导出策略、CEL 条款和指纹 | 支持解除 BGP 引用后原生独立删除 |
 | Cloud Identity | 配置目录中的身份组及成员关系 | 审查后删除身份组；普通成员关系也可独立删除 |
@@ -264,3 +265,18 @@ CEL 语法错误或无法解析的计算所得集合名会使该策略扫描分�
 等待地域操作完成，并确认集合已不存在。策略读取不完整、引用无法解析、资源发生
 变化或云端冲突都会停止清理。详见[原生删除 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteNamedSet)。
 父路由器的级联清理审查仍待补齐。
+
+## Cloud NAT 网关
+
+扫描 Cloud NAT 需要目标项目的 `compute.routers.list` 和 `compute.routers.get`
+权限。Steward 从各路由器的原生 `nats` 数组独立发现网关，包括公共/私有类型、
+IP 分配与排空、子网和 NAT64 选择、规则、端口分配及日志设置。可用
+`type = "compute.googleapis.com/RouterNat"` 和 `properties.type = "PRIVATE"`
+筛选。资源身份包含项目、地域、路由器和 NAT 名称；该盘点身份不代表独立的
+REST 接口或 CAI 资产类型。参阅[原生 Router 架构](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers)。
+
+同时扫描相关资源后，可查看路由器、VPC、子网和地址的显式引用关系。规则 CEL
+中的 Hub 引用保留在配置中，尚未解析为关系边。路由器响应不完整、权限不足、
+缺失或身份不符时，扫描分片失败并保留历史记录；只有完整且身份匹配的路由器响应
+才能确认 NAT 已不存在。独立 NAT 删除和父路由器的级联清理审查仍待实现。
+Google 明确说明，[删除路由器也会删除其中的 Cloud NAT 网关](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers)。

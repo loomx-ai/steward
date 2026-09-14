@@ -4663,6 +4663,22 @@
       "delete_operations": [
         "compute.routers.deleteNamedSet"
       ]
+    },
+    {
+      "native_type": "compute.googleapis.com/RouterNat",
+      "collection": "nats",
+      "class": "network.nat_gateway",
+      "display_name": "Cloud NAT gateway",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.routers.get"
+      ],
+      "list_operations": [
+        "compute.routers.get"
+      ],
+      "delete_operations": []
     }
   ],
   "sdk_documents": [

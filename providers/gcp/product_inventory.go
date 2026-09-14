@@ -167,6 +167,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, err
 		}
 	}
+	if nativeType == cloudNatType {
+		if _, err := c.cloudNatRouter(result.Data, target.ParentID, target.ParentUID); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+	}
 	var records []productRecord
 	if nativeType != discoverySiteType && nativeType != securityBillingType {
 		records, err = productRecords(result.Data, target.API.ItemsPath)
@@ -283,7 +288,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				return contracts.InventoryBatch{}, err
 			}
 			var live map[string]any
-			if isRouterComponent(nativeType) {
+			if nativeType == cloudNatType {
+				live = record.Data // routers.get already returned the complete native NAT object.
+			} else if isRouterComponent(nativeType) {
 				live, err = c.routerComponentRead(ctx, nativeType, id)
 			} else if isInfra(nativeType) {
 				live, err = c.infraRead(ctx, nativeType, id)
@@ -403,6 +410,15 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, err
 		}
 		if target.ParentID != "" {
+			if nativeType == cloudNatType {
+				item.Normalized[cloudNatRouterID] = result.Data["id"]
+				networks := references(c, map[string]any{"network": result.Data["network"]})["compute.googleapis.com/Network"]
+				item.Normalized[referenceKey("compute.googleapis.com/Network")] = networks
+				item.NetworkReferences = append(item.NetworkReferences, networks...)
+				if len(networks) == 1 {
+					item.Normalized["vpc_id"] = networks[0]
+				}
+			}
 			if nativeType == namedSetType {
 				item.Normalized[namedSetRouterID] = target.ParentUID
 				actionable := firewallNumericID(target.ParentUID) && text(item.Normalized["fingerprint"]) != ""
@@ -985,6 +1001,8 @@ func (c *client) productIdentity(kind resourceType, operation catalog.Operation,
 		collection := "routePolicies"
 		if kind.NativeType == namedSetType {
 			collection = "namedSets"
+		} else if kind.NativeType == cloudNatType {
+			collection = "nats"
 		}
 		id := "//compute.googleapis.com/projects/" + text(parameters["project"]) + "/regions/" + text(parameters["region"]) + "/routers/" + text(parameters["router"]) + "/" + collection + "/" + name
 		if _, _, err := c.routerComponentOperation(kind.NativeType, id, "GET"); err != nil {

@@ -37,7 +37,7 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 199 explicit resource rules and 785 selected methods
+The current catalog has 200 explicit resource rules and 785 selected methods
 from 58 selected Discovery fragments at 56 official URLs and one pinned Cloud SDK archive (Network Services and Security Center Management). Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
@@ -411,3 +411,8 @@ Policy-to-set relationships use the pinned official CEL Go parser
 nodes, including literal escapes and nested expressions. No expression is
 executed. Computed set names remain unresolved and fail the affected scan shard
 instead of silently omitting a dependency. API metadata/counts remain unchanged.
+
+Cloud NAT gateways use the existing `routers.get` method and embedded `nats`
+objects. Their independent inventory identity includes the containing router;
+there is no invented NAT endpoint or deletion operation. See
+[Cloud NAT evidence](../fixtures/cloud-nat/README.md).

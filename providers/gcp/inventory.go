@@ -319,6 +319,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized["cleanup_protection_reason"] = "identity_group_locked_or_protected"
 	}
 	refs := references(c, data)
+	if nativeType == cloudNatType {
+		refs = c.cloudNatReferences(data)
+	}
 	if nativeType == securityServiceType {
 		refs = map[string][]string{}
 	}

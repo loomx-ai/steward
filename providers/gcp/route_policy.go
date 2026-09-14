@@ -24,7 +24,9 @@ func (c *client) routePolicyOperation(id, method string) (catalog.Operation, map
 	return c.routerComponentOperation(routePolicyType, id, method)
 }
 
-func isRouterComponent(kind string) bool { return kind == routePolicyType || kind == namedSetType }
+func isRouterComponent(kind string) bool {
+	return kind == routePolicyType || kind == namedSetType || kind == cloudNatType
+}
 
 func (c *client) routerComponentOperation(kind, id, method string) (catalog.Operation, map[string]any, error) {
 	collection, query, operation := "routePolicies", "policy", routePolicyGet
@@ -35,6 +37,11 @@ func (c *client) routerComponentOperation(kind, id, method string) (catalog.Oper
 		collection, query, operation = "namedSets", "namedSet", namedSetGet
 		if method == "DELETE" {
 			operation = namedSetDelete
+		}
+	} else if kind == cloudNatType {
+		collection, query, operation = "nats", "", "compute.routers.get"
+		if method != "GET" {
+			return catalog.Operation{}, nil, groupDenied("cloud_nat_method_unsupported")
 		}
 	} else if kind != routePolicyType {
 		return catalog.Operation{}, nil, groupDenied("router_component_type_invalid")
@@ -52,7 +59,11 @@ func (c *client) routerComponentOperation(kind, id, method string) (catalog.Oper
 	if !ok {
 		return catalog.Operation{}, nil, groupDenied("route_policy_method_missing")
 	}
-	return op, map[string]any{"project": c.project, "region": parts[3], "router": parts[5], query: parts[7]}, nil
+	parameters := map[string]any{"project": c.project, "region": parts[3], "router": parts[5]}
+	if query != "" {
+		parameters[query] = parts[7]
+	}
+	return op, parameters, nil
 }
 
 func (c *client) routePolicyRead(ctx context.Context, id string) (map[string]any, error) {
@@ -71,6 +82,18 @@ func (c *client) routerComponentRead(ctx context.Context, kind, id string) (map[
 	result, err := c.requestResult(ctx, bound.Method, bound.URL, nil, nil)
 	if err != nil {
 		return nil, err
+	}
+	if kind == cloudNatType {
+		values, err := c.cloudNatRouter(result.Data, strings.TrimSuffix(id, "/nats/"+last(id)), "")
+		if err != nil {
+			return nil, err
+		}
+		for _, value := range values {
+			if value["name"] == last(id) {
+				return value, nil
+			}
+		}
+		return nil, groupDenied("cloud_nat_missing_from_router")
 	}
 	data := object(result.Data["resource"])
 	if err := routerComponentData(kind, data, last(id)); err != nil {

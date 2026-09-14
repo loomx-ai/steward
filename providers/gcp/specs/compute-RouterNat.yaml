@@ -1,0 +1,94 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/RouterNat
+  class: network.nat_gateway
+presentation:
+  displayNames:
+    en-US: Cloud NAT gateway
+    zh-CN: Cloud NAT 网关
+  consoleLinkTemplate: https://console.cloud.google.com/net-services/nat/list?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    source: product-api
+    nativeType: compute.googleapis.com/Router
+  list:
+    operation: compute.routers.get
+    parameters:
+      project: scope.project
+      region: scope.location
+      router: parent.normalized.name
+    itemsPath: nats
+    identityPath: name
+  detail:
+    operation: compute.routers.get
+    itemsPath: nats
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  type:
+    path: type
+    type: string
+  natIpAllocateOption:
+    path: natIpAllocateOption
+    type: string
+  natIps:
+    path: natIps
+    type: array
+  drainNatIps:
+    path: drainNatIps
+    type: array
+  subnetworks:
+    path: subnetworks
+    type: array
+  nat64Subnetworks:
+    path: nat64Subnetworks
+    type: array
+  sourceSubnetworkIpRangesToNat:
+    path: sourceSubnetworkIpRangesToNat
+    type: string
+  sourceSubnetworkIpRangesToNat64:
+    path: sourceSubnetworkIpRangesToNat64
+    type: string
+  rules:
+    path: rules
+    type: array
+  endpointTypes:
+    path: endpointTypes
+    type: array
+  enableDynamicPortAllocation:
+    path: enableDynamicPortAllocation
+    type: boolean
+  minPortsPerVm:
+    path: minPortsPerVm
+    type: number
+  maxPortsPerVm:
+    path: maxPortsPerVm
+    type: number
+  logConfig:
+    path: logConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Router
+  targetIdPath: refs_compute_googleapis_com_Router
+- type: member_of
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: uses
+  targetType: compute.googleapis.com/Subnetwork
+  targetIdPath: refs_compute_googleapis_com_Subnetwork
+- type: uses
+  targetType: compute.googleapis.com/Address
+  targetIdPath: refs_compute_googleapis_com_Address
