@@ -182,8 +182,8 @@ or live-cloud guarantee is claimed. Run with the existing loopback
 `STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL` harness configuration and
 `go test ./providers/gcp -run '^TestMonitoringDashboardIndependentMockGCP$' -count=1 -v`.
 
-Cross-project policy mappings, direct Uptime queries and unresolved query languages
-remain separate work. The [native Dashboard DELETE](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards/delete)
+Arbitrary cross-project policy mappings and unresolved query languages remain separate
+work. The [native Dashboard DELETE](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards/delete)
 has no etag precondition, so the last GET cannot close external-writer races.
 
 
@@ -215,3 +215,35 @@ Both results survive JSON restart and own-404 readback. The standalone native Po
 test also verifies the backend's Unimplemented response before each of its four
 explicit Dashboard LIST fixtures. Neither test claims native list/IAM enforcement,
 arbitrary cross-project consumer discovery or live-cloud acceptance.
+
+
+## Direct Uptime queries and Monitoring coordination
+
+Uptime review now gathers native Dashboard snapshots alongside AlertPolicy snapshots
+through the same metric-scoping-project, project-identity and log-routing readers.
+Native time-series filters and ratio denominators use the existing metric/check-ID
+parser. Default-host LogsPanel filters combine with known log routes; explicit
+monitored-project sources are recognized. Template expressions, unsupported languages,
+unknown structures and unreviewed foreign-project/log-view sources remain unresolved.
+Fresh local references require explicit Dashboard deletion before Uptime; remote
+consumers never authorize cross-project writes through the monitored connection.
+
+Unit/protocol checks cover metric/check exclusions, ratio denominators, templates,
+unknown dialects, log routes and source names; foreign-project LIST/GET errors, paging,
+identity mismatch and reverse-scope drift; local graph boundaries, late references,
+prerequisite review and conservative synchronous settlement. The SQLite ordered-worker
+scenario now has direct Dashboard→Uptime and Dashboard→Policy→Uptime dependencies.
+All five Monitoring kinds share one project write reservation. This fixes the previous
+collection-specific reservation behavior; older saved collection suffixes are normalized
+when read, and failed legacy reservations block new work of other Monitoring kinds.
+
+`TestMonitoringDashboardUptimeIndependentMockGCP` forwards 26 native requests with
+one Dashboard and one Uptime DELETE, verifying reference blocking, ordered removal,
+JSON restart and own-404 settlement. Nine Dashboard LIST responses, six reverse-scope
+responses and twelve Logging LIST responses are explicit fixtures. Before substitution,
+the unchanged backend is probed: Dashboard/Uptime LIST return Unimplemented, while
+reverse-scope and `in_scope("DEFAULT")` sink requests reject their native query bindings
+with HTTP 400. These are backend limitations, not evidence that the real APIs reject
+the cataloged requests. The standalone native Uptime test also proves each unsupported
+read prevents any DELETE before fixtures are enabled. No native scope discovery, sink
+filtering, IAM enforcement, external-write lock or live-cloud guarantee is claimed.

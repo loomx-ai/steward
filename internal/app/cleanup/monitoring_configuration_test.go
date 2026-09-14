@@ -43,6 +43,10 @@ func monitoringConfigurationAsset(id, project string, channel bool, billing ...b
 		value.Identity.NativeType = "monitoring.googleapis.com/Dashboard"
 		value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "/alertPolicies/", "/dashboards/", 1)
 	}
+	if len(billing) > 3 && billing[3] {
+		value.Identity.NativeType = "monitoring.googleapis.com/UptimeCheckConfig"
+		value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "/alertPolicies/", "/uptimeCheckConfigs/", 1)
+	}
 	return value
 }
 func testMonitoringPlans(t *testing.T, channel bool, billing ...bool) {
@@ -85,6 +89,9 @@ func testMonitoringPlans(t *testing.T, channel bool, billing ...bool) {
 		case "host":
 			value.Identity.NativeID = strings.Replace(strings.Replace(value.Identity.NativeID, "monitoring.googleapis.com", "evil.example", 1), "billingbudgets.googleapis.com", "evil.example", 1)
 		case "collection":
+			if value.Identity.NativeType == "monitoring.googleapis.com/UptimeCheckConfig" {
+				value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "/uptimeCheckConfigs/", "/wrong/", 1)
+			}
 			value.Identity.NativeID = strings.Replace(strings.Replace(value.Identity.NativeID, "/groups/", "/wrong/", 1), "/dashboards/", "/wrong/", 1)
 			value.Identity.NativeID = strings.Replace(strings.Replace(strings.Replace(value.Identity.NativeID, "alertPolicies", "uptimeCheckConfigs", 1), "notificationChannels", "uptimeCheckConfigs", 1), "/budgets/", "/wrong/", 1)
 		case "extra":
@@ -194,6 +201,9 @@ func TestMonitoringGroupRecoveryBindsFrozenConsumers(t *testing.T) {
 func TestMonitoringPolicyRecoveryBindsFrozenDashboards(t *testing.T) {
 	testMonitoringConsumerRecovery(t, false, true)
 }
+func TestMonitoringUptimeRecoveryBindsFrozenDashboards(t *testing.T) {
+	testMonitoringConsumerRecovery(t, false, true, true)
+}
 func testMonitoringConsumerRecovery(t *testing.T, group bool, dashboard ...bool) {
 	repos, err := sqlite.Open(filepath.Join(t.TempDir(), "channel-recovery.db"), "../../../migrations")
 	if err != nil {
@@ -209,6 +219,9 @@ func testMonitoringConsumerRecovery(t *testing.T, group bool, dashboard ...bool)
 		channel = monitoringPolicyAsset("target-policy", "sample-project")
 		policy = monitoringConfigurationAsset("dashboard", "sample-project", false, false, false, true)
 		key = "_monitoring_dashboard_configuration"
+		if len(dashboard) > 1 && dashboard[1] {
+			channel = monitoringConfigurationAsset("uptime", "sample-project", false, false, false, false, true)
+		}
 	}
 	policy.Normalized = map[string]any{key: "reviewed"}
 	root := plan.CleanupTaskStep{ID: "channel", AssetID: channel.ID, Action: "delete", DependsOn: []plan.StepID{"policy"}, Evidence: map[string]any{plan.EvidencePlannedAsset: channel, plan.EvidenceRequiredDeletions: []plan.RequiredDeletion{{StepID: "policy", AssetID: policy.ID}}}}
@@ -255,4 +268,11 @@ func TestMonitoringDashboardPlansSerializeProjectWrites(t *testing.T) {
 }
 func TestMonitoringDashboardProjectScopePersistsThroughFailures(t *testing.T) {
 	testMonitoringScopeFailures(t, false, false, false, true)
+}
+
+func TestMonitoringUptimePlansSerializeProjectWrites(t *testing.T) {
+	testMonitoringPlans(t, false, false, false, false, true)
+}
+func TestMonitoringUptimeProjectScopePersistsThroughFailures(t *testing.T) {
+	testMonitoringScopeFailures(t, false, false, false, false, true)
 }

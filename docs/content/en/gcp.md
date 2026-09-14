@@ -639,6 +639,25 @@ Deletion repeats the consumer review and confirms selected dashboards are absent
 through their own GETs. Frozen dashboard prerequisites remain bound to policy
 receipts and project write reservations after restart. Discovery also runs for
 policy-only scans and requires `monitoring.dashboards.list/get`. This checks the
-configured project's dashboards; arbitrary references from other projects and
-direct Dashboard queries of Uptime metrics/logs still need broader coverage.
+configured project's dashboards; arbitrary policy-object references from other projects still need broader coverage.
 See the [AlertChart and IncidentList contracts](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards#AlertChart).
+
+
+Uptime dependency review includes dashboards in every discovered metric-scoping
+project and applicable project log-routing destination. Native time-series filters
+and ratio denominators use the Uptime metric/check-ID parser. Default-host log panels
+also use the verified route and log filter; an explicit monitored-project log source
+is recognized. Query templates, unsupported languages, unknown structure and unreviewed
+foreign-project/log-view sources cannot establish absence. Cross-project consumers
+remain blockers requiring their own connection; they are not deleted through the
+monitored project's connection.
+
+Fresh local dashboards require explicit selection before the Uptime check. Complete
+LIST/GET/re-LIST snapshots are enclosed by repeated metric-scope and log-route reads;
+permission failures and configuration drift prevent cleanup. Frozen Dashboard/Policy
+prerequisites and synchronous receipts survive restart, with own GET 404 confirming
+completion. All five reviewed Monitoring resource types now share one connection/project
+write reservation. Older collection-specific reservations are recognized, and uncertain
+failed/canceled Uptime actions retain that reservation until independently settled.
+Arbitrary dashboards outside the discovered projects, detailed log-view authority and
+unsupported query languages remain outside the currently proven coverage.

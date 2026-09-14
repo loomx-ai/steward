@@ -137,13 +137,17 @@ func monitoringPolicyReviews(values map[string]map[string]any) string {
 	return firewallDigest(reviews)
 }
 
-type monitoringPolicy struct {
-	Data           map[string]any
-	Metrics, Local bool
-	LogRoutes      []map[string]any
+type monitoringConsumer struct {
+	NativeType, Project, ProjectNumber, MonitoredProject, MonitoredNumber string
+	Data                                                                  map[string]any
+	Metrics, Local                                                        bool
+	LogRoutes                                                             []map[string]any
 }
 
-func (p monitoringPolicy) reference(check string) monitoringReference {
+func (p monitoringConsumer) reference(check string) monitoringReference {
+	if p.NativeType == monitoringDashboardType {
+		return p.dashboardReference(check)
+	}
 	result := alertPolicyUptimeScopedReference(p.Data, check, p.Metrics, false)
 	route := monitoringNoReference
 	if p.Local {
@@ -157,7 +161,10 @@ func (p monitoringPolicy) reference(check string) monitoringReference {
 	}
 	return result
 }
-func (c *client) monitoringPolicies(ctx context.Context, checks ...string) (map[string]monitoringPolicy, error) {
+func (c *client) monitoringPolicies(ctx context.Context, checks ...string) (map[string]monitoringConsumer, error) {
+	return c.monitoringConsumers(ctx, []string{alertPolicyType}, checks...)
+}
+func (c *client) monitoringConsumers(ctx context.Context, kinds []string, checks ...string) (map[string]monitoringConsumer, error) {
 	projects, err := c.monitoringScopingProjects(ctx)
 	if err != nil {
 		return nil, err
@@ -222,7 +229,7 @@ func (c *client) monitoringPolicies(ctx context.Context, checks ...string) (map[
 		existing.metrics = existing.metrics || aliases[project]
 		existing.routes = append(existing.routes, routing.Projects[project]...)
 	}
-	result := map[string]monitoringPolicy{}
+	result := map[string]monitoringConsumer{}
 	numbers := make([]string, 0, len(readers))
 	for number := range readers {
 		numbers = append(numbers, number)
@@ -232,15 +239,26 @@ func (c *client) monitoringPolicies(ctx context.Context, checks ...string) (map[
 		scope := readers[number]
 		reader := scope.client
 
-		policies, err := reader.monitoringPolicySnapshot(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for id, live := range policies {
-			if _, exists := result[id]; exists {
-				return nil, groupDenied("monitoring_policy_duplicate")
+		for _, kind := range kinds {
+			var values map[string]map[string]any
+			var err error
+			switch kind {
+			case alertPolicyType:
+				values, err = reader.monitoringPolicySnapshot(ctx)
+			case monitoringDashboardType:
+				values, err = reader.monitoringGroupConsumerSnapshot(ctx, monitoringDashboardType)
+			default:
+				return nil, groupDenied("monitoring_consumer_type_invalid")
 			}
-			result[id] = monitoringPolicy{Data: live, Metrics: scope.metrics, Local: number == c.number, LogRoutes: scope.routes}
+			if err != nil {
+				return nil, err
+			}
+			for id, live := range values {
+				if _, exists := result[id]; exists {
+					return nil, groupDenied("monitoring_consumer_duplicate")
+				}
+				result[id] = monitoringConsumer{NativeType: kind, Project: reader.project, ProjectNumber: reader.number, MonitoredProject: c.project, MonitoredNumber: c.number, Data: live, Metrics: scope.metrics, Local: number == c.number, LogRoutes: scope.routes}
+			}
 		}
 	}
 	again, err := c.monitoringScopingProjects(ctx)
@@ -290,7 +308,7 @@ func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID
 	for _, check := range checks {
 		checkIDs = append(checkIDs, last(check.Identity.NativeID))
 	}
-	policies, err := h.client.monitoringPolicies(ctx, checkIDs...)
+	policies, err := h.client.monitoringConsumers(ctx, []string{alertPolicyType, monitoringDashboardType}, checkIDs...)
 	if err != nil {
 		return result, err
 	}
@@ -311,28 +329,30 @@ func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID
 			return result, groupDenied("monitoring_configuration_changed")
 		}
 		for _, id := range ids {
+			nativeType := policies[id].NativeType
+			reviewKey := monitoringReviewKey(nativeType)
 			ref := policies[id].reference(last(check.Identity.NativeID))
 			if ref == monitoringNoReference {
 				continue
 			}
 			block := func(reason string) {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: check.Identity.Provider, ConnectionID: check.Identity.ConnectionID, ControllerID: check.ID, NativeType: alertPolicyType, NativeID: id, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{"reason": reason, "source": monitoringDependencySource}})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: check.Identity.Provider, ConnectionID: check.Identity.ConnectionID, ControllerID: check.ID, NativeType: nativeType, NativeID: id, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{"reason": reason, "source": monitoringDependencySource}})
 			}
 			if ref == monitoringUnresolvedReference {
 				block("monitoring_condition_reference_unresolved")
 				continue
 			}
-			kind, _ := findType(alertPolicyType)
+			kind, _ := findType(nativeType)
 			if _, err := h.client.resourceURL(kind, id); err != nil {
-				block("monitoring_foreign_policy_requires_own_connection")
+				block("monitoring_foreign_consumer_requires_own_connection")
 				continue
 			}
-			policy, found, err := findManagedAsset(assets, check, alertPolicyType, id)
+			policy, found, err := findManagedAsset(assets, check, nativeType, id)
 			if err != nil {
 				return result, err
 			}
-			if !found || policy.ClosedAt != nil || text(policy.Normalized[alertPolicyReview]) != monitoringConfiguration(alertPolicyType, id, policies[id].Data) {
-				block("monitoring_policy_refresh_required")
+			if !found || policy.ClosedAt != nil || text(policy.Normalized[reviewKey]) != monitoringConfiguration(nativeType, id, policies[id].Data) {
+				block("monitoring_consumer_refresh_required")
 				continue
 			}
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: check.ID, TargetAssetID: policy.ID, Type: graph.RelationshipDependsOn, Source: monitoringDependencySource, Confidence: 1, Evidence: map[string]any{
@@ -340,7 +360,7 @@ func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID
 				graph.RelationshipEvidenceAutomaticSelection: false,
 				graph.RelationshipEvidenceAuthority:          string(graph.AuthorityAuthoritative),
 				graph.RelationshipEvidenceDeletionOrder:      graph.DeletionOrderTargetBeforeSource,
-				"native_policy":                              id, "configuration": policy.Normalized[alertPolicyReview],
+				"native_consumer":                            id, "configuration": policy.Normalized[reviewKey],
 			}})
 		}
 	}
@@ -353,6 +373,9 @@ func (a *action) monitoringPrerequisites(request contracts.ActionRequest) error 
 		p := prerequisite.Asset
 		proof, err := hex.DecodeString(text(p.Normalized[monitoringReviewKey(p.Identity.NativeType)]))
 		validType := p.Identity.NativeType == alertPolicyType
+		if a.kind.NativeType == uptimeType {
+			validType = validType || p.Identity.NativeType == monitoringDashboardType
+		}
 		if a.kind.NativeType == alertPolicyType {
 			validType = p.Identity.NativeType == monitoringDashboardType
 		}
@@ -407,14 +430,14 @@ func (a *action) monitoringIncoming(ctx context.Context, request contracts.Actio
 		}
 		return nil
 	}
-	policies, err := a.client.monitoringPolicies(ctx, last(a.identity.NativeID))
+	policies, err := a.client.monitoringConsumers(ctx, []string{alertPolicyType, monitoringDashboardType}, last(a.identity.NativeID))
 	if err != nil {
 		return err
 	}
 	for _, policy := range policies {
 		switch policy.reference(last(a.identity.NativeID)) {
 		case monitoringHasReference:
-			return groupDenied("uptime_referenced_by_alert_policy")
+			return groupDenied("uptime_referenced_by_monitoring_consumer")
 		case monitoringUnresolvedReference:
 			return groupDenied("monitoring_condition_reference_unresolved")
 		}

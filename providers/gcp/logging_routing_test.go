@@ -369,14 +369,14 @@ func TestLoggingRoutingDoesNotBorrowMetricsScope(t *testing.T) {
 	metricPolicy := map[string]any{"conditions": []any{map[string]any{"conditionThreshold": map[string]any{"filter": uptimeMetricFilter + ` AND metric.labels.check_id="public-check"`}}}}
 	route := []map[string]any{{"filter": `labels.check_id="public-check"`}}
 	for _, tt := range []struct {
-		policy monitoringPolicy
+		policy monitoringConsumer
 		want   monitoringReference
 	}{
-		{monitoringPolicy{Data: logPolicy, Metrics: true}, monitoringNoReference},
-		{monitoringPolicy{Data: metricPolicy, LogRoutes: route}, monitoringNoReference},
-		{monitoringPolicy{Data: logPolicy, LogRoutes: route}, monitoringHasReference},
-		{monitoringPolicy{Data: metricPolicy, Metrics: true}, monitoringHasReference},
-		{monitoringPolicy{Data: logPolicy, Metrics: true, Local: true}, monitoringHasReference},
+		{monitoringConsumer{Data: logPolicy, Metrics: true}, monitoringNoReference},
+		{monitoringConsumer{Data: metricPolicy, LogRoutes: route}, monitoringNoReference},
+		{monitoringConsumer{Data: logPolicy, LogRoutes: route}, monitoringHasReference},
+		{monitoringConsumer{Data: metricPolicy, Metrics: true}, monitoringHasReference},
+		{monitoringConsumer{Data: logPolicy, Metrics: true, Local: true}, monitoringHasReference},
 	} {
 		if got := tt.policy.reference("public-check"); got != tt.want {
 			t.Fatal(got, tt.want)

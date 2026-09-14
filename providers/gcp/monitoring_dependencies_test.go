@@ -32,6 +32,10 @@ func monitoringDependencyFixture(t *testing.T) *monitoringDependencyScenario {
 	s := &monitoringDependencyScenario{request: *request, data: alertPolicyFixture(), uptimeDeletes: deletes, uptimeMode: uptimeMode, uptimeData: uptimeData}
 	object(object(array(s.data["conditions"])[0])["conditionThreshold"])["filter"] = uptimeMetricFilter + ` AND metric.labels.check_id="public-check"`
 	s.r = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == "GET" && req.URL.Host == "monitoring.googleapis.com" && req.URL.Path == "/v1/projects/foreign-project/dashboards" && req.URL.RawQuery == "pageSize=100" {
+			return apiResponse(req, 200, `{"dashboards":[]}`), nil
+		}
+
 		if req.Method == "GET" && strings.HasPrefix(req.URL.Path, "/v3/projects/foreign-project/") {
 			return dataformResponse(req, 200, map[string]any{"alertPolicies": []any{}}), nil
 		}

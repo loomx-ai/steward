@@ -131,6 +131,8 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 						return apiResponse(r, 200, `{"metricsScopes":[{"name":"locations/global/metricsScopes/123456"}]}`), nil
 					case "/v3/projects/sample-project/alertPolicies?pageSize=100":
 						return apiResponse(r, 200, `{}`), nil
+					case "/v1/projects/sample-project/dashboards?pageSize=100":
+						return apiResponse(r, 200, `{"dashboards":[]}`), nil
 					}
 				}
 				var response any = data

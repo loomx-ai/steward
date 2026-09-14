@@ -36,7 +36,7 @@ func testMonitoringGroupSQLiteCleanup(t *testing.T, dashboard bool) {
 	object(object(array(s.values["alertPolicies"][0]["conditions"])[0])["conditionThreshold"])["filter"] = uptimeMetricFilter + ` AND metric.labels.check_id="public-check" AND group.id="9876"`
 	s.assets[3].Normalized[alertPolicyReview] = monitoringConfiguration(alertPolicyType, s.assets[3].Identity.NativeID, s.values["alertPolicies"][0])
 	if dashboard {
-		s.values["dashboards"][0]["gridLayout"] = map[string]any{"widgets": []any{map[string]any{"xyChart": map[string]any{"dataSets": []any{map[string]any{"timeSeriesQuery": map[string]any{"timeSeriesFilter": map[string]any{"filter": `group.id="9876"`}}}}}}}}
+		s.values["dashboards"][0]["gridLayout"] = map[string]any{"widgets": []any{map[string]any{"xyChart": map[string]any{"dataSets": []any{map[string]any{"timeSeriesQuery": map[string]any{"timeSeriesFilter": map[string]any{"filter": uptimeMetricFilter + ` AND group.id="9876"`}}}}}}}}
 		layout := object(s.values["dashboards"][0]["gridLayout"])
 		layout["widgets"] = append(array(layout["widgets"]), dashboardPolicyWidget("alertChart", alertPolicyName))
 		s.assets = append(s.assets, monitoringDashboardAsset(t, s))

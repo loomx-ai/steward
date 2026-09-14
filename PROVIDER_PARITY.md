@@ -6390,3 +6390,29 @@ Arbitrary foreign-project dashboard references, direct Dashboard Uptime metric/l
 queries, unknown query languages, external-writer races, duplicate connections and
 broader provider/live/full-app acceptance remain unfinished. All eight acceptance
 criteria remain open. No catalog methods or native schemas changed.
+
+
+### Dashboard-to-Uptime review and shared Monitoring project reservations
+
+Uptime consumer discovery now snapshots both AlertPolicy and Dashboard collections
+through the existing verified metric-scope/project-alias/log-routing readers. Native
+Dashboard filters and ratio parts reuse metric/check-ID parsing; supported log panels
+combine their filters with established routes or explicit monitored-project sources.
+Templates, unknown structures, unsupported languages and unreviewed foreign/log-view
+sources remain unresolved. Fresh local dashboards require explicit prerequisite
+deletion; foreign consumers cannot authorize writes through the monitored connection.
+Native action checks repeat consumer reads and retain frozen Dashboard prerequisites
+and synchronous receipts across restart.
+
+Inspection found that previous Monitoring reservations actually retained collection
+suffixes, despite documentation describing project coordination. The scope is now
+shared by Group, AlertPolicy, NotificationChannel, Dashboard and UptimeCheckConfig in
+one connection/project. Existing collection-specific reservations normalize during
+readback without rewriting frozen task evidence. Uptime settlement and recovery now
+bind full prerequisites and reject empty/lost synchronous receipts. Mixed-type plan
+ordering, legacy failed reservations and SQLite restart tests cover the correction.
+
+Arbitrary dashboards outside discovered metric/log-routing projects, log-view authority,
+unsupported query languages, arbitrary cross-project policy-object references, duplicate
+connections, external writers and broader provider/live/full-app acceptance remain
+unfinished. All eight acceptance criteria remain open. Catalog/native schemas unchanged.

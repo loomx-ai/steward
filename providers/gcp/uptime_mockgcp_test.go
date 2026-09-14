@@ -60,9 +60,19 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 	fixtureCalls := 0
 	loggingFixture, nativeLoggingFailed := false, false
 	loggingFixtureCalls := 0
+	dashboardFixture, nativeDashboardFailed := false, false
+	dashboardFixtureCalls := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if req.URL.Host != "monitoring.googleapis.com" && req.URL.Host != loggingHost {
 			t.Fatal(req.URL)
+		}
+		dashboardList := req.Method == "GET" && req.URL.Host == "monitoring.googleapis.com" && req.URL.Path == "/v1/projects/sample-project/dashboards"
+		if dashboardList && dashboardFixture {
+			if req.URL.RawQuery != "pageSize=100" {
+				t.Fatal(req.URL)
+			}
+			dashboardFixtureCalls++
+			return apiResponse(req, 200, `{"dashboards":[]}`), nil
 		}
 		loggingList := req.URL.Host == loggingHost && req.Method == "GET" && req.URL.Path == "/v2/projects/sample-project/sinks"
 		if loggingList && loggingFixture {
@@ -72,7 +82,6 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 			loggingFixtureCalls++
 			return apiResponse(req, 200, `{}`), nil
 		}
-		calls = append(calls, req.Method+" "+req.URL.Path)
 		reverse := req.Method == "GET" && req.URL.Path == "/v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject"
 		if reverse && reverseFixture {
 			if req.URL.Query().Get("monitoredResourceContainer") != "projects/123456" {
@@ -81,9 +90,13 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 			fixtureCalls++
 			return apiResponse(req, 200, `{"metricsScopes":[{"name":"locations/global/metricsScopes/123456"}]}`), nil
 		}
+		calls = append(calls, req.Method+" "+req.URL.Path)
 		local := req.Clone(req.Context())
 		local.URL.Scheme, local.URL.Host, local.Host = u.Scheme, u.Host, u.Host
 		response, err := http.DefaultTransport.RoundTrip(local)
+		if dashboardList && err == nil && response.StatusCode >= 400 {
+			nativeDashboardFailed = true
+		}
 		if loggingList && err == nil && response.StatusCode >= 400 {
 			nativeLoggingFailed = true
 		}
@@ -136,6 +149,17 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 		}
 	}
 	loggingFixture = true
+	if _, err := driver.Execute(ctx, request); err == nil || !nativeDashboardFailed {
+		t.Fatal("unsupported Dashboard LIST did not block cleanup", err)
+	}
+	for _, call := range calls {
+		if strings.HasPrefix(call, "DELETE ") {
+			t.Fatal("incomplete dashboard discovery allowed DELETE")
+		}
+	}
+	dashboardFixture = true
+	t.Cleanup(func() { t.Logf("explicit Dashboard LIST fixture calls: %d", dashboardFixtureCalls) })
+
 	t.Cleanup(func() { t.Logf("explicit Logging empty LIST fixture calls: %d", loggingFixtureCalls) })
 	policySeed := alertPolicyFixture()
 	delete(policySeed, "name")
@@ -166,7 +190,7 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 	policy.Identity.NativeID, policy.Identity.NativeType = policyItem.NativeID, alertPolicyType
 	_, err = driver.Execute(ctx, request)
 	var blocked *contracts.ProviderCallError
-	if !errors.As(err, &blocked) || blocked.Provider.Code != "uptime_referenced_by_alert_policy" {
+	if !errors.As(err, &blocked) || blocked.Provider.Code != "uptime_referenced_by_monitoring_consumer" {
 		t.Fatal("native policy reference was not enforced", err)
 	}
 	for _, call := range calls {
@@ -217,5 +241,5 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 	if deletes != 2 || fixtureCalls == 0 {
 		t.Fatal("duplicate native deletion", calls)
 	}
-	t.Logf("Google mockgcp: %d forwarded Monitoring/Logging requests, %d explicitly modeled reverse-scope calls; native Uptime LIST, reverse lookup and sink LIST remain unimplemented. Verified unsupported-discovery write blocking, native AlertPolicy LIST/GET, reference blocking, policy DELETE/404, check DELETE, prerequisite-bound JSON resume and 404. No native IAM or reference-lock claim.", len(calls)-fixtureCalls, fixtureCalls)
+	t.Logf("Google mockgcp: %d forwarded Monitoring/Logging requests, %d explicitly modeled reverse-scope calls; native Uptime/Dashboard LIST and reverse/sink query bindings remain unsupported by this backend. Verified unsupported-discovery write blocking, native AlertPolicy LIST/GET, reference blocking, policy DELETE/404, check DELETE, prerequisite-bound JSON resume and 404. No native IAM or reference-lock claim.", len(calls)-fixtureCalls, fixtureCalls)
 }

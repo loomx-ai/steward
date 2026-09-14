@@ -19,8 +19,11 @@ func routerScope(identity asset.Identity) (string, error) {
 	}
 	// The persisted Router scope mechanism also coordinates Monitoring's
 	// project writes and account-scoped Billing Budget deletion.
-	if identity.NativeType == "monitoring.googleapis.com/Dashboard" || identity.NativeType == "monitoring.googleapis.com/Group" || identity.NativeType == "monitoring.googleapis.com/AlertPolicy" || identity.NativeType == "monitoring.googleapis.com/NotificationChannel" || identity.NativeType == "billingbudgets.googleapis.com/Budget" {
+	if identity.NativeType == "monitoring.googleapis.com/UptimeCheckConfig" || identity.NativeType == "monitoring.googleapis.com/Dashboard" || identity.NativeType == "monitoring.googleapis.com/Group" || identity.NativeType == "monitoring.googleapis.com/AlertPolicy" || identity.NativeType == "monitoring.googleapis.com/NotificationChannel" || identity.NativeType == "billingbudgets.googleapis.com/Budget" {
 		collection := "alertPolicies"
+		if identity.NativeType == "monitoring.googleapis.com/UptimeCheckConfig" {
+			collection = "uptimeCheckConfigs"
+		}
 		if identity.NativeType == "monitoring.googleapis.com/Dashboard" {
 			collection = "dashboards"
 		}
@@ -43,7 +46,7 @@ func routerScope(identity asset.Identity) (string, error) {
 				return "", fmt.Errorf("invalid native Monitoring mutation segment")
 			}
 		}
-		return string(identity.ConnectionID) + "/gcp///" + host + "/" + root + "/" + parts[1] + "/" + collection, nil
+		return monitoringProjectScope(string(identity.ConnectionID) + "/gcp///" + host + "/" + root + "/" + parts[1] + "/" + collection), nil
 	}
 	suffix := ""
 	switch identity.NativeType {
@@ -99,7 +102,7 @@ func taskRouterScopes(ctx context.Context, repositories persistence.Repositories
 				scope, _ = step.Evidence[natMutationScope].(string)
 			}
 			if scope != "" {
-				result[step.AssetID] = strings.Replace(scope, "/google-cloud/", "/gcp/", 1)
+				result[step.AssetID] = monitoringProjectScope(strings.Replace(scope, "/google-cloud/", "/gcp/", 1))
 				continue
 			}
 			if step.Action != "delete" {
@@ -239,4 +242,17 @@ func prepareRouterConfiguration(ctx context.Context, repositories persistence.Re
 	}
 	task.Steps = steps
 	return true, nil
+}
+
+// Older tasks persisted a collection suffix. Coordinate them with new project
+// reservations without rewriting their frozen action or evidence.
+func monitoringProjectScope(scope string) string {
+	parts := strings.Split(scope, "/")
+	if len(parts) == 8 && parts[1] == "gcp" && parts[2] == "" && parts[3] == "" && parts[4] == "monitoring.googleapis.com" && parts[5] == "projects" {
+		switch parts[7] {
+		case "alertPolicies", "notificationChannels", "groups", "dashboards", "uptimeCheckConfigs":
+			return strings.Join(parts[:7], "/")
+		}
+	}
+	return scope
 }

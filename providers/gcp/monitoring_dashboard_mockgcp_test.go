@@ -16,12 +16,16 @@ import (
 )
 
 func TestMonitoringDashboardIndependentMockGCP(t *testing.T) {
-	testMonitoringDashboardIndependentMockGCP(t, false)
+	testMonitoringDashboardIndependentMockGCP(t, "")
 }
 func TestMonitoringDashboardPolicyIndependentMockGCP(t *testing.T) {
-	testMonitoringDashboardIndependentMockGCP(t, true)
+	testMonitoringDashboardIndependentMockGCP(t, alertPolicyType)
 }
-func testMonitoringDashboardIndependentMockGCP(t *testing.T, policy bool) {
+func TestMonitoringDashboardUptimeIndependentMockGCP(t *testing.T) {
+	testMonitoringDashboardIndependentMockGCP(t, uptimeType)
+}
+func testMonitoringDashboardIndependentMockGCP(t *testing.T, targetType string) {
+	policy := targetType != ""
 	endpoint := os.Getenv("STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL")
 	if endpoint == "" {
 		t.Skip("set STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL to the pinned Monitoring harness")
@@ -61,9 +65,14 @@ func testMonitoringDashboardIndependentMockGCP(t *testing.T, policy bool) {
 	policyExists := false
 	if policy {
 		seed := alertPolicyFixture()
+		collection := "alertPolicies"
+		if targetType == uptimeType {
+			seed = uptimeFixture()
+			collection = "uptimeCheckConfigs"
+		}
 		delete(seed, "name")
 		delete(seed, "futureNativeField")
-		created := native("POST", "/v3/projects/sample-project/alertPolicies", seed, 200)
+		created := native("POST", "/v3/projects/sample-project/"+collection, seed, 200)
 		policyName = text(created["name"])
 		policyExists = true
 		t.Cleanup(func() {
@@ -75,6 +84,9 @@ func testMonitoringDashboardIndependentMockGCP(t *testing.T, policy bool) {
 	seed := monitoringDashboardFixture()
 	if policy {
 		seed["gridLayout"] = map[string]any{"widgets": []any{dashboardPolicyWidget("alertChart", policyName)}}
+		if targetType == uptimeType {
+			seed = dashboardUptimeFixture(uptimeMetricFilter)
+		}
 	}
 	delete(seed, "name")
 	delete(seed, "etag")
@@ -93,12 +105,38 @@ func testMonitoringDashboardIndependentMockGCP(t *testing.T, policy bool) {
 	if object(unsupported["error"])["message"] != "method ListDashboards not implemented" {
 		t.Fatal(unsupported)
 	}
+	if targetType == uptimeType {
+		unsupported := native("GET", "/v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject?monitoredResourceContainer=projects/123456", nil, 400)
+		if object(unsupported["error"])["message"] != `invalid value for query-param "monitored_resource_container"` {
+			t.Fatal(unsupported)
+		}
+		logging := native("GET", "/v2/projects/sample-project/sinks?filter=in_scope%28%22DEFAULT%22%29&pageSize=1000", nil, 400)
+		if object(logging["error"])["message"] != `invalid value for query-param "filter"` {
+			t.Fatal(logging)
+		}
+		native("GET", "/v3/projects/sample-project/uptimeCheckConfigs", nil, 500)
+	}
+	reverseFixtures, loggingFixtures := 0, 0
 	hybrid := false
 	clearList := false
 	forwarded, fixtures, deletes := 0, 0, 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
-		if req.URL.Host != "monitoring.googleapis.com" || (req.Method != "GET" && req.Method != "DELETE") {
+		if (req.URL.Host != "monitoring.googleapis.com" && !(targetType == uptimeType && req.URL.Host == loggingHost)) || (req.Method != "GET" && req.Method != "DELETE") {
 			t.Fatal(req.Method, req.URL)
+		}
+		if targetType == uptimeType && req.URL.Path == "/v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject" {
+			if req.Method != "GET" || req.URL.Query().Get("monitoredResourceContainer") != "projects/123456" || len(req.URL.Query()) != 1 {
+				t.Fatal(req.Method, req.URL)
+			}
+			reverseFixtures++
+			return apiResponse(req, 200, `{"metricsScopes":[{"name":"locations/global/metricsScopes/123456"}]}`), nil
+		}
+		if targetType == uptimeType && req.URL.Host == loggingHost && req.URL.Path == "/v2/projects/sample-project/sinks" {
+			if req.Method != "GET" || req.URL.Query().Get("filter") != `in_scope("DEFAULT")` || req.URL.Query().Get("pageSize") != "1000" || len(req.URL.Query()) != 2 {
+				t.Fatal(req.Method, req.URL)
+			}
+			loggingFixtures++
+			return apiResponse(req, 200, `{}`), nil
 		}
 		if hybrid && req.URL.Path == "/v1/projects/sample-project/dashboards" {
 			if req.URL.RawQuery != "pageSize=100" {
@@ -157,19 +195,36 @@ func testMonitoringDashboardIndependentMockGCP(t *testing.T, policy bool) {
 	}
 	policyRequest := contracts.ActionRequest{}
 	if policy {
-		batch, e := r.List(t.Context(), productRequest(r, alertPolicyType, "global"))
-		if e != nil || len(batch.Items) != 1 {
-			t.Fatal(batch, e)
+		var item contracts.InventoryItem
+		if targetType == uptimeType {
+			c, e := r.resolve(t.Context(), "connection")
+			if e != nil {
+				t.Fatal(e)
+			}
+			id := c.canonicalName("//monitoring.googleapis.com/" + policyName)
+			live, e := c.uptimeRead(t.Context(), id)
+			if e != nil {
+				t.Fatal(e)
+			}
+			item, e = r.inventoryItem(c, map[string]any{"assetType": uptimeType, "name": id, "resource": map[string]any{"data": live, "location": "global"}})
+			if e != nil {
+				t.Fatal(e)
+			}
+		} else {
+			batch, e := r.List(t.Context(), productRequest(r, targetType, "global"))
+			if e != nil || len(batch.Items) != 1 {
+				t.Fatal(batch, e)
+			}
+			item = batch.Items[0]
 		}
-		item := batch.Items[0]
-		k := r.resourceKind(alertPolicyType)
-		value := asset.Asset{ID: "native-policy", ResourceKindID: k.ID, Identity: asset.Identity{Provider: asset.ProviderGCP, Partition: "gcp", ConnectionID: "connection", NativeType: alertPolicyType, NativeID: item.NativeID}, Normalized: item.Normalized, Capabilities: k.Capabilities}
+		k := r.resourceKind(targetType)
+		value := asset.Asset{ID: "native-consumer-target", ResourceKindID: k.ID, Identity: asset.Identity{Provider: asset.ProviderGCP, Partition: "gcp", ConnectionID: "connection", NativeType: targetType, NativeID: item.NativeID}, Normalized: item.Normalized, Capabilities: k.Capabilities}
 		policyRequest = contracts.ActionRequest{Asset: value, Action: "delete", IdempotencyKey: "native-policy-delete"}
 		driver, e := r.ResolveAction(t.Context(), "connection", value)
 		if e != nil {
 			t.Fatal(e)
 		}
-		if _, e = driver.Execute(t.Context(), policyRequest); e == nil || deletes != 0 {
+		if _, e = driver.Execute(t.Context(), policyRequest); e == nil || deletes != 0 || (targetType == uptimeType && !strings.Contains(e.Error(), "uptime_referenced_by_monitoring_consumer")) {
 			t.Fatal("live native dashboard did not block policy", e, deletes)
 		}
 		policyRequest.PrerequisiteDeletions = []contracts.ActionImpact{{Asset: saved, ControllerID: value.ID, Delete: true}}
@@ -234,5 +289,5 @@ func testMonitoringDashboardIndependentMockGCP(t *testing.T, policy bool) {
 			t.Fatal(settled, e)
 		}
 	}
-	t.Logf("%d native forwarded requests (%d DELETE), %d explicit LIST fixtures", forwarded, deletes, fixtures)
+	t.Logf("%d native forwarded requests (%d DELETE), %d explicit Dashboard LIST fixtures, %d explicit reverse-scope fixtures, %d explicit Logging LIST fixtures", forwarded, deletes, fixtures, reverseFixtures, loggingFixtures)
 }
