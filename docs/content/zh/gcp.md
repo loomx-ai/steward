@@ -197,7 +197,8 @@ Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。可选择�
 `resourcemanager.folders.get` 和 `resourcemanager.organizations.get` 来核验祖先链。
 每页读取绑定已核验的父级关系；权限失败或项目迁移会使该页失败，保留原有观测。
 不再可见的祖先设置保留原观测时间。这不涵盖其他项目或组织中的所有私有地域，
-也不会修改任何祖先设置。
+也不会修改任何祖先设置。列表会在发布前核验每条记录和分页令牌；列表或详情响应
+格式错误、不完整时，保留上次完整观测。扩展字段中的私有服务配置也会脱敏。
 
 已知 `projects/.../locations/.../clusters/.../securityCenterServices/...` 名称时，
 可调用原生 `securitycentermanagement.projects.locations.clusters.securityCenterServices.get`。

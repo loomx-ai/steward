@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -47,7 +48,18 @@ func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, 
 			if failure == "hidden_service" {
 				return dataformResponse(req, 200, map[string]any{}), nil
 			}
-			return dataformResponse(req, 200, map[string]any{"securityCenterServices": []any{map[string]any{"name": name}}}), nil
+			record := map[string]any{"name": name}
+			if failure == "list_state" {
+				record["effectiveEnablementState"] = true
+			}
+			if failure == "list_partial" {
+				record["unreachable"] = []any{"eu"}
+			}
+			body := map[string]any{"securityCenterServices": []any{record}}
+			if failure == "list_token" {
+				body["nextPageToken"] = 12
+			}
+			return dataformResponse(req, 200, body), nil
 		case "/v1/" + name:
 			if failure == "denied" {
 				return dataformResponse(req, 403, map[string]any{}), nil
@@ -56,6 +68,10 @@ func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, 
 				return dataformResponse(req, 404, map[string]any{}), nil
 			}
 			data := securityServiceData(name)
+			data["extension"] = map[string]any{"serviceConfig": map[string]any{"ordinary": "PRIVATE_NESTED_CONFIG"}}
+			if failure == "detail_partial" {
+				data["unreachable"] = []any{"eu"}
+			}
 			if failure == "updated" {
 				data["effectiveEnablementState"] = "DISABLED"
 			}
@@ -109,7 +125,7 @@ func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, 
 	service := inventory.NewService(repositories.Inventory(), inventory.WithClock(func() time.Time { return now }))
 	handler := inventory.NewScanHandler(repositories, dataformVisibilityRuntime{adapter: r}, service)
 	var lastObserved time.Time
-	runs := []string{"first", "denied", "missing", "changed", "hidden_location", "hidden_service", "updated", "legacy"}
+	runs := []string{"first", "denied", "missing", "changed", "list_state", "list_partial", "list_token", "detail_partial", "hidden_location", "hidden_service", "updated", "legacy"}
 	if parent != "projects/sample-project" {
 		runs = append([]string{"first", "ancestor_denied", "ancestry_hidden"}, runs[1:]...)
 	}
@@ -133,7 +149,7 @@ func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, 
 		}
 		failure = runID
 		err := handler.Handle(ctx, execution.Job{ID: execution.JobID("security-services-" + runID), Type: execution.JobScan, Payload: map[string]any{"scan_shard_id": string(shard.ID)}})
-		failed := runID == "ancestor_denied" || runID == "denied" || runID == "missing" || runID == "changed" || runID == "legacy"
+		failed := runID == "list_state" || runID == "list_partial" || runID == "list_token" || runID == "detail_partial" || runID == "ancestor_denied" || runID == "denied" || runID == "missing" || runID == "changed" || runID == "legacy"
 		if !failed && err != nil || failed && err == nil {
 			t.Fatalf("scan %s: %v", runID, err)
 		}
@@ -147,6 +163,10 @@ func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, 
 		page, err := repositories.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10})
 		if err != nil || len(page.Items) != 1 {
 			t.Fatalf("Service projection: %d %v", len(page.Items), err)
+		}
+		encoded, _ := json.Marshal(page.Items)
+		if strings.Contains(string(encoded), "PRIVATE_NESTED_CONFIG") {
+			t.Fatal("private configuration persisted")
 		}
 		wantState := "INGEST_ONLY"
 		if runID == "updated" || runID == "legacy" {

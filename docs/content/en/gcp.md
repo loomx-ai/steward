@@ -242,7 +242,9 @@ LIST/GET permissions on these ancestors, plus `resourcemanager.projects.get`,
 verification. Every page binds the verified parent chain; denied reads or a moved
 project fail the page without replacing previous observations. Ancestors that stop
 being visible retain their original last-seen time. This does not enumerate other
-projects or every private organization location. No ancestor settings are modified.
+projects or every private organization location. No ancestor settings are modified. Lists validate every record and pagination token
+before publication; malformed or partial list/detail responses preserve the last
+complete observation. Private service configuration is also redacted in extension fields.
 
 The native cluster service GET is available for an already known
 `projects/.../locations/.../clusters/.../securityCenterServices/...` name through

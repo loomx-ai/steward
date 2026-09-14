@@ -11,14 +11,22 @@ import (
 // to the shared credential-key filter before logs, inventory, or Invoke escape
 // the provider. This copies the response; live protection checks keep their data.
 func safePayload(value map[string]any) map[string]any {
-	cleaned, err := contracts.CloudRawPayload(value)
-	if err != nil {
-		return map[string]any{}
-	}
 	// Transport log envelopes are created locally before response validation.
 	// Never trust a response name to identify private serviceConfig in logs;
 	// retain typed configuration for validated inventory and internal checks.
 	logPayload := value["body"] != nil && (value["status_code"] != nil || value["method"] != nil)
+	return sanitizePayload(value, logPayload)
+}
+
+func safeSecurityServicePayload(value map[string]any) map[string]any {
+	return sanitizePayload(value, true)
+}
+
+func sanitizePayload(value map[string]any, privateServiceConfig bool) map[string]any {
+	cleaned, err := contracts.CloudRawPayload(value)
+	if err != nil {
+		return map[string]any{}
+	}
 	var redact func(any)
 	redact = func(value any) {
 		switch object := value.(type) {
@@ -38,7 +46,7 @@ func safePayload(value map[string]any) map[string]any {
 			redactDataprocPayload(object)
 			// Service-specific SCC configuration is an untyped private payload.
 			// Keep declared service/module enablement metadata available.
-			if logPayload || strings.Contains(text(object["name"]), "/securityCenterServices/") {
+			if privateServiceConfig || strings.Contains(text(object["name"]), "/securityCenterServices/") {
 				if _, present := object["serviceConfig"]; present {
 					object["serviceConfig"] = "[REDACTED]"
 				}

@@ -132,3 +132,20 @@ LIST entries. Log envelopes redact serviceConfig without trusting response names
 internal response data and typed Cloud Functions inventory configuration remain
 available. A counterfactual run on the preceding commit reproduces eight invalid
 project GET responses that the added response validation now rejects.
+
+### Service LIST response validation
+
+Invoke and inventory share validation of complete native pages, record identities,
+project aliases, duplicates, settings and token types. Empty pages may carry an
+opaque nextPageToken; Invoke returns it without following additional pages. The
+caller-supplied pageSize, pageToken and showEligibleModulesOnly are preserved.
+Nested partial records fail the entire page. Inventory detail GETs also reject
+partial responses before replacing any previous observation.
+
+`security_service_list_test.go` covers project, folder and organization APIs and
+invalid project LIST parents. Running it against a559d94 reproduces 20 failures.
+SCC payload sanitization covers unnamed extension serviceConfig objects as well as
+native records. The SQLite worker regression additionally verifies retained state,
+query results, timestamps and absence of private nested configuration after failed
+LIST/detail reads. These are synthetic protocol and real SQLite tests, not an
+independent SCC emulator or live-cloud acceptance.

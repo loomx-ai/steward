@@ -43,6 +43,15 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if securityServiceAncestorOperation(operation.ID) {
 		return c.invokeAncestorSecurityService(ctx, operation, parameters)
 	}
+	if operation.ID == securityProjectServiceList {
+		matched, _, err := c.securitySettingsOperation(metadata, securityServiceType, text(parameters["parent"])+"/securityCenterServices/scope-validation", "GET")
+		if err != nil {
+			return contracts.InvocationResult{}, err
+		}
+		if matched.ID != securityProjectServiceGet {
+			return contracts.InvocationResult{}, groupDenied("security_service_operation_mismatch")
+		}
+	}
 	if operation.ID == securityProjectServiceGet || operation.ID == securityClusterServiceGet {
 		matched, _, err := c.securitySettingsOperation(metadata, securityServiceType, text(parameters["name"]), "GET")
 		if err != nil {
@@ -174,12 +183,21 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 			return contracts.InvocationResult{}, err
 		}
 	}
+	if operation.ID == securityProjectServiceList {
+		if err := c.securityServiceListMetadata(result.Data, text(parameters["parent"])); err != nil {
+			return contracts.InvocationResult{}, err
+		}
+	}
 	if operation.ID == securityBillingGet {
 		if err := c.securityBillingMetadata(result.Data, text(parameters["name"])); err != nil {
 			return contracts.InvocationResult{}, err
 		}
 	}
-	result.Data = safePayload(result.Data)
+	if operation.Call.Product == "securitycentermanagement" {
+		result.Data = safeSecurityServicePayload(result.Data)
+	} else {
+		result.Data = safePayload(result.Data)
+	}
 	if operation.Call.Product == "config" {
 		result.Data = safeInfraPayload(result.Data)
 	}

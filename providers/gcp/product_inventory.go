@@ -182,6 +182,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	if err = checkListCompleteness(result.Data); err != nil {
 		return contracts.InventoryBatch{}, fmt.Errorf("%s: %w", target.API.Operation, err)
 	}
+	if nativeType == securityServiceType {
+		if err := c.securityServiceListMetadata(result.Data, text(parameters["parent"])); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+	}
 	if isInfra(nativeType) {
 		if err := infraListShape(result.Data, target.API.ItemsPath); err != nil {
 			return contracts.InventoryBatch{}, err
@@ -247,12 +252,6 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		id, err := c.productIdentity(kind, operation, parameters, identityPath, record)
 		if err != nil {
 			return contracts.InventoryBatch{}, err
-		}
-		if nativeType == securityServiceType {
-			parent := c.canonicalName("//" + securityServiceHost + "/" + text(parameters["parent"]))
-			if !strings.HasPrefix(id, parent+"/securityCenterServices/") {
-				return contracts.InventoryBatch{}, groupDenied("security_service_list_parent_changed")
-			}
 		}
 		if nativeType == storagePoolType {
 			if err := c.storagePoolIdentity(id, record.Data, record.Location); err != nil {
@@ -403,8 +402,8 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 					return contracts.InventoryBatch{}, groupDenied("bigtable_identity_changed")
 				}
 			} else if nativeType == securityServiceType {
-				if c.canonicalName("//"+securityServiceHost+"/"+text(live["name"])) != id {
-					return contracts.InventoryBatch{}, groupDenied("security_service_identity_changed")
+				if err := c.securityServiceMetadata(live, strings.TrimPrefix(id, "//"+securityServiceHost+"/")); err != nil {
+					return contracts.InventoryBatch{}, err
 				}
 			} else if isDataproc(nativeType) {
 				if err := c.dataprocIdentity(nativeType, id, live); err != nil {

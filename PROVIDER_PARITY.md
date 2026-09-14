@@ -6489,3 +6489,25 @@ parents, and the cluster REST page was unavailable during the audit. Complete
 cluster enumeration and verified GKE name/immutable-ID mapping remain unfinished.
 No speculative GKE address join, cluster mutation, emulator or cloud deployment
 was introduced. Broader provider acceptance and all eight criteria remain open.
+
+
+### SCC service LIST validation across Invoke and inventory
+
+Project, folder and organization service lists now share whole-page validation:
+container/location ownership, native names, canonical project aliases, duplicate
+identities, object/state/module shapes, pagination-token types, and both page and
+record completeness. Public Invoke returns one native page and preserves its
+opaque token and explicit module filter. Inventory validates the list before detail
+reads and validates detail completeness before publishing observations.
+
+A retained counterfactual run on a559d94 reproduces 20 failing cases: invalid project
+list responses, nested partial records in ancestor lists, and private configuration
+inside extension fields. SCC-specific sanitization now covers all serviceConfig
+containers in Invoke and persisted inventory while preserving internal native data.
+The SQLite scan-worker regression runs at project, folder and organization levels;
+malformed list state/tokens, partial list records and partial detail responses must
+retain the previous queryable settings and original last-seen timestamp.
+
+No native operation, SDK byte or resource specification changed. This is protocol
+and application-persistence evidence; independent cloud execution and automatic
+cluster inventory remain unfinished. All eight acceptance criteria remain open.

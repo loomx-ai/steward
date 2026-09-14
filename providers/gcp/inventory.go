@@ -515,6 +515,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		actionable = false
 	} // Native member/configuration discovery enables reviewed pool cleanup.
 	sanitize := safePayload
+	if nativeType == securityServiceType || nativeType == securityBillingType {
+		sanitize = safeSecurityServicePayload
+	}
 	if isInfra(nativeType) {
 		sanitize = safeInfraPayload
 	}

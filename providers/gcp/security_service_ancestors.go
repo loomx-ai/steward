@@ -163,38 +163,19 @@ func (c *client) invokeAncestorSecurityService(ctx context.Context, operation ca
 	if err = checkListCompleteness(result.Data); err != nil {
 		return contracts.InvocationResult{}, err
 	}
-	records := []map[string]any{result.Data}
 	if key == "parent" {
-		records, err = cloudNatObjects(result.Data, "securityCenterServices")
-		if err != nil {
-			return contracts.InvocationResult{}, err
-		}
-		if err = cloudNatScalars(result.Data, []string{"nextPageToken"}, nil, nil, nil); err != nil {
-			return contracts.InvocationResult{}, err
-		}
+		err = c.securityServiceListMetadata(result.Data, name)
+	} else if nativeType == securityBillingType {
+		err = c.securityBillingMetadata(result.Data, name)
+	} else {
+		err = c.securityServiceMetadata(result.Data, name)
 	}
-	seen := map[string]bool{}
-	for _, record := range records {
-		actual := text(record["name"])
-		if key == "name" && actual != name || key == "parent" && !strings.HasPrefix(actual, name+"/securityCenterServices/") || seen[actual] {
-			return contracts.InvocationResult{}, groupDenied("security_service_identity_changed")
-		}
-		if _, _, err = c.securitySettingsOperation(metadata, nativeType, actual, "GET"); err != nil {
-			return contracts.InvocationResult{}, err
-		}
-		if nativeType == securityBillingType {
-			err = c.securityBillingMetadata(record, name)
-		} else {
-			err = securityServiceSettings(record)
-		}
-		if err != nil {
-			return contracts.InvocationResult{}, err
-		}
-		seen[actual] = true
+	if err != nil {
+		return contracts.InvocationResult{}, err
 	}
 	if err = c.verifySecurityServiceAncestry(ctx, &first); err != nil {
 		return contracts.InvocationResult{}, err
 	}
-	result.Data = safePayload(result.Data)
+	result.Data = safeSecurityServicePayload(result.Data)
 	return result, nil
 }

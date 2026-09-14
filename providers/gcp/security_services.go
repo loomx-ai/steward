@@ -1,7 +1,10 @@
 package gcp
 
+import "strings"
+
 const (
 	securityClusterServiceGet      = "securitycentermanagement.projects.locations.clusters.securityCenterServices.get"
+	securityProjectServiceList     = "securitycentermanagement.projects.locations.securityCenterServices.list"
 	securityProjectServiceGet      = "securitycentermanagement.projects.locations.securityCenterServices.get"
 	securityServiceHost            = "securitycentermanagement.googleapis.com"
 	securityServiceSource          = "security-services"
@@ -70,4 +73,39 @@ func (c *client) securityServiceMetadata(data map[string]any, name string) error
 		return err
 	}
 	return securityServiceSettings(data)
+}
+
+// Validate the whole native page before exposing any record or advancing its token.
+func (c *client) securityServiceListMetadata(data map[string]any, parent string) error {
+	if err := checkListCompleteness(data); err != nil {
+		return err
+	}
+	if err := cloudNatScalars(data, []string{"nextPageToken"}, nil, nil, nil); err != nil {
+		return err
+	}
+	records, err := cloudNatObjects(data, "securityCenterServices")
+	if err != nil {
+		return err
+	}
+	metadata, err := providerData()
+	if err != nil {
+		return err
+	}
+	prefix := c.canonicalName("//"+securityServiceHost+"/"+parent) + "/securityCenterServices/"
+	seen := map[string]bool{}
+	for _, record := range records {
+		name := text(record["name"])
+		id := c.canonicalName("//" + securityServiceHost + "/" + name)
+		if !strings.HasPrefix(id, prefix) || seen[id] {
+			return groupDenied("security_service_list_identity_changed")
+		}
+		if _, _, err := c.securitySettingsOperation(metadata, securityServiceType, name, "GET"); err != nil {
+			return err
+		}
+		if err := c.securityServiceMetadata(record, name); err != nil {
+			return err
+		}
+		seen[id] = true
+	}
+	return nil
 }
