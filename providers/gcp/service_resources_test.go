@@ -58,7 +58,7 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 		{"servicedirectory.googleapis.com/Endpoint", "v1", regional + "namespaces/apps/services/api/endpoints/backend", regional + "namespaces/apps/services/api/endpoints", "endpoints", "us-central1", "", `{"uid":"endpoint-uid"}`},
 		{"logging.googleapis.com/LogBucket", "v2", global + "buckets/archive", p + "locations/-/buckets", "buckets", "global", "", `{"lifecycleState":"ACTIVE"}`},
 		{"logging.googleapis.com/LogSink", "v2", p + "sinks/audit", p + "sinks", "sinks", "global", "", `{"name":"audit"}`},
-		{"monitoring.googleapis.com/Dashboard", "v1", p + "dashboards/overview", p + "dashboards", "dashboards", "global", "", `{}`},
+		{"monitoring.googleapis.com/Dashboard", "v1", p + "dashboards/overview", p + "dashboards", "dashboards", "global", "", `{"displayName":"Overview","etag":"reviewed","gridLayout":{}}`},
 		{"monitoring.googleapis.com/UptimeCheckConfig", "v3", p + "uptimeCheckConfigs/public", p + "uptimeCheckConfigs", "uptimeCheckConfigs", "global", "", `{"displayName":"Public check","timeout":"10s","monitoredResource":{"type":"uptime_url","labels":{"project_id":"sample-project","host":"example.com"}},"httpCheck":{"useSsl":true}}`},
 
 		{"aiplatform.googleapis.com/Endpoint", "v1", regional + "endpoints/predict", regional + "endpoints", "endpoints", "us-central1", regional + "operations/delete", `{}`},
@@ -236,8 +236,8 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 				t.Fatalf("logical global resource lost: %+v", item.Scope)
 			}
 			request := contracts.ActionRequest{Action: "delete", IdempotencyKey: "service-delete", Asset: asset.Asset{Identity: asset.Identity{NativeType: test.kind, NativeID: item.NativeID}, Normalized: item.Normalized}}
-			if test.kind == uptimeType {
-				request.Asset.ID = "uptime"
+			if test.kind == uptimeType || test.kind == monitoringDashboardType {
+				request.Asset.ID = "monitoring"
 				request.Asset.Identity.Provider = asset.ProviderGCP
 				request.Asset.Identity.Partition = "gcp"
 				request.Asset.Identity.ConnectionID = "connection"

@@ -3,15 +3,12 @@ package gcp
 import (
 	"context"
 	"slices"
-	"strings"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/graph"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
-
-const monitoringDashboardType = "monitoring.googleapis.com/Dashboard"
 
 func (c *client) monitoringGroupConsumerData(kind, id string, data map[string]any) error {
 	switch kind {
@@ -20,18 +17,7 @@ func (c *client) monitoringGroupConsumerData(kind, id string, data map[string]an
 	case uptimeType:
 		return c.uptimeData(id, data)
 	case monitoringDashboardType:
-		if err := checkListCompleteness(data); err != nil {
-			return err
-		}
-		if err := cloudNatScalars(data, []string{"name", "displayName", "etag"}, nil, nil, nil); err != nil {
-			return err
-		}
-		if !strings.HasPrefix(text(data["name"]), "projects/") || c.canonicalName("//monitoring.googleapis.com/"+text(data["name"])) != id || text(data["displayName"]) == "" {
-			return groupDenied("monitoring_dashboard_identity_invalid")
-		}
-		spec, _ := findType(kind)
-		_, err := c.resourceURL(spec, id)
-		return err
+		return c.monitoringDashboardData(id, data)
 	}
 	return groupDenied("monitoring_group_consumer_type_invalid")
 }
@@ -44,9 +30,7 @@ func (c *client) monitoringGroupConsumerConfiguration(kind, id string, data map[
 	case alertPolicyType:
 		return monitoringConfiguration(kind, id, data)
 	default:
-		value := cloneParameters(data)
-		value["name"] = id
-		return firewallDigest(value)
+		return monitoringDashboardConfiguration(id, data)
 	}
 }
 
@@ -203,12 +187,6 @@ func (h *monitoringDependencies) monitoringGroupDependencies(ctx context.Context
 				}
 				if ref == monitoringUnresolvedReference {
 					block("monitoring_group_consumer_reference_unresolved")
-					continue
-				}
-				// Dashboard actions do not yet bind a full reviewed configuration. Keep the
-				// consumer visible, without authorizing that generic action as a prerequisite.
-				if kind == monitoringDashboardType {
-					block("monitoring_group_dashboard_review_required")
 					continue
 				}
 				consumer, found, err := findManagedAsset(assets, group, kind, id)

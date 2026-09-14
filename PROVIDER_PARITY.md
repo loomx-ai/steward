@@ -6339,3 +6339,30 @@ is not implemented. Catalog has 204 rules and 805 operations.
 Reviewed Dashboard cleanup, broader member/consumer mappings, external-writer and
 duplicate-connection coordination, real-cloud and full-app acceptance remain open.
 All eight acceptance criteria remain open.
+
+
+### GCP Monitoring dashboard reviewed cleanup milestone
+
+Custom Dashboard inventory now compares native LIST/GET full configuration, including
+etag and unknown fields, and requires its own project identity and layout. Persisted
+and Invoke payloads retain display metadata and proof while redacting query, layout,
+text, annotation and unknown content. System dashboards remain outside project cleanup.
+Generic Invoke DELETE cannot bypass the reviewed action. The action rejects parameters,
+missing request keys, substituted identities/proofs and protection labels, rereads the
+configuration before empty-body DELETE and binds its synchronous receipt across restart.
+Own GET 404 settles completion; lost/empty receipts cannot release a project reservation.
+
+Fresh known Dashboard group references now authorize an explicit required-deletion
+edge. Missing, stale, foreign, closed and unknown references remain blocking; membership
+never implies selection. SQLite graph/plan/worker tests use actual Dashboard inventory
+and reopen before every action, verifying five ordered deletions with the group last.
+Dashboard project write reservations also retain failure/cancellation recovery semantics.
+The native API has no conditional DELETE, so review does not close external-writer races.
+
+Broader Dashboard-to-policy/Uptime mappings, unknown query languages, broader member
+mappings, duplicate connections, real-cloud and full-app acceptance remain unfinished.
+Pinned independent mockgcp validation forwards nine runtime requests (one Dashboard
+DELETE), exercising native Create/GET/Update/DELETE/404 with generated etag and numeric
+project names. Three Dashboard LIST responses are explicit fixtures after verifying
+the native Unimplemented error; IAM, native pagination and live cloud are not covered.
+All eight acceptance criteria remain open. Catalog remains 204 rules and 805 operations.

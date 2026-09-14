@@ -348,7 +348,7 @@ func (a *action) monitoringPrerequisites(request contracts.ActionRequest) error 
 		proof, err := hex.DecodeString(text(p.Normalized[monitoringReviewKey(p.Identity.NativeType)]))
 		validType := p.Identity.NativeType == alertPolicyType
 		if a.kind.NativeType == monitoringGroupType {
-			validType = validType || p.Identity.NativeType == uptimeType || p.Identity.NativeType == monitoringGroupType
+			validType = validType || p.Identity.NativeType == uptimeType || p.Identity.NativeType == monitoringGroupType || p.Identity.NativeType == monitoringDashboardType
 		}
 		if (a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType && a.kind.NativeType != monitoringGroupType) || err != nil || len(proof) != 32 || p.ID == "" || p.ID == request.Asset.ID || p.Identity.NativeID == a.identity.NativeID || !prerequisite.Delete || prerequisite.ControllerID != request.Asset.ID || p.Identity.Provider != a.identity.Provider || p.Identity.ConnectionID != a.identity.ConnectionID || p.Identity.Partition != a.identity.Partition || !validType || seen[p.Identity.NativeID] {
 			return groupDenied("monitoring_prerequisite_changed")

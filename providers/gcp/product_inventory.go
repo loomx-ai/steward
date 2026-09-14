@@ -169,6 +169,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	}
 	if nativeType == monitoringGroupType || isMonitoringConfig(nativeType) {
 		collection := "uptimeCheckConfigs"
+		if nativeType == monitoringDashboardType {
+			collection = "dashboards"
+		}
 		if nativeType == monitoringGroupType {
 			collection = "group"
 		}
@@ -299,6 +302,13 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		// Persisted Router observations require their own complete native GET.
 		if nativeType == routerType && len(ancestors) == 1 {
 			live, err := c.routerInventoryData(ctx, id, record.Data)
+			if err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			record.Data = live
+		}
+		if nativeType == monitoringDashboardType {
+			live, err := c.monitoringDashboardInventory(ctx, id, record.Data)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}

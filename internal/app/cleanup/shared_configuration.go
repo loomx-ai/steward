@@ -180,7 +180,7 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 		return false, fmt.Errorf("mutation recovery identity changed")
 	}
 	// Each driver must prove every possible phase; Router requests also bind child review.
-	if reviewed.Identity.NativeType != "compute.googleapis.com/Router" && reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" && reviewed.Identity.NativeType != "compute.googleapis.com/RoutePolicy" && reviewed.Identity.NativeType != "compute.googleapis.com/NamedSet" && reviewed.Identity.NativeType != "monitoring.googleapis.com/Group" && reviewed.Identity.NativeType != "monitoring.googleapis.com/AlertPolicy" && reviewed.Identity.NativeType != "monitoring.googleapis.com/NotificationChannel" && reviewed.Identity.NativeType != "billingbudgets.googleapis.com/Budget" {
+	if reviewed.Identity.NativeType != "compute.googleapis.com/Router" && reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" && reviewed.Identity.NativeType != "compute.googleapis.com/RoutePolicy" && reviewed.Identity.NativeType != "compute.googleapis.com/NamedSet" && reviewed.Identity.NativeType != "monitoring.googleapis.com/Dashboard" && reviewed.Identity.NativeType != "monitoring.googleapis.com/Group" && reviewed.Identity.NativeType != "monitoring.googleapis.com/AlertPolicy" && reviewed.Identity.NativeType != "monitoring.googleapis.com/NotificationChannel" && reviewed.Identity.NativeType != "billingbudgets.googleapis.com/Budget" {
 		return false, nil
 	}
 	// ponytail: retain the database locks during rare recovery reads so a second

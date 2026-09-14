@@ -12,6 +12,9 @@ import (
 )
 
 func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (contracts.InvocationResult, error) {
+	if invocation.Operation == monitoringDashboardDelete {
+		return contracts.InvocationResult{}, groupDenied("monitoring_dashboard_requires_reviewed_action")
+	}
 	if invocation.Operation == monitoringGroupDelete {
 		return contracts.InvocationResult{}, groupDenied("monitoring_group_requires_reviewed_action")
 	}

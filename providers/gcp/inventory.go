@@ -257,6 +257,12 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	for key, value := range data {
 		normalized[key] = value
 	}
+	if nativeType == monitoringDashboardType {
+		if err := c.monitoringDashboardData(nativeID, data); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized[monitoringDashboardReview] = monitoringDashboardConfiguration(nativeID, data)
+	}
 	if nativeType == monitoringGroupType {
 		if err := c.monitoringGroupData(nativeID, data); err != nil {
 			return contracts.InventoryItem{}, err
@@ -352,7 +358,7 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized["cleanup_protection_reason"] = "identity_group_locked_or_protected"
 	}
 	refs := references(c, data)
-	if nativeType == alertPolicyType || nativeType == notificationChannelType {
+	if nativeType == alertPolicyType || nativeType == notificationChannelType || nativeType == monitoringDashboardType {
 		refs = map[string][]string{}
 	}
 	if nativeType == monitoringGroupType {

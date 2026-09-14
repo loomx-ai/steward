@@ -589,14 +589,14 @@ Dashboard time-series filters and ratio denominators are inspected through the
 native schema. Text and log content do not count as group references. Dynamic
 `GROUP` filters, template variables, unknown structures and unparsed MQL/PromQL/SQL
 queries remain cleanup blockers when their references cannot be established.
-Referenced dashboards also remain blocked pending full configuration review of
-their cleanup action. Group cleanup rechecks consumers before sending DELETE.
+Fresh referenced dashboards can be explicitly selected for reviewed deletion before
+the group. Group cleanup rechecks consumers before sending DELETE.
 See [Monitoring group selectors](https://docs.cloud.google.com/monitoring/api/v3/filters)
 and the [dashboard contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards).
 
 Group deletion also requires `monitoring.groups.delete`. The action fixes
 `recursive=false`, rejects caller-supplied overrides, and verifies the selected
-child/Uptime/policy prerequisites through their own native GETs. Remaining consumers,
+child/Uptime/policy/dashboard prerequisites through their own native GETs. Remaining consumers,
 changed configuration or uncertain reads prevent the DELETE. The final group GET
 and two complete consumer reviews precede the write; group members are retained.
 After restart, the receipt remains bound to the original asset, configuration,
@@ -608,3 +608,18 @@ task to verify them. An empty/lost response cannot independently release that sc
 The native API has no conditional DELETE: external configuration changes can race
 the final GET. Duplicate connections and external clients are outside this
 coordination boundary. See the [nonrecursive deletion contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups/delete).
+
+
+Custom dashboards require matching native LIST and GET configurations, including
+`etag`, layouts and unknown fields. Queries, text, annotations and widget contents
+are redacted before persistence and Invoke responses; display metadata and the
+configuration digest remain available. System dashboards are outside project cleanup.
+
+Dashboard deletion requires `monitoring.dashboards.delete` and a frozen configuration
+review. Two own GETs precede an empty-body DELETE with no caller parameters; changed
+configuration or protected labels stop the action. The native API has no conditional
+DELETE parameter: including `etag` in the review cannot prevent an external write
+between the final GET and DELETE. Receipts bind the asset and request key across
+restart, and own GET 404 confirms completion. Dashboard writes share the connection's
+project reservation with other reviewed Monitoring configuration writes; uncertain
+failed/canceled outcomes retain it. See the [dashboard deletion contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards/delete).

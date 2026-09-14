@@ -462,13 +462,13 @@ LIST、GET、再次 LIST 的配置。失权、分页不完整或配置变化会�
 
 仪表板查询按原生结构检查，包括时间序列筛选和比值分母；文本和日志内容不会当作组
 引用。动态 `GROUP` 筛选、模板变量、未知结构及尚未解析的 MQL、PromQL、SQL 查询，
-在无法确定引用时会阻断清理。已确认引用的仪表板也暂时阻断，待其清理动作支持完整配置
-复核后接入。资源组清理会在发送 DELETE 前重新检查消费方。参阅
+在无法确定引用时会阻断清理。已刷新且确认引用的仪表板可以显式选择，经配置复核后
+先于资源组删除。资源组清理会在发送 DELETE 前重新检查消费方。参阅
 [Monitoring 组选择器](https://docs.cloud.google.com/monitoring/api/v3/filters)和
 [仪表板契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards)。
 
 资源组删除还需要 `monitoring.groups.delete`。动作固定使用 `recursive=false`，拒绝
-调用方覆盖参数，并通过所选子组、Uptime 检查和策略各自的原生 GET 确认其已不存在。
+调用方覆盖参数，并通过所选子组、Uptime 检查、策略和仪表板各自的原生 GET 确认其已不存在。
 消费方仍存在、配置变化或读取结果不确定时，不会发送 DELETE。写入前完成两轮消费方
 复核及最后一次资源组读取，组成员会保留。重启后的回执仍绑定原始资源、配置、前置
 删除项和请求键，只通过该资源组自身的 404 确认不存在。
@@ -477,3 +477,15 @@ LIST、GET、再次 LIST 的配置。失权、分页不完整或配置变化会�
 范围；请继续原任务核验。响应为空或丢失不能独立释放该范围。原生接口不支持带版本
 条件的 DELETE，外部配置变更可能发生在最后一次 GET 之后；重复连接和外部客户端
 不在此协调范围内。参阅[非递归删除契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups/delete)。
+
+
+自定义仪表板清单要求原生 LIST 与 GET 配置一致，复核涵盖 `etag`、布局及未知字段。
+查询、文本、注释和组件内容会在持久化与 Invoke 返回前脱敏，保留显示元数据和配置
+摘要。系统仪表板不纳入项目清理。
+
+仪表板删除需要 `monitoring.dashboards.delete` 权限和已冻结的配置复核。两次自身 GET
+通过后才发送无请求体、无调用方参数的 DELETE；配置变化或保护标签会阻止动作。
+原生 DELETE 不支持版本条件：将 `etag` 纳入复核仍无法阻止最后一次 GET 与 DELETE
+之间的外部写入。回执在重启后仍绑定原始资源和请求键，通过自身 GET 的 404 确认完成。
+仪表板与同连接、同项目内其他已复核的 Monitoring 配置写入共享写入范围；失败或取消
+后的结果不确定时仍保留该范围。参阅[仪表板删除契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards/delete)。

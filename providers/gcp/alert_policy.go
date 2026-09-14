@@ -11,9 +11,12 @@ const alertPolicyType = "monitoring.googleapis.com/AlertPolicy"
 const alertPolicyReview = "_alert_policy_configuration"
 
 func isMonitoringConfig(kind string) bool {
-	return kind == uptimeType || kind == alertPolicyType || kind == notificationChannelType || kind == monitoringGroupType
+	return kind == uptimeType || kind == alertPolicyType || kind == notificationChannelType || kind == monitoringGroupType || kind == monitoringDashboardType
 }
 func monitoringReviewKey(kind string) string {
+	if kind == monitoringDashboardType {
+		return monitoringDashboardReview
+	}
 	if kind == monitoringGroupType {
 		return monitoringGroupReview
 	}
@@ -33,6 +36,9 @@ func (c *client) monitoringConfiguration(kind, id string, data map[string]any) s
 }
 
 func monitoringConfiguration(kind, id string, data map[string]any) string {
+	if kind == monitoringDashboardType {
+		return monitoringDashboardConfiguration(id, data)
+	}
 	if kind == notificationChannelType {
 		return notificationChannelConfiguration(id, data)
 	}
@@ -152,6 +158,9 @@ func (c *client) alertPolicyData(id string, data map[string]any) error {
 }
 
 func (c *client) monitoringRead(ctx context.Context, kind, id string) (map[string]any, error) {
+	if kind == monitoringDashboardType {
+		return c.monitoringDashboardRead(ctx, id)
+	}
 	if kind == monitoringGroupType {
 		return c.monitoringGroupRead(ctx, id)
 	}

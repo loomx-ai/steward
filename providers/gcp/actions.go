@@ -730,6 +730,9 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 }
 
 func protectionReason(nativeType string, data map[string]any) string {
+	if nativeType == monitoringDashboardType && protectedComputeLabels(data) {
+		return "protected_labels"
+	}
 	if nativeType == notificationChannelType && data["type"] == "email" {
 		return "notification_channel_budget_scope_required"
 	}

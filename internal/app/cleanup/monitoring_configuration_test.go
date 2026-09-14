@@ -39,6 +39,10 @@ func monitoringConfigurationAsset(id, project string, channel bool, billing ...b
 		value.Identity.NativeType = "monitoring.googleapis.com/Group"
 		value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "/alertPolicies/", "/groups/", 1)
 	}
+	if len(billing) > 2 && billing[2] {
+		value.Identity.NativeType = "monitoring.googleapis.com/Dashboard"
+		value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "/alertPolicies/", "/dashboards/", 1)
+	}
 	return value
 }
 func testMonitoringPlans(t *testing.T, channel bool, billing ...bool) {
@@ -81,7 +85,7 @@ func testMonitoringPlans(t *testing.T, channel bool, billing ...bool) {
 		case "host":
 			value.Identity.NativeID = strings.Replace(strings.Replace(value.Identity.NativeID, "monitoring.googleapis.com", "evil.example", 1), "billingbudgets.googleapis.com", "evil.example", 1)
 		case "collection":
-			value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "/groups/", "/wrong/", 1)
+			value.Identity.NativeID = strings.Replace(strings.Replace(value.Identity.NativeID, "/groups/", "/wrong/", 1), "/dashboards/", "/wrong/", 1)
 			value.Identity.NativeID = strings.Replace(strings.Replace(strings.Replace(value.Identity.NativeID, "alertPolicies", "uptimeCheckConfigs", 1), "notificationChannels", "uptimeCheckConfigs", 1), "/budgets/", "/wrong/", 1)
 		case "extra":
 			value.Identity.NativeID += "/extra"
@@ -235,4 +239,11 @@ func TestMonitoringGroupPlansSerializeProjectWrites(t *testing.T) {
 }
 func TestMonitoringGroupProjectScopePersistsThroughFailures(t *testing.T) {
 	testMonitoringScopeFailures(t, false, false, true)
+}
+
+func TestMonitoringDashboardPlansSerializeProjectWrites(t *testing.T) {
+	testMonitoringPlans(t, false, false, false, true)
+}
+func TestMonitoringDashboardProjectScopePersistsThroughFailures(t *testing.T) {
+	testMonitoringScopeFailures(t, false, false, false, true)
 }

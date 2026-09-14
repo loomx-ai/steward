@@ -25,10 +25,21 @@ func (h monitoringGroupCleanupContributors) ResolveContributors(ctx context.Cont
 	return []governance.Contributor{NewUptimeTargets(), native}, err
 }
 func TestMonitoringGroupSQLiteOrderedCleanupRestart(t *testing.T) {
+	testMonitoringGroupSQLiteCleanup(t, false)
+}
+func TestMonitoringDashboardSQLiteOrderedCleanupRestart(t *testing.T) {
+	testMonitoringGroupSQLiteCleanup(t, true)
+}
+func testMonitoringGroupSQLiteCleanup(t *testing.T, dashboard bool) {
 	ctx := t.Context()
 	s := newMonitoringGroupConsumerScenario(t)
 	object(object(array(s.values["alertPolicies"][0]["conditions"])[0])["conditionThreshold"])["filter"] = uptimeMetricFilter + ` AND metric.labels.check_id="public-check" AND group.id="9876"`
 	s.assets[3].Normalized[alertPolicyReview] = monitoringConfiguration(alertPolicyType, s.assets[3].Identity.NativeID, s.values["alertPolicies"][0])
+	if dashboard {
+		s.values["dashboards"][0]["gridLayout"] = map[string]any{"widgets": []any{map[string]any{"xyChart": map[string]any{"dataSets": []any{map[string]any{"timeSeriesQuery": map[string]any{"timeSeriesFilter": map[string]any{"filter": `group.id="9876"`}}}}}}}}
+		s.assets = append(s.assets, monitoringDashboardAsset(t, s))
+	}
+	count := len(s.assets)
 	// Uptime consumer discovery also follows reverse metric scopes and Logging
 	// routes; retain the existing protocol fixtures for those separate APIs.
 	fallback, _, _, _, _ := uptimeScenario(t)
@@ -40,11 +51,11 @@ func TestMonitoringGroupSQLiteOrderedCleanupRestart(t *testing.T) {
 		}
 		if req.Method == "DELETE" {
 			parts := strings.Split(strings.Trim(req.URL.Path, "/"), "/")
-			if req.URL.Host != "monitoring.googleapis.com" || len(parts) != 5 || parts[0] != "v3" || parts[1] != "projects" || parts[2] != "sample-project" {
+			if req.URL.Host != "monitoring.googleapis.com" || len(parts) != 5 || (parts[0] != "v3" && !(dashboard && parts[0] == "v1" && parts[3] == "dashboards")) || parts[1] != "projects" || parts[2] != "sample-project" {
 				t.Fatal("unexpected deletion", req.URL)
 			}
 			collection, id := parts[3], parts[4]
-			if collection != "groups" && collection != "uptimeCheckConfigs" && collection != "alertPolicies" {
+			if collection != "groups" && collection != "uptimeCheckConfigs" && collection != "alertPolicies" && !(dashboard && collection == "dashboards") {
 				t.Fatal("deleted member/other resource", req.URL)
 			}
 			if req.Body != nil {
@@ -62,7 +73,7 @@ func TestMonitoringGroupSQLiteOrderedCleanupRestart(t *testing.T) {
 						return apiResponse(req, 400, `{"error":{"code":400,"message":"descendants remain"}}`), nil
 					}
 				}
-				if id == "9876" && (len(s.values["uptimeCheckConfigs"]) != 0 || len(s.values["alertPolicies"]) != 0) {
+				if id == "9876" && (len(s.values["uptimeCheckConfigs"]) != 0 || len(s.values["alertPolicies"]) != 0 || dashboard && len(s.values["dashboards"]) != 0) {
 					t.Fatal("group deleted with live consumers")
 				}
 			} else if req.URL.RawQuery != "" {
@@ -128,11 +139,11 @@ func TestMonitoringGroupSQLiteOrderedCleanupRestart(t *testing.T) {
 		t.Fatal("consumers automatically selected", blocked, err)
 	}
 	task, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: conn.ID, CreatedBy: "test", Selectors: selectors})
-	if err != nil || len(task.Task.Blockers) != 0 || len(task.Steps) != 4 || task.Steps[3].AssetID != s.assets[0].ID {
+	if err != nil || len(task.Task.Blockers) != 0 || len(task.Steps) != count || task.Steps[count-1].AssetID != s.assets[0].ID {
 		t.Fatal(task, err)
 	}
-	prerequisites, err := plan.RequiredDeletions(task.Steps[3])
-	if err != nil || len(prerequisites) != 3 {
+	prerequisites, err := plan.RequiredDeletions(task.Steps[count-1])
+	if err != nil || len(prerequisites) != count-1 {
 		t.Fatal(prerequisites, err)
 	}
 	attempt, err := service.CreateExecution(ctx, cleanup.CreateExecutionRequest{CleanupTaskID: task.Task.ID, ConnectionID: conn.ID, RequestedBy: "test", IdempotencyKey: "group-order", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}})
@@ -177,11 +188,11 @@ func TestMonitoringGroupSQLiteOrderedCleanupRestart(t *testing.T) {
 		now = now.Add(3 * time.Second)
 	}
 	current, err := repos.Executions().GetExecution(ctx, attempt.ID)
-	if err != nil || current.Status != execution.ExecutionSucceeded || len(done) != 4 || len(writes) != 4 || writes[3] != "groups/9876" {
+	if err != nil || current.Status != execution.ExecutionSucceeded || len(done) != count || len(writes) != count || writes[count-1] != "groups/9876" {
 		t.Fatal(current, done, writes, err)
 	}
 	actions, err := repos.Executions().ListActions(ctx, attempt.ID)
-	if err != nil || len(actions) != 4 {
+	if err != nil || len(actions) != count {
 		t.Fatal(actions, err)
 	}
 	for _, action := range actions {

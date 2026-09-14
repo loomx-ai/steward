@@ -92,8 +92,8 @@ The native [group selector contract](https://docs.cloud.google.com/monitoring/ap
 binds group IDs to the request's scoping project. Known metric-condition selectors
 are retained conservatively as policy references; this is not evidence that the
 current API accepts group selectors in new AlertPolicy writes. MQL/PromQL/SQL and
-unknown condition forms do not prove absence. Dashboard references remain blockers
-because their generic delete driver does not yet bind a full configuration review.
+unknown condition forms do not prove absence. Fresh known Dashboard references now
+require explicit selection of their reviewed cleanup action; unknown references block.
 [Dashboard native fields](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards)
 and [unfiltered Dashboard LIST](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards/list)
 provide the collection and query contracts.
@@ -104,8 +104,8 @@ target drift. Real SQLite close/reopen graph tests retain edges and blockers on
 failed refreshes, then clear and restore them after successful native observations.
 The existing independent backend's missing native Group LIST remains a limit;
 these new consumer snapshots use explicit protocol fixtures, not claimed independent
-server or live-cloud coverage. Dashboard reviewed deletion and external-writer race protection remain unfinished;
-the reviewed Group DELETE milestone follows.
+server or live-cloud coverage. External-writer race protection remains unfinished;
+the reviewed Group and Dashboard DELETE milestones follow.
 
 
 ## Reviewed nonrecursive deletion
@@ -147,5 +147,41 @@ is tested independently from that missing server enforcement.
 
 Native permissions additionally require `monitoring.groups.delete`. The API lacks
 a version-conditioned DELETE, so changes from external writers can race the final
-GET. Cross-connection coordination, reviewed Dashboard cleanup and real-cloud/full-app
+GET. Cross-connection coordination and real-cloud/full-app
 acceptance remain open; the protocol fixtures are not evidence of those guarantees.
+
+
+## Reviewed Dashboard deletion
+
+The existing native Dashboard GET/LIST/DELETE contracts and all 61 reachable schemas
+are unchanged. Inventory requires native LIST/GET configuration agreement and binds
+etag, labels, layout, filters, annotations and unknown fields into the review digest.
+Native project-number names are canonicalized to the configured project identity.
+Raw layouts, text, queries and unknown content are redacted after review, including
+Invoke output. Display metadata and provider-derived proofs remain available.
+
+Dashboard actions share the reviewed Monitoring receipt/readback flow, reject caller
+parameters and require request keys. Two own GETs precede empty-body DELETE, with no
+query parameters. Configuration drift and native protection labels stop deletion.
+Synchronous receipts survive JSON/SQLite restart; own 404 confirms completion and
+empty/lost receipts cannot independently release the shared project reservation.
+Known group references require explicit Dashboard selection and deletion before the
+group; stale/missing/closed/foreign/unknown consumers remain blocking. Actual SQLite
+inventory-backed graph/plan/worker tests verify five ordered deletions and reopen the
+database before each worker action. Failure/cancellation reservation tests cover
+Dashboard writes alongside the existing Monitoring configuration cases.
+
+`TestMonitoringDashboardIndependentMockGCP` uses the same pinned unmodified upstream
+backend and harness. Native Create/GET/Update/DELETE/404 are exercised, including
+server-generated etag and project-number identities. Nine runtime requests are
+forwarded unchanged (one DELETE), with three explicitly substituted LIST responses.
+The test first verifies the real backend's `ListDashboards not implemented` error;
+that failure cannot become an empty authoritative inventory. Stale LIST after the
+native DELETE fails on its own GET. No native LIST, paging, IAM, external concurrency
+or live-cloud guarantee is claimed. Run with the existing loopback
+`STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL` harness configuration and
+`go test ./providers/gcp -run '^TestMonitoringDashboardIndependentMockGCP$' -count=1 -v`.
+
+Dashboard-to-policy/Uptime mappings and unresolved query languages remain separate
+work. The [native Dashboard DELETE](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards/delete)
+has no etag precondition, so the last GET cannot close external-writer races.
