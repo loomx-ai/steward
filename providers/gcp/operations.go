@@ -251,6 +251,11 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 				continue
 			}
 		}
+		if kind.NativeType == "bigtableadmin.googleapis.com/Table" && method == "GET" {
+			// LIST cannot use FULL; every table detail read needs both schema
+			// and replication metadata, including cleanup dependency reads.
+			parameters["view"] = "FULL"
+		}
 		if _, err := catalog.BindREST(operation, parameters); err == nil {
 			return operation, parameters, nil
 		}

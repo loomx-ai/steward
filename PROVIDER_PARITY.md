@@ -5084,3 +5084,57 @@ background evidence only, not acceptance evidence for this work.
   chapters and 10 existing screenshots (30 chapters in the isolated checkout).
   All 65 original work-in-progress file hashes remained unchanged. No external
   emulator or live cloud resource was started for this milestone.
+
+## Bigtable table view and detail completeness
+
+- The official [LIST](https://docs.cloud.google.com/bigtable/docs/reference/admin/rest/v2/projects.instances.tables/list)
+  method supports NAME_ONLY, REPLICATION_VIEW and ENCRYPTION_VIEW; using its
+  shared enum's FULL value for LIST would be invalid. The existing native
+  REPLICATION_VIEW list stays unchanged. Table inventory now enriches every
+  listed table using [GET](https://docs.cloud.google.com/bigtable/docs/reference/admin/rest/v2/projects.instances.tables/get)
+  with FULL, exposing schema and replication metadata together. FULL does not
+  include STATS_VIEW statistics; no statistical completeness is claimed.
+- GET view selection lives in the shared resource-operation binding, covering
+  inventory, direct table actions, instance child discovery, cleanup preflight,
+  final child readback and Infrastructure Manager physical-resource reads. DELETE parameters remain unchanged. The native
+  table identity must match the listed/resolved target, and list results must
+  belong to the enumerated instance. Project ID/number aliases are accepted.
+- Retained protocol tests cover multiple instances with same-named tables,
+  native pagination, detail-only properties, GET permissions/404, omitted or
+  changed identities and wrong-instance list entries. Single-table preflight,
+  execution, wait and repeat execution use full metadata; protection, denial
+  and identity changes cannot trigger a write. Existing fixtures now retain
+  the action identity as the real resolver does, and return native table names.
+- Instance cascade regression checks full table reads, protected/denied/changed
+  children, reviewed deletion, surviving children after the parent's 404 and
+  final per-child absence. Actual SQLite scan-worker regressions prove that a
+  successful LIST followed by denied/missing/mismatched GET marks coverage
+  failed while keeping the last complete table and searchable properties.
+- Independent emulator feasibility was inspected separately. The official
+  [emulator documentation](https://docs.cloud.google.com/bigtable/docs/emulator)
+  excludes instance/cluster management. Google's bttest source at
+  [4dc7532](https://github.com/googleapis/google-cloud-go/blob/4dc7532ec124a797db0b78205a837a64ec49ed42/bigtable/bttest/inmem.go)
+  serves gRPC: ListTables returns names; GetTable returns schema/protection but
+  does not inspect the requested view. It can independently test table metadata
+  and protection with a transport bridge, but cannot prove view selection,
+  replication/backup metadata or complete instance cascade behavior. No emulator
+  or cloud resources were started in this milestone; those checks remain open.
+- Native catalog/spec counts are unchanged. This closes the confirmed Bigtable
+  list-view gap, not the eight overall provider acceptance criteria.
+
+- The first all-package run exposed a stale Infrastructure Manager identity
+  fixture that still expected a GET without the new FULL parameter; all other
+  packages passed, including Azure (350.173s). Its literal native GET URL now
+  includes FULL, and the Bigtable test compares Infrastructure Manager's live
+  metadata/protection with the projected inventory. This was a fixture mismatch,
+  not a relaxation of the resource identity or cleanup checks.
+
+- Final verification: after the fixture correction, the complete GCP suite passed
+  (172.708s). Final Bigtable/service/database/GCP-schema/Infra-identity race tests
+  passed (12.858s); the initial race selection also passed (16.993s). Main
+  Bigtable/service regressions passed (6.943s), then final Bigtable/Infra-identity
+  checks passed (1.592s). Unfiltered main inventory/query/contracts passed
+  (2.384s/0.529s/0.772s), as did vet and documentation checks (30 isolated / 42
+  main chapters and all 10 existing screenshots). All other packages passed in
+  the initial full run; only its stale GCP URL fixture required the final rerun.
+  The 65 original WIP file hashes were preserved; no runtime dependencies added.

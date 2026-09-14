@@ -19,7 +19,11 @@ func (a *action) readResource(ctx context.Context) (map[string]any, error) {
 	if isDiscovery(a.kind.NativeType) {
 		return a.client.discoveryRead(ctx, a.kind.NativeType, a.identity.NativeID)
 	}
-	return a.client.request(ctx, "GET", a.endpoint, nil)
+	data, err := a.client.request(ctx, "GET", a.endpoint, nil)
+	if err == nil && a.kind.NativeType == "bigtableadmin.googleapis.com/Table" && a.client.canonicalName("//bigtableadmin.googleapis.com/"+text(data["name"])) != a.client.canonicalName(a.identity.NativeID) {
+		return nil, groupDenied("bigtable_identity_changed")
+	}
+	return data, err
 }
 
 func discoveryPhase(request contracts.ActionRequest, operation string) map[string]any {

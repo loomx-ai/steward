@@ -501,7 +501,7 @@
     "cai_name": "//bigtable.googleapis.com/projects/sample-project/instances/parent/tables/item",
     "native_type": "bigtableadmin.googleapis.com/Table",
     "native_id": "//bigtableadmin.googleapis.com/projects/sample-project/instances/parent/tables/item",
-    "get_url": "https://bigtableadmin.googleapis.com/v2/projects/sample-project/instances/parent/tables/item"
+    "get_url": "https://bigtableadmin.googleapis.com/v2/projects/sample-project/instances/parent/tables/item?view=FULL"
   },
   {
     "terraform_type": "google_alloydb_cluster",

@@ -54,6 +54,8 @@ Cloud Identity 身份组、成员关系及 Resource Manager 组织的 `propertie
 
 Discovery Engine 文档的 `properties.indexedAt` 是索引状态中的时间戳；索引错误文本和文档内容仍被遮蔽。目标网站提供 `properties.indexingStatus`，会话提供 `startTime` 与 `endTime`，而非创建时间。Infrastructure Manager 资源变更提供 `properties.intent`。KMS 的 `properties.primaryState` 仅表示 CryptoKey 主版本的状态；密钥版本和导入任务不会继承密钥标签。参见[文档索引字段](https://docs.cloud.google.com/generative-ai-app-builder/docs/reference/rest/v1/projects.locations.collections.dataStores.branches.documents)和[资源变更意图](https://docs.cloud.google.com/infrastructure-manager/docs/reference/rest/v1/projects.locations.previews.resourceChanges)。
 
+Bigtable 表扫描会在列举后读取完整原生元数据，包括列族、复制状态、备份策略和删除保护。因此连接除了 `bigtable.tables.list`，还需要 `bigtable.tables.get`。详情无权限、资源消失或身份不一致时，扫描分片失败并保留之前的观测。单表删除与实例级联清理也会读取完整元数据并遵守表的删除保护。参见原生[列表](https://docs.cloud.google.com/bigtable/docs/reference/admin/rest/v2/projects.instances.tables/list)与[详情](https://docs.cloud.google.com/bigtable/docs/reference/admin/rest/v2/projects.instances.tables/get)方法。
+
 ## 盘点与清理范围
 
 Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 用于补充发现其他类型，作为只读资源展示。产品扫描分片失败时会明确报告，也不会据此认定资源已不存在。

@@ -234,6 +234,8 @@ func TestDatabaseAndBrokerCascadesRequireReviewedNativeChildren(t *testing.T) {
 			parent := asset.Asset{ID: "parent", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", NativeType: test.parent, NativeID: "//" + host + "/" + test.name}, Normalized: map[string]any{"name": test.name}, Capabilities: asset.CapabilitySet{asset.CapabilityActionable}}
 			child := asset.Asset{ID: "child", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", NativeType: test.child, NativeID: "//" + host + "/" + test.childName}, Normalized: map[string]any{"name": test.childName}, Capabilities: asset.CapabilitySet{asset.CapabilityActionable}}
 			writes := 0
+			tableFailure := ""
+			parentGone, childGone := false, false
 			transport := func(r *http.Request) (*http.Response, error) {
 				if r.URL.Host != host {
 					t.Fatal("cross-service request")
@@ -253,9 +255,28 @@ func TestDatabaseAndBrokerCascadesRequireReviewedNativeChildren(t *testing.T) {
 						body = map[string]any{"name": p + "locations/us-central1/operations/delete"}
 					}
 				case r.URL.Path == "/"+version+"/"+test.name:
+					if parentGone {
+						return apiResponse(r, 404, `{}`), nil
+					}
 					body = parent.Normalized
 				case r.URL.Path == "/"+version+"/"+test.childName:
 					body = child.Normalized
+					if test.child == bigtableTestKind {
+						if r.URL.Query().Get("view") != "FULL" {
+							t.Fatal("cascade used incomplete table view", r.URL)
+						}
+						if childGone {
+							return apiResponse(r, 404, `{}`), nil
+						}
+						switch tableFailure {
+						case "protected":
+							body = map[string]any{"name": test.childName, "deletionProtection": true}
+						case "denied":
+							return apiResponse(r, 403, `{}`), nil
+						case "changed":
+							body = map[string]any{"name": test.childName + "-other"}
+						}
+					}
 				case r.URL.Path == "/"+version+"/"+test.name+"/"+test.collection:
 					body = map[string]any{test.collection: []any{child.Normalized}}
 				case host == "bigtableadmin.googleapis.com" && (strings.HasSuffix(r.URL.Path, "/tables") || strings.HasSuffix(r.URL.Path, "/clusters")):
@@ -277,8 +298,29 @@ func TestDatabaseAndBrokerCascadesRequireReviewedNativeChildren(t *testing.T) {
 				t.Fatal("unreviewed database child deleted")
 			}
 			request.LifecycleImpacts = []contracts.ActionImpact{{Asset: child, ControllerID: parent.ID, Delete: true}}
+			if test.child == bigtableTestKind {
+				for _, failure := range []string{"protected", "denied", "changed"} {
+					tableFailure = failure
+					if _, err := driver.Execute(t.Context(), request); err == nil || writes != 0 {
+						t.Fatal("unsafe instance cascade", failure, writes, err)
+					}
+				}
+				tableFailure = ""
+			}
 			if _, err := driver.Execute(context.Background(), request); err != nil || writes != 1 {
 				t.Fatalf("reviewed cascade failed: writes=%d %v", writes, err)
+			}
+			if test.child == bigtableTestKind {
+				parentGone = true
+				read, err := driver.Readback(t.Context(), request)
+				if err != nil || !read.Exists {
+					t.Fatal("parent absence hid surviving table", read, err)
+				}
+				childGone = true
+				read, err = driver.Readback(t.Context(), request)
+				if err != nil || read.Exists {
+					t.Fatal("native table absence not confirmed", read, err)
+				}
 			}
 		})
 	}

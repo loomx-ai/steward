@@ -166,6 +166,9 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 					polls++
 					response = map[string]any{"name": test.operation, "done": polls > 1}
 				case r.URL.Path == targetPath && r.Method == "GET":
+					if test.kind == "bigtableadmin.googleapis.com/Table" && r.URL.Query().Get("view") != "FULL" {
+						t.Fatalf("incomplete table detail view: %s", r.URL)
+					}
 					if deleted {
 						reads++
 						if reads > 1 {
@@ -219,6 +222,7 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 			}
 			request := contracts.ActionRequest{Action: "delete", IdempotencyKey: "service-delete", Asset: asset.Asset{Identity: asset.Identity{NativeType: test.kind, NativeID: item.NativeID}, Normalized: item.Normalized}}
 			driver := protocolAction(t, test.kind, test.name, transport)
+			driver.identity = request.Asset.Identity
 			result, err := driver.Execute(context.Background(), request)
 			if err != nil {
 				t.Fatal(err)
@@ -275,7 +279,7 @@ func TestServiceProtectionAndSoftDeletion(t *testing.T) {
 	for _, test := range []struct{ kind, name, body, reason string }{
 		{"firestore.googleapis.com/Database", "projects/sample-project/databases/(default)", `{"deleteProtectionState":"DELETE_PROTECTION_ENABLED"}`, "deletion_protection_enabled"},
 		{"spanner.googleapis.com/Database", "projects/sample-project/instances/main/databases/app", `{"enableDropProtection":true}`, "deletion_protection_enabled"},
-		{"bigtableadmin.googleapis.com/Table", "projects/sample-project/instances/main/tables/app", `{"deletionProtection":true}`, "deletion_protection_enabled"},
+		{"bigtableadmin.googleapis.com/Table", "projects/sample-project/instances/main/tables/app", `{"name":"projects/sample-project/instances/main/tables/app","deletionProtection":true}`, "deletion_protection_enabled"},
 		{"redis.googleapis.com/Cluster", "projects/sample-project/locations/us-central1/clusters/app", `{"deletionProtectionEnabled":true}`, "deletion_protection_enabled"},
 		{"file.googleapis.com/Instance", "projects/sample-project/locations/us-central1-a/instances/app", `{"deletionProtectionEnabled":true}`, "deletion_protection_enabled"},
 		{"logging.googleapis.com/LogBucket", "projects/sample-project/locations/global/buckets/app", `{"locked":true}`, "log_bucket_retention_locked"},
@@ -291,6 +295,9 @@ func TestServiceProtectionAndSoftDeletion(t *testing.T) {
 				}
 				return apiResponse(r, 200, test.body), nil
 			})
+			if test.kind == "bigtableadmin.googleapis.com/Table" {
+				driver.identity.NativeID = "//bigtableadmin.googleapis.com/" + test.name
+			}
 			check, err := driver.Preflight(context.Background(), contracts.ActionRequest{Action: "delete"})
 			if err != nil || check.Allowed || check.Reason != test.reason {
 				t.Fatalf("check=%+v error=%v", check, err)

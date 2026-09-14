@@ -261,7 +261,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 		seenIDs[id] = true
 		bigquery := nativeType == "bigquery.googleapis.com/Dataset" || nativeType == "bigquery.googleapis.com/Table"
-		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || bigquery {
+		bigtable := nativeType == "bigtableadmin.googleapis.com/Table"
+		if bigtable && !strings.HasPrefix(id, target.ParentID+"/tables/") {
+			return contracts.InventoryBatch{}, groupDenied("bigtable_list_parent_changed")
+		}
+		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || bigquery || bigtable {
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
@@ -285,6 +289,10 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				liveID, identityErr := c.productIdentity(kind, operation, parameters, identityPath, productRecord{Data: live})
 				if identityErr != nil || liveID != id {
 					return contracts.InventoryBatch{}, groupDenied("bigquery_identity_changed")
+				}
+			} else if bigtable {
+				if c.canonicalName("//bigtableadmin.googleapis.com/"+text(live["name"])) != id {
+					return contracts.InventoryBatch{}, groupDenied("bigtable_identity_changed")
 				}
 			} else if isDataproc(nativeType) {
 				if err := c.dataprocIdentity(nativeType, id, live); err != nil {

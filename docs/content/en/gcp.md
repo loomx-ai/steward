@@ -83,6 +83,14 @@ primary version; key versions and import jobs do not inherit the key's labels.
 See the [document index fields](https://docs.cloud.google.com/generative-ai-app-builder/docs/reference/rest/v1/projects.locations.collections.dataStores.branches.documents)
 and [resource-change intent](https://docs.cloud.google.com/infrastructure-manager/docs/reference/rest/v1/projects.locations.previews.resourceChanges).
 
+Bigtable table scans read full native metadata after listing tables, including
+column families, replication state, backup policy and deletion protection. The
+connection therefore needs `bigtable.tables.get` as well as `bigtable.tables.list`.
+A denied, missing or mismatched detail response fails the scan shard and preserves
+previous observations. Table deletion and instance cascade checks also read full
+metadata and honor table deletion protection. See the native [list](https://docs.cloud.google.com/bigtable/docs/reference/admin/rest/v2/projects.instances.tables/list)
+and [detail](https://docs.cloud.google.com/bigtable/docs/reference/admin/rest/v2/projects.instances.tables/get) methods.
+
 ## Inventory and supported cleanup
 
 Steward lists the resources below through their native product APIs. Cloud Asset Inventory adds broad discovery for other types, which appear as read-only inventory. A failed product shard is reported and cannot establish resource absence.
