@@ -2,8 +2,10 @@ package gcp
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -18,8 +20,17 @@ import (
 )
 
 func TestRoutePolicySQLiteScanCleanupRestartAndReconciliation(t *testing.T) {
+	for _, bgp := range []bool{false, true} {
+		t.Run(map[bool]string{false: "unattached", true: "bgp-attached"}[bgp], func(t *testing.T) { routePolicySQLiteCleanup(t, bgp) })
+	}
+}
+
+func routePolicySQLiteCleanup(t *testing.T, bgp bool) {
 	ctx := t.Context()
-	r, _, fixture := routePolicyActionRuntime(t)
+	r, request, fixture := routePolicyActionRuntime(t)
+	if bgp {
+		routePolicyAttachFixture(t, &request, fixture)
+	}
 	transport := r.transport
 	registry := identityRegistry(t, r)
 	db := filepath.Join(t.TempDir(), "route-policy-cleanup.db")
@@ -88,6 +99,12 @@ func TestRoutePolicySQLiteScanCleanupRestartAndReconciliation(t *testing.T) {
 	if policy.ID == "" || !policy.Capabilities.Has(asset.CapabilityActionable) || policy.Normalized[routePolicyRouterID] != "1001" {
 		t.Fatal("scan did not capture deletable policy review", policy)
 	}
+	if bgp {
+		encoded, _ := json.Marshal(policy.Normalized)
+		if strings.Contains(string(encoded), "router-only-secret") || len(array(policy.Normalized["bgpReferences"])) != 2 {
+			t.Fatal("missing references or leaked key", policy.Normalized["bgpReferences"])
+		}
+	}
 	planner := cleanup.NewService(repositories, registry, cleanup.WithClock(func() time.Time { return now }))
 	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: policy.ID}}, CreatedBy: "test"})
 	if err != nil || len(task.Steps) != 1 || task.Steps[0].AssetID != policy.ID {
@@ -101,7 +118,11 @@ func TestRoutePolicySQLiteScanCleanupRestartAndReconciliation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for round, want := range []execution.ActionStatus{execution.ActionWaiting, execution.ActionWaiting, execution.ActionReadingBack, execution.ActionSucceeded} {
+	states := []execution.ActionStatus{execution.ActionWaiting, execution.ActionWaiting, execution.ActionReadingBack, execution.ActionSucceeded}
+	if bgp {
+		states = []execution.ActionStatus{execution.ActionWaiting, execution.ActionWaiting, execution.ActionWaiting, execution.ActionWaiting, execution.ActionWaiting, execution.ActionReadingBack, execution.ActionSucceeded}
+	}
+	for round, want := range states {
 		repositories, err = sqlite.Open(db, "../../migrations")
 		if err != nil {
 			t.Fatal(err)
@@ -111,23 +132,44 @@ func TestRoutePolicySQLiteScanCleanupRestartAndReconciliation(t *testing.T) {
 		handler := cleanup.NewExecutionHandler(planner, cleanup.ActionResolverFunc(func(ctx context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
 			return fresh.ResolveAction(ctx, value.Identity.ConnectionID, value)
 		}))
-		if round == 1 {
-			fixture.status = "DONE"
-		}
-		if round == 2 {
-			fixture.exists = false
+		if bgp {
+			if round == 1 {
+				fixture.patchStatus = "DONE"
+			}
+			if round == 2 {
+				applyRoutePolicyPatch(t, fixture)
+			}
+			if round == 4 {
+				fixture.status = "DONE"
+			}
+			if round == 5 {
+				fixture.exists = false
+			}
+		} else {
+			if round == 1 {
+				fixture.status = "DONE"
+			}
+			if round == 2 {
+				fixture.exists = false
+			}
 		}
 		err = handler.Handle(ctx, job)
 		var retry *cleanup.RetryError
 		if want == execution.ActionSucceeded && err != nil || want != execution.ActionSucceeded && !errors.As(err, &retry) {
 			t.Fatal("restarted worker", round, err)
 		}
+		phase := "route_policy_delete"
+		deletes := 1
+		if bgp && round < 2 {
+			phase = routePolicyDetach
+			deletes = 0
+		}
 		actions, err := repositories.Executions().ListActions(ctx, attempt.ID)
-		if err != nil || len(actions) != 1 || actions[0].Status != want || actions[0].ProviderResult["phase"] != "route_policy_delete" {
+		if err != nil || len(actions) != 1 || actions[0].Status != want || actions[0].ProviderResult["phase"] != phase {
 			t.Fatal("persisted native phase", round, actions, err)
 		}
-		if fixture.deletes != 1 {
-			t.Fatal("restart repeated deletion", fixture.deletes)
+		if fixture.deletes != deletes || bgp && fixture.patches != 1 {
+			t.Fatal("restart repeated mutation", round, fixture.deletes, fixture.patches)
 		}
 		now = now.Add(3 * time.Second)
 	}

@@ -176,6 +176,24 @@ func TestGCPChangedPropertyPathsMatchPinnedNativeSchemas(t *testing.T) {
 							t.Fatal("derived scope must be a string", field, property)
 						}
 						continue
+					case kind == routePolicyType && path == "bgpReferences":
+						// This adapter field projects Router peer names/directions;
+						// it is not a field returned by getRoutePolicy.
+						if property.Type != "array" || object(root["properties"])[path] != nil {
+							t.Fatal("invalid derived policy references", property)
+						}
+						peers := nativePropertySchema(schemas, object(schemas["Router"]), "bgpPeers")
+						peer := nativePropertySchema(schemas, object(peers["items"]), "$")
+						if peers["type"] != "array" || nativePropertySchema(schemas, peer, "name")["type"] != "string" {
+							t.Fatal("native peer identity schema missing")
+						}
+						for _, direction := range []string{"importPolicies", "exportPolicies"} {
+							policies := nativePropertySchema(schemas, peer, direction)
+							if policies["type"] != "array" || object(policies["items"])["type"] != "string" {
+								t.Fatal("native policy reference schema missing", direction)
+							}
+						}
+						continue
 					case kind == storagePoolType && path == "storage_pool_disks":
 						// Native member discovery is covered by the StoragePool
 						// inventory/SQLite/restart suites, not its GET schema.

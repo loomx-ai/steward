@@ -405,6 +405,23 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if target.ParentID != "" {
 			if nativeType == routePolicyType {
 				item.Normalized[routePolicyRouterID] = target.ParentUID
+				peers, err := routePolicyBGPFromCursor(target.ParentConfiguration)
+				if err != nil {
+					return contracts.InventoryBatch{}, err
+				}
+				item.Normalized[routePolicyPeers] = peers
+				references := []any{}
+				for _, value := range peers {
+					peer := object(value)
+					for _, direction := range []string{"importPolicies", "exportPolicies"} {
+						for _, policy := range array(peer[direction]) {
+							if policy == last(id) {
+								references = append(references, map[string]any{"peer": peer["name"], "direction": direction})
+							}
+						}
+					}
+				}
+				item.Normalized["bgpReferences"] = references
 				actionable := firewallNumericID(target.ParentUID) && text(item.Normalized["fingerprint"]) != ""
 				item.Actionable = &actionable
 			}
@@ -719,6 +736,17 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 					}
 				}
 				configuration := text(parent.Normalized[dataformProof])
+				if kind.NativeType == routePolicyType {
+					peers, err := routePolicyBGPPeers(parent.Normalized)
+					if err != nil {
+						return nil, err
+					}
+					encoded, err := json.Marshal(map[string]any{"bgpPeers": peers})
+					if err != nil {
+						return nil, err
+					}
+					configuration = string(encoded)
+				}
 				if isInfra(parent.NativeType) {
 					configuration = text(parent.Normalized[infraProof])
 				}

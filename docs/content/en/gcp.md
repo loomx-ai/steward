@@ -100,7 +100,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
 | Hyperdisk Storage Pools | Native pools, capacity/performance usage, provisioning modes and disk members | Inventory and reviewed cleanup |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
-| Cloud Router BGP policies | Per-router import/export policies, CEL terms and fingerprint | Independent native policy deletion; BGP detachment remains pending |
+| Cloud Router BGP policies | Per-router import/export policies, CEL terms and fingerprint | Independent native policy deletion with BGP reference detachment |
 | Cloud Identity | Groups and member relationships in the configured directory | Reviewed group deletion; ordinary member links can also be removed independently |
 | Resource Manager | Organization containing the connected project, discovered through its folder ancestry | Read-only; the public v3 API has no organization delete method |
 | Firewall policies | Hierarchical policies within the configured firewall scope; global and regional network policies; native associations | Remove reviewed associations before deleting a policy; associations can also be removed independently |
@@ -274,13 +274,24 @@ and [policy detail API](https://docs.cloud.google.com/compute/docs/reference/res
 Independent policy deletion additionally requires `compute.routers.get`,
 `compute.routers.deleteRoutePolicy` and `compute.regionOperations.get`.
 Run a fresh scan before creating the cleanup task so it includes the policy
-fingerprint and containing router ID. Changes to either require a new review.
+fingerprint, containing router ID and BGP peer configuration. Changes require a new review.
+`bgpReferences` lists the affected peers and import/export directions.
 Steward uses the native [policy deletion API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteRoutePolicy),
 resumes its regional operation after restart and confirms policy absence while
 the same router remains readable. Operation completion alone does not prove
 that deletion is visible. An unreadable parent is reported as a dependency failure.
 
-Native dependency conflicts are reported for review; automatic BGP peer
-detachment and parent-router cascade handling are still pending. The native
-method has no fingerprint precondition, so avoid concurrent policy edits during
-cleanup. Named sets and other policies are not selected for deletion by this action.
+When peers reference the selected policy, Steward first removes that name from
+those import/export lists, retaining every other policy in its original order.
+This uses [Router PATCH](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/patch)
+and additionally needs `compute.routers.update`; Google's [audit permission list](https://docs.cloud.google.com/compute/docs/logging/audit-logging)
+also identifies `compute.networks.updatePolicy` on the router's network. The
+request preserves other peer settings and omits unrelated router fields. Only
+after the regional operation finishes and the updated peers are visible does
+policy deletion begin. Both phases resume from persisted receipts after restart.
+
+Configuration changes, native dependency conflicts and permission failures are
+reported for review. These native mutations have no fingerprint precondition,
+so avoid concurrent policy or BGP peer edits during cleanup. Parent-router
+cascade handling remains pending. Named sets and other policies are not selected
+for deletion by this action.

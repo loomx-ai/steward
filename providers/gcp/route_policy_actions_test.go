@@ -12,24 +12,30 @@ import (
 )
 
 type routePolicyActionFixture struct {
-	mode       string
-	exists     bool
-	status     string
-	deletes    int
-	reads      int
-	requestIDs []string
-	parent     map[string]any
-	policy     map[string]any
-	operation  map[string]any
+	mode           string
+	patches        int
+	patchStatus    string
+	patchOperation map[string]any
+	patchPeers     []any
+	patchIDs       []string
+	exists         bool
+	status         string
+	deletes        int
+	reads          int
+	requestIDs     []string
+	parent         map[string]any
+	policy         map[string]any
+	operation      map[string]any
 }
 
 func routePolicyActionRuntime(t *testing.T) (*Runtime, contracts.ActionRequest, *routePolicyActionFixture) {
 	t.Helper()
 	parentID := "//compute.googleapis.com/projects/sample-project/regions/us-central1/routers/router-a"
 	policy := routePolicyFixture("policy-a")
-	fixture := &routePolicyActionFixture{exists: true, status: "RUNNING", policy: policy, parent: map[string]any{"name": "router-a", "id": "1001", "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/routers/router-a", "bgpPeers": []any{map[string]any{"name": "peer-a", "importPolicies": []any{"policy-a", "other-policy"}, "exportPolicies": []any{"export-policy"}}}}}
+	fixture := &routePolicyActionFixture{exists: true, status: "RUNNING", policy: policy, parent: map[string]any{"name": "router-a", "id": "1001", "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/routers/router-a", "bgpPeers": []any{map[string]any{"name": "peer-a", "importPolicies": []any{"other-policy"}, "exportPolicies": []any{"export-policy"}}}}}
 	normalized := cloneParameters(policy)
 	normalized[routePolicyRouterID] = "1001"
+	normalized[routePolicyPeers], _ = routePolicyBGPPeers(fixture.parent)
 	request := contracts.ActionRequest{Asset: asset.Asset{ID: "policy", Identity: asset.Identity{Provider: asset.ProviderGCP, Partition: "gcp", ConnectionID: "connection", NativeType: routePolicyType, NativeID: parentID + "/routePolicies/policy-a"}, Normalized: normalized}, Action: "delete", IdempotencyKey: "delete-policy"}
 	runtime := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if req.URL.Host != "compute.googleapis.com" {
@@ -68,6 +74,17 @@ func routePolicyActionRuntime(t *testing.T) (*Runtime, contracts.ActionRequest, 
 				}
 				return dataformResponse(req, 200, map[string]any{"resource": fixture.policy}), nil
 			}
+			if strings.HasSuffix(req.URL.Path, "/regions/us-central1/operations/bgp-operation") {
+				if fixture.mode == "patch-poll-denied" {
+					return apiResponse(req, 403, `{}`), nil
+				}
+				if fixture.mode == "patch-poll-expired" {
+					return apiResponse(req, 404, `{}`), nil
+				}
+				data := cloneParameters(fixture.patchOperation)
+				data["status"] = fixture.patchStatus
+				return dataformResponse(req, 200, data), nil
+			}
 			if strings.HasSuffix(req.URL.Path, "/regions/us-central1/operations/operation-a") {
 				if fixture.mode == "poll-denied" {
 					return apiResponse(req, 403, `{}`), nil
@@ -79,6 +96,42 @@ func routePolicyActionRuntime(t *testing.T) (*Runtime, contracts.ActionRequest, 
 				result["status"] = fixture.status
 				return dataformResponse(req, 200, result), nil
 			}
+		}
+		if req.Method == "PATCH" && strings.HasSuffix(req.URL.Path, "/routers/router-a") {
+			fixture.patches++
+			fixture.patchIDs = append(fixture.patchIDs, req.URL.Query().Get("requestId"))
+			var body map[string]any
+			if err := json.NewDecoder(req.Body).Decode(&body); err != nil {
+				t.Fatal(err)
+			}
+			if len(body) != 1 || body["bgpPeers"] == nil || len(req.URL.Query()) != 1 || req.URL.Query().Get("requestId") == "" {
+				t.Fatal("invalid patch", body, req.URL)
+			}
+			fixture.patchPeers = array(body["bgpPeers"])
+			for _, v := range fixture.patchPeers {
+				peer := object(v)
+				if _, ok := peer["managementType"]; ok {
+					t.Fatal("output-only field sent", peer)
+				}
+				for _, direction := range []string{"importPolicies", "exportPolicies"} {
+					for _, policy := range array(peer[direction]) {
+						if policy == "policy-a" {
+							t.Fatal("selected reference remains", peer)
+						}
+					}
+				}
+			}
+			switch fixture.mode {
+			case "patch-denied":
+				return apiResponse(req, 403, `{}`), nil
+			case "patch-conflict":
+				return apiResponse(req, 409, `{}`), nil
+			case "patch-retry":
+				return apiResponse(req, 503, `{}`), nil
+			}
+			fixture.patchStatus = "RUNNING"
+			fixture.patchOperation = map[string]any{"name": "bgp-operation", "operationType": "patch", "status": "PENDING", "targetLink": fixture.parent["selfLink"], "targetId": "1001", "clientOperationId": req.URL.Query().Get("requestId")}
+			return dataformResponse(req, 200, fixture.patchOperation), nil
 		}
 		if req.Method == "POST" && strings.HasSuffix(req.URL.Path, "/routers/router-a/deleteRoutePolicy") {
 			fixture.deletes++

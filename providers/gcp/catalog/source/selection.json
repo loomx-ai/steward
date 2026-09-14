@@ -1028,7 +1028,8 @@
       "methods": [
         "compute.routers.getRoutePolicy",
         "compute.routers.listRoutePolicies",
-        "compute.routers.deleteRoutePolicy"
+        "compute.routers.deleteRoutePolicy",
+        "compute.routers.patch"
       ]
     }
   ],

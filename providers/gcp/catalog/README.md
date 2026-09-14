@@ -37,7 +37,7 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 198 explicit resource rules and 781 selected methods
+The current catalog has 198 explicit resource rules and 782 selected methods
 from 58 selected Discovery fragments at 56 official URLs and one pinned Cloud SDK archive (Network Services and Security Center Management). Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
@@ -392,5 +392,7 @@ router-local names distinct. Terms, type and fingerprint are queryable after a
 successful scan. Independent deletion uses `deleteRoutePolicy`, a persisted
 regional operation and policy absence readback while retaining the containing
 router. Policy fingerprints and router IDs must still match the scanned review.
-Explicit BGP detachment and parent-router cascade review remain pending;
+Native Router PATCH now detaches reviewed BGP references before policy deletion,
+with ordered list preservation and persisted regional operation phases.
+Parent-router cascade review remains pending;
 see [protocol and emulator evidence](../fixtures/route-policy/README.md).

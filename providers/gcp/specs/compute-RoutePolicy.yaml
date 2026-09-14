@@ -50,6 +50,9 @@ fields:
   terms:
     path: terms
     type: array
+  bgpReferences:
+    path: bgpReferences
+    type: array
   fingerprint:
     path: fingerprint
     type: string

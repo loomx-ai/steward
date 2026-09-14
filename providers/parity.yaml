@@ -431,9 +431,12 @@ resources:
     Failed details preserve prior observations; successful empty native lists prove absence.
     Independent native deletion now binds the scanned policy fingerprint and router ID,
     persists regional operation receipts and verifies policy absence after restart.
-    Native dependency conflicts are surfaced without rewriting BGP peers. Explicit BGP
-    detachment, named-set dependencies, parent cascade and independent/live acceptance
-    remain unfinished. Router deletion is not policy deletion parity.
+    Reviewed BGP import/export references are detached with native Router PATCH,
+    preserving other peer settings and ordered policy lists. Persisted phases wait for
+    detachment before deletion; permission failures, drift and native conflicts fail.
+    Native mutations lack a fingerprint precondition. Named-set dependencies, parent
+    cascade and independent/live acceptance remain unfinished. Router deletion is not
+    policy deletion parity.
 - alicloud: ACS::CEN::TrafficMarkingPolicy
   spec: providers/alicloud/specs/cen-traffic-marking-policy.yaml
   class: network.traffic_marking_policy

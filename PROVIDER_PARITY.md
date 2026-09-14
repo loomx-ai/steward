@@ -5462,3 +5462,45 @@ background evidence only, not acceptance evidence for this work.
   object remain unchanged. The commit contains only 21 milestone files; all
   65 original WIP file hashes are preserved. No external environment or new
   runtime dependency was added.
+
+### BGP reference detachment before native route-policy deletion
+
+- Verified the native Router PATCH contract and unchanged Cloud SDK BGP update
+  command from the same pinned archive. Retained one method and its transitive
+  schemas without refreshing prior native objects; catalog counts are 198 rules
+  and 782 operations. Router PATCH has no fingerprint/conditional revision input.
+- Route-policy inventory now records the containing router's BGP peer snapshot
+  and exposes peer/direction references. Old action reviews require a fresh scan.
+  Cleanup removes only the selected policy from ordered import/export lists,
+  retaining other peer fields and policies, including empty-list clears. Router
+  NAT, interfaces, BGP settings and authentication keys are omitted from PATCH.
+- A persisted detachment phase waits for native operation completion and exact
+  peer readback before issuing policy deletion. Each mutation uses its own stable
+  request UUID. Restarts and lost receipts preserve idempotency. Missing policies
+  with reviewed dangling references still require detachment. Changed peers,
+  policy/parent identity, malformed receipts, denial and native conflicts fail.
+- Retained exact-body tests, independent validation against pinned native schemas,
+  import/export order and preservation checks, operation expiry, lost receipts,
+  configuration drift and serialized driver restart. Real SQLite scan, graph,
+  plan, execution and reconciliation tests reopen storage at seven BGP cleanup
+  checkpoints and assert one PATCH, one policy DELETE and a retained router.
+  Focused route-policy/catalog tests passed in 11.512s, including cursor binding
+  to the peer snapshot. The initial full run caught the property audit treating
+  derived `bgpReferences` as a native policy field; the audit now explicitly
+  validates its source Router peer/name/import/export schemas.
+- The inspected independent mockgcp router implementation has PATCH but no policy
+  handlers; no live-cloud or independent combined cleanup claim is made. Native
+  mutations cannot atomically exclude external concurrent edits. Named-set
+  dependencies, parent-router cascade review, network-selection application
+  acceptance and all eight overall parity criteria remain open.
+- Final verification after the audit correction: `go test ./providers/gcp
+  ./internal/...` passed (GCP 181.286s, internal integration 22.400s). Focused
+  route-policy/catalog/property tests passed in 9.333s and race tests in 25.748s;
+  GCP vet passed. Main-workspace focused tests passed in 11.389s. Documentation
+  checks passed for 30 isolated/42 main chapters and 10 screenshots. Repeated
+  generation matched catalog SHA-256
+  `3399d67a6fe4dd580d09f0b3e44a93f075b67099c085c438c181e672b33b84a0`.
+  All 781 prior generated operations and every previous native method/schema
+  object remain unchanged. The commit contains 18 milestone files; all 65
+  original WIP hashes are preserved. No runtime dependency or external test
+  environment was added.

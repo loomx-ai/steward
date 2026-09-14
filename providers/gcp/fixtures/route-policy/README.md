@@ -4,7 +4,7 @@ The native contract is retained in `catalog/source/discovery.json` from the
 [Compute v1 Discovery document](https://www.googleapis.com/discovery/v1/apis/compute/v1/rest),
 revision `20260908`, full-response SHA-256
 `aa1078267f6ad9c82274e6c62572bae328b0de11c6f08861f20488b6617afda7`.
-Three unchanged method objects and their twenty transitive schemas are selected in a
+Four unchanged method objects and their thirty-five transitive schemas are selected in a
 separate fragment, preserving all earlier native metadata.
 
 - [routers.listRoutePolicies](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/listRoutePolicies)
@@ -46,7 +46,7 @@ Router List nor route-policy List/Get/Delete. The complete, non-truncated mockgc
 subtree `8b6f0584391a159b43ed7e5adf26580557872854` was checked for router handlers.
 No independent route-policy emulator or real-cloud test is claimed.
 
-Remaining work includes explicit BGP peer detachment, named-set dependencies,
+Remaining work includes named-set dependencies,
 parent-router cascade review, network-scan
 application acceptance and independent/live-cloud behavior verification. These
 milestones do not establish full Alibaba Cloud route-map cleanup parity.
@@ -74,9 +74,9 @@ receipts bind the policy, connection, request ID and review. Optional native
 target/scope/request echoes must agree. DONE or an expired operation alone does
 not prove absence; the driver reads the policy and confirms the same parent
 before and after that read. 403, changed identities and parent 404 remain failures.
-Native DELETE 404 requires independent readback. Dependency conflicts are surfaced,
-without issuing speculative BGP configuration updates. Concurrent external policy
-edits cannot be atomically excluded by this API's request contract.
+Native DELETE 404 requires independent readback. Dependency conflicts are surfaced.
+Concurrent external policy edits cannot be atomically excluded by this API's
+request contract. BGP reference detachment is covered below.
 
 `route_policy_actions_test.go` retains protocol cases for native POST, missing
 optional operation echoes, operation/receipt tampering, idempotent retries,
@@ -86,3 +86,43 @@ real SQLite scan, graph, plan and execution services, reopening repositories and
 recreating the runtime between action checkpoints. It verifies one policy-only
 step, retained parent, a deletion tombstone and subsequent inventory reconciliation.
 These are application/protocol tests, not live backend behavior validation.
+
+## BGP reference detachment
+
+[Router PATCH](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/patch)
+uses JSON merge patch. Its Router schema has no fingerprint field and the method
+has no conditional revision parameter. BGP peer arrays are replaced, so the
+request retains all peer settings, excludes output-only `managementType`, and
+removes only the selected policy name. Import/export policy order is preserved;
+empty arrays explicitly clear the selected list. Unrelated Router fields,
+including NAT, interfaces and authentication keys, are omitted from the patch.
+The [policy application guide](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/bgp-route-policies/apply-policies)
+confirms independent ordered import/export lists. Additional permissions are
+`compute.routers.update` and, per the native audit permission list,
+`compute.networks.updatePolicy` on the containing network.
+
+The unmodified [Cloud SDK command](update_bgp_peer.py) reads the router, changes
+peer policy fields, calls `ComputeRoutersPatchRequest` / `service.Patch`, and
+waits on `compute.regionOperations`. It is retained from
+`lib/surface/compute/routers/update_bgp_peer.py` in the same verified archive above;
+member SHA-256 is
+`18d2d0717fc8bc9fe1aeb1ee58dbfc05c0ae395c9aacb1457595758843026c48`.
+The same Apache 2.0 license applies. It is source evidence, not a runtime dependency.
+
+Inventory stores a peer snapshot and exposes `bgpReferences`; old reviews need a
+new scan. Before mutation and during readback, live peers must equal the reviewed
+snapshot or the exact desired detachment. Receipts bind both phases and use
+separate deterministic native request IDs. PATCH DONE or operation expiry alone
+cannot begin deletion; native peer readback must confirm detachment. A missing
+policy with dangling reviewed references still requires unlinking. Receipt loss
+reuses the same native UUID; persisted normal execution does not repeat mutation.
+Concurrent external peer edits cannot be atomically excluded by Router PATCH.
+
+`route_policy_bgp_test.go` checks exact replacement bodies, native schema
+validation using the independent JSON Schema library, preserved peer settings,
+import/export order, empty-list handling, lost receipts, changed membership,
+permission/conflict failures, malformed/expired operations and serialized restart.
+The SQLite scan/graph/cleanup/reconciliation test exercises both attached and
+unattached policies, reopening storage and recreating the runtime at each phase.
+The independent mockgcp audit above supplies no policy handlers; these tests
+remain protocol/application evidence, not independent backend or live-cloud proof.

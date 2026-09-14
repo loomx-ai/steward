@@ -43,27 +43,28 @@ func (a *action) routePolicyActionIdentity(request contracts.ActionRequest) erro
 	if text(request.Asset.Normalized["fingerprint"]) == "" || !firewallNumericID(text(request.Asset.Normalized[routePolicyRouterID])) {
 		return groupDenied("route_policy_review_missing")
 	}
-	return nil
+	_, _, err := routePolicyBGPReview(request.Asset.Normalized, last(a.identity.NativeID))
+	return err
 }
 
 func (a *action) routePolicyParent() string {
 	return strings.TrimSuffix(a.identity.NativeID, "/routePolicies/"+last(a.identity.NativeID))
 }
 
-func (a *action) checkRoutePolicyParent(ctx context.Context, request contracts.ActionRequest) error {
+func (a *action) checkRoutePolicyParent(ctx context.Context, request contracts.ActionRequest) (bool, error) {
 	kind, _ := findType(routerType)
 	endpoint, err := a.client.resourceURL(kind, a.routePolicyParent())
 	if err != nil {
-		return err
+		return false, err
 	}
 	data, err := a.client.request(ctx, "GET", endpoint, nil)
 	if err != nil {
-		return contracts.DependencyReadError(err)
+		return false, contracts.DependencyReadError(err)
 	}
 	if data["name"] != last(a.routePolicyParent()) || a.client.canonicalName(text(data["selfLink"])) != a.client.canonicalName(a.routePolicyParent()) || data["id"] != request.Asset.Normalized[routePolicyRouterID] {
-		return groupDenied("route_policy_router_recreated_or_changed")
+		return false, groupDenied("route_policy_router_recreated_or_changed")
 	}
-	return nil
+	return a.routePolicyBGPState(request, data)
 }
 
 func (a *action) routePolicyReadback(ctx context.Context, request contracts.ActionRequest) (read contracts.ReadbackResult, err error) {
@@ -76,7 +77,7 @@ func (a *action) routePolicyReadback(ctx context.Context, request contracts.Acti
 			return read, err
 		}
 	}
-	if err := a.checkRoutePolicyParent(ctx, request); err != nil {
+	if _, err := a.checkRoutePolicyParent(ctx, request); err != nil {
 		return read, err
 	}
 	live, err := a.client.routePolicyRead(ctx, a.identity.NativeID)
@@ -87,8 +88,13 @@ func (a *action) routePolicyReadback(ctx context.Context, request contracts.Acti
 		return read, groupDenied("route_policy_configuration_changed")
 	}
 	read.Exists = err == nil
-	if err := a.checkRoutePolicyParent(ctx, request); err != nil {
+	attached, err := a.checkRoutePolicyParent(ctx, request)
+	if err != nil {
 		return contracts.ReadbackResult{}, err
+	}
+	read.Exists = read.Exists || attached
+	if attached {
+		read.State = routePolicyDetach
 	}
 	return read, nil
 }
@@ -99,7 +105,7 @@ func (a *action) routePolicyPreflight(ctx context.Context, request contracts.Act
 }
 
 func (a *action) routePolicyRequestID(request contracts.ActionRequest) string {
-	return googleRequestID(request.IdempotencyKey + "/" + string(a.identity.ConnectionID) + "/" + a.identity.NativeID + "/" + text(request.Asset.Normalized[routePolicyRouterID]) + "/" + routePolicyConfiguration(request.Asset.Normalized))
+	return googleRequestID(request.IdempotencyKey + "/" + string(a.identity.ConnectionID) + "/" + a.identity.NativeID + "/" + text(request.Asset.Normalized[routePolicyRouterID]) + "/" + routePolicyConfiguration(request.Asset.Normalized) + "/" + firewallDigest(request.Asset.Normalized[routePolicyPeers]))
 }
 
 func (a *action) routePolicyOperationURL(name string) (string, error) {
@@ -118,7 +124,7 @@ func (a *action) routePolicyOperationURL(name string) (string, error) {
 	return bound.URL, err
 }
 
-func (a *action) routePolicyOperationResult(request contracts.ActionRequest, data map[string]any, operationType, requestID string) (string, error) {
+func (a *action) routePolicyOperationResult(request contracts.ActionRequest, data map[string]any, operationType, requestID, stage string) (string, error) {
 	operation, err := a.routePolicyOperationURL(text(data["name"]))
 	if err != nil {
 		return "", err
@@ -128,7 +134,7 @@ func (a *action) routePolicyOperationResult(request contracts.ActionRequest, dat
 	}
 	// Subresource mutations can identify their containing router. Optional native
 	// echoes must agree; the receipt also binds the exact policy and request ID.
-	if value, exists := data["targetLink"]; exists && a.client.canonicalName(text(value)) != a.client.canonicalName(a.routePolicyParent()) && a.client.canonicalName(text(value)) != a.client.canonicalName(a.endpoint) {
+	if value, exists := data["targetLink"]; exists && a.client.canonicalName(text(value)) != a.client.canonicalName(a.routePolicyParent()) && (stage == routePolicyDetach || a.client.canonicalName(text(value)) != a.client.canonicalName(a.endpoint)) {
 		return "", groupDenied("route_policy_operation_target_changed")
 	}
 	if value, exists := data["region"]; exists && a.client.canonicalName(text(value)) != a.client.canonicalName(strings.TrimSuffix(operation, "/operations/"+text(data["name"]))) {
@@ -140,7 +146,7 @@ func (a *action) routePolicyOperationResult(request contracts.ActionRequest, dat
 	if value, exists := data["targetId"]; exists && value != request.Asset.Normalized[routePolicyRouterID] {
 		return "", groupDenied("route_policy_operation_target_changed")
 	}
-	if value, exists := data["clientOperationId"]; exists && value != a.routePolicyRequestID(request) {
+	if value, exists := data["clientOperationId"]; exists && value != a.routePolicyNativeRequestID(request, stage) {
 		return "", groupDenied("route_policy_operation_request_changed")
 	}
 	if text(data["operationType"]) == "" || operationType != "" && data["operationType"] != operationType || !slices.Contains([]string{"PENDING", "RUNNING", "DONE"}, text(data["status"])) {
@@ -165,26 +171,46 @@ func (a *action) routePolicyOperationResult(request contracts.ActionRequest, dat
 	return operation, nil
 }
 
-func (a *action) routePolicyPhase(request contracts.ActionRequest, operation, operationType string) map[string]any {
-	return map[string]any{"phase": "route_policy_delete", "resource": a.identity.NativeID, "connection": string(a.identity.ConnectionID), "configuration": routePolicyConfiguration(request.Asset.Normalized), "parent_id": request.Asset.Normalized[routePolicyRouterID], "request_id": a.routePolicyRequestID(request), "operation": operation, "operation_type": operationType}
+func (a *action) routePolicyStage(request contracts.ActionRequest, stage, operation, initial, operationType string) map[string]any {
+	return map[string]any{"phase": stage, "resource": a.identity.NativeID, "connection": string(a.identity.ConnectionID), "configuration": routePolicyConfiguration(request.Asset.Normalized), "parent_id": request.Asset.Normalized[routePolicyRouterID], "bgp_review": firewallDigest(request.Asset.Normalized[routePolicyPeers]), "request_id": a.routePolicyNativeRequestID(request, stage), "operation": operation, "initial_operation": initial, "operation_type": operationType}
 }
 
 func (a *action) routePolicyReceipt(request contracts.ActionRequest, result contracts.ActionResult) (string, error) {
 	if len(result.Data) == 0 && result.ProviderOperationID == "" {
 		return "", nil
 	}
-	parsed, err := url.Parse(result.ProviderOperationID)
-	if err != nil {
-		return "", groupDenied("route_policy_receipt_invalid")
+	stage := text(result.Data["phase"])
+	if stage != routePolicyDetach && stage != "route_policy_delete" {
+		return "", groupDenied("route_policy_receipt_phase_invalid")
 	}
-	expected, err := a.routePolicyOperationURL(last(parsed.Path))
-	if err != nil || expected != result.ProviderOperationID || text(result.Data["operation_type"]) == "" || firewallDigest(result.Data) != firewallDigest(a.routePolicyPhase(request, expected, text(result.Data["operation_type"]))) {
+	for _, endpoint := range []string{result.ProviderOperationID, text(result.Data["operation"])} {
+		parsed, err := url.Parse(endpoint)
+		if err != nil {
+			return "", groupDenied("route_policy_receipt_invalid")
+		}
+		expected, err := a.routePolicyOperationURL(last(parsed.Path))
+		if err != nil || expected != endpoint {
+			return "", groupDenied("route_policy_receipt_invalid")
+		}
+	}
+	operation := text(result.Data["operation"])
+	if text(result.Data["operation_type"]) == "" || firewallDigest(result.Data) != firewallDigest(a.routePolicyStage(request, stage, operation, result.ProviderOperationID, text(result.Data["operation_type"]))) {
 		return "", groupDenied("route_policy_receipt_changed")
 	}
-	return expected, nil
+	return operation, nil
 }
 
 func (a *action) executeRoutePolicy(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
+	attached, err := a.checkRoutePolicyParent(ctx, request)
+	if err != nil {
+		return contracts.ActionResult{}, err
+	}
+	if attached {
+		if request.ExecutionResult != nil {
+			return contracts.ActionResult{}, groupDenied("route_policy_bgp_reference_reintroduced")
+		}
+		return a.detachRoutePolicy(ctx, request)
+	}
 	parameters := cloneParameters(a.deleteParameters)
 	parameters["requestId"] = a.routePolicyRequestID(request)
 	bound, err := catalog.BindREST(a.deleteOperation, parameters)
@@ -205,11 +231,11 @@ func (a *action) executeRoutePolicy(ctx context.Context, request contracts.Actio
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
-	operation, err := a.routePolicyOperationResult(request, response.Data, "", response.RequestID)
+	operation, err := a.routePolicyOperationResult(request, response.Data, "", response.RequestID, "route_policy_delete")
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
-	return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: operation, Data: a.routePolicyPhase(request, operation, text(response.Data["operationType"])), RetryAfter: 2 * time.Second}, nil
+	return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: operation, Data: a.routePolicyStage(request, "route_policy_delete", operation, operation, text(response.Data["operationType"])), RetryAfter: 2 * time.Second}, nil
 }
 
 func (a *action) waitRoutePolicy(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
@@ -227,7 +253,7 @@ func (a *action) waitRoutePolicy(ctx context.Context, request contracts.ActionRe
 			return contracts.WaitResult{}, err
 		}
 		if err == nil {
-			actual, err := a.routePolicyOperationResult(request, response.Data, text(result.Data["operation_type"]), response.RequestID)
+			actual, err := a.routePolicyOperationResult(request, response.Data, text(result.Data["operation_type"]), response.RequestID, text(result.Data["phase"]))
 			if err != nil {
 				return contracts.WaitResult{}, err
 			}
@@ -237,6 +263,21 @@ func (a *action) waitRoutePolicy(ctx context.Context, request contracts.ActionRe
 			pending = response.Data["status"] != "DONE"
 		}
 	}
+	request.ExecutionResult = &result
 	read, err := a.routePolicyReadback(ctx, request)
-	return contracts.WaitResult{Done: err == nil && !pending && !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
+	if err != nil {
+		return contracts.WaitResult{}, err
+	}
+	if text(result.Data["phase"]) == routePolicyDetach && !pending && read.Exists && read.State != routePolicyDetach {
+		next, err := a.executeRoutePolicy(ctx, request)
+		if err != nil {
+			return contracts.WaitResult{}, err
+		}
+		if len(next.Data) == 0 {
+			return contracts.WaitResult{Done: true, Data: result.Data}, nil
+		}
+		next.Data["initial_operation"] = result.ProviderOperationID
+		return contracts.WaitResult{Data: next.Data, State: text(next.Data["phase"]), RetryAfter: 2 * time.Second}, nil
+	}
+	return contracts.WaitResult{Done: !pending && !read.Exists, State: read.State, RetryAfter: 2 * time.Second}, nil
 }
