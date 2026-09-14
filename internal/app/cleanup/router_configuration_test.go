@@ -149,9 +149,6 @@ func TestRouterScopeGuardsAllNativeFamiliesAndLegacySnapshots(t *testing.T) {
 				err = guardSharedConfiguration(ctx, repos, current, registry, "")
 				if mode == "failed-detach" {
 					expected := 1 // Component providers must verify every possible phase.
-					if kind == "Router" {
-						expected = 0
-					} // Parent recovery still needs impacts.
 					if registry.calls != expected {
 						t.Fatal("incorrect settlement capability", kind, registry.calls)
 					}

@@ -150,6 +150,9 @@ func (a *action) routePolicyBGPMerge(ctx context.Context, request contracts.Acti
 }
 
 func (a *action) routePolicyNativeRequestID(request contracts.ActionRequest, stage string) string {
+	if a.kind.NativeType == routerType && stage == routerPriorDelete {
+		return googleRequestID(request.IdempotencyKey)
+	}
 	if stage == routePolicyDetach {
 		return googleRequestID(a.routerComponentRequestID(request) + "/bgp")
 	}

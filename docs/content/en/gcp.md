@@ -389,9 +389,19 @@ Associated VPN tunnels and VLAN attachments block this cleanup; remove them and
 scan again before creating the Router task. Other configuration changes also
 require renewed review. These reads and native deletion are not atomic, so avoid
 external edits while cleanup runs. Old Router tasks without configuration reviews
-need a fresh scan; uncertain legacy operation receipts remain blocked pending
-recovery. See the [Router GET contract](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/get)
+need a fresh scan before new deletion. See the [Router GET contract](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/get)
 and [router deletion guide](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers).
+
+Failed or canceled Router executions with terminal worker jobs can release their
+mutation reservation after the original native delete operation is confirmed
+terminal. Current recovery reconstructs the frozen NAT impacts and policy/set
+prerequisites; changed or missing child reviews block it. Recognized older
+operation-only receipts need the original request UUID, target and numeric Router
+ID echoed by the native operation. This read-only recovery does not resume the old
+delete or mark Router/NAT cleanup successful. `compute.regionOperations.get` is
+required; lost or expired current receipts and expired older receipts also need
+`compute.regionOperations.list`. Missing operation history, unidentifiable older
+receipts and missing incarnation evidence remain blocked.
 
 ## Cloud NAT gateways
 

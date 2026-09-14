@@ -94,8 +94,8 @@ becomes visible during child LIST or the last Router GET, a bounded native paren
 confirmation handles that race without treating child 404 alone as proof. A
 same-name replacement with another numeric ID never inherits deletion proof.
 These reads have no atomic native configuration precondition. Older generic
-Router receipts are not accepted as new bound receipts; legacy recovery remains
-unfinished rather than guessing whether an old mutation can still execute.
+Router receipts are not accepted as new execution cursors; the read-only
+settlement path below handles recognized operation-only receipts separately.
 
 `router_cascade_test.go` covers native dependency order, NAT retention/independent
 cleanup, missing indexed children, permissions, malformed/partial/paged lists,
@@ -113,3 +113,42 @@ checkpoint, recreates the runtime/database, verifies all five deletion tombstone
 and the NAT controller-deletion result, then rescans to prove reconciliation.
 No separate NAT PATCH/address DELETE is issued for the parent cascade. These are
 locally authored protocol/application tests, not independent emulator acceptance.
+
+
+## Parent operation settlement and older receipts
+
+The shared terminal-execution guard now reconstructs the Router worker's original
+frozen prerequisite/impact lists in the same order. It uses the planned child
+snapshots even after prerequisite tombstones or a later inventory update; missing
+snapshots, unknown outcomes, invalid dependencies and identity changes fail.
+Router settlement proofs additionally bind the task's steps and impacts. Changing
+child review invalidates a cached proof. Existing NAT/policy/set proof encodings
+are unchanged, so upgrading does not discard already verified terminal evidence.
+
+Current bound Router receipts use the existing regional operation GET and full
+UUID-filtered LIST recovery, with strict `delete` operation type. A missing current
+receipt still needs the original full Router/child review. Recognized historical
+operation-only receipts use the former generic driver's request UUID instead;
+those weaker receipts require full native request, target and numeric incarnation
+echoes even for GET. Missing configuration hashes do not prevent this old-write
+settlement if the frozen identity and native operation prove the specific write.
+An absent old receipt cannot identify that historical request scheme and remains
+unresolved. Neither path accepts parent 404 as terminal operation evidence.
+
+Both paths retain the existing terminal job/execution eligibility, locks and
+read deadline. Native DONE can be terminal even when deletion failed; this does
+not create Router/NAT tombstones, resume the old action, repeat any mutation or
+mark the old execution successful. Complete native history is still required.
+Primary contracts: [Router DELETE](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/delete),
+[regional operation GET](https://docs.cloud.google.com/compute/docs/reference/rest/v1/regionOperations/get)
+and [LIST](https://docs.cloud.google.com/compute/docs/reference/rest/v1/regionOperations/list).
+
+`router_recovery_test.go` sends native current and historical DELETE requests,
+then checks pending/failed/missing/expired/foreign/malformed operation evidence,
+receipt changes and read-only recovery. SQLite tests execute real prerequisite
+jobs and the Router worker, stop at pending deletion, reopen repositories/runtime
+and attempt conflicting task creation. Current/lost/imported older receipts only
+release scope after terminal proof; changed NAT review is rejected before native
+recovery reads. Root/NAT inventory and original action/execution outcomes remain
+unchanged. Shared tests verify frozen request order and child-proof invalidation.
+These are authored protocol/application tests, not independent cloud acceptance.

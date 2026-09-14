@@ -25,6 +25,20 @@ func (c routerCleanupContributors) ResolveContributors(ctx context.Context, conn
 }
 
 func TestRouterCascadeSQLiteScanPlanRestartAndReconciliation(t *testing.T) {
+	routerCascadeSQLiteCleanup(t)
+}
+
+type routerCascadeCheckpoint struct {
+	DatabasePath string
+	Repositories persistence.Repositories
+	Runtime      *Runtime
+	Fixture      *routerCascadeFixture
+	Task         persistence.CleanupTaskAggregate
+	Attempt      execution.ExecutionAttempt
+	Job          execution.Job
+}
+
+func routerCascadeSQLiteCleanup(t *testing.T, checkpoints ...func(routerCascadeCheckpoint)) {
 	ctx := t.Context()
 	r, _, f := routerCascadeRuntime(t)
 	registry := identityRegistry(t, r)
@@ -88,6 +102,9 @@ func TestRouterCascadeSQLiteScanPlanRestartAndReconciliation(t *testing.T) {
 		return positions[a.Payload["cleanup_task_step_id"].(string)] - positions[b.Payload["cleanup_task_step_id"].(string)]
 	})
 	for index, job := range jobs {
+		if index == len(jobs)-1 && len(checkpoints) > 0 {
+			f.pending = true
+		}
 		done := false
 		for round := 0; round < 10; round++ {
 			repos, err = sqlite.Open(db, "../../migrations")
@@ -106,6 +123,14 @@ func TestRouterCascadeSQLiteScanPlanRestartAndReconciliation(t *testing.T) {
 				}
 			}
 			err = handler.Handle(ctx, job)
+			if index == len(jobs)-1 && round == 0 && len(checkpoints) > 0 {
+				var retry *cleanup.RetryError
+				if !errors.As(err, &retry) || f.routerDeletes != 1 {
+					t.Fatal("Router did not reach pending native deletion", err)
+				}
+				checkpoints[0](routerCascadeCheckpoint{db, repos, fresh, f, task, attempt, job})
+				return
+			}
 			if err == nil {
 				done = true
 				break

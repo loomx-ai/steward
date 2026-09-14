@@ -310,9 +310,16 @@ Steward 会逐一读取路由器的当前详情，核实身份后记录 NAT、BG
 
 关联的 VPN 隧道和 VLAN attachment 会阻止此清理；应先移除关联资源、重新扫描，
 再创建 Router 任务。其他配置变化也需要重新审查。读取与原生删除不是原子操作，
-清理期间应避免外部修改。缺少配置审查的旧 Router 任务需要重新扫描；结果不明的旧
-操作回执仍会保持阻塞，等待恢复能力补齐。参阅 [Router GET 契约](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/get)
+清理期间应避免外部修改。缺少配置审查的旧 Router 任务需要重新扫描后再执行新的删除。参阅 [Router GET 契约](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/get)
 和[路由器删除指南](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers)。
+
+对于已失败或取消、所有作业均已结束的 Router 执行，确认原生删除操作结束后，可解除
+修改占用。新回执恢复会重建已冻结的 NAT 影响和策略／集合前置步骤；子资源审查缺失或
+变化时会阻止恢复。可识别的旧格式操作回执则必须由原生操作返回匹配的原请求 UUID、
+目标和 Router 数字 ID。这一只读过程不会继续旧删除，也不会将 Router／NAT 清理
+标为成功。需要 `compute.regionOperations.get`；新回执丢失或过期、旧回执过期时，
+还需 `compute.regionOperations.list`。操作历史缺失、旧回执无法识别或缺少资源 ID
+证据时，仍保持阻塞。
 
 ## Cloud NAT 网关
 

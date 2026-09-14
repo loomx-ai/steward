@@ -230,7 +230,8 @@ context deadline and persisted action-bound proof are reused. Proofs contain the
 ordered operation URLs for every phase. No normal Wait call, cloud mutation,
 resource absence inference, action status rewrite or tombstone is used to settle
 scope. Missing/ambiguous/partial/denied history remains unresolved. Parent Router
-legacy receipts and migration of already-issued unordered legacy work remain open.
+settlement is covered in [Router evidence](../router/README.md#parent-operation-settlement-and-older-receipts).
+Migration of already-issued unordered legacy work remains open.
 
 `route_policy_recovery_test.go` actually invokes detach and the subsequent policy
 delete, then discards the returned cursor to model the persistence gap. It covers

@@ -10,8 +10,12 @@ import (
 )
 
 func (a *action) MutationSettled(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.MutationSettlement, error) {
-	if !isRouterComponent(a.kind.NativeType) {
+	if !isRouterComponent(a.kind.NativeType) && a.kind.NativeType != routerType {
 		return contracts.MutationSettlement{}, groupDenied("mutation_settlement_unsupported")
+	}
+
+	if a.kind.NativeType == routerType && len(result.Data) == 1 && result.Data["operation"] != nil {
+		return a.routerPriorMutationSettled(ctx, request, result)
 	}
 	if err := a.routerComponentActionIdentity(request); err != nil {
 		return contracts.MutationSettlement{}, err
@@ -58,7 +62,7 @@ func (a *action) routerMutationStageSettled(ctx context.Context, request contrac
 			return contracts.MutationSettlement{}, err
 		}
 		if err == nil {
-			return a.routerMutationOperationSettled(request, data, operation, operationType, stage, operationType == "")
+			return a.routerMutationOperationSettled(request, data, operation, operationType, stage, operationType == "" || stage == routerPriorDelete)
 		}
 	}
 	// A lost/expired receipt may still have a native operation indexed by its
@@ -126,7 +130,7 @@ func (a *action) routerMutationOperationSettled(request contracts.ActionRequest,
 	if name, ok := data["name"].(string); !ok || name == "" {
 		return contracts.MutationSettlement{}, groupDenied("cloud_nat_operation_name_invalid")
 	}
-	if kind, ok := data["operationType"].(string); !ok || kind == "" {
+	if kind, ok := data["operationType"].(string); !ok || kind == "" || a.kind.NativeType == routerType && kind != "delete" {
 		return contracts.MutationSettlement{}, groupDenied("cloud_nat_operation_type_invalid")
 	}
 

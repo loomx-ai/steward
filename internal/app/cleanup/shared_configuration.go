@@ -155,7 +155,7 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 	if action.Status == execution.ActionIntentPersisted && action.ResumeStatus == "" && action.FailedFrom == "" && action.ProviderRequestID == "" && len(action.PreflightEvidence) == 0 && action.ProviderOperationID == "" && len(action.ProviderResult) == 0 {
 		return true, nil
 	}
-	digest, err := sharedMutationDigest(attempt, step, action)
+	digest, err := sharedMutationDigest(attempt, step, action, task)
 	if err != nil {
 		return false, err
 	}
@@ -179,9 +179,8 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 	if reviewed.Identity.ConnectionID != attempt.ConnectionID || reviewed.Identity.Provider != asset.ProviderGCP {
 		return false, fmt.Errorf("mutation recovery identity changed")
 	}
-	// Router components prove every possible phase, including an unrecorded policy
-	// delete after detach. Parent Router recovery still requires lifecycle impacts.
-	if reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" && reviewed.Identity.NativeType != "compute.googleapis.com/RoutePolicy" && reviewed.Identity.NativeType != "compute.googleapis.com/NamedSet" {
+	// Each driver must prove every possible phase; Router requests also bind child review.
+	if reviewed.Identity.NativeType != "compute.googleapis.com/Router" && reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" && reviewed.Identity.NativeType != "compute.googleapis.com/RoutePolicy" && reviewed.Identity.NativeType != "compute.googleapis.com/NamedSet" {
 		return false, nil
 	}
 	// ponytail: retain the database locks during rare recovery reads so a second
@@ -195,6 +194,12 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 		return false, nil
 	}
 	request := contracts.ActionRequest{Asset: reviewed, Action: step.Action, Parameters: cloneRequest(step.RequestOptions), IdempotencyKey: resumedProviderIdempotencyKey(attempt, action)}
+	if reviewed.Identity.NativeType == "compute.googleapis.com/Router" {
+		if err := routerRecoveryImpacts(ctx, repositories, task, step, &request); err != nil {
+			return false, err
+		}
+	}
+
 	result := contracts.ActionResult{ProviderRequestID: action.ProviderRequestID, ProviderOperationID: action.ProviderOperationID, Data: cloneRequest(action.ProviderResult)}
 	settlement, err := reader.MutationSettled(ctx, request, result)
 	if err != nil {
@@ -212,13 +217,30 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 	return true, nil
 }
 
-func sharedMutationDigest(attempt execution.ExecutionAttempt, step plan.CleanupTaskStep, action execution.ActionAttempt) (string, error) {
+func sharedMutationDigest(attempt execution.ExecutionAttempt, step plan.CleanupTaskStep, action execution.ActionAttempt, task persistence.CleanupTaskAggregate) (string, error) {
 	action.MutationSettlement = nil
+	var lifecycle any
+	raw, err := json.Marshal(step.Evidence[plan.EvidencePlannedAsset])
+	if err != nil {
+		return "", err
+	}
+	var reviewed asset.Asset
+	if err := json.Unmarshal(raw, &reviewed); err != nil {
+		return "", err
+	}
+	if reviewed.Identity.NativeType == "compute.googleapis.com/Router" {
+		// The Router UUID includes child snapshots, which live outside its own step.
+		lifecycle = struct {
+			Steps   []plan.CleanupTaskStep
+			Impacts []plan.ImpactItem
+		}{task.Steps, task.ImpactItems}
+	}
 	encoded, err := json.Marshal(struct {
-		Attempt execution.ExecutionAttempt
-		Step    plan.CleanupTaskStep
-		Action  execution.ActionAttempt
-	}{attempt, step, action})
+		Attempt   execution.ExecutionAttempt
+		Step      plan.CleanupTaskStep
+		Action    execution.ActionAttempt
+		Lifecycle any `json:",omitempty"`
+	}{attempt, step, action, lifecycle})
 	if err != nil {
 		return "", err
 	}

@@ -5897,3 +5897,31 @@ against a still-occupied same-task scope while allowing the bound continuation.
   remaining provider families are still open. All eight overall acceptance
   criteria remain unfinished; these locally authored tests do not prove cloud
   acceptance.
+
+
+### Parent Router terminal recovery with frozen lifecycle intent
+
+- Reconstruct Router recovery requests from the frozen task's direct prerequisites
+  and delegated NAT impacts in worker order. Missing child snapshots, invalid
+  dependencies, unknown outcomes and identity changes fail. Shared cached Router
+  proofs now bind all task steps/impacts; existing component proof encoding stays
+  byte-compatible. No mutation-capable worker or provider Wait is called.
+- Enabled native Router operation settlement for current bound/lost/expired
+  receipts and recognized historical operation-only receipts. Current UUIDs bind
+  the complete lifecycle review. Older receipts use their original generic UUID
+  and require full native request/target/incarnation echoes, even on operation GET.
+  Both paths require a native delete operation and terminal state, not parent 404.
+- Native tests issue current and older DELETE wire requests and exercise strict
+  recovery evidence. Actual SQLite scan/plan/cascade workers persist prerequisites,
+  reach pending Router deletion and restart before conflicting execution creation.
+  Changed NAT review blocks recovery; DONE releases scope without changing old
+  action/execution status or Router/NAT deletion outcomes. Shared tests verify
+  frozen ordering, cached-proof invalidation and prior component-proof encoding.
+- Bilingual guidance and provider evidence updated. Native source/catalog and
+  dependencies remain unchanged: 200 rules, 785 operations, catalog SHA-256
+  `f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`.
+- Missing operation/incarnation history, unidentifiable older receipts, safe
+  migration around already-issued unordered work, external writers, independent
+  backend/live acceptance and the remaining provider families stay open. All eight
+  overall acceptance criteria remain unfinished. Protocol/SQLite evidence is not
+  independent cloud acceptance.
