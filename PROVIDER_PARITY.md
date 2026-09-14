@@ -5352,3 +5352,33 @@ background evidence only, not acceptance evidence for this work.
   Native source/selection/generated catalog files remain byte-identical to the
   previous commit. All 65 original WIP file hashes are preserved. This milestone
   changes only 13 owned files and starts no external test environment.
+
+### Security metadata HTTP scan acceptance
+
+- Added a public-router integration test for project SecurityCenterService and
+  BillingMetadata. An authenticated operator creates one regional task containing
+  two native sources; the test executes its actual persisted scan job and graph
+  reconciliation job, then reads the terminal task and property queries through
+  the viewer API. The registry, compiled bundle and SQLite repositories are real.
+- The sequence verifies successful discovery, successful empty location discovery,
+  denied service detail with independently successful billing, and updated native
+  state/tier. HTTP task status becomes succeeded or partial as appropriate. Source
+  progress counts current observations while asset queries retain historical data;
+  unobserved assets keep their last-seen time and recovery preserves their IDs.
+- Unauthenticated/viewer scan creation is rejected; scan details and assets remain
+  scoped to the selected connection. Unsupported query properties are rejected,
+  and these settings are exposed without an actionable capability. Cloud calls are
+  restricted by the fixture to the selected project's read operations.
+- This uses in-process HTTP handlers and locally authored cloud protocol fixtures.
+  It does not exercise connection onboarding, the background scheduler, provider
+  lifecycle contributors, a browser, an independent emulator or a live cloud.
+  The initial test expectation incorrectly counted two sources as two overall
+  targets; it now checks one region target and its two source counters separately.
+  No production behavior or dependency changed. All parity criteria remain open.
+- Verification: `go test ./providers/gcp ./internal/...` passed (GCP 176.912s,
+  internal integration 22.675s). Focused security HTTP/service/billing/subscription
+  race tests passed in 17.835s; GCP vet passed. The final focused test passed in
+  0.911s in isolation and 3.846s with the main workspace's existing changes.
+  The commit contains only this test and evidence record. All 65 original WIP
+  files are byte-identical; native sources, generated catalogs and dependencies
+  are unchanged. No external server was started.
