@@ -2,8 +2,12 @@ package gcp
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"net/http"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -18,9 +22,56 @@ import (
 )
 
 func TestStoragePoolSQLiteScanPlanExecutionAndReconciliation(t *testing.T) {
+	for _, managed := range []bool{false, true} {
+		t.Run(fmt.Sprint(managed), func(t *testing.T) { storagePoolSQLiteScanPlanExecution(t, managed) })
+	}
+}
+
+func storagePoolSQLiteScanPlanExecution(t *testing.T, managed bool) {
 	ctx := t.Context()
 	s := newPoolCleanupScenario()
-	r := protocolRuntime(t, s.transport(t))
+	transport := s.transport(t)
+	kinds := []string{storagePoolType, "compute.googleapis.com/Disk"}
+	wantAssets := 2
+	if managed {
+		kinds = append(kinds, instanceType)
+		wantAssets = 3
+		vm := map[string]any{"id": "vm-101", "name": "web", "kind": "compute#instance", "selfLink": "https://compute.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instances/web", "zone": s.pool["zone"], "status": "RUNNING", "disks": []any{map[string]any{"source": s.disk["selfLink"], "deviceName": "boot", "autoDelete": true, "boot": true}}}
+		s.disk["users"] = []any{vm["selfLink"]}
+		remainingReads := 2
+		base := transport
+		transport = func(req *http.Request) (*http.Response, error) {
+			if strings.HasSuffix(req.URL.Path, "/aggregated/instances") {
+				data := map[string]any{}
+				if vm != nil {
+					data["items"] = map[string]any{"zones/us-central1-a": map[string]any{"instances": []any{vm}}}
+				}
+				raw, _ := json.Marshal(data)
+				return apiResponse(req, 200, string(raw)), nil
+			}
+			if strings.HasSuffix(req.URL.Path, "/instances/web") {
+				if vm == nil {
+					return apiResponse(req, 404, `{}`), nil
+				}
+				if req.Method == "DELETE" {
+					s.writes = append(s.writes, req.URL.Path)
+					vm = nil
+					return apiResponse(req, 200, `{"name":"delete-vm","status":"RUNNING"}`), nil
+				}
+				raw, _ := json.Marshal(vm)
+				return apiResponse(req, 200, string(raw)), nil
+			}
+			if vm == nil && s.disk != nil && req.Method == "GET" && strings.HasSuffix(req.URL.Path, "/disks/disk") {
+				if remainingReads == 0 {
+					s.disk = nil
+				} else {
+					remainingReads--
+				}
+			}
+			return base(req)
+		}
+	}
+	r := protocolRuntime(t, transport)
 	registry := identityRegistry(t, r)
 	db := filepath.Join(t.TempDir(), "pool-cleanup.db")
 	repo, err := sqlite.Open(db, "../../migrations")
@@ -43,8 +94,12 @@ func TestStoragePoolSQLiteScanPlanExecutionAndReconciliation(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: "connection", RequestedBy: "test", RegionMode: inventory.RegionModeAllActive, ResourceKindIDs: []asset.ResourceKindID{r.resourceKind(storagePoolType).ID, r.resourceKind("compute.googleapis.com/Disk").ID}})
-		if err != nil || len(created.Shards) != 2 {
+		kindIDs := make([]asset.ResourceKindID, 0, len(kinds))
+		for _, kind := range kinds {
+			kindIDs = append(kindIDs, r.resourceKind(kind).ID)
+		}
+		created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: "connection", RequestedBy: "test", RegionMode: inventory.RegionModeAllActive, ResourceKindIDs: kindIDs})
+		if err != nil || len(created.Shards) != len(kinds) {
 			t.Fatal(created, err)
 		}
 		handler := inventory.NewScanHandler(repo, registry, inventory.NewService(repo.Inventory(), inventory.WithClock(func() time.Time { return now })))
@@ -78,13 +133,16 @@ func TestStoragePoolSQLiteScanPlanExecutionAndReconciliation(t *testing.T) {
 	}
 	scan()
 	page, err := repo.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10})
-	if err != nil || len(page.Items) != 2 {
+	if err != nil || len(page.Items) != wantAssets {
 		t.Fatal(page, err)
 	}
 	values := page.Items
 	planner := cleanup.NewService(repo, registry, cleanup.WithClock(func() time.Time { return now }))
 	selectors := []plan.CleanupSelector{}
 	for _, value := range values {
+		if managed && value.Identity.NativeType == "compute.googleapis.com/Disk" {
+			continue
+		}
 		selectors = append(selectors, plan.CleanupSelector{Kind: plan.SelectorAsset, AssetID: value.ID})
 	}
 	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: selectors, CreatedBy: "test"})
@@ -112,7 +170,7 @@ func TestStoragePoolSQLiteScanPlanExecutionAndReconciliation(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		fresh := protocolRuntime(t, s.transport(t))
+		fresh := protocolRuntime(t, transport)
 		planner = cleanup.NewService(repo, identityRegistry(t, fresh), cleanup.WithClock(func() time.Time { return now }))
 		handler := cleanup.NewExecutionHandler(planner, cleanup.ActionResolverFunc(func(ctx context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
 			return fresh.ResolveAction(ctx, value.Identity.ConnectionID, value)

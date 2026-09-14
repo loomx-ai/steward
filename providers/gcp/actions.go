@@ -95,6 +95,10 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	data, err := a.readResource(ctx)
 	if isNotFound(err) {
+		if a.kind.NativeType == instanceType {
+			read, err := a.instanceDisksReadback(ctx, request)
+			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"service_parent_absent": true}}, err
+		}
 		if a.isGKE() {
 			read, err := a.gkeReadback(ctx, request)
 			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"gke_absent": true}}, err
@@ -633,6 +637,9 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	}
 	data, err := a.readResource(ctx)
 	if isNotFound(err) {
+		if a.kind.NativeType == instanceType {
+			return a.instanceDisksReadback(ctx, request)
+		}
 		if a.isGKE() {
 			return a.gkeReadback(ctx, request)
 		}

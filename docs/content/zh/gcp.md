@@ -145,6 +145,6 @@ Cloud TPU 盘点需要 `tpu.locations.list`、`tpu.nodes.list`、`tpu.nodes.get`
 
 盘点需要 `compute.storagePools.list` 和 `compute.storagePools.get`（用于成员列表和池复查）。权限失败或部分列表会使扫描失败，并保留已有记录。成员发现遍历 `storagePools.listDisks` 的所有分页，保留磁盘容量、已用字节、IOPS、吞吐量、挂载实例及快照策略。成员磁盘须属于池所在可用区，分页结束后会复查池的创建身份。共享到其他项目的磁盘会保留成员摘要，当前连接不会因此读取或管理外部项目。成员读取失败时保留已有记录；磁盘资源自身仍由磁盘扫描确认存续。
 
-Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。需要单独选择池中的本地磁盘，清理会先确认每块磁盘已不存在，再删除池。配置或成员变化后需重新扫描。快照独立保留。Exapool 以及仍有跨项目成员的池需要在外部完成相应清理，之后重新扫描。参见 [Google 存储池管理指南](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools)。
+Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。可选择池中的本地磁盘，或选择负责删除这些磁盘的 VM、MIG、GKE 控制器；计划不会自动选择控制器。清理会先确认每块磁盘已不存在，再删除池；若计划决定保留成员磁盘，则禁止删除其存储池。配置或成员变化后需重新扫描。快照独立保留。Exapool 以及仍有跨项目成员的池需要在外部完成相应清理，之后重新扫描。参见 [Google 存储池管理指南](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools)。
 
 删除还需要 `compute.storagePools.delete`、`compute.zoneOperations.get`，成员磁盘清理需要 `compute.disks.get` / `compute.disks.delete`。有效的未来预留可能阻止原生删除，Steward 不会自动取消预留。清理期间应避免并发修改池：原生删除 API 不支持按资源 ID 或 etag 进行条件删除。容量和性能池化不能据此认定与阿里云的物理资源独享完全等价。

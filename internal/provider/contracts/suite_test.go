@@ -14,6 +14,7 @@ import (
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/core/graph"
 	"github.com/loomx-ai/steward/internal/core/plan"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 	"github.com/loomx-ai/steward/providers/alicloud"
@@ -128,12 +129,13 @@ func TestLifecycleContractCollapsesManagedResourcesAcrossProviders(t *testing.T)
 	azureNIC := lifecycleAsset("azure-nic", asset.ProviderAzure, "Microsoft.Network/networkInterfaces", azureRoot+"Microsoft.Network/networkInterfaces/nic")
 	azureVM.Normalized = map[string]any{"subscription_id": "11111111-1111-4111-8111-111111111111", "networkProfile": map[string]any{"networkInterfaces": []any{map[string]any{"id": azureNIC.Identity.NativeID, "properties": map[string]any{"deleteOption": "Delete"}}}}}
 	tests := []struct {
-		name        string
-		contributor lifecycleContributor
-		controller  asset.Asset
-		managed     asset.Asset
+		name               string
+		contributor        lifecycleContributor
+		controller         asset.Asset
+		managed            asset.Asset
+		controllerVerifies bool
 	}{
-		{name: "GCP instance disks", contributor: gcp.NewInstanceDisks(), controller: gcpVM, managed: gcpDisk},
+		{name: "GCP instance disks", contributor: gcp.NewInstanceDisks(), controller: gcpVM, managed: gcpDisk, controllerVerifies: true},
 		{name: "Azure VM attachments", contributor: azure.NewResourceAttachments(), controller: azureVM, managed: azureNIC},
 		{
 			name: "ACK", contributor: alihooks.NewACK(&ackLifecycleClient{}, "cn-hangzhou"),
@@ -157,7 +159,11 @@ func TestLifecycleContractCollapsesManagedResourcesAcrossProviders(t *testing.T)
 				Relationships: contribution.Relationships, LifecycleBindings: contribution.Bindings,
 				Revision: plan.RevisionBinding{InventoryRevision: "inventory", GraphRevision: "graph", SpecBundleRevision: "bundle", SpecHash: "spec"},
 			})
-			if err != nil || len(result.Blockers) != 0 || len(result.Steps) != 2 || len(result.ImpactItems) != 1 || result.ImpactItems[0].AssetID != test.managed.ID {
+			wantSteps := 2
+			if test.controllerVerifies {
+				wantSteps = 1
+			}
+			if err != nil || len(result.Blockers) != 0 || len(result.Steps) != wantSteps || len(result.ImpactItems) != 1 || result.ImpactItems[0].AssetID != test.managed.ID {
 				t.Fatalf("managed lifecycle result=%+v err=%v", result, err)
 			}
 			var controllerStep, verificationStep plan.CleanupTaskStep
@@ -168,6 +174,12 @@ func TestLifecycleContractCollapsesManagedResourcesAcrossProviders(t *testing.T)
 				case test.managed.ID:
 					verificationStep = step
 				}
+			}
+			if test.controllerVerifies {
+				if controllerStep.Kind != plan.StepController || verificationStep.ID != "" || result.ImpactItems[0].Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] != true || result.ImpactItems[0].DelegatedTo != controllerStep.ID {
+					t.Fatal("controller lost native member verification", result)
+				}
+				return
 			}
 			if controllerStep.Kind != plan.StepController ||
 				verificationStep.Kind != plan.StepVerification ||

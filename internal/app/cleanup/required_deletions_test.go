@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strings"
 	"testing"
 	"time"
 
@@ -44,10 +45,21 @@ func requiredDeletionExecutionFixture(t *testing.T, authorizer cleanup.Execution
 			relationships[i].Evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = map[string]any{"configuration": true}
 		}
 	}
-	seedPlanningGraph(t, repositories, "scope-a", "required-graph", assets, relationships, []graph.LifecycleBinding{owner, view})
+	bindings := []graph.LifecycleBinding{owner, view}
+	wantImpacts := 1
+	if len(managed) > 1 && managed[1] {
+		node := planningAsset("node", "c-1", "ACS::ECS::Instance", "node-native", now)
+		assets = append(assets, node)
+		bindings[1].ControllerAssetID = node.ID
+		parent := planningBinding("node-binding", "configuration", node.ID, graph.OwnershipExclusive, graph.CleanupDelegate, "required-graph", now)
+		parent.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] = true
+		bindings = append(bindings, parent)
+		wantImpacts = 2
+	}
+	seedPlanningGraph(t, repositories, "scope-a", "required-graph", assets, relationships, bindings)
 	planner := cleanup.NewService(repositories, bundleResolver{asset.ProviderAliCloud: {Provider: asset.ProviderAliCloud, Revision: "bundle-a", Hash: "spec-a"}}, cleanup.WithClock(func() time.Time { return now }), cleanup.WithTaskIDGenerator(func() string { return "cln-required" }), cleanup.WithExecutionIDGenerator(func() string { return "execution-required" }), cleanup.WithExecutionAuthorizer(authorizer))
 	aggregate, err := planner.CreateTask(context.Background(), cleanup.CreateTaskRequest{Selectors: selectors, CreatedBy: "operator"})
-	if err != nil || aggregate.Task.Status != plan.StatusReady || len(aggregate.Steps) != 3 || len(aggregate.ImpactItems) != 1 {
+	if err != nil || aggregate.Task.Status != plan.StatusReady || len(aggregate.Steps) != 3 || len(aggregate.ImpactItems) != wantImpacts {
 		t.Fatalf("required cleanup planning failed %+v %v", aggregate, err)
 	}
 	if len(managed) == 0 && !slices.Equal(aggregate.Task.ResolvedAssetIDs, []asset.AssetID{"first", "second"}) || cleanupTaskStepForAsset(aggregate.Steps, "retained-owner").ID != "" {
@@ -330,10 +342,10 @@ func TestIndependentRequiredDeletionSurvivesPlanningAndExecutionPersistence(t *t
 }
 
 func TestRequiredManagedDeletionRestoresFrozenImpactAndRejectsTampering(t *testing.T) {
-	for _, mode := range []string{"restore", "missing-snapshot", "wrong-controller", "unverified", "retained", "foreign-snapshot", "duplicate-impact"} {
+	for _, mode := range []string{"restore", "nested-restore", "nested-wrong-owner", "nested-unverified-parent", "nested-missing-parent", "nested-duplicate-parent", "missing-snapshot", "wrong-controller", "unverified", "retained", "foreign-snapshot", "duplicate-impact"} {
 		t.Run(mode, func(t *testing.T) {
 			ctx := context.Background()
-			repositories, planner := requiredDeletionExecutionFixture(t, cleanup.ExecutionAuthorizerFunc(func(context.Context, string, []asset.AssetID) error { return nil }), true)
+			repositories, planner := requiredDeletionExecutionFixture(t, cleanup.ExecutionAuthorizerFunc(func(context.Context, string, []asset.AssetID) error { return nil }), true, strings.HasPrefix(mode, "nested-"))
 			if _, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{CleanupTaskID: "cln-required", RequestedBy: "operator", IdempotencyKey: "managed-required", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}}); err != nil {
 				t.Fatal(err)
 			}
@@ -372,7 +384,7 @@ func TestRequiredManagedDeletionRestoresFrozenImpactAndRejectsTampering(t *testi
 				switch mode {
 				case "missing-snapshot":
 					delete(impact.Evidence, plan.EvidencePlannedAsset)
-				case "wrong-controller":
+				case "wrong-controller", "nested-wrong-owner":
 					impact.ControllerID = "first"
 				case "unverified":
 					delete(impact.Evidence, graph.LifecycleEvidenceControllerVerifiesManagedAbsence)
@@ -381,6 +393,22 @@ func TestRequiredManagedDeletionRestoresFrozenImpactAndRejectsTampering(t *testi
 				case "foreign-snapshot":
 					v := planningAsset("view", "other", "ACS::ECS::Instance", "view-native", time.Now())
 					impact.Evidence[plan.EvidencePlannedAsset] = v
+				}
+			}
+			for i := range aggregate.ImpactItems {
+				impact := &aggregate.ImpactItems[i]
+				if impact.AssetID != "node" {
+					continue
+				}
+				switch mode {
+				case "nested-unverified-parent":
+					delete(impact.Evidence, graph.LifecycleEvidenceControllerVerifiesManagedAbsence)
+				case "nested-missing-parent":
+					impact.AssetID = "missing-node"
+				case "nested-duplicate-parent":
+					copy := *impact
+					copy.ID = "duplicate-node"
+					aggregate.ImpactItems = append(aggregate.ImpactItems, copy)
 				}
 			}
 			if mode == "duplicate-impact" {
@@ -393,7 +421,7 @@ func TestRequiredManagedDeletionRestoresFrozenImpactAndRejectsTampering(t *testi
 			}
 			handler = cleanup.NewExecutionHandler(planner, resolver)
 			err = handler.Handle(ctx, cleanupExecutionJobForAsset(t, repositories, "cln-required", "first"))
-			if mode != "restore" {
+			if mode != "restore" && mode != "nested-restore" {
 				if err == nil || source.executeCalls != 0 {
 					t.Fatal("altered managed prerequisite executed", mode, err)
 				}

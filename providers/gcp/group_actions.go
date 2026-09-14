@@ -462,7 +462,7 @@ func (a *action) managedGroupReadback(ctx context.Context, request contracts.Act
 	endpoint, _ := a.client.resourceURL(kind, id)
 	live, err := a.client.request(ctx, "GET", endpoint, nil)
 	if isNotFound(err) {
-		return contracts.ReadbackResult{Exists: false}, nil
+		return a.computeMembersReadback(ctx, request, "compute")
 	}
 	if err != nil {
 		return contracts.ReadbackResult{}, err

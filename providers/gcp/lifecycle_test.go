@@ -171,6 +171,9 @@ func TestInstanceDeletionRetainsDiskAndResumesPreparationAfterRestart(t *testing
 			return apiResponse(r, 200, `{"status":"DONE"}`), nil
 		}
 		if deleted {
+			if strings.HasSuffix(r.URL.Path, "/disks/boot") {
+				return apiResponse(r, 200, `{}`), nil // Explicitly retained disk survives.
+			}
 			return apiResponse(r, 404, `{}`), nil
 		}
 		body, _ := json.Marshal(live)

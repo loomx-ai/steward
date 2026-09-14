@@ -113,7 +113,7 @@ func (c *client) storagePoolSame(root asset.Asset, live map[string]any) error {
 	return nil
 }
 
-func (h *computeGroups) contributeStoragePools(ctx context.Context, assets []asset.Asset) (governance.Contribution, error) {
+func (h *computeGroups) contributeStoragePools(ctx context.Context, assets []asset.Asset, bindings []graph.LifecycleBinding) (governance.Contribution, error) {
 	result := governance.Contribution{}
 	for _, root := range assets {
 		if root.Identity.Provider != asset.ProviderGCP || root.Identity.NativeType != storagePoolType {
@@ -180,14 +180,15 @@ func (h *computeGroups) contributeStoragePools(ctx context.Context, assets []ass
 				block(member.ID, "compute.googleapis.com/Disk", "storage_pool_disk_refresh_required")
 				continue
 			}
-			// Disk deletion must be separately selected; this prerequisite does not
-			// transfer ownership from a VM or authorize a pool cascade.
+			// A separately selected disk or verified native controller can satisfy
+			// this prerequisite. The pool gains no ownership or cascade authority.
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: root.ID, TargetAssetID: disk.ID, Type: graph.RelationshipDependsOn, Source: poolLifecycleSource, Confidence: 1, Evidence: map[string]any{
 				"native_pool": root.Identity.NativeID,
-				graph.RelationshipEvidenceRequiredDeletion:   true,
-				graph.RelationshipEvidenceAutomaticSelection: false,
-				graph.RelationshipEvidenceAuthority:          string(graph.AuthorityAuthoritative),
-				graph.RelationshipEvidenceDeletionOrder:      graph.DeletionOrderTargetBeforeSource,
+				graph.RelationshipEvidenceRequiredDeletion:           true,
+				graph.RelationshipEvidenceAutomaticSelection:         false,
+				graph.RelationshipEvidenceDeletionCascadeControllers: storagePoolDiskControllers(disk, assets, bindings),
+				graph.RelationshipEvidenceAuthority:                  string(graph.AuthorityAuthoritative),
+				graph.RelationshipEvidenceDeletionOrder:              graph.DeletionOrderTargetBeforeSource,
 			}})
 		}
 	}
@@ -370,4 +371,44 @@ func (a *action) storagePoolWait(ctx context.Context, request contracts.ActionRe
 	}
 	read, err := a.storagePoolReadback(ctx, request)
 	return contracts.WaitResult{Done: err == nil && !read.Exists, State: read.State, RetryAfter: 2 * time.Second}, err
+}
+
+// Reuse the native lifecycle chain without inventing pool ownership. The solver
+// still requires the chosen controller to be selected and the disk not retained.
+func storagePoolDiskControllers(disk asset.Asset, assets []asset.Asset, bindings []graph.LifecycleBinding) map[string]any {
+	controllers := map[string]any{}
+	seen := map[asset.AssetID]bool{}
+	member := disk.ID
+	for !seen[member] {
+		seen[member] = true
+		var owner asset.AssetID
+		for _, binding := range bindings {
+			if binding.ManagedAssetID != member {
+				continue
+			}
+			if owner != "" || binding.Authority != graph.AuthorityAuthoritative || binding.Ownership != graph.OwnershipExclusive || binding.CleanupPolicy != graph.CleanupDelegate || binding.Confidence < graph.ExecutableConfidence || binding.Confidence > 1 || binding.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] != true {
+				return controllers
+			}
+			owner = binding.ControllerAssetID
+		}
+		if owner == "" || seen[owner] {
+			break
+		}
+		var parent asset.Asset
+		for _, value := range assets {
+			if value.ID == owner {
+				parent = value
+				break
+			}
+		}
+		if parent.Identity.Provider != disk.Identity.Provider || parent.Identity.ConnectionID != disk.Identity.ConnectionID || parent.Identity.Partition != disk.Identity.Partition || parent.ClosedAt != nil {
+			break
+		}
+		switch parent.Identity.NativeType {
+		case instanceType, managerType, clusterType, nodePoolType, dataprocClusterType:
+			controllers[string(owner)] = true
+		}
+		member = owner
+	}
+	return controllers
 }

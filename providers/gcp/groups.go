@@ -455,6 +455,7 @@ func addGroupBinding(result *governance.Contribution, assets []asset.Asset, cont
 	evidence := map[string]any{"resource_type": nativeType, "instance_id": id, "delete_by_default": deletes, "lifecycle_kind": "gcp_managed_instance_group"}
 	if deletes && policy == graph.CleanupDelegate {
 		evidence[graph.LifecycleEvidenceControllerDeleteGuaranteed] = true
+		evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] = true
 	}
 	if nativeType == instanceGroupType {
 		evidence["retention_supported"] = false
@@ -550,7 +551,7 @@ func (h *computeGroups) Contribute(ctx context.Context, scope asset.ScopeID, ass
 	if err != nil {
 		return result, err
 	}
-	pools, err := h.contributeStoragePools(ctx, assets)
+	pools, err := h.contributeStoragePools(ctx, assets, result.Bindings)
 	result.Relationships = append(result.Relationships, pools.Relationships...)
 	result.Unresolved = append(result.Unresolved, pools.Unresolved...)
 	return result, err

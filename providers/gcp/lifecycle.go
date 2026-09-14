@@ -101,10 +101,10 @@ func (*InstanceDisks) Contribute(_ context.Context, _ asset.ScopeID, assets []as
 			}
 			if attachment.autoDelete {
 				evidence["delete_by_default"] = true
+				evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] = true
 				if batchManaged {
 					// Batch owns the VM lifecycle; only its Job DELETE is issued.
 					evidence["retention_supported"] = false
-					evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] = true
 				}
 				evidence[graph.LifecycleEvidenceControllerDeleteGuaranteed] = true
 				result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: vm.ID, ManagedAssetID: managed.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, EvidenceSource: diskAttachmentSource, Evidence: evidence, Confidence: 1})
@@ -159,4 +159,16 @@ func (a *action) plannedDisks(request contracts.ActionRequest, live map[string]a
 		}
 	}
 	return retain, "", nil
+}
+
+// Verify native disk outcomes even after the instance itself is absent. The
+// frozen attachment list remains authoritative for a resumed deletion.
+func (a *action) instanceDisksReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if _, reason, err := a.plannedDisks(request, request.Asset.Normalized); err != nil || reason != "" {
+		if err != nil {
+			return contracts.ReadbackResult{}, err
+		}
+		return contracts.ReadbackResult{}, groupDenied(reason)
+	}
+	return a.computeMembersReadback(ctx, request, "compute")
 }

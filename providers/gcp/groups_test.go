@@ -450,6 +450,15 @@ func TestManagedGroupFailedOperationAndMissingRootDoNotCloseLiveChildren(t *test
 	}
 	delete(f.resources, f.value("ig").Identity.NativeID)
 	wait, err = f.driver().Wait(context.Background(), request, result)
+	if err != nil || wait.Done {
+		t.Fatal("group absence hid surviving managed resources", wait, err)
+	}
+	for _, impact := range request.LifecycleImpacts {
+		if impact.Delete {
+			delete(f.resources, impact.Asset.Identity.NativeID)
+		}
+	}
+	wait, err = f.driver().Wait(context.Background(), request, result)
 	if err != nil || !wait.Done {
 		t.Fatalf("final absence not accepted %+v %v", wait, err)
 	}

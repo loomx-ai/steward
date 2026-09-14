@@ -75,3 +75,23 @@ error catalog documents `STORAGE_POOL_DELETE_HAS_ACTIVE_FR`; the native rejectio
 is preserved without force or automatic reservation cancellation. Preflight's
 repeated complete member/own reads reduce stale-review risk but cannot freeze
 concurrent cloud changes atomically.
+
+Controller composition is covered by `storage_pool_controller_test.go`: a separately
+selected MIG, GKE node pool or GKE cluster can satisfy disk prerequisites without
+issuing independent disk DELETEs. Unselected controllers, retained disks and protected
+disks remain blocked. The cluster case reuses the actual local HTTPS/TLS Kubernetes
+fixture, including workload finalizers, native member deletion and readback before
+pool cleanup. It is still a scripted protocol server, not an independent emulator.
+The SQLite scan/plan/execution test additionally selects a standalone VM and pool,
+reopens the runtime/database between rounds, waits through live disk observations
+after VM absence, verifies the managed disk projection and finally reconciles all
+three resources. VM own-absence tests cover survivors, denied reads, missing impact
+manifests, and missing/replaced retained disks. MIG regression verifies that both
+manager and complementary-group 404 cannot conceal other live members.
+
+The shared cleanup regression verifies nested prerequisite restoration and rejects
+changed owners, missing/unverified/duplicate intermediate impacts, altered member
+snapshots and retention changes. Native ownership is unchanged. Official evidence:
+[VM disk auto-delete](https://docs.cloud.google.com/compute/docs/samples/compute-disk-autodelete-change),
+[MIG preserved-state semantics](https://docs.cloud.google.com/compute/docs/instance-groups/preserved-state),
+and [GKE pool boot disks](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/hyperdisk-storage-pools).

@@ -817,7 +817,7 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 			if requirement.ControllerAssetID != "" {
 				evidence = nil
 				for _, impact := range aggregate.ImpactItems {
-					if impact.AssetID == requirement.AssetID && impact.ControllerID == owner && impact.DelegatedTo == requirement.StepID && impact.Expected == plan.ExpectedDelegatedDelete && impact.Ownership == graph.OwnershipExclusive && impact.CleanupPolicy == graph.CleanupDelegate && impact.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] == true {
+					if impact.AssetID == requirement.AssetID && plan.VerifiedManagedDeletion(impact, owner, requirement.StepID, aggregate.ImpactItems) {
 						if evidence != nil {
 							return fmt.Errorf("required managed cleanup has ambiguous reviewed impacts")
 						}

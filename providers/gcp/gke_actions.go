@@ -129,6 +129,10 @@ func (a *action) plannedGKE(ctx context.Context, request contracts.ActionRequest
 }
 
 func (a *action) gkeReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	return a.computeMembersReadback(ctx, request, "gke")
+}
+
+func (a *action) computeMembersReadback(ctx context.Context, request contracts.ActionRequest, family string) (contracts.ReadbackResult, error) {
 	impacts, err := groupImpacts(request)
 	if err != nil {
 		return contracts.ReadbackResult{}, err
@@ -137,13 +141,13 @@ func (a *action) gkeReadback(ctx context.Context, request contracts.ActionReques
 		if !impact.Delete {
 			live, err := a.client.nativeGet(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID)
 			if isNotFound(err) {
-				return contracts.ReadbackResult{}, groupDenied("gke_retained_member_missing")
+				return contracts.ReadbackResult{}, groupDenied(family + "_retained_member_missing")
 			}
 			if err != nil {
 				return contracts.ReadbackResult{}, err
 			}
 			if text(live["id"]) != "" && text(live["id"]) != text(impact.Asset.Normalized["id"]) {
-				return contracts.ReadbackResult{}, groupDenied("gke_retained_member_identity_changed")
+				return contracts.ReadbackResult{}, groupDenied(family + "_retained_member_identity_changed")
 			}
 			continue
 		}
@@ -154,7 +158,7 @@ func (a *action) gkeReadback(ctx context.Context, request contracts.ActionReques
 		if err != nil {
 			return contracts.ReadbackResult{}, err
 		}
-		return contracts.ReadbackResult{Exists: true, State: "waiting_for_gke_members"}, nil
+		return contracts.ReadbackResult{Exists: true, State: "waiting_for_" + family + "_members"}, nil
 	}
 	return contracts.ReadbackResult{}, nil
 }

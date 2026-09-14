@@ -337,8 +337,10 @@ Identity, duplicate and partial-result checks fail incomplete scans; pool readba
 rejects a replaced creation. Member disk references participate in network selection
 without authorizing disk deletion. The native delete action is registered for reviewed
 Hyperdisk Balanced/Throughput cleanup. Authoritative prerequisites require separate
-selection and deletion of local disks; they do not change VM ownership or create a
-pool cascade. Exapools and pools with foreign-project members remain protected.
+disk selection or a selected native controller that verifies its managed disks are
+absent. VM, MIG and GKE cleanup can satisfy the prerequisite through the reviewed
+ownership chain; retained disks still block the pool. This does not create pool ownership
+or a pool cascade. Exapools and pools with foreign-project members remain protected.
 
 Preflight compares native configuration and creation identity, reads two complete
 empty member lists and checks every known disk's own absence. Persisted operation
@@ -350,3 +352,10 @@ verification and physical-isolation parity remain unfinished. All 773 original
 operation objects remain unchanged; only resource action metadata was enabled.
 See [the official management guide](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools)
 and [source/test evidence](../fixtures/storage-pool/README.md).
+
+VM cleanup now verifies reviewed disk outcomes after the VM's own 404. MIG cleanup
+verifies all reviewed member outcomes after both native manager and complementary
+group absence. GKE retains its complete member and workload-finalizer readback.
+The shared prerequisite checker follows every reviewed intermediate controller;
+a supplied effective-controller label alone is insufficient. Planner and executor
+use the same check, retaining frozen member snapshots after worker restart.

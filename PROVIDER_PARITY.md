@@ -4820,3 +4820,36 @@ background evidence only, not acceptance evidence for this work.
   All 773 generated native operation objects compare equal to the previous commit.
   The 23 owned files were isolated from all 65 preexisting working changes, whose
   bytes were verified unchanged. No frontend code or live-cloud environment changed.
+
+
+## Storage Pool cleanup composed with native compute controllers
+
+- Pool disk prerequisites now accept separately selected controllers with an
+  authoritative exclusive native lifecycle chain and verified managed absence.
+  This preserves VM/MIG/GKE ownership and does not select controllers, force
+  deletion or bypass retained/protected disks. Pool readback still independently
+  verifies every reviewed disk before confirming pool cleanup.
+- VM readback verifies reviewed disk outcomes after its own 404, including missing
+  impacts and retained disks. MIG readback verifies all reviewed members after
+  manager and complementary-group absence. Controller completion cannot close a
+  surviving known member. GKE's workload finalizers and complete readback remain.
+- Shared planner/executor prerequisite validation follows the reviewed intermediate
+  impacts to the selected deletion action. An effective-controller label alone is
+  insufficient; changed, missing, unverified or duplicate intermediate ownership
+  cannot supply a prerequisite. Frozen nested member snapshots survive restarts.
+- Native protocol tests cover combined MIG, node-pool and cluster/pool deletion;
+  the cluster case uses the existing real local HTTPS/TLS Kubernetes fixture with
+  finalizers. SQLite runs real scan/graph/plan/execution/reconciliation for VM,
+  managed disk and pool with delayed member absence and database/runtime reopening.
+  These remain scripted protocol evidence, not live cloud or independent emulator
+  evidence. API definitions, specifications and catalogs are unchanged. Broader
+  parity and all eight acceptance criteria remain open.
+- Final validation passed: full isolated `go test ./... -count=1`, including
+  Azure (354.043s) and GCP (172.852s); targeted GCP/plan/cleanup/server race tests
+  (52.414s / 7.297s / 11.597s / 9.182s); affected-package vet; main integration
+  tests for native pool/controllers, nested prerequisite restoration, shared
+  lifecycle contracts and server dispatch. Documentation checks passed for 30
+  isolated and 42 main chapters plus 10 original screenshots. Twenty owned files
+  were staged; 64 unrelated working-file hashes remain unchanged and the existing
+  worker modification remains an identical separate unstaged diff. Its only owned
+  change calls the shared prerequisite validator. Catalog/API/spec bytes are unchanged.

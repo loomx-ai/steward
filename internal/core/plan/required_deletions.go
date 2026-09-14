@@ -176,7 +176,7 @@ func Solve(input Input) (Result, error) {
 			owner := steps[targetStepID].AssetID
 			if targetStepID != "" && targetStepID != sourceStepID && owner != target.ID && controllers[string(owner)] == true {
 				for _, impact := range result.ImpactItems {
-					if impact.AssetID == target.ID && impact.DelegatedTo == targetStepID && impact.ControllerID == owner && impact.Expected == ExpectedDelegatedDelete && impact.Ownership == graph.OwnershipExclusive && impact.CleanupPolicy == graph.CleanupDelegate && impact.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] == true {
+					if impact.AssetID == target.ID && VerifiedManagedDeletion(impact, owner, targetStepID, result.ImpactItems) {
 						controller = owner
 					}
 				}
@@ -231,4 +231,35 @@ func Solve(input Input) (Result, error) {
 		return result, nil
 	}
 	return Result{}, fmt.Errorf("cleanup prerequisite expansion did not converge")
+}
+
+// VerifiedManagedDeletion follows the reviewed ownership chain to the action
+// that verifies it. An effective-controller label alone cannot authorize a
+// nested prerequisite or disguise a changed immediate owner.
+func VerifiedManagedDeletion(impact ImpactItem, controller asset.AssetID, step StepID, impacts []ImpactItem) bool {
+	for depth := 0; depth <= len(impacts); depth++ {
+		if impact.DelegatedTo != step || impact.Expected != ExpectedDelegatedDelete || impact.Ownership != graph.OwnershipExclusive || impact.CleanupPolicy != graph.CleanupDelegate || impact.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] != true {
+			return false
+		}
+		if impact.ControllerID == controller {
+			return true
+		}
+		if fmt.Sprint(impact.Evidence["effective_controller"]) != string(controller) {
+			return false
+		}
+		var parent *ImpactItem
+		for i := range impacts {
+			if impacts[i].AssetID == impact.ControllerID && impacts[i].DelegatedTo == step {
+				if parent != nil {
+					return false
+				}
+				parent = &impacts[i]
+			}
+		}
+		if parent == nil {
+			return false
+		}
+		impact = *parent
+	}
+	return false
 }
