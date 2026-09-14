@@ -1,0 +1,305 @@
+{
+  "methods": {
+    "logging.folders.sinks.get": {
+      "description": "Gets a sink.",
+      "flatPath": "v2/folders/{foldersId}/sinks/{sinksId}",
+      "httpMethod": "GET",
+      "id": "logging.folders.sinks.get",
+      "parameterOrder": [
+        "sinkName"
+      ],
+      "parameters": {
+        "sinkName": {
+          "description": "Required. The resource name of the sink: \"projects/[PROJECT_ID]/sinks/[SINK_ID]\" \"organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]\" \"billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]\" \"folders/[FOLDER_ID]/sinks/[SINK_ID]\" For example:\"projects/my-project/sinks/my-sink\"",
+          "location": "path",
+          "pattern": "^folders/[^/]+/sinks/[^/]+$",
+          "required": true,
+          "type": "string"
+        }
+      },
+      "path": "v2/{+sinkName}",
+      "response": {
+        "$ref": "LogSink"
+      },
+      "scopes": [
+        "https://www.googleapis.com/auth/cloud-platform",
+        "https://www.googleapis.com/auth/cloud-platform.read-only",
+        "https://www.googleapis.com/auth/logging.admin",
+        "https://www.googleapis.com/auth/logging.read"
+      ]
+    },
+    "logging.folders.sinks.list": {
+      "description": "Lists sinks.",
+      "flatPath": "v2/folders/{foldersId}/sinks",
+      "httpMethod": "GET",
+      "id": "logging.folders.sinks.list",
+      "parameterOrder": [
+        "parent"
+      ],
+      "parameters": {
+        "filter": {
+          "description": "Optional. A filter expression to constrain the sinks returned. Today, this only supports the following strings: '' 'in_scope(\"ALL\")', 'in_scope(\"ANCESTOR\")', 'in_scope(\"DEFAULT\")'.Description of scopes below. ALL: Includes all of the sinks which can be returned in any other scope. ANCESTOR: Includes intercepting sinks owned by ancestor resources. DEFAULT: Includes sinks owned by parent.When the empty string is provided, then the filter 'in_scope(\"DEFAULT\")' is applied.",
+          "location": "query",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+          "format": "int32",
+          "location": "query",
+          "type": "integer"
+        },
+        "pageToken": {
+          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+          "location": "query",
+          "type": "string"
+        },
+        "parent": {
+          "description": "Required. The parent resource whose sinks are to be listed: \"projects/[PROJECT_ID]\" \"organizations/[ORGANIZATION_ID]\" \"billingAccounts/[BILLING_ACCOUNT_ID]\" \"folders/[FOLDER_ID]\" ",
+          "location": "path",
+          "pattern": "^folders/[^/]+$",
+          "required": true,
+          "type": "string"
+        }
+      },
+      "path": "v2/{+parent}/sinks",
+      "response": {
+        "$ref": "ListSinksResponse"
+      },
+      "scopes": [
+        "https://www.googleapis.com/auth/cloud-platform",
+        "https://www.googleapis.com/auth/cloud-platform.read-only",
+        "https://www.googleapis.com/auth/logging.admin",
+        "https://www.googleapis.com/auth/logging.read"
+      ]
+    },
+    "logging.organizations.sinks.get": {
+      "description": "Gets a sink.",
+      "flatPath": "v2/organizations/{organizationsId}/sinks/{sinksId}",
+      "httpMethod": "GET",
+      "id": "logging.organizations.sinks.get",
+      "parameterOrder": [
+        "sinkName"
+      ],
+      "parameters": {
+        "sinkName": {
+          "description": "Required. The resource name of the sink: \"projects/[PROJECT_ID]/sinks/[SINK_ID]\" \"organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]\" \"billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]\" \"folders/[FOLDER_ID]/sinks/[SINK_ID]\" For example:\"projects/my-project/sinks/my-sink\"",
+          "location": "path",
+          "pattern": "^organizations/[^/]+/sinks/[^/]+$",
+          "required": true,
+          "type": "string"
+        }
+      },
+      "path": "v2/{+sinkName}",
+      "response": {
+        "$ref": "LogSink"
+      },
+      "scopes": [
+        "https://www.googleapis.com/auth/cloud-platform",
+        "https://www.googleapis.com/auth/cloud-platform.read-only",
+        "https://www.googleapis.com/auth/logging.admin",
+        "https://www.googleapis.com/auth/logging.read"
+      ]
+    },
+    "logging.organizations.sinks.list": {
+      "description": "Lists sinks.",
+      "flatPath": "v2/organizations/{organizationsId}/sinks",
+      "httpMethod": "GET",
+      "id": "logging.organizations.sinks.list",
+      "parameterOrder": [
+        "parent"
+      ],
+      "parameters": {
+        "filter": {
+          "description": "Optional. A filter expression to constrain the sinks returned. Today, this only supports the following strings: '' 'in_scope(\"ALL\")', 'in_scope(\"ANCESTOR\")', 'in_scope(\"DEFAULT\")'.Description of scopes below. ALL: Includes all of the sinks which can be returned in any other scope. ANCESTOR: Includes intercepting sinks owned by ancestor resources. DEFAULT: Includes sinks owned by parent.When the empty string is provided, then the filter 'in_scope(\"DEFAULT\")' is applied.",
+          "location": "query",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+          "format": "int32",
+          "location": "query",
+          "type": "integer"
+        },
+        "pageToken": {
+          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+          "location": "query",
+          "type": "string"
+        },
+        "parent": {
+          "description": "Required. The parent resource whose sinks are to be listed: \"projects/[PROJECT_ID]\" \"organizations/[ORGANIZATION_ID]\" \"billingAccounts/[BILLING_ACCOUNT_ID]\" \"folders/[FOLDER_ID]\" ",
+          "location": "path",
+          "pattern": "^organizations/[^/]+$",
+          "required": true,
+          "type": "string"
+        }
+      },
+      "path": "v2/{+parent}/sinks",
+      "response": {
+        "$ref": "ListSinksResponse"
+      },
+      "scopes": [
+        "https://www.googleapis.com/auth/cloud-platform",
+        "https://www.googleapis.com/auth/cloud-platform.read-only",
+        "https://www.googleapis.com/auth/logging.admin",
+        "https://www.googleapis.com/auth/logging.read"
+      ]
+    }
+  },
+  "revision": "20260818",
+  "schemas": {
+    "BigQueryOptions": {
+      "description": "Options that change functionality of a sink exporting data to BigQuery.",
+      "id": "BigQueryOptions",
+      "properties": {
+        "usePartitionedTables": {
+          "description": "Optional. Whether to use BigQuery's partition tables (https://docs.cloud.google.com/bigquery/docs/partitioned-tables). By default, Cloud Logging creates dated tables based on the log entries' timestamps, e.g. syslog_20170523. With partitioned tables the date suffix is no longer present and special query syntax (https://docs.cloud.google.com/bigquery/docs/querying-partitioned-tables) has to be used instead. In both cases, tables are sharded based on UTC timezone.",
+          "type": "boolean"
+        },
+        "usesTimestampColumnPartitioning": {
+          "description": "Output only. True if new timestamp column based partitioning is in use, false if legacy ingress-time partitioning is in use.All new sinks will have this field set true and will use timestamp column based partitioning. If use_partitioned_tables is false, this value has no meaning and will be false. Legacy sinks using partitioned tables will have this field set to false.",
+          "readOnly": true,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "ListSinksResponse": {
+      "description": "Result returned from ListSinks.",
+      "id": "ListSinksResponse",
+      "properties": {
+        "nextPageToken": {
+          "description": "If there might be more results than appear in this response, then nextPageToken is included. To get the next set of results, call the same method again using the value of nextPageToken as pageToken.",
+          "type": "string"
+        },
+        "sinks": {
+          "description": "A list of sinks.",
+          "items": {
+            "$ref": "LogSink"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "LogExclusion": {
+      "description": "Specifies a set of log entries that are filtered out by a sink. If your Google Cloud resource receives a large volume of log entries, you can use exclusions to reduce your chargeable logs. Note that exclusions on organization-level and folder-level sinks don't apply to child resources. Note also that you cannot modify the _Required sink or exclude logs from it.",
+      "id": "LogExclusion",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The creation timestamp of the exclusion.This field may not be present for older exclusions.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. A description of this exclusion.",
+          "type": "string"
+        },
+        "disabled": {
+          "description": "Optional. If set to True, then this exclusion is disabled and it does not exclude any log entries. You can update an exclusion to change the value of this field.",
+          "type": "boolean"
+        },
+        "filter": {
+          "description": "Required. An advanced logs filter (https://docs.cloud.google.com/logging/docs/view/building-queries#queries-by-expression) that matches the log entries to be excluded. By using the sample function (https://docs.cloud.google.com/logging/docs/view/logging-query-language#sample), you can exclude less than 100% of the matching log entries.For example, the following query matches 99% of low-severity log entries from Google Cloud Storage buckets:resource.type=gcs_bucket severity<ERROR sample(insertId, 0.99)",
+          "type": "string"
+        },
+        "name": {
+          "description": "Optional. A client-assigned identifier, such as \"load-balancer-exclusion\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods. First character has to be alphanumeric.",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. The last update timestamp of the exclusion.This field may not be present for older exclusions.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "LogSink": {
+      "description": "Describes a sink used to export log entries to one of the following destinations: a Cloud Logging log bucket, a Cloud Storage bucket, a BigQuery dataset, a Pub/Sub topic, a Cloud project.A logs filter controls which log entries are exported. The sink must be created within a project, organization, billing account, or folder.",
+      "id": "LogSink",
+      "properties": {
+        "bigqueryOptions": {
+          "$ref": "BigQueryOptions",
+          "description": "Optional. Options that affect sinks exporting data to BigQuery."
+        },
+        "createTime": {
+          "description": "Output only. The creation timestamp of the sink.This field may not be present for older sinks.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. A description of this sink.The maximum length of the description is 8000 characters.",
+          "type": "string"
+        },
+        "destination": {
+          "description": "Required. The export destination: \"storage.googleapis.com/[GCS_BUCKET]\" \"bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]\" \"pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]\" \"logging.googleapis.com/projects/[PROJECT_ID]\" \"logging.googleapis.com/projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]\" The sink's writer_identity, set when the sink is created, must have permission to write to the destination or else the log entries are not exported. For more information, see Route logs to supported destinations (https://docs.cloud.google.com/logging/docs/export/configure_export_v2).",
+          "type": "string"
+        },
+        "disabled": {
+          "description": "Optional. If set to true, then this sink is disabled and it does not export any log entries.",
+          "type": "boolean"
+        },
+        "exclusions": {
+          "description": "Optional. Log entries that match any of these exclusion filters will not be exported.If a log entry is matched by both filter and one of exclusions it will not be exported.",
+          "items": {
+            "$ref": "LogExclusion"
+          },
+          "type": "array"
+        },
+        "filter": {
+          "description": "Optional. An advanced logs filter (https://docs.cloud.google.com/logging/docs/view/building-queries#queries-by-expression). The only exported log entries are those that are in the resource owning the sink and that match the filter.For example:logName=\"projects/[PROJECT_ID]/logs/[LOG_ID]\" AND severity>=ERROR",
+          "type": "string"
+        },
+        "includeChildren": {
+          "description": "Optional. This field applies only to sinks owned by organizations and folders. If the field is false, the default, only the logs owned by the sink's parent resource are available for export. If the field is true, then log entries from all the projects, folders, and billing accounts contained in the sink's parent resource are also available for export. Whether a particular log entry from the children is exported depends on the sink's filter expression.For example, if this field is true, then the filter resource.type=gce_instance would export all Compute Engine VM instance log entries from all projects in the sink's parent.To only export entries from certain child projects, filter on the project part of the log name:logName:(\"projects/test-project1/\" OR \"projects/test-project2/\") AND resource.type=gce_instance",
+          "type": "boolean"
+        },
+        "interceptChildren": {
+          "description": "Optional. This field applies only to sinks owned by organizations and folders.When the value of 'intercept_children' is true, the following restrictions apply: The sink must have the include_children flag set to true. The sink destination must be a Cloud project.Also, the following behaviors apply: Any logs matched by the sink won't be included by non-_Required sinks owned by child resources. The sink appears in the results of a ListSinks call from a child resource if the value of the filter field in its request is either 'in_scope(\"ALL\")' or 'in_scope(\"ANCESTOR\")'.",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "Optional. The client-assigned sink identifier, unique within the project.For example: \"my-syslog-errors-to-pubsub\".Sink identifiers are limited to 100 characters and can include only the following characters: upper and lower-case alphanumeric characters, underscores, hyphens, periods.First character has to be alphanumeric.",
+          "type": "string"
+        },
+        "outputVersionFormat": {
+          "deprecated": true,
+          "description": "Deprecated. This field is unused.",
+          "enum": [
+            "VERSION_FORMAT_UNSPECIFIED",
+            "V2",
+            "V1"
+          ],
+          "enumDescriptions": [
+            "An unspecified format version that will default to V2.",
+            "LogEntry version 2 format.",
+            "LogEntry version 1 format."
+          ],
+          "type": "string"
+        },
+        "resourceName": {
+          "description": "Output only. The resource name of the sink. \"projects/[PROJECT_ID]/sinks/[SINK_NAME] \"organizations/[ORGANIZATION_ID]/sinks/[SINK_NAME] \"billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_NAME] \"folders/[FOLDER_ID]/sinks/[SINK_NAME] For example: projects/my_project/sinks/SINK_NAME",
+          "readOnly": true,
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. The last update timestamp of the sink.This field may not be present for older sinks.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "writerIdentity": {
+          "description": "Output only. An IAM identity—a service account or group—under which Cloud Logging writes the exported log entries to the sink's destination. This field is either set by specifying custom_writer_identity or set automatically by sinks.create and sinks.update based on the value of unique_writer_identity in those methods.Until you grant this identity write-access to the destination, log entry exports from this sink will fail. For more information, see Manage access to projects, folders, and organizations (https://docs.cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource). Consult the destination service's documentation to determine the appropriate IAM roles to assign to the identity.Sinks that have a destination that is a log bucket in the same project as the sink cannot have a writer_identity and no additional permissions are required.",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "source_sha256": "da8b8dafbac40c8b0c4bf0568a7b6ccd9654045ddac92a94040164e0accf9191",
+  "source_uri": "https://logging.googleapis.com/$discovery/rest?version=v2"
+}

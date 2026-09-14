@@ -271,3 +271,9 @@ Logging fuzzing completed 11,881 executions in its 20-second budget without a cr
 The complete GCP rerun includes the Unicode-version and IPv4-mapping uncertainty
 guards. The independent emulator was not rerun: no native wire contract changed,
 and its query evaluator was never claimed as an oracle for these expressions.
+
+The native project/ancestor routing gap described above is addressed by the next
+[Logging routing milestone](../logging-routing/README.md). Destination-project log
+scope is now evaluated independently of MetricsScope, with repeated native sink
+and ancestry observations. Live delivery/IAM and atomic cross-service acceptance
+remain separate requirements.

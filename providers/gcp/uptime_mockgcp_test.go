@@ -58,9 +58,19 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 	// that gap blocks all writes; only then enable this explicit protocol fixture.
 	reverseFixture, nativeReverseFailed := false, false
 	fixtureCalls := 0
+	loggingFixture, nativeLoggingFailed := false, false
+	loggingFixtureCalls := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
-		if req.URL.Host != "monitoring.googleapis.com" {
+		if req.URL.Host != "monitoring.googleapis.com" && req.URL.Host != loggingHost {
 			t.Fatal(req.URL)
+		}
+		loggingList := req.URL.Host == loggingHost && req.Method == "GET" && req.URL.Path == "/v2/projects/sample-project/sinks"
+		if loggingList && loggingFixture {
+			if req.URL.Query().Get("filter") != `in_scope("DEFAULT")` || req.URL.Query().Get("pageSize") != "1000" {
+				t.Fatal("wrong modeled logging request")
+			}
+			loggingFixtureCalls++
+			return apiResponse(req, 200, `{}`), nil
 		}
 		calls = append(calls, req.Method+" "+req.URL.Path)
 		reverse := req.Method == "GET" && req.URL.Path == "/v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject"
@@ -74,6 +84,9 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 		local := req.Clone(req.Context())
 		local.URL.Scheme, local.URL.Host, local.Host = u.Scheme, u.Host, u.Host
 		response, err := http.DefaultTransport.RoundTrip(local)
+		if loggingList && err == nil && response.StatusCode >= 400 {
+			nativeLoggingFailed = true
+		}
 		if reverse && err == nil && response.StatusCode >= 400 {
 			nativeReverseFailed = true
 		}
@@ -114,6 +127,16 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 		}
 	}
 	reverseFixture = true
+	if _, err := driver.Execute(ctx, request); err == nil || !nativeLoggingFailed {
+		t.Fatal("unimplemented sink LIST did not block cleanup", err)
+	}
+	for _, call := range calls {
+		if strings.HasPrefix(call, "DELETE ") {
+			t.Fatal("incomplete routing allowed DELETE")
+		}
+	}
+	loggingFixture = true
+	t.Cleanup(func() { t.Logf("explicit Logging empty LIST fixture calls: %d", loggingFixtureCalls) })
 	policySeed := alertPolicyFixture()
 	delete(policySeed, "name")
 	delete(policySeed, "futureNativeField")
@@ -194,5 +217,5 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 	if deletes != 2 || fixtureCalls == 0 {
 		t.Fatal("duplicate native deletion", calls)
 	}
-	t.Logf("Google mockgcp: %d forwarded Monitoring calls, %d explicitly modeled reverse-scope calls; native Uptime LIST and reverse lookup remain unimplemented. Verified unsupported-discovery write blocking, native AlertPolicy LIST/GET, reference blocking, policy DELETE/404, check DELETE, prerequisite-bound JSON resume and 404. No native IAM or reference-lock claim.", len(calls)-fixtureCalls, fixtureCalls)
+	t.Logf("Google mockgcp: %d forwarded Monitoring/Logging requests, %d explicitly modeled reverse-scope calls; native Uptime LIST, reverse lookup and sink LIST remain unimplemented. Verified unsupported-discovery write blocking, native AlertPolicy LIST/GET, reference blocking, policy DELETE/404, check DELETE, prerequisite-bound JSON resume and 404. No native IAM or reference-lock claim.", len(calls)-fixtureCalls, fixtureCalls)
 }

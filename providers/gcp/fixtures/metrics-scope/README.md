@@ -121,3 +121,9 @@ STEWARD_METRICS_SCOPE_MOCKGCP_URL=http://127.0.0.1:PORT \
 
 Stop the temporary server after the test and remove its checkout and binary.
 All resources are in memory; no cloud credentials or cloud resources are used.
+
+The [Logging routing milestone](../logging-routing/README.md) extends this same
+harness with unmodified `mocklogging` handlers and a third synthetic project,
+`foreign-project` (987654). The earlier metrics-scope run remains historical
+scope evidence. The added Logging integration explicitly identifies unsupported
+sink LIST and its modeled pages; no native Logging discovery claim is made.

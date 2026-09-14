@@ -38,6 +38,9 @@ func monitoringScenario(t *testing.T, kind string) (*Runtime, *contracts.ActionR
 	reads := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if kind == uptimeType && req.Method == "GET" {
+			if req.URL.Host == loggingHost && req.URL.Path == "/v2/projects/sample-project/sinks" && req.URL.Query().Get("filter") == `in_scope("DEFAULT")` && req.URL.Query().Get("pageSize") == "1000" {
+				return apiResponse(req, 200, `{}`), nil
+			}
 			if req.URL.Path == "/v3/projects/sample-project/alertPolicies" {
 				return apiResponse(req, 200, `{}`), nil
 			}

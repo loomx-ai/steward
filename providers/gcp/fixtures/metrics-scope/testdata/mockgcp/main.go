@@ -16,6 +16,7 @@ import (
 	"github.com/GoogleCloudPlatform/k8s-config-connector/mockgcp/common"
 	"github.com/GoogleCloudPlatform/k8s-config-connector/mockgcp/common/operations"
 	"github.com/GoogleCloudPlatform/k8s-config-connector/mockgcp/common/projects"
+	"github.com/GoogleCloudPlatform/k8s-config-connector/mockgcp/mocklogging"
 	"github.com/GoogleCloudPlatform/k8s-config-connector/mockgcp/mockmonitoring"
 	"github.com/GoogleCloudPlatform/k8s-config-connector/mockgcp/pkg/storage"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -28,7 +29,7 @@ import (
 type fixtureProjects struct{}
 
 func (fixtureProjects) GetProjectByIDOrNumber(value string) (*projects.ProjectData, error) {
-	for id, number := range map[string]int64{"sample-project": 123456, "monitored-project": 222222} {
+	for id, number := range map[string]int64{"sample-project": 123456, "monitored-project": 222222, "foreign-project": 987654} {
 		if value == id || value == strconv.FormatInt(number, 10) {
 			return &projects.ProjectData{ID: id, Number: number}, nil
 		}
@@ -55,6 +56,8 @@ func main() {
 	service := mockmonitoring.New(&common.MockEnvironment{Projects: fixtureProjects{}}, data)
 	grpcServer := grpc.NewServer()
 	service.Register(grpcServer)
+	loggingService := mocklogging.New(&common.MockEnvironment{Projects: fixtureProjects{}}, data)
+	loggingService.Register(grpcServer)
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		log.Fatal(err)
@@ -77,6 +80,11 @@ func main() {
 	}
 	mux := http.NewServeMux()
 	mux.Handle("/v1/operations/", opMux)
+	loggingMux, err := loggingService.NewHTTPMux(ctx, conn)
+	if err != nil {
+		log.Fatal(err)
+	}
+	mux.Handle("/v2/", loggingMux)
 	mux.Handle("/", serviceMux)
 	httpListener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {

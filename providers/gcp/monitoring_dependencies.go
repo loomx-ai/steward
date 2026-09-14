@@ -106,22 +106,102 @@ func monitoringPolicyReviews(values map[string]map[string]any) string {
 	}
 	return firewallDigest(reviews)
 }
-func (c *client) monitoringPolicies(ctx context.Context) (map[string]map[string]any, error) {
+
+type monitoringPolicy struct {
+	Data           map[string]any
+	Metrics, Local bool
+	LogRoutes      []map[string]any
+}
+
+func (p monitoringPolicy) reference(check string) monitoringReference {
+	result := alertPolicyUptimeScopedReference(p.Data, check, p.Metrics, false)
+	route := monitoringNoReference
+	if p.Local {
+		route = monitoringHasReference
+	}
+	for _, sink := range p.LogRoutes {
+		route = monitoringOr(route, loggingRouteReference(sink, check))
+	}
+	if route != monitoringNoReference {
+		result = monitoringOr(result, monitoringAnd(route, alertPolicyUptimeScopedReference(p.Data, check, false, true)))
+	}
+	return result
+}
+func (c *client) monitoringPolicies(ctx context.Context, checks ...string) (map[string]monitoringPolicy, error) {
 	projects, err := c.monitoringScopingProjects(ctx)
 	if err != nil {
 		return nil, err
 	}
-	result := map[string]map[string]any{}
+	routing, err := c.loggingRouting(ctx)
+	if err != nil {
+		return nil, err
+	}
+	type projectReader struct {
+		client  *client
+		metrics bool
+		routes  []map[string]any
+	}
+	readers := map[string]*projectReader{}
+	aliases := map[string]bool{}
 	for _, project := range projects {
+		aliases[project] = true
+	}
+	for project, routes := range routing.Projects {
+		possible := len(checks) == 0
+		for _, sink := range routes {
+			for _, check := range checks {
+				if loggingRouteReference(sink, check) != monitoringNoReference {
+					possible = true
+				}
+			}
+		}
+		if !possible {
+			continue
+		}
+		if _, ok := aliases[project]; !ok {
+			aliases[project] = false
+		}
+	}
+	names := make([]string, 0, len(aliases))
+	for project := range aliases {
+		names = append(names, project)
+	}
+	slices.Sort(names)
+	for _, project := range names {
 		reader := c
-		if project != c.number {
+		if project != c.number && project != c.project {
 			copy := *c
 			copy.project, copy.number, copy.firewallParent, copy.identityParent = project, "", "", ""
-			if _, err := copy.projectIdentity(ctx); err != nil {
+			identity, err := copy.projectIdentity(ctx)
+			if err != nil {
 				return nil, contracts.DependencyReadError(err)
+			}
+			if identity["name"] != "projects/"+copy.number || identity["projectId"] != copy.project || !firewallNumericID(copy.number) || !projectPattern.MatchString(copy.project) {
+				return nil, groupDenied("monitoring_project_identity_invalid")
 			}
 			reader = &copy
 		}
+		existing := readers[reader.number]
+		if existing == nil {
+			existing = &projectReader{client: reader}
+			readers[reader.number] = existing
+		}
+		if existing.client.project != reader.project {
+			return nil, groupDenied("monitoring_project_alias_changed")
+		}
+		existing.metrics = existing.metrics || aliases[project]
+		existing.routes = append(existing.routes, routing.Projects[project]...)
+	}
+	result := map[string]monitoringPolicy{}
+	numbers := make([]string, 0, len(readers))
+	for number := range readers {
+		numbers = append(numbers, number)
+	}
+	slices.Sort(numbers)
+	for _, number := range numbers {
+		scope := readers[number]
+		reader := scope.client
+
 		listed, err := reader.monitoringPolicyList(ctx)
 		if err != nil {
 			return nil, err
@@ -136,10 +216,10 @@ func (c *client) monitoringPolicies(ctx context.Context) (map[string]map[string]
 			if err != nil {
 				return nil, err
 			}
-			if result[id] != nil {
+			if _, exists := result[id]; exists {
 				return nil, groupDenied("monitoring_policy_duplicate")
 			}
-			result[id] = live
+			result[id] = monitoringPolicy{Data: live, Metrics: scope.metrics, Local: number == c.number, LogRoutes: scope.routes}
 		}
 		again, err := reader.monitoringPolicyList(ctx)
 		if err != nil {
@@ -156,6 +236,13 @@ func (c *client) monitoringPolicies(ctx context.Context) (map[string]map[string]
 	if !slices.Equal(projects, again) {
 		return nil, groupDenied("monitoring_scoping_projects_changed")
 	}
+	routingAgain, err := c.loggingRouting(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if firewallDigest(routing) != firewallDigest(routingAgain) {
+		return nil, groupDenied("logging_routing_changed")
+	}
 	return result, nil
 }
 
@@ -170,7 +257,11 @@ func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID
 	if len(checks) == 0 {
 		return result, nil
 	}
-	policies, err := h.client.monitoringPolicies(ctx)
+	checkIDs := make([]string, 0, len(checks))
+	for _, check := range checks {
+		checkIDs = append(checkIDs, last(check.Identity.NativeID))
+	}
+	policies, err := h.client.monitoringPolicies(ctx, checkIDs...)
 	if err != nil {
 		return result, err
 	}
@@ -191,7 +282,7 @@ func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID
 			return result, groupDenied("monitoring_configuration_changed")
 		}
 		for _, id := range ids {
-			ref := alertPolicyUptimeReference(policies[id], last(check.Identity.NativeID))
+			ref := policies[id].reference(last(check.Identity.NativeID))
 			if ref == monitoringNoReference {
 				continue
 			}
@@ -211,7 +302,7 @@ func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID
 			if err != nil {
 				return result, err
 			}
-			if !found || policy.ClosedAt != nil || text(policy.Normalized[alertPolicyReview]) != monitoringConfiguration(alertPolicyType, id, policies[id]) {
+			if !found || policy.ClosedAt != nil || text(policy.Normalized[alertPolicyReview]) != monitoringConfiguration(alertPolicyType, id, policies[id].Data) {
 				block("monitoring_policy_refresh_required")
 				continue
 			}
@@ -258,12 +349,12 @@ func (a *action) monitoringIncoming(ctx context.Context, request contracts.Actio
 			return groupDenied("monitoring_prerequisite_still_exists")
 		}
 	}
-	policies, err := a.client.monitoringPolicies(ctx)
+	policies, err := a.client.monitoringPolicies(ctx, last(a.identity.NativeID))
 	if err != nil {
 		return err
 	}
 	for _, policy := range policies {
-		switch alertPolicyUptimeReference(policy, last(a.identity.NativeID)) {
+		switch policy.reference(last(a.identity.NativeID)) {
 		case monitoringHasReference:
 			return groupDenied("uptime_referenced_by_alert_policy")
 		case monitoringUnresolvedReference:

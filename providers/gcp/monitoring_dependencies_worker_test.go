@@ -43,27 +43,8 @@ func testMonitoringDependencySQLitePlanExecutionRestart(t *testing.T, logging bo
 	}
 	ctx := t.Context()
 	dsn := filepath.Join(t.TempDir(), "monitoring.db")
-	open := func() (*sqlite.Repositories, func()) {
-		t.Helper()
-		db, err := gorm.Open(sqlitedriver.Open(dsn), &gorm.Config{TranslateError: true, Logger: logger.Default.LogMode(logger.Silent)})
-		if err != nil {
-			t.Fatal(err)
-		}
-		sqlDB, err := db.DB()
-		if err != nil {
-			t.Fatal(err)
-		}
-		sqlDB.SetMaxOpenConns(1)
-		if err := persistence.Migrate(sqlDB, "sqlite3", "../../migrations"); err != nil {
-			t.Fatal(err)
-		}
-		return sqlite.New(db), func() {
-			if err := sqlDB.Close(); err != nil {
-				t.Fatal(err)
-			}
-		}
-	}
-	repos, closeDB := open()
+
+	repos, closeDB := monitoringSQLite(t, dsn)
 	now := time.Now().UTC()
 	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP, Partition: "gcp", Status: asset.ConnectionActive, CreatedAt: now, UpdatedAt: now}
 	scope := asset.Scope{ID: "global", ConnectionID: connection.ID, Kind: asset.ScopeGlobal, NativeID: "sample-project/global", CreatedAt: now, UpdatedAt: now}
@@ -119,7 +100,7 @@ func testMonitoringDependencySQLitePlanExecutionRestart(t *testing.T, logging bo
 	finished := false
 	for round := 0; round < 12; round++ {
 		closeDB()
-		repos, closeDB = open()
+		repos, closeDB = monitoringSQLite(t, dsn)
 		fresh := protocolRuntime(t, s.r.transport.RoundTrip)
 		service = cleanup.NewService(repos, identityRegistry(t, fresh), cleanup.WithClock(func() time.Time { return now }))
 		worker := cleanup.NewExecutionHandler(service, cleanup.ActionResolverFunc(func(ctx context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
@@ -179,4 +160,97 @@ func testMonitoringDependencySQLitePlanExecutionRestart(t *testing.T, logging bo
 		}
 	}
 	closeDB()
+}
+
+func monitoringSQLite(t *testing.T, dsn string) (*sqlite.Repositories, func()) {
+	t.Helper()
+	db, err := gorm.Open(sqlitedriver.Open(dsn), &gorm.Config{TranslateError: true, Logger: logger.Default.LogMode(logger.Silent)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		t.Fatal(err)
+	}
+	sqlDB.SetMaxOpenConns(1)
+	if err := persistence.Migrate(sqlDB, "sqlite3", "../../migrations"); err != nil {
+		t.Fatal(err)
+	}
+	return sqlite.New(db), func() {
+		if err := sqlDB.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+}
+
+func TestLoggingRoutingSQLitePreservesBlockedPlanAfterReadFailure(t *testing.T) {
+	s := newLoggingRoutingScenario(t)
+	dsn := filepath.Join(t.TempDir(), "routing.db")
+	repos, closeDB := monitoringSQLite(t, dsn)
+	ctx := t.Context()
+	now := time.Now().UTC()
+	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP, Partition: "gcp", Status: asset.ConnectionActive, CreatedAt: now, UpdatedAt: now}
+	scope := asset.Scope{ID: "global", ConnectionID: connection.ID, Kind: asset.ScopeGlobal, NativeID: "sample-project/global", CreatedAt: now, UpdatedAt: now}
+	kind := s.r.resourceKind(uptimeType)
+	value := s.request.Asset
+	value.ResourceKindID, value.ScopeID, value.FirstSeenAt, value.LastSeenAt = kind.ID, scope.ID, now, now
+	for _, err := range []error{repos.Connections().PutConnection(ctx, connection), repos.Inventory().PutScope(ctx, scope), repos.Inventory().PutResourceKind(ctx, kind), repos.Inventory().PutAsset(ctx, value)} {
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := repos.Inventory().CreateScanRun(ctx, asset.ScanRun{ID: "routing", ConnectionID: connection.ID, Status: asset.ScanSucceeded, CreatedAt: now}); err != nil {
+		t.Fatal(err)
+	}
+	if err := repos.Inventory().PutScanShard(ctx, asset.ScanShard{ID: "routing", ScanRunID: "routing", Provider: asset.ProviderGCP, ScopeID: scope.ID, ResourceKindID: kind.ID, Source: productInventorySource, Status: asset.ShardSucceeded, Authoritative: true, CreatedAt: now}); err != nil {
+		t.Fatal(err)
+	}
+	rebuild := func() error {
+		fresh := protocolRuntime(t, s.r.transport.RoundTrip)
+		fresh.transport = s.r.transport // Preserve explicit ancestry responses across client restart.
+		handler := governance.NewGraphHandler(repos, identityRegistry(t, fresh), monitoringDependencyContributors{fresh})
+		return handler.Handle(ctx, execution.Job{Type: execution.JobGraph, Payload: map[string]any{"scan_run_id": "routing"}})
+	}
+	if err := rebuild(); err != nil {
+		t.Fatal(err)
+	}
+	for round := 0; round < 3; round++ {
+		closeDB()
+		repos, closeDB = monitoringSQLite(t, dsn)
+		if round == 1 {
+			s.mode = "ancestor-denied"
+			if err := rebuild(); err == nil {
+				t.Fatal("failed native ancestry erased graph")
+			}
+		}
+		if round == 2 {
+			s.mode = ""
+			s.sinks["projects/sample-project"] = nil
+			if err := rebuild(); err != nil {
+				t.Fatal(err)
+			}
+		}
+		unresolved, err := repos.Graph().ListUnresolvedByConnection(ctx, connection.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		wantBlocked := round < 2
+		if wantBlocked && (len(unresolved) != 1 || !unresolved[0].BlocksCleanup) || !wantBlocked && len(unresolved) != 0 {
+			t.Fatal("incorrect persisted routing boundary", round, unresolved)
+		}
+		encoded, _ := json.Marshal(unresolved)
+		if strings.Contains(string(encoded), "PRIVATE_") || strings.Contains(string(encoded), "writer@example") {
+			t.Fatal("persisted private sink configuration")
+		}
+		service := cleanup.NewService(repos, identityRegistry(t, s.r), cleanup.WithClock(func() time.Time { return now }))
+		task, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: connection.ID, CreatedBy: "test", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: value.ID}}})
+		if err != nil || (len(task.Task.Blockers) > 0) != wantBlocked {
+			t.Fatal("restart changed plan safety", round, task, err)
+		}
+	}
+	closeDB()
+	if *s.uptimeDeletes != 0 || s.policyDeletes != 0 {
+		t.Fatal("graph/plan mutated cloud")
+	}
 }

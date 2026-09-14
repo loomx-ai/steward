@@ -6094,3 +6094,24 @@ against a still-occupied same-task scope while allowing the bound continuation.
   focused race (GCP 37.373s), vet, docs and 11,881 final fuzz executions. Official
   Unicode data provides an independent normalization oracle; this does not claim
   a native Logging query evaluator or a new live/emulator acceptance run.
+
+### Cross-project Logging routing before Uptime deletion
+
+- Closed the prior native routing-discovery gap: reuse Resource Manager ancestry,
+  read project/folder/organization sinks with complete LIST/GET/repeated LIST,
+  then repeat ancestry/routing after incoming policy reads. Include ordinary and
+  intercepting aggregates; a project-level ALL query alone omits the former.
+- Follow native one-hop project destinations, merge verified project ID/number
+  aliases, apply inclusion/exclusion filters without negating away uncertainty,
+  and distinguish Logging scope from MetricsScope. Foreign references block
+  cleanup without gaining selection, ownership or mutation authority.
+- Added four unchanged native read methods and schema evidence: 201 resource rules,
+  792 methods. Previous source fragments and rules are preserved. Tests include
+  late routes, permission loss, SQLite close/reopen blocker preservation, and
+  existing local policy-before-check execution/recovery.
+- Independent Google mockgcp passed native project/folder/organization sink GET
+  and foreign alert-policy enforcement. Its unsupported sink LIST first fails
+  closed; only explicitly identified LIST/ancestry/reverse-scope fixtures enable
+  the hybrid test. No native route/filter evaluator, cross-service atomic lock,
+  live IAM or complete emulator acceptance is claimed. All eight overall parity
+  criteria remain open. See [routing evidence](providers/gcp/fixtures/logging-routing/README.md).

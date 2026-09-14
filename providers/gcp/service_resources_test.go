@@ -115,6 +115,13 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 			listPath := "/" + test.version + "/" + test.list
 			targetPath := "/" + test.version + "/" + test.name
 			transport := func(r *http.Request) (*http.Response, error) {
+				if test.kind == uptimeType && r.Method == "GET" && r.URL.String() == "https://cloudresourcemanager.googleapis.com/v3/projects/sample-project" {
+					return apiResponse(r, 200, `{"name":"projects/123456","projectId":"sample-project","state":"ACTIVE"}`), nil
+				}
+				if test.kind == uptimeType && r.Method == "GET" && r.URL.Host == loggingHost && r.URL.RequestURI() == "/v2/projects/sample-project/sinks?filter=in_scope%28%22DEFAULT%22%29&pageSize=1000" {
+					return apiResponse(r, 200, `{}`), nil
+				}
+
 				if r.URL.Host != host {
 					t.Fatalf("foreign native host: %s", r.URL)
 				}

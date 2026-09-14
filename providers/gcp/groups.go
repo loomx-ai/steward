@@ -107,6 +107,14 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 		if err := checkListCompleteness(response.Data); err != nil {
 			return nil, err
 		}
+		if operation.Call.Product == "logging" && strings.HasSuffix(operation.ID, ".sinks.list") {
+			if _, err := cloudNatObjects(response.Data, "sinks"); err != nil {
+				return nil, err
+			}
+			if err := cloudNatScalars(response.Data, []string{"nextPageToken"}, nil, nil, nil); err != nil {
+				return nil, err
+			}
+		}
 		if operation.ID == "monitoring.projects.alertPolicies.list" {
 			if _, err := cloudNatObjects(response.Data, "alertPolicies"); err != nil {
 				return nil, err

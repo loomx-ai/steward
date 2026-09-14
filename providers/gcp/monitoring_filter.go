@@ -406,10 +406,16 @@ func monitoringFilterReference(filter, check string) monitoringReference {
 }
 
 func alertPolicyUptimeReference(data map[string]any, check string) monitoringReference {
+	return alertPolicyUptimeScopedReference(data, check, true, true)
+}
+func alertPolicyUptimeScopedReference(data map[string]any, check string, metrics, logs bool) monitoringReference {
 	result := monitoringNoReference
 	for _, raw := range array(data["conditions"]) {
 		condition := object(raw)
 		for _, key := range []string{"conditionThreshold", "conditionAbsent"} {
+			if !metrics {
+				continue
+			}
 			body := object(condition[key])
 			for _, field := range []string{"filter", "denominatorFilter"} {
 				if value, ok := body[field].(string); ok && value != "" {
@@ -417,11 +423,11 @@ func alertPolicyUptimeReference(data map[string]any, check string) monitoringRef
 				}
 			}
 		}
-		if body := object(condition["conditionMatchedLog"]); body != nil {
+		if body := object(condition["conditionMatchedLog"]); logs && body != nil {
 			result = monitoringOr(result, loggingFilterReference(text(body["filter"]), check))
 		}
 		for _, key := range []string{"conditionMonitoringQueryLanguage", "conditionPrometheusQueryLanguage", "conditionSql"} {
-			if _, ok := condition[key]; ok {
+			if _, ok := condition[key]; ok && (metrics || logs && key == "conditionSql") {
 				result = monitoringOr(result, monitoringUnresolvedReference)
 			}
 		}

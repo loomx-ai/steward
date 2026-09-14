@@ -146,3 +146,9 @@ AlertPolicy inventory and native-filter incoming-reference checks are now covere
 by the [Monitoring dependency evidence](../alert-policy/README.md#native-uptime-incoming-dependencies).
 Logging/MQL/PromQL/SQL analysis, independent Uptime LIST and full application/live acceptance
 remain open. Observed references cannot guarantee atomicity against external edits.
+
+Native cleanup now also reads source/ancestor Logging sinks and relevant destination
+policies; see [Logging routing evidence](../logging-routing/README.md). Use the
+updated Monitoring/Logging harness for the opt-in test. It proves that unsupported
+sink LIST blocks cleanup before enabling an explicit LIST fixture; it does not
+claim that Google mockgcp implements Logging routing or sink discovery.
