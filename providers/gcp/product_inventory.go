@@ -403,6 +403,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, err
 		}
 		if target.ParentID != "" {
+			if nativeType == routePolicyType {
+				item.Normalized[routePolicyRouterID] = target.ParentUID
+				actionable := firewallNumericID(target.ParentUID) && text(item.Normalized["fingerprint"]) != ""
+				item.Actionable = &actionable
+			}
 			if isInfra(nativeType) {
 				item.Normalized[infraParentProof] = target.ParentConfiguration
 				if target.ParentType == infraRevision {

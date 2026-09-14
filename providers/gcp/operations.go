@@ -52,14 +52,14 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 			}
 		}
 	}
-	if operation.ID == routePolicyGet || operation.ID == routePolicyList {
+	if operation.ID == routePolicyGet || operation.ID == routePolicyList || operation.ID == routePolicyDelete {
 		for _, key := range []string{"region", "router"} {
 			value, ok := parameters[key].(string)
 			if !ok || !routePolicySegment.MatchString(value) {
 				return contracts.InvocationResult{}, groupDenied("route_policy_parameter_invalid")
 			}
 		}
-		if operation.ID == routePolicyGet {
+		if operation.ID == routePolicyGet || operation.ID == routePolicyDelete {
 			value, ok := parameters["policy"].(string)
 			if !ok || !routePolicySegment.MatchString(value) {
 				return contracts.InvocationResult{}, groupDenied("route_policy_parameter_invalid")

@@ -65,7 +65,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
 | Hyperdisk 存储池 | 原生池、容量与性能用量、预配模式和磁盘成员 | 支持盘点和经审查的清理 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
-| Cloud Router BGP 策略 | 各路由器的导入/导出策略、CEL 条款和指纹 | 已支持盘点；策略清理尚未实现 |
+| Cloud Router BGP 策略 | 各路由器的导入/导出策略、CEL 条款和指纹 | 支持原生策略独立删除；BGP 关联解除仍待实现 |
 | Cloud Identity | 配置目录中的身份组及成员关系 | 审查后删除身份组；普通成员关系也可独立删除 |
 | Resource Manager | 沿文件夹父级链发现当前项目所属的组织 | 只读；公开的 v3 API 没有组织删除方法 |
 | 防火墙策略 | 配置范围内的层级策略、全局和地域级网络策略及原生关联 | 先解除审查过的关联，再删除策略；也支持独立解除关联 |
@@ -216,5 +216,15 @@ Steward 在各路由器所属地域分页列举策略，并逐条读取详情；
 
 可用 `type = "compute.googleapis.com/RoutePolicy"` 和
 `properties.type = "ROUTE_POLICY_TYPE_IMPORT"` 筛选策略。
-原生策略删除和 BGP 对等体关联处理仍待实现。参阅 Google 的[策略列表 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/listRoutePolicies)
+参阅 Google 的[策略列表 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/listRoutePolicies)
 和[策略详情 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/getRoutePolicy)。
+
+独立删除策略还需要 `compute.routers.get`、`compute.routers.deleteRoutePolicy`
+和 `compute.regionOperations.get` 权限。创建清理任务前先重新扫描，记录策略指纹及
+父路由器 ID；二者变化后需重新审查。Steward 调用[原生策略删除 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteRoutePolicy)，
+在重启后继续等待地域级操作，并在同一父路由器仍可读取的前提下确认策略已不存在。
+异步操作结束本身不能证明删除结果已可见；父路由器不可读取时会报告依赖读取失败。
+
+原生依赖冲突会明确报告，自动解除 BGP 对等体关联和父路由器级联清理仍待实现。
+该原生方法没有指纹前置条件，清理期间应避免并发修改策略。本操作不会将命名集合
+或其他策略纳入删除范围。

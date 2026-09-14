@@ -429,8 +429,11 @@ resources:
   notes: GCP route policies are independently inventoried per router through native
     paginated list and wrapped detail GET, including type, CEL terms and fingerprint.
     Failed details preserve prior observations; successful empty native lists prove absence.
-    Native policy deletion, BGP attachments, named-set dependencies and parent cascade
-    review remain unfinished. Router deletion is not policy deletion parity.
+    Independent native deletion now binds the scanned policy fingerprint and router ID,
+    persists regional operation receipts and verifies policy absence after restart.
+    Native dependency conflicts are surfaced without rewriting BGP peers. Explicit BGP
+    detachment, named-set dependencies, parent cascade and independent/live acceptance
+    remain unfinished. Router deletion is not policy deletion parity.
 - alicloud: ACS::CEN::TrafficMarkingPolicy
   spec: providers/alicloud/specs/cen-traffic-marking-policy.yaml
   class: network.traffic_marking_policy

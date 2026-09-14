@@ -10,6 +10,9 @@ import (
 )
 
 func (a *action) readResource(ctx context.Context) (map[string]any, error) {
+	if a.kind.NativeType == routePolicyType {
+		return a.client.routePolicyRead(ctx, a.identity.NativeID)
+	}
 	if isFusion(a.kind.NativeType) {
 		return a.client.fusionRead(ctx, a.kind.NativeType, a.identity.NativeID)
 	}

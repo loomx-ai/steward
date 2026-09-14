@@ -11,6 +11,8 @@ import (
 
 const routePolicyType = "compute.googleapis.com/RoutePolicy"
 const routePolicyGet = "compute.routers.getRoutePolicy"
+const routePolicyDelete = "compute.routers.deleteRoutePolicy"
+const routePolicyRouterID = "_route_policy_router_id"
 const routePolicyList = "compute.routers.listRoutePolicies"
 const routerType = "compute.googleapis.com/Router"
 
@@ -21,14 +23,18 @@ var routePolicySegment = regexp.MustCompile(`^[a-z]([-a-z0-9]{0,61}[a-z0-9])?$`)
 func (c *client) routePolicyOperation(id, method string) (catalog.Operation, map[string]any, error) {
 	name := strings.TrimPrefix(id, "//compute.googleapis.com/")
 	parts := strings.Split(name, "/")
-	if method != "GET" || name == id || len(parts) != 8 || parts[0] != "projects" || (parts[1] != c.project && parts[1] != c.number) || parts[2] != "regions" || parts[4] != "routers" || parts[6] != "routePolicies" || !routePolicySegment.MatchString(parts[3]) || !routePolicySegment.MatchString(parts[5]) || !routePolicySegment.MatchString(parts[7]) {
+	if (method != "GET" && method != "DELETE") || name == id || len(parts) != 8 || parts[0] != "projects" || (parts[1] != c.project && parts[1] != c.number) || parts[2] != "regions" || parts[4] != "routers" || parts[6] != "routePolicies" || !routePolicySegment.MatchString(parts[3]) || !routePolicySegment.MatchString(parts[5]) || !routePolicySegment.MatchString(parts[7]) {
 		return catalog.Operation{}, nil, groupDenied("route_policy_identity_invalid")
 	}
 	metadata, err := providerData()
 	if err != nil {
 		return catalog.Operation{}, nil, err
 	}
-	op, ok := metadata.catalog.Operation(routePolicyGet)
+	operation := routePolicyGet
+	if method == "DELETE" {
+		operation = routePolicyDelete
+	}
+	op, ok := metadata.catalog.Operation(operation)
 	if !ok {
 		return catalog.Operation{}, nil, groupDenied("route_policy_method_missing")
 	}

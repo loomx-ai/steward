@@ -39,7 +39,7 @@ func TestRoutePolicyNativeInventory(t *testing.T) {
 					if req.URL.Query().Get("pageToken") == "router-next" {
 						name = "router-b"
 					}
-					result := map[string]any{"items": []any{map[string]any{"name": name, "id": name, "selfLink": "https://www.googleapis.com" + req.URL.Path + "/" + name, "network": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/network-a"}}}
+					result := map[string]any{"items": []any{map[string]any{"name": name, "id": map[string]string{"router-a": "1001", "router-b": "1002"}[name], "selfLink": "https://www.googleapis.com" + req.URL.Path + "/" + name, "network": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/network-a"}}}
 					if name == "router-a" {
 						result["nextPageToken"] = "router-next"
 					}
@@ -90,7 +90,7 @@ func TestRoutePolicyNativeInventory(t *testing.T) {
 				for _, item := range batch.Items {
 					ids = append(ids, item.NativeID)
 					parent := strings.TrimSuffix(item.NativeID, "/routePolicies/"+item.Name)
-					if !slices.Contains(item.NetworkReferences, parent) || len(array(item.Normalized["terms"])) != 1 || item.Normalized["fingerprint"] != "ZnAx" || item.Actionable == nil || *item.Actionable {
+					if !slices.Contains(item.NetworkReferences, parent) || len(array(item.Normalized["terms"])) != 1 || item.Normalized["fingerprint"] != "ZnAx" || item.Actionable == nil || !*item.Actionable {
 						t.Fatalf("lost policy metadata or parent: %+v", item)
 					}
 					term := object(array(item.Normalized["terms"])[0])

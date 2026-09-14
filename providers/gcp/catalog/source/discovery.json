@@ -129943,6 +129943,58 @@
                 "description": "Opt-in for partial success behavior which provides partial results in case\nof failure. The default value is false.\n\nFor example, when partial success behavior is enabled, aggregatedList for a\nsingle zone scope either returns all resources in the zone or no resources,\nwith an error code."
               }
             }
+          },
+          "compute.routers.deleteRoutePolicy": {
+            "path": "projects/{project}/regions/{region}/routers/{router}/deleteRoutePolicy",
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute"
+            ],
+            "httpMethod": "POST",
+            "parameterOrder": [
+              "project",
+              "region",
+              "router"
+            ],
+            "id": "compute.routers.deleteRoutePolicy",
+            "parameters": {
+              "requestId": {
+                "location": "query",
+                "type": "string",
+                "description": "An optional request ID to identify requests. Specify a unique request ID so\nthat if you must retry your request, the server will know to ignore the\nrequest if it has already been completed.\n\nFor example, consider a situation where you make an initial request and\nthe request times out. If you make the request again with the same\nrequest ID, the server can check if original operation with the same\nrequest ID was received, and if so, will ignore the second request. This\nprevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be\na valid UUID with the exception that zero UUID is not supported\n(00000000-0000-0000-0000-000000000000)."
+              },
+              "region": {
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+                "location": "path",
+                "required": true,
+                "type": "string",
+                "description": "Name of the region for this request."
+              },
+              "policy": {
+                "location": "query",
+                "description": "The Policy name for this request. Name must conform to RFC1035",
+                "type": "string"
+              },
+              "router": {
+                "required": true,
+                "location": "path",
+                "type": "string",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+                "description": "Name of the Router resource where Route Policy is defined."
+              },
+              "project": {
+                "type": "string",
+                "description": "Project ID for this request.",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "location": "path"
+              }
+            },
+            "description": "Deletes Route Policy",
+            "flatPath": "projects/{project}/regions/{region}/routers/{router}/deleteRoutePolicy",
+            "response": {
+              "$ref": "Operation"
+            }
           }
         },
         "schemas": {
@@ -130203,6 +130255,677 @@
             "description": "Represents a textual expression in the Common Expression Language (CEL)\nsyntax. CEL is a C-like expression language. The syntax and semantics of CEL\nare documented at https://github.com/google/cel-spec.\n\nExample (Comparison):\n\n    title: \"Summary size limit\"\n    description: \"Determines if a summary is less than 100 chars\"\n    expression: \"document.summary.size() < 100\"\n\nExample (Equality):\n\n    title: \"Requestor is owner\"\n    description: \"Determines if requestor is the document owner\"\n    expression: \"document.owner == request.auth.claims.email\"\n\nExample (Logic):\n\n    title: \"Public documents\"\n    description: \"Determine whether the document should be publicly visible\"\n    expression: \"document.type != 'private' && document.type != 'internal'\"\n\nExample (Data Manipulation):\n\n    title: \"Notification string\"\n    description: \"Create a notification string with a timestamp.\"\n    expression: \"'New message received at ' + string(document.create_time)\"\n\nThe exact variables and functions that may be referenced within an expression\nare determined by the service that evaluates it. See the service\ndocumentation for additional information.",
             "type": "object",
             "id": "Expr"
+          },
+          "Operation": {
+            "id": "Operation",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "[Output Only] The unique identifier for the operation. This identifier is\ndefined by the server.",
+                "format": "uint64"
+              },
+              "getHealthOperationMetadata": {
+                "description": "Output only. Metadata for GetHealth operations.",
+                "readOnly": true,
+                "$ref": "GetHealthOperationMetadata"
+              },
+              "status": {
+                "enum": [
+                  "DONE",
+                  "PENDING",
+                  "RUNNING"
+                ],
+                "enumDescriptions": [
+                  "The operation has completed processing successfully or with an error.",
+                  "The operation is waiting to be processed.",
+                  "The operation is actively being processed."
+                ],
+                "type": "string",
+                "description": "[Output Only] The status of the operation, which can be one of the\nfollowing:\n`PENDING`, `RUNNING`, or `DONE`."
+              },
+              "kind": {
+                "type": "string",
+                "readOnly": true,
+                "default": "compute#operation",
+                "description": "Output only. [Output Only] Type of the resource. Always `compute#operation` for\nOperation resources."
+              },
+              "setCommonInstanceMetadataOperationMetadata": {
+                "readOnly": true,
+                "$ref": "SetCommonInstanceMetadataOperationMetadata",
+                "description": "Output only. [Output Only] If the operation is for projects.setCommonInstanceMetadata,\nthis field will contain information on all underlying zonal actions and\ntheir state."
+              },
+              "selfLink": {
+                "description": "[Output Only] Server-defined URL for the resource.",
+                "type": "string"
+              },
+              "zone": {
+                "description": "[Output Only] The URL of the zone where the operation resides. Only\napplicable when performing per-zone operations.",
+                "type": "string"
+              },
+              "httpErrorStatusCode": {
+                "description": "[Output Only] If the operation fails, this field contains the HTTP error\nstatus code that was returned. For example, a `404` means the\nresource was not found.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "statusMessage": {
+                "type": "string",
+                "description": "[Output Only] An optional textual description of the current status of the\noperation."
+              },
+              "operationGroupId": {
+                "type": "string",
+                "description": "Output only. [Output Only] An ID that represents a group of operations, such as when a\ngroup of operations results from a `bulkInsert` API request.",
+                "readOnly": true
+              },
+              "instancesBulkInsertOperationMetadata": {
+                "$ref": "InstancesBulkInsertOperationMetadata"
+              },
+              "endTime": {
+                "description": "[Output Only] The time that this operation was completed. This value is inRFC3339\ntext format.",
+                "type": "string"
+              },
+              "startTime": {
+                "type": "string",
+                "description": "[Output Only] The time that this operation was started by the server.\nThis value is inRFC3339\ntext format."
+              },
+              "user": {
+                "description": "[Output Only] User who requested the operation, for example:\n`user@example.com` or\n`alice_smith_identifier (global/workforcePools/example-com-us-employees)`.",
+                "type": "string"
+              },
+              "operationType": {
+                "description": "[Output Only] The type of operation, such as `insert`,\n`update`, or `delete`, and so on.",
+                "type": "string"
+              },
+              "region": {
+                "description": "[Output Only] The URL of the region where the operation resides. Only\napplicable when performing regional operations.",
+                "type": "string"
+              },
+              "insertTime": {
+                "type": "string",
+                "description": "[Output Only] The time that this operation was requested.\nThis value is inRFC3339\ntext format."
+              },
+              "clientOperationId": {
+                "description": "[Output Only] The value of `requestId` if you provided it in the request.\nNot present otherwise.",
+                "type": "string"
+              },
+              "targetLink": {
+                "type": "string",
+                "description": "[Output Only] The URL of the resource that the operation modifies. For\noperations related to creating a snapshot, this points to the disk\nthat the snapshot was created from."
+              },
+              "getVersionOperationMetadata": {
+                "$ref": "GetVersionOperationMetadata"
+              },
+              "creationTimestamp": {
+                "description": "[Deprecated] This field is deprecated.",
+                "type": "string"
+              },
+              "warnings": {
+                "items": {
+                  "properties": {
+                    "data": {
+                      "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]",
+                      "items": {
+                        "properties": {
+                          "key": {
+                            "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "[Output Only] A warning data value corresponding to the key."
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "message": {
+                      "description": "[Output Only] A human-readable description of the warning code.",
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enumDeprecated": [
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        true,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                      ],
+                      "enumDescriptions": [
+                        "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                        "A link to a deprecated resource was created.",
+                        "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                        "The user created a boot disk that is larger than image size.",
+                        "When deploying and at least one of the resources has a type marked as\nexperimental",
+                        "Warning that is present in an external api call",
+                        "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                        "The operation involved use of an injected kernel, which is deprecated.",
+                        "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                        "When deploying a deployment with a exceedingly large number of resources",
+                        "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                        "A resource depends on a missing type",
+                        "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                        "The route's next hop instance cannot ip forward.",
+                        "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                        "The route's nextHopInstance URL refers to an instance that does not exist.",
+                        "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                        "The route's next hop instance does not have a status of RUNNING.",
+                        "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                        "No results are present on a particular list page.",
+                        "Success is reported, but some results may be missing due to errors",
+                        "Quota information is not available to client requests (e.g:\nregions.list).",
+                        "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                        "Warning that a resource is in use.",
+                        "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                        "When a resource schema validation is ignored.",
+                        "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                        "When undeclared properties in the schema are present",
+                        "A given scope cannot be reached."
+                      ],
+                      "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                      "enum": [
+                        "CLEANUP_FAILED",
+                        "DEPRECATED_RESOURCE_USED",
+                        "DEPRECATED_TYPE_USED",
+                        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                        "EXPERIMENTAL_TYPE_USED",
+                        "EXTERNAL_API_WARNING",
+                        "FIELD_VALUE_OVERRIDEN",
+                        "INJECTED_KERNELS_DEPRECATED",
+                        "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                        "LARGE_DEPLOYMENT_WARNING",
+                        "LIST_OVERHEAD_QUOTA_EXCEED",
+                        "MISSING_TYPE_DEPENDENCY",
+                        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                        "NEXT_HOP_CANNOT_IP_FORWARD",
+                        "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                        "NEXT_HOP_INSTANCE_NOT_FOUND",
+                        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                        "NEXT_HOP_NOT_RUNNING",
+                        "NOT_CRITICAL_ERROR",
+                        "NO_RESULTS_ON_PAGE",
+                        "PARTIAL_SUCCESS",
+                        "QUOTA_INFO_UNAVAILABLE",
+                        "REQUIRED_TOS_AGREEMENT",
+                        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                        "RESOURCE_NOT_DELETED",
+                        "SCHEMA_VALIDATION_IGNORED",
+                        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                        "UNDECLARED_PROPERTIES",
+                        "UNREACHABLE"
+                      ]
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array",
+                "description": "[Output Only] If warning messages are generated during processing of the\noperation, this field will be populated."
+              },
+              "httpErrorMessage": {
+                "description": "[Output Only] If the operation fails, this field contains the HTTP error\nmessage that was returned, such as `NOT FOUND`.",
+                "type": "string"
+              },
+              "progress": {
+                "type": "integer",
+                "description": "[Output Only] An optional progress indicator that ranges from 0 to 100.\nThere is no requirement that this be linear or support any granularity of\noperations. This should not be used to guess when the operation will be\ncomplete. This number should monotonically increase as the operation\nprogresses.",
+                "format": "int32"
+              },
+              "targetId": {
+                "type": "string",
+                "format": "uint64",
+                "description": "[Output Only] The unique target ID, which identifies a specific incarnation\nof the target resource."
+              },
+              "error": {
+                "type": "object",
+                "description": "[Output Only] If errors are generated during processing of the operation,\nthis field will be populated.",
+                "properties": {
+                  "errors": {
+                    "items": {
+                      "description": "Represents a single error encountered during the processing of an\noperation.",
+                      "properties": {
+                        "code": {
+                          "description": "[Output Only] The error type identifier for this error.",
+                          "type": "string"
+                        },
+                        "errorDetails": {
+                          "description": "[Output Only] An optional list of messages that contain the error\ndetails. There is a set of defined message types to use for providing\ndetails.The syntax depends on the error code. For example,\nQuotaExceededInfo will have details when the error code is\nQUOTA_EXCEEDED.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "help": {
+                                "description": "Links and information to help the user resolve the error.",
+                                "$ref": "Help"
+                              },
+                              "errorInfo": {
+                                "$ref": "ErrorInfo",
+                                "description": "Error information containing structured domain, reason, and metadata."
+                              },
+                              "quotaInfo": {
+                                "description": "Details about quota limits and metrics when a quota is exceeded.",
+                                "$ref": "QuotaExceededInfo"
+                              },
+                              "localizedMessage": {
+                                "$ref": "LocalizedMessage",
+                                "description": "A localized human-readable error message intended for end users."
+                              }
+                            },
+                            "description": "Container for structured error details providing additional context\nspecific to the encountered error code."
+                          },
+                          "type": "array"
+                        },
+                        "location": {
+                          "type": "string",
+                          "description": "[Output Only] Indicates the field in the request that caused the error.\nThis property is optional."
+                        },
+                        "message": {
+                          "description": "[Output Only] An optional, human-readable error message.",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "description": "[Output Only] The array of errors encountered while processing this\noperation.",
+                    "type": "array"
+                  }
+                }
+              },
+              "description": {
+                "description": "[Output Only] A textual description of the operation, which is\nset when the operation is created.",
+                "type": "string"
+              },
+              "name": {
+                "type": "string",
+                "description": "[Output Only] Name of the operation."
+              }
+            },
+            "type": "object",
+            "description": "Represents an Operation resource.\n\nGoogle Compute Engine has three Operation resources:\n\n* [Global](/compute/docs/reference/rest/v1/globalOperations)\n* [Regional](/compute/docs/reference/rest/v1/regionOperations)\n* [Zonal](/compute/docs/reference/rest/v1/zoneOperations)\n\nYou can use an operation resource to manage asynchronous API requests.\nFor more information, readHandling\nAPI responses.\n\nOperations can be global, regional or zonal.\n   \n   - For global operations, use the `globalOperations`\n   resource. \n   - For regional operations, use the\n   `regionOperations` resource. \n   - For zonal operations, use\n   the `zoneOperations` resource.\n\n\n\nFor more information, read\nGlobal, Regional, and Zonal Resources.\n\nNote that completed Operation resources have a limited \nretention period."
+          },
+          "GetHealthOperationMetadata": {
+            "description": "Metadata for GetHealth operations.",
+            "properties": {
+              "healthInfo": {
+                "$ref": "GetHealthOperationMetadataHealthInfo",
+                "description": "Output only. The health information.",
+                "readOnly": true
+              }
+            },
+            "id": "GetHealthOperationMetadata",
+            "type": "object"
+          },
+          "Help": {
+            "id": "Help",
+            "description": "Provides links to documentation or for performing an out of band action.\n\nFor example, if a quota check failed with an error indicating the calling\nproject hasn't enabled the accessed service, this can contain a URL pointing\ndirectly to the right place in the developer console to flip the bit.",
+            "type": "object",
+            "properties": {
+              "links": {
+                "description": "URL(s) pointing to additional information on handling the current error.",
+                "items": {
+                  "$ref": "HelpLink"
+                },
+                "type": "array"
+              }
+            }
+          },
+          "GetHealthOperationMetadataHealthInfo": {
+            "properties": {
+              "availabilitySloStatus": {
+                "description": "Output only. The availability SLO status.",
+                "enumDescriptions": [
+                  "The slot availability is in SLO.",
+                  "The slot availability is out of SLO.",
+                  "The slot availability is unknown.",
+                  "Unspecified availability SLO status."
+                ],
+                "enum": [
+                  "AVAILABILITY_SLO_STATUS_IN_SLO",
+                  "AVAILABILITY_SLO_STATUS_OUT_OF_SLO",
+                  "AVAILABILITY_SLO_STATUS_SLO_UNKNOWN",
+                  "AVAILABILITY_SLO_STATUS_UNSPECIFIED"
+                ],
+                "readOnly": true,
+                "type": "string"
+              },
+              "unhealthyReason": {
+                "enum": [
+                  "UNHEALTHY_REASON_PENDING_USER_APPROVAL",
+                  "UNHEALTHY_REASON_REPAIRING",
+                  "UNHEALTHY_REASON_UNSCHEDULABLE",
+                  "UNHEALTHY_REASON_UNSPECIFIED"
+                ],
+                "enumDescriptions": [
+                  "The slot is unhealthy because there is a pending repair, waiting for\ncustomer approval",
+                  "The slot is unhealthy because repair is in progress",
+                  "The slot is unhealthy because a vm cannot be scheduled on it, and no\nrepairs are running on the slot",
+                  "Unspecified unhealthy reason."
+                ],
+                "description": "Output only. The reason for unhealthy status.",
+                "type": "string",
+                "readOnly": true
+              },
+              "healthStatus": {
+                "enum": [
+                  "HEALTH_STATUS_HEALTHY",
+                  "HEALTH_STATUS_UNHEALTHY",
+                  "HEALTH_STATUS_UNSPECIFIED"
+                ],
+                "description": "Output only. The health status.",
+                "type": "string",
+                "readOnly": true,
+                "enumDescriptions": [
+                  "The reservation slot is healthy.",
+                  "The reservation slot is unhealthy.",
+                  "Unspecified health status."
+                ]
+              },
+              "repairCategory": {
+                "type": "string",
+                "description": "Output only. The repair category.",
+                "readOnly": true,
+                "enum": [
+                  "REPAIR_CATEGORY_CRITICAL_FAILURE",
+                  "REPAIR_CATEGORY_EMERGENT_MAINTENANCE",
+                  "REPAIR_CATEGORY_PLANNED_MAINTENANCE",
+                  "REPAIR_CATEGORY_UNSPECIFIED",
+                  "REPAIR_CATEGORY_USER_REPORTED_FAULT"
+                ],
+                "enumDescriptions": [
+                  "The repair is because of critical failures, that are scoped outside\nemergent maintenance",
+                  "The repair is because of an emergent maintenance",
+                  "The repair is because of a planned maintenance",
+                  "Unspecified repair category.",
+                  "The repair is because of a user reported fault"
+                ]
+              },
+              "updateTime": {
+                "description": "Output only. The time when health info was updated.",
+                "readOnly": true,
+                "type": "string",
+                "format": "google-datetime"
+              }
+            },
+            "id": "GetHealthOperationMetadataHealthInfo",
+            "type": "object",
+            "description": "Health information."
+          },
+          "SetCommonInstanceMetadataOperationMetadata": {
+            "type": "object",
+            "properties": {
+              "clientOperationId": {
+                "type": "string",
+                "description": "[Output Only] The client operation id."
+              },
+              "perLocationOperations": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo"
+                },
+                "description": "[Output Only] Status information per location (location name is key).\nExample key: zones/us-central1-a"
+              }
+            },
+            "id": "SetCommonInstanceMetadataOperationMetadata"
+          },
+          "HelpLink": {
+            "description": "Describes a URL link.",
+            "id": "HelpLink",
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string",
+                "description": "Describes what the link offers."
+              },
+              "url": {
+                "description": "The URL of the link.",
+                "type": "string"
+              }
+            }
+          },
+          "InstancesBulkInsertOperationMetadata": {
+            "id": "InstancesBulkInsertOperationMetadata",
+            "type": "object",
+            "properties": {
+              "perLocationStatus": {
+                "type": "object",
+                "description": "Status information per location (location name is key).\nExample key: zones/us-central1-a",
+                "additionalProperties": {
+                  "$ref": "BulkInsertOperationStatus"
+                }
+              }
+            }
+          },
+          "SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo": {
+            "properties": {
+              "state": {
+                "type": "string",
+                "description": "[Output Only] Status of the action, which can be one of the following:\n`PROPAGATING`, `PROPAGATED`, `ABANDONED`, `FAILED`, or `DONE`.",
+                "enum": [
+                  "ABANDONED",
+                  "DONE",
+                  "FAILED",
+                  "PROPAGATED",
+                  "PROPAGATING",
+                  "UNSPECIFIED"
+                ],
+                "enumDescriptions": [
+                  "Operation not tracked in this location e.g. zone is marked as DOWN.",
+                  "Operation has completed successfully.",
+                  "Operation is in an error state.",
+                  "Operation is confirmed to be in the location.",
+                  "Operation is not yet confirmed to have been created in the location.",
+                  ""
+                ]
+              },
+              "error": {
+                "description": "[Output Only] If state is `ABANDONED` or `FAILED`, this field is\npopulated.",
+                "$ref": "Status"
+              }
+            },
+            "id": "SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo",
+            "type": "object"
+          },
+          "BulkInsertOperationStatus": {
+            "properties": {
+              "targetVmCount": {
+                "format": "int32",
+                "type": "integer",
+                "description": "[Output Only] Count of VMs originally planned to be created."
+              },
+              "status": {
+                "type": "string",
+                "description": "[Output Only] Creation status of BulkInsert operation - information\nif the flow is rolling forward or rolling back.",
+                "enum": [
+                  "CREATING",
+                  "DONE",
+                  "ROLLING_BACK",
+                  "STATUS_UNSPECIFIED"
+                ],
+                "enumDescriptions": [
+                  "Rolling forward - creating VMs.",
+                  "Done",
+                  "Rolling back - cleaning up after an error.",
+                  ""
+                ]
+              },
+              "failedToCreateVmCount": {
+                "type": "integer",
+                "format": "int32",
+                "description": "[Output Only] Count of VMs that started creating but encountered an\nerror."
+              },
+              "createdVmCount": {
+                "type": "integer",
+                "format": "int32",
+                "description": "[Output Only] Count of VMs successfully created so far."
+              },
+              "deletedVmCount": {
+                "format": "int32",
+                "type": "integer",
+                "description": "[Output Only] Count of VMs that got deleted during rollback."
+              }
+            },
+            "id": "BulkInsertOperationStatus",
+            "type": "object"
+          },
+          "GetVersionOperationMetadata": {
+            "type": "object",
+            "properties": {
+              "inlineSbomInfo": {
+                "$ref": "GetVersionOperationMetadataSbomInfo"
+              }
+            },
+            "id": "GetVersionOperationMetadata"
+          },
+          "QuotaExceededInfo": {
+            "description": "Additional details for quota exceeded error for resource quota.",
+            "properties": {
+              "rolloutStatus": {
+                "enum": [
+                  "IN_PROGRESS",
+                  "ROLLOUT_STATUS_UNSPECIFIED"
+                ],
+                "type": "string",
+                "enumDescriptions": [
+                  "IN_PROGRESS - A rollout is in process which will change the limit value\nto future limit.",
+                  "ROLLOUT_STATUS_UNSPECIFIED - Rollout status is not specified. The default\nvalue."
+                ],
+                "description": "Rollout status of the future quota limit."
+              },
+              "dimensions": {
+                "type": "object",
+                "description": "The map holding related quota dimensions.",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "limitName": {
+                "type": "string",
+                "description": "The name of the quota limit."
+              },
+              "futureLimit": {
+                "type": "number",
+                "format": "double",
+                "description": "Future quota limit being rolled out. The limit's unit depends on the quota\n type or metric."
+              },
+              "limit": {
+                "format": "double",
+                "description": "Current effective quota limit. The limit's unit depends on the quota type\nor metric.",
+                "type": "number"
+              },
+              "metricName": {
+                "type": "string",
+                "description": "The Compute Engine quota metric name."
+              }
+            },
+            "type": "object",
+            "id": "QuotaExceededInfo"
+          },
+          "LocalizedMessage": {
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "The localized error message in the above locale."
+              },
+              "locale": {
+                "description": "The locale used following the specification defined at\nhttps://www.rfc-editor.org/rfc/bcp/bcp47.txt.\nExamples are: \"en-US\", \"fr-CH\", \"es-MX\"",
+                "type": "string"
+              }
+            },
+            "id": "LocalizedMessage",
+            "type": "object",
+            "description": "Provides a localized error message that is safe to return to the user\nwhich can be attached to an RPC error."
+          },
+          "Status": {
+            "type": "object",
+            "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https://github.com/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https://cloud.google.com/apis/design/errors).",
+            "id": "Status",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "description": "The status code, which should be an enum value of google.rpc.Code.",
+                "format": "int32"
+              },
+              "message": {
+                "type": "string",
+                "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client."
+              },
+              "details": {
+                "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+                "type": "array",
+                "items": {
+                  "format": "google.protobuf.Any",
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "any",
+                    "description": "Properties of the object. Contains field @type with type URL."
+                  }
+                }
+              }
+            }
+          },
+          "ErrorInfo": {
+            "id": "ErrorInfo",
+            "description": "Describes the cause of the error with structured details.\n\nExample of an error when contacting the \"pubsub.googleapis.com\" API when it\nis not enabled:\n\n    { \"reason\": \"API_DISABLED\"\n      \"domain\": \"googleapis.com\"\n      \"metadata\": {\n        \"resource\": \"projects/123\",\n        \"service\": \"pubsub.googleapis.com\"\n      }\n    }\n\nThis response indicates that the pubsub.googleapis.com API is not enabled.\n\nExample of an error that is returned when attempting to create a Spanner\ninstance in a region that is out of stock:\n\n    { \"reason\": \"STOCKOUT\"\n      \"domain\": \"spanner.googleapis.com\",\n      \"metadata\": {\n        \"availableRegions\": \"us-central1,us-east2\"\n      }\n    }",
+            "properties": {
+              "metadatas": {
+                "description": "Additional structured details about this error.\n\nKeys must match a regular expression of `a-z+` but should\nideally be lowerCamelCase. Also, they must be limited to 64 characters in\nlength. When identifying the current value of an exceeded limit, the units\nshould be contained in the key, not the value.  For example, rather than\n`{\"instanceLimit\": \"100/request\"}`, should be returned as,\n`{\"instanceLimitPerRequest\": \"100\"}`, if the client exceeds the number of\ninstances that can be created in a single (batch) request.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "reason": {
+                "description": "The reason of the error. This is a constant value that identifies the\nproximate cause of the error. Error reasons are unique within a particular\ndomain of errors. This should be at most 63 characters and match a\nregular expression of `A-Z+[A-Z0-9]`, which represents\nUPPER_SNAKE_CASE.",
+                "type": "string"
+              },
+              "domain": {
+                "description": "The logical grouping to which the \"reason\" belongs. The error domain\nis typically the registered service name of the tool or product that\ngenerates the error. Example: \"pubsub.googleapis.com\". If the error is\ngenerated by some common infrastructure, the error domain must be a\nglobally unique value that identifies the infrastructure. For Google API\ninfrastructure, the error domain is \"googleapis.com\".",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "GetVersionOperationMetadataSbomInfo": {
+            "type": "object",
+            "id": "GetVersionOperationMetadataSbomInfo",
+            "properties": {
+              "currentComponentVersions": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object",
+                "description": "A mapping of components to their currently-applied versions or other\nappropriate identifiers."
+              },
+              "targetComponentVersions": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object",
+                "description": "A mapping of components to their target versions or other appropriate\nidentifiers."
+              }
+            }
           }
         }
       }
@@ -134208,6 +134931,9 @@
         ],
         "list_operations": [
           "compute.routers.listRoutePolicies"
+        ],
+        "delete_operations": [
+          "compute.routers.deleteRoutePolicy"
         ]
       }
     }

@@ -27,7 +27,7 @@ type action struct {
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
-	if (value.Identity.NativeType == storagePoolType || value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType) || isIdentityGroup(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
+	if (value.Identity.NativeType == routePolicyType || value.Identity.NativeType == storagePoolType || value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType) || isIdentityGroup(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
 		return nil, groupDenied("native_connection_changed")
 	}
 	kind, ok := findType(value.Identity.NativeType)
@@ -65,6 +65,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
+	}
+	if a.kind.NativeType == routePolicyType {
+		return a.routePolicyPreflight(ctx, request)
 	}
 	if isIdentityGroup(a.kind.NativeType) {
 		return a.identityPreflight(ctx, request)
@@ -250,6 +253,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if check.Absent {
 		return contracts.ActionResult{}, nil
 	}
+	if a.kind.NativeType == routePolicyType {
+		return a.executeRoutePolicy(ctx, request)
+	}
 	if isIdentityGroup(a.kind.NativeType) {
 		return a.executeIdentityGroup(ctx, request)
 	}
@@ -395,6 +401,9 @@ func (a *action) operationURL(data map[string]any) (string, error) {
 		return a.gkeOperationURL(data)
 	}
 	nativeType := a.kind.NativeType
+	if nativeType == routePolicyType {
+		return a.routePolicyOperationURL(text(data["name"]))
+	}
 	if strings.HasPrefix(nativeType, "compute.googleapis.com/") || nativeType == "sqladmin.googleapis.com/Instance" {
 		name := text(data["name"])
 		if !segmentPattern.MatchString(name) || name == "." || name == ".." {
@@ -459,6 +468,9 @@ func operationError(data map[string]any, requestID string) error {
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
 	if a.kind.NativeType == storagePoolType {
 		return a.storagePoolWait(ctx, request, result)
+	}
+	if a.kind.NativeType == routePolicyType {
+		return a.waitRoutePolicy(ctx, request, result)
 	}
 	if isIdentityGroup(a.kind.NativeType) {
 		return a.waitIdentityGroup(ctx, request, result)
@@ -604,6 +616,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	if a.kind.NativeType == storagePoolType {
 		return a.storagePoolReadback(ctx, request)
+	}
+	if a.kind.NativeType == routePolicyType {
+		return a.routePolicyReadback(ctx, request)
 	}
 	if isIdentityGroup(a.kind.NativeType) {
 		return a.identityReadback(ctx, request)

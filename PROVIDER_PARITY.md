@@ -5423,3 +5423,42 @@ background evidence only, not acceptance evidence for this work.
   All 778 previous operation objects and all prior native source documents remain
   unchanged. Only 16 milestone files are committed; all 65 original WIP file
   hashes are preserved. No dependency or running external environment was added.
+
+### Native route-policy deletion and persisted execution
+
+- Verified `routers.deleteRoutePolicy` in the same pinned Compute Discovery
+  document and in the unchanged Cloud SDK remove-route-policy command. The
+  native request is POST with a policy query and optional UUID request ID; it
+  has no body or fingerprint precondition. Retained this method and transitive
+  Operation schemas without changing any prior native method/schema objects.
+  Counts are 198 resource rules and 781 operations; source provenance is unchanged.
+- Policies with a scanned router ID and fingerprint now support an independent
+  delete action. Preflight and final readback compare the policy configuration
+  and containing router identity. Native term order is normalized, while action
+  order remains significant. Missing review data requires a fresh scan. Native
+  dependency conflicts are reported; no speculative BGP rewrite is added.
+- Native regional operation receipts survive restart and bind the exact policy,
+  connection, request ID and review. Scope, target and request echoes are checked
+  when present. Wrong receipts/operations, provider errors and identity changes
+  fail safely. DONE, polling 404 and DELETE 404 require policy absence readback;
+  unreadable/recreated parents are dependency failures, not policy-absence proof.
+- Retained protocol failures, retries, delayed visibility and serialized driver
+  tests. Real SQLite scan/graph/plan/execution/reconciliation tests reopen storage
+  and recreate runtimes at every action checkpoint. They verify one selected
+  policy step, no repeated deletion, parent retention and a persisted tombstone.
+  Focused route-policy/catalog checks passed in 5.182s after the final guards.
+- Explicit BGP detachment, named-set dependencies, parent-router cascade review,
+  network-selection application acceptance and independent/live-cloud behavior
+  verification remain open. The inspected mockgcp revision still has no native
+  route-policy handler. This is not full route-map or provider parity, and the
+  eight acceptance criteria stay open. Full/race/vet/workspace results follow.
+- Final verification: `go test ./providers/gcp ./internal/...` passed (GCP
+  180.532s, internal integration 25.727s). Focused route-policy/catalog race
+  tests passed in 16.738s; GCP vet passed. Main-workspace focused tests passed
+  in 5.434s. Documentation checks passed for 30 isolated/42 main chapters and
+  10 screenshots. Repeated generation matched catalog SHA-256
+  `6ec2c10ecc8e825fe65a5f72f6d838bcfddcfc8aaceb06c281c312a74cacb757`.
+  All 780 previous operation objects and every prior native method/schema
+  object remain unchanged. The commit contains only 21 milestone files; all
+  65 original WIP file hashes are preserved. No external environment or new
+  runtime dependency was added.

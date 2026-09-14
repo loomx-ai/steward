@@ -24,7 +24,7 @@ func TestRoutePolicySQLiteFailureAbsenceAndRecovery(t *testing.T) {
 			t.Fatal("unexpected API", req.URL)
 		}
 		if strings.HasSuffix(req.URL.Path, "/routers") {
-			return dataformResponse(req, 200, map[string]any{"items": []any{map[string]any{"name": "router-a", "selfLink": "https://www.googleapis.com" + req.URL.Path + "/router-a"}}}), nil
+			return dataformResponse(req, 200, map[string]any{"items": []any{map[string]any{"name": "router-a", "id": "1001", "selfLink": "https://www.googleapis.com" + req.URL.Path + "/router-a"}}}), nil
 		}
 		if strings.HasSuffix(req.URL.Path, "/listRoutePolicies") {
 			if phase == "absent" {
