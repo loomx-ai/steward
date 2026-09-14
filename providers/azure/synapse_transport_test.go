@@ -84,8 +84,8 @@ func newSynapseTransportFixture(t *testing.T) *synapseTransportFixture {
 			}
 		}
 		if req.URL.Host == "first.dev.azuresynapse.net" {
-			if req.Header.Get("Authorization") != "Bearer "+synapseOAuthScope || req.Method != "GET" {
-				t.Fatal("ARM token or mutation reached Synapse")
+			if req.Header.Get("Authorization") != "Bearer "+synapseOAuthScope || req.Method != "GET" && req.Method != "DELETE" {
+				t.Fatal("wrong token or method reached Synapse")
 			}
 			f.dataCalls++
 			if f.override != nil {

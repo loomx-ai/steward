@@ -71,12 +71,15 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		return contracts.InvocationResult{}, fmt.Errorf("unknown Azure operation %q", invocation.Operation)
 	}
 	if operation.Call.Style == "azure-synapse-rest" {
-		if operation.Call.Method != "GET" {
+		if operation.Call.Method != "GET" && !synapseCancelKind(operation.ID).spark {
 			return contracts.InvocationResult{}, serviceDenied("synapse_data_mutation_not_implemented")
 		}
 		c, err := r.synapseClient(ctx, invocation.ConnectionID)
 		if err != nil {
 			return contracts.InvocationResult{}, err
+		}
+		if operation.Call.Method == "DELETE" {
+			return c.invokeCancel(ctx, operation, invocation)
 		}
 		return c.invokeRead(ctx, operation, invocation)
 	}

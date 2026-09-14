@@ -86,7 +86,7 @@ Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难�
 
 Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
 
-Synapse 使用原生列表和详情读取。列表遗漏不会移除已知资源，只有该资源自身的 GET 确认不存在后才会关闭旧记录。默认 Data Lake 存储作为独立依赖保留。数据平面接口现支持读取 Spark 任务与会话、Notebook 和 Spark 作业定义，并校验工作区归属、使用独立认证 audience。返回数据和诊断日志不包含代码、任务配置和运行日志。这四类数据平面对象也已登记为盘点资产，并关联工作区和池。扫描校验原生分页，保留列表遗漏的已知对象。清理流程仍在实现中，这些资产暂不提供清理操作。
+Synapse 使用原生列表和详情读取。列表遗漏不会移除已知资源，只有该资源自身的 GET 确认不存在后才会关闭旧记录。默认 Data Lake 存储作为独立依赖保留。数据平面接口现支持读取 Spark 任务与会话、Notebook 和 Spark 作业定义，并校验工作区归属、使用独立认证 audience。返回数据和诊断日志不包含代码、任务配置和运行日志。这四类数据平面对象也已登记为盘点资产，并关联工作区和池。扫描校验原生分页，保留列表遗漏的已知对象。原生 API 还支持取消 Spark 任务和会话，并检查保护状态、读取详情确认结果。取消后可能保留已停止的历史记录，不能据此判断资源已删除。调用需要 Synapse 数据平面取消权限，以及工作区、池、资源组和管理锁的 ARM 读取权限。经审查的清理流程仍在实现中，这些资产暂不提供清理操作。
 
 ## 清理保护
 

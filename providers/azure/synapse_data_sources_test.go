@@ -2,7 +2,6 @@ package azure
 
 import (
 	"bytes"
-	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
@@ -14,7 +13,6 @@ import (
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/provider/catalog"
-	"github.com/loomx-ai/steward/internal/provider/contracts"
 	"github.com/santhosh-tekuri/jsonschema/v6"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
@@ -243,14 +241,6 @@ func TestSynapseDataNativeContracts(t *testing.T) {
 					}
 				}
 				schemas++
-			}
-			// Cancellation still requires reviewed lifecycle support. Its catalog
-			// contract must not make the mutation independently executable yet.
-			if method == "delete" {
-				var runtime Runtime
-				if _, err = runtime.Invoke(context.Background(), contracts.Invocation{Operation: op.ID, Parameters: params}); err == nil || !strings.Contains(err.Error(), "synapse_data_mutation_not_implemented") {
-					t.Fatal("mutation escaped lifecycle gate", err)
-				}
 			}
 
 		})

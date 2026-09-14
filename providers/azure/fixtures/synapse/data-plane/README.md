@@ -10,7 +10,8 @@ The selected operations are Spark batch/session list, get and cancel, plus
 notebook and Spark-job-definition list and get. They establish the contracts
 needed to inspect work affected by pool/workspace cleanup. The eight read
 operations now execute through workspace-bound OAuth and validate their native
-responses. Cancellation remains gated pending reviewed lifecycle support.
+responses. Native cancellation is available through Runtime.Invoke with ownership,
+protection and readback checks; reviewed cleanup orchestration remains unfinished.
 Data-plane asset inventory and resource cleanup remain unfinished. Existing ARM
 inventory and resource actions are unchanged.
 
@@ -67,7 +68,7 @@ response-schema failures rather than bypassing schema validation.
 
 Validation covers ten operations, ten original examples and eight response
 schemas, plus endpoint/version/ID/pagination rejection, deterministic import,
-and refusal to invoke cancellation before lifecycle support. This is offline
+and rejection of the original preview cancellation parameters. This is offline
 contract testing; no live Azure resources or independent Synapse emulator were used.
 
 Official API documentation:
@@ -135,8 +136,8 @@ source is non-authoritative and emits explicit absence only on its final page.
 Tests cover native and client paging, changing indexes/parents, private canaries,
 known-object reconciliation, protection and actual SQLite worker/graph persistence.
 
-All seven Synapse resource kinds remain non-actionable. Terminal classification,
-cancellation, complete dependency coverage and pool/workspace cleanup remain
+All seven Synapse resource kinds remain non-actionable. Durable cancellation
+orchestration, complete dependency coverage and pool/workspace cleanup remain
 required next steps. No live cloud or independent emulator validation is claimed.
 
 ### Stable-version CLI artifact recordings
@@ -156,3 +157,50 @@ only the two pinned official recording files. Request credentials and request
 bodies are excluded; response metadata and complete JSON bodies are retained.
 These historical CLI recordings complement local tests; they are not fresh
 live-cloud validation of Steward.
+
+
+### Native cancellation and stopped-work evidence
+
+Runtime.Invoke supports the two catalogued stable Spark cancellation operations.
+Microsoft documents these as cancelling work, with a 200 acknowledgement and no
+LRO URL: [batch cancellation](https://learn.microsoft.com/en-us/rest/api/synapse/data-plane/spark-batch/cancel-spark-batch-job?view=rest-synapse-data-plane-2020-12-01)
+and [session cancellation](https://learn.microsoft.com/en-us/rest/api/synapse/data-plane/spark-session/cancel-spark-session?view=rest-synapse-data-plane-2020-12-01).
+The runtime binds the exact native path, resolves current subscription workspace
+ownership, reads the pool and detailed job, checks resource-group management,
+inherited locks and protected tags, verifies parents again and re-reads the job
+before cancellation. A valid submittedAt timestamp binds the observed job
+incarnation. Authored configuration or incarnation changes fail the call.
+
+The return data distinguishes `accepted`, `exists` and `quiesced`, with a redacted
+`observation`. Acceptance requires 200 with an empty result and no polling headers;
+202/204, errors and redirects do not qualify. Both cancellation 200 and 404 receive
+an independent detail read. Only that GET's 404 establishes absence. A retained
+record can be quiesced without being absent. Permission failures, missing parents
+or changed job/parent configuration never report completed cancellation. The
+native response request ID is preserved; no synthetic LRO ID is invented.
+
+Stopped-work classification requires a recognized state, a final Synapse result
+(Succeeded, Failed or Cancelled), and both scheduler and plugin currentState=Ended.
+A Livy state alone is insufficient; idle, error or a cancellation request alone
+cannot prove completion. Unknown or missing completion fields remain unproven.
+The service fields are defined in the pinned Spark schema; [upstream Livy state
+semantics](https://livy.apache.org/docs/latest/rest-api.html#session-state) explain
+why idle is not terminal. An already-quiesced job is observed without another
+DELETE. Otherwise this call reads back once; callers can observe later progress
+through the native GET. It does not block, automatically retry a mutation, or
+provide a durable reviewed cleanup phase. The native cancel contract supplies no
+conditional incarnation header, so a concurrent replacement after the final
+preflight read cannot be atomically excluded. Request IDs are correlation, not a
+provider guarantee of idempotency.
+
+`cli-cancellation-recordings.json` retains four unchanged responses from the
+pinned official CLI Spark batch/session recordings: a cancel acknowledgement and
+a subsequent 200 record for each. The cancelled queued batch still has Livy
+state not_started; the cancelled session has state killed. Both have service
+result Cancelled and scheduler/plugin Ended. These recordings use
+2019-11-01-preview, remain labelled as such and are tested for response semantics
+only; they are not replayed as stable-version wire fixtures. Reproduce with
+`python3 -B reproduce_cancellation_recordings.py [original-yaml-directory]`.
+Local runtime tests separately exercise stable paths, explicit OAuth, private
+canaries, protection, status/receipt faults, before/after drift, final readback and
+context interruption. No fresh live-cloud or independent emulator run is claimed.

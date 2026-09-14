@@ -6702,3 +6702,29 @@ This is local protocol and persistence evidence. Stable CLI artifact recordings
 remain unchanged. Full dependency coverage, terminal classification, cancellation,
 reviewed cleanup and live-cloud acceptance remain open. All 159 parity rows and
 all eight acceptance criteria remain open.
+
+
+### Synapse native Spark cancellation
+
+Enabled the two stable native Spark cancellation operations through Runtime.Invoke.
+The separate-audience transport resolves live workspace/pool ownership, checks
+resource-group management, inherited locks and protected tags, binds a valid job
+submission timestamp, and re-reads the job and parents around cancellation.
+Native 200 acknowledges cancellation; its independent detail GET determines
+whether the record remains. A DELETE 404 alone never establishes absence.
+Final Synapse result plus scheduler/plugin Ended establishes stopped-work evidence;
+unknown fields and Livy state alone do not. Results separate acknowledgement,
+continued existence and quiescence, with redacted observations and request IDs.
+
+Retained actual preview CLI cancel/readback responses demonstrate that cancelled
+batch/session records remain readable; their original API versions are unchanged.
+Stable local protocol tests cover both Runtime.Invoke routes, OAuth, protection,
+receipt errors, identity/configuration drift, request interruption, redirects,
+readback failures, terminal re-invocation and secret redaction. These are protocol
+and historical-source evidence, not a live-cloud or independent-emulator run.
+The native API has no conditional incarnation header or idempotency guarantee.
+
+Catalog counts remain 455 specifications, 1,521 operations and 418 cleanup
+bindings. Durable reviewed cancellation phases, controller cleanup, complete
+dependencies and full application acceptance remain unfinished. All 159 parity
+rows and all eight acceptance criteria remain open.

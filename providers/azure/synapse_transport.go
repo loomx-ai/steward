@@ -198,8 +198,19 @@ func (c *synapseDataClient) invokeRead(ctx context.Context, op catalog.Operation
 }
 
 func (c *synapseDataClient) request(ctx context.Context, workspace synapseWorkspace, request catalog.RESTRequest) (response, error) {
-	if request.Method != "GET" || len(request.Body) != 0 {
+	if request.Method != "GET" && request.Method != "DELETE" || len(request.Body) != 0 {
 		return response{}, serviceDenied("synapse_data_mutation_not_implemented")
+	}
+	if request.Method == "DELETE" {
+		valid := false
+		for _, kind := range []string{synapseBatchType, synapseSessionType} {
+			if _, _, err := c.arm.synapseDataIdentity(request.URL, kind); err == nil {
+				valid = true
+			}
+		}
+		if !valid {
+			return response{}, serviceDenied("invalid_synapse_cancel_target")
+		}
 	}
 	endpoint, err := synapseWorkspaceEndpoint(workspace.raw)
 	if err != nil || endpoint != workspace.endpoint || c.arm.synapseMetadata(workspace.raw, synapseType) != nil || !strings.EqualFold(text(workspace.raw["id"]), workspace.id) {

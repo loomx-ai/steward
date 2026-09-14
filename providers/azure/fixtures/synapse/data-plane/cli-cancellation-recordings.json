@@ -1,0 +1,178 @@
+[
+  {
+    "file": "test_spark_job.yaml",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/c683a64f397974bae397d77a204e2ae86a908fa0/src/azure-cli/azure/cli/command_modules/synapse/tests/latest/recordings/test_spark_job.yaml",
+    "source_sha256": "431c4ca2e96f5e5da72d397bda257033ef8179f14e2c175f51164369c2909d94",
+    "recordings": [
+      {
+        "interaction_index": 3,
+        "method": "DELETE",
+        "uri": "https://yanjuntestws001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpooltest/batches/0",
+        "status": 200,
+        "headers": {},
+        "body": {}
+      },
+      {
+        "interaction_index": 4,
+        "method": "GET",
+        "uri": "https://yanjuntestws001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpooltest/batches/0?detailed=true",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "livyInfo": {
+            "notStartedAt": null,
+            "startingAt": null,
+            "runningAt": null,
+            "deadAt": null,
+            "successAt": null,
+            "killedAt": null,
+            "recoveringAt": null,
+            "currentState": "not_started",
+            "jobCreationRequest": {
+              "name": "WordCount_Java",
+              "file": "abfss://filesystem01@ywtestaccount.dfs.core.windows.net/wordcount/wordcount_2.11-0.1.jar",
+              "className": "WordCount",
+              "args": [
+                "[abfss://filesystem01@ywtestaccount.dfs.core.windows.net/wordcount/input/shakespeare.txt,",
+                "abfss://filesystem01@ywtestaccount.dfs.core.windows.net/wordcount/output/]"
+              ],
+              "conf": {
+                "spark.dynamicAllocation.maxExecutors": "18"
+              },
+              "driverMemory": "56g",
+              "driverCores": 8,
+              "executorMemory": "56g",
+              "executorCores": 8,
+              "numExecutors": 4
+            }
+          },
+          "name": "WordCount_Java",
+          "workspaceName": "yanjuntestws001",
+          "computeName": "sparkpooltest",
+          "sparkPoolName": "sparkpooltest",
+          "submitterName": "v-weishuzhao@microsoft.com",
+          "submitterId": "6a33200f-2b27-4fda-8567-b0c70d532441",
+          "artifactId": "Livy",
+          "jobType": "SparkBatch",
+          "result": "Cancelled",
+          "schedulerInfo": {
+            "submittedAt": "2025-02-24T09:47:41.6861206+00:00",
+            "queuedAt": "2025-02-24T09:47:42.1202441+00:00",
+            "scheduledAt": null,
+            "endedAt": "2025-02-24T09:47:49.5312196+00:00",
+            "cancellationRequestedAt": "2025-02-24T09:47:49.5294113+00:00",
+            "currentState": "Ended"
+          },
+          "pluginInfo": {
+            "preparationStartedAt": null,
+            "resourceAcquisitionStartedAt": null,
+            "submissionStartedAt": null,
+            "monitoringStartedAt": null,
+            "cleanupStartedAt": "2025-02-24T09:47:49.5296112+00:00",
+            "currentState": "Ended"
+          },
+          "tags": {},
+          "id": 0,
+          "appId": null,
+          "appInfo": null,
+          "state": "not_started",
+          "log": null,
+          "registeredSources": null
+        }
+      }
+    ]
+  },
+  {
+    "file": "test_spark_session_and_statements.yaml",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/c683a64f397974bae397d77a204e2ae86a908fa0/src/azure-cli/azure/cli/command_modules/synapse/tests/latest/recordings/test_spark_session_and_statements.yaml",
+    "source_sha256": "b64405d9ea86a3a0ac1bca1d8d4abdc550d19098f1964d3fa44c680cdf02076f",
+    "recordings": [
+      {
+        "interaction_index": 8,
+        "method": "DELETE",
+        "uri": "https://yanjuntestws001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpooltest/sessions/4",
+        "status": 200,
+        "headers": {},
+        "body": {}
+      },
+      {
+        "interaction_index": 9,
+        "method": "GET",
+        "uri": "https://yanjuntestws001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpooltest/sessions/4?detailed=true",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "livyInfo": {
+            "notStartedAt": null,
+            "startingAt": "2025-02-24T10:42:09.7963442+00:00",
+            "idleAt": "2025-02-24T10:42:41.9735224+00:00",
+            "deadAt": null,
+            "shuttingDownAt": null,
+            "killedAt": null,
+            "recoveringAt": null,
+            "busyAt": null,
+            "errorAt": null,
+            "currentState": "killed",
+            "jobCreationRequest": {
+              "name": "clisession000002",
+              "conf": {},
+              "driverMemory": "28g",
+              "driverCores": 4,
+              "executorMemory": "28g",
+              "executorCores": 4,
+              "numExecutors": 2
+            }
+          },
+          "name": "clisession000002",
+          "workspaceName": "yanjuntestws001",
+          "computeName": "sparkpooltest",
+          "sparkPoolName": "sparkpooltest",
+          "submitterName": "v-weishuzhao@microsoft.com",
+          "submitterId": "6a33200f-2b27-4fda-8567-b0c70d532441",
+          "artifactId": "Livy",
+          "jobType": "SparkSession",
+          "result": "Cancelled",
+          "schedulerInfo": {
+            "submittedAt": "2025-02-24T10:41:45.6711287+00:00",
+            "queuedAt": "2025-02-24T10:41:45.8856562+00:00",
+            "scheduledAt": "2025-02-24T10:42:01.4498111+00:00",
+            "endedAt": "2025-02-24T10:48:35.0523496+00:00",
+            "cancellationRequestedAt": "2025-02-24T10:48:05.9596335+00:00",
+            "currentState": "Ended"
+          },
+          "pluginInfo": {
+            "preparationStartedAt": "2025-02-24T10:42:03.460577+00:00",
+            "resourceAcquisitionStartedAt": "2025-02-24T10:42:05.4915055+00:00",
+            "submissionStartedAt": "2025-02-24T10:42:09.6944824+00:00",
+            "monitoringStartedAt": "2025-02-24T10:42:11.8224021+00:00",
+            "cleanupStartedAt": "2025-02-24T10:48:05.9633638+00:00",
+            "currentState": "Ended"
+          },
+          "tags": {},
+          "id": 4,
+          "appId": "application_1740390690825_0004",
+          "appInfo": {
+            "sparkUiUrl": "https://web.azuresynapse.net/sparkui/72f988bf-86f1-41af-91ab-2d7cd011db47/workspaces/yanjuntestws001/sparkpools/sparkpooltest/sessions/4/applications/application_1740390690825_0004",
+            "impulseErrorCode": null,
+            "isStreamingQueryExists": "false",
+            "impulseClassification": null,
+            "impulseTsg": null,
+            "isSessionTimedOut": "false",
+            "driverLogUrl": "https://web.azuresynapse.net/sparkui/72f988bf-86f1-41af-91ab-2d7cd011db47/api/v1/workspaces/yanjuntestws001/sparkpools/sparkpooltest/sessions/4/applications/application_1740390690825_0004/driverlog/stderr"
+          },
+          "state": "killed",
+          "log": [
+            "stdout: ",
+            "Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=/mnt/tmp",
+            "Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=/mnt/tmp",
+            "\nstderr: ",
+            "\nYARN Diagnostics: "
+          ],
+          "registeredSources": [
+            "default"
+          ]
+        }
+      }
+    ]
+  }
+]
