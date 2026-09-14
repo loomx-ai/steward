@@ -47,8 +47,8 @@ func (c *client) alertPolicyChannels(data map[string]any) ([]string, error) {
 	return slices.Compact(result), nil
 }
 
-// This discovers concrete own-project AlertPolicy consumers. It does not prove
-// absence of Billing Budget or other external consumers. Non-email cleanup also
+// This discovers own-project AlertPolicy and visible Billing Budget consumers.
+// It does not prove absence of inaccessible consumers. Non-email cleanup also
 // uses the native non-forced deletion guard; email cleanup remains protected.
 func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Context, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
@@ -61,22 +61,48 @@ func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Con
 	if len(channels) == 0 {
 		return result, nil
 	}
-	validate := func(value asset.Asset) error {
+	validate := func(value asset.Asset) (bool, error) {
 		if !gcpPartition(value.Identity.Partition) {
-			return groupDenied("monitoring_channel_partition_invalid")
+			return false, groupDenied("monitoring_channel_partition_invalid")
 		}
 		data, err := h.client.notificationChannelRead(ctx, value.Identity.NativeID)
 		if err != nil {
-			return contracts.DependencyReadError(err)
+			return false, contracts.DependencyReadError(err)
 		}
 		if notificationChannelConfiguration(value.Identity.NativeID, data) != text(value.Normalized[notificationChannelReview]) {
-			return groupDenied("notification_channel_configuration_changed")
+			return false, groupDenied("notification_channel_configuration_changed")
 		}
-		return nil
+		return data["type"] == "email", nil
 	}
+	emails := []asset.Asset{}
 	for _, channel := range channels {
-		if err := validate(channel); err != nil {
+		email, err := validate(channel)
+		if err != nil {
 			return result, err
+		}
+		if email {
+			emails = append(emails, channel)
+		}
+	}
+	if len(emails) != 0 {
+		budgets, err := h.client.visibleBillingBudgetChannels(ctx)
+		if err != nil {
+			return result, err
+		}
+		ids := make([]string, 0, len(budgets))
+		for id := range budgets {
+			ids = append(ids, id)
+		}
+		slices.Sort(ids)
+		for _, channel := range emails {
+			// Account LIST is filtered by IAM visibility. Preserve a distinct coverage
+			// barrier even when the currently visible budgets no longer mention us.
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: channel.Identity.Provider, ConnectionID: channel.Identity.ConnectionID, ControllerID: channel.ID, NativeType: notificationChannelType, NativeID: channel.Identity.NativeID, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{"reason": "notification_channel_budget_scope_unverified", "source": monitoringDependencySource}})
+			for _, id := range ids {
+				if slices.Contains(budgets[id], channel.Identity.NativeID) {
+					result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: channel.Identity.Provider, ConnectionID: channel.Identity.ConnectionID, ControllerID: channel.ID, NativeType: billingBudgetType, NativeID: id, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{"reason": "notification_channel_referenced_by_budget", "source": monitoringDependencySource}})
+				}
+			}
 		}
 	}
 	policies, err := h.client.monitoringPolicySnapshot(ctx)
@@ -115,7 +141,7 @@ func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Con
 		}
 	}
 	for _, channel := range channels {
-		if err := validate(channel); err != nil {
+		if _, err := validate(channel); err != nil {
 			return governance.Contribution{}, err
 		}
 	}

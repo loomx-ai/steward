@@ -6179,3 +6179,27 @@ Masked native values and external writers remain API limits; cross-connection
 write coordination and real-cloud acceptance are still open. Native catalog now
 has 202 resource rules and 795 methods; prior source fragments remain unchanged.
 See [channel lifecycle evidence](providers/gcp/fixtures/notification-channel/README.md).
+
+### GCP Billing Budget positive dependency milestone
+
+Added native visible-account and per-account Budget LIST/GET to email-channel
+dependency discovery, with complete pagination, identity/shape validation,
+configuration comparisons and repeated indexes. Known references create concrete
+blocking Budget references without persisting private budget configuration.
+Live channel type controls discovery, so local type tampering cannot bypass it.
+Non-email channels do not acquire a Billing permission requirement.
+
+Protocol tests cover multi-account/multi-page enumeration, closed accounts,
+foreign spending projects, permission/shape failures, aliases and observed drift.
+SQLite reopen tests preserve prior budget references after read failure and remove
+concrete references only after successful refresh. The pinned independent Google
+mock verifies native account/budget reads and native budget-reference removal
+with 31 forwarded GETs and no Billing response fixtures. Existing channel native
+inventory and ordered deletion regressions also pass.
+
+The native account index is IAM-visibility-filtered: every email channel retains
+a separate unknown-scope barrier, even after an empty successful read. Email
+cleanup, durable account-scope coverage, Budget lifecycle, external writer safety
+and real-cloud acceptance remain unfinished. Catalog now has 202 resource rules
+and 799 methods; existing native fragments and rules are unchanged. No acceptance
+criterion is closed. See [Billing Budget evidence](providers/gcp/fixtures/billing-budget/README.md).

@@ -187,3 +187,14 @@ configuration precondition: external changes (including channel type changes)
 can race the last read. `force=false` guards native policy references, not budget
 references or arbitrary configuration races. The local write reservation cannot
 make other cloud clients participate in its lock.
+
+
+## Subsequent Billing Budget discovery
+
+[Billing Budget evidence](../billing-budget/README.md) adds concrete visible-budget
+references while preserving an independent unknown-account-scope barrier for
+email channels. Native GET type controls this discovery; non-email channels do
+not call Billing. The legacy independent email Monitoring case now supplies two
+explicit empty-account protocol responses in addition to its 12 native Monitoring
+GETs. The dedicated Budget test instead forwards native Billing reads and proves
+reference removal after a native budget update. Email cleanup remains blocked.

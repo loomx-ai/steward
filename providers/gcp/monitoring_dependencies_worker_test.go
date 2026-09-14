@@ -263,7 +263,18 @@ func TestLoggingRoutingSQLitePreservesBlockedPlanAfterReadFailure(t *testing.T) 
 }
 
 func TestNotificationChannelSQLiteDependencyHistory(t *testing.T) {
+	testChannelSQLiteDependencyHistory(t, false)
+}
+func TestBillingBudgetSQLiteDependencyHistory(t *testing.T) {
+	testChannelSQLiteDependencyHistory(t, true)
+}
+func testChannelSQLiteDependencyHistory(t *testing.T, withBudget bool) {
 	s, _, _, deletes := channelDependencyFixture(t)
+	var billing *billingBudgetScenario
+	if withBudget {
+		billing = budgetScenario(t, s.r.transport.RoundTrip)
+		s.r = billing.r
+	}
 	ctx := t.Context()
 	dsn := filepath.Join(t.TempDir(), "channels.db")
 	repos, closeDB := monitoringSQLite(t, dsn)
@@ -300,10 +311,18 @@ func TestNotificationChannelSQLiteDependencyHistory(t *testing.T) {
 			}
 		}
 		if round == 2 {
-			s.mode = "get-denied"
+			if withBudget {
+				billing.mode = "budget-denied"
+			} else {
+				s.mode = "get-denied"
+			}
 		}
 		if round == 3 {
 			s.mode = ""
+			if withBudget {
+				billing.mode = ""
+				object(billing.budget["notificationsRule"])["monitoringNotificationChannels"] = []any{}
+			}
 			s.data["notificationChannels"] = []any{}
 		}
 		fresh := protocolRuntime(t, s.r.transport.RoundTrip)
@@ -320,12 +339,27 @@ func TestNotificationChannelSQLiteDependencyHistory(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		wantEdges, wantUnresolved := 0, 0
+		wantEdges, wantUnresolved := 0, 1
 		if round == 0 {
-			wantUnresolved = 1
+			wantUnresolved = 2
 		}
 		if round == 1 || round == 2 {
 			wantEdges = 1
+		}
+		if withBudget && round < 3 {
+			wantUnresolved++
+		}
+		budgets := 0
+		for _, ref := range unresolved {
+			if ref.NativeType == billingBudgetType {
+				budgets++
+				if ref.NativeID != "//billingbudgets.googleapis.com/"+testBillingBudget || !ref.BlocksCleanup {
+					t.Fatal(ref)
+				}
+			}
+		}
+		if (budgets == 1) != (withBudget && round < 3) {
+			t.Fatal("budget history lost across restart or failure", round, unresolved)
 		}
 		if len(edges) != wantEdges || len(unresolved) != wantUnresolved {
 			t.Fatal("restart or failed read changed authoritative graph", round, edges, unresolved)

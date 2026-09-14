@@ -21,7 +21,11 @@ func TestNotificationChannelIndependentMockGCP(t *testing.T) {
 func TestNotificationChannelDeleteIndependentMockGCP(t *testing.T) {
 	testNotificationChannelIndependentMockGCP(t, "pubsub")
 }
-func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string) {
+func TestBillingBudgetIndependentMockGCP(t *testing.T) {
+	testNotificationChannelIndependentMockGCP(t, "email", true)
+}
+func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, billing ...bool) {
+	withBudget := len(billing) != 0 && billing[0]
 	endpoint := os.Getenv("STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL")
 	if endpoint == "" {
 		t.Skip("set STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL to the pinned Monitoring harness")
@@ -78,9 +82,32 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string) {
 			native("DELETE", "/v3/"+name, nil)
 		}
 	})
+	budgetName := ""
+	if withBudget {
+		account := native("POST", "/v1/billingAccounts", billingAccountFixture())
+		if account["name"] != testBillingAccount {
+			t.Fatal("wrong native billing account")
+		}
+		budget := billingBudgetFixture()
+		delete(budget, "name")
+		delete(budget, "etag")
+		object(budget["notificationsRule"])["monitoringNotificationChannels"] = []any{name}
+		createdBudget := native("POST", "/v1/"+testBillingAccount+"/budgets", budget)
+		budgetName = text(createdBudget["name"])
+		if !strings.HasPrefix(budgetName, testBillingAccount+"/budgets/") {
+			t.Fatal("wrong native budget identity")
+		}
+		t.Cleanup(func() { native("DELETE", "/v1/"+budgetName, nil) })
+	}
 	calls := []string{}
+	billingFixtureCalls := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
-		if req.URL.Host != "monitoring.googleapis.com" || (req.Method != "GET" && (delivery == "email" || req.Method != "DELETE")) {
+		if req.URL.Host == "cloudbilling.googleapis.com" && delivery == "email" && !withBudget {
+			billingFixtureCalls++
+			return emptyBillingAccountsFixture(t, req), nil
+		}
+		billingRead := withBudget && (req.URL.Host == "cloudbilling.googleapis.com" || req.URL.Host == "billingbudgets.googleapis.com") && req.Method == "GET"
+		if (!billingRead && req.URL.Host != "monitoring.googleapis.com") || (req.Method != "GET" && (delivery == "email" || req.Method != "DELETE")) {
 			t.Fatal("unexpected runtime request", req.Method, req.URL)
 		}
 		if req.Method == "DELETE" && strings.Contains(req.URL.Path, "/notificationChannels/") && req.URL.RawQuery != "force=false" {
@@ -152,11 +179,42 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string) {
 		t.Fatal(err)
 	}
 	contribution, err := contributor.Contribute(t.Context(), "global", []asset.Asset{channel, policyAsset})
+	if err == nil && delivery == "email" {
+		contribution.Unresolved = assertBudgetCoverage(t, contribution.Unresolved, channel.ID)
+	}
+	if err == nil && withBudget {
+		if len(contribution.Unresolved) != 1 || contribution.Unresolved[0].NativeType != billingBudgetType || contribution.Unresolved[0].NativeID != "//billingbudgets.googleapis.com/"+budgetName || !contribution.Unresolved[0].BlocksCleanup {
+			t.Fatal("native budget reference missing", contribution)
+		}
+		contribution.Unresolved = nil
+	}
+	if (delivery == "email" && !withBudget && billingFixtureCalls != 2) || (withBudget && billingFixtureCalls != 0) || (delivery != "email" && billingFixtureCalls != 0) {
+		t.Fatal("unexpected explicit billing fixture calls", billingFixtureCalls)
+	}
 	if err != nil || len(contribution.Unresolved) != 0 || len(contribution.Relationships) != 1 || contribution.Relationships[0].SourceAssetID != channel.ID || contribution.Relationships[0].TargetAssetID != policyAsset.ID {
 		t.Fatal(contribution, err)
 	}
-	if len(calls) != 12 {
+	wantCalls := 12
+	if withBudget {
+		wantCalls += 7
+	}
+	if len(calls) != wantCalls {
 		t.Fatal("unexpected native reads", calls)
+	}
+	if withBudget {
+		native("PATCH", "/v1/"+budgetName+"?updateMask=notificationsRule", map[string]any{"name": budgetName, "notificationsRule": map[string]any{"monitoringNotificationChannels": []any{}}})
+		updated, err := contributor.Contribute(t.Context(), "global", []asset.Asset{channel, policyAsset})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if refs := assertBudgetCoverage(t, updated.Unresolved, channel.ID); len(refs) != 0 {
+			t.Fatal("removed native budget reference retained", refs)
+		}
+		if len(updated.Relationships) != 1 {
+			t.Fatal("budget removal lost policy reference")
+		}
+		t.Logf("Native Billing Account/Budget LIST/GET and channel graph, then native budget PATCH/reference removal passed (%d forwarded GETs; no Billing fixture)", len(calls))
+		return
 	}
 	if delivery != "email" {
 		driver, err := r.ResolveAction(t.Context(), "connection", channel)

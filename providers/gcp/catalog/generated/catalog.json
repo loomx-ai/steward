@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "c116ab1effbcf7696074c0e87a7df80484863da577789d46ecc68ed273bcfba9",
+    "checksum": "3af1d34fa2e13a323c1809f97d5795c088e41612f5511c6d5e9ddc2adbf6c09e",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "c1b79f20fecc1fe483c7753b467f80aa3f074fe349ccd6d4206180dfc2f94b2b",
+  "content_checksum": "52ae9ae3a1768e6c5c7da722f1fd09073dc8c3c8498b5c5d8b60ae0409e4e191",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -11926,6 +11926,167 @@
       "source_uri": "https://bigtableadmin.googleapis.com/$discovery/rest?version=v2"
     },
     {
+      "id": "billingbudgets.billingAccounts.budgets.get",
+      "name": "get",
+      "service": "billingbudgets",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. Name of budget to get. Values are of the form `billingAccounts/{billingAccountId}/budgets/{budgetId}`.",
+            "location": "path",
+            "pattern": "^billingAccounts/[^/]+/budgets/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A budget is a plan that describes what you expect to spend on Cloud projects, plus the rules to execute as spend is tracked against that plan, (for example, send an alert when 90% of the target spend is met). The budget time period is configurable, with options such as month (default), quarter, year, or custom time period.",
+        "id": "GoogleCloudBillingBudgetsV1Budget",
+        "properties": {
+          "amount": {
+            "$ref": "GoogleCloudBillingBudgetsV1BudgetAmount",
+            "description": "Required. Budgeted amount."
+          },
+          "budgetFilter": {
+            "$ref": "GoogleCloudBillingBudgetsV1Filter",
+            "description": "Optional. Filters that define which resources are used to compute the actual spend against the budget amount, such as projects, services, and the budget's time period, as well as other filters."
+          },
+          "displayName": {
+            "description": "User data for display name in UI. The name must be less than or equal to 60 characters.",
+            "type": "string"
+          },
+          "etag": {
+            "description": "Optional. Etag to validate that the object is unchanged for a read-modify-write operation. An empty etag causes an update to overwrite other changes.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Output only. Resource name of the budget. The resource name implies the scope of a budget. Values are of the form `billingAccounts/{billingAccountId}/budgets/{budgetId}`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "notificationsRule": {
+            "$ref": "GoogleCloudBillingBudgetsV1NotificationsRule",
+            "description": "Optional. Rules to apply to notifications sent based on budget spend and thresholds."
+          },
+          "ownershipScope": {
+            "enum": [
+              "OWNERSHIP_SCOPE_UNSPECIFIED",
+              "ALL_USERS",
+              "BILLING_ACCOUNT"
+            ],
+            "enumDescriptions": [
+              "Unspecified ownership scope, same as ALL_USERS.",
+              "Both billing account-level users and project-level users have full access to the budget, if the users have the required IAM permissions.",
+              "Only billing account-level users have full access to the budget. Project-level users have read-only access, even if they have the required IAM permissions."
+            ],
+            "type": "string"
+          },
+          "thresholdRules": {
+            "description": "Optional. Rules that trigger alerts (notifications of thresholds being crossed) when spend exceeds the specified percentages of the budget. Optional for `pubsubTopic` notifications. Required if using email notifications.",
+            "items": {
+              "$ref": "GoogleCloudBillingBudgetsV1ThresholdRule"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "billingbudgets",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://billingbudgets.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://billingbudgets.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "billingbudgets.billingAccounts.budgets.list",
+      "name": "list",
+      "service": "billingbudgets",
+      "method": "GET",
+      "path": "/v1/{parent}/budgets",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "pageSize": {
+            "description": "Optional. The maximum number of budgets to return per page. The default and maximum value are 100.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. The value returned by the last `ListBudgetsResponse` which indicates that this is a continuation of a prior `ListBudgets` call, and that the system should return the next page of data.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. Name of billing account to list budgets under. Values are of the form `billingAccounts/{billingAccountId}`.",
+            "location": "path",
+            "pattern": "^billingAccounts/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "Optional. Set the scope of the budgets to be returned, in the format of the resource name. The scope of a budget is the cost that it tracks, such as costs for a single project, or the costs for all projects in a folder. Only project scope (in the format of \"projects/project-id\" or \"projects/123\") is supported in this field. When this field is set to a project's resource name, the budgets returned are tracking the costs for that project.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response for ListBudgets",
+        "id": "GoogleCloudBillingBudgetsV1ListBudgetsResponse",
+        "properties": {
+          "budgets": {
+            "description": "List of the budgets owned by the requested billing account.",
+            "items": {
+              "$ref": "GoogleCloudBillingBudgetsV1Budget"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "If not empty, indicates that there may be more budgets that match the request; this value should be passed in a new `ListBudgetsRequest`.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "budgets"
+      },
+      "call": {
+        "product": "billingbudgets",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/budgets",
+        "endpoint": "https://billingbudgets.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://billingbudgets.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
       "id": "certificatemanager.projects.locations.certificateMaps.certificateMapEntries.delete",
       "name": "delete",
       "service": "certificatemanager",
@@ -12884,6 +13045,144 @@
         "parameter_position": "query"
       },
       "source_uri": "https://cloudasset.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudbilling.billingAccounts.get",
+      "name": "get",
+      "service": "cloudbilling",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The resource name of the billing account to retrieve. For example, `billingAccounts/012345-567890-ABCDEF`.",
+            "location": "path",
+            "pattern": "^billingAccounts/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A billing account in the [Google Cloud Console](https://console.cloud.google.com/). You can assign a billing account to one or more projects.",
+        "id": "BillingAccount",
+        "properties": {
+          "currencyCode": {
+            "description": "Optional. The currency in which the billing account is billed and charged, represented as an ISO 4217 code such as `USD`. Billing account currency is determined at the time of billing account creation and cannot be updated subsequently, so this field should not be set on update requests. In addition, a subaccount always matches the currency of its parent billing account, so this field should not be set on subaccount creation requests. Clients can read this field to determine the currency of an existing billing account.",
+            "type": "string"
+          },
+          "displayName": {
+            "description": "The display name given to the billing account, such as `My Billing Account`. This name is displayed in the Google Cloud Console.",
+            "type": "string"
+          },
+          "masterBillingAccount": {
+            "description": "If this account is a [subaccount](https://cloud.google.com/billing/docs/concepts), then this will be the resource name of the parent billing account that it is being resold through. Otherwise this will be empty.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Output only. The resource name of the billing account. The resource name has the form `billingAccounts/{billing_account_id}`. For example, `billingAccounts/012345-567890-ABCDEF` would be the resource name for billing account `012345-567890-ABCDEF`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "open": {
+            "description": "Output only. True if the billing account is open, and will therefore be charged for any usage on associated projects. False if the billing account is closed, and therefore projects associated with it are unable to use paid services.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "parent": {
+            "description": "Output only. The billing account's parent resource identifier. Use the `MoveBillingAccount` method to update the account's parent resource if it is a organization. Format: - `organizations/{organization_id}`, for example, `organizations/12345678` - `billingAccounts/{billing_account_id}`, for example, `billingAccounts/012345-567890-ABCDEF`",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "cloudbilling",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://cloudbilling.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudbilling.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudbilling.billingAccounts.list",
+      "name": "list",
+      "service": "cloudbilling",
+      "method": "GET",
+      "path": "/v1/billingAccounts",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Options for how to filter the returned billing accounts. This only supports filtering for [subaccounts](https://cloud.google.com/billing/docs/concepts) under a single provided parent billing account. (for example, `master_billing_account=billingAccounts/012345-678901-ABCDEF`). Boolean algebra and other fields are not currently supported.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Requested page size. The maximum page size is 100; this is also the default.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "A token identifying a page of results to return. This should be a `next_page_token` value returned from a previous `ListBillingAccounts` call. If unspecified, the first page of results is returned.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Optional. The parent resource to list billing accounts from. Format: - `organizations/{organization_id}`, for example, `organizations/12345678` - `billingAccounts/{billing_account_id}`, for example, `billingAccounts/012345-567890-ABCDEF`",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response message for `ListBillingAccounts`.",
+        "id": "ListBillingAccountsResponse",
+        "properties": {
+          "billingAccounts": {
+            "description": "A list of billing accounts.",
+            "items": {
+              "$ref": "BillingAccount"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "A token to retrieve the next page of results. To retrieve the next page, call `ListBillingAccounts` again with the `page_token` field set to this value. This field is empty if there are no more results to retrieve.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "billingAccounts"
+      },
+      "call": {
+        "product": "cloudbilling",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/billingAccounts",
+        "endpoint": "https://cloudbilling.googleapis.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudbilling.googleapis.com/$discovery/rest?version=v1"
     },
     {
       "id": "cloudfunctions.projects.locations.functions.delete",

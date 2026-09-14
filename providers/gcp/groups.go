@@ -115,6 +115,18 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 				return nil, err
 			}
 		}
+		if operation.ID == billingAccountsList || operation.ID == billingBudgetsList {
+			collection := "billingAccounts"
+			if operation.ID == billingBudgetsList {
+				collection = "budgets"
+			}
+			if _, err := cloudNatObjects(response.Data, collection); err != nil {
+				return nil, err
+			}
+			if err := cloudNatScalars(response.Data, []string{"nextPageToken"}, nil, nil, nil); err != nil {
+				return nil, err
+			}
+		}
 		if operation.ID == "monitoring.projects.alertPolicies.list" {
 			if _, err := cloudNatObjects(response.Data, "alertPolicies"); err != nil {
 				return nil, err

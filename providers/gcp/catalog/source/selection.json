@@ -1050,6 +1050,20 @@
         "monitoring.projects.notificationChannels.list"
       ],
       "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
+    },
+    {
+      "methods": [
+        "cloudbilling.billingAccounts.get",
+        "cloudbilling.billingAccounts.list"
+      ],
+      "source_uri": "https://cloudbilling.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "methods": [
+        "billingbudgets.billingAccounts.budgets.get",
+        "billingbudgets.billingAccounts.budgets.list"
+      ],
+      "source_uri": "https://billingbudgets.googleapis.com/$discovery/rest?version=v1"
     }
   ],
   "resource_types": [

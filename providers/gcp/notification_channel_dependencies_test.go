@@ -23,6 +23,9 @@ func channelDependencyFixture(t *testing.T, delivery ...string) (*monitoringDepe
 	}
 	s.uptimeData, s.uptimeMode, s.uptimeDeletes = data, mode, deletes
 	s.r = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if req.URL.Host == "cloudbilling.googleapis.com" {
+			return emptyBillingAccountsFixture(t, req), nil
+		}
 		if req.Method != "GET" && req.Method != "DELETE" || req.URL.Host != "monitoring.googleapis.com" {
 			t.Fatal("unexpected channel dependency call", req.Method, req.URL)
 		}
@@ -126,6 +129,9 @@ func TestNotificationChannelDependencyGraph(t *testing.T) {
 			}
 			if err != nil || len(result.Bindings) != 0 {
 				t.Fatal(result, err)
+			}
+			if mode != "closed-channel" {
+				result.Unresolved = assertBudgetCoverage(t, result.Unresolved, s.request.Asset.ID)
 			}
 			b, _ := json.Marshal(result)
 			if strings.Contains(string(b), "PRIVATE_") {
