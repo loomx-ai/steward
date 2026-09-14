@@ -100,6 +100,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
 | Hyperdisk Storage Pools | Native pools, capacity/performance usage, provisioning modes and disk members | Inventory and reviewed cleanup |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
+| Cloud Router | Native router configuration, NAT impacts and policy/set prerequisites | Reviewed parent deletion and NAT cascade |
 | Cloud NAT | Per-router public/private NAT configurations, rules, subnet and address references | Independent removal; other NATs and the router retained |
 | Cloud Router named sets | Per-router prefix/community sets, CEL elements and fingerprint | Reviewed deletion after referring policies |
 | Cloud Router BGP policies | Per-router import/export policies, CEL terms and fingerprint | Independent native policy deletion with BGP reference detachment |
@@ -305,9 +306,8 @@ router has an unresolved mutation.
 
 Other configuration changes, native dependency conflicts and permission failures
 are reported for review. These native mutations have no fingerprint precondition,
-so avoid concurrent policy or BGP peer edits during cleanup. Parent-router
-cascade handling remains pending. Named sets and other policies are not selected
-for deletion by this action.
+so avoid concurrent policy or BGP peer edits during cleanup. Named sets and other
+policies are not selected for deletion by an independent policy action.
 
 Older plans receive missing ordering dependencies before execution starts or
 continues, retaining their step identities and reviewed resource snapshots. If
@@ -348,9 +348,9 @@ only a policy retains its sets. Deletion needs `compute.routers.get`,
 router identity, waits for the regional operation, and confirms the set is absent.
 Incomplete policy reads, unresolved references, changed resources or provider
 conflicts stop cleanup. See the [native deletion API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteNamedSet).
-Parent-router cascade review remains unfinished.
+Selecting the parent Router includes its policies and sets as prerequisite deletions.
 
-## Cloud Router inventory
+## Cloud Router inventory and cleanup
 
 Router scans need `compute.routers.list` and `compute.routers.get`. Steward reads
 current detail for each listed router and checks its identity before recording
@@ -358,9 +358,28 @@ NAT, BGP and interface configuration. A denied, missing, incomplete or mismatche
 detail response fails the scan source and preserves previous observations. MD5
 authentication material is redacted from inventory and API logs.
 
-Router cascade review is still being completed. Google documents that deleting
-a router also removes its NAT gateways; associated VPN tunnels and VLAN
-attachments must be removed first. See the [Router GET contract](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/get)
+Scan the Router, NAT configurations, policies and named sets together before
+selecting the Router for cleanup. Steward lists and reads every native child,
+checks the scanned configuration and reports unindexed children as blockers.
+Policies and named sets become independent prerequisite deletions. Reviewed NATs
+are included in the parent deletion impact; they cannot be retained while deleting
+the Router. Independent NAT cleanup remains available.
+
+Router lifecycle review also needs `compute.routers.listRoutePolicies`,
+`compute.routers.getRoutePolicy`, `compute.routers.listNamedSets` and
+`compute.routers.getNamedSet`. Parent deletion needs `compute.routers.delete` and
+`compute.regionOperations.get`, plus the permissions required by its prerequisite
+steps. Steward uses native [Router DELETE](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/delete),
+resumes the bound regional operation after restart, and confirms parent and
+prerequisite absence before recording the NAT cascade. It issues no separate NAT
+or address-deletion request for that cascade.
+
+Associated VPN tunnels and VLAN attachments block this cleanup; remove them and
+scan again before creating the Router task. Other configuration changes also
+require renewed review. These reads and native deletion are not atomic, so avoid
+external edits while cleanup runs. Old Router tasks without configuration reviews
+need a fresh scan; uncertain legacy operation receipts remain blocked pending
+recovery. See the [Router GET contract](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/get)
 and [router deletion guide](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers).
 
 ## Cloud NAT gateways
@@ -402,5 +421,5 @@ Native PATCH has no configuration revision precondition, so concurrent external
 writers can still race the final read/update. Avoid changing that
 router's NAT configuration externally while cleanup runs. See the
 [native PATCH and request-ID contract](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/patch).
-Parent-router cascade review remains unfinished.
+Selecting the parent Router includes reviewed NATs in its deletion impact.
 Google documents that [deleting a router also deletes its Cloud NAT gateways](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers).

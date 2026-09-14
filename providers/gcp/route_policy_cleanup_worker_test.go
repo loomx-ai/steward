@@ -362,7 +362,7 @@ func routerComponentSQLiteCleanup(t *testing.T, nativeType string, bgp, setRefer
 	}
 }
 
-func scanRouterComponentAssets(t *testing.T, repositories persistence.Repositories, registry *providerruntime.Registry, now time.Time, kinds []asset.ResourceKindID) time.Time {
+func scanRouterComponentAssets(t *testing.T, repositories persistence.Repositories, registry *providerruntime.Registry, now time.Time, kinds []asset.ResourceKindID, contributors ...governance.ContributorResolver) time.Time {
 	t.Helper()
 	ctx := t.Context()
 	creator, err := inventory.NewCreator(repositories, registry, inventory.WithCreatorClock(func() time.Time { return now }))
@@ -391,7 +391,11 @@ func scanRouterComponentAssets(t *testing.T, repositories persistence.Repositori
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := governance.NewGraphHandler(repositories, registry, nil).Handle(ctx, job); err != nil {
+	var resolver governance.ContributorResolver
+	if len(contributors) > 0 {
+		resolver = contributors[0]
+	}
+	if err := governance.NewGraphHandler(repositories, registry, resolver).Handle(ctx, job); err != nil {
 		t.Fatal(err)
 	}
 	if err := repositories.Jobs().Complete(ctx, job.ID, "policy-graph", execution.JobSucceeded, "", now); err != nil {

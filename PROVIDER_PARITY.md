@@ -5830,3 +5830,41 @@ against a still-occupied same-task scope while allowing the bound continuation.
   race suites (20.359s/4.347s), native Router family checks (30.662s), static vet,
   and bilingual documentation/screenshot checks. The continuation-specific native
   race test also passed (14.205s). No independent backend/live acceptance claimed.
+
+
+### Native Router lifecycle contribution and reviewed NAT cascade
+
+- Registered the Router service lifecycle using native parent GET, complete
+  policy/set LIST plus query GET, repeated membership checks and the full scanned
+  configuration. Missing indexed children block cleanup; child configuration and
+  numeric parent incarnation must agree. VPN/VLAN references remain blockers until
+  their resources are removed and the configuration is scanned again.
+- NATs are reviewed delegated deletion impacts verified by the parent; policies
+  and named sets are independent prerequisites with existing CEL dependency order.
+  Independent NAT deletion remains available. Retained children, missing/foreign/
+  duplicate impacts and changed configuration are rejected. Existing shared Router
+  coordination supplies serialization and excludes competing attempts.
+- The parent uses native empty-body DELETE, a UUID binding incarnation/full review/
+  child intent, strict regional operation receipts and fresh readback. Original BGP
+  settings survive comparison after only prerequisite policy references are removed.
+  Documented NAT cascade is recorded after native parent/prerequisite absence;
+  bounded rechecks handle deletion becoming visible during child or final reads.
+  Pending/failed/expired/mismatched operations cannot substitute for native absence.
+- Native protocol tests exercise paging, malformed/partial reads, coverage gaps,
+  drift, retention, prerequisite order, operation and receipt faults and restart.
+  Actual SQLite scan/graph/plan/worker execution selects one Router, deletes the
+  policy/set prerequisites, verifies its NAT impact and five tombstones, and then
+  reconciles an empty rescan. Runtime and repositories reopen between checkpoints.
+  Evidence and primary API links are in [Router evidence](providers/gcp/fixtures/router/README.md).
+- Native catalog/source bytes and dependencies remain unchanged: 200 resource
+  rules, 785 operations, catalog SHA-256
+  `f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`.
+  Bilingual docs now explain required permissions and Router cascade behavior.
+- Uncertain old generic Router receipts, legacy multi-phase mutation recovery,
+  external writer races, computed CEL/NAT Hub references, independent backend/live
+  acceptance and the remaining provider families remain unfinished. All eight
+  overall provider acceptance criteria remain open.
+- Validation passed: complete GCP/internal package regression (GCP 216.307s),
+  focused race checks (106.756s), additional disappearance/recreation race cases
+  (11.734s), static vet and bilingual documentation/screenshot checks. These are
+  locally authored protocol/application tests, not independent or live acceptance.

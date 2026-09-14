@@ -105,7 +105,8 @@ flag on `compute.routers.patch` change. Updated catalog SHA-256:
 `f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`.
 The importer tests ensure a PATCH becomes destructive only when explicitly bound
 as a resource deletion; GET cannot gain destructive classification this way.
-Parent cascade, independent backend/live acceptance and broader parity remain open.
+Reviewed parent cascade is covered in [Router evidence](../router/README.md).
+Independent backend/live acceptance and broader parity remain open.
 
 ## Terminal mutation settlement
 
@@ -154,5 +155,5 @@ node docs/check.mjs
 
 This milestone leaves all native source documents and generated catalog bytes
 unchanged (200 rules, 785 operations, SHA-256 above). Unprovable operation history,
-external writer races, parent cascade and independent backend/live acceptance
-remain open; no live-cloud or independent-emulator result is claimed.
+external writer races and independent backend/live acceptance remain open;
+reviewed parent cascade is covered in [Router evidence](../router/README.md); no live-cloud or independent-emulator result is claimed.

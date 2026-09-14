@@ -26,6 +26,7 @@ type serviceCascadeRule struct {
 // These are documented native cascades, not an inference from resource nesting.
 // New rules must cover the native child set, reviewed impact and final readback.
 var serviceCascadeRules = map[string]serviceCascadeRule{
+	routerType:                                      {children: []string{cloudNatType, routePolicyType, namedSetType}, directChildren: []string{routePolicyType, namedSetType}},
 	identityGroupType:                               {children: []string{identityMemberType}},
 	firewallPolicyType:                              {children: []string{firewallAssociationType}, directChildren: []string{firewallAssociationType}},
 	networkFirewallPolicyType:                       {children: []string{networkFirewallAssociationType}, directChildren: []string{networkFirewallAssociationType}},
@@ -74,6 +75,9 @@ type serviceChild struct {
 }
 
 func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, data map[string]any) ([]serviceChild, error) {
+	if parent.NativeType == routerType {
+		return c.routerChildren(ctx, parent, data)
+	}
 	if parent.NativeType == identityGroupType {
 		return c.identityChildren(ctx, parent, data)
 	}
@@ -256,6 +260,12 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 			continue
 		}
+		if parent.Identity.NativeType == routerType {
+			if err := s.client.routerSaved(parent); err != nil {
+				return result, err
+			}
+			result.Unresolved = append(result.Unresolved, s.client.routerUseReferences(parent)...)
+		}
 		children, err := s.client.serviceChildren(ctx, parent.Identity, parent.Normalized)
 		if err != nil {
 			return result, err
@@ -287,6 +297,11 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if target == nil {
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 				continue
+			}
+			if parent.Identity.NativeType == routerType {
+				if err := routerSameChild(parent, *target, child); err != nil {
+					return result, err
+				}
 			}
 			if isIdentityGroup(child.kind) {
 				if _, err := s.client.identitySaved(*target); err != nil {
@@ -332,7 +347,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				evidence["native_job_uid"] = parent.Normalized["uid"]
 				evidence["native_batch_cleanup_only"] = true
 			}
-			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: ownership, CleanupPolicy: policy, DirectCleanupAllowed: child.direct || isDiscovery(child.kind) || child.kind == fusionDNSType || child.kind == identityMemberType && !identityGroupDynamic(parent.Normalized), EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: ownership, CleanupPolicy: policy, DirectCleanupAllowed: child.direct || child.kind == cloudNatType || isDiscovery(child.kind) || child.kind == fusionDNSType || child.kind == identityMemberType && !identityGroupDynamic(parent.Normalized), EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 		}
 	}

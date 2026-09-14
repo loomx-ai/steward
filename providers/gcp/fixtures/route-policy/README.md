@@ -200,8 +200,9 @@ scope aliases, native/frozen/legacy inventory identities, forged annotations,
 malformed snapshots, different routers, terminal success, uncertain detach,
 legacy DAG ordering and continuation with resumed actions or expired worker
 leases. `order_test.go` rejects missing dependencies, duplicate identities and
-cycles. These are locally authored SQLite/protocol tests. Independent mock-server,
-live-cloud acceptance and full parent Router cascade remain unfinished.
+cycles. These are locally authored SQLite/protocol tests. Independent mock-server
+and live-cloud acceptance remain unfinished. Reviewed parent cascade is covered
+in [Router evidence](../router/README.md).
 
 Execution coordination excludes only the exact attempt being continued, not all
 attempts belonging to the same task. Regression coverage rejects a fresh attempt

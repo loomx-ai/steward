@@ -30,6 +30,9 @@ func routePolicyConfiguration(data map[string]any) string {
 }
 
 func (a *action) routerComponentActionIdentity(request contracts.ActionRequest) error {
+	if a.kind.NativeType == routerType {
+		return a.routerActionIdentity(request)
+	}
 	if request.Action != "delete" || request.Asset.ID == "" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || !gcpPartition(a.identity.Partition) || !isRouterComponent(a.kind.NativeType) || request.IdempotencyKey == "" || len(request.Parameters) != 0 || len(request.LifecycleImpacts) != 0 || len(request.PrerequisiteDeletions) != 0 {
 		return groupDenied("route_policy_action_changed")
 	}
@@ -56,6 +59,9 @@ func (a *action) routerComponentActionIdentity(request contracts.ActionRequest) 
 }
 
 func (a *action) routerComponentParent() string {
+	if a.kind.NativeType == routerType {
+		return a.identity.NativeID
+	}
 	if a.kind.NativeType == cloudNatType {
 		parent, _, _ := strings.Cut(a.identity.NativeID, "/nats/")
 		return parent
@@ -99,6 +105,9 @@ func (a *action) checkRouterComponentParent(ctx context.Context, request contrac
 }
 
 func (a *action) routerComponentReadback(ctx context.Context, request contracts.ActionRequest) (read contracts.ReadbackResult, err error) {
+	if a.kind.NativeType == routerType {
+		return a.routerReadback(ctx, request)
+	}
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if err := a.routerComponentActionIdentity(request); err != nil {
 		return read, err
@@ -145,6 +154,9 @@ func (a *action) routerComponentPreflight(ctx context.Context, request contracts
 }
 
 func (a *action) routerComponentRequestID(request contracts.ActionRequest) string {
+	if a.kind.NativeType == routerType {
+		return googleRequestID(request.IdempotencyKey + "/" + string(a.identity.ConnectionID) + "/" + a.identity.NativeID + "/" + text(request.Asset.Normalized["id"]) + "/" + text(request.Asset.Normalized[routerReview]) + "/" + serviceReview(request))
+	}
 	return googleRequestID(request.IdempotencyKey + "/" + string(a.identity.ConnectionID) + "/" + a.identity.NativeID + "/" + text(request.Asset.Normalized[a.routerComponentIncarnationKey()]) + "/" + a.routerComponentConfiguration(request.Asset.Normalized) + "/" + firewallDigest(request.Asset.Normalized[routePolicyPeers]))
 }
 
@@ -196,6 +208,9 @@ func (a *action) routerComponentOperationIdentity(request contracts.ActionReques
 }
 
 func (a *action) routerComponentOperationResult(request contracts.ActionRequest, data map[string]any, operationType, requestID, stage string) (string, error) {
+	if a.kind.NativeType == routerType && data["operationType"] != "delete" {
+		return "", groupDenied("router_operation_type_changed")
+	}
 	operation, err := a.routerComponentOperationIdentity(request, data, operationType, stage)
 	if err != nil {
 		return "", err

@@ -66,6 +66,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
 	}
+	if a.kind.NativeType == routerType {
+		return a.routerPreflight(ctx, request)
+	}
 	if isRouterComponent(a.kind.NativeType) {
 		return a.routerComponentPreflight(ctx, request)
 	}
@@ -252,6 +255,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if check.Absent {
 		return contracts.ActionResult{}, nil
+	}
+	if a.kind.NativeType == routerType {
+		return a.deleteRouter(ctx, request)
 	}
 	if isRouterComponent(a.kind.NativeType) {
 		return a.executeRouterComponent(ctx, request)
@@ -469,7 +475,7 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 	if a.kind.NativeType == storagePoolType {
 		return a.storagePoolWait(ctx, request, result)
 	}
-	if isRouterComponent(a.kind.NativeType) {
+	if isRouterComponent(a.kind.NativeType) || a.kind.NativeType == routerType {
 		return a.waitRouterComponent(ctx, request, result)
 	}
 	if isIdentityGroup(a.kind.NativeType) {
@@ -616,6 +622,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	if a.kind.NativeType == storagePoolType {
 		return a.storagePoolReadback(ctx, request)
+	}
+	if a.kind.NativeType == routerType {
+		return a.routerReadback(ctx, request)
 	}
 	if isRouterComponent(a.kind.NativeType) {
 		return a.routerComponentReadback(ctx, request)

@@ -8,6 +8,9 @@ import (
 )
 
 func (a *action) routerComponentIncarnationKey() string {
+	if a.kind.NativeType == routerType {
+		return "id"
+	}
 	if a.kind.NativeType == cloudNatType {
 		return cloudNatRouterID
 	}
@@ -18,6 +21,9 @@ func (a *action) routerComponentIncarnationKey() string {
 }
 
 func (a *action) routerComponentDeletePhase() string {
+	if a.kind.NativeType == routerType {
+		return "router_delete"
+	}
 	if a.kind.NativeType == cloudNatType {
 		return "cloud_nat_delete"
 	}
@@ -28,6 +34,9 @@ func (a *action) routerComponentDeletePhase() string {
 }
 
 func (a *action) routerComponentConfiguration(data map[string]any) string {
+	if a.kind.NativeType == routerType {
+		return text(data[routerReview])
+	}
 	if a.kind.NativeType == cloudNatType {
 		return firewallDigest(cloudNatConfiguration(data))
 	}

@@ -107,6 +107,18 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 		if err := checkListCompleteness(response.Data); err != nil {
 			return nil, err
 		}
+		if operation.ID == routePolicyList || operation.ID == namedSetList {
+			if raw, present := response.Data["result"]; present {
+				if _, ok := raw.([]any); !ok {
+					return nil, groupDenied("router_child_list_invalid")
+				}
+			}
+			if raw, present := response.Data["nextPageToken"]; present {
+				if _, ok := raw.(string); !ok {
+					return nil, groupDenied("router_child_pagination_invalid")
+				}
+			}
+		}
 		if operation.Call.Product == "config" {
 			if err := infraListShape(response.Data, itemsPath); err != nil {
 				return nil, err

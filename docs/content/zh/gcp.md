@@ -65,6 +65,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
 | Hyperdisk 存储池 | 原生池、容量与性能用量、预配模式和磁盘成员 | 支持盘点和经审查的清理 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
+| Cloud Router | 原生路由器配置、NAT 影响和策略／集合前置步骤 | 支持审查后的父资源删除及 NAT 级联 |
 | Cloud NAT | 各路由器的公共/私有 NAT 配置、规则及子网/IP 引用 | 支持独立删除，保留其他 NAT 和所属路由器 |
 | Cloud Router 命名集合 | 各路由器的前缀/社区集合、CEL 元素和指纹 | 审查引用后删除，先清理引用它的策略 |
 | Cloud Router BGP 策略 | 各路由器的导入/导出策略、CEL 条款和指纹 | 支持解除 BGP 引用后原生独立删除 |
@@ -245,7 +246,7 @@ Steward 在各路由器所属地域分页列举策略，并逐条读取详情；
 清理任务不能启动或继续相关修改。
 
 其他配置变化、原生依赖冲突及权限失败会明确报告，供重新审查。这些原生修改没有指纹
-前置条件，清理期间应避免并发修改策略或 BGP 对等体。父路由器级联清理仍待实现。
+前置条件，清理期间应避免并发修改策略或 BGP 对等体。
 本操作不会将命名集合或其他策略纳入删除范围。
 
 旧计划在启动或继续前会补齐缺失的顺序依赖，并保留步骤身份及已审查的资源快照。
@@ -277,17 +278,32 @@ CEL 语法错误或无法解析的计算所得集合名会使该策略扫描分�
 `compute.regionOperations.get` 权限。Steward 校验扫描时的集合版本和路由器身份，
 等待地域操作完成，并确认集合已不存在。策略读取不完整、引用无法解析、资源发生
 变化或云端冲突都会停止清理。详见[原生删除 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteNamedSet)。
-父路由器的级联清理审查仍待补齐。
+选择父 Router 清理时，其策略和命名集合会纳入前置删除步骤。
 
-## Cloud Router 盘点
+## Cloud Router 盘点与清理
 
 Router 扫描需要 `compute.routers.list` 和 `compute.routers.get` 权限。
 Steward 会逐一读取路由器的当前详情，核实身份后记录 NAT、BGP 和接口配置。
 详情读取被拒绝、资源消失、结果不完整或身份不匹配时，该扫描源会失败，并保留
 已有观测记录。MD5 认证材料会从库存和 API 日志中脱敏。
 
-Router 级联清理审查仍在完善。Google 明确说明，删除路由器会一并移除 NAT 网关；
-关联的 VPN 隧道和 VLAN attachment 则需要先删除。参阅 [Router GET 契约](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/get)
+选择 Router 清理前，应一同扫描路由器、NAT 配置、策略和命名集合。Steward 会完整
+列举并读取原生子资源，核对扫描时的配置；未纳入盘点的子资源会阻止清理。策略和命名
+集合成为独立的前置删除步骤，已审查的 NAT 纳入父资源删除影响，不能在删除 Router
+的同时保留。单独清理 NAT 的能力仍然保留。
+
+生命周期审查还需要 `compute.routers.listRoutePolicies`、
+`compute.routers.getRoutePolicy`、`compute.routers.listNamedSets` 和
+`compute.routers.getNamedSet`。父资源删除需要 `compute.routers.delete`、
+`compute.regionOperations.get`，以及各前置步骤所需权限。Steward 调用原生
+[Router DELETE](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/delete)，
+在重启后继续等待已绑定的地域操作，确认父资源和前置资源不存在后记录 NAT 级联结果。
+该级联流程不会另外发送 NAT 或地址资源删除请求。
+
+关联的 VPN 隧道和 VLAN attachment 会阻止此清理；应先移除关联资源、重新扫描，
+再创建 Router 任务。其他配置变化也需要重新审查。读取与原生删除不是原子操作，
+清理期间应避免外部修改。缺少配置审查的旧 Router 任务需要重新扫描；结果不明的旧
+操作回执仍会保持阻塞，等待恢复能力补齐。参阅 [Router GET 契约](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/get)
 和[路由器删除指南](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers)。
 
 ## Cloud NAT 网关
@@ -321,5 +337,5 @@ NAT 删除与父 Router、路由策略及命名集合共用顺序依赖和跨任
 原生 PATCH 没有配置版本条件，最后一次读取与更新之间仍可能受到外部并发写入
 影响；清理期间应避免在外部修改该路由器的 NAT 配置。参阅
 [原生 PATCH 与请求 ID 契约](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/patch)。
-父路由器的级联清理审查仍待完成。
+选择父 Router 清理时，已审查的 NAT 会纳入其删除影响。
 Google 明确说明，[删除路由器也会删除其中的 Cloud NAT 网关](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers)。

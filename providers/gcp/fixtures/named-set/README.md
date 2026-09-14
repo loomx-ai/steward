@@ -115,8 +115,8 @@ Independent set-only cleanup and policy-only set retention are also tested.
 
 These tests are protocol/application evidence. The inspected mockgcp router
 implementation remains insufficient for independent named-set backend acceptance;
-no live-cloud acceptance is claimed. Computed CEL names and parent-router cascade
-review remain unfinished.
+no live-cloud acceptance is claimed. Computed CEL names remain unfinished.
+Reviewed parent cascade is covered in [Router evidence](../router/README.md).
 
 The IAM permission sections of the official REST pages were checked for
 `routers.get`, `routers.getNamedSet`, `routers.listRoutePolicies`,
