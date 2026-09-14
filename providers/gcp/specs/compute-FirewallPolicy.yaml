@@ -28,6 +28,9 @@ discovery:
     identityPath: name
 fields:
   name:
+    path: name
+    type: string
+  shortName:
     path: shortName
     type: string
   resourceId:

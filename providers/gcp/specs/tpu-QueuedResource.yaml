@@ -37,6 +37,9 @@ fields:
     path: project_id
     type: string
   state:
+    path: state
+    type: object
+  lifecycleState:
     path: state.state
     type: string
   createTime:

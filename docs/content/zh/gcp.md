@@ -30,6 +30,18 @@ Steward 支持标准 Google Cloud 端点的服务账号 JSON 密钥，不会使�
 
 **完成标志：** 能找到预期资源，所属项目和位置正确，扫描没有尚未处理的失败项。Cloud Asset Inventory 存在收集延迟，新建资源可能需要稍后重扫。
 
+## 按资源属性搜索
+
+选择资源类型后，搜索补全会显示它支持的属性字段。已有库存会在下一次成功扫描后获得新增属性。例如：
+
+```text
+type = "compute.googleapis.com/StoragePool" AND properties.provisionedCapacityGiB = "20480"
+type = "compute.googleapis.com/FirewallPolicy" AND properties.shortName = "hierarchical-policy"
+type = "tpu.googleapis.com/QueuedResource" AND properties.lifecycleState = "ACTIVE"
+```
+
+容量、数量等原生 64 位整数字符串需要使用引号包裹查询值。防火墙策略的 `properties.name` 是原生数字名称，`properties.shortName` 是显示名称。TPU 排队资源保留结构化的 `properties.state`，可用 `properties.lifecycleState` 查询其中的状态值。各资源类型仍可使用顶层 `state` 字段搜索状态。
+
 ## 盘点与清理范围
 
 Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 用于补充发现其他类型，作为只读资源展示。产品扫描分片失败时会明确报告，也不会据此认定资源已不存在。

@@ -4909,3 +4909,46 @@ background evidence only, not acceptance evidence for this work.
   The exact temporary server exited normally; its upstream checkout and binary
   were removed. Three owned files were integrated, preserving all 65 preexisting
   working-file hashes. Production code, API metadata and frontend remain unchanged.
+
+## GCP declared inventory property projection
+
+- Every successful public inventory result now resolves declared aliases after
+  native discovery, service enrichment, proof construction and sanitization.
+  This covers product APIs and specialized sources without changing their
+  internal parent discovery data. Existing native keys are preserved; alias
+  values are resolved together so map iteration cannot create alias chains.
+- Corrected ten specifications against their retained native GET schemas:
+  SQL/Subnetwork/Pub/Sub state fields, IAM/Dataproc project IDs, native Dataproc
+  policy/template names plus short resource IDs, firewall numeric/display names,
+  and TPU queued state objects plus their scalar lifecycle state. The native
+  catalog and operation definitions are unchanged.
+- Firewall configuration comparison ignores derived project/resource/date aliases
+  while preserving native ID, creation timestamp, fingerprint and rule checks.
+  The existing native-change/tampered-plan tests remain the regression boundary.
+  Organization policies acquire no project ownership from alias projection.
+  Infra Manager physical-resource comparison removes only declared aliases that
+  still equal their native source values; native fields and inconsistent aliases
+  remain checked. Registered deployment/deployment-group lifecycle tests cover
+  this distinction across review, execution, retention and restart.
+- Native Dataproc, TPU and firewall fixtures exercise validated property queries
+  alongside action identity/configuration checks. StoragePool's SQLite scan worker
+  now verifies enriched member aliases, exact capacity strings and real SQL query
+  results across failures, database/runtime reopening and absence reconciliation.
+  Existing native keys and sanitized raw observations remain intact; unknown kinds
+  receive no invented properties. Bilingual Google Cloud docs explain queries,
+  exact integer strings and the next successful scan needed for older inventory.
+- All eight overall criteria remain open. These changes improve property parity;
+  they do not establish new native APIs, permissions or live-cloud equivalence.
+- Final validation passed: full `go test ./... -count=1` (Azure 353.800s,
+  GCP 172.515s); affected native lifecycle/property/query race suites (GCP 39.134s,
+  inventory 1.560s, resourcequery 1.948s); vet; main integration (GCP 12.426s,
+  inventory 0.576s, resourcequery 0.704s). The earlier full GCP race attempt on
+  superseded source reached its 10-minute suite timeout; final race verification
+  targeted the affected paths. Documentation checks passed for 30 isolated and
+  42 main chapters plus 10 original screenshots.
+- Both firewall and FutureReservation independent Google mockgcp tests passed
+  again in isolated and main workspaces. Existing explicit firewall list/CRM
+  substitutions remain documented; FutureReservation Compute responses are
+  unmodified. The exact server exited normally, and its temporary source checkout
+  and binary were removed. Nineteen owned files preserve all 65 original working
+  file hashes. No catalog/API generation or frontend changes were required.

@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+	"reflect"
 	"slices"
 	"strings"
 	"time"
@@ -285,6 +286,22 @@ func infraPhysicalVisible(kind string, data map[string]any) string {
 	}
 	if kind == nodePoolType {
 		value["labels"] = object(value["config"])["resourceLabels"]
+	}
+	// Inventory adds declared query aliases after constructing the native proof.
+	// Strip only aliases that still equal their source; changed aliases must not
+	// hide tampering, and native fields (Path == field) remain part of the proof.
+	if metadata, err := providerData(); err == nil {
+		for _, compiled := range metadata.bundle.Specs {
+			if compiled.ResourceKind.NativeType != kind {
+				continue
+			}
+			for field, property := range compiled.Definition.Fields {
+				if property.Path != field && reflect.DeepEqual(value[field], productValue(data, property.Path)) {
+					delete(value, field)
+				}
+			}
+			break
+		}
 	}
 	return infraPhysicalConfiguration(value)
 }

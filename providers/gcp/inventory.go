@@ -83,6 +83,37 @@ func (c *client) assetPageResult(ctx context.Context, cursor, nativeType string,
 	return result, nil
 }
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
+	batch, err := r.list(ctx, request)
+	if err != nil {
+		return batch, err
+	}
+	for i := range batch.Items {
+		r.projectProperties(&batch.Items[i])
+	}
+	return batch, nil
+}
+
+// Apply declared aliases after native discovery, proof construction, redaction
+// and service enrichment. Native keys remain authoritative for cleanup consumers.
+func (r *Runtime) projectProperties(item *contracts.InventoryItem) {
+	definition, _ := r.productDefinition(item.NativeType)
+	properties := map[string]any{}
+	for field, property := range definition.Fields {
+		if _, exists := item.Normalized[field]; exists {
+			continue
+		}
+		if value := productValue(item.Normalized, property.Path); value != nil {
+			properties[field] = value
+		}
+	}
+	// Resolve every path against the same native observation, not aliases added
+	// earlier in this iteration; Go map order must not affect the projection.
+	for field, value := range properties {
+		item.Normalized[field] = value
+	}
+}
+
+func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
 	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource && request.Source != organizationInventorySource && request.Source != identityInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported GCP inventory source")
 	}
@@ -347,16 +378,6 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	}
 	if zone := text(data["zone"]); zone != "" {
 		normalized["zone_id"] = last(zone)
-	}
-	if nativeType == "compute.googleapis.com/FutureReservation" {
-		// Keep the native payload and materialize the declared properties so
-		// filters can address nested procurement metadata without losing int64s.
-		definition, _ := r.productDefinition(nativeType)
-		for field, property := range definition.Fields {
-			if value := productValue(normalized, property.Path); value != nil {
-				normalized[field] = value
-			}
-		}
 	}
 	networkRefs := []string{}
 	for target, values := range refs {

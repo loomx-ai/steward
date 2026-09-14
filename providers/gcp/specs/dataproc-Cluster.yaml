@@ -47,7 +47,7 @@ fields:
     path: virtualClusterConfig
     type: object
   projectId:
-    path: project_id
+    path: projectId
     type: string
   labels:
     path: labels

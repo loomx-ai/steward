@@ -148,7 +148,7 @@ func (c *client) firewallResourceOperation(kind, id, method string) (catalog.Ope
 func firewallConfiguration(data map[string]any, base bool) string {
 	value := cloneParameters(data)
 	for key := range value {
-		if strings.HasPrefix(key, "_") || strings.HasPrefix(key, "refs_") || slices.Contains([]string{"project_id", "project_number", "vpc_id", "subnet_ids", "vswitch_id", "cleanup_protected", "cleanup_protection_reason"}, key) || base && (key == "associations" || key == "fingerprint") {
+		if strings.HasPrefix(key, "_") || strings.HasPrefix(key, "refs_") || slices.Contains([]string{"project_id", "project_number", "projectId", "resourceId", "createdAt", "vpc_id", "subnet_ids", "vswitch_id", "cleanup_protected", "cleanup_protection_reason"}, key) || base && (key == "associations" || key == "fingerprint") {
 			delete(value, key)
 		}
 	}

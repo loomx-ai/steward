@@ -30,6 +30,24 @@ Steward accepts service account JSON keys for the standard Google Cloud endpoint
 
 **Success check:** Expected resources appear under the correct project and location, with no unresolved scan failures. Cloud Asset Inventory has collection delays, so newly created resources may require another scan later.
 
+## Search resource properties
+
+Select a resource type to see its supported property fields in search completion.
+Existing inventory gains newly supported fields after the next successful scan.
+For example:
+
+```text
+type = "compute.googleapis.com/StoragePool" AND properties.provisionedCapacityGiB = "20480"
+type = "compute.googleapis.com/FirewallPolicy" AND properties.shortName = "hierarchical-policy"
+type = "tpu.googleapis.com/QueuedResource" AND properties.lifecycleState = "ACTIVE"
+```
+
+Capacity and count fields represented as native 64-bit integer strings use quoted
+values. A firewall policy's `properties.name` is its native numeric name;
+`properties.shortName` is its display name. TPU queued resources expose their
+structured native `properties.state` alongside the searchable `properties.lifecycleState`.
+The top-level `state` search field remains available across resource types.
+
 ## Inventory and supported cleanup
 
 Steward lists the resources below through their native product APIs. Cloud Asset Inventory adds broad discovery for other types, which appear as read-only inventory. A failed product shard is reported and cannot establish resource absence.

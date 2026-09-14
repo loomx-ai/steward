@@ -31,6 +31,9 @@ discovery:
     identityPath: name
 fields:
   name:
+    path: name
+    type: string
+  resourceId:
     path: id
     type: string
   version:

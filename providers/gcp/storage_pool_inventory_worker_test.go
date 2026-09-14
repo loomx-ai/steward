@@ -11,6 +11,7 @@ import (
 	"github.com/loomx-ai/steward/internal/app/inventory"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/core/resourcequery"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/persistence/sqlite"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -127,6 +128,10 @@ func TestStoragePoolSQLiteScanFailureAndReconciliation(t *testing.T) {
 			if value.ClosedAt != nil {
 				closed++
 			}
+			projectedMembers, projected := value.Normalized["memberDisks"].([]any)
+			if !projected || len(projectedMembers) != expectedMembers || value.Normalized["provisionedCapacityGiB"] != "20480" || value.Normalized["projectId"] != "sample-project" {
+				t.Fatal("declared pool properties not projected after member enrichment", step, value)
+			}
 			if value.Normalized["id"] != "9007199254740993" || value.Normalized["poolProvisionedCapacityGb"] != "20480" || !value.Capabilities.Has(asset.CapabilityActionable) {
 				t.Fatal("persisted pool metadata changed", value)
 			}
@@ -137,6 +142,17 @@ func TestStoragePoolSQLiteScanFailureAndReconciliation(t *testing.T) {
 		}
 		if closed != expected {
 			t.Fatal("failed scan established absence", step, closed)
+		}
+		query, err := resourcequery.Parse(`type = "compute.googleapis.com/StoragePool" AND properties.projectId = "sample-project" AND properties.provisionedCapacityGiB = "20480" AND properties.diskCount = "2"`)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := query.Validate([]asset.ResourceKind{kind}); err != nil {
+			t.Fatal(err)
+		}
+		filtered, err := repo.Inventory().ListAssets(t.Context(), persistence.ListOptions{Limit: 10, ResourceQuery: query})
+		if err != nil || len(filtered.Items) != 2-expected {
+			t.Fatal("persisted typed property query lost active pools", step, filtered, err)
 		}
 		now = now.Add(time.Minute)
 	}

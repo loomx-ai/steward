@@ -64,7 +64,7 @@ func TestFutureReservationProcurementState(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if item.State != state || item.Normalized["state"] != state || item.Normalized["planningStatus"] != "SUBMITTED" || object(item.Normalized["lastKnownGoodState"])["procurementStatus"] != "APPROVED" {
+			if item.State != state || item.Normalized["planningStatus"] != "SUBMITTED" || productValue(item.Normalized, "status.lastKnownGoodState.procurementStatus") != "APPROVED" {
 				t.Fatal("procurement/planning/amendment history conflated", item)
 			}
 			driver := protocolAction(t, futureReservationTestType, "projects/sample-project/zones/us-central1-a/futureReservations/fixture", transport)
@@ -216,11 +216,16 @@ func TestFutureReservationFixturesMatchOfficialSchemas(t *testing.T) {
 		}
 	}
 	runtime := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
-		t.Fatalf("unexpected API %s", req.URL)
-		return nil, nil
+		if req.Method != "GET" || req.URL.Path != "/compute/v1/projects/sample-project/aggregated/futureReservations" {
+			t.Fatalf("unexpected API %s", req.URL)
+		}
+		return dataformResponse(req, 200, map[string]any{"items": map[string]any{"zones/us-central1-a": map[string]any{"futureReservations": []any{futureReservationStorageFixture()}}}}), nil
 	})
-	data := futureReservationStorageFixture()
-	item, err := runtime.inventoryItem(&client{project: "sample-project"}, map[string]any{"assetType": futureReservationTestType, "name": data["selfLink"], "resource": map[string]any{"data": data}})
+	batch, err := runtime.List(t.Context(), productRequest(runtime, futureReservationTestType, "us-central1"))
+	if err != nil || len(batch.Items) != 1 {
+		t.Fatal("native storage reservation list", batch, err)
+	}
+	item := batch.Items[0]
 	if err != nil || productValue(item.Normalized, "storagePoolProperties.requestedStoragePoolProvisionedCapacity.poolProvisionedCapacityGb") != "9007199254740993" || productValue(item.Normalized, "storagePoolProvisionedCapacity.poolProvisionedCapacityGb") != "9007199254740992" || item.Normalized["requestedInstanceCount"] != nil || len(item.NetworkReferences) != 0 {
 		t.Fatal("storage capacity created an instance count or pool identity", item, err)
 	}
