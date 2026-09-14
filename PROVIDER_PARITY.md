@@ -6464,3 +6464,28 @@ conversion remain reproducible.
 This is native protocol and real application-persistence evidence. Independent
 emulation, real-cloud regional behavior, project trial history, cluster settings
 and broader provider acceptance remain unfinished. All eight criteria stay open.
+
+
+### Known SCC cluster service reads and project GET response validation
+
+Added the cluster SecurityCenterService GET from the unchanged pinned SDK. The
+native supplied name binds the exact cluster path and selected project; module
+filtering is explicit, response identity/settings are checked and private service
+configuration is redacted. Existing project service Invoke previously returned
+unvalidated response identities/settings; it now applies the same validation.
+Retained tests cover wrong project/location/service/cluster, malformed and partial
+responses, permission/404, cancellation, request IDs, number aliases, native method
+binding, optional filters, future states and rejected mutation/invalid methods.
+A counterfactual run against the preceding commit reproduces eight invalid project
+GET responses being accepted. Transport-log regression tests also cover missing,
+malformed and misleading native names and nested LIST entries: log copies redact
+serviceConfig before validation, retaining raw internal data and typed Cloud
+Functions inventory configuration. All 810 previous operations and SDK member
+bytes remain unchanged.
+
+This is a known-name native read, not complete cluster inventory. The SDK provides
+no cluster service LIST; CLI references document only project/folder/organization
+parents, and the cluster REST page was unavailable during the audit. Complete
+cluster enumeration and verified GKE name/immutable-ID mapping remain unfinished.
+No speculative GKE address join, cluster mutation, emulator or cloud deployment
+was introduced. Broader provider acceptance and all eight criteria remain open.

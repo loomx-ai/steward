@@ -4643,7 +4643,8 @@
       "read_operations": [
         "securitycentermanagement.projects.locations.securityCenterServices.get",
         "securitycentermanagement.folders.locations.securityCenterServices.get",
-        "securitycentermanagement.organizations.locations.securityCenterServices.get"
+        "securitycentermanagement.organizations.locations.securityCenterServices.get",
+        "securitycentermanagement.projects.locations.clusters.securityCenterServices.get"
       ],
       "list_operations": [
         "securitycentermanagement.projects.locations.securityCenterServices.list"
@@ -4831,7 +4832,8 @@
         "securitycentermanagement.folders.locations.securityCenterServices.get",
         "securitycentermanagement.organizations.locations.securityCenterServices.list",
         "securitycentermanagement.organizations.locations.securityCenterServices.get",
-        "securitycentermanagement.organizations.locations.getBillingMetadata"
+        "securitycentermanagement.organizations.locations.getBillingMetadata",
+        "securitycentermanagement.projects.locations.clusters.securityCenterServices.get"
       ]
     }
   ]

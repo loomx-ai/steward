@@ -129517,6 +129517,26 @@
             "response": {
               "$ref": "BillingMetadata"
             }
+          },
+          "securitycentermanagement.projects.locations.clusters.securityCenterServices.get": {
+            "httpMethod": "GET",
+            "id": "securitycentermanagement.projects.locations.clusters.securityCenterServices.get",
+            "parameters": {
+              "name": {
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/clusters/[^/]+/securityCenterServices/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "showEligibleModulesOnly": {
+                "location": "query",
+                "type": "boolean"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "SecurityCenterService"
+            }
           }
         },
         "name": "securitycentermanagement",
@@ -129891,6 +129911,20 @@
               "name": {
                 "required": true,
                 "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "SecuritycentermanagementProjectsLocationsClustersSecurityCenterServicesGetRequest": {
+            "description": "A SecuritycentermanagementProjectsLocationsClustersSecurityCenterService\nsGetRequest object.\n\nFields:\n  name: Required. The Security Command Center service to retrieve, in one of\n    the following formats: * organizations/{organization}/locations/{locatio\n    n}/securityCenterServices/{service} *\n    folders/{folder}/locations/{location}/securityCenterServices/{service} *\n    projects/{project}/locations/{location}/securityCenterServices/{service}\n    * projects/{project}/locations/{location}/clusters/{cluster}/securityCen\n    terServices/{service} The following values are valid for `{service}`: *\n    `container-threat-detection` * `event-threat-detection` * `security-\n    health-analytics` * `vm-threat-detection` * `web-security-scanner` *\n    `vm-threat-detection-aws` * `cloud-run-threat-detection` * `external-\n    exposure` * `vm-manager` * `ec2-vulnerability-assessment` * `gce-\n    vulnerability-assessment` * `azure-vulnerability-assessment` *\n    `notebook-security-scanner` * `artifact-analysis` * `agent-engine-\n    threat-detection`\n  showEligibleModulesOnly: Optional. Indicates whether to show only modules\n    that are available in your Security Command Center service tier. By\n    default, all modules are shown.",
+            "id": "SecuritycentermanagementProjectsLocationsClustersSecurityCenterServicesGetRequest",
+            "properties": {
+              "name": {
+                "required": true,
+                "type": "string"
+              },
+              "showEligibleModulesOnly": {
+                "type": "boolean"
               }
             },
             "type": "object"
@@ -138667,7 +138701,8 @@
         "read_operations": [
           "securitycentermanagement.projects.locations.securityCenterServices.get",
           "securitycentermanagement.folders.locations.securityCenterServices.get",
-          "securitycentermanagement.organizations.locations.securityCenterServices.get"
+          "securitycentermanagement.organizations.locations.securityCenterServices.get",
+          "securitycentermanagement.projects.locations.clusters.securityCenterServices.get"
         ]
       },
       "scopeKinds": [

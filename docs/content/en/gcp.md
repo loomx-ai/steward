@@ -244,6 +244,14 @@ project fail the page without replacing previous observations. Ancestors that st
 being visible retain their original last-seen time. This does not enumerate other
 projects or every private organization location. No ancestor settings are modified.
 
+The native cluster service GET is available for an already known
+`projects/.../locations/.../clusters/.../securityCenterServices/...` name through
+`securitycentermanagement.projects.locations.clusters.securityCenterServices.get`.
+It validates the selected project and returned identity/settings, with the same
+`securitycentermanagement.securityCenterServices.get` permission and redaction.
+Automatic cluster service enumeration and GKE identifier mapping remain unverified;
+this does not establish cluster-wide threat-detector coverage.
+
 Organization subscription inventory shows the current Security Command Center tier
 and the latest subscription's type, start time and end time. The latest subscription
 may already have ended; its dates do not imply that a paid tier is currently active.

@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "5a1b30017ea94f1dae9121f860f878942164e4f8ae790823f62c7459aaa4d361",
+    "checksum": "45ec6081852d2788345d34ce7741525e1de3cf05b0bbba733e5f8cca302f4bb3",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "0a66cb750f19b0936b65e0acf229bef040f4aa9bdb9744901edfe1647e33b447",
+  "content_checksum": "b65bbf45c5b455de073c6ad0b2fdae388859cf46cda465056b01b48f81c56657",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -109214,6 +109214,84 @@
       "source_format": "google-cloud-sdk"
     },
     {
+      "id": "securitycentermanagement.projects.locations.clusters.securityCenterServices.get",
+      "name": "get",
+      "service": "securitycentermanagement",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/clusters/[^/]+/securityCenterServices/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "showEligibleModulesOnly": {
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a particular Security Command Center service. This includes\nsettings information such as top-level enablement in addition to individual\nmodule settings. Service settings can be configured at the organization,\nfolder, or project level. Service settings at the organization or folder\nlevel are inherited by those in descendant folders and projects.\n\nEnums:\n  EffectiveEnablementStateValueValuesEnum: Output only. The effective\n    enablement state for the service at its level of the resource hierarchy.\n    If the intended state is set to `INHERITED`, the effective state will be\n    inherited from the enablement state of an ancestor. This state may\n    differ from the intended enablement state due to billing eligibility or\n    onboarding status.\n  IntendedEnablementStateValueValuesEnum: Optional. The intended enablement\n    state for the service at its level of the resource hierarchy. A\n    `DISABLED` state will override all module enablement states to\n    `DISABLED`.\n\nMessages:\n  ModulesValue: Optional. The module configurations, including the\n    enablement state for the service's modules. The absence of a module in\n    the map implies that its configuration is inherited from its parents.\n  ServiceConfigValue: Optional. Additional service-specific configuration.\n    Not all services will utilize this field.\n\nFields:\n  effectiveEnablementState: Output only. The effective enablement state for\n    the service at its level of the resource hierarchy. If the intended\n    state is set to `INHERITED`, the effective state will be inherited from\n    the enablement state of an ancestor. This state may differ from the\n    intended enablement state due to billing eligibility or onboarding\n    status.\n  intendedEnablementState: Optional. The intended enablement state for the\n    service at its level of the resource hierarchy. A `DISABLED` state will\n    override all module enablement states to `DISABLED`.\n  modules: Optional. The module configurations, including the enablement\n    state for the service's modules. The absence of a module in the map\n    implies that its configuration is inherited from its parents.\n  name: Identifier. The name of the service, in one of the following\n    formats: * `organizations/{organization}/locations/{location}/securityCe\n    nterServices/{service}` *\n    `folders/{folder}/locations/{location}/securityCenterServices/{service}`\n    * `projects/{project}/locations/{location}/securityCenterServices/{servi\n    ce}` * `projects/{project}/locations/{location}/clusters/{cluster}/secur\n    ityCenterServices/{service}` The following values are valid for\n    `{service}`: * `container-threat-detection` * `event-threat-detection` *\n    `security-health-analytics` * `vm-threat-detection` * `web-security-\n    scanner` * `vm-threat-detection-aws` * `cloud-run-threat-detection` *\n    `external-exposure` * `vm-manager` * `ec2-vulnerability-assessment` *\n    `gce-vulnerability-assessment` * `azure-vulnerability-assessment` *\n    `notebook-security-scanner` * `artifact-analysis` * `agent-engine-\n    threat-detection`\n  serviceConfig: Optional. Additional service-specific configuration. Not\n    all services will utilize this field.\n  updateTime: Output only. The time the service was last updated. This could\n    be due to an explicit user update or due to a side effect of another\n    system change, such as billing subscription expiry.",
+        "id": "SecurityCenterService",
+        "properties": {
+          "effectiveEnablementState": {
+            "enum": [
+              "ENABLEMENT_STATE_UNSPECIFIED",
+              "INHERITED",
+              "ENABLED",
+              "DISABLED",
+              "INGEST_ONLY"
+            ],
+            "type": "string"
+          },
+          "intendedEnablementState": {
+            "enum": [
+              "ENABLEMENT_STATE_UNSPECIFIED",
+              "INHERITED",
+              "ENABLED",
+              "DISABLED",
+              "INGEST_ONLY"
+            ],
+            "type": "string"
+          },
+          "modules": {
+            "$ref": "SecurityCenterService.ModulesValue"
+          },
+          "name": {
+            "type": "string"
+          },
+          "serviceConfig": {
+            "$ref": "SecurityCenterService.ServiceConfigValue"
+          },
+          "updateTime": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "securitycentermanagement",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://securitycentermanagement.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz",
+      "source_format": "google-cloud-sdk"
+    },
+    {
       "id": "securitycentermanagement.projects.locations.getBillingMetadata",
       "name": "getBillingMetadata",
       "service": "securitycentermanagement",
@@ -118948,7 +119026,8 @@
         "read_operations": [
           "securitycentermanagement.projects.locations.securityCenterServices.get",
           "securitycentermanagement.folders.locations.securityCenterServices.get",
-          "securitycentermanagement.organizations.locations.securityCenterServices.get"
+          "securitycentermanagement.organizations.locations.securityCenterServices.get",
+          "securitycentermanagement.projects.locations.clusters.securityCenterServices.get"
         ],
         "list_operations": [
           "securitycentermanagement.projects.locations.securityCenterServices.list"

@@ -80,6 +80,8 @@ func (c *client) securitySettingsOperation(metadata providerMetadata, nativeType
 	parts := strings.Split(name, "/")
 	billing := nativeType == securityBillingType
 	valid := len(parts) == 6 && parts[4] == "securityCenterServices" && nativeType == securityServiceType
+	cluster := len(parts) == 8 && parts[0] == "projects" && parts[4] == "clusters" && parts[6] == "securityCenterServices" && nativeType == securityServiceType
+	valid = valid || cluster
 	if billing {
 		valid = len(parts) == 5 && parts[4] == "billingMetadata" && (parts[0] == "projects" || parts[0] == "organizations")
 	}
@@ -99,6 +101,9 @@ func (c *client) securitySettingsOperation(metadata providerMetadata, nativeType
 		return catalog.Operation{}, nil, groupDenied("security_service_container_invalid")
 	}
 	operationID := "securitycentermanagement." + parts[0] + ".locations.securityCenterServices.get"
+	if cluster {
+		operationID = securityClusterServiceGet
+	}
 	if billing {
 		operationID = "securitycentermanagement." + parts[0] + ".locations.getBillingMetadata"
 	}

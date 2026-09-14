@@ -21,8 +21,8 @@ settings separately, retaining `configurationParent` and omitting project owners
 fields on ancestor records. Four native SDK GET/LIST methods implement these reads.
 No folder/organization locations LIST exists in the pinned SDK, so ancestor reads
 use project-visible locations (or the explicitly selected global scope). This does
-not enumerate every private location or other projects. Cluster-specific settings
-remain outside this rule. The service API has
+not enumerate every private location or other projects. Automatic cluster-specific discovery
+remains outside this rule. The service API has
 GET/LIST/PATCH and no resource DELETE. This inventory implements the read-only
 security-service-state baseline; it neither disables protection nor changes a
 subscription. [Organization subscriptions](../security-subscription/README.md) and
@@ -97,3 +97,38 @@ These remain protocol/application evidence; the pinned mockgcp has no such servi
 
 - [Folder service list](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/folders.locations.securityCenterServices/list)
 - [Organization service list](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations.securityCenterServices/list)
+
+## Known cluster service GET
+
+The unchanged pinned SDK includes
+`securitycentermanagement.projects.locations.clusters.securityCenterServices.get`
+with `GET /v1/{name=projects/*/locations/*/clusters/*/securityCenterServices/*}`.
+The runtime now binds this exact method for a supplied native cluster service
+name, limits it to the selected project (including its verified number alias),
+checks the returned complete service identity/settings and redacts serviceConfig.
+The same response validation now applies to the existing project service GET.
+Optional showEligibleModulesOnly remains an explicit caller choice; default reads
+do not add a module filter. No PATCH, DELETE or cluster service LIST is registered.
+
+The SDK has cluster GET/PATCH but no cluster service LIST. The current official
+[CLI describe reference](https://docs.cloud.google.com/sdk/gcloud/reference/scc/manage/services/describe)
+only documents organization, folder and project parents. The cluster REST reference
+was not accessible during this audit. These sources do not establish a complete
+cluster enumeration or prove how every native cluster component maps to GKE names
+versus immutable IDs. Automatic inventory fanout therefore remains unfinished;
+the runtime does not synthesize cluster addresses from GKE list records. A known
+GET does not claim daemon deployment or effective protection on every cluster.
+
+Protocol tests exercise the exact cluster/project GETs, native request IDs,
+project-number response aliases, optional module filtering, future states,
+redaction, 403/404, cancellation, wrong response owner/location/service/cluster,
+malformed settings, incomplete responses, and invalid/mutation operation rejection.
+Offline SDK conversion checks verify the exact native path and response declaration.
+This is retained native SDK/protocol evidence, not emulator or live-cloud execution.
+
+Transport logging happens before response validation. Retained tests therefore
+exercise missing, malformed and misleading names, config-only responses and nested
+LIST entries. Log envelopes redact serviceConfig without trusting response names;
+internal response data and typed Cloud Functions inventory configuration remain
+available. A counterfactual run on the preceding commit reproduces eight invalid
+project GET responses that the added response validation now rejects.

@@ -199,6 +199,12 @@ Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。可选择�
 不再可见的祖先设置保留原观测时间。这不涵盖其他项目或组织中的所有私有地域，
 也不会修改任何祖先设置。
 
+已知 `projects/.../locations/.../clusters/.../securityCenterServices/...` 名称时，
+可调用原生 `securitycentermanagement.projects.locations.clusters.securityCenterServices.get`。
+读取会核验连接项目、返回身份和设置，并继续脱敏；使用相同的
+`securitycentermanagement.securityCenterServices.get` 权限。自动集群服务枚举及 GKE
+标识映射仍待核实，此能力不代表已验证所有集群的威胁检测覆盖。
+
 组织订阅盘点展示 Security Command Center 当前套餐，以及最近一次订阅的类型、开始时间和结束时间。
 最近一次订阅可能已经结束；这些时间不代表当前仍在使用付费套餐，Steward 会单独保留原生套餐字段。
 盘点沿当前项目的祖先关系读取所属组织，并在读取后复核祖先关系。项目迁移或权限丢失会保留之前的记录。

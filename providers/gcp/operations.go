@@ -43,6 +43,15 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if securityServiceAncestorOperation(operation.ID) {
 		return c.invokeAncestorSecurityService(ctx, operation, parameters)
 	}
+	if operation.ID == securityProjectServiceGet || operation.ID == securityClusterServiceGet {
+		matched, _, err := c.securitySettingsOperation(metadata, securityServiceType, text(parameters["name"]), "GET")
+		if err != nil {
+			return contracts.InvocationResult{}, err
+		}
+		if matched.ID != operation.ID {
+			return contracts.InvocationResult{}, groupDenied("security_service_operation_mismatch")
+		}
+	}
 	if operation.ID == securitySubscriptionGet {
 		if _, err := catalog.BindREST(operation, parameters); err != nil {
 			return contracts.InvocationResult{}, err
@@ -157,6 +166,11 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 			kind, parameter = namedSetType, "namedSet"
 		}
 		if err := routerComponentData(kind, object(result.Data["resource"]), text(parameters[parameter])); err != nil {
+			return contracts.InvocationResult{}, err
+		}
+	}
+	if operation.ID == securityProjectServiceGet || operation.ID == securityClusterServiceGet {
+		if err := c.securityServiceMetadata(result.Data, text(parameters["name"])); err != nil {
 			return contracts.InvocationResult{}, err
 		}
 	}

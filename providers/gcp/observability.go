@@ -15,6 +15,10 @@ func safePayload(value map[string]any) map[string]any {
 	if err != nil {
 		return map[string]any{}
 	}
+	// Transport log envelopes are created locally before response validation.
+	// Never trust a response name to identify private serviceConfig in logs;
+	// retain typed configuration for validated inventory and internal checks.
+	logPayload := value["body"] != nil && (value["status_code"] != nil || value["method"] != nil)
 	var redact func(any)
 	redact = func(value any) {
 		switch object := value.(type) {
@@ -34,7 +38,7 @@ func safePayload(value map[string]any) map[string]any {
 			redactDataprocPayload(object)
 			// Service-specific SCC configuration is an untyped private payload.
 			// Keep declared service/module enablement metadata available.
-			if strings.Contains(text(object["name"]), "/securityCenterServices/") {
+			if logPayload || strings.Contains(text(object["name"]), "/securityCenterServices/") {
 				if _, present := object["serviceConfig"]; present {
 					object["serviceConfig"] = "[REDACTED]"
 				}

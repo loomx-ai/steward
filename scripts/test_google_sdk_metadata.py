@@ -100,6 +100,13 @@ class SecurityServicesSDKMetadataTests(unittest.TestCase):
         # The native SDK has no ancestor locations LIST; don't fabricate one.
         for parent in ("folders", "organizations"):
             self.assertNotIn(f"securitycentermanagement.{parent}.locations.list", methods)
+        cluster_get = methods["securitycentermanagement.projects.locations.clusters.securityCenterServices.get"]
+        self.assertEqual(cluster_get["httpMethod"], "GET")
+        self.assertEqual(cluster_get["path"], "v1/{+name}")
+        self.assertEqual(cluster_get["parameters"]["name"]["pattern"], "^projects/[^/]+/locations/[^/]+/clusters/[^/]+/securityCenterServices/[^/]+$")
+        self.assertEqual(cluster_get["parameters"]["showEligibleModulesOnly"]["type"], "boolean")
+        self.assertEqual(cluster_get["response"], {"$ref": "SecurityCenterService"})
+        self.assertNotIn("securitycentermanagement.projects.locations.clusters.securityCenterServices.list", methods)
         fields = document["schemas"]["SecurityCenterService"]["properties"]
         self.assertIn("INGEST_ONLY", fields["effectiveEnablementState"]["enum"])
         self.assertEqual(document["schemas"]["SecurityCenterService.ModulesValue"]["additionalProperties"], {"$ref": "ModuleSettings"})

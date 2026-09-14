@@ -1,6 +1,8 @@
 package gcp
 
 const (
+	securityClusterServiceGet      = "securitycentermanagement.projects.locations.clusters.securityCenterServices.get"
+	securityProjectServiceGet      = "securitycentermanagement.projects.locations.securityCenterServices.get"
 	securityServiceHost            = "securitycentermanagement.googleapis.com"
 	securityServiceSource          = "security-services"
 	securityServiceType            = securityServiceHost + "/SecurityCenterService"
@@ -56,4 +58,16 @@ func (c *client) securityBillingMetadata(data map[string]any, name string) error
 		}
 	}
 	return nil
+}
+
+// A GET response must identify the requested service. Project-number aliases are
+// canonicalized, but a different cluster, location, service or project is not.
+func (c *client) securityServiceMetadata(data map[string]any, name string) error {
+	if c.canonicalName("//"+securityServiceHost+"/"+text(data["name"])) != c.canonicalName("//"+securityServiceHost+"/"+name) {
+		return groupDenied("security_service_identity_changed")
+	}
+	if err := checkListCompleteness(data); err != nil {
+		return err
+	}
+	return securityServiceSettings(data)
 }
