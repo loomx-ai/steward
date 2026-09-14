@@ -144,8 +144,8 @@ return its own native policy 404; the Router is then reread to reject parent
 recreation, incomplete responses or BGP changes during those absence checks.
 A still-present, denied or malformed sibling cannot authorize the merge. The
 immutable original review and both request UUIDs remain unchanged across restart.
-This permits sequential completed removals, not concurrent write coordination;
-Router PATCH still supplies no atomic configuration condition.
+This native merge preserves completed removals. Steward execution coordination
+is described below; Router PATCH still supplies no atomic configuration condition.
 
 `route_policy_multi_test.go` checks two policies sharing one scan, serialized
 receipts/runtime recreation, preservation of earlier removals and unrelated NAT
@@ -161,3 +161,48 @@ are locally authored protocol/application tests, not independent emulator proof.
 ```sh
 go test ./providers/gcp -run 'TestRoutePolicySequential|TestRoutePolicySibling|TestRoutePolicyLastRead|TestRoutePolicySQLiteSequential' -count=1
 ```
+
+
+## Shared Router mutation coordination
+
+Router, RouterNat, RoutePolicy and NamedSet delete steps now share the same
+connection/parent scope. Historical `gcp` and `google-cloud` partition names
+normalize to one scope. The planner preserves existing DAG prerequisites before
+adding same-parent serialization; other routers remain independent. The execution
+creation/continuation guard uses frozen identities, including older tasks without
+scope metadata, with inventory fallback for legacy tasks lacking snapshots.
+Corrupt snapshots or mismatched native parent identities cannot erase a scope.
+
+Before worker creation, old plans are upgraded in the same transaction without
+changing step IDs or reviewed assets. Continuing a plan that needs new edges
+requires terminal jobs and no unsettled previously invoked actions on the affected
+router. Metadata-only upgrades do not block already correctly ordered work.
+The connection/execution locks and durable worker dependencies are reused; no new
+scheduler, runtime dependency, database schema or native CAS is introduced.
+
+The existing read-only terminal-operation recovery remains NAT-only. In a policy
+flow, an old detach receipt can coexist with an already-issued native deletion
+whose later receipt was not saved. A DONE detach operation cannot release scope;
+full recovery for uncertain legacy multi-phase writes remains unfinished.
+
+`route_policy_multi_worker_test.go` now uses concurrency two, claims both worker
+jobs and repeatedly tries the dependent policy before its predecessor settles.
+It verifies no second mutation at each checkpoint, across database/runtime
+reopening. Both current plans and old plans with removed scope/ordering metadata
+complete, retain the Router and reconcile policy tombstones. The legacy case
+also fails the original jobs before invocation, removes ordering again and uses
+the real ContinueExecution service to persist the upgrade and resume the same
+execution and step IDs. A second task's
+execution request is rejected while the first occupies the Router.
+
+`router_configuration_test.go` covers every parent/component kind, cross-partition
+scope aliases, native/frozen/legacy inventory identities, forged annotations,
+malformed snapshots, different routers, terminal success, uncertain detach,
+legacy DAG ordering and continuation with resumed actions or expired worker
+leases. `order_test.go` rejects missing dependencies, duplicate identities and
+cycles. These are locally authored SQLite/protocol tests. Independent mock-server,
+live-cloud acceptance and full parent Router cascade remain unfinished.
+
+Execution coordination excludes only the exact attempt being continued, not all
+attempts belonging to the same task. Regression coverage rejects a fresh attempt
+against a still-occupied same-task scope while allowing the bound continuation.

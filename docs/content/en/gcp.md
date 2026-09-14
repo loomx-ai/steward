@@ -298,11 +298,23 @@ the current configuration and preserves earlier removals only after the native A
 confirms those sibling policies are absent. New references, reordered policies,
 changed peers or settings, and unreadable sibling policies stop execution.
 
+Steward serializes selected Router, NAT, policy and named-set deletions on the
+same router, even when execution concurrency is higher. Other routers can proceed
+independently. An overlapping cleanup task cannot start or continue while that
+router has an unresolved mutation.
+
 Other configuration changes, native dependency conflicts and permission failures
 are reported for review. These native mutations have no fingerprint precondition,
 so avoid concurrent policy or BGP peer edits during cleanup. Parent-router
 cascade handling remains pending. Named sets and other policies are not selected
 for deletion by this action.
+
+Older plans receive missing ordering dependencies before execution starts or
+continues, retaining their step identities and reviewed resource snapshots. If
+new dependencies would affect unfinished worker jobs or previously issued,
+unsettled cloud actions, continuation is blocked. A completed policy-detachment
+operation alone does not release the router: policy deletion has a second native
+phase whose outcome must also be accounted for.
 
 ## Cloud Router named sets
 
@@ -374,9 +386,10 @@ read. It needs `compute.routers.get`, `compute.routers.update` and
 configurations and leaves BGP peers, interfaces, keys and the router intact.
 Manual address resources are not explicitly deleted by this action.
 
-Steward runs same-router NAT deletions in sequence. An unresolved update in
-another cleanup task blocks a new update on that router. For failed or canceled
-tasks with no runnable jobs, Steward releases the block when it can verify that
+NAT deletion shares ordering and cross-task coordination with the containing
+Router, route policies and named sets. An unresolved update in another cleanup
+task blocks a new update on that router. For failed or canceled NAT actions with
+no runnable jobs, Steward releases the block when it can verify that
 no update was invoked or the original cloud operation has finished. This does
 not mark the old task or deletion as successful. Paused tasks and uncertain
 updates remain blocked; failed tasks can still be continued in their original task.

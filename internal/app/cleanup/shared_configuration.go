@@ -6,8 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"slices"
-	"strings"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -17,55 +15,50 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-const natMutationScope = "gcp_nat_mutation_scope"
+const natMutationScope = "gcp_nat_mutation_scope" // Legacy persisted key.
+const routerMutationScope = "gcp_router_mutation_scope"
 
 func solveCleanupPlan(input plan.Input) (plan.Result, error) {
 	result, err := plan.Solve(input)
 	if err != nil {
 		return result, err
 	}
-	scopes := map[asset.AssetID]string{}
-	for _, value := range input.Assets {
-		if value.Identity.Provider != asset.ProviderGCP || value.Identity.NativeType != "compute.googleapis.com/RouterNat" {
-			continue
-		}
-		parent, _, ok := strings.Cut(value.Identity.NativeID, "/nats/")
-		if ok {
-			scopes[value.ID] = string(value.Identity.ConnectionID) + "/" + value.Identity.Partition + "/" + parent
+	// Keep the solver's reviewable cycle blocker rather than turn it into a transport error.
+	for _, blocker := range result.Blockers {
+		if blocker.Code == plan.BlockDependencyCycle {
+			return result, nil
 		}
 	}
-	previous := map[string]plan.StepID{}
-	// Steps already have topological order. Adding an edge to an earlier sibling
-	// keeps that order acyclic and reuses durable worker prerequisite handling.
-	for i := range result.Steps {
-		step := &result.Steps[i]
-		scope := scopes[step.AssetID]
-		if scope == "" || step.Action != "delete" {
-			continue
+	scopes := map[asset.AssetID]string{}
+	for _, value := range input.Assets {
+		scope, err := routerScope(value.Identity)
+		if err != nil {
+			return result, err
 		}
-		if step.Evidence == nil {
-			step.Evidence = map[string]any{}
-		}
-		step.Evidence[natMutationScope] = scope
-		if prior := previous[scope]; prior != "" && !slices.Contains(step.DependsOn, prior) {
-			step.DependsOn = append(step.DependsOn, prior)
-		}
-		previous[scope] = step.ID
+		scopes[value.ID] = scope
+	}
+	result.Steps, _, err = serializeRouterSteps(result.Steps, scopes)
+	if err != nil {
+		return result, err
 	}
 	return result, nil
 }
 
 // Call under the connection row lock in the execution creation/resume transaction.
 // A paused run can retain an outstanding cloud operation, so it still owns scope.
-func (s *Service) guardSharedConfiguration(ctx context.Context, repositories persistence.Repositories, aggregate persistence.CleanupTaskAggregate) error {
+func (s *Service) guardSharedConfiguration(ctx context.Context, repositories persistence.Repositories, aggregate persistence.CleanupTaskAggregate, continuing execution.ExecutionID) error {
 	registry, _ := s.bundles.(ProviderActionRegistry)
-	return guardSharedConfiguration(ctx, repositories, aggregate, registry)
+	return guardSharedConfiguration(ctx, repositories, aggregate, registry, continuing)
 }
 
-func guardSharedConfiguration(ctx context.Context, repositories persistence.Repositories, aggregate persistence.CleanupTaskAggregate, registries ...ProviderActionRegistry) error {
+func guardSharedConfiguration(ctx context.Context, repositories persistence.Repositories, aggregate persistence.CleanupTaskAggregate, registry ProviderActionRegistry, continuing execution.ExecutionID) error {
+	selected, err := taskRouterScopes(ctx, repositories, aggregate)
+	if err != nil {
+		return err
+	}
 	scopes := map[string]bool{}
-	for _, step := range aggregate.Steps {
-		if scope, ok := step.Evidence[natMutationScope].(string); ok && scope != "" {
+	for _, scope := range selected {
+		if scope != "" {
 			scopes[scope] = true
 		}
 	}
@@ -81,28 +74,28 @@ func guardSharedConfiguration(ctx context.Context, repositories persistence.Repo
 			return err
 		}
 		for _, attempt := range page.Items {
-			if attempt.CleanupTaskID == string(aggregate.Task.ID) || attempt.Status == execution.ExecutionSucceeded {
+			if attempt.ID == continuing && attempt.CleanupTaskID == string(aggregate.Task.ID) || attempt.Status == execution.ExecutionSucceeded {
 				continue
 			}
 			other, err := repositories.CleanupTasks().GetTask(ctx, plan.CleanupTaskID(attempt.CleanupTaskID))
 			if err != nil {
 				return err
 			}
+			otherScopes, err := taskRouterScopes(ctx, repositories, other)
+			if err != nil {
+				return fmt.Errorf("%w: cannot identify previous router updates: %w", persistence.ErrConflict, err)
+			}
 			for _, step := range other.Steps {
-				scope, _ := step.Evidence[natMutationScope].(string)
+				scope := otherScopes[step.AssetID]
 				if !scopes[scope] {
 					continue
 				}
-				var registry ProviderActionRegistry
-				if len(registries) > 0 {
-					registry = registries[0]
-				}
 				settled, err := settleSharedConfiguration(ctx, repositories, other, attempt, step, registry)
 				if err != nil {
-					return fmt.Errorf("%w: cannot verify previous NAT update: %w", persistence.ErrConflict, err)
+					return fmt.Errorf("%w: cannot verify previous router update: %w", persistence.ErrConflict, err)
 				}
 				if !settled {
-					return fmt.Errorf("%w: another cleanup execution has an unresolved NAT update on this router", persistence.ErrConflict)
+					return fmt.Errorf("%w: another cleanup execution has an unresolved router update on this router", persistence.ErrConflict)
 				}
 			}
 		}
@@ -183,8 +176,13 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 	if err != nil {
 		return false, err
 	}
-	if reviewed.Identity.ConnectionID != attempt.ConnectionID || reviewed.Identity.Provider != asset.ProviderGCP || reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" {
+	if reviewed.Identity.ConnectionID != attempt.ConnectionID || reviewed.Identity.Provider != asset.ProviderGCP {
 		return false, fmt.Errorf("mutation recovery identity changed")
+	}
+	// Only NAT currently provides proof covering every possible native write.
+	// A policy's DONE detach receipt cannot rule out a later, unrecorded delete.
+	if reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" {
+		return false, nil
 	}
 	// ponytail: retain the database locks during rare recovery reads so a second
 	// execution cannot race settlement; cap lock duration rather than add a queue.

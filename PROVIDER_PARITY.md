@@ -5792,3 +5792,41 @@ background evidence only, not acceptance evidence for this work.
 - Focused native/SQLite checks passed (7.672s); focused GCP race checks passed
   (81.948s), GCP/internal vet passed, and isolated documentation checks passed
   for 30 chapters and 10 screenshots.
+
+
+### Shared Router mutation ordering and old-plan upgrades
+
+- Parent Router, Cloud NAT, route-policy and named-set delete steps now share one
+  connection/parent mutation scope. Historical GCP partition aliases normalize
+  together. Existing dependency DAG order is preserved before adding serial edges;
+  different routers remain independent. Frozen identities protect old tasks that
+  lack scope annotations; legacy inventory fallback and explicit reservations are
+  retained, while malformed snapshots fail closed.
+- Execution creation persists missing ordering before jobs are enqueued. Continue
+  preserves step IDs/reviews and upgrades metadata, but will not introduce new
+  dependencies around runnable old jobs or unsettled native actions. A reused core
+  topological sorter validates duplicate IDs, missing prerequisites and cycles.
+  Existing connection/execution locks and worker dependency handling are reused.
+- Real SQLite/native policy execution uses concurrency two and probes the waiting
+  sibling at every preceding phase, including runtime/database reopening. Current
+  and legacy plans complete, retain the Router and reconcile policy tombstones;
+  an overlapping task cannot start. The legacy case also resumes an actual failed
+  execution before native invocation, preserving its IDs and persisting the new
+  dependencies. Shared tests cover all four native kinds,
+  partition aliases, absent/forged annotations, malformed/mismatched identities,
+  separate routers, terminal actions and legacy continuation/expired leases.
+- Terminal operation recovery remains NAT-only: a completed policy detach does
+  not prove a later native deletion was never issued. Uncertain legacy multi-phase
+  recovery, full Router cascade and independent backend/live acceptance remain
+  unfinished. All eight overall acceptance criteria and the remaining provider
+  families remain open. Native catalog/source bytes and dependencies are unchanged.
+
+Execution coordination excludes only the exact attempt being continued, not all
+attempts belonging to the same task. Regression coverage rejects a fresh attempt
+against a still-occupied same-task scope while allowing the bound continuation.
+
+- Validation passed: all Go packages (Azure 360.935s, GCP 207.684s), subsequent
+  GCP/internal regression, focused race checks (GCP 98.799s), final cleanup/plan
+  race suites (20.359s/4.347s), native Router family checks (30.662s), static vet,
+  and bilingual documentation/screenshot checks. The continuation-specific native
+  race test also passed (14.205s). No independent backend/live acceptance claimed.

@@ -67,15 +67,19 @@ func TestCloudNatConcurrentExecutionsKeepScopeUntilVerifiedSuccess(t *testing.T)
 		if err := repositories.Executions().UpdateExecution(ctx, attempt); err != nil {
 			t.Fatal(err)
 		}
-		if err := guardSharedConfiguration(ctx, repositories, current); !errors.Is(err, persistence.ErrConflict) {
+		if err := guardSharedConfiguration(ctx, repositories, current, nil, ""); !errors.Is(err, persistence.ErrConflict) {
 			t.Fatal("unresolved sibling update was not blocked", status, err)
 		}
 	}
-	if err := guardSharedConfiguration(ctx, repositories, other); err != nil {
+	// A stale pre-lock task snapshot must not create a second overlapping run.
+	if err := guardSharedConfiguration(ctx, repositories, other, nil, ""); !errors.Is(err, persistence.ErrConflict) {
+		t.Fatal("same-task outstanding execution was ignored", err)
+	}
+	if err := guardSharedConfiguration(ctx, repositories, other, nil, attempt.ID); err != nil {
 		t.Fatal("same task cannot recover", err)
 	}
 	current.Steps[0].Evidence[natMutationScope] = "connection/gcp/router-b"
-	if err := guardSharedConfiguration(ctx, repositories, current); err != nil {
+	if err := guardSharedConfiguration(ctx, repositories, current, nil, ""); err != nil {
 		t.Fatal("different router blocked", err)
 	}
 	current.Steps[0].Evidence[natMutationScope] = scope
@@ -88,7 +92,7 @@ func TestCloudNatConcurrentExecutionsKeepScopeUntilVerifiedSuccess(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := guardSharedConfiguration(ctx, repositories, current); err != nil {
+	if err := guardSharedConfiguration(ctx, repositories, current, nil, ""); err != nil {
 		t.Fatal("verified success did not release router", err)
 	}
 }
@@ -143,7 +147,7 @@ func TestCloudNatTerminalScopeWithoutInvocation(t *testing.T) {
 				}
 			}
 			current := persistence.CleanupTaskAggregate{Task: plan.CleanupTask{ID: "new", ConnectionID: "connection"}, Steps: []plan.CleanupTaskStep{{Evidence: map[string]any{natMutationScope: scope}}}}
-			err = guardSharedConfiguration(ctx, repositories, current)
+			err = guardSharedConfiguration(ctx, repositories, current, nil, "")
 			safe := mode == "no-action" || mode == "intent" || mode == "finished-job"
 			if safe && err != nil || !safe && !errors.Is(err, persistence.ErrConflict) {
 				t.Fatal("incorrect scope release", mode, err)
@@ -197,7 +201,7 @@ func TestCloudNatSettlementProofPersistsAndInvalidatesOnActionChange(t *testing.
 	registry := &mutationProofRegistry{}
 	var semanticErr error
 	if err := repositories.WithTx(ctx, func(tx persistence.Repositories) error {
-		semanticErr = guardSharedConfiguration(ctx, tx, current, registry)
+		semanticErr = guardSharedConfiguration(ctx, tx, current, registry, "")
 		return nil
 	}); err != nil {
 		t.Fatal(err)
@@ -217,7 +221,9 @@ func TestCloudNatSettlementProofPersistsAndInvalidatesOnActionChange(t *testing.
 	}
 	current.Steps = current.Steps[:1]
 	registry.calls = 0
-	if err := repositories.WithTx(ctx, func(tx persistence.Repositories) error { return guardSharedConfiguration(ctx, tx, current, registry) }); err != nil || registry.calls != 0 {
+	if err := repositories.WithTx(ctx, func(tx persistence.Repositories) error {
+		return guardSharedConfiguration(ctx, tx, current, registry, "")
+	}); err != nil || registry.calls != 0 {
 		t.Fatal("persisted proof was not reused", err, registry.calls)
 	}
 	// Reusing the original action after a worker update requires a fresh check.
@@ -225,7 +231,9 @@ func TestCloudNatSettlementProofPersistsAndInvalidatesOnActionChange(t *testing.
 	if err := repositories.Executions().UpdateAction(ctx, saved); err != nil {
 		t.Fatal(err)
 	}
-	if err := repositories.WithTx(ctx, func(tx persistence.Repositories) error { return guardSharedConfiguration(ctx, tx, current, registry) }); err != nil || registry.calls != 1 {
+	if err := repositories.WithTx(ctx, func(tx persistence.Repositories) error {
+		return guardSharedConfiguration(ctx, tx, current, registry, "")
+	}); err != nil || registry.calls != 1 {
 		t.Fatal("stale proof survived worker update", err, registry.calls)
 	}
 	refreshed, err := repositories.Executions().GetAction(ctx, "nat-a")
