@@ -277,13 +277,15 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if bigtable && !strings.HasPrefix(id, target.ParentID+"/tables/") {
 			return contracts.InventoryBatch{}, groupDenied("bigtable_list_parent_changed")
 		}
-		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || bigquery || bigtable || nativeType == securityServiceType {
+		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || bigquery || bigtable || nativeType == securityServiceType || nativeType == routePolicyType {
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
 			var live map[string]any
-			if isInfra(nativeType) {
+			if nativeType == routePolicyType {
+				live, err = c.routePolicyRead(ctx, id)
+			} else if isInfra(nativeType) {
 				live, err = c.infraRead(ctx, nativeType, id)
 			} else if isFusion(nativeType) {
 				live, err = c.fusionRead(ctx, nativeType, id)
@@ -302,6 +304,8 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				if identityErr != nil || liveID != id {
 					return contracts.InventoryBatch{}, groupDenied("bigquery_identity_changed")
 				}
+			} else if nativeType == routePolicyType {
+				// routePolicyRead verifies the native wrapper and router-local name.
 			} else if bigtable {
 				if c.canonicalName("//bigtableadmin.googleapis.com/"+text(live["name"])) != id {
 					return contracts.InventoryBatch{}, groupDenied("bigtable_identity_changed")
@@ -690,7 +694,13 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				continue
 			}
 			for _, parent := range parents {
+				if kind.NativeType == routePolicyType && parent.Scope.NativeID != location {
+					continue
+				}
 				resolved, err := productParameters(parameters, c, location, parent)
+				if kind.NativeType == routePolicyType && err == nil && resolved["router"] != last(parent.NativeID) {
+					return nil, groupDenied("route_policy_router_identity_changed")
+				}
 				if err != nil {
 					return nil, err
 				}
@@ -918,6 +928,17 @@ func checkListCompleteness(data map[string]any) error {
 }
 
 func (c *client) productIdentity(kind resourceType, operation catalog.Operation, parameters map[string]any, identityPath string, record productRecord) (string, error) {
+	if kind.NativeType == routePolicyType {
+		name, ok := record.Data["name"].(string)
+		if !ok {
+			return "", groupDenied("route_policy_name_invalid")
+		}
+		id := "//compute.googleapis.com/projects/" + text(parameters["project"]) + "/regions/" + text(parameters["region"]) + "/routers/" + text(parameters["router"]) + "/routePolicies/" + name
+		if _, _, err := c.routePolicyOperation(id, "GET"); err != nil {
+			return "", err
+		}
+		return c.canonicalName(id), nil
+	}
 	if isFusion(kind.NativeType) {
 		return c.fusionID(kind.NativeType, text(productValue(record.Data, identityPath)), text(parameters["parent"]))
 	}

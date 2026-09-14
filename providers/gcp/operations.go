@@ -52,6 +52,20 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 			}
 		}
 	}
+	if operation.ID == routePolicyGet || operation.ID == routePolicyList {
+		for _, key := range []string{"region", "router"} {
+			value, ok := parameters[key].(string)
+			if !ok || !routePolicySegment.MatchString(value) {
+				return contracts.InvocationResult{}, groupDenied("route_policy_parameter_invalid")
+			}
+		}
+		if operation.ID == routePolicyGet {
+			value, ok := parameters["policy"].(string)
+			if !ok || !routePolicySegment.MatchString(value) {
+				return contracts.InvocationResult{}, groupDenied("route_policy_parameter_invalid")
+			}
+		}
+	}
 	if err := c.identityInvocation(ctx, operation, parameters); err != nil {
 		return contracts.InvocationResult{}, err
 	}
@@ -118,6 +132,11 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if err != nil {
 		return result, err
 	}
+	if operation.ID == routePolicyGet {
+		if err := routePolicyData(object(result.Data["resource"]), text(parameters["policy"])); err != nil {
+			return contracts.InvocationResult{}, err
+		}
+	}
 	if operation.ID == securityBillingGet {
 		if err := c.securityBillingMetadata(result.Data, text(parameters["name"])); err != nil {
 			return contracts.InvocationResult{}, err
@@ -162,6 +181,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 	name := strings.TrimPrefix(nativeID, prefix)
 	if isIdentityGroup(kind.NativeType) {
 		return identityResourceOperation(metadata, kind.NativeType, nativeID, method)
+	}
+	if kind.NativeType == routePolicyType {
+		return c.routePolicyOperation(nativeID, method)
 	}
 	if kind.NativeType == securitySubscriptionType {
 		return securitySubscriptionOperation(metadata, nativeID, method)

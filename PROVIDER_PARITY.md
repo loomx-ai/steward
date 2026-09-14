@@ -5382,3 +5382,44 @@ background evidence only, not acceptance evidence for this work.
   The commit contains only this test and evidence record. All 65 original WIP
   files are byte-identical; native sources, generated catalogs and dependencies
   are unchanged. No external server was started.
+
+### Native Cloud Router route policy inventory
+
+- The route-map mapping previously listed only Cloud Router. Verified native
+  Compute v1 List/Get/Delete route-policy APIs establish a concrete independent
+  policy lifecycle; deleting its parent router is not an equivalent operation.
+  This milestone implements native inventory and details. Deletion, BGP peer
+  attachment handling, named-set dependencies and parent cascade review remain
+  required follow-up work; no route-map acceptance criterion is closed.
+- Retained two unchanged native read methods and five transitive schemas from
+  Compute revision 20260908, full source SHA-256
+  `aa1078267f6ad9c82274e6c62572bae328b0de11c6f08861f20488b6617afda7`.
+  Earlier method/schema objects remain unchanged. The catalog now contains
+  198 resource rules and 780 operations, with 58 Discovery fragments at 56
+  distinct official URLs plus two service documents from the pinned SDK archive.
+- Added router-local composite identities, parent/region-bound fanout, native
+  pagination, per-policy wrapped detail GET, property projection, and parent
+  references. Foreign identities, mismatched parent names, parent UID changes
+  during paging, changed policy names, invalid terms and partial native lists
+  fail the scan. No standalone REST path or CAI asset type is assumed.
+- Protocol tests cover project/regional/global scans, two routers with identical
+  policy names, nested pagination, request IDs, credential/project boundaries,
+  future enum strings, malformed data and cursor failure. SQLite scan workers
+  verify queryability, failure preservation, authoritative absence and reopening
+  the same asset with a new observation. An initial catalog filter selected no
+  tests; the corrected focused run selected route-policy and reproducibility
+  tests and passed in 2.360s.
+- A pinned, non-truncated Google mockgcp subtree and its router implementation
+  were inspected. It implements parent Router Get/Insert/Patch/Update/Delete,
+  but neither Router List nor route-policy List/Get/Delete. These retained tests
+  are protocol/application evidence, not independent emulator or live-cloud
+  acceptance. Full/race/vet checks and final workspace verification follow.
+- Final verification: `go test ./providers/gcp ./internal/...` passed (GCP
+  180.266s, internal integration 25.833s). Focused route-policy/product/catalog
+  race tests passed in 16.893s; GCP vet passed. Main-workspace focused tests
+  passed in 3.000s. Docs checks passed for 30 isolated/42 main chapters and
+  10 screenshots. Repeated generation matched catalog SHA-256
+  `74cabe51e7489c3226d2ee292757e8bf1d30c8fa70e311044399164d246fb7e6`.
+  All 778 previous operation objects and all prior native source documents remain
+  unchanged. Only 16 milestone files are committed; all 65 original WIP file
+  hashes are preserved. No dependency or running external environment was added.

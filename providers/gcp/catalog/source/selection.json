@@ -1022,6 +1022,13 @@
       "methods": [
         "securitycenter.organizations.getSubscription"
       ]
+    },
+    {
+      "source_uri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest",
+      "methods": [
+        "compute.routers.getRoutePolicy",
+        "compute.routers.listRoutePolicies"
+      ]
     }
   ],
   "resource_types": [
@@ -4614,6 +4621,21 @@
       ],
       "list_operations": [
         "securitycentermanagement.projects.locations.getBillingMetadata"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/RoutePolicy",
+      "collection": "routePolicies",
+      "class": "network.route_policy",
+      "display_name": "Cloud Router route policy",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.routers.getRoutePolicy"
+      ],
+      "list_operations": [
+        "compute.routers.listRoutePolicies"
       ]
     }
   ],

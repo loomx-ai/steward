@@ -240,6 +240,11 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 			return contracts.InventoryItem{}, err
 		}
 	}
+	if nativeType == routePolicyType {
+		if err := routePolicyData(data, last(nativeID)); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+	}
 	location, region := assetLocation(raw)
 	scope := contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}
 	if region == "global" {

@@ -100,6 +100,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
 | Hyperdisk Storage Pools | Native pools, capacity/performance usage, provisioning modes and disk members | Inventory and reviewed cleanup |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
+| Cloud Router BGP policies | Per-router import/export policies, CEL terms and fingerprint | Inventory only; policy cleanup is pending |
 | Cloud Identity | Groups and member relationships in the configured directory | Reviewed group deletion; ordinary member links can also be removed independently |
 | Resource Manager | Organization containing the connected project, discovered through its folder ancestry | Read-only; the public v3 API has no organization delete method |
 | Firewall policies | Hierarchical policies within the configured firewall scope; global and regional network policies; native associations | Remove reviewed associations before deleting a policy; associations can also be removed independently |
@@ -256,3 +257,17 @@ Enable **Security Center Management API** and grant
 `securitycentermanagement.locations.list` and
 `securitycentermanagement.billingMetadata.get`. Include global scope to read global
 settings. These records are read-only. See the [project billing contract](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations/getBillingMetadata).
+
+## Cloud Router route policies
+
+Scanning route policies requires `compute.routers.list`,
+`compute.routers.listRoutePolicies` and `compute.routers.getRoutePolicy` in the
+selected project. Steward reads each router's policies in its own region and
+fetches every policy's details. Policies with the same name in different routers
+remain separate resources. A failed detail read preserves the last successful
+observation; a successful empty policy list marks the old policy absent.
+
+Filter policies with `type = "compute.googleapis.com/RoutePolicy"` and
+`properties.type = "ROUTE_POLICY_TYPE_IMPORT"`. Native deletion and BGP peer
+attachment handling are still pending. See Google's [policy list API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/listRoutePolicies)
+and [policy detail API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/getRoutePolicy).

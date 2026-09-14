@@ -421,10 +421,16 @@ resources:
   gcp:
     resources:
     - compute.googleapis.com/Router
+    - compute.googleapis.com/RoutePolicy
   azure:
     resources:
     - Microsoft.Network/virtualHubs/routeMaps
   status: pending_verification
+  notes: GCP route policies are independently inventoried per router through native
+    paginated list and wrapped detail GET, including type, CEL terms and fingerprint.
+    Failed details preserve prior observations; successful empty native lists prove absence.
+    Native policy deletion, BGP attachments, named-set dependencies and parent cascade
+    review remain unfinished. Router deletion is not policy deletion parity.
 - alicloud: ACS::CEN::TrafficMarkingPolicy
   spec: providers/alicloud/specs/cen-traffic-marking-policy.yaml
   class: network.traffic_marking_policy

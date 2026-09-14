@@ -37,8 +37,8 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 197 explicit resource rules and 778 selected methods
-from 57 selected Discovery fragments at 56 official URLs and one pinned Cloud SDK archive (Network Services and Security Center Management). Extended Compute rules cover VPN and
+The current catalog has 198 explicit resource rules and 780 selected methods
+from 58 selected Discovery fragments at 56 official URLs and one pinned Cloud SDK archive (Network Services and Security Center Management). Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
@@ -385,3 +385,9 @@ same record. [Visibility regression evidence](../fixtures/security-services/READ
 covers actual global/regional scan creation, SQLite preservation and safe rejection
 of legacy authoritative jobs. This changes the resource rule and bundle revision,
 not the native API catalog or its source provenance.
+
+Cloud Router route policies now use parent-router discovery, native paginated
+`listRoutePolicies` and wrapped `getRoutePolicy` details. Composite identities keep
+router-local names distinct. Terms, type and fingerprint are queryable after a
+successful scan. Native policy deletion and BGP attachment handling remain pending;
+see [protocol and emulator evidence](../fixtures/route-policy/README.md).

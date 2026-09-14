@@ -65,6 +65,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
 | Hyperdisk 存储池 | 原生池、容量与性能用量、预配模式和磁盘成员 | 支持盘点和经审查的清理 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
+| Cloud Router BGP 策略 | 各路由器的导入/导出策略、CEL 条款和指纹 | 已支持盘点；策略清理尚未实现 |
 | Cloud Identity | 配置目录中的身份组及成员关系 | 审查后删除身份组；普通成员关系也可独立删除 |
 | Resource Manager | 沿文件夹父级链发现当前项目所属的组织 | 只读；公开的 v3 API 没有组织删除方法 |
 | 防火墙策略 | 配置范围内的层级策略、全局和地域级网络策略及原生关联 | 先解除审查过的关联，再删除策略；也支持独立解除关联 |
@@ -205,3 +206,15 @@ Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。可选择�
 `securitycentermanagement.locations.list` 和 `securitycentermanagement.billingMetadata.get`，
 并在扫描中包含全局范围以读取全局设置。这些记录只读。参见
 [项目计费接口契约](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations/getBillingMetadata)。
+
+## Cloud Router 路由策略
+
+扫描路由策略需要目标项目的 `compute.routers.list`、
+`compute.routers.listRoutePolicies` 和 `compute.routers.getRoutePolicy` 权限。
+Steward 在各路由器所属地域分页列举策略，并逐条读取详情；不同路由器下的同名策略
+分别保存。详情读取失败时保留上次成功观测；原生列表成功返回为空时，将旧策略标为已不存在。
+
+可用 `type = "compute.googleapis.com/RoutePolicy"` 和
+`properties.type = "ROUTE_POLICY_TYPE_IMPORT"` 筛选策略。
+原生策略删除和 BGP 对等体关联处理仍待实现。参阅 Google 的[策略列表 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/listRoutePolicies)
+和[策略详情 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/getRoutePolicy)。

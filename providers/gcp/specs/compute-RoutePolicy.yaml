@@ -1,0 +1,61 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/RoutePolicy
+  class: network.route_policy
+presentation:
+  displayNames:
+    en-US: Cloud Router route policy
+    zh-CN: Cloud Router 路由策略
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    source: product-api
+    nativeType: compute.googleapis.com/Router
+  list:
+    operation: compute.routers.listRoutePolicies
+    parameters:
+      project: scope.project
+      region: scope.location
+      router: parent.normalized.name
+    itemsPath: result
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+  detail:
+    operation: compute.routers.getRoutePolicy
+    itemsPath: resource
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  type:
+    path: type
+    type: string
+  description:
+    path: description
+    type: string
+  terms:
+    path: terms
+    type: array
+  fingerprint:
+    path: fingerprint
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Router
+  targetIdPath: refs_compute_googleapis_com_Router
