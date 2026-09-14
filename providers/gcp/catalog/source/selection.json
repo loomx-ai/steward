@@ -4641,7 +4641,9 @@
       ],
       "collection": "securityCenterServices",
       "read_operations": [
-        "securitycentermanagement.projects.locations.securityCenterServices.get"
+        "securitycentermanagement.projects.locations.securityCenterServices.get",
+        "securitycentermanagement.folders.locations.securityCenterServices.get",
+        "securitycentermanagement.organizations.locations.securityCenterServices.get"
       ],
       "list_operations": [
         "securitycentermanagement.projects.locations.securityCenterServices.list"
@@ -4823,7 +4825,11 @@
         "securitycentermanagement.projects.locations.list",
         "securitycentermanagement.projects.locations.securityCenterServices.list",
         "securitycentermanagement.projects.locations.securityCenterServices.get",
-        "securitycentermanagement.projects.locations.getBillingMetadata"
+        "securitycentermanagement.projects.locations.getBillingMetadata",
+        "securitycentermanagement.folders.locations.securityCenterServices.list",
+        "securitycentermanagement.folders.locations.securityCenterServices.get",
+        "securitycentermanagement.organizations.locations.securityCenterServices.list",
+        "securitycentermanagement.organizations.locations.securityCenterServices.get"
       ]
     }
   ]

@@ -40,6 +40,9 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	for name, value := range invocation.Parameters {
 		parameters[name] = value
 	}
+	if securityServiceAncestorOperation(operation.ID) {
+		return c.invokeAncestorSecurityService(ctx, operation, parameters)
+	}
 	if operation.ID == securitySubscriptionGet {
 		if _, err := catalog.BindREST(operation, parameters); err != nil {
 			return contracts.InvocationResult{}, err
@@ -199,6 +202,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource identity")
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
+	if kind.NativeType == securityServiceType {
+		return c.securityServiceOperation(metadata, name, method)
+	}
 	if kind.NativeType == billingBudgetType {
 		if _, _, err := billingBudgetName(nativeID); err != nil {
 			return catalog.Operation{}, nil, err

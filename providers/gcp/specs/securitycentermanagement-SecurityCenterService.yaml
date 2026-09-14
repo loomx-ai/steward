@@ -30,6 +30,9 @@ discovery:
     itemsPath: $
     identityPath: name
 fields:
+  configurationParent:
+    path: configurationParent
+    type: string
   name:
     path: name
     type: string

@@ -191,6 +191,14 @@ Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。可选择�
 [服务设置契约](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations.securityCenterServices)和
 [读取权限](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations.securityCenterServices/get)。
 
+服务盘点还会在项目可见的相同地域中读取其祖先文件夹和组织的设置。
+`configurationParent` 标明配置所属层级，与项目实际生效的设置分别保留。
+需要在这些祖先上授予服务 LIST/GET 权限，并授予 `resourcemanager.projects.get`、
+`resourcemanager.folders.get` 和 `resourcemanager.organizations.get` 来核验祖先链。
+每页读取绑定已核验的父级关系；权限失败或项目迁移会使该页失败，保留原有观测。
+不再可见的祖先设置保留原观测时间。这不涵盖其他项目或组织中的所有私有地域，
+也不会修改任何祖先设置。
+
 组织订阅盘点展示 Security Command Center 当前套餐，以及最近一次订阅的类型、开始时间和结束时间。
 最近一次订阅可能已经结束；这些时间不代表当前仍在使用付费套餐，Steward 会单独保留原生套餐字段。
 盘点沿当前项目的祖先关系读取所属组织，并在读取后复核祖先关系。项目迁移或权限丢失会保留之前的记录。

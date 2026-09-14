@@ -6416,3 +6416,28 @@ Arbitrary dashboards outside discovered metric/log-routing projects, log-view au
 unsupported query languages, arbitrary cross-project policy-object references, duplicate
 connections, external writers and broader provider/live/full-app acceptance remain
 unfinished. All eight acceptance criteria remain open. Catalog/native schemas unchanged.
+
+
+### Security Command Center ancestor service settings
+
+Security-service inventory now includes the selected project's verified ancestor
+folders and organization, using the same project-visible locations. Four GET/LIST
+operations come from the unchanged pinned Cloud SDK source; no ancestor location
+LIST, mutation or unrelated-project enumeration is invented. Configuration parent
+is searchable and ancestor records no longer claim project ownership. Native
+project effective state and each ancestor's own intended/effective/module state
+remain separate.
+
+Every page and empty result rechecks the complete ancestry, and cursors bind that
+chain. Native parent/location/own-GET identity, permission and malformed response
+failures prevent publishing that page. Public ancestor Invoke enforces the same
+ancestry boundary and redacts private settings. Non-authoritative scan semantics
+preserve records and their timestamps when ancestors or locations cease to be
+visible. SQLite scan-worker tests cover all three levels, denied/missing/mismatched
+reads, hidden ancestry and later state updates. SDK conversion checks retain the
+original source hashes and verify the four native paths without executing SDK code.
+
+This is protocol and application evidence, not independent emulator or real-cloud
+acceptance. Cluster settings, arbitrary private organization locations, project
+trial history and broader provider parity remain unfinished. All eight acceptance
+criteria remain open. No cloud resource or new dependency was created.

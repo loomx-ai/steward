@@ -81,16 +81,28 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return contracts.InventoryBatch{}, fmt.Errorf("GCP parent discovery contains a cycle")
 	}
 	ancestors = append(slices.Clone(ancestors), nativeType)
+	var serviceAncestry *organizationAncestry
+	if nativeType == securityServiceType {
+		chain, err := c.organizationAncestry(ctx)
+		if err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+		serviceAncestry = &chain
+	}
 	targets, err := r.productTargets(ctx, c, request, definition, ancestors)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
+	}
+	if serviceAncestry != nil {
+		targets = securityServiceTargets(targets, *serviceAncestry)
 	}
 	bound, _ := json.Marshal(struct {
 		Connection                                        asset.ConnectionID
 		Project, ScopeKind, ScopeID, NativeType, Revision string
 		Network                                           *asset.ScanTarget
+		Ancestry                                          *organizationAncestry `json:"ancestry,omitempty"`
 		Targets                                           []productTarget
-	}{request.ConnectionID, c.project, string(request.Scope.Kind), request.Scope.NativeID, nativeType, r.bundle.Revision, request.NetworkTarget, targets})
+	}{request.ConnectionID, c.project, string(request.Scope.Kind), request.Scope.NativeID, nativeType, r.bundle.Revision, request.NetworkTarget, serviceAncestry, targets})
 	fingerprint := fmt.Sprintf("%x", sha256.Sum256(bound))
 	cursor := productCursor{Fingerprint: fingerprint}
 	if request.Cursor != "" {
@@ -104,6 +116,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	}
 	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: true}
 	if len(targets) == 0 {
+		if err := c.verifySecurityServiceAncestry(ctx, serviceAncestry); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
 		return batch, nil
 	}
 	target := targets[cursor.Target]
@@ -142,7 +157,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
-	if nativeType == monitoringGroupType || isMonitoringConfig(nativeType) || nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
+	if nativeType == securityServiceType || nativeType == monitoringGroupType || isMonitoringConfig(nativeType) || nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -587,6 +602,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return contracts.InventoryBatch{}, err
 	}
 	if err := c.verifyDataformParent(ctx, target); err != nil {
+		return contracts.InventoryBatch{}, err
+	}
+	if err := c.verifySecurityServiceAncestry(ctx, serviceAncestry); err != nil {
 		return contracts.InventoryBatch{}, err
 	}
 	next := ""
@@ -1139,7 +1157,7 @@ func (c *client) productIdentity(kind resourceType, operation catalog.Operation,
 			return "", fmt.Errorf("GCP resource URL has no project")
 		}
 	}
-	if strings.HasPrefix(name, "projects/") {
+	if strings.HasPrefix(name, "projects/") || kind.NativeType == securityServiceType && (strings.HasPrefix(name, "folders/") || strings.HasPrefix(name, "organizations/")) {
 		return c.canonicalName("//" + host + "/" + name), nil
 	}
 	if (!segmentPattern.MatchString(name) && !(kind.NativeType == dnsRecordSetType && dnsRecordName(name))) || name == "." || name == ".." {

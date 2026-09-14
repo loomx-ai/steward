@@ -234,6 +234,16 @@ becomes visible again, inventory updates its state. Restart older pending scans
 if they fail after this update. See the [service settings contract](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations.securityCenterServices)
 and [read permissions](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations.securityCenterServices/get).
 
+Service discovery also reads the selected project's ancestor folders and organization
+at the same project-visible locations. `configurationParent` identifies which level
+owns each setting; effective project settings remain separate. Grant the service
+LIST/GET permissions on these ancestors, plus `resourcemanager.projects.get`,
+`resourcemanager.folders.get` and `resourcemanager.organizations.get` for ancestry
+verification. Every page binds the verified parent chain; denied reads or a moved
+project fail the page without replacing previous observations. Ancestors that stop
+being visible retain their original last-seen time. This does not enumerate other
+projects or every private organization location. No ancestor settings are modified.
+
 Organization subscription inventory shows the current Security Command Center tier
 and the latest subscription's type, start time and end time. The latest subscription
 may already have ended; its dates do not imply that a paid tier is currently active.

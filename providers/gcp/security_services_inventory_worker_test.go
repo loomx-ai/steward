@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -20,12 +21,21 @@ import (
 // A successful LIST followed by a failed detail GET cannot close the previously
 // observed service or replace its full metadata with a list summary.
 func TestSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T) {
+	for _, parent := range []string{"projects/sample-project", "folders/456", "organizations/123"} {
+		t.Run(parent, func(t *testing.T) { testSecurityServicesDetailFailurePreservesSQLiteObservations(t, parent) })
+	}
+}
+
+func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, parent string) {
 	ctx := context.Background()
 	failure := ""
-	name := "projects/sample-project/locations/eu/securityCenterServices/event-threat-detection"
-	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+	name := parent + "/locations/eu/securityCenterServices/event-threat-detection"
+	transport := func(req *http.Request) (*http.Response, error) {
 		if req.Method != "GET" || req.URL.Host != securityServiceHost {
 			t.Fatalf("unexpected request %s", req.URL)
+		}
+		if strings.HasSuffix(req.URL.Path, "/securityCenterServices") && req.URL.Path != "/v1/"+parent+"/locations/eu/securityCenterServices" {
+			return apiResponse(req, 200, `{}`), nil
 		}
 		switch req.URL.Path {
 		case "/v1/projects/sample-project/locations":
@@ -33,7 +43,7 @@ func TestSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T) 
 				return dataformResponse(req, 200, map[string]any{}), nil
 			}
 			return dataformResponse(req, 200, map[string]any{"locations": []any{map[string]any{"name": "projects/sample-project/locations/eu"}}}), nil
-		case "/v1/projects/sample-project/locations/eu/securityCenterServices":
+		case "/v1/" + parent + "/locations/eu/securityCenterServices":
 			if failure == "hidden_service" {
 				return dataformResponse(req, 200, map[string]any{}), nil
 			}
@@ -56,7 +66,20 @@ func TestSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T) 
 		}
 		t.Fatalf("unexpected request %s", req.URL)
 		return nil, nil
-	})
+	}
+	var r *Runtime
+	ancestry := newOrganizationScenario()
+	if parent == "projects/sample-project" {
+		r = protocolRuntime(t, transport)
+	} else {
+		ancestry.hook = func(req *http.Request) (*http.Response, bool) {
+			if failure == "ancestor_denied" && req.URL.Path == "/v3/folders/456" {
+				return apiResponse(req, 403, `{}`), true
+			}
+			return nil, false
+		}
+		r = securityAncestorRuntime(t, ancestry, transport)
+	}
 	kind := r.resourceKind(securityServiceType)
 	var source contracts.InventorySource
 	for _, value := range r.InventorySources() {
@@ -86,7 +109,11 @@ func TestSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T) 
 	service := inventory.NewService(repositories.Inventory(), inventory.WithClock(func() time.Time { return now }))
 	handler := inventory.NewScanHandler(repositories, dataformVisibilityRuntime{adapter: r}, service)
 	var lastObserved time.Time
-	for _, runID := range []string{"first", "denied", "missing", "changed", "hidden_location", "hidden_service", "updated", "legacy"} {
+	runs := []string{"first", "denied", "missing", "changed", "hidden_location", "hidden_service", "updated", "legacy"}
+	if parent != "projects/sample-project" {
+		runs = append([]string{"first", "ancestor_denied", "ancestry_hidden"}, runs[1:]...)
+	}
+	for _, runID := range runs {
 		run := asset.ScanRun{ID: asset.ScanRunID(runID), ConnectionID: connection.ID, Status: asset.ScanPending, RequestedBy: "fixture", CreatedAt: now}
 		shard := asset.ScanShard{ID: asset.ScanShardID("security-services-" + runID), ScanRunID: run.ID, Provider: asset.ProviderGCP, Source: source.Name, ScopeID: scope.ID, ResourceKindID: kind.ID, Authoritative: source.AuthoritativeDefault, Status: asset.ShardPending, CreatedAt: now}
 		if runID == "legacy" {
@@ -98,9 +125,15 @@ func TestSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T) 
 		if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
 			t.Fatal(err)
 		}
+		if parent != "projects/sample-project" {
+			ancestry.project["parent"] = "folders/456"
+			if runID == "ancestry_hidden" {
+				ancestry.project["parent"] = ""
+			}
+		}
 		failure = runID
 		err := handler.Handle(ctx, execution.Job{ID: execution.JobID("security-services-" + runID), Type: execution.JobScan, Payload: map[string]any{"scan_shard_id": string(shard.ID)}})
-		failed := runID == "denied" || runID == "missing" || runID == "changed" || runID == "legacy"
+		failed := runID == "ancestor_denied" || runID == "denied" || runID == "missing" || runID == "changed" || runID == "legacy"
 		if !failed && err != nil || failed && err == nil {
 			t.Fatalf("scan %s: %v", runID, err)
 		}
@@ -126,6 +159,9 @@ func TestSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T) 
 			lastObserved = page.Items[0].LastSeenAt
 		}
 		for _, value := range page.Items {
+			if value.Normalized["configurationParent"] != parent {
+				t.Fatal("configuration parent lost", value.Normalized)
+			}
 			if !value.LastSeenAt.Equal(lastObserved) {
 				t.Fatal("unobserved service was marked fresh", runID, value.LastSeenAt, lastObserved)
 			}
@@ -133,7 +169,7 @@ func TestSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T) 
 				t.Fatal("failed detail scan lost the last complete service", value)
 			}
 		}
-		expression, err := resourcequery.Parse(`properties.effectiveEnablementState = "` + wantState + `" AND properties.intendedEnablementState = "INHERITED"`)
+		expression, err := resourcequery.Parse(`properties.effectiveEnablementState = "` + wantState + `" AND properties.intendedEnablementState = "INHERITED" AND properties.configurationParent = "` + parent + `"`)
 		if err != nil {
 			t.Fatal(err)
 		}

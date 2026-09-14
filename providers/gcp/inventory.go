@@ -309,6 +309,16 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	normalized["_inventory_source"] = inventorySource
 	normalized["project_id"] = c.project
 	normalized["project_number"] = c.number
+	if nativeType == securityServiceType {
+		parts := strings.Split(strings.TrimPrefix(nativeID, "//"+securityServiceHost+"/"), "/")
+		if len(parts) >= 2 {
+			normalized["configurationParent"] = strings.Join(parts[:2], "/")
+			if parts[0] != "projects" {
+				delete(normalized, "project_id")
+				delete(normalized, "project_number")
+			}
+		}
+	}
 	if isInfra(nativeType) {
 		if err := c.infraIdentity(nativeType, nativeID, data); err != nil {
 			return contracts.InventoryItem{}, err

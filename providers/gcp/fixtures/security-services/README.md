@@ -1,7 +1,7 @@
 # Security Command Center service inventory
 
 The native `securitycentermanagement.googleapis.com/SecurityCenterService` rule
-reads project-visible service locations, paginated service lists and each listed
+reads project-visible service locations, paginated project/ancestor service lists and each listed
 service's own GET. It preserves intended/effective enablement, module settings and
 update time. Module omission denotes inherited configuration, not a disabled
 module. The state shown in inventory is the effective service state, including
@@ -15,9 +15,14 @@ service Discovery returned 403 and the central Discovery endpoint returned 404
 when checked; the retained metadata explicitly uses `google-cloud-sdk` provenance.
 All older catalog operations/documents remain unchanged.
 
-The connection still authorizes one project. Its effective settings include
-inherited organization/folder policy, but their separate ancestor resources and
-cluster-specific settings are not registered by this rule. The service API has
+The connection authorizes one project's context. The rule follows that project's
+verified Resource Manager parent chain and reads ancestor folder/organization
+settings separately, retaining `configurationParent` and omitting project ownership
+fields on ancestor records. Four native SDK GET/LIST methods implement these reads.
+No folder/organization locations LIST exists in the pinned SDK, so ancestor reads
+use project-visible locations (or the explicitly selected global scope). This does
+not enumerate every private location or other projects. Cluster-specific settings
+remain outside this rule. The service API has
 GET/LIST/PATCH and no resource DELETE. This inventory implements the read-only
 security-service-state baseline; it neither disables protection nor changes a
 subscription. [Organization subscriptions](../security-subscription/README.md) and
@@ -73,3 +78,22 @@ These tests exercise preservation of historical observations; they do not establ
 that every temporarily invisible service still exists. No synthetic deletion or
 protection-disable call is introduced. The catalog's 778 native operations and all
 source metadata remain unchanged by the authority correction.
+
+## Ancestor read boundary
+
+The complete project/folder/organization identity chain is included in page cursors
+and re-read after every page, including empty results. A move, replacement or denied
+ancestor read rejects the page; no foreign ancestor can be selected through Invoke.
+All ancestors use the existing non-authoritative source, so lost ancestry or location
+visibility cannot close historical observations. Native GET/LIST do not grant PATCH
+or DELETE authority. Settings and private configuration retain the same redaction.
+
+Retained tests cover both ancestor kinds, global/EU fanout, service pagination,
+identity and location mismatches, partial/malformed lists, 403/404, movement during
+and between pages, Invoke scope/response validation and original SDK conversion.
+The real SQLite scan-worker regression now runs for project, folder and organization
+records, including inaccessible and no-longer-visible ancestors and later updates.
+These remain protocol/application evidence; the pinned mockgcp has no such service.
+
+- [Folder service list](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/folders.locations.securityCenterServices/list)
+- [Organization service list](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations.securityCenterServices/list)

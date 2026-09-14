@@ -2450,7 +2450,9 @@ resources:
     (including trial and pay-as-you-go), and start/end times through verified selected-project
     ancestry. Project billingMetadata now preserves the tier explicitly configured at each native
     location without inferring inherited entitlement or trial history. Project trial history,
-    ancestor service settings and independent behavior verification remain pending.
+    cluster-specific settings and independent behavior verification remain pending. Ancestor folder
+    and organization service settings are separately inventoried through a verified project parent
+    chain at project-visible locations; arbitrary organization location/project enumeration is not claimed.
 - alicloud: ACS::TSDB::Instance
   spec: providers/alicloud/specs/tsdb-instance.yaml
   class: database.timeseries

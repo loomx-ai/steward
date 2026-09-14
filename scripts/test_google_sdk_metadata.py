@@ -89,6 +89,17 @@ class SecurityServicesSDKMetadataTests(unittest.TestCase):
         self.assertEqual(listing["path"], "v1/{+parent}/securityCenterServices")
         self.assertEqual(listing["parameters"]["parent"]["pattern"], "^projects/[^/]+/locations/[^/]+$")
         self.assertEqual(listing["parameters"]["showEligibleModulesOnly"]["type"], "boolean")
+        for parent in ("folders", "organizations"):
+            for method in ("get", "list"):
+                operation = methods[f"securitycentermanagement.{parent}.locations.securityCenterServices.{method}"]
+                self.assertEqual(operation["httpMethod"], "GET")
+                key = "name" if method == "get" else "parent"
+                suffix = "/securityCenterServices/[^/]+" if method == "get" else ""
+                self.assertEqual(operation["parameters"][key]["pattern"], f"^{parent}/[^/]+/locations/[^/]+{suffix}$")
+                self.assertEqual(operation["path"], "v1/{+name}" if method == "get" else "v1/{+parent}/securityCenterServices")
+        # The native SDK has no ancestor locations LIST; don't fabricate one.
+        for parent in ("folders", "organizations"):
+            self.assertNotIn(f"securitycentermanagement.{parent}.locations.list", methods)
         fields = document["schemas"]["SecurityCenterService"]["properties"]
         self.assertIn("INGEST_ONLY", fields["effectiveEnablementState"]["enum"])
         self.assertEqual(document["schemas"]["SecurityCenterService.ModulesValue"]["additionalProperties"], {"$ref": "ModuleSettings"})
