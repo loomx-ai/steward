@@ -46,3 +46,13 @@ fields:
     type: boolean
 extensions:
   hook: gcp.resource
+actions:
+  delete:
+    operation: monitoring.projects.groups.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: monitoring.projects.groups.get
+      itemsPath: $
+      identityPath: name

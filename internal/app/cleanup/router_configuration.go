@@ -19,8 +19,11 @@ func routerScope(identity asset.Identity) (string, error) {
 	}
 	// The persisted Router scope mechanism also coordinates Monitoring's
 	// project writes and account-scoped Billing Budget deletion.
-	if identity.NativeType == "monitoring.googleapis.com/AlertPolicy" || identity.NativeType == "monitoring.googleapis.com/NotificationChannel" || identity.NativeType == "billingbudgets.googleapis.com/Budget" {
+	if identity.NativeType == "monitoring.googleapis.com/Group" || identity.NativeType == "monitoring.googleapis.com/AlertPolicy" || identity.NativeType == "monitoring.googleapis.com/NotificationChannel" || identity.NativeType == "billingbudgets.googleapis.com/Budget" {
 		collection := "alertPolicies"
+		if identity.NativeType == "monitoring.googleapis.com/Group" {
+			collection = "groups"
+		}
 		host, root := "monitoring.googleapis.com", "projects"
 		if identity.NativeType == "billingbudgets.googleapis.com/Budget" {
 			host, root, collection = "billingbudgets.googleapis.com", "billingAccounts", "budgets"

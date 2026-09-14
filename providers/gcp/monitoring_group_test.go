@@ -219,7 +219,7 @@ func TestMonitoringGroupInventorySnapshot(t *testing.T) {
 			}
 			item := batch.Items[0]
 			encoded, _ := json.Marshal(item)
-			if strings.Contains(string(encoded), "PRIVATE_GROUP") || item.Actionable == nil || *item.Actionable || item.Normalized[monitoringGroupReview] == nil || item.Normalized["_monitoring_group_member_interval"] == nil {
+			if strings.Contains(string(encoded), "PRIVATE_GROUP") || item.Actionable == nil || !*item.Actionable || item.Normalized[monitoringGroupReview] == nil || item.Normalized["_monitoring_group_member_interval"] == nil {
 				t.Fatal(item)
 			}
 			if item.NativeID != testMonitoringGroupID || item.ResourceKind.NativeType != monitoringGroupType {

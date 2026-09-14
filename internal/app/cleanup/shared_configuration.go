@@ -180,7 +180,7 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 		return false, fmt.Errorf("mutation recovery identity changed")
 	}
 	// Each driver must prove every possible phase; Router requests also bind child review.
-	if reviewed.Identity.NativeType != "compute.googleapis.com/Router" && reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" && reviewed.Identity.NativeType != "compute.googleapis.com/RoutePolicy" && reviewed.Identity.NativeType != "compute.googleapis.com/NamedSet" && reviewed.Identity.NativeType != "monitoring.googleapis.com/AlertPolicy" && reviewed.Identity.NativeType != "monitoring.googleapis.com/NotificationChannel" && reviewed.Identity.NativeType != "billingbudgets.googleapis.com/Budget" {
+	if reviewed.Identity.NativeType != "compute.googleapis.com/Router" && reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" && reviewed.Identity.NativeType != "compute.googleapis.com/RoutePolicy" && reviewed.Identity.NativeType != "compute.googleapis.com/NamedSet" && reviewed.Identity.NativeType != "monitoring.googleapis.com/Group" && reviewed.Identity.NativeType != "monitoring.googleapis.com/AlertPolicy" && reviewed.Identity.NativeType != "monitoring.googleapis.com/NotificationChannel" && reviewed.Identity.NativeType != "billingbudgets.googleapis.com/Budget" {
 		return false, nil
 	}
 	// ponytail: retain the database locks during rare recovery reads so a second
@@ -194,7 +194,7 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 		return false, nil
 	}
 	request := contracts.ActionRequest{Asset: reviewed, Action: step.Action, Parameters: cloneRequest(step.RequestOptions), IdempotencyKey: resumedProviderIdempotencyKey(attempt, action)}
-	if reviewed.Identity.NativeType == "compute.googleapis.com/Router" || reviewed.Identity.NativeType == "monitoring.googleapis.com/NotificationChannel" {
+	if reviewed.Identity.NativeType == "compute.googleapis.com/Router" || reviewed.Identity.NativeType == "monitoring.googleapis.com/NotificationChannel" || reviewed.Identity.NativeType == "monitoring.googleapis.com/Group" {
 		if err := routerRecoveryImpacts(ctx, repositories, task, step, &request); err != nil {
 			return false, err
 		}
@@ -228,8 +228,8 @@ func sharedMutationDigest(attempt execution.ExecutionAttempt, step plan.CleanupT
 	if err := json.Unmarshal(raw, &reviewed); err != nil {
 		return "", err
 	}
-	if reviewed.Identity.NativeType == "compute.googleapis.com/Router" || reviewed.Identity.NativeType == "monitoring.googleapis.com/NotificationChannel" {
-		// Router UUIDs and channel receipts include reviews outside their own step.
+	if reviewed.Identity.NativeType == "compute.googleapis.com/Router" || reviewed.Identity.NativeType == "monitoring.googleapis.com/NotificationChannel" || reviewed.Identity.NativeType == "monitoring.googleapis.com/Group" {
+		// Router UUIDs and Monitoring consumer receipts bind reviews outside their own step.
 		lifecycle = struct {
 			Steps   []plan.CleanupTaskStep
 			Impacts []plan.ImpactItem

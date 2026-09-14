@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "49af45d5d2d115c273339c593b2da5ef22304c0d49fcc369afbc75e0d57a8cba",
+    "checksum": "2a2602a66ff04f3eae220df87df7f2f683b29fbfcd22d151cf1a6ded7e77bcf8",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "0f8ccf67b56100c78743538a15e3e7ea7a4109604e9ae25b7de2458b044aa7d1",
+  "content_checksum": "ddf4d0b47ad53c0a68d7eac6b577796e45d57882bf951815628cb20bfdc025a2",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -98990,6 +98990,52 @@
       "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "monitoring.projects.groups.delete",
+      "name": "delete",
+      "service": "monitoring",
+      "method": "DELETE",
+      "path": "/v3/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The group to delete. The format is: projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID] ",
+            "location": "path",
+            "pattern": "^projects/[^/]+/groups/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "recursive": {
+            "description": "If this field is true, then the request means to delete a group with all its descendants. Otherwise, the request means to delete a group only when it has no descendants. The default value is false.",
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } ",
+        "id": "Empty",
+        "properties": {},
+        "type": "object"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v3",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v3/{name}",
+        "endpoint": "https://monitoring.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
+    },
+    {
       "id": "monitoring.projects.groups.get",
       "name": "get",
       "service": "monitoring",
@@ -117823,6 +117869,9 @@
         "collection": "groups",
         "read_operations": [
           "monitoring.projects.groups.get"
+        ],
+        "delete_operations": [
+          "monitoring.projects.groups.delete"
         ],
         "list_operations": [
           "monitoring.projects.groups.list"

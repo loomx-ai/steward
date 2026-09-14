@@ -394,17 +394,13 @@ func TestMonitoringGroupConsumerGraphBoundaries(t *testing.T) {
 			if strings.Contains(string(payload), "PRIVATE_") {
 				t.Fatal("private query in graph")
 			}
-			if _, err := s.r.ResolveAction(t.Context(), "connection", assets[0]); err == nil {
-				t.Fatal("consumer observation enabled deletion")
+			if _, err := s.r.ResolveAction(t.Context(), "connection", assets[0]); err != nil {
+				t.Fatal("reviewed group action unavailable", err)
 			}
 			if mode == "normal" {
 				// Informational child->parent plus reviewed parent->child must yield the
-				// same deletion ordering, not a cycle. Exercise the solver with deletable
-				// capabilities solely to test ordering; the runtime gate above stays shut.
+				// same deletion ordering, not a cycle, using native cleanup capabilities.
 				values := append([]asset.Asset{}, assets...)
-				for i := range values {
-					values[i].Capabilities = assets[2].Capabilities
-				}
 				relationships := append([]graph.Relationship{}, result.Relationships...)
 				relationships = append(relationships, graph.Relationship{SourceAssetID: assets[1].ID, TargetAssetID: assets[0].ID, Type: graph.RelationshipDependsOn, Source: "gcp:monitoring-group-targets", Confidence: 1})
 				selected := []asset.AssetID{}

@@ -11,6 +11,9 @@ import (
 )
 
 func (a *action) monitoringActionIdentity(request contracts.ActionRequest) error {
+	if a.kind.NativeType == monitoringGroupType && (len(request.Parameters) != 0 || request.IdempotencyKey == "") {
+		return groupDenied("monitoring_group_action_review_changed")
+	}
 	if a.kind.NativeType == notificationChannelType && len(request.Parameters) != 0 {
 		return groupDenied("notification_channel_parameters_unsupported")
 	}
@@ -32,7 +35,7 @@ func (a *action) monitoringReadback(ctx context.Context, request contracts.Actio
 	if err != nil {
 		return contracts.ReadbackResult{}, contracts.DependencyReadError(err)
 	}
-	if monitoringConfiguration(a.kind.NativeType, a.identity.NativeID, data) != text(request.Asset.Normalized[monitoringReviewKey(request.Asset.Identity.NativeType)]) {
+	if a.client.monitoringConfiguration(a.kind.NativeType, a.identity.NativeID, data) != text(request.Asset.Normalized[monitoringReviewKey(request.Asset.Identity.NativeType)]) {
 		return contracts.ReadbackResult{}, groupDenied("monitoring_configuration_changed")
 	}
 	if protectedComputeLabels(map[string]any{"labels": data["userLabels"]}) {
@@ -54,6 +57,9 @@ func (a *action) monitoringPreflight(ctx context.Context, request contracts.Acti
 
 func uptimePhase(request contracts.ActionRequest) map[string]any {
 	phase := "uptime_delete"
+	if request.Asset.Identity.NativeType == monitoringGroupType {
+		phase = "monitoring_group_delete"
+	}
 	if request.Asset.Identity.NativeType == notificationChannelType {
 		phase = "notification_channel_delete"
 	}
@@ -76,7 +82,7 @@ func (a *action) executeMonitoring(ctx context.Context, request contracts.Action
 	if !read.Exists {
 		return contracts.ActionResult{}, nil
 	}
-	if a.kind.NativeType == uptimeType || a.kind.NativeType == notificationChannelType {
+	if a.kind.NativeType == uptimeType || a.kind.NativeType == notificationChannelType || a.kind.NativeType == monitoringGroupType {
 		if err := a.monitoringIncoming(ctx, request); err != nil {
 			return contracts.ActionResult{}, err
 		}
@@ -90,6 +96,9 @@ func (a *action) executeMonitoring(ctx context.Context, request contracts.Action
 		}
 	}
 	var query url.Values
+	if a.kind.NativeType == monitoringGroupType {
+		query = url.Values{"recursive": {"false"}}
+	}
 	if a.kind.NativeType == notificationChannelType {
 		query = url.Values{"force": {"false"}}
 	}

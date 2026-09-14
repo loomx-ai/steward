@@ -9,6 +9,7 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
+const monitoringGroupDelete = "monitoring.projects.groups.delete"
 const monitoringGroupType = "monitoring.googleapis.com/Group"
 const monitoringGroupReview = "_monitoring_group_configuration"
 const monitoringGroupMembers = "_monitoring_group_member_references"

@@ -15,21 +15,21 @@ Parent groups and Uptime group targets join the same graph. Unmapped member type
 remain non-blocking unresolved observations with counts and the time interval;
 private labels and filter text never enter graph evidence or stored configuration.
 No member ownership, required deletion, cascade or retention binding is produced.
-Group delete is deliberately not advertised by this inventory milestone; native
-nonrecursive deletion remains to be implemented. Consumer graph coverage is
-described below.
+Native nonrecursive group deletion is now available through the reviewed action
+described below; neither inventory nor membership grants cascading deletion.
 
 ## Pinned native metadata
 
 - [Monitoring Discovery v3](https://monitoring.googleapis.com/$discovery/rest?version=v3),
   revision `20260903`, full document SHA-256
   `9273bd1f36bbc4c94fb948450a2cf63f876e04ca8a1b331fd80158b152907019`.
-- Exact `monitoring.projects.groups.list/get` and
+- Exact `monitoring.projects.groups.list/get/delete` and
   `monitoring.projects.groups.members.list` methods, with unchanged transitive
-  schemas `Group`, `ListGroupsResponse`, `ListGroupMembersResponse` and
-  `MonitoredResource`, are selected from that document. The adjacent schema fixture
-  is compiled independently of the generated catalog. Existing native fragments
-  and resource rules remain unchanged; catalog now has 204 rules and 804 methods.
+  schemas `Group`, `ListGroupsResponse`, `ListGroupMembersResponse`,
+  `MonitoredResource` and `Empty`, are selected from that document. The adjacent
+  schema fixture is compiled independently of the generated catalog. Previous
+  native methods and other resource rules remain unchanged; the catalog has
+  204 rules and 805 methods.
 - [Group](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups)
   describes dynamic filtering and inherited parent membership.
 - [Member LIST](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups.members/list)
@@ -104,5 +104,48 @@ target drift. Real SQLite close/reopen graph tests retain edges and blockers on
 failed refreshes, then clear and restore them after successful native observations.
 The existing independent backend's missing native Group LIST remains a limit;
 these new consumer snapshots use explicit protocol fixtures, not claimed independent
-server or live-cloud coverage. Group DELETE, dashboard reviewed deletion and
-external-writer race protection remain unfinished.
+server or live-cloud coverage. Dashboard reviewed deletion and external-writer race protection remain unfinished;
+the reviewed Group DELETE milestone follows.
+
+
+## Reviewed nonrecursive deletion
+
+The exact native `monitoring.projects.groups.delete` method and `Empty` response
+schema are retained from the same pinned v3 Discovery document. The Group rule
+advertises the reviewed deletion action. Generic Invoke cannot bypass it. The
+action rejects parameters, changed identities/proofs and missing request keys;
+selected prerequisites must be independently deletable same-connection Group,
+UptimeCheckConfig or AlertPolicy assets with frozen reviews. Their own native GETs
+must confirm absence. Unselected or newly appearing consumers still block deletion.
+
+Preflight and Execute both perform complete consumer snapshots; Execute then
+rereads the group immediately before its empty-body DELETE with explicit
+`recursive=false`. This uses the native descendant guard and never requests
+recursive deletion or modifies group members. Native GET 403/500, snapshot errors,
+configuration drift and nonempty/malformed DELETE responses cannot establish
+success. DELETE 404 is followed by own GET; the group must actually be absent.
+Wait and mutation settlement bind the receipt to the full frozen request, including
+prerequisites. Empty/lost receipts cannot settle the shared write reservation.
+
+Same-connection/project Group writes use the existing persisted scope mechanism,
+including failed/canceled actions and frozen prerequisite reconstruction. Tests
+exercise actual SQLite plans and close/reopen before every cleanup worker action:
+policy precedes its Uptime check, selected child/Uptime/policy deletion precedes
+the parent group, and all four assets are marked deleted only after own readback.
+Separate tests cover failed-action reservations, stale settlement proofs, changed
+prerequisite snapshots, late references, changed target configuration and receipt
+substitution. Group members are never deletion targets.
+
+The independent native backend test forwards 19 runtime calls (including one
+actual Group DELETE), with 19 explicit Group/member/Uptime/Dashboard list fixtures.
+It first verifies that the unsupported native list endpoints report Unimplemented.
+Actual Group GET/update/delete/404, empty deletion response and restarted waiter
+are exercised; the backend does not enforce descendant or IAM protections. The
+harness dispatches v1 Dashboard paths to Monitoring and project billing-info paths
+to Cloud Billing, preserving both native services. The runtime's query/body guard
+is tested independently from that missing server enforcement.
+
+Native permissions additionally require `monitoring.groups.delete`. The API lacks
+a version-conditioned DELETE, so changes from external writers can race the final
+GET. Cross-connection coordination, reviewed Dashboard cleanup and real-cloud/full-app
+acceptance remain open; the protocol fixtures are not evidence of those guarantees.

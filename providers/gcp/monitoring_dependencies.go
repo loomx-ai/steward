@@ -345,11 +345,15 @@ func (a *action) monitoringPrerequisites(request contracts.ActionRequest) error 
 	seen := map[string]bool{}
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		p := prerequisite.Asset
-		proof, err := hex.DecodeString(text(p.Normalized[alertPolicyReview]))
-		if (a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType) || err != nil || len(proof) != 32 || p.ID == "" || p.ID == request.Asset.ID || !prerequisite.Delete || prerequisite.ControllerID != request.Asset.ID || p.Identity.Provider != a.identity.Provider || p.Identity.ConnectionID != a.identity.ConnectionID || p.Identity.Partition != a.identity.Partition || p.Identity.NativeType != alertPolicyType || seen[p.Identity.NativeID] {
+		proof, err := hex.DecodeString(text(p.Normalized[monitoringReviewKey(p.Identity.NativeType)]))
+		validType := p.Identity.NativeType == alertPolicyType
+		if a.kind.NativeType == monitoringGroupType {
+			validType = validType || p.Identity.NativeType == uptimeType || p.Identity.NativeType == monitoringGroupType
+		}
+		if (a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType && a.kind.NativeType != monitoringGroupType) || err != nil || len(proof) != 32 || p.ID == "" || p.ID == request.Asset.ID || p.Identity.NativeID == a.identity.NativeID || !prerequisite.Delete || prerequisite.ControllerID != request.Asset.ID || p.Identity.Provider != a.identity.Provider || p.Identity.ConnectionID != a.identity.ConnectionID || p.Identity.Partition != a.identity.Partition || !validType || seen[p.Identity.NativeID] {
 			return groupDenied("monitoring_prerequisite_changed")
 		}
-		kind, _ := findType(alertPolicyType)
+		kind, _ := findType(p.Identity.NativeType)
 		// Foreign-project dependencies cannot be independently deleted through this
 		// configured project. The graph retains them as unresolved boundaries.
 		if _, err := a.client.resourceURL(kind, p.Identity.NativeID); err != nil {
@@ -360,17 +364,20 @@ func (a *action) monitoringPrerequisites(request contracts.ActionRequest) error 
 	return nil
 }
 func (a *action) monitoringIncoming(ctx context.Context, request contracts.ActionRequest) error {
-	if a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType {
+	if a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType && a.kind.NativeType != monitoringGroupType {
 		return nil
 	}
 	for _, p := range request.PrerequisiteDeletions {
-		_, err := a.client.monitoringRead(ctx, alertPolicyType, p.Asset.Identity.NativeID)
+		_, err := a.client.monitoringRead(ctx, p.Asset.Identity.NativeType, p.Asset.Identity.NativeID)
 		if !isNotFound(err) {
 			if err != nil {
 				return contracts.DependencyReadError(err)
 			}
 			return groupDenied("monitoring_prerequisite_still_exists")
 		}
+	}
+	if a.kind.NativeType == monitoringGroupType {
+		return a.monitoringGroupIncoming(ctx)
 	}
 	if a.kind.NativeType == notificationChannelType {
 		policies, err := a.client.monitoringPolicySnapshot(ctx)

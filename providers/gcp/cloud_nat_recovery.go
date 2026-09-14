@@ -23,7 +23,7 @@ func (a *action) MutationSettled(ctx context.Context, request contracts.ActionRe
 		}
 		return contracts.MutationSettlement{Settled: true, Operation: "billing-budget-synchronous-response:" + text(result.Data["review"])}, nil
 	}
-	if a.kind.NativeType == alertPolicyType || a.kind.NativeType == notificationChannelType {
+	if a.kind.NativeType == alertPolicyType || a.kind.NativeType == notificationChannelType || a.kind.NativeType == monitoringGroupType {
 		if err := a.monitoringActionIdentity(request); err != nil {
 			return contracts.MutationSettlement{}, err
 		}

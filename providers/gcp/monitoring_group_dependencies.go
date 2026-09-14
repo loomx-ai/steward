@@ -237,3 +237,32 @@ func (h *monitoringDependencies) monitoringGroupDependencies(ctx context.Context
 	}
 	return result, nil
 }
+
+// Deleting the Group never deletes monitored resources. Only the native group
+// hierarchy and configuration consumers constrain this nonrecursive operation.
+func (a *action) monitoringGroupIncoming(ctx context.Context) error {
+	for _, kind := range []string{monitoringGroupType, uptimeType, alertPolicyType, monitoringDashboardType} {
+		var consumers map[string]map[string]any
+		var err error
+		if kind == alertPolicyType {
+			consumers, err = a.client.monitoringPolicySnapshot(ctx)
+		} else {
+			consumers, err = a.client.monitoringGroupConsumerSnapshot(ctx, kind)
+		}
+		if err != nil {
+			return err
+		}
+		if kind == monitoringGroupType && consumers[a.identity.NativeID] == nil {
+			return groupDenied("monitoring_group_missing_from_consumer_snapshot")
+		}
+		for _, data := range consumers {
+			switch a.client.monitoringGroupConsumerReference(kind, data, a.identity.NativeID) {
+			case monitoringHasReference:
+				return groupDenied("monitoring_group_still_referenced")
+			case monitoringUnresolvedReference:
+				return groupDenied("monitoring_group_consumer_reference_unresolved")
+			}
+		}
+	}
+	return nil
+}

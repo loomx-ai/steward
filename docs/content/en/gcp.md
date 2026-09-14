@@ -570,8 +570,8 @@ types, including AWS members, remain unresolved observations.
 
 Membership is dynamic and does not establish ownership, retention policy or
 cascading deletion. Failed, inconsistent or incomplete member reads preserve the
-previous observation. Group cleanup remains under implementation; observing a
-group does not enable its deletion. Reads require `monitoring.groups.list`,
+previous observation. Group cleanup binds the reviewed native configuration and
+uses nonrecursive deletion. Reads require `monitoring.groups.list`
 and `monitoring.groups.get` on the scoping project; member enumeration uses the
 same `monitoring.groups.get` permission.
 See the [native group contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups)
@@ -590,6 +590,21 @@ native schema. Text and log content do not count as group references. Dynamic
 `GROUP` filters, template variables, unknown structures and unparsed MQL/PromQL/SQL
 queries remain cleanup blockers when their references cannot be established.
 Referenced dashboards also remain blocked pending full configuration review of
-their cleanup action. Resource-group deletion is not yet enabled by this step.
+their cleanup action. Group cleanup rechecks consumers before sending DELETE.
 See [Monitoring group selectors](https://docs.cloud.google.com/monitoring/api/v3/filters)
 and the [dashboard contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards).
+
+Group deletion also requires `monitoring.groups.delete`. The action fixes
+`recursive=false`, rejects caller-supplied overrides, and verifies the selected
+child/Uptime/policy prerequisites through their own native GETs. Remaining consumers,
+changed configuration or uncertain reads prevent the DELETE. The final group GET
+and two complete consumer reviews precede the write; group members are retained.
+After restart, the receipt remains bound to the original asset, configuration,
+prerequisites and request key, and only the group's own 404 confirms absence.
+
+Group writes in the same connection and project are serialized. Failed or canceled
+requests with uncertain outcomes keep their write reservation; continue the original
+task to verify them. An empty/lost response cannot independently release that scope.
+The native API has no conditional DELETE: external configuration changes can race
+the final GET. Duplicate connections and external clients are outside this
+coordination boundary. See the [nonrecursive deletion contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups/delete).

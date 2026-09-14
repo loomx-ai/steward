@@ -100,7 +100,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	mux.Handle("/v1/projects/", billingMux)
+	mux.Handle("/v1/projects/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+		if len(parts) >= 4 && parts[3] == "dashboards" {
+			serviceMux.ServeHTTP(w, r)
+		} else {
+			billingMux.ServeHTTP(w, r)
+		}
+	}))
 	mux.Handle("/v1/billingAccounts", billingMux)
 	mux.Handle("/v1/billingAccounts/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(r.URL.Path, "/budgets") {

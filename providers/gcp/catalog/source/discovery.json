@@ -134397,6 +134397,37 @@
             "flatPath": "v3/projects/{projectsId}/groups/{groupsId}/members",
             "httpMethod": "GET",
             "id": "monitoring.projects.groups.members.list"
+          },
+          "monitoring.projects.groups.delete": {
+            "description": "Deletes an existing group.",
+            "flatPath": "v3/projects/{projectsId}/groups/{groupsId}",
+            "httpMethod": "DELETE",
+            "id": "monitoring.projects.groups.delete",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. The group to delete. The format is: projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID] ",
+                "location": "path",
+                "pattern": "^projects/[^/]+/groups/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "recursive": {
+                "description": "If this field is true, then the request means to delete a group with all its descendants. Otherwise, the request means to delete a group only when it has no descendants. The default value is false.",
+                "location": "query",
+                "type": "boolean"
+              }
+            },
+            "path": "v3/{+name}",
+            "response": {
+              "$ref": "Empty"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/monitoring"
+            ]
           }
         },
         "schemas": {
@@ -134485,6 +134516,12 @@
                 "description": "Required. Values for all of the labels listed in the associated monitored resource descriptor. For example, Compute Engine VM instances use the labels \"project_id\", \"instance_id\", and \"zone\"."
               }
             }
+          },
+          "Empty": {
+            "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } ",
+            "id": "Empty",
+            "properties": {},
+            "type": "object"
           }
         }
       }
@@ -138602,7 +138639,9 @@
       "nativeType": "monitoring.googleapis.com/Group",
       "rest": {
         "collection": "groups",
-        "delete_operations": [],
+        "delete_operations": [
+          "monitoring.projects.groups.delete"
+        ],
         "list_operations": [
           "monitoring.projects.groups.list"
         ],

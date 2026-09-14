@@ -116,8 +116,8 @@ func TestMonitoringGroupSQLiteInventoryAndGraphRestart(t *testing.T) {
 		if strings.Contains(string(b), "PRIVATE_GROUP") {
 			t.Fatal("private filter persisted")
 		}
-		if _, err := fresh.ResolveAction(ctx, conn.ID, current); err == nil {
-			t.Fatal("observation enabled group deletion")
+		if _, err := fresh.ResolveAction(ctx, conn.ID, current); err != nil {
+			t.Fatal("reviewed group action unavailable", err)
 		}
 		previous = current
 	}

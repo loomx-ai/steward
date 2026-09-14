@@ -6316,3 +6316,26 @@ covered. These snapshots use explicit protocol fixtures; the independent backend
 still lacks native Group LIST. Catalog remains 204 rules and 804 operations.
 Group deletion, dashboard reviewed cleanup, broader consumer mappings, live-cloud
 and full-app acceptance remain unfinished. All eight acceptance criteria remain open.
+
+
+### GCP Monitoring group nonrecursive cleanup milestone
+
+The native Group DELETE method and Empty response schema are registered, enabling
+reviewed cleanup with fixed recursive=false and no request body. Generic Invoke
+cannot bypass configuration review. Own target reads and two complete consumer
+snapshots precede deletion; remaining/new/unknown consumers block it. Selected
+Group/Uptime/AlertPolicy prerequisites require independent own-native absence.
+Membership observations never authorize member deletion or recursive cleanup.
+
+The receipt binds target identity/configuration, prerequisites and request key;
+restart waiters confirm own 404 and reject substituted receipts. Project Group
+write scopes persist across failures/cancellation, with frozen prerequisite
+reconstruction and conservative lost-response settlement. Actual SQLite graph,
+plan and cleanup worker tests reopen before each action and verify all four
+ordered deletions. The independent backend exercises native Group DELETE and 404,
+with missing lists explicitly isolated as fixtures; its descendant/IAM enforcement
+is not implemented. Catalog has 204 rules and 805 operations.
+
+Reviewed Dashboard cleanup, broader member/consumer mappings, external-writer and
+duplicate-connection coordination, real-cloud and full-app acceptance remain open.
+All eight acceptance criteria remain open.

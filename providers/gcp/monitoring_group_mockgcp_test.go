@@ -11,10 +11,17 @@ import (
 	"testing"
 	"time"
 
+	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 func TestMonitoringGroupIndependentMockGCP(t *testing.T) {
+	testMonitoringGroupIndependentMockGCP(t, false)
+}
+func TestMonitoringGroupDeleteIndependentMockGCP(t *testing.T) {
+	testMonitoringGroupIndependentMockGCP(t, true)
+}
+func testMonitoringGroupIndependentMockGCP(t *testing.T, cleanup bool) {
 	endpoint := os.Getenv("STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL")
 	if endpoint == "" {
 		t.Skip("set STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL to the pinned Monitoring harness")
@@ -70,10 +77,18 @@ func TestMonitoringGroupIndependentMockGCP(t *testing.T) {
 	if object(unsupported["error"])["message"] != "method ListGroupMembers not implemented" {
 		t.Fatal(unsupported)
 	}
-	fixtures, forwarded := 0, 0
+	fixtures, forwarded, deletes := 0, 0, 0
+	if cleanup {
+		for path, method := range map[string]string{"/v3/projects/sample-project/uptimeCheckConfigs": "ListUptimeCheckConfigs", "/v1/projects/sample-project/dashboards": "ListDashboards"} {
+			unsupported := native("GET", path, nil, 500)
+			if object(unsupported["error"])["message"] != "method "+method+" not implemented" {
+				t.Fatal(unsupported)
+			}
+		}
+	}
 	hybrid := false
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
-		if req.Method != "GET" || req.URL.Host != "monitoring.googleapis.com" {
+		if (req.Method != "GET" && !(cleanup && req.Method == "DELETE")) || req.URL.Host != "monitoring.googleapis.com" {
 			t.Fatal("runtime group mutation", req.Method, req.URL)
 		}
 		if hybrid && req.URL.Path == "/v3/projects/sample-project/groups" {
@@ -92,6 +107,25 @@ func TestMonitoringGroupIndependentMockGCP(t *testing.T) {
 			fixtures++
 			b, _ := json.Marshal(map[string]any{"members": []any{monitoringGroupMemberFixture()}, "totalSize": 1})
 			return apiResponse(req, 200, string(b)), nil
+		}
+		if cleanup && (req.URL.Path == "/v3/projects/sample-project/uptimeCheckConfigs" || req.URL.Path == "/v1/projects/sample-project/dashboards") {
+			if req.Method != "GET" || req.URL.RawQuery != "pageSize=100" {
+				t.Fatal(req.Method, req.URL)
+			}
+			fixtures++
+			return apiResponse(req, 200, `{}`), nil
+		}
+		if req.Method == "DELETE" {
+			deletes++
+			if req.URL.Path != "/v3/"+name || req.URL.RawQuery != "recursive=false" {
+				t.Fatal(req.URL)
+			}
+			if req.Body != nil {
+				body, _ := io.ReadAll(req.Body)
+				if len(body) != 0 {
+					t.Fatal("native DELETE body")
+				}
+			}
 		}
 		forwarded++
 		local := req.Clone(req.Context())
@@ -112,6 +146,7 @@ func TestMonitoringGroupIndependentMockGCP(t *testing.T) {
 	}
 	hybrid = true
 	var previous string
+	var observed contracts.InventoryItem
 	for _, phase := range []string{"initial", "updated"} {
 		if phase == "updated" {
 			seed["name"] = name
@@ -127,15 +162,56 @@ func TestMonitoringGroupIndependentMockGCP(t *testing.T) {
 			t.Fatal("native update not bound")
 		}
 		previous = proof
+		observed = batch.Items[0]
 	}
-	native("DELETE", "/v3/"+name+"?recursive=false", nil, 200)
-	exists = false
+	if cleanup {
+		value := asset.Asset{ID: "native-group", Identity: asset.Identity{ConnectionID: "connection", Provider: asset.ProviderGCP, Partition: "gcp", NativeType: monitoringGroupType, NativeID: observed.NativeID}, Normalized: observed.Normalized}
+		request := contracts.ActionRequest{Asset: value, Action: "delete", IdempotencyKey: "native-group-delete"}
+		driver, err := r.ResolveAction(t.Context(), "connection", value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		result, err := driver.Execute(t.Context(), request)
+		if err != nil || deletes != 1 || result.Data["phase"] != "monitoring_group_delete" || result.ProviderOperationID != "" {
+			t.Fatal(result, err, deletes)
+		}
+		exists = false
+		encoded, _ := json.Marshal(result)
+		restored := contracts.ActionResult{}
+		if err := json.Unmarshal(encoded, &restored); err != nil {
+			t.Fatal(err)
+		}
+		fresh := protocolRuntime(t, r.transport.RoundTrip)
+		driver, err = fresh.ResolveAction(t.Context(), "connection", value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		wait, err := driver.Wait(t.Context(), request, restored)
+		if err != nil || !wait.Done {
+			t.Fatal(wait, err)
+		}
+		settled, err := driver.(contracts.MutationSettlementReader).MutationSettled(t.Context(), request, restored)
+		if err != nil || !settled.Settled {
+			t.Fatal(settled, err)
+		}
+		settled, err = driver.(contracts.MutationSettlementReader).MutationSettled(t.Context(), request, contracts.ActionResult{})
+		if err != nil || settled.Settled {
+			t.Fatal("empty receipt released scope", settled, err)
+		}
+	} else {
+		native("DELETE", "/v3/"+name+"?recursive=false", nil, 200)
+		exists = false
+	}
 	batch, err := r.List(t.Context(), req)
 	if err == nil || batch.Complete || len(batch.Items) != 0 {
 		t.Fatal("listed group's own native 404 became absence", batch, err)
 	}
-	if fixtures != 7 || forwarded != 7 {
+	wantFixtures, wantForwarded := 7, 7
+	if cleanup {
+		wantFixtures, wantForwarded = 19, 19
+	}
+	if fixtures != wantFixtures || forwarded != wantForwarded {
 		t.Fatal("unexpected hybrid evidence", fixtures, forwarded)
 	}
-	t.Logf("Native Group GET/update/404 and unsupported LIST/member endpoints verified: %d forwarded runtime GETs, %d explicit LIST/member fixtures; no native paging, membership or IAM claim", forwarded, fixtures)
+	t.Logf("Native Group GET/update/404 and optional reviewed deletion verified: %d forwarded calls (%d DELETE), %d explicit LIST/member fixtures; no native paging, membership, descendant-guard or IAM claim", forwarded, deletes, fixtures)
 }

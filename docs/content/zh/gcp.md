@@ -449,7 +449,7 @@ AlertPolicy 扫描使用项目级原生 LIST 和 GET，也包含禁用或无效�
 （包括 AWS 成员）保留为未解析的观察。
 
 动态成员关系不代表所有权、保留策略或级联删除。成员读取失败、配置不一致或分页不完整
-时，会保留上次观察。资源组清理仍在实现中，发现资源组不会开启其删除能力。读取需要
+时，会保留上次观察。资源组清理会绑定复核过的原生配置，并使用非递归删除。读取需要
 范围项目上的 `monitoring.groups.list` 与 `monitoring.groups.get`；成员枚举同样使用
 `monitoring.groups.get`。参阅[原生组契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups)
 及[成员时间窗口契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups.members/list)。
@@ -463,6 +463,17 @@ LIST、GET、再次 LIST 的配置。失权、分页不完整或配置变化会�
 仪表板查询按原生结构检查，包括时间序列筛选和比值分母；文本和日志内容不会当作组
 引用。动态 `GROUP` 筛选、模板变量、未知结构及尚未解析的 MQL、PromQL、SQL 查询，
 在无法确定引用时会阻断清理。已确认引用的仪表板也暂时阻断，待其清理动作支持完整配置
-复核后接入。此步骤尚未开启资源组删除能力。参阅
+复核后接入。资源组清理会在发送 DELETE 前重新检查消费方。参阅
 [Monitoring 组选择器](https://docs.cloud.google.com/monitoring/api/v3/filters)和
 [仪表板契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards)。
+
+资源组删除还需要 `monitoring.groups.delete`。动作固定使用 `recursive=false`，拒绝
+调用方覆盖参数，并通过所选子组、Uptime 检查和策略各自的原生 GET 确认其已不存在。
+消费方仍存在、配置变化或读取结果不确定时，不会发送 DELETE。写入前完成两轮消费方
+复核及最后一次资源组读取，组成员会保留。重启后的回执仍绑定原始资源、配置、前置
+删除项和请求键，只通过该资源组自身的 404 确认不存在。
+
+同一连接、同一项目中的组写入按序执行。失败或取消请求的结果无法确认时，仍保留写入
+范围；请继续原任务核验。响应为空或丢失不能独立释放该范围。原生接口不支持带版本
+条件的 DELETE，外部配置变更可能发生在最后一次 GET 之后；重复连接和外部客户端
+不在此协调范围内。参阅[非递归删除契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups/delete)。

@@ -35,6 +35,10 @@ func monitoringConfigurationAsset(id, project string, channel bool, billing ...b
 		value.Identity.NativeType = "billingbudgets.googleapis.com/Budget"
 		value.Identity.NativeID = "//billingbudgets.googleapis.com/billingAccounts/" + account + "/budgets/" + id
 	}
+	if len(billing) > 1 && billing[1] {
+		value.Identity.NativeType = "monitoring.googleapis.com/Group"
+		value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "/alertPolicies/", "/groups/", 1)
+	}
 	return value
 }
 func testMonitoringPlans(t *testing.T, channel bool, billing ...bool) {
@@ -77,6 +81,7 @@ func testMonitoringPlans(t *testing.T, channel bool, billing ...bool) {
 		case "host":
 			value.Identity.NativeID = strings.Replace(strings.Replace(value.Identity.NativeID, "monitoring.googleapis.com", "evil.example", 1), "billingbudgets.googleapis.com", "evil.example", 1)
 		case "collection":
+			value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "/groups/", "/wrong/", 1)
 			value.Identity.NativeID = strings.Replace(strings.Replace(strings.Replace(value.Identity.NativeID, "alertPolicies", "uptimeCheckConfigs", 1), "notificationChannels", "uptimeCheckConfigs", 1), "/budgets/", "/wrong/", 1)
 		case "extra":
 			value.Identity.NativeID += "/extra"
@@ -177,11 +182,20 @@ func testMonitoringScopeFailures(t *testing.T, channel bool, billing ...bool) {
 }
 
 func TestMonitoringChannelRecoveryBindsFrozenPolicies(t *testing.T) {
+	testMonitoringConsumerRecovery(t, false)
+}
+func TestMonitoringGroupRecoveryBindsFrozenConsumers(t *testing.T) {
+	testMonitoringConsumerRecovery(t, true)
+}
+func testMonitoringConsumerRecovery(t *testing.T, group bool) {
 	repos, err := sqlite.Open(filepath.Join(t.TempDir(), "channel-recovery.db"), "../../../migrations")
 	if err != nil {
 		t.Fatal(err)
 	}
 	channel := monitoringConfigurationAsset("channel", "sample-project", true)
+	if group {
+		channel = monitoringConfigurationAsset("group", "sample-project", false, false, true)
+	}
 	policy := monitoringPolicyAsset("policy", "sample-project")
 	policy.Normalized = map[string]any{"_alert_policy_configuration": "reviewed"}
 	root := plan.CleanupTaskStep{ID: "channel", AssetID: channel.ID, Action: "delete", DependsOn: []plan.StepID{"policy"}, Evidence: map[string]any{plan.EvidencePlannedAsset: channel, plan.EvidenceRequiredDeletions: []plan.RequiredDeletion{{StepID: "policy", AssetID: policy.ID}}}}
@@ -214,4 +228,11 @@ func TestMonitoringChannelRecoveryBindsFrozenPolicies(t *testing.T) {
 func TestBillingBudgetPlansSerializeAccountWrites(t *testing.T) { testMonitoringPlans(t, false, true) }
 func TestBillingBudgetAccountScopePersistsThroughFailures(t *testing.T) {
 	testMonitoringScopeFailures(t, false, true)
+}
+
+func TestMonitoringGroupPlansSerializeProjectWrites(t *testing.T) {
+	testMonitoringPlans(t, false, false, true)
+}
+func TestMonitoringGroupProjectScopePersistsThroughFailures(t *testing.T) {
+	testMonitoringScopeFailures(t, false, false, true)
 }
