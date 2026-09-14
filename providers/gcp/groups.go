@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sort"
@@ -95,6 +96,7 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 		parameters["maxResults"] = 500
 	}
 	var result []map[string]any
+	memberTotal := -1
 	seen := map[string]bool{}
 	for {
 		bound, err := catalog.BindREST(operation, parameters)
@@ -119,6 +121,25 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 			}
 			if err := cloudNatScalars(response.Data, []string{"nextPageToken"}, nil, nil, nil); err != nil {
 				return nil, err
+			}
+		}
+		if operation.ID == monitoringGroupMembersList {
+			if _, err := cloudNatObjects(response.Data, "members"); err != nil {
+				return nil, err
+			}
+			if err := cloudNatScalars(response.Data, []string{"nextPageToken"}, nil, []string{"totalSize"}, nil); err != nil {
+				return nil, err
+			}
+			if total, present := response.Data["totalSize"]; present {
+				encoded, _ := json.Marshal(total)
+				var n int
+				if err := json.Unmarshal(encoded, &n); err != nil {
+					return nil, err
+				}
+				if memberTotal != -1 && memberTotal != n {
+					return nil, groupDenied("monitoring_group_member_total_changed")
+				}
+				memberTotal = n
 			}
 		}
 		if operation.ID == billingAccountsList || operation.ID == billingBudgetsList {
@@ -204,6 +225,9 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 			}
 		}
 		if next == "" {
+			if operation.ID == monitoringGroupMembersList && memberTotal != -1 && len(result) != memberTotal {
+				return nil, groupDenied("monitoring_group_member_total_incomplete")
+			}
 			return result, nil
 		}
 		if seen[next] || properties["pageToken"] == nil || (operation.Call.Product == "discoveryengine" && strings.HasSuffix(operation.ID, ".engines.list")) {

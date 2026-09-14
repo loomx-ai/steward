@@ -557,3 +557,22 @@ continue the original task; uncertain failed or canceled attempts retain their
 reservation. Duplicate connections and external clients are outside that scope.
 The native API has no conditional DELETE, and some Console-only settings are not
 exposed: changes by other clients can race the final read.
+
+
+## Cloud Monitoring groups
+
+Group inventory includes the native group hierarchy and a fixed past minute of
+monitored-resource membership. Uptime checks targeting a group can join network
+scans through supported member references. Compute instances match their immutable
+numeric IDs, so a replacement VM with the same name does not inherit the reference.
+Group filters and descriptor-defined member labels are redacted. Unmapped resource
+types, including AWS members, remain unresolved observations.
+
+Membership is dynamic and does not establish ownership, retention policy or
+cascading deletion. Failed, inconsistent or incomplete member reads preserve the
+previous observation. Group cleanup remains under implementation; observing a
+group does not enable its deletion. Reads require `monitoring.groups.list`,
+and `monitoring.groups.get` on the scoping project; member enumeration uses the
+same `monitoring.groups.get` permission.
+See the [native group contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups)
+and [member time-window contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups.members/list).

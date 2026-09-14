@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "ea045d5f9df24e6947c6ab87bbd338bdedadc7cd6035b07e35739c87943422e8",
+    "checksum": "49af45d5d2d115c273339c593b2da5ef22304c0d49fcc369afbc75e0d57a8cba",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "98db34b1f9780c894c08e126c3cea9cc5013bd79fc0051957b092c1432ea69ff",
+  "content_checksum": "0f8ccf67b56100c78743538a15e3e7ea7a4109604e9ae25b7de2458b044aa7d1",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -98990,6 +98990,243 @@
       "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "monitoring.projects.groups.get",
+      "name": "get",
+      "service": "monitoring",
+      "method": "GET",
+      "path": "/v3/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The group to retrieve. The format is: projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID] ",
+            "location": "path",
+            "pattern": "^projects/[^/]+/groups/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The description of a dynamic collection of monitored resources. Each group has a filter that is matched against monitored resources and their associated metadata. If a group's filter matches an available monitored resource, then that resource is a member of that group. Groups can contain any number of monitored resources, and each monitored resource can be a member of any number of groups.Groups can be nested in parent-child hierarchies. The parentName field identifies an optional parent for each group. If a group has a parent, then the only monitored resources available to be matched by the group's filter are the resources contained in the parent group. In other words, a group contains the monitored resources that match its filter and the filters of all the group's ancestors. A group without a parent can contain any monitored resource.For example, consider an infrastructure running a set of instances with two user-defined tags: \"environment\" and \"role\". A parent group has a filter, environment=\"production\". A child of that parent group has a filter, role=\"transcoder\". The parent group contains all instances in the production environment, regardless of their roles. The child group contains instances that have the transcoder role and are in the production environment.The monitored resources contained in a group can change at any moment, depending on what resources exist and what filters are associated with the group and its ancestors.",
+        "id": "Group",
+        "properties": {
+          "displayName": {
+            "description": "A user-assigned name for this group, used only for display purposes.",
+            "type": "string"
+          },
+          "filter": {
+            "description": "The filter used to determine which monitored resources belong to this group.",
+            "type": "string"
+          },
+          "isCluster": {
+            "description": "If true, the members of this group are considered to be a cluster. The system can perform additional analysis on groups that are clusters.",
+            "type": "boolean"
+          },
+          "name": {
+            "description": "Output only. The name of this group. The format is: projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID] When creating a group, this field is ignored and a new name is created consisting of the project specified in the call to CreateGroup and a unique [GROUP_ID] that is generated automatically.",
+            "type": "string"
+          },
+          "parentName": {
+            "description": "The name of the group's parent, if it has one. The format is: projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID] For groups with no parent, parent_name is the empty string, \"\".",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v3",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v3/{name}",
+        "endpoint": "https://monitoring.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
+    },
+    {
+      "id": "monitoring.projects.groups.list",
+      "name": "list",
+      "service": "monitoring",
+      "method": "GET",
+      "path": "/v3/{name}/groups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "ancestorsOfGroup": {
+            "description": "A group name. The format is: projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID] Returns groups that are ancestors of the specified group. The groups are returned in order, starting with the immediate parent and ending with the most distant ancestor. If the specified group has no immediate parent, the results are empty.",
+            "location": "query",
+            "type": "string"
+          },
+          "childrenOfGroup": {
+            "description": "A group name. The format is: projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID] Returns groups whose parent_name field contains the group name. If no groups have this parent, the results are empty.",
+            "location": "query",
+            "type": "string"
+          },
+          "descendantsOfGroup": {
+            "description": "A group name. The format is: projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID] Returns the descendants of the specified group. This is a superset of the results returned by the children_of_group filter, and includes children-of-children, and so forth.",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Required. The project (https://cloud.google.com/monitoring/api/v3#project_name) whose groups are to be listed. The format is: projects/[PROJECT_ID_OR_NUMBER] ",
+            "location": "path",
+            "pattern": "^projects/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "A positive number that is the maximum number of results to return.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "If this field is not empty then it must contain the next_page_token value returned by a previous call to this method. Using this field causes the method to return additional results from the previous method call.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The ListGroups response.",
+        "id": "ListGroupsResponse",
+        "properties": {
+          "group": {
+            "description": "The groups that match the specified filters.",
+            "items": {
+              "$ref": "Group"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "If there are more results than have been returned, then this field is set to a non-empty value. To see the additional results, use that value as page_token in the next call to this method.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "group"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v3",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v3/{name}/groups",
+        "endpoint": "https://monitoring.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
+    },
+    {
+      "id": "monitoring.projects.groups.members.list",
+      "name": "list",
+      "service": "monitoring",
+      "method": "GET",
+      "path": "/v3/{name}/members",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "An optional list filter (https://cloud.google.com/monitoring/api/learn_more#filtering) describing the members to be returned. The filter may reference the type, labels, and metadata of monitored resources that comprise the group. For example, to return only resources representing Compute Engine VM instances, use this filter: `resource.type = \"gce_instance\"` ",
+            "location": "query",
+            "type": "string"
+          },
+          "interval.endTime": {
+            "description": "Required. The end of the time interval.",
+            "format": "google-datetime",
+            "location": "query",
+            "type": "string"
+          },
+          "interval.startTime": {
+            "description": "Optional. The beginning of the time interval. The default value for the start time is the end time. The start time must not be later than the end time.",
+            "format": "google-datetime",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Required. The group whose members are listed. The format is: projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID] ",
+            "location": "path",
+            "pattern": "^projects/[^/]+/groups/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "A positive number that is the maximum number of results to return.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "If this field is not empty then it must contain the next_page_token value returned by a previous call to this method. Using this field causes the method to return additional results from the previous method call.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The ListGroupMembers response.",
+        "id": "ListGroupMembersResponse",
+        "properties": {
+          "members": {
+            "description": "A set of monitored resources in the group.",
+            "items": {
+              "$ref": "MonitoredResource"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "If there are more results than have been returned, then this field is set to a non-empty value. To see the additional results, use that value as page_token in the next call to this method.",
+            "type": "string"
+          },
+          "totalSize": {
+            "description": "The total number of elements matching this request.",
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "members"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v3",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v3/{name}/members",
+        "endpoint": "https://monitoring.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
+    },
+    {
       "id": "monitoring.projects.notificationChannels.delete",
       "name": "delete",
       "service": "monitoring",
@@ -117572,6 +117809,23 @@
         ],
         "list_operations": [
           "monitoring.projects.dashboards.list"
+        ]
+      }
+    },
+    {
+      "native_type": "monitoring.googleapis.com/Group",
+      "class": "observability.resource_group",
+      "display_name": "Cloud Monitoring group",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "groups",
+        "read_operations": [
+          "monitoring.projects.groups.get"
+        ],
+        "list_operations": [
+          "monitoring.projects.groups.list"
         ]
       }
     },

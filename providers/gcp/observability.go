@@ -22,6 +22,7 @@ func safePayload(value map[string]any) map[string]any {
 			redactBillingBudgetPayload(object)
 			redactAlertPolicyPayload(object)
 			redactNotificationChannelPayload(object)
+			redactMonitoringGroupPayload(object)
 			if check, ok := object["httpCheck"].(map[string]any); ok {
 				for _, field := range []string{"authInfo", "headers", "body"} {
 					if _, present := check[field]; present {

@@ -257,6 +257,12 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	for key, value := range data {
 		normalized[key] = value
 	}
+	if nativeType == monitoringGroupType {
+		if err := c.monitoringGroupData(nativeID, data); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized[monitoringGroupReview] = c.monitoringGroupConfiguration(nativeID, data)
+	}
 	if nativeType == notificationChannelType {
 		if err := c.notificationChannelData(nativeID, data); err != nil {
 			return contracts.InventoryItem{}, err
@@ -348,6 +354,12 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	refs := references(c, data)
 	if nativeType == alertPolicyType || nativeType == notificationChannelType {
 		refs = map[string][]string{}
+	}
+	if nativeType == monitoringGroupType {
+		refs = map[string][]string{}
+		if parent := text(data["parentName"]); parent != "" {
+			refs[monitoringGroupType] = []string{c.canonicalName("//monitoring.googleapis.com/" + parent)}
+		}
 	}
 	if nativeType == uptimeType {
 		var err error

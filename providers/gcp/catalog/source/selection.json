@@ -1076,6 +1076,14 @@
       "methods": [
         "cloudbilling.projects.getBillingInfo"
       ]
+    },
+    {
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3",
+      "methods": [
+        "monitoring.projects.groups.get",
+        "monitoring.projects.groups.list",
+        "monitoring.projects.groups.members.list"
+      ]
     }
   ],
   "resource_types": [

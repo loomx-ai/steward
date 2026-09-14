@@ -142,7 +142,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
-	if isMonitoringConfig(nativeType) || nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
+	if nativeType == monitoringGroupType || isMonitoringConfig(nativeType) || nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -167,8 +167,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, err
 		}
 	}
-	if isMonitoringConfig(nativeType) {
+	if nativeType == monitoringGroupType || isMonitoringConfig(nativeType) {
 		collection := "uptimeCheckConfigs"
+		if nativeType == monitoringGroupType {
+			collection = "group"
+		}
 		if nativeType == notificationChannelType {
 			collection = "notificationChannels"
 		}
@@ -296,6 +299,13 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		// Persisted Router observations require their own complete native GET.
 		if nativeType == routerType && len(ancestors) == 1 {
 			live, err := c.routerInventoryData(ctx, id, record.Data)
+			if err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			record.Data = live
+		}
+		if nativeType == monitoringGroupType {
+			live, err := c.monitoringGroupInventory(ctx, id, record.Data)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
@@ -445,6 +455,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 		if !productScopeMatches(request, item) {
 			continue
+		}
+		if nativeType == monitoringGroupType {
+			if err := c.enrichMonitoringGroup(ctx, &item, record.Data); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
 		}
 		if nativeType == storagePoolType {
 			if err := c.enrichStoragePool(ctx, &item, record.Data); err != nil {

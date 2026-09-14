@@ -439,3 +439,17 @@ AlertPolicy 扫描使用项目级原生 LIST 和 GET，也包含禁用或无效�
 失败或取消请求仍保留写入范围。重复配置的连接与外部客户端不在此协调范围内。
 原生接口不支持带版本条件的 DELETE，部分 Console 设置也不会返回；外部修改仍可能
 发生在最后一次读取之后。
+
+
+## Cloud Monitoring 资源组
+
+资源组清单包含原生组层级，以及固定过去一分钟内的受监控成员。以组为目标的 Uptime
+检查可通过已支持的成员引用接入网络扫描。Compute 实例按不可变数字 ID 匹配，同名
+重建的 VM 不会继承旧引用。组筛选条件和成员的描述符标签会脱敏；尚未映射的资源类型
+（包括 AWS 成员）保留为未解析的观察。
+
+动态成员关系不代表所有权、保留策略或级联删除。成员读取失败、配置不一致或分页不完整
+时，会保留上次观察。资源组清理仍在实现中，发现资源组不会开启其删除能力。读取需要
+范围项目上的 `monitoring.groups.list` 与 `monitoring.groups.get`；成员枚举同样使用
+`monitoring.groups.get`。参阅[原生组契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups)
+及[成员时间窗口契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups.members/list)。

@@ -550,3 +550,17 @@ func TestGCPNotificationChannelContributorIsConnectedWithoutCascade(t *testing.T
 		t.Fatal("missing channel dependency discovery was accepted")
 	}
 }
+
+func TestGCPMonitoringGroupContributorIsConnectedWithoutCascade(t *testing.T) {
+	runtime := &monitoringContributorRuntime{}
+	resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})
+	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP}
+	value := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: connection.ID, NativeType: "monitoring.googleapis.com/Group"}}
+	contributors, err := resolver.ResolveContributors(t.Context(), connection, []asset.Asset{value, value})
+	if err != nil || len(contributors) != 3 || !reflect.DeepEqual(runtime.monitoringConnections, []asset.ConnectionID{connection.ID}) {
+		t.Fatal(contributors, err)
+	}
+	if _, ok := contributors[1].(*gcp.UptimeTargets); !ok {
+		t.Fatalf("missing group target contributor: %T", contributors[1])
+	}
+}

@@ -121,11 +121,19 @@ func NewUptimeTargets() *UptimeTargets { return &UptimeTargets{} }
 func (*UptimeTargets) Contribute(_ context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
 	for _, source := range assets {
-		if source.ClosedAt != nil || source.Identity.Provider != asset.ProviderGCP || source.Identity.NativeType != uptimeType {
+		if source.ClosedAt != nil || source.Identity.Provider != asset.ProviderGCP || source.Identity.NativeType != uptimeType && source.Identity.NativeType != monitoringGroupType {
 			continue
 		}
 		c := &client{project: text(source.Normalized["project_id"]), number: text(source.Normalized["project_number"])}
 		refs, err := c.uptimeReferences(source.Identity.NativeID, source.Normalized)
+		evidenceSource, graphSource := "native_uptime_target", "gcp:uptime-targets"
+		if source.Identity.NativeType == monitoringGroupType {
+			refs, err = c.monitoringGroupReferences(source.Normalized)
+			evidenceSource, graphSource = "native_monitoring_group_observation", "gcp:monitoring-group-targets"
+			if len(object(source.Normalized[monitoringGroupUnmapped])) != 0 {
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: source.Identity.Provider, ConnectionID: source.Identity.ConnectionID, ControllerID: source.ID, NativeType: monitoringGroupType, NativeID: source.Identity.NativeID, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{"reason": "monitoring_group_members_unmapped", "types": source.Normalized[monitoringGroupUnmapped], "interval": source.Normalized["_monitoring_group_member_interval"]}})
+			}
+		}
 		if err != nil {
 			return result, err
 		}
@@ -154,11 +162,15 @@ func (*UptimeTargets) Contribute(_ context.Context, _ asset.ScopeID, assets []as
 					}
 					target = candidate
 				}
-				evidence := map[string]any{"target_native_id": id, "source": "native_uptime_target"}
+				evidence := map[string]any{"target_native_id": id, "source": evidenceSource}
+				if source.Identity.NativeType == monitoringGroupType && kind != monitoringGroupType {
+					evidence["member_interval"] = source.Normalized["_monitoring_group_member_interval"]
+					evidence["member_configuration"] = source.Normalized["_monitoring_group_member_configuration"]
+				}
 				if target == nil {
 					result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: source.Identity.Provider, ConnectionID: source.Identity.ConnectionID, ControllerID: source.ID, NativeType: kind, NativeID: id, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 				} else {
-					result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: source.ID, TargetAssetID: target.ID, Type: graph.RelationshipDependsOn, Source: "gcp:uptime-targets", Confidence: 1, Evidence: evidence})
+					result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: source.ID, TargetAssetID: target.ID, Type: graph.RelationshipDependsOn, Source: graphSource, Confidence: 1, Evidence: evidence})
 				}
 			}
 		}

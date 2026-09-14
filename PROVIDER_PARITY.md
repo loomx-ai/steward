@@ -6272,3 +6272,25 @@ permissions and boundaries. Catalog contains 203 resource rules and 801 methods.
 This is a project-budget milestone, not completion of email consumer coverage,
 duplicate-connection coordination, external-writer safety or real-cloud/full-app
 acceptance. All eight acceptance criteria above remain open.
+
+
+### GCP Monitoring group inventory and member-observation milestone
+
+Added explicit Group inventory with native hierarchy, LIST/GET configuration
+reviews and twice-read member pages anchored to the same past-minute interval.
+Inconsistent totals, pagination, permission/404 and observed drift fail the scan.
+Private filters and member labels are redacted. Uptime group targets and supported
+member references join network closure and informational dependency graphs;
+Compute numeric aliases prevent matching recreated VMs. Unmapped types stay
+unresolved observations, with no ownership or cascading deletion authority.
+
+SQLite scan/graph restart tests preserve observations and edges on failed reads,
+then handle member removal and group absence/reappearance. Server dispatch covers
+group-only assets. The pinned independent backend verifies actual supported native
+GET/update/404 responses and explicitly records its unimplemented group/member
+LISTs; seven synthetic list/member responses are separated from seven forwarded
+runtime GETs. Native schema/compiler/catalog and bilingual docs are retained.
+Catalog has 204 resource rules and 804 operations, with previous fragments intact.
+
+Native group cleanup, remaining member/consumer mappings, real-cloud and full-app
+acceptance remain unfinished. All eight acceptance criteria remain open.
