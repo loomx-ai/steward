@@ -89,3 +89,7 @@ Official contract entry points:
 [workspaces](https://learn.microsoft.com/en-us/rest/api/synapse/resourcemanager/workspaces?view=rest-synapse-resourcemanager-2021-06-01),
 [Spark pools](https://learn.microsoft.com/en-us/rest/api/synapse/resourcemanager/big-data-pools?view=rest-synapse-resourcemanager-2021-06-01),
 [SQL pools](https://learn.microsoft.com/en-us/rest/api/synapse/resourcemanager/sql-pools?view=rest-synapse-resourcemanager-2021-06-01).
+
+The [Spark and artifact data-plane evidence](data-plane/README.md) covers ten
+additional native operations. It has a separate transport contract and original
+example manifest; workspace-bound execution and complete cleanup remain open.

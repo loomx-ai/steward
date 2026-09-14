@@ -219,8 +219,9 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 		}
 		batch := document.Host == "" && document.Info.Title == "Azure Batch" && document.ParameterizedHost != nil
 		communication := document.Host == "" && (document.Info.Title == "PhoneNumbersClient" || document.Info.Title == "Azure Communication Room Service") && document.ParameterizedHost != nil
+		synapse := document.Host == "" && (document.Info.Title == "SparkClient" || document.Info.Title == "ArtifactsClient") && document.ParameterizedHost != nil && strings.Contains(upstream.SourceURI, "/specification/synapse/data-plane/Microsoft.Synapse/")
 		var endpointParameter map[string]any
-		if batch || communication {
+		if batch || communication || synapse {
 			host := document.ParameterizedHost
 			if len(host.Parameters) == 1 {
 				endpointParameter, err = resolver.resolve(host.Parameters[0], upstream.SourceURI)
@@ -232,7 +233,7 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				return Catalog{}, fmt.Errorf("unsupported Azure data-plane parameterized host")
 			}
 		}
-		if document.Swagger != "2.0" || document.Info.Version == "" || (!batch && !communication && (document.Host != "management.azure.com" || document.ParameterizedHost != nil)) {
+		if document.Swagger != "2.0" || document.Info.Version == "" || (!batch && !communication && !synapse && (document.Host != "management.azure.com" || document.ParameterizedHost != nil)) {
 			return Catalog{}, fmt.Errorf("Azure OpenAPI document must describe a supported versioned Azure API")
 		}
 		titles[upstream.SourceURI] = document.Info.Title
@@ -275,6 +276,9 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				if communication {
 					service = "Microsoft.Communication.DataPlane"
 				}
+				if synapse {
+					service = "Microsoft.Synapse.DataPlane"
+				}
 				properties := map[string]any{}
 				rawParameters := []string{}
 				for _, parameter := range append(common, operation.Parameters...) {
@@ -296,8 +300,14 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 						properties[parameter[2]] = map[string]any{"type": "string", "in": "path", "required": true}
 					}
 				}
-				properties["api-version"] = map[string]any{"type": "string", "in": "query", "enum": []string{document.Info.Version}}
-				if batch || communication {
+				if synapse && document.Info.Title == "SparkClient" {
+					if p, ok := properties["livyApiVersion"].(map[string]any); !ok || p["in"] != "path" || p["required"] != true || !strings.Contains(path, "/versions/{livyApiVersion}/") {
+						return Catalog{}, fmt.Errorf("unsupported Synapse Livy version contract")
+					}
+				} else {
+					properties["api-version"] = map[string]any{"type": "string", "in": "query", "enum": []string{document.Info.Version}}
+				}
+				if batch || communication || synapse {
 					properties["endpoint"] = endpointParameter
 				}
 				var output map[string]any
@@ -327,6 +337,12 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				}
 				if communication {
 					call.Style, call.Endpoint, call.EndpointParameters = "azure-communication-rest", "{endpoint}", []string{"endpoint"}
+				}
+				if synapse {
+					call.Style, call.Endpoint, call.EndpointParameters = "azure-synapse-rest", "{endpoint}", []string{"endpoint"}
+					// Native names are individual URL segments, even when Swagger
+					// asks its generated clients to skip encoding.
+					call.RawPathParameters = nil
 				}
 				destructive := isDestructiveOperation(operation.ID, method) || (batch && operation.ID == "Pools_RemoveNodes" && method == "post" && path == "/pools/{poolId}/removenodes")
 				c.Operations = append(c.Operations, Operation{ID: "Azure." + service + "." + operation.ID, Name: operation.ID, Service: service, Method: call.Method, Path: fullPath, Destructive: destructive, InputSchema: map[string]any{"type": "object", "properties": properties}, OutputSchema: output, Pagination: pagination, Call: call, SourceURI: upstream.SourceURI})

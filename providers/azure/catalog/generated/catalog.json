@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "66c8e71c110be1b72442fb09a8ed22381a24e0933f4ebfb6180f87b42e961fea",
+    "checksum": "7a5f168d76252078e6a176eca150a4049ec0e8b49d6fc3b94eb82e5236d98d1a",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "3ba4f4d1c0fdea398b2e24258f759df4de982d1fde4b667972f3ce3a9a9b36b3",
+  "content_checksum": "6e4e04c2b4e9c8a51318e167d787c4b1664105bb4fcacb95418b650cd9e0f02c",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -124827,6 +124827,1051 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/bigDataPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.Notebook_GetNotebook",
+      "name": "Notebook_GetNotebook",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/notebooks/{notebookName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "If-None-Match": {
+            "description": "ETag of the Notebook entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "notebookName": {
+            "description": "The notebook name.",
+            "in": "path",
+            "name": "notebookName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Notebook resource type.",
+        "properties": {
+          "etag": {
+            "description": "Resource Etag.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "Fully qualified resource Id for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the resource",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "./entityTypes/Notebook.json#/definitions/Notebook",
+            "description": "Properties of Notebook."
+          },
+          "type": {
+            "description": "The type of the resource. Ex- Microsoft.Compute/virtualMachines or Microsoft.Storage/storageAccounts.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/notebooks/{notebookName}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/notebooks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.Notebook_GetNotebooksByWorkspace",
+      "name": "Notebook_GetNotebooksByWorkspace",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/notebooks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of Notebook resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of results, if any remaining results exist.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of Notebooks.",
+            "items": {
+              "$ref": "#/definitions/NotebookResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/notebooks",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/notebooks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.SparkBatch_CancelSparkBatchJob",
+      "name": "SparkBatch_CancelSparkBatchJob",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "DELETE",
+      "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/batches/{batchId}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "batchId": {
+            "description": "Identifier for the batch job.",
+            "format": "int32",
+            "in": "path",
+            "name": "batchId",
+            "required": true,
+            "type": "integer"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "livyApiVersion": {
+            "description": "Valid api-version for the request.",
+            "in": "path",
+            "name": "livyApiVersion",
+            "required": true,
+            "type": "string",
+            "x-ms-client-default": "2019-11-01-preview",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "sparkPoolName": {
+            "description": "Name of the spark pool.",
+            "in": "path",
+            "name": "sparkPoolName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/batches/{batchId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJob.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.SparkBatch_GetSparkBatchJob",
+      "name": "SparkBatch_GetSparkBatchJob",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/batches/{batchId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "batchId": {
+            "description": "Identifier for the batch job.",
+            "format": "int32",
+            "in": "path",
+            "name": "batchId",
+            "required": true,
+            "type": "integer"
+          },
+          "detailed": {
+            "description": "Optional query param specifying whether detailed response is returned beyond plain livy.",
+            "in": "query",
+            "name": "detailed",
+            "required": false,
+            "type": "boolean"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "livyApiVersion": {
+            "description": "Valid api-version for the request.",
+            "in": "path",
+            "name": "livyApiVersion",
+            "required": true,
+            "type": "string",
+            "x-ms-client-default": "2019-11-01-preview",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "sparkPoolName": {
+            "description": "Name of the spark pool.",
+            "in": "path",
+            "name": "sparkPoolName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "appId": {
+            "description": "The application id of this session",
+            "type": "string",
+            "x-nullable": true
+          },
+          "appInfo": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The detailed application info.",
+            "type": "object",
+            "x-nullable": true
+          },
+          "artifactId": {
+            "description": "The artifact identifier.",
+            "type": "string"
+          },
+          "errorInfo": {
+            "description": "The error information.",
+            "items": {
+              "$ref": "#/definitions/SparkServiceError"
+            },
+            "type": "array",
+            "uniqueItems": false,
+            "x-ms-client-name": "errors"
+          },
+          "id": {
+            "description": "The session Id.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "jobType": {
+            "description": "The job type.",
+            "enum": [
+              "SparkBatch",
+              "SparkSession"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "SparkJobType"
+            }
+          },
+          "livyInfo": {
+            "$ref": "#/definitions/SparkBatchJobState"
+          },
+          "log": {
+            "description": "The log lines.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": false,
+            "x-ms-client-name": "logLines",
+            "x-nullable": true
+          },
+          "name": {
+            "description": "The batch name.",
+            "type": "string"
+          },
+          "pluginInfo": {
+            "$ref": "#/definitions/SparkServicePlugin",
+            "description": "The plugin information.",
+            "x-ms-client-name": "plugin"
+          },
+          "result": {
+            "description": "The Spark batch job result.",
+            "enum": [
+              "Uncertain",
+              "Succeeded",
+              "Failed",
+              "Cancelled"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "SparkBatchJobResultType"
+            }
+          },
+          "schedulerInfo": {
+            "$ref": "#/definitions/SparkScheduler",
+            "description": "The scheduler information.",
+            "x-ms-client-name": "scheduler"
+          },
+          "sparkPoolName": {
+            "description": "The Spark pool name.",
+            "type": "string"
+          },
+          "state": {
+            "description": "The batch state",
+            "enum": [
+              "not_started",
+              "starting",
+              "idle",
+              "busy",
+              "shutting_down",
+              "error",
+              "dead",
+              "killed",
+              "success",
+              "running",
+              "recovering"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "LivyStates"
+            }
+          },
+          "submitterId": {
+            "description": "The submitter identifier.",
+            "type": "string"
+          },
+          "submitterName": {
+            "description": "The submitter name.",
+            "type": "string"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The tags.",
+            "type": "object"
+          },
+          "workspaceName": {
+            "description": "The workspace name.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/batches/{batchId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJob.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.SparkBatch_GetSparkBatchJobs",
+      "name": "SparkBatch_GetSparkBatchJobs",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/batches",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "detailed": {
+            "description": "Optional query param specifying whether detailed response is returned beyond plain livy.",
+            "in": "query",
+            "name": "detailed",
+            "required": false,
+            "type": "boolean"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "from": {
+            "description": "Optional param specifying which index the list should begin from.",
+            "format": "int32",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "type": "integer"
+          },
+          "livyApiVersion": {
+            "description": "Valid api-version for the request.",
+            "in": "path",
+            "name": "livyApiVersion",
+            "required": true,
+            "type": "string",
+            "x-ms-client-default": "2019-11-01-preview",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "size": {
+            "description": "Optional param specifying the size of the returned list.\r\n            By default it is 20 and that is the maximum.",
+            "format": "int32",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "type": "integer"
+          },
+          "sparkPoolName": {
+            "description": "Name of the spark pool.",
+            "in": "path",
+            "name": "sparkPoolName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response for batch list operation.",
+        "properties": {
+          "from": {
+            "description": "The start index of fetched sessions.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "sessions": {
+            "description": "Batch list",
+            "items": {
+              "$ref": "#/definitions/SparkBatchJob"
+            },
+            "type": "array",
+            "uniqueItems": false
+          },
+          "total": {
+            "description": "Number of sessions fetched.",
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "from",
+          "total"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/batches",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJob.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.SparkJobDefinition_GetSparkJobDefinition",
+      "name": "SparkJobDefinition_GetSparkJobDefinition",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/sparkJobDefinitions/{sparkJobDefinitionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "If-None-Match": {
+            "description": "ETag of the Spark Job Definition entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "sparkJobDefinitionName": {
+            "description": "The spark job definition name.",
+            "in": "path",
+            "name": "sparkJobDefinitionName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "artifacts.json#/definitions/SubResource"
+          }
+        ],
+        "description": "Spark job definition resource type.",
+        "properties": {
+          "properties": {
+            "$ref": "./entityTypes/SparkJobDefinition.json#/definitions/SparkJobDefinition",
+            "description": "Properties of spark job definition."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/sparkJobDefinitions/{sparkJobDefinitionName}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJobDefinitions.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.SparkJobDefinition_GetSparkJobDefinitionsByWorkspace",
+      "name": "SparkJobDefinition_GetSparkJobDefinitionsByWorkspace",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/sparkJobDefinitions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of spark job definitions resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of results, if any remaining results exist.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of spark job definitions.",
+            "items": {
+              "$ref": "#/definitions/SparkJobDefinitionResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/sparkJobDefinitions",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJobDefinitions.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.SparkSession_CancelSparkSession",
+      "name": "SparkSession_CancelSparkSession",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "DELETE",
+      "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/sessions/{sessionId}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "livyApiVersion": {
+            "description": "Valid api-version for the request.",
+            "in": "path",
+            "name": "livyApiVersion",
+            "required": true,
+            "type": "string",
+            "x-ms-client-default": "2019-11-01-preview",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "sessionId": {
+            "description": "Identifier for the session.",
+            "format": "int32",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "type": "integer"
+          },
+          "sparkPoolName": {
+            "description": "Name of the spark pool.",
+            "in": "path",
+            "name": "sparkPoolName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/sessions/{sessionId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJob.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.SparkSession_GetSparkSession",
+      "name": "SparkSession_GetSparkSession",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/sessions/{sessionId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "detailed": {
+            "description": "Optional query param specifying whether detailed response is returned beyond plain livy.",
+            "in": "query",
+            "name": "detailed",
+            "required": false,
+            "type": "boolean"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "livyApiVersion": {
+            "description": "Valid api-version for the request.",
+            "in": "path",
+            "name": "livyApiVersion",
+            "required": true,
+            "type": "string",
+            "x-ms-client-default": "2019-11-01-preview",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "sessionId": {
+            "description": "Identifier for the session.",
+            "format": "int32",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "type": "integer"
+          },
+          "sparkPoolName": {
+            "description": "Name of the spark pool.",
+            "in": "path",
+            "name": "sparkPoolName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "appId": {
+            "type": "string",
+            "x-nullable": true
+          },
+          "appInfo": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "x-nullable": true
+          },
+          "artifactId": {
+            "type": "string"
+          },
+          "errorInfo": {
+            "items": {
+              "$ref": "#/definitions/SparkServiceError"
+            },
+            "type": "array",
+            "uniqueItems": false,
+            "x-ms-client-name": "errors"
+          },
+          "id": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "jobType": {
+            "enum": [
+              "SparkBatch",
+              "SparkSession"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "SparkJobType"
+            }
+          },
+          "livyInfo": {
+            "$ref": "#/definitions/SparkSessionState"
+          },
+          "log": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": false,
+            "x-ms-client-name": "logLines",
+            "x-nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "pluginInfo": {
+            "$ref": "#/definitions/SparkServicePlugin",
+            "x-ms-client-name": "plugin"
+          },
+          "result": {
+            "enum": [
+              "Uncertain",
+              "Succeeded",
+              "Failed",
+              "Cancelled"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "SparkSessionResultType"
+            }
+          },
+          "schedulerInfo": {
+            "$ref": "#/definitions/SparkScheduler",
+            "x-ms-client-name": "scheduler"
+          },
+          "sparkPoolName": {
+            "type": "string"
+          },
+          "state": {
+            "description": "The session state.",
+            "enum": [
+              "not_started",
+              "starting",
+              "idle",
+              "busy",
+              "shutting_down",
+              "error",
+              "dead",
+              "killed",
+              "success",
+              "running",
+              "recovering"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "LivyStates"
+            }
+          },
+          "submitterId": {
+            "type": "string"
+          },
+          "submitterName": {
+            "type": "string"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "workspaceName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/sessions/{sessionId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJob.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.SparkSession_GetSparkSessions",
+      "name": "SparkSession_GetSparkSessions",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/sessions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "detailed": {
+            "description": "Optional query param specifying whether detailed response is returned beyond plain livy.",
+            "in": "query",
+            "name": "detailed",
+            "required": false,
+            "type": "boolean"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "from": {
+            "description": "Optional param specifying which index the list should begin from.",
+            "format": "int32",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "type": "integer"
+          },
+          "livyApiVersion": {
+            "description": "Valid api-version for the request.",
+            "in": "path",
+            "name": "livyApiVersion",
+            "required": true,
+            "type": "string",
+            "x-ms-client-default": "2019-11-01-preview",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "size": {
+            "description": "Optional param specifying the size of the returned list.\r\n            By default it is 20 and that is the maximum.",
+            "format": "int32",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "type": "integer"
+          },
+          "sparkPoolName": {
+            "description": "Name of the spark pool.",
+            "in": "path",
+            "name": "sparkPoolName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "from": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "sessions": {
+            "items": {
+              "$ref": "#/definitions/SparkSession"
+            },
+            "type": "array",
+            "uniqueItems": false
+          },
+          "total": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "from",
+          "total"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/sessions",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJob.json"
     },
     {
       "id": "Azure.Microsoft.Synapse.RestorableDroppedSqlPools_Get",

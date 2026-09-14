@@ -20,7 +20,7 @@ type RESTRequest struct {
 
 func BindREST(operation Operation, parameters map[string]any) (RESTRequest, error) {
 	call := operation.Call
-	if call == nil || (call.Style != "google-rest" && call.Style != "azure-rest" && call.Style != "azure-batch-rest" && call.Style != "azure-communication-rest") {
+	if call == nil || (call.Style != "google-rest" && call.Style != "azure-rest" && call.Style != "azure-batch-rest" && call.Style != "azure-communication-rest" && call.Style != "azure-synapse-rest") {
 		return RESTRequest{}, fmt.Errorf("operation %q is not a REST operation", operation.ID)
 	}
 	domain := "googleapis.com"
@@ -42,6 +42,13 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 			return RESTRequest{}, fmt.Errorf("invalid Azure Communication endpoint")
 		}
 	}
+	if call.Style == "azure-synapse-rest" {
+		endpoint, _ := parameters["endpoint"].(string)
+		origin, err = trustedRESTOrigin(endpoint, "dev.azuresynapse.net")
+		if call.Endpoint != "{endpoint}" || !slices.Equal(call.EndpointParameters, []string{"endpoint"}) || !azureSynapseOrigin.MatchString(endpoint) {
+			return RESTRequest{}, fmt.Errorf("invalid Azure Synapse endpoint")
+		}
+	}
 	if err != nil || !strings.HasPrefix(call.Path, "/") || strings.ContainsAny(call.Path, "?#") {
 		return RESTRequest{}, fmt.Errorf("invalid REST operation endpoint or path")
 	}
@@ -58,6 +65,11 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 			return RESTRequest{}, fmt.Errorf("Azure API version differs from catalog")
 		}
 		values["api-version"] = call.Version
+	}
+	if call.Style == "azure-synapse-rest" {
+		if err := bindSynapseParameters(call, properties, values); err != nil {
+			return RESTRequest{}, err
+		}
 	}
 	query := url.Values{}
 	result := RESTRequest{Method: call.Method}

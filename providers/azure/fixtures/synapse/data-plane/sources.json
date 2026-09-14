@@ -1,0 +1,92 @@
+[
+  {
+    "file": "SparkFrontend_SparkBatch_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/SparkFrontend_SparkBatch_List.json",
+    "source_sha256": "d044d3bb7b3325fd3e48f7d8abc8ce8b62c0af309eecb9231596e5e38bf3fac6",
+    "operation": "SparkBatch_GetSparkBatchJobs",
+    "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/batches",
+    "method": "GET",
+    "document": "sparkJob.json"
+  },
+  {
+    "file": "SparkFrontend_SparkBatch_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/SparkFrontend_SparkBatch_Get.json",
+    "source_sha256": "25332ecf691ba94961379d7d2b271569b3b9aa1f420f26dd4c4fcec67a28eccd",
+    "operation": "SparkBatch_GetSparkBatchJob",
+    "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/batches/{batchId}",
+    "method": "GET",
+    "document": "sparkJob.json"
+  },
+  {
+    "file": "SparkFrontend_SparkBatch_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/SparkFrontend_SparkBatch_Delete.json",
+    "source_sha256": "ab1186e5de05c8b72e937020f600a64256ddd948fc7b77ad2c27054988cdf2de",
+    "operation": "SparkBatch_CancelSparkBatchJob",
+    "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/batches/{batchId}",
+    "method": "DELETE",
+    "document": "sparkJob.json"
+  },
+  {
+    "file": "SparkFrontend_SparkSession_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/SparkFrontend_SparkSession_List.json",
+    "source_sha256": "d044d3bb7b3325fd3e48f7d8abc8ce8b62c0af309eecb9231596e5e38bf3fac6",
+    "operation": "SparkSession_GetSparkSessions",
+    "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/sessions",
+    "method": "GET",
+    "document": "sparkJob.json"
+  },
+  {
+    "file": "SparkFrontend_SparkSession_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/SparkFrontend_SparkSession_Get.json",
+    "source_sha256": "dc7f9e5138595fb7b8af67b2d9dac959dc5b167cdf49e3f09dcf453d7555751b",
+    "operation": "SparkSession_GetSparkSession",
+    "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/sessions/{sessionId}",
+    "method": "GET",
+    "document": "sparkJob.json"
+  },
+  {
+    "file": "SparkFrontend_SparkSession_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/SparkFrontend_SparkSession_Delete.json",
+    "source_sha256": "863ef1f2800c096a70f262aab8e621076632cae2da710ff5e87611a5a59a718c",
+    "operation": "SparkSession_CancelSparkSession",
+    "path": "/livyApi/versions/{livyApiVersion}/sparkPools/{sparkPoolName}/sessions/{sessionId}",
+    "method": "DELETE",
+    "document": "sparkJob.json"
+  },
+  {
+    "file": "Notebooks_ListByWorkspace.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/Notebooks_ListByWorkspace.json",
+    "source_sha256": "5b0d77617d6dc52d02ca750bb8cc2337c3338cbd1b247bfaa45f63d3f6d61190",
+    "operation": "Notebook_GetNotebooksByWorkspace",
+    "path": "/notebooks",
+    "method": "GET",
+    "document": "notebooks.json"
+  },
+  {
+    "file": "Notebooks_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/Notebooks_Get.json",
+    "source_sha256": "4480f69a70838567a9b80fdc2802308dd60f1b7c6d88c209a9f5a2e20fc314d3",
+    "operation": "Notebook_GetNotebook",
+    "path": "/notebooks/{notebookName}",
+    "method": "GET",
+    "document": "notebooks.json"
+  },
+  {
+    "file": "SparkJobDefinitions_ListByWorkspace.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/SparkJobDefinitions_ListByWorkspace.json",
+    "source_sha256": "2fa0e1f3f6ff9fd134a797b20aa225f3bd7ad2f755087e4a34280f0ec415fd07",
+    "operation": "SparkJobDefinition_GetSparkJobDefinitionsByWorkspace",
+    "path": "/sparkJobDefinitions",
+    "method": "GET",
+    "document": "sparkJobDefinitions.json"
+  },
+  {
+    "file": "SparkJobDefinitions_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/SparkJobDefinitions_Get.json",
+    "source_sha256": "b5e0e9cdfc58ffe34e6455befb194130daf6cff4f845a507d679ee3769a8c53d",
+    "operation": "SparkJobDefinition_GetSparkJobDefinition",
+    "path": "/sparkJobDefinitions/{sparkJobDefinitionName}",
+    "method": "GET",
+    "document": "sparkJobDefinitions.json"
+  }
+]

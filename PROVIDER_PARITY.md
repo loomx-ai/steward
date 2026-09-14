@@ -6627,3 +6627,25 @@ all 159 statuses and all eight acceptance criteria remain open. The missing-spec
 backlog now has 17 Azure types and 23 references; existing specifications still
 require their full behavioral acceptance. English and Chinese coverage documents
 state the current capability and remaining limitations explicitly.
+
+### Synapse Spark and artifact data-plane contract foundation
+
+Added ten pinned official data-plane operations: Spark batch/session list, get
+and cancel, plus notebook and Spark-job-definition list/get. Six new source
+snapshots and ten unchanged native examples extend the catalog from 1511 to 1521
+operations. Existing ARM operations and all 451 resource bindings are unchanged.
+
+A distinct REST binding preserves workspace HTTPS endpoints, Livy's path version
+and numeric int32 IDs, bounded offset pagination, artifact query versions and
+nextLink metadata. Tests cover endpoint/path/version rejection, numeric and
+boolean wire types, deterministic import, ten native examples and eight response
+schemas. Explicit tests preserve original-source discrepancies: missing schemes,
+preview cancellation versions, undeclared parameters/header aliases, invalid
+null/object/state fields, pyFiles type disagreement and incomplete Spark lists.
+See [the evidence and exact limitations](providers/azure/fixtures/synapse/data-plane/README.md).
+
+Runtime invocation of the new transport is explicitly denied until workspace
+ownership, its separate OAuth audience, complete dependency inventory and cleanup
+are implemented. No live service or independent emulator was used. This is an
+intermediate contract milestone, not completed Synapse runtime support. All 159
+matrix statuses and all eight acceptance criteria remain open.

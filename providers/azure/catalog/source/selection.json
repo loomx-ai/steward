@@ -2491,6 +2491,31 @@
         "Workspaces_List",
         "Workspaces_ListByResourceGroup"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJob.json",
+      "operations": [
+        "SparkBatch_CancelSparkBatchJob",
+        "SparkBatch_GetSparkBatchJob",
+        "SparkBatch_GetSparkBatchJobs",
+        "SparkSession_CancelSparkSession",
+        "SparkSession_GetSparkSession",
+        "SparkSession_GetSparkSessions"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/notebooks.json",
+      "operations": [
+        "Notebook_GetNotebook",
+        "Notebook_GetNotebooksByWorkspace"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJobDefinitions.json",
+      "operations": [
+        "SparkJobDefinition_GetSparkJobDefinition",
+        "SparkJobDefinition_GetSparkJobDefinitionsByWorkspace"
+      ]
     }
   ],
   "resource_types": [
