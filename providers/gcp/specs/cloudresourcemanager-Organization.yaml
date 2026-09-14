@@ -21,8 +21,21 @@ discovery:
     itemsPath: $
     identityPath: name
 fields:
-  name: displayName
-  state: state
-  createTime: createTime
-  updateTime: updateTime
-  directoryCustomerId: directoryCustomerId
+  name:
+    path: name
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  state:
+    path: state
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  updateTime:
+    path: updateTime
+    type: string
+  directoryCustomerId:
+    path: directoryCustomerId
+    type: string

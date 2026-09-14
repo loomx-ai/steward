@@ -42,9 +42,6 @@ fields:
   createTime:
     path: createTime
     type: string
-  state:
-    path: state
-    type: string
   disableMoves:
     path: disableMoves
     type: boolean

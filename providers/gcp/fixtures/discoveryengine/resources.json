@@ -207,7 +207,7 @@
     "type": "INCLUDE",
     "providedUriPattern": "DISCOVERY_PRIVATE_SITE",
     "exactMatch": false,
-    "indexingStatus": "INDEXING",
+    "indexingStatus": "PENDING",
     "siteVerificationInfo": {
       "siteVerificationState": "VERIFIED"
     }

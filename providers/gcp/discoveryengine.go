@@ -443,6 +443,34 @@ func safeDiscoveryPayload(raw map[string]any) map[string]any {
 	var redact func(map[string]any)
 	redact = func(value map[string]any) {
 		for key, child := range value {
+			if key == "indexingStatus" || key == "isDefault" || key == "lastDocumentImportTime" {
+				valid := false
+				switch key {
+				case "indexingStatus":
+					valid = slices.Contains([]string{"INDEXING_STATUS_UNSPECIFIED", "PENDING", "FAILED", "SUCCEEDED", "DELETING", "CANCELLABLE", "CANCELLED"}, text(child))
+				case "isDefault":
+					_, valid = child.(bool)
+				case "lastDocumentImportTime":
+					_, err := time.Parse(time.RFC3339Nano, text(child))
+					valid = err == nil
+				}
+				if !valid {
+					value[key] = "[REDACTED]"
+				}
+				continue
+			}
+			if key == "indexStatus" {
+				// Preserve only the typed timestamp, never indexing messages,
+				// error samples or malformed customer content.
+				status := map[string]any{}
+				if stamp := text(object(child)["indexTime"]); stamp != "" {
+					if _, err := time.Parse(time.RFC3339Nano, stamp); err == nil {
+						status["indexTime"] = stamp
+					}
+				}
+				value[key] = status
+				continue
+			}
 			if slices.Contains(keep, key) || strings.HasPrefix(key, "_") || strings.HasPrefix(key, "refs_") {
 				continue
 			}

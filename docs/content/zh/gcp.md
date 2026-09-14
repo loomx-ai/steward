@@ -42,11 +42,17 @@ type = "run.googleapis.com/Service" AND state = "CONDITION_FAILED"
 type = "sqladmin.googleapis.com/Instance" AND tags.team = "analytics"
 type = "bigquery.googleapis.com/Table" AND properties.name = "events" AND properties.numRows = "9007199254740993"
 type = "compute.googleapis.com/SslCertificate" AND properties.managedStatus = "PROVISIONING_FAILED"
+type = "discoveryengine.googleapis.com/Document" AND properties.indexedAt = "2026-08-01T13:00:00Z"
+type = "cloudidentity.googleapis.com/Membership" AND properties.memberId = "member@example.test"
 ```
 
 容量、数量等原生 64 位整数字符串需要使用引号包裹查询值。防火墙策略的 `properties.name` 是原生数字名称，`properties.shortName` 是显示名称。TPU 排队资源保留结构化的 `properties.state`，可用 `properties.lifecycleState` 查询其中的状态值。各资源类型仍可使用顶层 `state` 字段搜索状态；API 不提供资源状态时，该值为空。例如，网络和防火墙规则没有原生状态或标签属性。路由返回 `routeStatus` 时会映射为可搜索状态。托管证书状态、PSC 连接状态和负载均衡迁移状态使用各自的属性名，不代表资源的整体健康状态。参见[路由](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routes)和[证书](https://docs.cloud.google.com/compute/docs/reference/rest/v1/sslCertificates)的 API 字段。
 
 BigQuery 数据集与表的 `properties.name` 是短 ID；不同数据集中的同名表通过完整资源 ID 区分。扫描会在列举后读取原生详情，以获得加密配置、行数和字节数等属性。除列举权限外，连接还需要 `bigquery.datasets.get` 和 `bigquery.tables.get`。详情访问被拒绝、资源消失或身份不一致时，该扫描分片失败并保留已有库存。参见[数据集](https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/datasets/get)和[表](https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/tables/get)的详情方法。
+
+Cloud Identity 身份组、成员关系及 Resource Manager 组织的 `properties.name` 保留原生资源名。身份组与组织的显示名称使用 `properties.displayName`，成员标识使用 `properties.memberId`。GKE 标签来自原生集群或节点池配置。
+
+Discovery Engine 文档的 `properties.indexedAt` 是索引状态中的时间戳；索引错误文本和文档内容仍被遮蔽。目标网站提供 `properties.indexingStatus`，会话提供 `startTime` 与 `endTime`，而非创建时间。Infrastructure Manager 资源变更提供 `properties.intent`。KMS 的 `properties.primaryState` 仅表示 CryptoKey 主版本的状态；密钥版本和导入任务不会继承密钥标签。参见[文档索引字段](https://docs.cloud.google.com/generative-ai-app-builder/docs/reference/rest/v1/projects.locations.collections.dataStores.branches.documents)和[资源变更意图](https://docs.cloud.google.com/infrastructure-manager/docs/reference/rest/v1/projects.locations.previews.resourceChanges)。
 
 ## 盘点与清理范围
 

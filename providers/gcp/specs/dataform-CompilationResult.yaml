@@ -42,9 +42,6 @@ fields:
   createTime:
     path: createTime
     type: string
-  state:
-    path: state
-    type: string
   codeCompilationConfig:
     path: codeCompilationConfig
     type: object

@@ -36,7 +36,7 @@ fields:
     path: project_id
     type: string
   labels:
-    path: labels
+    path: config.resourceLabels
     type: object
 extensions:
   hook: gcp.resource

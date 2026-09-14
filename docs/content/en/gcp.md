@@ -44,6 +44,8 @@ type = "run.googleapis.com/Service" AND state = "CONDITION_FAILED"
 type = "sqladmin.googleapis.com/Instance" AND tags.team = "analytics"
 type = "bigquery.googleapis.com/Table" AND properties.name = "events" AND properties.numRows = "9007199254740993"
 type = "compute.googleapis.com/SslCertificate" AND properties.managedStatus = "PROVISIONING_FAILED"
+type = "discoveryengine.googleapis.com/Document" AND properties.indexedAt = "2026-08-01T13:00:00Z"
+type = "cloudidentity.googleapis.com/Membership" AND properties.memberId = "member@example.test"
 ```
 
 Capacity and count fields represented as native 64-bit integer strings use quoted
@@ -66,6 +68,20 @@ row counts and byte counts. The connection needs `bigquery.datasets.get` and
 detail fails that scan shard and preserves existing inventory. See the
 [dataset](https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/datasets/get)
 and [table](https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/tables/get) detail methods.
+
+Cloud Identity groups and memberships, and Resource Manager organizations, keep
+their native resource name in `properties.name`. Use `properties.displayName`
+for group/organization display names and `properties.memberId` for a membership's
+subject ID. GKE labels come from the native cluster or node-pool configuration.
+
+Discovery Engine document `properties.indexedAt` is the index-status timestamp;
+indexing error text and document content remain redacted. Target sites expose
+`properties.indexingStatus`, while conversations and sessions expose `startTime`
+and `endTime` rather than creation time. Infrastructure Manager changes expose
+`properties.intent`. KMS `properties.primaryState` describes only a CryptoKey's
+primary version; key versions and import jobs do not inherit the key's labels.
+See the [document index fields](https://docs.cloud.google.com/generative-ai-app-builder/docs/reference/rest/v1/projects.locations.collections.dataStores.branches.documents)
+and [resource-change intent](https://docs.cloud.google.com/infrastructure-manager/docs/reference/rest/v1/projects.locations.previews.resourceChanges).
 
 ## Inventory and supported cleanup
 

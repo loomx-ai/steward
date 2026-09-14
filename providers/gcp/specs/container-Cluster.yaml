@@ -37,7 +37,7 @@ fields:
     path: zone_id
     type: string
   labels:
-    path: labels
+    path: resourceLabels
     type: object
   clusterId:
     path: id

@@ -35,15 +35,21 @@ fields:
   name:
     path: name
     type: string
-  state:
-    path: state
-    type: string
   projectId:
     path: project_id
     type: string
   labels:
     path: labels
     type: object
+  primaryState:
+    path: primary.state
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  purpose:
+    path: purpose
+    type: string
 extensions:
   hook: gcp.resource
 relationships:

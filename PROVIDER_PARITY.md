@@ -5031,3 +5031,56 @@ background evidence only, not acceptance evidence for this work.
   passed (GCP 11.476s, inventory 1.577s, resourcequery 0.391s, contracts 0.522s).
   Forty-three owned files preserve all 65 original working-file hashes. No
   temporary external server or cloud resources were created for this milestone.
+
+## GCP complete declared-field schema audit
+
+- Extended the native field guard to every declared property in all 194 current
+  GCP specifications, including newly added kinds. It resolves the retained GET
+  or list-detail response schema, checks field existence and types, and rejects
+  aliases that would collide with an authoritative native key. Both integer and
+  number properties can represent native integer schemas; native int64 strings
+  stay strings. Scope and StoragePool adapter-derived fields remain explicit.
+- Reviewed the remaining 41 static candidates against native schemas and service
+  adapters, removing unsupported state/label/name/creation-time declarations.
+  Added specific native metadata: Discovery document IDs/schema/index times,
+  target-site indexing status, branch default/import metadata, conversation and
+  session intervals, Infra change intent/Terraform type, KMS key creation/purpose/
+  primary-version state, bucket times/storage class and Artifact Registry format,
+  mode, times and exact byte counts. These names preserve native semantics rather
+  than treating indexing, execution or a key version as a parent resource state.
+- Cloud Identity Group/Membership and Resource Manager Organization now declare
+  string properties explicitly. Their native `name` remains authoritative, with
+  separate displayName/memberId properties. GKE label paths point directly to
+  resourceLabels or config.resourceLabels while preserving inventory tags and
+  physical configuration proofs. All current native field contracts pass.
+- Discovery index-status sanitization exposes only a valid RFC3339 index time;
+  pending messages, error samples and malformed nested values remain private.
+  Newly exposed default/import/indexing scalars also reject malformed values;
+  all native indexing enum values are checked against the pinned schema. The old
+  synthetic target-site fixture's unsupported INDEXING value was corrected to
+  PENDING. Both native raw/proof inputs and ordinary public metadata remain unchanged.
+  Stored SQLite documents now support indexedAt/id queries after successful scans
+  and after a later permission failure. No resource creation time is inferred.
+- Native inventory/query regressions cover Discovery metadata and fresh enriched
+  readback proofs, identity names/member IDs and configuration proofs, organization
+  names/state, Infra change intent/type, and GKE labels/physical proofs. Existing
+  full lifecycle suites remain the deletion/restart/retention regression boundary.
+  The initial query test compared site-search proof with a summary fixture; it
+  now reads the actual adapter path to include native sitemap/connector enrichment.
+- Evidence is the pinned Discovery documents plus native protocol/SQLite tests,
+  not new emulator or live-cloud verification. The native catalog and operations
+  are unchanged. All eight overall acceptance criteria remain open: declared-field
+  validation alone does not prove complete list/detail availability, service
+  coverage, cleanup semantics, independent emulators or full application parity.
+
+- Verification: the all-package `go test ./... -count=1` suite passed (GCP
+  177.856s, Azure 351.809s) before the final strict scalar checks and target-site
+  fixture correction. On the final source, unfiltered GCP, contracts, inventory,
+  resource-query, server and HTTP suites passed (GCP 167.319s), followed by the
+  GCP/Discovery race selection (203.624s). The earlier wider GCP/Discovery/Infra/
+  Identity/Organization/GKE race selection also passed (307.095s). Vet and docs
+  passed. After integration, selected GCP regressions passed (28.711s), as did
+  unfiltered inventory/query/contracts (4.537s/3.259s/2.932s); docs validated 42
+  chapters and 10 existing screenshots (30 chapters in the isolated checkout).
+  All 65 original work-in-progress file hashes remained unchanged. No external
+  emulator or live cloud resource was started for this milestone.

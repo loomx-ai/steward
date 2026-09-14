@@ -39,9 +39,6 @@ fields:
   createTime:
     path: createTime
     type: string
-  state:
-    path: state
-    type: string
 extensions:
   hook: gcp.resource
 relationships:

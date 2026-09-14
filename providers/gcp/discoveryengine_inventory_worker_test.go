@@ -12,6 +12,7 @@ import (
 	"github.com/loomx-ai/steward/internal/app/inventory"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/core/resourcequery"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/persistence/sqlite"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -88,6 +89,17 @@ func TestDiscoveryEngineDocumentScanPermissionFailurePreservesObservations(t *te
 			if value.ClosedAt != nil || value.DeletedAt != nil || text(value.Normalized[discoveryParentProof]) == "" || text(value.Normalized["_discoveryengine_ancestors"]) == "" {
 				t.Fatalf("failed scan lost native document proof: %+v", value)
 			}
+		}
+		expression, err := resourcequery.Parse(`properties.indexedAt = "2026-08-01T13:00:00Z" AND properties.id = "document-1"`)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := expression.Validate([]asset.ResourceKind{kind}); err != nil {
+			t.Fatal(err)
+		}
+		matched, err := repositories.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10, ResourceQuery: expression})
+		if err != nil || len(matched.Items) != 1 {
+			t.Fatal("native index timestamp query lost after scan or failure", matched, err)
 		}
 		encoded, _ := json.Marshal(page)
 		if strings.Contains(string(encoded), "DISCOVERY_PRIVATE_") {

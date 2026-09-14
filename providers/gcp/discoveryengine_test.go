@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"reflect"
 	"slices"
 	"sort"
 	"strings"
@@ -576,5 +577,45 @@ func TestDiscoveryEngineLogsRedactMalformedCustomerRecords(t *testing.T) {
 	other := safePayload(map[string]any{"name": "projects/sample-project/locations/us/collections/unrelated", "configuration": map[string]any{"ordinary": true}})
 	if object(other["configuration"])["ordinary"] != true {
 		t.Fatal("Discovery Engine filtering changed another service")
+	}
+}
+
+func TestDiscoveryEngineIndexMetadataCannotExposePrivateStatus(t *testing.T) {
+	for _, stamp := range []any{"2026-08-01T13:00:00Z", "DISCOVERY_PRIVATE_TIME", map[string]any{"private": "DISCOVERY_PRIVATE_NESTED"}, nil} {
+		raw := map[string]any{"name": deStore + "/branches/0/documents/document-1", "indexStatus": map[string]any{"indexTime": stamp, "pendingMessage": "DISCOVERY_PRIVATE_PENDING", "errorSamples": []any{map[string]any{"code": 3, "message": "DISCOVERY_PRIVATE_ERROR", "details": []any{"DISCOVERY_PRIVATE_DETAIL"}}}}, "indexingStatus": "PENDING", "isDefault": false}
+		before, _ := json.Marshal(raw)
+		cleaned := safeDiscoveryPayload(raw)
+		encoded, _ := json.Marshal(cleaned)
+		if strings.Contains(string(encoded), "DISCOVERY_PRIVATE_") || cleaned["indexingStatus"] != "PENDING" || cleaned["isDefault"] != false {
+			t.Fatal("private indexing status escaped or public metadata changed", cleaned)
+		}
+		status := object(cleaned["indexStatus"])
+		if text(stamp) == "2026-08-01T13:00:00Z" {
+			if status["indexTime"] != stamp || len(status) != 1 {
+				t.Fatal("native index time missing", status)
+			}
+		} else if len(status) != 0 {
+			t.Fatal("malformed status became public metadata", status)
+		}
+		after, _ := json.Marshal(raw)
+		if string(before) != string(after) {
+			t.Fatal("redaction mutated native proof input")
+		}
+	}
+}
+
+func TestDiscoveryEngineIndexMetadataRejectsMalformedScalars(t *testing.T) {
+	for _, field := range []string{"indexingStatus", "isDefault", "lastDocumentImportTime"} {
+		for _, value := range []any{"DISCOVERY_PRIVATE_SCALAR", map[string]any{"content": "DISCOVERY_PRIVATE_OBJECT"}, []any{"DISCOVERY_PRIVATE_ARRAY"}} {
+			cleaned := safeDiscoveryPayload(map[string]any{field: value})
+			encoded, _ := json.Marshal(cleaned)
+			if strings.Contains(string(encoded), "DISCOVERY_PRIVATE_") {
+				t.Fatal("malformed metadata escaped", cleaned)
+			}
+		}
+	}
+	data := map[string]any{"indexingStatus": "PENDING", "isDefault": false, "lastDocumentImportTime": "2026-08-01T13:00:00Z"}
+	if !reflect.DeepEqual(safeDiscoveryPayload(data), data) {
+		t.Fatal("valid native metadata changed")
 	}
 }

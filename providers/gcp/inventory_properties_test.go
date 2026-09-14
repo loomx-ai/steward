@@ -142,20 +142,14 @@ func TestGCPChangedPropertyPathsMatchPinnedNativeSchemas(t *testing.T) {
 		t.Fatalf("unexpected API %s", req.URL)
 		return nil, nil
 	})
-	selected := map[string][]string{
-		"run.googleapis.com/Service": {"state"}, dataformInvocationType: {"invocationTiming"},
-		"pubsub.googleapis.com/Subscription": {"state"}, "pubsub.googleapis.com/Topic": {"state"}, "sqladmin.googleapis.com/Instance": {"state", "labels"},
-		"iam.googleapis.com/ServiceAccount": {"projectId"}, dataprocClusterType: {"projectId"}, dataprocPolicyType: {"name", "resourceId"}, dataprocTemplateType: {"name", "resourceId"}, tpuQueueType: {"state", "lifecycleState"},
-	}
-	// Check every declared field for these audited families, including future
-	// additions. Product-specific derived values must be accounted for below.
+	selected := map[string][]string{}
+	// Check every declared field, including future resource additions. Native
+	// detail wrappers and explicit adapter-derived fields are handled below.
 	for _, compiled := range r.bundle.Specs {
 		kind := compiled.ResourceKind.NativeType
-		if strings.HasPrefix(kind, "compute.googleapis.com/") || strings.HasPrefix(kind, "bigquery.googleapis.com/") || kind == tpuReservationType || kind == fusionNamespaceType || kind == fusionDNSType {
-			definition, _ := r.productDefinition(kind)
-			for field := range definition.Fields {
-				selected[kind] = append(selected[kind], field)
-			}
+		definition, _ := r.productDefinition(kind)
+		for field := range definition.Fields {
+			selected[kind] = append(selected[kind], field)
 		}
 	}
 	for kind, fields := range selected {
@@ -192,10 +186,28 @@ func TestGCPChangedPropertyPathsMatchPinnedNativeSchemas(t *testing.T) {
 					case kind == storagePoolType && (path == "pool_usage" || strings.HasPrefix(path, "pool_usage.")):
 						path = "resourceStatus" + strings.TrimPrefix(path, "pool_usage")
 					}
+					if property.Path != field && object(root["properties"])[field] != nil {
+						t.Error("alias would collide with an authoritative native field", field, property)
+					}
 					node := nativePropertySchema(schemas, root, path)
 					nativeType := text(node["type"])
-					if nativeType == "integer" {
+					if nativeType == "integer" && property.Type == "number" {
 						nativeType = "number"
+					}
+					if kind == discoveryHost+"/TargetSite" && field == "indexingStatus" {
+						for _, state := range array(node["enum"]) {
+							if safeDiscoveryPayload(map[string]any{"indexingStatus": state})["indexingStatus"] != state {
+								t.Error("native indexing enum was redacted", state)
+							}
+						}
+						fixture := newDiscoveryScenario(t).resources[deUSStore+"/siteSearchEngine/targetSites/site-1"]
+						found := false
+						for _, state := range array(node["enum"]) {
+							found = found || fixture["indexingStatus"] == state
+						}
+						if !found {
+							t.Error("fixture indexing state is not native", fixture["indexingStatus"])
+						}
 					}
 					if nativeType != string(property.Type) || node == nil {
 						t.Error("property differs from native schema", field, property, node)
@@ -434,4 +446,99 @@ func TestGCPComputeNativeStatusQueries(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGCPRemainingNativePropertyQueries(t *testing.T) {
+	t.Run("discovery metadata", func(t *testing.T) {
+		s := newDiscoveryScenario(t)
+		r := protocolRuntime(t, s.transport(t))
+		queries := map[string]string{
+			"Document":     `properties.id = "document-1" AND properties.schemaId = "default_schema" AND properties.indexedAt = "2026-08-01T13:00:00Z"`,
+			"TargetSite":   `properties.indexingStatus = "PENDING"`,
+			"Branch":       `properties.isDefault = true`,
+			"Session":      `properties.startTime = "2026-08-01T12:00:00Z"`,
+			"Conversation": `properties.startTime = "2026-08-01T12:00:00Z"`,
+		}
+		seen := map[string]bool{}
+		for _, value := range s.inventory(t, r) {
+			kind := last(value.Identity.NativeType)
+			if query := queries[kind]; query != "" {
+				assertGCPPropertyQuery(t, r, []asset.Asset{value}, value.Identity.NativeType, value.Identity.NativeID, query)
+				seen[kind] = true
+			}
+			c, err := r.resolve(t.Context(), "connection")
+			if err != nil {
+				t.Fatal(err)
+			}
+			// Read through the adapter to include native connector and sitemap
+			// enrichment rather than comparing against incomplete list fixtures.
+			live, err := c.discoveryRead(t.Context(), value.Identity.NativeType, value.Identity.NativeID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := discoverySameResource(value.Identity.NativeType, value.Normalized, live); err != nil {
+				t.Fatal("metadata exposure changed native configuration proof", kind, err)
+			}
+		}
+		if len(seen) != len(queries) {
+			t.Fatal("missing native query fixture", seen)
+		}
+	})
+	t.Run("identity names", func(t *testing.T) {
+		s := newIdentityScenario()
+		r := s.runtime(t)
+		values := s.inventory(t, r)
+		assertGCPPropertyQuery(t, r, values, identityGroupType, identityTestGroup, `properties.name = "groups/g-primary" AND properties.displayName = "g-primary"`)
+		assertGCPPropertyQuery(t, r, values, identityMemberType, "/memberships/m-user", `properties.name = "groups/g-primary/memberships/m-user" AND properties.memberId = "member@example.test"`)
+		for _, value := range values {
+			if identityConfiguration(value.Normalized) != value.Normalized[identityProof] {
+				t.Fatal("identity alias changed reviewed configuration", value)
+			}
+		}
+	})
+	t.Run("organization names", func(t *testing.T) {
+		s := newOrganizationScenario()
+		r := s.runtime(t)
+		batch, err := r.List(t.Context(), organizationRequest(r))
+		if err != nil || len(batch.Items) != 1 {
+			t.Fatal(batch, err)
+		}
+		item := batch.Items[0]
+		value := asset.Asset{Identity: asset.Identity{NativeType: item.NativeType, NativeID: item.NativeID}, Normalized: item.Normalized}
+		assertGCPPropertyQuery(t, r, []asset.Asset{value}, organizationType, "organizations/123", `properties.name = "organizations/123" AND properties.displayName = "example.test" AND properties.state = "ACTIVE"`)
+	})
+	t.Run("infra change intent", func(t *testing.T) {
+		s := newInfraScenario(t)
+		r := protocolRuntime(t, s.transport(t))
+		values := s.inventory(t, r)
+		assertGCPPropertyQuery(t, r, values, infraChange, "/resourceChanges/network", `properties.intent = "DELETE" AND properties.terraformType = "google_compute_network"`)
+		assertGCPPropertyQuery(t, r, values, infraDrift, "/resourceDrifts/network", `properties.terraformType = "google_compute_network"`)
+		for _, value := range values {
+			if value.Identity.NativeType == infraChange || value.Identity.NativeType == infraDrift {
+				original := s.resources[strings.TrimPrefix(value.Identity.NativeID, "//"+infraHost+"/")]
+				if err := infraSame(value.Normalized, original); err != nil {
+					t.Fatal("change/drift aliases altered configuration proof", err)
+				}
+			}
+		}
+	})
+	t.Run("gke labels", func(t *testing.T) {
+		f := newGKEFixture(t)
+		f.gke[f.cluster.Identity.NativeID]["resourceLabels"] = map[string]any{"team": "cluster"}
+		f.gke[f.pool.Identity.NativeID]["config"] = map[string]any{"resourceLabels": map[string]any{"team": "pool"}}
+		r := protocolRuntime(t, f.roundTrip)
+		for kind, want := range map[string]string{clusterType: "cluster", nodePoolType: "pool"} {
+			batch, err := r.List(t.Context(), productRequest(r, kind, "us-central1"))
+			if err != nil || len(batch.Items) != 1 {
+				t.Fatal(batch, err)
+			}
+			item := batch.Items[0]
+			if item.Tags["team"] != want || object(item.Normalized["labels"])["team"] != want {
+				t.Fatal("native GKE labels lost", item)
+			}
+			if infraPhysicalVisible(kind, f.gke[item.NativeID]) != infraPhysicalVisible(kind, item.Normalized) {
+				t.Fatal("native GKE label path changed physical proof", item)
+			}
+		}
+	})
 }

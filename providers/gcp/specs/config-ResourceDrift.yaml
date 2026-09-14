@@ -39,8 +39,8 @@ fields:
   projectId:
     path: project_id
     type: string
-  state:
-    path: state
+  terraformType:
+    path: terraformInfo.type
     type: string
 extensions:
   hook: gcp.resource

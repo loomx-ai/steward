@@ -39,9 +39,6 @@ fields:
   projectId:
     path: project_id
     type: string
-  state:
-    path: state
-    type: string
 extensions:
   hook: gcp.resource
 relationships:

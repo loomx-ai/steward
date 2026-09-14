@@ -36,11 +36,11 @@ fields:
   displayName:
     path: displayName
     type: string
-  createTime:
-    path: createTime
-    type: string
-  state:
-    path: state
+  isDefault:
+    path: isDefault
+    type: boolean
+  lastDocumentImportTime:
+    path: lastDocumentImportTime
     type: string
 extensions:
   hook: gcp.resource

@@ -42,9 +42,6 @@ fields:
   createTime:
     path: createTime
     type: string
-  state:
-    path: state
-    type: string
   releaseConfig:
     path: releaseConfig
     type: string

@@ -39,12 +39,6 @@ fields:
   projectId:
     path: project_id
     type: string
-  createTime:
-    path: createTime
-    type: string
-  state:
-    path: state
-    type: string
   gitCommitish:
     path: gitCommitish
     type: string

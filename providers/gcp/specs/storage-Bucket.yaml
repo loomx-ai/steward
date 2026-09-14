@@ -33,9 +33,6 @@ fields:
   name:
     path: name
     type: string
-  state:
-    path: status
-    type: string
   projectId:
     path: project_id
     type: string
@@ -45,6 +42,15 @@ fields:
   labels:
     path: labels
     type: object
+  timeCreated:
+    path: timeCreated
+    type: string
+  updated:
+    path: updated
+    type: string
+  storageClass:
+    path: storageClass
+    type: string
 extensions:
   hook: gcp.resource
 actions:

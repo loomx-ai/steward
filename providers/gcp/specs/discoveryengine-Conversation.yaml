@@ -39,14 +39,14 @@ fields:
   projectId:
     path: project_id
     type: string
-  displayName:
-    path: displayName
-    type: string
-  createTime:
-    path: createTime
-    type: string
   state:
     path: state
+    type: string
+  startTime:
+    path: startTime
+    type: string
+  endTime:
+    path: endTime
     type: string
 extensions:
   hook: gcp.resource

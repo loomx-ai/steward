@@ -32,15 +32,12 @@ fields:
   name:
     path: name
     type: string
-  state:
-    path: state
-    type: string
   projectId:
     path: project_id
     type: string
-  labels:
-    path: labels
-    type: object
+  createTime:
+    path: createTime
+    type: string
 extensions:
   hook: gcp.resource
 actions:
