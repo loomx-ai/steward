@@ -16,7 +16,7 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-// All Monitoring responses are forwarded to the unmodified pinned Google backend.
+// Native policy calls are forwarded; unsupported Dashboard LIST is an explicit fixture.
 func TestAlertPolicyIndependentMockGCP(t *testing.T) {
 	endpoint := os.Getenv("STEWARD_ALERT_POLICY_MOCKGCP_URL")
 	if endpoint == "" {
@@ -52,6 +52,7 @@ func TestAlertPolicyIndependentMockGCP(t *testing.T) {
 		t.Fatal("native create returned no identity")
 	}
 	calls := []string{}
+	dashboardFixtures := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if req.URL.Host != "monitoring.googleapis.com" {
 			t.Fatal(req.URL)
@@ -59,7 +60,21 @@ func TestAlertPolicyIndependentMockGCP(t *testing.T) {
 		calls = append(calls, req.Method+" "+req.URL.Path)
 		local := req.Clone(req.Context())
 		local.URL.Scheme, local.URL.Host, local.Host = u.Scheme, u.Host, u.Host
-		return http.DefaultTransport.RoundTrip(local)
+		response, err := http.DefaultTransport.RoundTrip(local)
+		if req.URL.Path == "/v1/projects/sample-project/dashboards" {
+			dashboardFixtures++
+			if err != nil {
+				t.Fatal(err)
+			}
+			body, _ := io.ReadAll(response.Body)
+			response.Body.Close()
+			data := map[string]any{}
+			if json.Unmarshal(body, &data) != nil || response.StatusCode != 500 || object(data["error"])["message"] != "method ListDashboards not implemented" {
+				t.Fatal("unexpected native Dashboard LIST", response.StatusCode)
+			}
+			return apiResponse(req, 200, `{"dashboards":[]}`), nil
+		}
+		return response, err
 	})
 	batch, err := r.List(ctx, productRequest(r, alertPolicyType, "global"))
 	if err != nil || !batch.Complete || len(batch.Items) != 1 {
@@ -110,5 +125,8 @@ func TestAlertPolicyIndependentMockGCP(t *testing.T) {
 	if err != nil || !empty.Complete || len(empty.Items) != 0 {
 		t.Fatal(empty, err)
 	}
-	t.Logf("Independent Google mockgcp LIST/GET/review/DELETE/JSON restart/404/empty LIST passed (%d calls)", len(calls))
+	if dashboardFixtures != 4 {
+		t.Fatal("missing dashboard preflight snapshots", dashboardFixtures)
+	}
+	t.Logf("Native policy LIST/GET/DELETE/restart/404 passed (%d calls, %d explicit Dashboard LIST fixtures after native Unimplemented)", len(calls), dashboardFixtures)
 }

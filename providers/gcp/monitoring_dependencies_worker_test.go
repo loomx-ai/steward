@@ -295,7 +295,7 @@ func testChannelSQLiteDependencyHistory(t *testing.T, withBudget bool) {
 	if err := repos.Inventory().PutScanShard(ctx, asset.ScanShard{ID: "channels", ScanRunID: "channels", Provider: asset.ProviderGCP, ScopeID: scope.ID, ResourceKindID: kind.ID, Source: productInventorySource, Status: asset.ShardSucceeded, Authoritative: true, CreatedAt: now}); err != nil {
 		t.Fatal(err)
 	}
-	for round := 0; round < 4; round++ {
+	for round := 0; round < 5; round++ {
 		if round > 0 {
 			closeDB()
 			repos, closeDB = monitoringSQLite(t, dsn)
@@ -325,10 +325,20 @@ func testChannelSQLiteDependencyHistory(t *testing.T, withBudget bool) {
 			}
 			s.data["notificationChannels"] = []any{}
 		}
+		if round == 4 {
+			batch, err := s.r.List(ctx, productRequest(s.r, alertPolicyType, "global"))
+			if err != nil || len(batch.Items) != 1 {
+				t.Fatal(batch, err)
+			}
+			s.policy.Normalized = batch.Items[0].Normalized
+			if err := repos.Inventory().PutAsset(ctx, s.policy); err != nil {
+				t.Fatal(err)
+			}
+		}
 		fresh := protocolRuntime(t, s.r.transport.RoundTrip)
 		handler := governance.NewGraphHandler(repos, identityRegistry(t, fresh), monitoringDependencyContributors{fresh})
 		err := handler.Handle(ctx, execution.Job{Type: execution.JobGraph, Payload: map[string]any{"scan_run_id": "channels"}})
-		if (err != nil) != (round == 2) {
+		if (err != nil) != (round == 2 || round == 3) {
 			t.Fatal(round, err)
 		}
 		unresolved, err := repos.Graph().ListUnresolvedByConnection(ctx, connection.ID)
@@ -343,10 +353,10 @@ func testChannelSQLiteDependencyHistory(t *testing.T, withBudget bool) {
 		if round == 0 {
 			wantUnresolved = 2
 		}
-		if round == 1 || round == 2 {
+		if round >= 1 && round <= 3 {
 			wantEdges = 1
 		}
-		if withBudget && round < 3 {
+		if withBudget && round < 4 {
 			wantUnresolved++
 		}
 		budgets := 0
@@ -358,7 +368,7 @@ func testChannelSQLiteDependencyHistory(t *testing.T, withBudget bool) {
 				}
 			}
 		}
-		if (budgets == 1) != (withBudget && round < 3) {
+		if (budgets == 1) != (withBudget && round < 4) {
 			t.Fatal("budget history lost across restart or failure", round, unresolved)
 		}
 		if len(edges) != wantEdges || len(unresolved) != wantUnresolved {

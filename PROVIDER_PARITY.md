@@ -6366,3 +6366,27 @@ DELETE), exercising native Create/GET/Update/DELETE/404 with generated etag and 
 project names. Three Dashboard LIST responses are explicit fixtures after verifying
 the native Unimplemented error; IAM, native pagination and live cloud are not covered.
 All eight acceptance criteria remain open. Catalog remains 204 rules and 805 operations.
+
+
+### Dashboard-to-alert-policy cleanup ordering
+
+The unchanged native Dashboard schema walker now separates structural traversal
+from Group and AlertPolicy reference semantics. AlertChart fully qualified paths
+and IncidentList project-local policy names are interpreted according to the native
+contract, including numeric project aliases. Unfiltered incident lists conservatively
+include local policies; text/log/query literals are not policy-object references.
+Unknown structures and malformed names cannot prove absence.
+
+Connected graph discovery runs for policy-only scans, brackets complete own-project
+Dashboard LIST/GET/re-LIST with policy configuration review, and preserves previous
+state when a target or consumer read is incomplete or stale. Known fresh Dashboard
+references require explicit deletion before the policy. Native policy actions repeat
+consumer review, independently confirm prerequisite absence and retain frozen Dashboard
+reviews in restart receipts and shared-mutation recovery digests. SQLite tests cover
+Dashboard → Policy → Uptime → Group ordering with database reopening at every step,
+and stale-policy refresh failure followed by fresh inventory and graph reconciliation.
+
+Arbitrary foreign-project dashboard references, direct Dashboard Uptime metric/log
+queries, unknown query languages, external-writer races, duplicate connections and
+broader provider/live/full-app acceptance remain unfinished. All eight acceptance
+criteria remain open. No catalog methods or native schemas changed.

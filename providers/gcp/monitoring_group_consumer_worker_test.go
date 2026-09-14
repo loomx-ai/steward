@@ -67,6 +67,31 @@ func TestMonitoringGroupConsumerSQLiteGraphRestart(t *testing.T) {
 			fresh := newMonitoringGroupConsumerScenario(t)
 			s.values = fresh.values
 		}
+		if phase == "cleared" || phase == "returned" {
+			batch, err := s.r.List(ctx, productRequest(s.r, alertPolicyType, "global"))
+			if err != nil || !batch.Complete {
+				t.Fatal(batch, err)
+			}
+			policy, err := repos.Inventory().GetAsset(ctx, s.assets[3].ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if phase == "cleared" {
+				if len(batch.Items) != 0 {
+					t.Fatal(batch)
+				}
+				policy.ClosedAt = &now
+			} else {
+				if len(batch.Items) != 1 {
+					t.Fatal(batch)
+				}
+				policy.ClosedAt = nil
+				policy.Normalized = batch.Items[0].Normalized
+			}
+			if err := repos.Inventory().PutAsset(ctx, policy); err != nil {
+				t.Fatal(err)
+			}
+		}
 		run := asset.ScanRun{ID: asset.ScanRunID(phase), ConnectionID: conn.ID, Status: asset.ScanSucceeded, CreatedAt: now}
 		if err := repos.Inventory().CreateScanRun(ctx, run); err != nil {
 			t.Fatal(err)
@@ -96,7 +121,7 @@ func TestMonitoringGroupConsumerSQLiteGraphRestart(t *testing.T) {
 		}
 		wantEdges, wantUnresolved := 1, 2
 		if phase == "unknown-dashboard" {
-			wantUnresolved = 3
+			wantUnresolved = 4
 		}
 		if phase == "cleared" {
 			wantEdges, wantUnresolved = 0, 0
@@ -110,7 +135,7 @@ func TestMonitoringGroupConsumerSQLiteGraphRestart(t *testing.T) {
 			}
 		}
 		for _, ref := range unresolved {
-			if !ref.BlocksCleanup || ref.ControllerID != s.assets[0].ID {
+			if !ref.BlocksCleanup || (ref.ControllerID != s.assets[0].ID && !(phase == "unknown-dashboard" && ref.ControllerID == s.assets[3].ID)) {
 				t.Fatal(ref)
 			}
 		}

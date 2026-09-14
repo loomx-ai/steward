@@ -191,7 +191,10 @@ func TestMonitoringChannelRecoveryBindsFrozenPolicies(t *testing.T) {
 func TestMonitoringGroupRecoveryBindsFrozenConsumers(t *testing.T) {
 	testMonitoringConsumerRecovery(t, true)
 }
-func testMonitoringConsumerRecovery(t *testing.T, group bool) {
+func TestMonitoringPolicyRecoveryBindsFrozenDashboards(t *testing.T) {
+	testMonitoringConsumerRecovery(t, false, true)
+}
+func testMonitoringConsumerRecovery(t *testing.T, group bool, dashboard ...bool) {
 	repos, err := sqlite.Open(filepath.Join(t.TempDir(), "channel-recovery.db"), "../../../migrations")
 	if err != nil {
 		t.Fatal(err)
@@ -201,16 +204,22 @@ func testMonitoringConsumerRecovery(t *testing.T, group bool) {
 		channel = monitoringConfigurationAsset("group", "sample-project", false, false, true)
 	}
 	policy := monitoringPolicyAsset("policy", "sample-project")
-	policy.Normalized = map[string]any{"_alert_policy_configuration": "reviewed"}
+	key := "_alert_policy_configuration"
+	if len(dashboard) > 0 && dashboard[0] {
+		channel = monitoringPolicyAsset("target-policy", "sample-project")
+		policy = monitoringConfigurationAsset("dashboard", "sample-project", false, false, false, true)
+		key = "_monitoring_dashboard_configuration"
+	}
+	policy.Normalized = map[string]any{key: "reviewed"}
 	root := plan.CleanupTaskStep{ID: "channel", AssetID: channel.ID, Action: "delete", DependsOn: []plan.StepID{"policy"}, Evidence: map[string]any{plan.EvidencePlannedAsset: channel, plan.EvidenceRequiredDeletions: []plan.RequiredDeletion{{StepID: "policy", AssetID: policy.ID}}}}
 	child := plan.CleanupTaskStep{ID: "policy", AssetID: policy.ID, Action: "delete", Evidence: map[string]any{plan.EvidencePlannedAsset: policy}}
 	task := persistence.CleanupTaskAggregate{Steps: []plan.CleanupTaskStep{root, child}}
-	policy.Normalized = map[string]any{"_alert_policy_configuration": "later"}
+	policy.Normalized = map[string]any{key: "later"}
 	if err := repos.Inventory().PutAsset(t.Context(), policy); err != nil {
 		t.Fatal(err)
 	}
 	request := contracts.ActionRequest{Asset: channel, Action: "delete"}
-	if err := routerRecoveryImpacts(t.Context(), repos, task, root, &request); err != nil || len(request.PrerequisiteDeletions) != 1 || request.PrerequisiteDeletions[0].Asset.Normalized["_alert_policy_configuration"] != "reviewed" {
+	if err := routerRecoveryImpacts(t.Context(), repos, task, root, &request); err != nil || len(request.PrerequisiteDeletions) != 1 || request.PrerequisiteDeletions[0].Asset.Normalized[key] != "reviewed" {
 		t.Fatal(request, err)
 	}
 	first, err := sharedMutationDigest(execution.ExecutionAttempt{}, root, execution.ActionAttempt{}, task)

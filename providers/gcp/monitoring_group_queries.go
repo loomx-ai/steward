@@ -81,6 +81,29 @@ var monitoringDashboardSchemas = sync.OnceValues(func() (map[string]any, error) 
 })
 
 func monitoringDashboardGroupReference(data map[string]any, group string) monitoringReference {
+	return monitoringDashboardReference(data, func(kind string, data map[string]any) monitoringReference {
+		switch kind {
+		case "TimeSeriesFilter", "RatioPart":
+			return monitoringGroupFilterReference(text(data["filter"]), group)
+		case "TimeSeriesQuery":
+			for _, key := range []string{"prometheusQuery", "timeSeriesQueryLanguage", "opsAnalyticsQuery", "traceQuery"} {
+				if _, ok := data[key]; ok {
+					return monitoringUnresolvedReference
+				}
+			}
+		case "DashboardFilter":
+			if data["filterType"] == "GROUP" {
+				if data["stringValue"] == group {
+					return monitoringHasReference
+				}
+				return monitoringUnresolvedReference
+			}
+		}
+		return monitoringNoReference
+	})
+}
+
+func monitoringDashboardReference(data map[string]any, inspect func(string, map[string]any) monitoringReference) monitoringReference {
 	schemas, err := monitoringDashboardSchemas()
 	if err != nil {
 		return monitoringUnresolvedReference
@@ -102,6 +125,7 @@ func monitoringDashboardGroupReference(data map[string]any, group string) monito
 			if data == nil {
 				return monitoringUnresolvedReference
 			}
+			result = inspect(text(schema["id"]), data)
 			switch text(schema["id"]) {
 			case "Dashboard":
 				count := 0
@@ -123,29 +147,15 @@ func monitoringDashboardGroupReference(data map[string]any, group string) monito
 				if count != 1 {
 					result = monitoringUnresolvedReference
 				}
-			case "TimeSeriesFilter", "RatioPart":
-				result = monitoringGroupFilterReference(text(data["filter"]), group)
 			case "TimeSeriesQuery":
 				count := 0
 				for _, key := range []string{"timeSeriesFilter", "timeSeriesFilterRatio", "prometheusQuery", "timeSeriesQueryLanguage", "opsAnalyticsQuery", "traceQuery"} {
 					if _, ok := data[key]; ok {
 						count++
-						if key != "timeSeriesFilter" && key != "timeSeriesFilterRatio" {
-							result = monitoringUnresolvedReference
-						}
 					}
 				}
 				if count != 1 {
 					result = monitoringUnresolvedReference
-				}
-			case "DashboardFilter":
-				if data["filterType"] == "GROUP" {
-					// A filter can offer dynamically chosen group values. Its default is not
-					// evidence that the other groups are unused.
-					result = monitoringUnresolvedReference
-					if data["stringValue"] == group {
-						result = monitoringHasReference
-					}
 				}
 			}
 			properties := object(schema["properties"])

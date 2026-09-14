@@ -623,3 +623,22 @@ between the final GET and DELETE. Receipts bind the asset and request key across
 restart, and own GET 404 confirms completion. Dashboard writes share the connection's
 project reservation with other reviewed Monitoring configuration writes; uncertain
 failed/canceled outcomes retain it. See the [dashboard deletion contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards/delete).
+
+
+Alert-policy cleanup also checks dashboards in the configured project. Native
+`AlertChart.name` uses a full project/policy path; `IncidentList.policyNames` uses
+`alertPolicies/ID`. An incident list without a policy filter is treated as a
+possible consumer of every local policy. Text, logs and metric query strings do
+not become policy-object references merely because they contain a policy name.
+Unknown widget structures or malformed policy names cannot establish absence.
+
+A fresh referenced dashboard must be explicitly selected and deleted before its
+policy. Dashboard LIST/GET/re-LIST and target configuration checks reject partial
+reads or drift; stale policy inventory requires a new scan before graph refresh.
+Deletion repeats the consumer review and confirms selected dashboards are absent
+through their own GETs. Frozen dashboard prerequisites remain bound to policy
+receipts and project write reservations after restart. Discovery also runs for
+policy-only scans and requires `monitoring.dashboards.list/get`. This checks the
+configured project's dashboards; arbitrary references from other projects and
+direct Dashboard queries of Uptime metrics/logs still need broader coverage.
+See the [AlertChart and IncidentList contracts](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards#AlertChart).

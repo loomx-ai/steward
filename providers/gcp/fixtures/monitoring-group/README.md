@@ -182,6 +182,36 @@ or live-cloud guarantee is claimed. Run with the existing loopback
 `STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL` harness configuration and
 `go test ./providers/gcp -run '^TestMonitoringDashboardIndependentMockGCP$' -count=1 -v`.
 
-Dashboard-to-policy/Uptime mappings and unresolved query languages remain separate
-work. The [native Dashboard DELETE](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards/delete)
+Cross-project policy mappings, direct Uptime queries and unresolved query languages
+remain separate work. The [native Dashboard DELETE](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards/delete)
 has no etag precondition, so the last GET cannot close external-writer races.
+
+
+## Dashboard policy references
+
+The same 61 native schemas now support a separate policy-reference visitor. It
+uses full project/policy paths for AlertChart and project-local `alertPolicies/ID`
+paths for IncidentList. An unfiltered incident list can consume any local policy;
+its resource selectors do not prove that a policy will never produce an incident.
+Text, LogsPanel and metric query strings do not refer to policy objects by literal
+name matching. Unknown structure or malformed names remain unresolved. Existing
+Group query semantics, traversal bounds and native schemas remain unchanged.
+
+The connected policy contributor reads complete Dashboard LIST/GET/re-LIST snapshots
+between own target configuration reads. Fresh known consumers require explicit
+selection; missing/stale/foreign/closed consumers block cleanup. Policy-only scans
+activate this contributor. Policy actions repeat the snapshot, verify selected
+Dashboard own-GET absence and bind the frozen prerequisite to receipts and shared
+project recovery. SQLite coverage retains graph state after permission/configuration
+failures, rescans changed/absent policies before reconciliation, and verifies
+Dashboard → Policy → Uptime → Group execution across database reopening.
+
+The pinned independent backend still lacks ListDashboards. The joint native test
+`TestMonitoringDashboardPolicyIndependentMockGCP` forwards 21 runtime requests
+(including Dashboard and Policy DELETE), with nine explicit Dashboard LIST fixtures.
+Native Dashboard create/update/GET and Policy create/LIST/GET are used; a live chart
+blocks policy deletion, then Dashboard removal enables reviewed policy deletion.
+Both results survive JSON restart and own-404 readback. The standalone native Policy
+test also verifies the backend's Unimplemented response before each of its four
+explicit Dashboard LIST fixtures. Neither test claims native list/IAM enforcement,
+arbitrary cross-project consumer discovery or live-cloud acceptance.

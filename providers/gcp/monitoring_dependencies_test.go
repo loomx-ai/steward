@@ -208,6 +208,9 @@ func testMonitoringDependencyGraphAndExplicitSelection(t *testing.T, logging boo
 			case "target-changed":
 				s.mode = mode
 			}
+			if mode == "unknown" || mode == "unrelated" {
+				candidate.Normalized[alertPolicyReview] = monitoringConfiguration(alertPolicyType, alertPolicyID, s.data)
+			}
 			if len(values) >= 2 {
 				values[1] = candidate
 			}
@@ -216,7 +219,7 @@ func testMonitoringDependencyGraphAndExplicitSelection(t *testing.T, logging boo
 				t.Fatal(err)
 			}
 			result, err := contributor.Contribute(t.Context(), "global", values)
-			if mode == "duplicate" || mode == "target-changed" {
+			if mode == "duplicate" || mode == "target-changed" || mode == "stale" {
 				if err == nil {
 					t.Fatal("invalid graph accepted")
 				}

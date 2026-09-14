@@ -489,3 +489,17 @@ LIST、GET、再次 LIST 的配置。失权、分页不完整或配置变化会�
 之间的外部写入。回执在重启后仍绑定原始资源和请求键，通过自身 GET 的 404 确认完成。
 仪表板与同连接、同项目内其他已复核的 Monitoring 配置写入共享写入范围；失败或取消
 后的结果不确定时仍保留该范围。参阅[仪表板删除契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards/delete)。
+
+
+告警策略清理还会检查已配置项目中的仪表板。原生 `AlertChart.name` 使用完整的项目与
+策略路径，`IncidentList.policyNames` 使用 `alertPolicies/ID` 短路径。没有策略筛选的
+事件列表按可能引用本项目所有策略处理。文本、日志和指标查询中的策略名称不会仅因
+字面匹配而成为策略对象引用；未知组件或无效策略名称不能证明没有引用。
+
+已刷新且确认引用的仪表板必须显式选择，并先于策略删除。仪表板 LIST、GET、再次
+LIST 以及目标配置复核会拒绝读取不完整或配置变化；策略清单过期时，需要重新扫描后
+才能刷新关系图。删除前重复检查消费方，并通过所选仪表板自身的 GET 确认其已不存在。
+重启后的策略回执和项目写入范围仍绑定已冻结的仪表板前置项。仅扫描策略时也会执行
+此依赖发现，额外需要 `monitoring.dashboards.list/get` 权限。当前检查已配置项目的
+仪表板；其他项目中的任意策略引用，以及仪表板直接查询 Uptime 指标或日志，仍需扩大
+覆盖。参阅[AlertChart 与 IncidentList 契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards#AlertChart)。

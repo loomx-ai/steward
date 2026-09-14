@@ -37,6 +37,8 @@ func testMonitoringGroupSQLiteCleanup(t *testing.T, dashboard bool) {
 	s.assets[3].Normalized[alertPolicyReview] = monitoringConfiguration(alertPolicyType, s.assets[3].Identity.NativeID, s.values["alertPolicies"][0])
 	if dashboard {
 		s.values["dashboards"][0]["gridLayout"] = map[string]any{"widgets": []any{map[string]any{"xyChart": map[string]any{"dataSets": []any{map[string]any{"timeSeriesQuery": map[string]any{"timeSeriesFilter": map[string]any{"filter": `group.id="9876"`}}}}}}}}
+		layout := object(s.values["dashboards"][0]["gridLayout"])
+		layout["widgets"] = append(array(layout["widgets"]), dashboardPolicyWidget("alertChart", alertPolicyName))
 		s.assets = append(s.assets, monitoringDashboardAsset(t, s))
 	}
 	count := len(s.assets)
@@ -78,6 +80,9 @@ func testMonitoringGroupSQLiteCleanup(t *testing.T, dashboard bool) {
 				}
 			} else if req.URL.RawQuery != "" {
 				t.Fatal(req.URL)
+			}
+			if dashboard && collection == "alertPolicies" && len(s.values["dashboards"]) != 0 {
+				t.Fatal("policy deleted before dashboard")
 			}
 			if collection == "uptimeCheckConfigs" && len(s.values["alertPolicies"]) != 0 {
 				t.Fatal("Uptime deleted before its policy")
@@ -137,6 +142,12 @@ func testMonitoringGroupSQLiteCleanup(t *testing.T, dashboard bool) {
 	blocked, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: conn.ID, CreatedBy: "test", Selectors: selectors[:1]})
 	if err != nil || len(blocked.Task.Blockers) == 0 {
 		t.Fatal("consumers automatically selected", blocked, err)
+	}
+	if dashboard {
+		policyOnly, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: conn.ID, CreatedBy: "test", Selectors: selectors[3:4]})
+		if err != nil || len(policyOnly.Task.Blockers) == 0 {
+			t.Fatal("dashboard consumer automatically selected", policyOnly, err)
+		}
 	}
 	task, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: conn.ID, CreatedBy: "test", Selectors: selectors})
 	if err != nil || len(task.Task.Blockers) != 0 || len(task.Steps) != count || task.Steps[count-1].AssetID != s.assets[0].ID {

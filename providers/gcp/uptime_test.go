@@ -47,6 +47,10 @@ func monitoringScenario(t *testing.T, kind string, delivery ...string) (*Runtime
 	deletes := 0
 	reads := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == "GET" && req.URL.Host == "monitoring.googleapis.com" && req.URL.Path == "/v1/projects/sample-project/dashboards" && req.URL.RawQuery == "pageSize=100" {
+			return apiResponse(req, 200, `{"dashboards":[]}`), nil
+		}
+
 		if kind == notificationChannelType && req.Method == "GET" && req.URL.Path == "/v3/projects/sample-project/alertPolicies" {
 			return apiResponse(req, 200, `{}`), nil
 		}

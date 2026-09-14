@@ -16,6 +16,12 @@ import (
 )
 
 func TestMonitoringDashboardIndependentMockGCP(t *testing.T) {
+	testMonitoringDashboardIndependentMockGCP(t, false)
+}
+func TestMonitoringDashboardPolicyIndependentMockGCP(t *testing.T) {
+	testMonitoringDashboardIndependentMockGCP(t, true)
+}
+func testMonitoringDashboardIndependentMockGCP(t *testing.T, policy bool) {
 	endpoint := os.Getenv("STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL")
 	if endpoint == "" {
 		t.Skip("set STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL to the pinned Monitoring harness")
@@ -51,7 +57,25 @@ func TestMonitoringDashboardIndependentMockGCP(t *testing.T) {
 		}
 		return result
 	}
+	policyName := ""
+	policyExists := false
+	if policy {
+		seed := alertPolicyFixture()
+		delete(seed, "name")
+		delete(seed, "futureNativeField")
+		created := native("POST", "/v3/projects/sample-project/alertPolicies", seed, 200)
+		policyName = text(created["name"])
+		policyExists = true
+		t.Cleanup(func() {
+			if policyExists {
+				native("DELETE", "/v3/"+policyName, nil, 200)
+			}
+		})
+	}
 	seed := monitoringDashboardFixture()
+	if policy {
+		seed["gridLayout"] = map[string]any{"widgets": []any{dashboardPolicyWidget("alertChart", policyName)}}
+	}
 	delete(seed, "name")
 	delete(seed, "etag")
 	current := native("POST", "/v1/projects/sample-project/dashboards", seed, 200)
@@ -70,6 +94,7 @@ func TestMonitoringDashboardIndependentMockGCP(t *testing.T) {
 		t.Fatal(unsupported)
 	}
 	hybrid := false
+	clearList := false
 	forwarded, fixtures, deletes := 0, 0, 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if req.URL.Host != "monitoring.googleapis.com" || (req.Method != "GET" && req.Method != "DELETE") {
@@ -80,11 +105,14 @@ func TestMonitoringDashboardIndependentMockGCP(t *testing.T) {
 				t.Fatal(req.URL)
 			}
 			fixtures++
+			if clearList {
+				return apiResponse(req, 200, `{"dashboards":[]}`), nil
+			}
 			return dataformResponse(req, 200, map[string]any{"dashboards": []any{current}}), nil
 		}
 		if req.Method == "DELETE" {
 			deletes++
-			if req.URL.Path != "/v1/"+strings.Replace(name, "projects/123456/", "projects/sample-project/", 1) || req.URL.RawQuery != "" {
+			if (req.URL.Path != "/v1/"+strings.Replace(name, "projects/123456/", "projects/sample-project/", 1) && !(policy && req.URL.Path == "/v3/"+strings.Replace(policyName, "projects/123456/", "projects/sample-project/", 1))) || req.URL.RawQuery != "" {
 				t.Fatal(req.URL)
 			}
 			if req.Body != nil {
@@ -127,6 +155,25 @@ func TestMonitoringDashboardIndependentMockGCP(t *testing.T) {
 		k := r.resourceKind(monitoringDashboardType)
 		saved = asset.Asset{ID: "native-dashboard", ResourceKindID: k.ID, Identity: asset.Identity{Provider: asset.ProviderGCP, Partition: "gcp", ConnectionID: "connection", NativeType: monitoringDashboardType, NativeID: item.NativeID}, Normalized: item.Normalized, Capabilities: k.Capabilities}
 	}
+	policyRequest := contracts.ActionRequest{}
+	if policy {
+		batch, e := r.List(t.Context(), productRequest(r, alertPolicyType, "global"))
+		if e != nil || len(batch.Items) != 1 {
+			t.Fatal(batch, e)
+		}
+		item := batch.Items[0]
+		k := r.resourceKind(alertPolicyType)
+		value := asset.Asset{ID: "native-policy", ResourceKindID: k.ID, Identity: asset.Identity{Provider: asset.ProviderGCP, Partition: "gcp", ConnectionID: "connection", NativeType: alertPolicyType, NativeID: item.NativeID}, Normalized: item.Normalized, Capabilities: k.Capabilities}
+		policyRequest = contracts.ActionRequest{Asset: value, Action: "delete", IdempotencyKey: "native-policy-delete"}
+		driver, e := r.ResolveAction(t.Context(), "connection", value)
+		if e != nil {
+			t.Fatal(e)
+		}
+		if _, e = driver.Execute(t.Context(), policyRequest); e == nil || deletes != 0 {
+			t.Fatal("live native dashboard did not block policy", e, deletes)
+		}
+		policyRequest.PrerequisiteDeletions = []contracts.ActionImpact{{Asset: saved, ControllerID: value.ID, Delete: true}}
+	}
 	driver, err := r.ResolveAction(t.Context(), "connection", saved)
 	if err != nil {
 		t.Fatal(err)
@@ -156,6 +203,36 @@ func TestMonitoringDashboardIndependentMockGCP(t *testing.T) {
 	}
 	if batch, e := r.List(t.Context(), req); e == nil || batch.Complete || len(batch.Items) != 0 {
 		t.Fatal("stale list accepted after native deletion", batch, e)
+	}
+	if policy {
+		clearList = true
+		fresh := protocolRuntime(t, r.transport.RoundTrip)
+		driver, e := fresh.ResolveAction(t.Context(), "connection", policyRequest.Asset)
+		if e != nil {
+			t.Fatal(e)
+		}
+		result, e := driver.Execute(t.Context(), policyRequest)
+		if e != nil || deletes != 2 {
+			t.Fatal(result, e, deletes)
+		}
+		policyExists = false
+		restored := contracts.ActionResult{}
+		if e = json.Unmarshal(mustDashboardJSON(t, result), &restored); e != nil {
+			t.Fatal(e)
+		}
+		fresh = protocolRuntime(t, r.transport.RoundTrip)
+		driver, e = fresh.ResolveAction(t.Context(), "connection", policyRequest.Asset)
+		if e != nil {
+			t.Fatal(e)
+		}
+		wait, e := driver.Wait(t.Context(), policyRequest, restored)
+		if e != nil || !wait.Done {
+			t.Fatal(wait, e)
+		}
+		settled, e := driver.(contracts.MutationSettlementReader).MutationSettled(t.Context(), policyRequest, restored)
+		if e != nil || !settled.Settled {
+			t.Fatal(settled, e)
+		}
 	}
 	t.Logf("%d native forwarded requests (%d DELETE), %d explicit LIST fixtures", forwarded, deletes, fixtures)
 }

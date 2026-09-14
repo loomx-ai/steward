@@ -265,6 +265,12 @@ func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID
 	if err != nil {
 		return result, err
 	}
+	dashboards, err := h.monitoringDashboardPolicyDependencies(ctx, assets)
+	if err != nil {
+		return result, err
+	}
+	result.Relationships = append(result.Relationships, dashboards.Relationships...)
+	result.Unresolved = append(result.Unresolved, dashboards.Unresolved...)
 	groups, err := h.monitoringGroupDependencies(ctx, assets)
 	if err != nil {
 		return result, err
@@ -347,10 +353,13 @@ func (a *action) monitoringPrerequisites(request contracts.ActionRequest) error 
 		p := prerequisite.Asset
 		proof, err := hex.DecodeString(text(p.Normalized[monitoringReviewKey(p.Identity.NativeType)]))
 		validType := p.Identity.NativeType == alertPolicyType
+		if a.kind.NativeType == alertPolicyType {
+			validType = p.Identity.NativeType == monitoringDashboardType
+		}
 		if a.kind.NativeType == monitoringGroupType {
 			validType = validType || p.Identity.NativeType == uptimeType || p.Identity.NativeType == monitoringGroupType || p.Identity.NativeType == monitoringDashboardType
 		}
-		if (a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType && a.kind.NativeType != monitoringGroupType) || err != nil || len(proof) != 32 || p.ID == "" || p.ID == request.Asset.ID || p.Identity.NativeID == a.identity.NativeID || !prerequisite.Delete || prerequisite.ControllerID != request.Asset.ID || p.Identity.Provider != a.identity.Provider || p.Identity.ConnectionID != a.identity.ConnectionID || p.Identity.Partition != a.identity.Partition || !validType || seen[p.Identity.NativeID] {
+		if (a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType && a.kind.NativeType != monitoringGroupType && a.kind.NativeType != alertPolicyType) || err != nil || len(proof) != 32 || p.ID == "" || p.ID == request.Asset.ID || p.Identity.NativeID == a.identity.NativeID || !prerequisite.Delete || prerequisite.ControllerID != request.Asset.ID || p.Identity.Provider != a.identity.Provider || p.Identity.ConnectionID != a.identity.ConnectionID || p.Identity.Partition != a.identity.Partition || !validType || seen[p.Identity.NativeID] {
 			return groupDenied("monitoring_prerequisite_changed")
 		}
 		kind, _ := findType(p.Identity.NativeType)
@@ -364,7 +373,7 @@ func (a *action) monitoringPrerequisites(request contracts.ActionRequest) error 
 	return nil
 }
 func (a *action) monitoringIncoming(ctx context.Context, request contracts.ActionRequest) error {
-	if a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType && a.kind.NativeType != monitoringGroupType {
+	if a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType && a.kind.NativeType != monitoringGroupType && a.kind.NativeType != alertPolicyType {
 		return nil
 	}
 	for _, p := range request.PrerequisiteDeletions {
@@ -375,6 +384,9 @@ func (a *action) monitoringIncoming(ctx context.Context, request contracts.Actio
 			}
 			return groupDenied("monitoring_prerequisite_still_exists")
 		}
+	}
+	if a.kind.NativeType == alertPolicyType {
+		return a.monitoringDashboardPolicyIncoming(ctx)
 	}
 	if a.kind.NativeType == monitoringGroupType {
 		return a.monitoringGroupIncoming(ctx)

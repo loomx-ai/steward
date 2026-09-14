@@ -552,10 +552,16 @@ func TestGCPNotificationChannelContributorIsConnectedWithoutCascade(t *testing.T
 }
 
 func TestGCPMonitoringGroupContributorIsConnectedWithoutCascade(t *testing.T) {
+	testGCPMonitoringConfigurationContributor(t, "monitoring.googleapis.com/Group")
+}
+func TestGCPMonitoringPolicyContributorIsConnectedWithoutCascade(t *testing.T) {
+	testGCPMonitoringConfigurationContributor(t, "monitoring.googleapis.com/AlertPolicy")
+}
+func testGCPMonitoringConfigurationContributor(t *testing.T, kind string) {
 	runtime := &monitoringContributorRuntime{}
 	resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})
 	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP}
-	value := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: connection.ID, NativeType: "monitoring.googleapis.com/Group"}}
+	value := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: connection.ID, NativeType: kind}}
 	contributors, err := resolver.ResolveContributors(t.Context(), connection, []asset.Asset{value, value})
 	if err != nil || len(contributors) != 3 || !reflect.DeepEqual(runtime.monitoringConnections, []asset.ConnectionID{connection.ID}) {
 		t.Fatal(contributors, err)

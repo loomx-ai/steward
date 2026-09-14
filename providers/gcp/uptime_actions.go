@@ -85,7 +85,7 @@ func (a *action) executeMonitoring(ctx context.Context, request contracts.Action
 	if !read.Exists {
 		return contracts.ActionResult{}, nil
 	}
-	if a.kind.NativeType == uptimeType || a.kind.NativeType == notificationChannelType || a.kind.NativeType == monitoringGroupType {
+	if a.kind.NativeType == uptimeType || a.kind.NativeType == notificationChannelType || a.kind.NativeType == monitoringGroupType || a.kind.NativeType == alertPolicyType {
 		if err := a.monitoringIncoming(ctx, request); err != nil {
 			return contracts.ActionResult{}, err
 		}

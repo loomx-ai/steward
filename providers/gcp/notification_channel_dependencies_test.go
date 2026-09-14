@@ -32,7 +32,7 @@ func channelDependencyFixture(t *testing.T, delivery ...string) (*monitoringDepe
 		if strings.Contains(req.URL.Path, "/notificationChannels/") {
 			return channelRuntime.transport.RoundTrip(req)
 		}
-		if strings.Contains(req.URL.Path, "/alertPolicies") {
+		if strings.Contains(req.URL.Path, "/alertPolicies") || req.URL.Path == "/v1/projects/sample-project/dashboards" {
 			if s.mode == "channel-changed" {
 				(*data)["displayName"] = "changed-during-policy-read"
 			}
@@ -63,7 +63,7 @@ func TestNotificationChannelDependencySnapshotFailures(t *testing.T) {
 				t.Fatal(err)
 			}
 			result, err := contributor.Contribute(t.Context(), "global", []asset.Asset{s.request.Asset, s.policy})
-			good := mode == "present" || mode == "paged" || mode == "empty"
+			good := mode == "present" || mode == "paged"
 			if (err == nil) != good {
 				t.Fatal(mode, result, err)
 			}
@@ -121,7 +121,7 @@ func TestNotificationChannelDependencyGraph(t *testing.T) {
 				t.Fatal(err)
 			}
 			result, err := contributor.Contribute(t.Context(), "global", values)
-			if mode == "duplicate" || mode == "foreign-partition" {
+			if mode == "duplicate" || mode == "foreign-partition" || mode == "stale" {
 				if err == nil {
 					t.Fatal("invalid identity accepted")
 				}

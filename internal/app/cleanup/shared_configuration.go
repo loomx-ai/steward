@@ -194,7 +194,7 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 		return false, nil
 	}
 	request := contracts.ActionRequest{Asset: reviewed, Action: step.Action, Parameters: cloneRequest(step.RequestOptions), IdempotencyKey: resumedProviderIdempotencyKey(attempt, action)}
-	if reviewed.Identity.NativeType == "compute.googleapis.com/Router" || reviewed.Identity.NativeType == "monitoring.googleapis.com/NotificationChannel" || reviewed.Identity.NativeType == "monitoring.googleapis.com/Group" {
+	if reviewed.Identity.NativeType == "compute.googleapis.com/Router" || reviewed.Identity.NativeType == "monitoring.googleapis.com/NotificationChannel" || reviewed.Identity.NativeType == "monitoring.googleapis.com/Group" || reviewed.Identity.NativeType == "monitoring.googleapis.com/AlertPolicy" {
 		if err := routerRecoveryImpacts(ctx, repositories, task, step, &request); err != nil {
 			return false, err
 		}
@@ -228,7 +228,7 @@ func sharedMutationDigest(attempt execution.ExecutionAttempt, step plan.CleanupT
 	if err := json.Unmarshal(raw, &reviewed); err != nil {
 		return "", err
 	}
-	if reviewed.Identity.NativeType == "compute.googleapis.com/Router" || reviewed.Identity.NativeType == "monitoring.googleapis.com/NotificationChannel" || reviewed.Identity.NativeType == "monitoring.googleapis.com/Group" {
+	if reviewed.Identity.NativeType == "compute.googleapis.com/Router" || reviewed.Identity.NativeType == "monitoring.googleapis.com/NotificationChannel" || reviewed.Identity.NativeType == "monitoring.googleapis.com/Group" || reviewed.Identity.NativeType == "monitoring.googleapis.com/AlertPolicy" {
 		// Router UUIDs and Monitoring consumer receipts bind reviews outside their own step.
 		lifecycle = struct {
 			Steps   []plan.CleanupTaskStep
