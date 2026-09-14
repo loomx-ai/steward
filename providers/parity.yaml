@@ -1735,9 +1735,11 @@ resources:
     - Microsoft.Network/natGateways
   status: pending_verification
   notes: GCP Cloud NAT configurations are independently inventoried from native Router.nats,
-    including public/private settings and explicit subnet/IP dependencies. Independent
-    removal preserving other router/NAT configuration, parent cascade review and
-    independent/live backend acceptance remain unfinished.
+    including public/private settings and explicit subnet/IP dependencies. Native PATCH
+    independently removes a reviewed NAT while retaining other router/NAT configuration.
+    Same-router deletes are serialized; unresolved cross-task updates block new writes.
+    Regional operation receipts and native absence readback survive worker restarts.
+    Parent cascade review and independent/live backend acceptance remain unfinished.
 - alicloud: ACS::NAT::NatIp
   spec: providers/alicloud/specs/nat-ip.yaml
   class: network.nat_ip

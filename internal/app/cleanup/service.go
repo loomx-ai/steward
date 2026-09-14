@@ -339,7 +339,7 @@ func (s *Service) CreateTask(ctx context.Context, request CreateTaskRequest) (pe
 		if err != nil {
 			return err
 		}
-		result, err := plan.Solve(input)
+		result, err := solveCleanupPlan(input)
 		if err != nil {
 			return err
 		}
@@ -438,7 +438,7 @@ func (s *Service) AddTaskAssets(ctx context.Context, request AddTaskAssetsReques
 		if err != nil {
 			return err
 		}
-		result, err := plan.Solve(input)
+		result, err := solveCleanupPlan(input)
 		if err != nil {
 			return err
 		}
@@ -541,7 +541,7 @@ func (s *Service) ValidateTask(ctx context.Context, id plan.CleanupTaskID) (pers
 			}
 			return invalidateStoredTask(ctx, repositories.CleanupTasks(), stored, freshnessErr, &aggregate, &validationErr)
 		}
-		current, err := plan.Solve(input)
+		current, err := solveCleanupPlan(input)
 		if err != nil {
 			return err
 		}
@@ -663,7 +663,7 @@ func (s *Service) CreateExecution(ctx context.Context, request CreateExecutionRe
 			}
 			return invalidateStoredTask(ctx, repositories.CleanupTasks(), aggregate, freshnessErr, &aggregate, &semanticErr)
 		}
-		current, err := plan.Solve(input)
+		current, err := solveCleanupPlan(input)
 		if err != nil {
 			return err
 		}
@@ -682,6 +682,9 @@ func (s *Service) CreateExecution(ctx context.Context, request CreateExecutionRe
 		}
 		now := s.clock()
 		if err := connectionapp.GuardActiveWork(ctx, repositories, aggregate.Task.ConnectionID, now); err != nil {
+			return err
+		}
+		if err := guardSharedConfiguration(ctx, repositories, aggregate); err != nil {
 			return err
 		}
 		created = execution.ExecutionAttempt{
@@ -853,6 +856,9 @@ func (s *Service) ContinueExecution(ctx context.Context, request ContinueExecuti
 		)
 		now := s.clock()
 		if err := connectionapp.GuardActiveWork(ctx, repositories, aggregate.Task.ConnectionID, now); err != nil {
+			return err
+		}
+		if err := guardSharedConfiguration(ctx, repositories, aggregate); err != nil {
 			return err
 		}
 

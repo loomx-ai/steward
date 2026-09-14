@@ -228,3 +228,33 @@ func TestAzureNativeOperationTitlesWithSpaces(t *testing.T) {
 	}
 	assertRESTDeterministic(t, "azure-openapi", asset.ProviderAzure, source)
 }
+
+func TestGoogleExplicitPatchDeletionBinding(t *testing.T) {
+	for _, method := range []string{"GET", "PATCH"} {
+		for _, listed := range []bool{false, true} {
+			var source map[string]any
+			if err := json.Unmarshal(restFixture(t, "google-compute"), &source); err != nil {
+				t.Fatal(err)
+			}
+			documents := source["documents"].([]any)
+			doc := documents[0].(map[string]any)["document"].(map[string]any)
+			resources := doc["resources"].(map[string]any)
+			methods := resources["instances"].(map[string]any)["methods"].(map[string]any)
+			get := methods["get"].(map[string]any)
+			get["httpMethod"] = method
+			source["x-resource-types"] = []any{map[string]any{"nativeType": "compute.googleapis.com/Embedded", "rest": map[string]any{"collection": "embedded", "delete_operations": map[bool][]string{true: {"compute.instances.get"}, false: {}}[listed]}}}
+			encoded, err := json.Marshal(source)
+			if err != nil {
+				t.Fatal(err)
+			}
+			c, err := ImportOfficial("google-discovery", asset.ProviderGCP, "fixture", encoded)
+			if err != nil {
+				t.Fatal(err)
+			}
+			op := requireRESTOperation(t, c, "compute.instances.get")
+			if op.Destructive != (method == "PATCH" && listed) {
+				t.Fatal("destructive classification escaped explicit PATCH binding", method, listed, op)
+			}
+		}
+	}
+}

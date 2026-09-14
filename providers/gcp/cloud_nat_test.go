@@ -96,7 +96,7 @@ func TestCloudNatNativeInventoryAndNetworkScope(t *testing.T) {
 						t.Fatal("duplicate NAT identity", item.NativeID)
 					}
 					seen[item.NativeID] = true
-					if !strings.Contains(item.NativeID, "/routers/") || !strings.Contains(item.NativeID, "/nats/") || item.Normalized[cloudNatRouterID] == nil || item.Actionable == nil || *item.Actionable {
+					if !strings.Contains(item.NativeID, "/routers/") || !strings.Contains(item.NativeID, "/nats/") || item.Normalized[cloudNatRouterID] == nil || item.Actionable == nil || !*item.Actionable || item.Normalized[cloudNatReview] == nil {
 						t.Fatal("invalid native component", item)
 					}
 					encoded, _ := json.Marshal(item)
@@ -252,8 +252,8 @@ func TestCloudNatFixturesMatchNativeSchemaAndIdentity(t *testing.T) {
 		if err != nil || op.ID != "compute.routers.get" || len(params) != 3 {
 			t.Fatal(op, params, err)
 		}
-		if _, _, err := c.routerComponentOperation(cloudNatType, id, "DELETE"); err == nil {
-			t.Fatal("NAT deletion routed to parent router")
+		if op, _, err := c.routerComponentOperation(cloudNatType, id, "DELETE"); err != nil || op.ID != "compute.routers.patch" {
+			t.Fatal("NAT removal must use native array PATCH", op, err)
 		}
 	}
 }

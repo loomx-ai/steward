@@ -1,0 +1,6 @@
+{
+  "source_uri": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz",
+  "source_sha256": "cecc5d244c10e3bc8ef7449937569c40339b90686b902fd48b4afc6f47ebfeb3",
+  "source_path": "lib/surface/compute/routers/nats/delete.py",
+  "file_sha256": "bf25c9a487ca4e0edcf7ff5bbae1f4f417787dabea7cf393fbf98acdf54ca96f"
+}

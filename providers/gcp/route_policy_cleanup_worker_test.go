@@ -153,7 +153,7 @@ func routerComponentSQLiteCleanup(t *testing.T, nativeType string, bgp, setRefer
 			parent = value
 		}
 	}
-	if policy.ID == "" || !policy.Capabilities.Has(asset.CapabilityActionable) || policy.Normalized[map[string]string{routePolicyType: routePolicyRouterID, namedSetType: namedSetRouterID}[nativeType]] != "1001" {
+	if policy.ID == "" || !policy.Capabilities.Has(asset.CapabilityActionable) || policy.Normalized[map[string]string{routePolicyType: routePolicyRouterID, namedSetType: namedSetRouterID, cloudNatType: cloudNatRouterID}[nativeType]] != "1001" {
 		t.Fatal("scan did not capture deletable policy review", policy)
 	}
 	if bgp {
@@ -201,9 +201,22 @@ func routerComponentSQLiteCleanup(t *testing.T, nativeType string, bgp, setRefer
 	if deleteSet && (task.Steps[1].AssetID != set.ID || !slices.Contains(task.Steps[1].DependsOn, task.Steps[0].ID)) {
 		t.Fatal("policy-before-set dependency absent", task.Steps)
 	}
+	var competing persistence.CleanupTaskAggregate
+	if nativeType == cloudNatType {
+		competing, err = planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: selectors, CreatedBy: "test"})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
 	attempt, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{CleanupTaskID: task.Task.ID, ConnectionID: "connection", RequestedBy: "test", IdempotencyKey: "policy-sqlite", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}})
 	if err != nil {
 		t.Fatal(err)
+	}
+	if nativeType == cloudNatType {
+		_, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{CleanupTaskID: competing.Task.ID, ConnectionID: "connection", RequestedBy: "test", IdempotencyKey: "competing-nat", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}})
+		if !errors.Is(err, persistence.ErrConflict) {
+			t.Fatal("overlapping native NAT execution accepted", err)
+		}
 	}
 	job, err := repositories.Jobs().ClaimNext(ctx, "policy-worker", now, time.Minute, execution.JobExecute)
 	if err != nil {
@@ -272,7 +285,7 @@ func routerComponentSQLiteCleanup(t *testing.T, nativeType string, bgp, setRefer
 		if want == execution.ActionSucceeded && err != nil || want != execution.ActionSucceeded && !errors.As(err, &retry) {
 			t.Fatal("restarted worker", round, err)
 		}
-		phase := map[string]string{routePolicyType: "route_policy_delete", namedSetType: "named_set_delete"}[nativeType]
+		phase := map[string]string{routePolicyType: "route_policy_delete", namedSetType: "named_set_delete", cloudNatType: "cloud_nat_delete"}[nativeType]
 		deletes := 1
 		if bgp && round < 2 {
 			phase = routePolicyDetach

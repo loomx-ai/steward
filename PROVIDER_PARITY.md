@@ -5649,3 +5649,48 @@ background evidence only, not acceptance evidence for this work.
   checks passed in 46.790s and GCP/internal vet passed. Isolated documentation
   checks passed for 30 chapters and 10 screenshots. All 65 original WIP file
   hashes were verified unchanged before application to the main workspace.
+
+### Native Cloud NAT removal and shared-array execution coordination
+
+- Verified the native Router JSON merge-patch/request-ID contract and public/private
+  NAT removal semantics. Retained the original Google Cloud SDK deletion source
+  with archive/member SHA-256 and Apache license reference. It explicitly includes
+  an empty `nats` array when removing the final gateway. No child endpoint,
+  fingerprint or native NAT UID is invented.
+- Native scans now retain the target's complete configuration review, including
+  unknown fields. Deletion rereads the parent incarnation and current NAT array,
+  rejects target changes, preserves fresh sibling configurations, omits only the
+  documented output-only effective TCP timeout and PATCHes only `nats`. Parent
+  BGP peers, interfaces, keys and manually managed address resources are retained.
+- NAT deletion reuses router-component regional operation receipts and readback.
+  Identity/configuration/request binding, restart, retries, expired receipts,
+  native error and malformed operation checks apply to NATs. Parent GET/PATCH
+  failures cannot prove child absence; DONE still requires complete native absence
+  readback. Sequential deletion tests verify the prior NAT is not recreated.
+- Cleanup planning adds execution-order edges among selected same-router NATs,
+  using existing topological order and durable prerequisites. Connection-locked
+  execution creation/continuation rejects overlap with another unresolved task,
+  including paused/failed/canceled runs. Matching verified action success releases
+  scope. SQLite tests cover scope persistence and actual competing task creation,
+  alongside native scan/graph/cleanup checkpoints, tombstones and retained router.
+- This guard is deliberately conservative: canceled-task reconciliation and release
+  are not implemented, and even cancellation before invocation can retain scope.
+  Failed tasks can be continued in their original task. Native PATCH has no CAS
+  precondition; external concurrent writers remain outside Steward coordination.
+  These recovery limitations, parent Router cascade, independent mock-server/live
+  acceptance and all broader provider requirements remain unfinished. All eight
+  overall acceptance criteria stay open.
+- All 60 pinned native documents and all native operation schemas/methods remain
+  unchanged. Catalog totals remain 200 resource rules and 785 operations. Only
+  RouterNat's deletion binding and the generated destructive flag on Router PATCH
+  change. Explicit PATCH deletion bindings drive classification; GET remains
+  non-destructive. Catalog SHA-256 is
+  `f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`.
+- Focused NAT/policy/set/catalog and shared-configuration checks passed (GCP
+  25.081s, cleanup 3.376s, catalog 3.851s). Evidence and runnable commands are in
+  [Cloud NAT evidence](providers/gcp/fixtures/cloud-nat/README.md).
+- Final isolated verification: `go test ./...` passed across all providers and
+  internal packages (GCP 202.505s, Azure 353.071s, Alibaba 12.065s, AWS 7.161s).
+  Focused race checks passed (GCP 60.443s, cleanup 6.865s, catalog 6.349s),
+  GCP/internal vet passed, and documentation checks passed for 30 chapters and
+  10 screenshots. No runtime dependency or external cloud resource was added.

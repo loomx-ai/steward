@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "039104da0c92665aab186e89fb016cf079ad6c16beae5a99f1df2653e467c86c",
+    "checksum": "484c0a2fe2e4131a2a328cd3073b02966704be767ec14f282ec48e098b8153e4",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "e3c723ee78f687914fffc97bbaf4445105649ec59c8a4625d8051828b043cc30",
+  "content_checksum": "734872f07c0b04d8187d2307412f14ab6e2b290dfeeda0f9c50096c7c530a59f",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -62038,7 +62038,7 @@
       "service": "compute",
       "method": "PATCH",
       "path": "/compute/v1/projects/{project}/regions/{region}/routers/{router}",
-      "destructive": false,
+      "destructive": true,
       "input_schema": {
         "properties": {
           "body": {
@@ -114638,6 +114638,9 @@
         "collection": "nats",
         "read_operations": [
           "compute.routers.get"
+        ],
+        "delete_operations": [
+          "compute.routers.patch"
         ],
         "list_operations": [
           "compute.routers.get"

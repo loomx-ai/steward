@@ -8,6 +8,9 @@ import (
 )
 
 func (a *action) routerComponentIncarnationKey() string {
+	if a.kind.NativeType == cloudNatType {
+		return cloudNatRouterID
+	}
 	if a.kind.NativeType == namedSetType {
 		return namedSetRouterID
 	}
@@ -15,6 +18,9 @@ func (a *action) routerComponentIncarnationKey() string {
 }
 
 func (a *action) routerComponentDeletePhase() string {
+	if a.kind.NativeType == cloudNatType {
+		return "cloud_nat_delete"
+	}
 	if a.kind.NativeType == namedSetType {
 		return "named_set_delete"
 	}
@@ -22,6 +28,9 @@ func (a *action) routerComponentDeletePhase() string {
 }
 
 func (a *action) routerComponentConfiguration(data map[string]any) string {
+	if a.kind.NativeType == cloudNatType {
+		return firewallDigest(cloudNatConfiguration(data))
+	}
 	if a.kind.NativeType == routePolicyType {
 		return routePolicyConfiguration(data)
 	}

@@ -39,11 +39,16 @@ func (a *action) routerComponentActionIdentity(request contracts.ActionRequest) 
 	if err := routerComponentData(a.kind.NativeType, request.Asset.Normalized, last(a.identity.NativeID)); err != nil {
 		return err
 	}
+	if a.kind.NativeType == cloudNatType {
+		if err := cloudNatData(object(request.Asset.Normalized[cloudNatReview]), last(a.identity.NativeID)); err != nil {
+			return groupDenied("cloud_nat_review_missing")
+		}
+	}
 	// Fingerprints are opaque native revision tokens, compared without rewriting.
-	if text(request.Asset.Normalized["fingerprint"]) == "" || !firewallNumericID(text(request.Asset.Normalized[a.routerComponentIncarnationKey()])) {
+	if (a.kind.NativeType != cloudNatType && text(request.Asset.Normalized["fingerprint"]) == "") || !firewallNumericID(text(request.Asset.Normalized[a.routerComponentIncarnationKey()])) {
 		return groupDenied("route_policy_review_missing")
 	}
-	if a.kind.NativeType == namedSetType {
+	if a.kind.NativeType == namedSetType || a.kind.NativeType == cloudNatType {
 		return nil
 	}
 	_, _, err := routePolicyBGPReview(request.Asset.Normalized, last(a.identity.NativeID))
@@ -51,6 +56,10 @@ func (a *action) routerComponentActionIdentity(request contracts.ActionRequest) 
 }
 
 func (a *action) routerComponentParent() string {
+	if a.kind.NativeType == cloudNatType {
+		parent, _, _ := strings.Cut(a.identity.NativeID, "/nats/")
+		return parent
+	}
 	parent, _, _ := strings.Cut(a.identity.NativeID, "/routePolicies/")
 	if a.kind.NativeType == namedSetType {
 		parent, _, _ = strings.Cut(a.identity.NativeID, "/namedSets/")
@@ -86,6 +95,10 @@ func (a *action) routerComponentReadback(ctx context.Context, request contracts.
 		if _, err := a.routerComponentReceipt(request, *request.ExecutionResult); err != nil {
 			return read, err
 		}
+	}
+	if a.kind.NativeType == cloudNatType {
+		_, read.Exists, err = a.cloudNatLive(ctx, request)
+		return read, err
 	}
 	if _, err := a.checkRouterComponentParent(ctx, request); err != nil {
 		return read, err
@@ -216,6 +229,9 @@ func (a *action) routerComponentReceipt(request contracts.ActionRequest, result 
 }
 
 func (a *action) executeRouterComponent(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
+	if a.kind.NativeType == cloudNatType {
+		return a.deleteCloudNat(ctx, request)
+	}
 	attached, err := a.checkRouterComponentParent(ctx, request)
 	if err != nil {
 		return contracts.ActionResult{}, err

@@ -4678,7 +4678,9 @@
       "list_operations": [
         "compute.routers.get"
       ],
-      "delete_operations": []
+      "delete_operations": [
+        "compute.routers.patch"
+      ]
     }
   ],
   "sdk_documents": [

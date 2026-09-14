@@ -113,6 +113,20 @@ func (GoogleDiscoveryImporter) Import(provider asset.Provider, sourceURI string,
 			return Catalog{}, err
 		}
 	}
+	// Embedded components can be removed by native merge-patch. Only explicit
+	// resource deletion bindings classify PATCH as destructive; reads never do.
+	for _, resource := range set.ResourceTypes {
+		if resource.REST == nil {
+			continue
+		}
+		for _, id := range resource.REST.DeleteOperations {
+			for i := range c.Operations {
+				if c.Operations[i].ID == id && c.Operations[i].Method == "PATCH" {
+					c.Operations[i].Destructive = true
+				}
+			}
+		}
+	}
 	appendResourceTypes(&c, set.ResourceTypes)
 	return finishRESTCatalog(c)
 }

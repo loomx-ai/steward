@@ -100,7 +100,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
 | Hyperdisk Storage Pools | Native pools, capacity/performance usage, provisioning modes and disk members | Inventory and reviewed cleanup |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
-| Cloud NAT | Per-router public/private NAT configurations, rules, subnet and address references | Inventory; independent deletion pending |
+| Cloud NAT | Per-router public/private NAT configurations, rules, subnet and address references | Independent removal; other NATs and the router retained |
 | Cloud Router named sets | Per-router prefix/community sets, CEL elements and fingerprint | Reviewed deletion after referring policies |
 | Cloud Router BGP policies | Per-router import/export policies, CEL terms and fingerprint | Independent native policy deletion with BGP reference detachment |
 | Cloud Identity | Groups and member relationships in the configured directory | Reviewed group deletion; ordinary member links can also be removed independently |
@@ -348,5 +348,20 @@ the related resources are also scanned. Hub references embedded in rule CEL are
 retained as configuration but are not yet resolved into graph edges. Incomplete,
 denied, missing or mismatched router responses fail the shard and preserve prior
 observations. Only a complete matching router response can establish NAT absence.
-Independent NAT deletion and parent-router cascade review remain unfinished.
+NAT cleanup removes the reviewed configuration through the native Router PATCH
+API, waits for its regional operation and confirms absence in a complete router
+read. It needs `compute.routers.get`, `compute.routers.update` and
+`compute.regionOperations.get`. The request preserves the latest other NAT
+configurations and leaves BGP peers, interfaces, keys and the router intact.
+Manual address resources are not explicitly deleted by this action.
+
+Steward runs same-router NAT deletions in sequence. An unresolved update in
+another cleanup task blocks a new update on that router. Failed tasks can be
+continued in their original task. Canceled tasks with unresolved updates remain
+blocked; cancellation recovery is not yet implemented. Native PATCH has no
+configuration revision precondition, so concurrent
+external writers can still race the final read/update. Avoid changing that
+router's NAT configuration externally while cleanup runs. See the
+[native PATCH and request-ID contract](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/patch).
+Parent-router cascade review remains unfinished.
 Google documents that [deleting a router also deletes its Cloud NAT gateways](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers).

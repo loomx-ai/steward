@@ -40,7 +40,9 @@ func (c *client) routerComponentOperation(kind, id, method string) (catalog.Oper
 		}
 	} else if kind == cloudNatType {
 		collection, query, operation = "nats", "", "compute.routers.get"
-		if method != "GET" {
+		if method == "DELETE" {
+			operation = "compute.routers.patch"
+		} else if method != "GET" {
 			return catalog.Operation{}, nil, groupDenied("cloud_nat_method_unsupported")
 		}
 	} else if kind != routePolicyType {

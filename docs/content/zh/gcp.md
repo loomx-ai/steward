@@ -65,7 +65,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
 | Hyperdisk 存储池 | 原生池、容量与性能用量、预配模式和磁盘成员 | 支持盘点和经审查的清理 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
-| Cloud NAT | 各路由器的公共/私有 NAT 配置、规则及子网/IP 引用 | 支持盘点；独立删除待实现 |
+| Cloud NAT | 各路由器的公共/私有 NAT 配置、规则及子网/IP 引用 | 支持独立删除，保留其他 NAT 和所属路由器 |
 | Cloud Router 命名集合 | 各路由器的前缀/社区集合、CEL 元素和指纹 | 审查引用后删除，先清理引用它的策略 |
 | Cloud Router BGP 策略 | 各路由器的导入/导出策略、CEL 条款和指纹 | 支持解除 BGP 引用后原生独立删除 |
 | Cloud Identity | 配置目录中的身份组及成员关系 | 审查后删除身份组；普通成员关系也可独立删除 |
@@ -278,5 +278,18 @@ REST 接口或 CAI 资产类型。参阅[原生 Router 架构](https://docs.clou
 同时扫描相关资源后，可查看路由器、VPC、子网和地址的显式引用关系。规则 CEL
 中的 Hub 引用保留在配置中，尚未解析为关系边。路由器响应不完整、权限不足、
 缺失或身份不符时，扫描分片失败并保留历史记录；只有完整且身份匹配的路由器响应
-才能确认 NAT 已不存在。独立 NAT 删除和父路由器的级联清理审查仍待实现。
+才能确认 NAT 已不存在。
+
+清理 NAT 通过原生 Router PATCH 移除已审查的配置，等待地域操作完成，再从完整的
+路由器响应确认删除。需要 `compute.routers.get`、`compute.routers.update` 和
+`compute.regionOperations.get` 权限。请求保留其他 NAT 的最新配置，并保留 BGP
+对等连接、接口、密钥和路由器；该动作不会显式删除手动分配的地址资源。
+
+同一路由器的 NAT 删除按顺序执行。其他清理任务存在未确认完成的更新时，会阻止
+新任务更新该路由器。失败的任务可在原任务中继续；已取消但更新状态未确认的
+任务仍会保持阻塞，这类取消后的恢复尚未实现。原生 PATCH 没有配置版本条件，
+最后一次读取与更新之间仍可能
+受到外部并发写入影响；清理期间应避免在外部修改该路由器的 NAT 配置。参阅
+[原生 PATCH 与请求 ID 契约](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/patch)。
+父路由器的级联清理审查仍待完成。
 Google 明确说明，[删除路由器也会删除其中的 Cloud NAT 网关](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers)。

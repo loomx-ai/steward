@@ -92,3 +92,13 @@ relationships:
 - type: uses
   targetType: compute.googleapis.com/Address
   targetIdPath: refs_compute_googleapis_com_Address
+actions:
+  delete:
+    operation: compute.routers.patch
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.routers.get
+      itemsPath: nats
+      identityPath: name

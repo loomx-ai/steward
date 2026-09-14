@@ -35,6 +35,9 @@ func routePolicyActionRuntime(t *testing.T) (*Runtime, contracts.ActionRequest, 
 }
 
 func routerComponentActionRuntime(t *testing.T, nativeType string) (*Runtime, contracts.ActionRequest, *routePolicyActionFixture) {
+	if nativeType == cloudNatType {
+		return cloudNatActionRuntime(t)
+	}
 	t.Helper()
 	parentID := "//compute.googleapis.com/projects/sample-project/regions/us-central1/routers/router-a"
 	policy := routePolicyFixture("policy-a")
@@ -339,9 +342,13 @@ func testRouterComponentDeleteGuardsAndFailures(t *testing.T, nativeType string)
 				fixture.policy = cloneParameters(fixture.policy)
 				fixture.policy["fingerprint"] = "ZnAy"
 			case "review-missing":
-				delete(request.Asset.Normalized, map[string]string{routePolicyType: routePolicyRouterID, namedSetType: namedSetRouterID}[nativeType])
+				delete(request.Asset.Normalized, map[string]string{routePolicyType: routePolicyRouterID, namedSetType: namedSetRouterID, cloudNatType: cloudNatRouterID}[nativeType])
 			case "fingerprint-missing":
-				delete(request.Asset.Normalized, "fingerprint")
+				if nativeType == cloudNatType {
+					delete(request.Asset.Normalized, cloudNatReview)
+				} else {
+					delete(request.Asset.Normalized, "fingerprint")
+				}
 			}
 			driver, err := r.ResolveAction(t.Context(), "connection", request.Asset)
 			if err != nil {
@@ -398,6 +405,9 @@ func testRouterComponentDeleteIdempotencyAndAlreadyAbsent(t *testing.T, nativeTy
 	if _, err := driver.Execute(t.Context(), request); err != nil || fixture.deletes != 2 {
 		t.Fatal("absent policy was deleted again", err)
 	}
+	if nativeType == cloudNatType {
+		return
+	} // A missing PATCH parent cannot prove NAT absence.
 	fixture.exists = true
 	fixture.mode = "delete-absent"
 	result, err = driver.Execute(t.Context(), request)
@@ -449,7 +459,7 @@ func testRouterComponentDeleteReceiptAndPollingBoundaries(t *testing.T, nativeTy
 			case "poll-zone":
 				fixture.operation["zone"] = "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a"
 			case "poll-type":
-				fixture.operation["operationType"] = "patch"
+				fixture.operation["operationType"] = map[bool]string{true: "delete", false: "patch"}[nativeType == cloudNatType]
 			case "poll-error":
 				fixture.operation["error"] = map[string]any{"errors": []any{map[string]any{"code": "FAILED"}}}
 			case "poll-empty-error":
@@ -504,7 +514,7 @@ func testRouterComponentActionIdentityAndTermOrder(t *testing.T, nativeType stri
 			t.Fatal("changed action reached cloud", err)
 		}
 	}
-	if nativeType == namedSetType {
+	if nativeType != routePolicyType {
 		return
 	}
 	first := object(array(fixture.policy["terms"])[0])

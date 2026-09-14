@@ -414,5 +414,7 @@ instead of silently omitting a dependency. API metadata/counts remain unchanged.
 
 Cloud NAT gateways use the existing `routers.get` method and embedded `nats`
 objects. Their independent inventory identity includes the containing router;
-there is no invented NAT endpoint or deletion operation. See
+there is no invented NAT endpoint. Independent deletion binds the native Router
+PATCH to the NAT rule. Explicit PATCH deletion bindings are classified as
+destructive without modifying their native method/schema documents. See
 [Cloud NAT evidence](../fixtures/cloud-nat/README.md).

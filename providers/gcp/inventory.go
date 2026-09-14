@@ -254,6 +254,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	for key, value := range data {
 		normalized[key] = value
 	}
+	if nativeType == cloudNatType {
+		normalized[cloudNatReview] = cloudNatConfiguration(data)
+	}
 	if nativeType == clusterType || nativeType == nodePoolType {
 		labels := data["resourceLabels"]
 		if nativeType == nodePoolType {
