@@ -22,6 +22,7 @@ import (
 func TestUptimeSQLiteScanHistoryCleanupRestartAndReconciliation(t *testing.T) {
 	ctx := t.Context()
 	r, _, data, mode, deletes := uptimeScenario(t)
+	*data = uptimeGCEFixture()
 	db := filepath.Join(t.TempDir(), "uptime.db")
 	repos, err := sqlite.Open(db, "../../migrations")
 	if err != nil {
@@ -68,7 +69,7 @@ func TestUptimeSQLiteScanHistoryCleanupRestartAndReconciliation(t *testing.T) {
 		now = now.Add(time.Second)
 	}
 	var first, current asset.Asset
-	for _, phase := range []string{"first", "get-denied", "gone", "detail-drift", "list-null", "list-token", "list-partial", "list-empty", "recovered"} {
+	for _, phase := range []string{"first", "get-denied", "gone", "detail-drift", "detail-target-invalid", "list-null", "list-token", "list-partial", "list-empty", "recovered"} {
 		*mode = phase
 		failed := phase != "first" && phase != "list-empty" && phase != "recovered"
 		if phase == "recovered" {
@@ -107,9 +108,7 @@ func TestUptimeSQLiteScanHistoryCleanupRestartAndReconciliation(t *testing.T) {
 			t.Fatal("persisted native authentication")
 		}
 	}
-	if err := governance.NewGraphHandler(repos, registry, nil).Handle(ctx, execution.Job{Type: execution.JobGraph, Payload: map[string]any{"scan_run_id": "recovered"}}); err != nil {
-		t.Fatal(err)
-	}
+	assertUptimeSQLiteTargetGraph(t, repos, r, current)
 	planner := cleanup.NewService(repos, registry, cleanup.WithClock(func() time.Time { return now }))
 	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: connection.ID, CreatedBy: "test", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: current.ID}}})
 	if err != nil || len(task.Steps) != 1 || len(task.ImpactItems) != 0 {
@@ -161,7 +160,7 @@ func TestUptimeSQLiteScanHistoryCleanupRestartAndReconciliation(t *testing.T) {
 	*mode = "list-empty"
 	scan("reconciliation", false)
 	page, err := repos.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10})
-	if err != nil || len(page.Items) != 0 || *deletes != 1 {
+	if err != nil || len(page.Items) != 1 || page.Items[0].ID != "uptime-target" || *deletes != 1 {
 		t.Fatal(page, err, *deletes)
 	}
 }

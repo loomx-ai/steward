@@ -508,3 +508,17 @@ func TestGCPCloudNatHubContributorIsConnectedWithoutCascade(t *testing.T) {
 		t.Fatalf("missing NAT Hub contributor: %T", contributors[1])
 	}
 }
+
+func TestGCPUptimeTargetContributorIsConnectedWithoutCascade(t *testing.T) {
+	runtime := &serviceContributorRuntime{}
+	resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})
+	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP}
+	value := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: connection.ID, NativeType: "monitoring.googleapis.com/UptimeCheckConfig"}}
+	contributors, err := resolver.ResolveContributors(t.Context(), connection, []asset.Asset{value, value})
+	if err != nil || len(contributors) != 2 || len(runtime.connections) != 0 {
+		t.Fatal(contributors, err, runtime.connections)
+	}
+	if _, ok := contributors[1].(*gcp.UptimeTargets); !ok {
+		t.Fatalf("missing Uptime target contributor: %T", contributors[1])
+	}
+}

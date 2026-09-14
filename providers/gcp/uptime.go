@@ -135,7 +135,8 @@ func (c *client) uptimeData(id string, data map[string]any) error {
 			}
 		}
 	}
-	return nil
+	_, err = c.uptimeReferences(id, data)
+	return err
 }
 
 func uptimeStringMap(data map[string]any, field string) error {

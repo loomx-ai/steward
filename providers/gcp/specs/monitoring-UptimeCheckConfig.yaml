@@ -72,9 +72,17 @@ fields:
   logCheckFailures:
     path: logCheckFailures
     type: boolean
+  isInternal:
+    path: isInternal
+    type: boolean
+  internalCheckers:
+    path: internalCheckers
+    type: array
   userLabels:
     path: userLabels
     type: object
+# Native target relationships are resolved by UptimeTargets across scopes.
+# GCE monitored targets use immutable numeric instance IDs, not instance names.
 extensions:
   hook: gcp.resource
 actions:

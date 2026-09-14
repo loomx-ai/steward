@@ -329,6 +329,13 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized["cleanup_protection_reason"] = "identity_group_locked_or_protected"
 	}
 	refs := references(c, data)
+	if nativeType == uptimeType {
+		var err error
+		refs, err = c.uptimeReferences(nativeID, data)
+		if err != nil {
+			return contracts.InventoryItem{}, err
+		}
+	}
 	if nativeType == cloudNatType {
 		refs = c.cloudNatReferences(data)
 		hubs, _, err := c.cloudNatHubReferences(data)
@@ -469,7 +476,13 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	if isDiscovery(nativeType) {
 		sanitize = safeDiscoveryPayload
 	}
-	return contracts.InventoryItem{NativeType: nativeType, NativeID: nativeID, ResourceKind: r.resourceKind(nativeType), Actionable: &actionable, Scope: scope, Name: name, State: state, Location: location, Tags: tags, Normalized: sanitize(normalized), Raw: sanitize(raw), NativeAliases: []string{text(data["selfLink"]), nativeID}, NetworkReferences: networkRefs}, nil
+	aliases := []string{text(data["selfLink"]), nativeID}
+	if nativeType == instanceType {
+		if alias := uptimeInstanceAlias(nativeID, data); alias != "" {
+			aliases = append(aliases, alias)
+		}
+	}
+	return contracts.InventoryItem{NativeType: nativeType, NativeID: nativeID, ResourceKind: r.resourceKind(nativeType), Actionable: &actionable, Scope: scope, Name: name, State: state, Location: location, Tags: tags, Normalized: sanitize(normalized), Raw: sanitize(raw), NativeAliases: aliases, NetworkReferences: networkRefs}, nil
 }
 
 func resourceState(data map[string]any) string {

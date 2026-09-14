@@ -96,6 +96,12 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 				break
 			}
 		}
+		for _, value := range assets {
+			if value.Identity.Provider == asset.ProviderGCP && value.Identity.NativeType == "monitoring.googleapis.com/UptimeCheckConfig" {
+				contributors = append(contributors, gcp.NewUptimeTargets())
+				break
+			}
+		}
 		return contributors, nil
 	case asset.ProviderAzure:
 		contributors := []governance.Contributor{azure.NewResourceAttachments()}

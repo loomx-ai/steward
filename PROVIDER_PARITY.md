@@ -5985,3 +5985,25 @@ against a still-occupied same-task scope while allowing the bound continuation.
   vet and documentation (30 chapters, 10 screenshots). Independent pinned
   mockgcp GET/DELETE/restart/404 passed (0.690s, seven Monitoring calls);
   its unimplemented LIST correctly failed. No upstream handlers were changed.
+
+
+### Uptime target identities and network membership
+
+- Native monitored-resource fields now link GCE numeric instance IDs, synthetic
+  functions, Cloud Run services, Service Directory services, Kubernetes clusters,
+  explicit peer-project checker networks and project-local Monitoring groups.
+  Group references remain unresolved until their inventory is implemented.
+- GCE numeric aliases preserve network closure without confusing same-name VM
+  recreation. Arbitrary label, HTTP and response-matcher strings do not determine
+  Uptime network membership. Malformed target identities fail native validation.
+- A server-wired contributor resolves dependencies across scopes by full identity
+  within one provider/partition/connection. Missing targets remain unresolved;
+  ambiguous identities fail. These are references, not ownership/cascade claims.
+  Selecting both orders the check before its target; selecting only the check
+  leaves its target intact. Protocol and SQLite worker tests cover these paths.
+- Source/catalog bytes and dependencies remain unchanged (200 rules, 785 methods).
+  App Engine/AWS and individual Kubernetes Service target resolution, Monitoring
+  groups/members, implicit legacy checker networks, AlertPolicy inventory/parsing/
+  ordering and independent LIST/live/full-application acceptance remain open.
+  All eight overall acceptance criteria remain unfinished. See
+  [Uptime evidence](providers/gcp/fixtures/uptime/README.md).

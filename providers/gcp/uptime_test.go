@@ -83,6 +83,10 @@ func uptimeScenario(t *testing.T) (*Runtime, *contracts.ActionRequest, *map[stri
 			return apiResponse(req, 403, `{}`), nil
 		case "get-partial":
 			return apiResponse(req, 200, `{"unreachable":["location"]}`), nil
+		case "detail-target-invalid":
+			live := cloneParameters(data)
+			live["monitoredResource"] = map[string]any{"type": "gce_instance", "labels": map[string]any{"project_id": "sample-project", "zone": "us-central1-a", "instance_id": "a-name"}}
+			return dataformResponse(req, 200, live), nil
 		case "detail-drift":
 			live := cloneParameters(data)
 			live["displayName"] = "changed-detail"

@@ -477,6 +477,15 @@ Permissions are `monitoring.uptimeCheckConfigs.list`,
 `monitoring.uptimeCheckConfigs.get`, and `monitoring.uptimeCheckConfigs.delete`.
 Delete associated alert policies first: the API rejects checks still referenced by
 those policies. Deleting a synthetic check retains its Cloud Run function.
-Steward currently deletes only the check; target/network relationships, group
-membership and automatic alert-policy ordering remain unfinished. See the
+When both a check and its target are selected, the plan deletes the check first.
+Target relationships cover GCE numeric instance IDs, synthetic Cloud Run functions,
+Cloud Run services, Service Directory services and the cluster containing a
+Kubernetes Service. Explicit internal checkers link to their peer-project VPCs.
+Network scans follow these identities; arbitrary URLs in labels or response
+matchers do not establish network membership. Missing targets remain unresolved;
+selecting a check does not automatically select or delete its target.
+
+Monitoring group inventory/membership, App Engine and AWS target resolution,
+individual Kubernetes Service relationships, implicit legacy internal-checker
+networks, and alert-policy inventory/ordering remain unfinished. See the
 [Monitoring deletion contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs/delete).

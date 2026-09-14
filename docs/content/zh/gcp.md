@@ -377,6 +377,14 @@ GET 确认不存在，工作进程重启后同样复核。原生 DELETE 是同�
 
 需要 `monitoring.uptimeCheckConfigs.list`、`monitoring.uptimeCheckConfigs.get`
 及 `monitoring.uptimeCheckConfigs.delete` 权限。需先删除相关告警策略，否则原生
-接口拒绝删除仍被引用的检查。删除合成检查会保留其 Cloud Run 函数。Steward 当前仅
-清理检查本身；目标及网络关系、资源组成员关系、自动告警依赖顺序仍待补齐。参阅
+接口拒绝删除仍被引用的检查。删除合成检查会保留其 Cloud Run 函数。
+
+同时选择检查与目标时，计划先删除检查。目标关系覆盖 GCE 实例数字 ID、合成监控的
+Cloud Run 函数、Cloud Run 服务、Service Directory 服务，以及 Kubernetes Service
+所在集群；显式内部检查器关联其所在项目的 VPC。网络扫描依据这些身份建立关联，
+标签或响应匹配内容中的任意 URL 不会成为网络成员依据。缺失目标保留为未解析引用，
+仅选择检查不会自动选择或删除目标。
+
+Monitoring 资源组清单及成员关系、App Engine 和 AWS 目标解析、独立 Kubernetes
+Service 关系、旧版隐式内部检查器网络，以及告警策略清单与删除顺序仍待补齐。参阅
 [Monitoring 删除接口](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs/delete)。

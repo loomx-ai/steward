@@ -96,5 +96,44 @@ LIST. The upstream tracked files remained unchanged.
 
 Stop the temporary process and remove the checkout/binary after verification.
 All resources are in memory; OAuth and Resource Manager identity use test fixtures.
-Full target/network relationships, Monitoring groups, alert-policy dependency
+Remaining target relationships, Monitoring groups, alert-policy dependency
 inventory/order and independent LIST or real-cloud acceptance remain unfinished.
+
+
+## Native target and network relationships
+
+The [monitored-resource descriptors](https://docs.cloud.google.com/monitoring/api/resources)
+specify numeric `instance_id` for GCE, project/region/service for Cloud Run,
+project/location/namespace/service for Service Directory, and cluster identity
+for Kubernetes Services. The [Uptime schema](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs)
+provides a fully qualified synthetic function, a project-local group ID, and
+explicit internal-checker network names with their `peerProjectId`.
+
+Steward derives references only from those target fields and uses full identities
+across source/target scopes within the same provider, partition and connection.
+Own-project number/ID aliases normalize consistently. A GCE alias binds its numeric
+ID to its observed project/zone, preventing a recreated instance with the same
+name from satisfying the old target. Network closure follows this alias and the
+explicit target references, ignoring arbitrary user-label/HTTP/matcher strings.
+The synthetic output-only revision never becomes another configured dependency.
+
+The provider contributor emits dependencies, not ownership or deletion impacts.
+When both are selected the check precedes the target; check-only cleanup retains
+the target. Missing or foreign-connection targets stay unresolved, and duplicate
+identities fail graph construction. Group IDs are retained as unresolved native
+Group references until group inventory is implemented. These graph references
+alone do not authorize cross-connection or cross-provider deletion.
+
+Protocol/unit tests exercise native field mapping, malformed and encoded paths,
+project aliases, foreign projects, cross-scope graph resolution, duplicates,
+missing/recreated targets, network closure and arbitrary-payload exclusions.
+The SQLite worker test scans a GCE-backed check, preserves its history after an
+invalid native target read, persists the cross-scope relationship and deletion
+DAG, then deletes only the check through process restarts while retaining the VM.
+Server tests verify the contributor is installed once without a service cascade.
+
+This does not yet resolve App Engine/AWS targets, individual Kubernetes Services,
+group membership or the implicit legacy `isInternal=true`/empty-checker set.
+AlertPolicy inventory, condition parsing, native incoming-reference rechecks,
+independent LIST and full application/live acceptance remain open. References
+are observed dependencies, not an atomic guarantee against external target edits.
