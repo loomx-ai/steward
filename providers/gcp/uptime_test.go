@@ -37,6 +37,14 @@ func monitoringScenario(t *testing.T, kind string) (*Runtime, *contracts.ActionR
 	deletes := 0
 	reads := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if kind == uptimeType && req.Method == "GET" {
+			if req.URL.Path == "/v3/projects/sample-project/alertPolicies" {
+				return apiResponse(req, 200, `{}`), nil
+			}
+			if req.URL.Path == "/v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject" {
+				return apiResponse(req, 200, `{"metricsScopes":[{"name":"locations/global/metricsScopes/123456"}]}`), nil
+			}
+		}
 		if req.URL.Host != "monitoring.googleapis.com" {
 			t.Fatal(req.URL)
 		}

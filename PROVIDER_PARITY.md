@@ -6038,3 +6038,35 @@ against a still-occupied same-task scope while allowing the bound continuation.
   including architecture (25.650s) and cleanup (6.348s); focused race GCP (120.742s),
   cleanup (9.576s), inventory (6.118s); vet and bilingual documentation checks
   (30 chapters, 10 screenshots).
+
+
+### Monitoring policies before Uptime deletion
+
+- Native Monitoring filter analysis now covers threshold/absence conditions,
+  numerator and denominator filters, native OR precedence, implicit AND, quoted
+  keys, string functions and RE2 matching. Finite metric-type constraints reject
+  unrelated/contradictory types. This is conservative potential-reference analysis,
+  not cloud time-series evaluation; unrelated resource/project labels cannot hide
+  a reference. Expressions are never persisted in graph evidence.
+- Reverse Metrics Scope discovery includes incoming scoping projects. Complete
+  unfiltered policy LIST/GET/repeated-LIST reads and repeated reverse discovery
+  reject malformed, partial, denied, duplicate, missing or changed observations.
+  Foreign Resource Manager identities are verified before read-only policy access.
+- Current local policy references require separate user selection and native
+  absence before check deletion. Missing/stale/foreign policies and unresolved
+  queries remain cleanup blockers. Preflight and final execution repeat incoming
+  reads; receipts bind reviewed prerequisites and final target reads detect drift.
+- Protocol, native grammar, explicit-selection planning and SQLite tests cover
+  policy-before-check ordering with both persisted execution jobs and actual database
+  close/reopen across rounds. No new catalog methods or dependencies were added.
+- Logging/MQL/PromQL/SQL analysis, unbounded metric selectors, Group/channel lifecycle,
+  duplicate-connection coordination, the remaining provider families and full
+  application/live acceptance remain unfinished. All eight overall acceptance
+  criteria remain open. See [Monitoring evidence](providers/gcp/fixtures/alert-policy/README.md#native-uptime-incoming-dependencies).
+
+- Validation: GCP full regression 247.602s and all internal packages passed;
+  the final Logging guard has focused race/execution coverage. Fuzzing exercised
+  128,646 inputs. The unchanged pinned Google mockgcp handled 26 runtime calls in
+  a hybrid dependency/delete test with 6 explicitly modeled reverse-scope reads;
+  unsupported native reverse lookup was first verified to block writes. This is
+  not full independent Monitoring, IAM or reference-lock acceptance.

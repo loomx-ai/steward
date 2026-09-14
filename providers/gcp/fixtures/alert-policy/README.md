@@ -106,12 +106,100 @@ server does not implement IAM, realistic pagination/filtering or concurrent-writ
 constraints; protocol/SQLite tests cover those local boundaries. Its tracked files
 remained unchanged; the temporary process, binary and checkout were removed.
 
-Condition-to-Uptime/metric/group/channel dependency extraction, native incoming
-reference rechecks, alert-before-check planning, channel/group inventory, broader
-provider parity and full application/live acceptance remain unfinished. This
-milestone does not claim cloud alert evaluation or production IAM acceptance.
+The following milestone adds native-filter Uptime dependencies. Logging/MQL/PromQL/SQL
+reference analysis, metric/group/channel lifecycle inventory, broader provider
+parity and full application/live acceptance remain unfinished. Neither milestone
+claims cloud alert evaluation or production IAM acceptance.
 
 
 Milestone checks passed in the isolated checkout: full GCP 237.872s, all internal
 packages (architecture 25.650s, cleanup 6.348s); focused race GCP 120.742s,
 cleanup 9.576s, inventory 6.118s; vet; bilingual docs (30 chapters, 10 screenshots).
+
+## Native Uptime incoming dependencies
+
+The [Monitoring filter grammar](https://docs.cloud.google.com/monitoring/api/v3/filters)
+has OR precedence above AND, implicit conjunction, parentheses, quoted label
+keys, string comparisons, one_of, prefix/suffix/substring functions and RE2 full
+matches. The implementation uses the standard-library scanner and regexp engine;
+it does not search for check IDs inside arbitrary strings. Threshold and absence
+conditions include both numerator and denominator filters. Finite metric-type
+constraints exclude unrelated metric families and contradictory type selectors.
+Both `metric.label.check_id` (the native alert sample) and `metric.labels.check_id`
+are recognized. Size/depth/node limits and unsupported syntax produce an
+unresolved result; comments and unknown escape dialects are not discarded.
+
+This is conservative dependency analysis, not metric evaluation: resource,
+project, metadata and other metric labels do not eliminate a possible check
+reference. They can change independently, and identical check IDs may exist in
+other projects. Broad uptime policies can therefore require separate selection
+even if a narrower live time-series query currently produces no matching data.
+Logging, MQL, PromQL, SQL and unbounded metric selectors remain unresolved unless another
+supported branch proves a reference or a check-ID exclusion proves absence.
+[Uptime logs](https://docs.cloud.google.com/monitoring/uptime-checks/troubleshoot)
+include `labels.check_id`; log conditions cannot be assumed unrelated. Raw
+queries, filters and extracted string arguments never enter graph evidence.
+
+[`listMetricsScopesByMonitoredProject`](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/locations.global.metricsScopes/listMetricsScopesByMonitoredProject)
+finds every scoping project, including the mandatory first self scope. Incoming
+reads validate project identities, read all unfiltered AlertPolicy pages, compare
+native LIST with GET and a repeated LIST, then repeat reverse-scope discovery.
+Null arrays/tokens, loops, duplicates, permission failures, partial responses,
+configuration changes and scope-set changes fail closed. Foreign scoping projects
+are read with the existing credentials after Resource Manager identity validation;
+the configured client remains unchanged. Missing read permissions do not establish
+absence. These reads cannot provide an atomic snapshot against external writers.
+
+Matching local policies with current inventory reviews become explicit deletion
+prerequisites. They must be selected separately; checks gain no ownership or
+cascade authority over policies, channels or their targets. Missing/stale policies,
+foreign-project policies and unresolved condition languages block check cleanup.
+Foreign policies require their own configured project to remove or revise them;
+no cross-project mutation is authorized by this discovery.
+
+Uptime preflight and the final execute path independently repeat incoming reads.
+Every reviewed prerequisite also requires its own native GET 404. New or unresolved
+policies stop DELETE; the target configuration is read again after policy paging.
+Receipts for plans with prerequisites bind their complete frozen review and survive
+JSON persistence/restart. Legacy receipts without prerequisites keep their old
+shape. Native DELETE's own reference rejection remains the final external-race
+barrier; no transaction or etag is invented.
+
+Retained checks cover syntax/precedence, bounded type contradictions, functions,
+Unicode case folding, quoted-string traps, unsupported languages, numerator and
+denominator references, strict pagination, reverse scopes, foreign identities,
+configuration drift, explicit selection and blocked writes. A SQLite graph/plan/
+execution test closes and reopens the database and recreates the runtime between
+rounds, processes both persisted jobs, verifies policy-before-check ordering,
+confirms both tombstones and checks that neither resource is deleted twice.
+The existing independent mockgcp run above does not test these new dependencies:
+its policy backend does not implement filter evaluation or Uptime reference locks.
+
+```sh
+go test ./providers/gcp ./internal/server -run 'TestMonitoring|TestUptime|TestAlertPolicy|TestGCPUptime' -count=1
+go test ./providers/gcp -run '^$' -fuzz '^FuzzMonitoringFilter$' -fuzztime=20s -parallel=2
+go test -race ./providers/gcp ./internal/app/cleanup ./internal/server -run 'TestMonitoring|TestUptime|TestAlertPolicy|TestGCPUptime' -count=1
+```
+
+### Validation of the incoming-dependency milestone
+
+GCP full regression passed in 247.602s after updating the legacy wire fixture;
+all internal packages passed (architecture 23.577s, cleanup 5.856s). The final
+Logging-condition classification correction was subsequently checked by the
+focused GCP race suite (39.938s) and the added log-reference execution regression
+(3.036s). Shared cleanup/server race checks also passed (6.582s/7.951s).
+The scanner fuzz run executed 128,646 inputs with a 20-second fuzz budget and no
+crash; vet and the documentation checks passed. These are distinct checks, not a
+claim that the full suite was rerun after the narrow Logging correction.
+
+The updated opt-in Uptime test also ran against unchanged Google mockgcp at the
+pinned revision: 26 runtime Monitoring calls were forwarded, and 6 reverse-scope
+calls used an explicitly identified native-shape protocol fixture (package 0.907s).
+First, its real unimplemented reverse endpoint was observed to block all writes.
+With only that missing read modeled, native AlertPolicy CREATE/LIST/GET data drove
+reference rejection, independent policy DELETE/404, check DELETE, JSON receipt
+recovery and final 404. Both CREATE seed requests are outside the runtime call
+counter. Neither AlertPolicy responses nor Uptime GET/DELETE responses were
+substituted. Uptime LIST remains unimplemented and is asserted to fail; native IAM,
+real reference locking, filter evaluation and a complete independent backend remain
+outside this emulator's coverage.

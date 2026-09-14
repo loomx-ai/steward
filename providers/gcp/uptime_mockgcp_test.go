@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -53,14 +54,30 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 		t.Fatal("native create returned no identity")
 	}
 	calls := []string{}
+	// The independent backend lacks reverse Metrics Scope lookup. First prove
+	// that gap blocks all writes; only then enable this explicit protocol fixture.
+	reverseFixture, nativeReverseFailed := false, false
+	fixtureCalls := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if req.URL.Host != "monitoring.googleapis.com" {
 			t.Fatal(req.URL)
 		}
 		calls = append(calls, req.Method+" "+req.URL.Path)
+		reverse := req.Method == "GET" && req.URL.Path == "/v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject"
+		if reverse && reverseFixture {
+			if req.URL.Query().Get("monitoredResourceContainer") != "projects/123456" {
+				t.Fatal("wrong modeled scope request")
+			}
+			fixtureCalls++
+			return apiResponse(req, 200, `{"metricsScopes":[{"name":"locations/global/metricsScopes/123456"}]}`), nil
+		}
 		local := req.Clone(req.Context())
 		local.URL.Scheme, local.URL.Host, local.Host = u.Scheme, u.Host, u.Host
-		return http.DefaultTransport.RoundTrip(local)
+		response, err := http.DefaultTransport.RoundTrip(local)
+		if reverse && err == nil && response.StatusCode >= 400 {
+			nativeReverseFailed = true
+		}
+		return response, err
 	})
 	if batch, err := r.List(ctx, productRequest(r, uptimeType, "global")); err == nil || len(batch.Items) != 0 {
 		t.Fatal("unimplemented native LIST became complete inventory", batch, err)
@@ -88,6 +105,66 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 		t.Fatal(err)
 	}
 	request := contracts.ActionRequest{Action: "delete", Asset: target, IdempotencyKey: "mock-uptime"}
+	if _, err := driver.Execute(ctx, request); err == nil || !nativeReverseFailed {
+		t.Fatal("unsupported reverse discovery did not block native mutation", err)
+	}
+	for _, call := range calls {
+		if strings.HasPrefix(call, "DELETE ") {
+			t.Fatal("unsupported reverse lookup allowed a write")
+		}
+	}
+	reverseFixture = true
+	policySeed := alertPolicyFixture()
+	delete(policySeed, "name")
+	delete(policySeed, "futureNativeField")
+	checkID, _ := json.Marshal(last(id))
+	object(object(array(policySeed["conditions"])[0])["conditionThreshold"])["filter"] = uptimeMetricFilter + " AND metric.labels.check_id=" + string(checkID)
+	payload, _ = json.Marshal(policySeed)
+	req, err = http.NewRequestWithContext(ctx, "POST", endpoint+"/v3/projects/sample-project/alertPolicies", bytes.NewReader(payload))
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	response, err = client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, _ = io.ReadAll(response.Body)
+	response.Body.Close()
+	if response.StatusCode != 200 {
+		t.Fatal("native policy seed failed", response.StatusCode)
+	}
+	policyBatch, err := r.List(ctx, productRequest(r, alertPolicyType, "global"))
+	if err != nil || !policyBatch.Complete || len(policyBatch.Items) != 1 {
+		t.Fatal("native policy discovery failed", err)
+	}
+	policyItem := policyBatch.Items[0]
+	policy := asset.Asset{ID: "mock-policy", Identity: target.Identity, Normalized: policyItem.Normalized}
+	policy.Identity.NativeID, policy.Identity.NativeType = policyItem.NativeID, alertPolicyType
+	_, err = driver.Execute(ctx, request)
+	var blocked *contracts.ProviderCallError
+	if !errors.As(err, &blocked) || blocked.Provider.Code != "uptime_referenced_by_alert_policy" {
+		t.Fatal("native policy reference was not enforced", err)
+	}
+	for _, call := range calls {
+		if strings.HasPrefix(call, "DELETE ") {
+			t.Fatal("referenced check sent a mutation")
+		}
+	}
+	policyDriver, err := r.ResolveAction(ctx, "connection", policy)
+	if err != nil {
+		t.Fatal(err)
+	}
+	policyRequest := contracts.ActionRequest{Action: "delete", Asset: policy, IdempotencyKey: "mock-policy"}
+	policyResult, err := policyDriver.Execute(ctx, policyRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	policyWait, err := policyDriver.Wait(ctx, policyRequest, policyResult)
+	if err != nil || !policyWait.Done {
+		t.Fatal("native prerequisite still exists", policyWait, err)
+	}
+	request.PrerequisiteDeletions = []contracts.ActionImpact{{Asset: policy, ControllerID: target.ID, Delete: true}}
 	result, err := driver.Execute(ctx, request)
 	if err != nil || result.ProviderOperationID != "" || result.Data["phase"] != "uptime_delete" {
 		t.Fatal(result, err)
@@ -114,8 +191,8 @@ func TestUptimeIndependentMockGCP(t *testing.T) {
 			deletes++
 		}
 	}
-	if deletes != 1 {
+	if deletes != 2 || fixtureCalls == 0 {
 		t.Fatal("duplicate native deletion", calls)
 	}
-	t.Logf("Independent Google mockgcp native GET, configuration review, synchronous DELETE, JSON resume and 404 passed (%d calls); LIST remains unimplemented", len(calls))
+	t.Logf("Google mockgcp: %d forwarded Monitoring calls, %d explicitly modeled reverse-scope calls; native Uptime LIST and reverse lookup remain unimplemented. Verified unsupported-discovery write blocking, native AlertPolicy LIST/GET, reference blocking, policy DELETE/404, check DELETE, prerequisite-bound JSON resume and 404. No native IAM or reference-lock claim.", len(calls)-fixtureCalls, fixtureCalls)
 }

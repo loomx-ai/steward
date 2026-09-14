@@ -107,6 +107,16 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 		if err := checkListCompleteness(response.Data); err != nil {
 			return nil, err
 		}
+		if operation.ID == "monitoring.projects.alertPolicies.list" {
+			if _, err := cloudNatObjects(response.Data, "alertPolicies"); err != nil {
+				return nil, err
+			}
+			if raw, present := response.Data["nextPageToken"]; present {
+				if _, ok := raw.(string); !ok {
+					return nil, groupDenied("monitoring_policy_pagination_invalid")
+				}
+			}
+		}
 		if operation.ID == routePolicyList || operation.ID == namedSetList {
 			if raw, present := response.Data["result"]; present {
 				if _, ok := raw.([]any); !ok {

@@ -118,6 +118,14 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 				if r.URL.Host != host {
 					t.Fatalf("foreign native host: %s", r.URL)
 				}
+				if test.kind == uptimeType && r.Method == "GET" {
+					switch r.URL.RequestURI() {
+					case "/v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject?monitoredResourceContainer=projects%2F123456":
+						return apiResponse(r, 200, `{"metricsScopes":[{"name":"locations/global/metricsScopes/123456"}]}`), nil
+					case "/v3/projects/sample-project/alertPolicies?pageSize=100":
+						return apiResponse(r, 200, `{}`), nil
+					}
+				}
 				var response any = data
 				if r.URL.Path == "/"+test.version+"/projects/sample-project/locations" && r.Method == "GET" {
 					location := test.region

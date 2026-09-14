@@ -509,14 +509,26 @@ func TestGCPCloudNatHubContributorIsConnectedWithoutCascade(t *testing.T) {
 	}
 }
 
+type monitoringContributorRuntime struct {
+	serviceContributorRuntime
+	monitoringConnections []asset.ConnectionID
+}
+
+func (r *monitoringContributorRuntime) MonitoringDependencies(_ context.Context, id asset.ConnectionID) (governance.Contributor, error) {
+	r.monitoringConnections = append(r.monitoringConnections, id)
+	return emptyClusterContributor{}, nil
+}
 func TestGCPUptimeTargetContributorIsConnectedWithoutCascade(t *testing.T) {
-	runtime := &serviceContributorRuntime{}
+	runtime := &monitoringContributorRuntime{}
 	resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})
 	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP}
 	value := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: connection.ID, NativeType: "monitoring.googleapis.com/UptimeCheckConfig"}}
 	contributors, err := resolver.ResolveContributors(t.Context(), connection, []asset.Asset{value, value})
-	if err != nil || len(contributors) != 2 || len(runtime.connections) != 0 {
+	if err != nil || len(contributors) != 3 || len(runtime.connections) != 0 || !reflect.DeepEqual(runtime.monitoringConnections, []asset.ConnectionID{connection.ID}) {
 		t.Fatal(contributors, err, runtime.connections)
+	}
+	if _, err := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: &serviceContributorRuntime{}}).ResolveContributors(t.Context(), connection, []asset.Asset{value}); err == nil {
+		t.Fatal("missing native Monitoring dependency discovery was accepted")
 	}
 	if _, ok := contributors[1].(*gcp.UptimeTargets); !ok {
 		t.Fatalf("missing Uptime target contributor: %T", contributors[1])

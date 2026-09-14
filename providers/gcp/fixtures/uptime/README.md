@@ -3,9 +3,10 @@
 The retained Monitoring v3 Discovery fragment has revision `20260827`, full-source
 SHA-256 `e0bbea1b5a2a0b8af6f1a7528cffd239f27138891a1711417800963e4430db5e`.
 It already contains UptimeCheckConfig LIST/GET/DELETE and their native schemas.
-No source, generated catalog or module dependency change is needed (200 kinds,
-785 operations; catalog SHA-256
-`f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`).
+No additional source, generated catalog or module dependency change is needed.
+With the subsequent AlertPolicy fragment the catalog contains 201 kinds and 788
+operations, SHA-256
+`0d7ba03c095a042eb22b677e7e4cc82cda08bbea73d929732d7c0182fa95c58c`.
 
 ## Native contract and implementation
 
@@ -67,11 +68,16 @@ Google Config Connector mockgcp is pinned at
 `8b6f0584391a159b43ed7e5adf26580557872854` contains
 [uptimecheck.go](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/673a61419de1b8e4f7d26070ce20dde2daa61da8/mockgcp/mockmonitoring/uptimecheck.go),
 which implements CREATE/GET/UPDATE/DELETE and native defaults/redaction. LIST is
-inherited as unimplemented. The opt-in test verifies that LIST fails and then
-observes an individually read native resource, runs Steward deletion, serializes
-and resumes the receipt, and verifies native 404. No substitute LIST is injected.
-The unchanged handlers do not enforce real IAM or alert-policy references, and
-redact every header regardless of maskHeaders; those limits remain explicit.
+inherited as unimplemented. The opt-in test verifies that LIST fails and observes
+an individually read native resource. Reverse Metrics Scope lookup is also
+unimplemented: the test first proves that this gap blocks every DELETE, then
+explicitly models only that reverse response to exercise the remaining integration.
+No substitute Uptime LIST or AlertPolicy response is injected. Native AlertPolicy
+CREATE/LIST/GET supplies a referencing policy; Steward blocks the check, deletes
+the separately selected policy, verifies 404, then deletes the check and resumes
+its prerequisite-bound receipt. The unchanged handlers do not enforce real IAM or
+native alert-policy locks and redact every header regardless of maskHeaders;
+those limits remain explicit. This is a hybrid test, not complete cloud emulation.
 
 Reuse the retained [Monitoring harness](../metrics-scope/testdata/mockgcp/main.go)
 inside a temporary sparse checkout containing `mockgcp`, `pkg`, and
@@ -90,14 +96,16 @@ STEWARD_UPTIME_MOCKGCP_URL=http://127.0.0.1:PORT \
   go test ./providers/gcp -run '^TestUptimeIndependentMockGCP$' -count=1 -v
 ```
 
-The independent run passed against the unchanged pinned handlers (0.690s package
-time, seven Monitoring calls), including the expected failure of unimplemented
-LIST. The upstream tracked files remained unchanged.
+The original independent run, before incoming-scope verification, passed with
+seven Monitoring calls (0.690s package time). The current hybrid integration passed
+with 26 forwarded calls and six explicitly modeled reverse-scope calls (0.907s).
+Both runs verify that unimplemented Uptime LIST fails; tracked upstream handlers
+remain unchanged. See [the current evidence](../alert-policy/README.md#validation-of-the-incoming-dependency-milestone).
 
 Stop the temporary process and remove the checkout/binary after verification.
 All resources are in memory; OAuth and Resource Manager identity use test fixtures.
-Remaining target relationships, Monitoring groups, alert-policy dependency
-inventory/order and independent LIST or real-cloud acceptance remain unfinished.
+Remaining target relationships, Monitoring groups, Logging/MQL/PromQL/SQL reference
+analysis and independent LIST or real-cloud acceptance remain unfinished.
 
 
 ## Native target and network relationships
@@ -134,6 +142,7 @@ Server tests verify the contributor is installed once without a service cascade.
 
 This does not yet resolve App Engine/AWS targets, individual Kubernetes Services,
 group membership or the implicit legacy `isInternal=true`/empty-checker set.
-AlertPolicy inventory, condition parsing, native incoming-reference rechecks,
-independent LIST and full application/live acceptance remain open. References
-are observed dependencies, not an atomic guarantee against external target edits.
+AlertPolicy inventory and native-filter incoming-reference checks are now covered
+by the [Monitoring dependency evidence](../alert-policy/README.md#native-uptime-incoming-dependencies).
+Logging/MQL/PromQL/SQL analysis, independent Uptime LIST and full application/live acceptance
+remain open. Observed references cannot guarantee atomicity against external edits.

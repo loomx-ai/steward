@@ -41,6 +41,10 @@ type serviceLifecycleRuntime interface {
 	ServiceLifecycle(context.Context, asset.ConnectionID) (governance.Contributor, error)
 }
 
+type monitoringDependenciesRuntime interface {
+	MonitoringDependencies(context.Context, asset.ConnectionID) (governance.Contributor, error)
+}
+
 type lifecycleContributorResolver struct {
 	runtimes lifecycleRuntimeDirectory
 }
@@ -98,7 +102,15 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 		}
 		for _, value := range assets {
 			if value.Identity.Provider == asset.ProviderGCP && value.Identity.NativeType == "monitoring.googleapis.com/UptimeCheckConfig" {
-				contributors = append(contributors, gcp.NewUptimeTargets())
+				provider, ok := runtime.(monitoringDependenciesRuntime)
+				if !ok {
+					return nil, fmt.Errorf("GCP runtime does not expose Monitoring dependency discovery")
+				}
+				contributor, err := provider.MonitoringDependencies(ctx, connection.ID)
+				if err != nil {
+					return nil, err
+				}
+				contributors = append(contributors, gcp.NewUptimeTargets(), contributor)
 				break
 			}
 		}

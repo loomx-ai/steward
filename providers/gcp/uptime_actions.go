@@ -11,10 +11,10 @@ import (
 
 func (a *action) monitoringActionIdentity(request contracts.ActionRequest) error {
 	proof, err := hex.DecodeString(text(request.Asset.Normalized[monitoringReviewKey(request.Asset.Identity.NativeType)]))
-	if err != nil || len(proof) != 32 || request.Asset.ID == "" || request.Action != "delete" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || !gcpPartition(a.identity.Partition) || len(request.LifecycleImpacts) != 0 || len(request.PrerequisiteDeletions) != 0 {
+	if err != nil || len(proof) != 32 || request.Asset.ID == "" || request.Action != "delete" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || !gcpPartition(a.identity.Partition) || len(request.LifecycleImpacts) != 0 {
 		return groupDenied("monitoring_action_review_changed")
 	}
-	return nil
+	return a.monitoringPrerequisites(request)
 }
 
 func (a *action) monitoringReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
@@ -42,6 +42,9 @@ func (a *action) monitoringReadback(ctx context.Context, request contracts.Actio
 
 func (a *action) monitoringPreflight(ctx context.Context, request contracts.ActionRequest) (contracts.PreflightResult, error) {
 	read, err := a.monitoringReadback(ctx, request)
+	if err == nil && read.Exists {
+		err = a.monitoringIncoming(ctx, request)
+	}
 	return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists}, err
 }
 
@@ -50,7 +53,11 @@ func uptimePhase(request contracts.ActionRequest) map[string]any {
 	if request.Asset.Identity.NativeType == alertPolicyType {
 		phase = "alert_policy_delete"
 	}
-	return map[string]any{"phase": phase, "review": firewallDigest(map[string]any{"asset_id": request.Asset.ID, "identity": request.Asset.Identity, "configuration": request.Asset.Normalized[monitoringReviewKey(request.Asset.Identity.NativeType)], "action": request.Action, "idempotency_key": request.IdempotencyKey})}
+	review := map[string]any{"asset_id": request.Asset.ID, "identity": request.Asset.Identity, "configuration": request.Asset.Normalized[monitoringReviewKey(request.Asset.Identity.NativeType)], "action": request.Action, "idempotency_key": request.IdempotencyKey}
+	if len(request.PrerequisiteDeletions) != 0 {
+		review["prerequisites"] = request.PrerequisiteDeletions
+	}
+	return map[string]any{"phase": phase, "review": firewallDigest(review)}
 }
 
 func (a *action) executeMonitoring(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
@@ -61,6 +68,19 @@ func (a *action) executeMonitoring(ctx context.Context, request contracts.Action
 	}
 	if !read.Exists {
 		return contracts.ActionResult{}, nil
+	}
+	if a.kind.NativeType == uptimeType {
+		if err := a.monitoringIncoming(ctx, request); err != nil {
+			return contracts.ActionResult{}, err
+		}
+		// Incoming reads can take many pages; recheck the target immediately before DELETE.
+		read, err = a.monitoringReadback(ctx, request)
+		if err != nil {
+			return contracts.ActionResult{}, err
+		}
+		if !read.Exists {
+			return contracts.ActionResult{}, nil
+		}
 	}
 	response, err := a.client.requestResult(ctx, "DELETE", a.endpoint, nil, nil)
 	if isNotFound(err) {
