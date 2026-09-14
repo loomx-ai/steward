@@ -67,26 +67,31 @@ func (c *client) billingBudgetData(parent string, data map[string]any) ([]string
 }
 
 func (c *client) billingRead(ctx context.Context, operation, name string) (map[string]any, error) {
+	result, err := c.billingReadResult(ctx, operation, name)
+	return result.Data, contracts.DependencyReadError(err)
+}
+
+func (c *client) billingReadResult(ctx context.Context, operation, name string) (contracts.InvocationResult, error) {
 	metadata, err := providerData()
 	if err != nil {
-		return nil, err
+		return contracts.InvocationResult{}, err
 	}
 	op, ok := metadata.catalog.Operation(operation)
 	if !ok {
-		return nil, groupDenied("billing_operation_missing")
+		return contracts.InvocationResult{}, groupDenied("billing_operation_missing")
 	}
 	bound, err := catalog.BindREST(op, map[string]any{"name": name})
 	if err != nil {
-		return nil, err
+		return contracts.InvocationResult{}, err
 	}
-	data, err := c.request(ctx, bound.Method, bound.URL, nil)
+	result, err := c.requestResult(ctx, bound.Method, bound.URL, nil, nil)
 	if err != nil {
-		return nil, contracts.DependencyReadError(err)
+		return result, err
 	}
-	if text(data["name"]) != name {
-		return nil, groupDenied("billing_identity_changed")
+	if text(result.Data["name"]) != name {
+		return contracts.InvocationResult{}, groupDenied("billing_identity_changed")
 	}
-	return data, nil
+	return result, nil
 }
 
 func (c *client) billingAccounts(ctx context.Context) (map[string]map[string]any, error) {
@@ -133,7 +138,7 @@ func (c *client) billingBudgets(ctx context.Context, parent string) (map[string]
 
 // Visibility-filtered accounts only establish positive references. Even a stable
 // empty result cannot prove global budget absence or authorize email deletion.
-func (c *client) visibleBillingBudgetChannels(ctx context.Context) (map[string][]string, error) {
+func (c *client) visibleBillingBudgets(ctx context.Context) (map[string]map[string]any, error) {
 	accounts, err := c.billingAccounts(ctx)
 	if err != nil {
 		return nil, err
@@ -143,7 +148,7 @@ func (c *client) visibleBillingBudgetChannels(ctx context.Context) (map[string][
 		ids = append(ids, id)
 	}
 	slices.Sort(ids)
-	result := map[string][]string{}
+	result := map[string]map[string]any{}
 	for _, account := range ids {
 		live, err := c.billingRead(ctx, "cloudbilling.billingAccounts.get", account)
 		if err != nil {
@@ -169,14 +174,14 @@ func (c *client) visibleBillingBudgetChannels(ctx context.Context) (map[string][
 			if err != nil {
 				return nil, err
 			}
-			refs, err := c.billingBudgetData(account, budget)
+			_, err = c.billingBudgetData(account, budget)
 			if err != nil {
 				return nil, err
 			}
 			if firewallDigest(budgets[name]) != firewallDigest(budget) {
 				return nil, groupDenied("billing_budget_changed")
 			}
-			result["//billingbudgets.googleapis.com/"+name] = refs
+			result["//billingbudgets.googleapis.com/"+name] = budget
 		}
 		again, err := c.billingBudgets(ctx, account)
 		if err != nil {

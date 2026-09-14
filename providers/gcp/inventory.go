@@ -125,7 +125,7 @@ func (r *Runtime) projectProperties(item *contracts.InventoryItem) {
 }
 
 func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource && request.Source != organizationInventorySource && request.Source != identityInventorySource && request.Source != securityBillingSource && request.Source != securityServiceSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource && request.Source != organizationInventorySource && request.Source != identityInventorySource && request.Source != billingBudgetSource && request.Source != securityBillingSource && request.Source != securityServiceSource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported GCP inventory source")
 	}
 	c, err := r.resolve(ctx, request.ConnectionID)
@@ -134,6 +134,9 @@ func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeProject && request.Scope.NativeID != c.project && request.Scope.NativeID != c.number {
 		return contracts.InventoryBatch{}, fmt.Errorf("GCP inventory belongs to another project")
+	}
+	if request.Source == billingBudgetSource {
+		return r.listBillingBudgets(ctx, c, request)
 	}
 	if request.Source == identityInventorySource {
 		return r.listIdentityGroups(ctx, c, request)

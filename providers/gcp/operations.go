@@ -190,6 +190,19 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource identity")
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
+	if kind.NativeType == billingBudgetType {
+		if _, _, err := billingBudgetName(nativeID); err != nil {
+			return catalog.Operation{}, nil, err
+		}
+		if method != "GET" {
+			return catalog.Operation{}, nil, groupDenied("billing_budget_method_unsupported")
+		}
+		operation, ok := metadata.catalog.Operation("billingbudgets.billingAccounts.budgets.get")
+		if !ok {
+			return catalog.Operation{}, nil, groupDenied("billing_operation_missing")
+		}
+		return operation, map[string]any{"name": name}, nil
+	}
 	if isIdentityGroup(kind.NativeType) {
 		return identityResourceOperation(metadata, kind.NativeType, nativeID, method)
 	}

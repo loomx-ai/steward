@@ -19,6 +19,7 @@ func safePayload(value map[string]any) map[string]any {
 	redact = func(value any) {
 		switch object := value.(type) {
 		case map[string]any:
+			redactBillingBudgetPayload(object)
 			redactAlertPolicyPayload(object)
 			redactNotificationChannelPayload(object)
 			if check, ok := object["httpCheck"].(map[string]any); ok {

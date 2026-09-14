@@ -24,7 +24,11 @@ func TestNotificationChannelDeleteIndependentMockGCP(t *testing.T) {
 func TestBillingBudgetIndependentMockGCP(t *testing.T) {
 	testNotificationChannelIndependentMockGCP(t, "email", true)
 }
+func TestBillingBudgetInventoryIndependentMockGCP(t *testing.T) {
+	testNotificationChannelIndependentMockGCP(t, "email", true, true)
+}
 func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, billing ...bool) {
+	inventoryBudget := len(billing) > 1 && billing[1]
 	withBudget := len(billing) != 0 && billing[0]
 	endpoint := os.Getenv("STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL")
 	if endpoint == "" {
@@ -83,21 +87,34 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, bi
 		}
 	})
 	budgetName := ""
+	budgetExists := false
 	if withBudget {
-		account := native("POST", "/v1/billingAccounts", billingAccountFixture())
-		if account["name"] != testBillingAccount {
+		account := map[string]any{"name": testBillingAccount}
+		if !inventoryBudget {
+			account = native("POST", "/v1/billingAccounts", billingAccountFixture())
+		} else {
+			// This case may run alone. The mock has no account DELETE; create through
+			// a dedicated account identity when sharing the harness with the prior case.
+			account = native("POST", "/v1/billingAccounts", map[string]any{"name": "billingAccounts/ABCDEF-012345-678901", "displayName": "Inventory account"})
+		}
+		if (!inventoryBudget && account["name"] != testBillingAccount) || (inventoryBudget && account["name"] != "billingAccounts/ABCDEF-012345-678901") {
 			t.Fatal("wrong native billing account")
 		}
 		budget := billingBudgetFixture()
 		delete(budget, "name")
 		delete(budget, "etag")
 		object(budget["notificationsRule"])["monitoringNotificationChannels"] = []any{name}
-		createdBudget := native("POST", "/v1/"+testBillingAccount+"/budgets", budget)
+		createdBudget := native("POST", "/v1/"+text(account["name"])+"/budgets", budget)
 		budgetName = text(createdBudget["name"])
-		if !strings.HasPrefix(budgetName, testBillingAccount+"/budgets/") {
+		if !strings.HasPrefix(budgetName, text(account["name"])+"/budgets/") {
 			t.Fatal("wrong native budget identity")
 		}
-		t.Cleanup(func() { native("DELETE", "/v1/"+budgetName, nil) })
+		budgetExists = true
+		t.Cleanup(func() {
+			if budgetExists {
+				native("DELETE", "/v1/"+budgetName, nil)
+			}
+		})
 	}
 	calls := []string{}
 	billingFixtureCalls := 0
@@ -152,6 +169,28 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, bi
 	b, _ := json.Marshal(result)
 	if err != nil || strings.Contains(string(b), "PRIVATE_CHANNEL") {
 		t.Fatal("private native Invoke response", err)
+	}
+	if inventoryBudget {
+		req := billingInventoryRequest(r)
+		batch, err := r.List(t.Context(), req)
+		if err != nil || !batch.Complete || len(batch.Items) != 1 || batch.Items[0].NativeID != "//billingbudgets.googleapis.com/"+budgetName {
+			t.Fatal(batch, err)
+		}
+		before := batch.Items[0].Normalized[billingBudgetReview]
+		req.KnownNativeIDs = []string{batch.Items[0].NativeID}
+		native("PATCH", "/v1/"+budgetName+"?updateMask=displayName", map[string]any{"name": budgetName, "displayName": "Updated native budget"})
+		batch, err = r.List(t.Context(), req)
+		if err != nil || len(batch.Items) != 1 || batch.Items[0].Name != "Updated native budget" || batch.Items[0].Normalized[billingBudgetReview] == before {
+			t.Fatal(batch, err)
+		}
+		native("DELETE", "/v1/"+budgetName, nil)
+		budgetExists = false
+		batch, err = r.List(t.Context(), req)
+		if err != nil || !batch.Complete || len(batch.Items) != 0 || len(batch.AbsentNativeIDs) != 1 || batch.AbsentNativeIDs[0] != req.KnownNativeIDs[0] {
+			t.Fatal(batch, err)
+		}
+		t.Logf("Native budget inventory, changed configuration and known-budget DELETE/GET-404 reconciliation passed (%d forwarded GETs)", len(calls))
+		return
 	}
 	policySeed := alertPolicyFixture()
 	delete(policySeed, "name")

@@ -50,6 +50,8 @@ func (r *Runtime) CredentialSchemas() []contracts.CredentialSchema {
 }
 func (r *Runtime) InventorySources() []contracts.InventorySource {
 	return []contracts.InventorySource{
+		// Billing visibility can change; only each saved budget's own GET proves absence.
+		{Name: billingBudgetSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeGlobal}, KindSpecific: true, ReconcileKnownIDs: true},
 		{Name: inventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeRegion, asset.ScopeGlobal}, NetworkClosure: true},
 		{Name: productInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, KindSpecific: true, NetworkClosure: true},
 		// Native folder searches are filtered by caller visibility. Losing access

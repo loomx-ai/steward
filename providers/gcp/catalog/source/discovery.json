@@ -138224,6 +138224,24 @@
       "scopeKinds": [
         "global"
       ]
+    },
+    {
+      "class": "billing.budget",
+      "displayName": "Cloud Billing budget",
+      "nativeType": "billingbudgets.googleapis.com/Budget",
+      "rest": {
+        "collection": "budgets",
+        "delete_operations": [],
+        "list_operations": [
+          "billingbudgets.billingAccounts.budgets.list"
+        ],
+        "read_operations": [
+          "billingbudgets.billingAccounts.budgets.get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
     }
   ]
 }

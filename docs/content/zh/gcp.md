@@ -406,3 +406,19 @@ AlertPolicy 扫描使用项目级原生 LIST 和 GET，也包含禁用或无效�
 `monitoring.alertPolicies.delete` 权限。条件引用解析及告警先于 Uptime 的自动顺序
 仍待补齐；目前请先选择并完成关联告警策略的删除，再删除其 Uptime 检查。参阅
 [原生删除接口](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies/delete)。
+
+
+## Cloud Billing 预算
+
+预算扫描覆盖连接凭据有权查看的账单账号，包括已关闭账号。资产展示实际账单账号、
+预算金额、阈值和所有权范围，并归入连接的全局清单；连接所选项目并非预算的所有者。
+通知投递配置和费用筛选条件不会写入资产配置，API 输出中的相关字段也会脱敏。
+
+预算从可见清单中消失不会被视为已删除。Steward 会逐项读取历史预算，并确认其账单
+账号仍可正常读取。只有该预算自身返回 404 才能确认不存在；权限错误会保留历史记录。
+新扫描且配置匹配的预算可解析通知渠道依赖，但预算目前没有清理动作，邮件渠道清理
+也会继续阻断，直到消费方范围得到完整确认。
+
+此路径需要账单账号可见权限以及 `billing.accounts.get`、`billing.budgets.list`
+和 `billing.budgets.get`。只有项目级预算权限、无法查看账单账号的情况尚未覆盖。
+参阅[原生预算访问控制要求](https://docs.cloud.google.com/billing/docs/how-to/budget-api-access-control)。

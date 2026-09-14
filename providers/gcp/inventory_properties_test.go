@@ -171,6 +171,18 @@ func TestGCPChangedPropertyPathsMatchPinnedNativeSchemas(t *testing.T) {
 					property := definition.Fields[field]
 					path := property.Path
 					switch {
+					case kind == billingBudgetType && path == "billing_account":
+						// The account is the parent encoded in native Budget.name,
+						// not an extra field invented in the native response schema.
+						nameSchema := nativePropertySchema(schemas, root, "name")
+						if property.Type != "string" || field != "billingAccount" || nameSchema["type"] != "string" || object(root["properties"])[path] != nil || object(root["properties"])[field] != nil {
+							t.Fatal("invalid derived budget account property", property, nameSchema)
+						}
+						name, parent, err := billingBudgetName("//billingbudgets.googleapis.com/" + text(billingBudgetFixture()["name"]))
+						if err != nil || name != testBillingBudget || parent != text(billingAccountFixture()["name"]) {
+							t.Fatal("budget property is not its native account parent", name, parent, err)
+						}
+						continue
 					case path == "project_id" || path == "zone_id":
 						if property.Type != "string" {
 							t.Fatal("derived scope must be a string", field, property)

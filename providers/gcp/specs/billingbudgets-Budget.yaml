@@ -1,0 +1,49 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: billingbudgets.googleapis.com/Budget
+  class: billing.budget
+presentation:
+  displayNames:
+    en-US: Cloud Billing budget
+    zh-CN: 云账单预算
+scope:
+  kind: global
+discovery:
+  source: billing-budgets-visible
+  list:
+    operation: billingbudgets.billingAccounts.budgets.list
+    itemsPath: budgets
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: billingbudgets.billingAccounts.budgets.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  billingAccount:
+    path: billing_account
+    type: string
+  ownershipScope:
+    path: ownershipScope
+    type: string
+  amount:
+    path: amount
+    type: object
+  thresholdRules:
+    path: thresholdRules
+    type: array
+extensions:
+  hook: gcp.resource

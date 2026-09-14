@@ -17,8 +17,8 @@ cannot bypass it. Non-email channel refreshes require no Billing permissions.
 ## Native contracts and provenance
 
 Selected native operations are `cloudbilling.billingAccounts.list/get` and
-`billingbudgets.billingAccounts.budgets.list/get`. No Billing resource rule,
-mutation, IAM change or notification-send operation is added.
+`billingbudgets.billingAccounts.budgets.list/get`. The inventory extension below adds a Budget resource rule; no Billing mutation,
+IAM change or notification-send operation is added.
 
 - [Cloud Billing Discovery v1](https://cloudbilling.googleapis.com/$discovery/rest?version=v1),
   revision `20260904`, downloaded document SHA-256
@@ -31,7 +31,8 @@ mutation, IAM change or notification-send operation is added.
 
 The adjacent schema fixtures retain native schema objects and transitive `$ref`
 closure unchanged. Tests compile these independently from the generated catalog.
-The catalog retains 202 resource rules and adds four read methods (799 total).
+The read foundation added four methods; the inventory extension brings the catalog
+to 203 resource rules and 799 methods.
 
 ## Verification
 
@@ -78,3 +79,52 @@ The native Budget API also omits some fields available only in Cloud Console.
 Repeated reads detect observed drift but do not provide an atomic cross-service
 snapshot. Full account-scope evidence, Budget lifecycle support and real-cloud
 acceptance remain open; this milestone does not authorize email deletion.
+
+
+## Budget asset inventory and saved-identity reconciliation
+
+Budget now has an explicit bilingual `billing.budget` resource specification and
+its own `billing-budgets-visible` source. It is indexed globally under the selected
+connection for navigation, but retains its real billing-account identity and does
+not claim that the selected project owns the budget. Scans expose name, account,
+amount, thresholds and ownership scope. Delivery rules and spending filters are
+redacted from escaping API payloads and omitted from stored asset configuration;
+the complete native configuration contributes to the review fingerprint.
+
+The source is not authoritative over list omissions. It uses the shared
+`ReconcileKnownIDs` contract and rereads saved budgets outside the current visible
+index. Each final budget read is bracketed by successful, matching account GETs.
+Only a saved budget omitted from the index whose own GET returns 404 can appear
+in `AbsentNativeIDs`. A listed budget returning 404 is an inconsistent snapshot
+and fails the scan. Missing/denied/changed accounts and failed budget reads return
+no complete batch or partial absence claims. Successful known-budget reads retain
+native request IDs, including the own-404 reconciliation response when available.
+
+A freshly scanned Budget whose configuration matches native discovery resolves
+the channel's concrete reference to an explicit Budget-before-channel dependency.
+It does not automatically select the budget. Stale, closed, foreign-connection or
+missing budget assets remain unresolved; ambiguous duplicates fail the graph.
+The separate email-channel scope barrier remains in either case.
+
+Retained protocol tests exercise source/scope validation, invalid and duplicate
+known identities, unrelated metadata, empty indexes, hidden-but-readable budgets,
+parent denial/404, child denial/404, final-read drift, redaction, query projection,
+read-only action boundaries and concrete graph resolution. A real SQLite scan
+worker closes/reopens the database between successful, hidden, denied, missing,
+deleted and reappeared states. It preserves prior observations on failure, closes
+only the exact saved budget after own 404, preserves searchable account metadata
+and reuses identity when the budget reappears.
+
+`TestBillingBudgetInventoryIndependentMockGCP` reuses the unmodified pinned Google
+backend. Native account/Budget creation, Budget LIST/GET, native PATCH and native
+DELETE/GET-404 verify inventory update and saved-identity reconciliation. Running
+all four channel/Budget independent cases passed; the inventory case forwarded
+46 GETs with two mock billing accounts visible. No runtime Billing writes or
+fabricated Billing responses are used. The mock's IAM/paging/concurrency limits
+and beta-proto v1 adaptation remain unchanged.
+
+Budget deletion remains a subsequent lifecycle step, requiring explicit reviewed
+scope and mutation/restart safeguards; the current Budget rule has no action.
+Project-only budget permissions without account visibility are not covered by
+this account-scoped inventory path. Neither indexed budgets nor successful
+reconciliation establish complete external consumer coverage for email deletion.

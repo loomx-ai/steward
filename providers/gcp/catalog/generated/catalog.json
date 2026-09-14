@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "3af1d34fa2e13a323c1809f97d5795c088e41612f5511c6d5e9ddc2adbf6c09e",
+    "checksum": "958c5dee1c6322aabe89057cf9ed72e882b777b15e24ea7b8abac394cba56319",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "52ae9ae3a1768e6c5c7da722f1fd09073dc8c3c8498b5c5d8b60ae0409e4e191",
+  "content_checksum": "5c95a88c427a771741c173692c4b9e1fd7ae923f33ca0e7920bc397161de28b7",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -114765,6 +114765,23 @@
         ],
         "list_operations": [
           "bigtableadmin.projects.instances.tables.list"
+        ]
+      }
+    },
+    {
+      "native_type": "billingbudgets.googleapis.com/Budget",
+      "class": "billing.budget",
+      "display_name": "Cloud Billing budget",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "budgets",
+        "read_operations": [
+          "billingbudgets.billingAccounts.budgets.get"
+        ],
+        "list_operations": [
+          "billingbudgets.billingAccounts.budgets.list"
         ]
       }
     },

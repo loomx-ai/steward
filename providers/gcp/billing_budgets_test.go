@@ -187,7 +187,7 @@ func TestBillingBudgetSnapshot(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			refs, err := c.visibleBillingBudgetChannels(t.Context())
+			refs, err := c.visibleBillingBudgets(t.Context())
 			good := mode == "present" || mode == "empty" || mode == "paged"
 			if (err == nil) != good {
 				t.Fatal(mode, refs, err)
@@ -210,7 +210,8 @@ func TestBillingBudgetSnapshot(t *testing.T) {
 				}
 				return
 			}
-			if len(refs) != 1 || len(refs["//billingbudgets.googleapis.com/"+testBillingBudget]) != 1 || refs["//billingbudgets.googleapis.com/"+testBillingBudget][0] != notificationChannelID {
+			channels, err := c.billingBudgetData(testBillingAccount, refs["//billingbudgets.googleapis.com/"+testBillingBudget])
+			if err != nil || len(refs) != 1 || len(channels) != 1 || channels[0] != notificationChannelID {
 				t.Fatal(refs)
 			}
 			wantLists := 2
@@ -325,12 +326,17 @@ func TestBillingBudgetAllAccountsAndPages(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	refs, err := c.visibleBillingBudgetChannels(t.Context())
+	refs, err := c.visibleBillingBudgets(t.Context())
 	if err != nil || len(refs) != 4 || calls != 20 {
 		t.Fatal(refs, calls, err)
 	}
-	for _, channels := range refs {
-		if len(channels) != 1 || channels[0] != notificationChannelID {
+	for id, budget := range refs {
+		_, parent, err := billingBudgetName(id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		channels, err := c.billingBudgetData(parent, budget)
+		if err != nil || len(channels) != 1 || channels[0] != notificationChannelID {
 			t.Fatal(channels)
 		}
 	}

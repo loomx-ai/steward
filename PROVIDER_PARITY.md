@@ -6203,3 +6203,26 @@ cleanup, durable account-scope coverage, Budget lifecycle, external writer safet
 and real-cloud acceptance remain unfinished. Catalog now has 202 resource rules
 and 799 methods; existing native fragments and rules are unchanged. No acceptance
 criterion is closed. See [Billing Budget evidence](providers/gcp/fixtures/billing-budget/README.md).
+
+### GCP Billing Budget inventory and saved-identity milestone
+
+Added a Budget resource rule with a dedicated non-authoritative visible-account
+source. Native snapshots and saved-budget GETs preserve real account identities,
+queryable amounts/thresholds and full configuration fingerprints. Delivery/filter
+payloads are redacted. The source reuses shared known-ID reconciliation: only the
+saved budget's own 404 between matching successful account reads establishes its
+absence. Account loss, denied reads and inconsistent snapshots preserve history.
+
+Freshly scanned matching budgets resolve concrete channel references to explicit
+Budget-before-channel edges without automatic selection. Stale or ambiguous
+identities retain conservative graph behavior and the email scope barrier stays.
+Real SQLite restart tests cover hidden visibility, failed reads, exact closure,
+queryability and reappearance. The pinned independent backend verifies native
+inventory, update and deletion/404 reconciliation; existing channel lifecycle
+and Budget dependency cases also pass. Source metadata is unchanged; catalog now
+contains 203 resource rules and 799 methods.
+
+Bilingual capability/permission documentation describes the actual read scope.
+Budget cleanup, project-only budget discovery, complete account/consumer coverage,
+external-writer coordination and real-cloud acceptance remain open. No full-goal
+acceptance criterion is closed by this milestone.

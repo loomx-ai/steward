@@ -85,7 +85,7 @@ func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Con
 		}
 	}
 	if len(emails) != 0 {
-		budgets, err := h.client.visibleBillingBudgetChannels(ctx)
+		budgets, err := h.client.visibleBillingBudgets(ctx)
 		if err != nil {
 			return result, err
 		}
@@ -99,7 +99,29 @@ func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Con
 			// barrier even when the currently visible budgets no longer mention us.
 			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: channel.Identity.Provider, ConnectionID: channel.Identity.ConnectionID, ControllerID: channel.ID, NativeType: notificationChannelType, NativeID: channel.Identity.NativeID, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{"reason": "notification_channel_budget_scope_unverified", "source": monitoringDependencySource}})
 			for _, id := range ids {
-				if slices.Contains(budgets[id], channel.Identity.NativeID) {
+				name, parent, err := billingBudgetName(id)
+				if err != nil {
+					return result, err
+				}
+				refs, err := h.client.billingBudgetData(parent, budgets[id])
+				if err != nil {
+					return result, err
+				}
+				if slices.Contains(refs, channel.Identity.NativeID) {
+					budget, found, err := findManagedAsset(assets, channel, billingBudgetType, id)
+					if err != nil {
+						return result, err
+					}
+					if found && budget.ClosedAt == nil && text(budget.Normalized[billingBudgetReview]) == firewallDigest(budgets[id]) {
+						result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: channel.ID, TargetAssetID: budget.ID, Type: graph.RelationshipDependsOn, Source: monitoringDependencySource, Confidence: 1, Evidence: map[string]any{
+							graph.RelationshipEvidenceRequiredDeletion:   true,
+							graph.RelationshipEvidenceAutomaticSelection: false,
+							graph.RelationshipEvidenceAuthority:          string(graph.AuthorityAuthoritative),
+							graph.RelationshipEvidenceDeletionOrder:      graph.DeletionOrderTargetBeforeSource,
+							"native_budget":                              name, "configuration": budget.Normalized[billingBudgetReview],
+						}})
+						continue
+					}
 					result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: channel.Identity.Provider, ConnectionID: channel.Identity.ConnectionID, ControllerID: channel.ID, NativeType: billingBudgetType, NativeID: id, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{"reason": "notification_channel_referenced_by_budget", "source": monitoringDependencySource}})
 				}
 			}

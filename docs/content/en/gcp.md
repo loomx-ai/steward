@@ -512,3 +512,25 @@ Required permissions are `monitoring.alertPolicies.list`,
 reference extraction and automatic alert-before-Uptime ordering remain unfinished;
 select and finish the associated policy deletion before deleting its Uptime check.
 See the [native deletion contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies/delete).
+
+
+## Cloud Billing budgets
+
+Budget scans cover the billing accounts visible to the connection's credential,
+including closed accounts. Assets show their real billing account, amount,
+thresholds and ownership scope. They appear in the connection's global inventory;
+the connection's selected project is not their owner. Notification delivery
+settings and spending filters are excluded from stored asset configuration and
+redacted from API output.
+
+A budget disappearing from a visible list is not treated as deleted. Steward
+rereads saved budgets and confirms their accounts remain readable. Only the saved
+budget's own 404 establishes its absence; permission errors preserve history.
+Fresh budget observations can resolve notification-channel dependencies, but
+budgets currently have no cleanup action and email-channel cleanup remains blocked
+until consumer scope is fully established.
+
+This path requires billing-account visibility, `billing.accounts.get`,
+`billing.budgets.list` and `billing.budgets.get`. Project-only budget permissions
+without account visibility are not yet covered. See the
+[native Budget access-control requirements](https://docs.cloud.google.com/billing/docs/how-to/budget-api-access-control).
