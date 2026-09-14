@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sort"
 	"strconv"
@@ -102,6 +103,11 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 		}
 		response, err := c.requestResult(ctx, bound.Method, bound.URL, nil, bound.Body)
 		if err != nil {
+			// Only first-page account-index denial can select project-only Budget
+			// inventory. A denied continuation must preserve the failed snapshot.
+			if operation.ID == billingAccountsList && len(seen) == 0 && text(parameters["pageToken"]) == "" && identityPermissionDenied(err) {
+				err = errors.Join(err, errBillingAccountIndexDenied)
+			}
 			return nil, err
 		}
 		if err := checkListCompleteness(response.Data); err != nil {

@@ -125,8 +125,7 @@ and beta-proto v1 adaptation remain unchanged.
 
 Budget deletion was subsequently added with the review and restart safeguards
 described below.
-Project-only budget permissions without account visibility are not covered by
-this account-scoped inventory path. Neither indexed budgets nor successful
+The account-scoped path is complemented by the project-permission path below. Neither indexed budgets nor successful
 reconciliation establish complete external consumer coverage for email deletion.
 
 
@@ -181,3 +180,50 @@ The API has no conditional DELETE and omits some Console-only settings. External
 changes can race the last read, and masked/unexposed fields cannot be compared.
 Budget lifecycle support does not establish complete email-channel consumer scope:
 email deletion, project-only discovery and real-cloud acceptance remain open.
+
+
+## Project-permission inventory and cleanup
+
+Inventory additionally reads the selected project's native `getBillingInfo` and
+pages Budget LIST with `scope=projects/{project_id}`. Every returned budget must
+have exactly the selected project (ID or number) in `budgetFilter.projects`.
+LIST/GET/re-LIST and repeated project information bind the snapshot. Initial
+account-index 403 may use this successfully read project scope; malformed or
+failed visible-account reads cannot silently fall back. Account and project
+snapshots must agree for overlapping identities; account proofs take precedence.
+
+Project observations retain separate project-configuration and project-identity
+proofs, never an invented account-configuration proof. Known project budgets
+outside the index still need their own GET and matching project billing context;
+relinked/disconnected projects cannot close old-account budgets. Cleanup verifies
+single-project scope, both proofs and current association before DELETE. Persisted
+receipts include the project review; account receipts retain their prior format.
+Parent failure after own 404 still fails readback. No new credential option or
+account/project mutation is added. The native account index and the project path
+remain non-authoritative over omissions; email coverage remains unresolved.
+
+The added method and `ProjectBillingInfo` schema are unchanged fragments of the
+pinned Cloud Billing document above. Catalog now has 203 rules and 801 methods.
+[Project billing information](https://docs.cloud.google.com/billing/docs/reference/rest/v1/projects/getBillingInfo),
+[Budget scope](https://docs.cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets/list)
+and [access control](https://docs.cloud.google.com/billing/docs/how-to/budget-api-access-control)
+provide the native contract. Project read permissions are
+`resourcemanager.projects.get` and `billing.resourcebudgets.read`; project cleanup
+additionally requires `billing.resourcebudgets.write`.
+
+Protocol cases cover denied/empty account visibility, paging, duplicate/partial
+responses, wrong identities, non-single-project filters, two-scope drift, native
+parent denial/404/relinking, failed late parent reads and saved-budget own 404.
+Independent native schema compilation checks ProjectBillingInfo. Real SQLite
+inventory and cleanup tests close/reopen the database through observation,
+permission loss, exact absence, reappearance, execution and final tombstone.
+
+`TestBillingBudgetProjectIndependentMockGCP` uses the same pinned, unmodified
+Google backend and a native project billing association. Runtime project GET,
+scoped Budget LIST/GET, DELETE and restarted readback are forwarded unchanged.
+Three explicitly synthetic account-index 403s select the project-permission path.
+The backend **does not enforce IAM or the LIST scope filter**; a single-project
+native fixture verifies request compatibility and lifecycle only. Protocol tests
+provide the scope/failure evidence. No real-cloud evidence or complete consumer
+coverage is claimed. The shared harness only routes project billing endpoints to
+the existing native Billing service.

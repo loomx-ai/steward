@@ -133368,7 +133368,7 @@
                 "type": "string"
               },
               "writerIdentity": {
-                "description": "Output only. An IAM identity—a service account or group—under which Cloud Logging writes the exported log entries to the sink's destination. This field is either set by specifying custom_writer_identity or set automatically by sinks.create and sinks.update based on the value of unique_writer_identity in those methods.Until you grant this identity write-access to the destination, log entry exports from this sink will fail. For more information, see Manage access to projects, folders, and organizations (https://docs.cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource). Consult the destination service's documentation to determine the appropriate IAM roles to assign to the identity.Sinks that have a destination that is a log bucket in the same project as the sink cannot have a writer_identity and no additional permissions are required.",
+                "description": "Output only. An IAM identity\u2014a service account or group\u2014under which Cloud Logging writes the exported log entries to the sink's destination. This field is either set by specifying custom_writer_identity or set automatically by sinks.create and sinks.update based on the value of unique_writer_identity in those methods.Until you grant this identity write-access to the destination, log entry exports from this sink will fail. For more information, see Manage access to projects, folders, and organizations (https://docs.cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource). Consult the destination service's documentation to determine the appropriate IAM roles to assign to the identity.Sinks that have a destination that is a log bucket in the same project as the sink cannot have a writer_identity and no additional permissions are required.",
                 "readOnly": true,
                 "type": "string"
               }
@@ -134181,6 +134181,74 @@
             "type": "object",
             "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
             "id": "GoogleProtobufEmpty"
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://cloudbilling.googleapis.com/$discovery/rest?version=v1",
+      "source_sha256": "14862c5e884d2f899280acdba70c187055a0d30052c10091b0428a2e92e65b25",
+      "document": {
+        "name": "cloudbilling",
+        "version": "v1",
+        "revision": "20260904",
+        "rootUrl": "https://cloudbilling.googleapis.com/",
+        "servicePath": "",
+        "methods": {
+          "cloudbilling.projects.getBillingInfo": {
+            "httpMethod": "GET",
+            "description": "Gets the billing information for a project. The current authenticated user must have the `resourcemanager.projects.get` permission for the project, which can be granted by assigning the [Project Viewer](https://cloud.google.com/iam/docs/understanding-roles#predefined_roles) role.",
+            "parameters": {
+              "name": {
+                "required": true,
+                "location": "path",
+                "description": "Required. The resource name of the project for which billing information is retrieved. For example, `projects/tokyo-rain-123`.",
+                "pattern": "^projects/[^/]+$",
+                "type": "string"
+              }
+            },
+            "id": "cloudbilling.projects.getBillingInfo",
+            "path": "v1/{+name}/billingInfo",
+            "response": {
+              "$ref": "ProjectBillingInfo"
+            },
+            "flatPath": "v1/projects/{projectsId}/billingInfo",
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-billing",
+              "https://www.googleapis.com/auth/cloud-billing.readonly",
+              "https://www.googleapis.com/auth/cloud-platform"
+            ],
+            "parameterOrder": [
+              "name"
+            ]
+          }
+        },
+        "schemas": {
+          "ProjectBillingInfo": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "readOnly": true,
+                "description": "Output only. The resource name for the `ProjectBillingInfo`; has the form `projects/{project_id}/billingInfo`. For example, the resource name for the billing information for project `tokyo-rain-123` would be `projects/tokyo-rain-123/billingInfo`.",
+                "type": "string"
+              },
+              "projectId": {
+                "readOnly": true,
+                "description": "Output only. The ID of the project that this `ProjectBillingInfo` represents, such as `tokyo-rain-123`. This is a convenience field so that you don't need to parse the `name` field to obtain a project ID.",
+                "type": "string"
+              },
+              "billingAccountName": {
+                "description": "The resource name of the billing account associated with the project, if any. For example, `billingAccounts/012345-567890-ABCDEF`.",
+                "type": "string"
+              },
+              "billingEnabled": {
+                "readOnly": true,
+                "description": "Output only. True if the project is associated with an open billing account, to which usage on the project is charged. False if the project is associated with a closed billing account, or no billing account at all, and therefore cannot use paid services.",
+                "type": "boolean"
+              }
+            },
+            "id": "ProjectBillingInfo",
+            "description": "Encapsulation of billing information for a Google Cloud Console project. A project has at most one associated billing account at a time (but a billing account can be assigned to multiple projects)."
           }
         }
       }
@@ -138278,7 +138346,9 @@
       "nativeType": "billingbudgets.googleapis.com/Budget",
       "rest": {
         "collection": "budgets",
-        "delete_operations": ["billingbudgets.billingAccounts.budgets.delete"],
+        "delete_operations": [
+          "billingbudgets.billingAccounts.budgets.delete"
+        ],
         "list_operations": [
           "billingbudgets.billingAccounts.budgets.list"
         ],

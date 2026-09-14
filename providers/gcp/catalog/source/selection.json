@@ -1070,6 +1070,12 @@
       "methods": [
         "billingbudgets.billingAccounts.budgets.delete"
       ]
+    },
+    {
+      "source_uri": "https://cloudbilling.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "cloudbilling.projects.getBillingInfo"
+      ]
     }
   ],
   "resource_types": [

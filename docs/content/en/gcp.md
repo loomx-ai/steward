@@ -530,8 +530,10 @@ Fresh budget observations can resolve notification-channel dependencies, but
 email-channel cleanup remains blocked until consumer scope is fully established.
 
 This path requires billing-account visibility, `billing.accounts.get`,
-`billing.budgets.list` and `billing.budgets.get`. Project-only budget permissions
-without account visibility are not yet covered. See the
+`billing.budgets.list` and `billing.budgets.get`. Scans also read the selected
+project’s billing association and its single-project budgets. This project path
+requires `resourcemanager.projects.get` and `billing.resourcebudgets.read`, and
+works when the account index is empty or denies access. See the
 [native Budget access-control requirements](https://docs.cloud.google.com/billing/docs/how-to/budget-api-access-control).
 
 
@@ -540,6 +542,14 @@ their observable configuration before native DELETE and confirms the budget's ow
 404 after worker restart. Account loss and denied reads are not deletion evidence.
 Cleanup preserves notification channels and spending projects. It also requires
 `billing.budgets.delete`; no account-close or project-delete permission is used.
+For a budget discovered through project permissions, cleanup instead verifies
+its single-project spending filter and the project's unchanged billing association.
+It requires `billing.resourcebudgets.write` in addition to the project read
+permissions. Relinking the project or losing project access blocks cleanup and
+saved-budget absence confirmation. Other billing configuration changes require
+a fresh cleanup review. A failed
+read within an already visible account still fails the scan and preserves history.
+Project-scoped discovery does not establish complete email-channel consumer scope.
 See the [native Budget deletion contract](https://docs.cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets/delete).
 
 Writes to one account are serialized within a connection. If a response is lost,

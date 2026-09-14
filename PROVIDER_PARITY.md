@@ -6250,3 +6250,25 @@ DELETE is unavailable natively, Console-only settings remain unobservable, and
 external/cross-connection writers remain outside local coordination. Complete
 email-consumer scope, project-only budget discovery and real-cloud/full-goal
 acceptance remain unfinished. No overall acceptance criterion is closed.
+
+
+### GCP project-permission Billing Budget milestone
+
+Added native project billing association and scoped Budget discovery alongside
+visible-account inventory. Single-project observations use a separate project
+review; account and project snapshots must agree where they overlap. Only initial
+account-index permission denial can use successful project discovery. Failures
+inside a visible account remain failures. Known-budget reconciliation preserves
+old identities when the project is relinked or parent permissions disappear.
+
+Project-permission cleanup verifies the native single-project filter and frozen
+billing association, persists the project review in its receipt and requires own
+budget absence after restart. Account receipts and account write reservations
+remain compatible. Protocol and SQLite restart tests cover both permission paths;
+the independent native backend exercise explicitly isolates its synthetic account
+403 and missing IAM/scope-filter behavior. Bilingual documentation records native
+permissions and boundaries. Catalog contains 203 resource rules and 801 methods.
+
+This is a project-budget milestone, not completion of email consumer coverage,
+duplicate-connection coordination, external-writer safety or real-cloud/full-app
+acceptance. All eight acceptance criteria above remain open.

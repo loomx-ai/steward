@@ -18,13 +18,16 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-func budgetDeleteScenario(t *testing.T) (*billingBudgetScenario, *Runtime, *contracts.ActionRequest, *string, *int) {
+func budgetDeleteScenario(t *testing.T, project ...bool) (*billingBudgetScenario, *Runtime, *contracts.ActionRequest, *string, *int) {
 	t.Helper()
 	s := budgetScenario(t, nil)
+	if len(project) != 0 && project[0] {
+		s = projectBudgetScenario(t)
+	}
 	mode, reads, deletes := "", 0, 0
 	accountReads := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
-		if req.Method == "GET" && req.URL.Host == "cloudbilling.googleapis.com" && req.URL.Path == "/v1/"+testBillingAccount {
+		if req.Method == "GET" && req.URL.Host == "cloudbilling.googleapis.com" && (req.URL.Path == "/v1/"+testBillingAccount || req.URL.Path == "/v1/projects/sample-project/billingInfo") {
 			accountReads++
 			if mode == "gone-account-late" && accountReads > 1 {
 				return apiResponse(req, 403, `{}`), nil
@@ -209,8 +212,14 @@ func TestBillingBudgetDeleteCannotBypassReviewedConnection(t *testing.T) {
 }
 
 func TestBillingBudgetSQLiteCleanupRestart(t *testing.T) {
+	testBillingBudgetSQLiteCleanupRestart(t, false)
+}
+func TestBillingBudgetProjectSQLiteCleanupRestart(t *testing.T) {
+	testBillingBudgetSQLiteCleanupRestart(t, true)
+}
+func testBillingBudgetSQLiteCleanupRestart(t *testing.T, project bool) {
 	ctx := t.Context()
-	_, r, request, mode, deletes := budgetDeleteScenario(t)
+	_, r, request, mode, deletes := budgetDeleteScenario(t, project)
 	dsn := filepath.Join(t.TempDir(), "budget-cleanup.db")
 	repos, closeDB := monitoringSQLite(t, dsn)
 	defer func() { closeDB() }()

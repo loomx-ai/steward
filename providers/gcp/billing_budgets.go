@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+	"errors"
 	"regexp"
 	"slices"
 	"strings"
@@ -13,6 +14,8 @@ import (
 const billingBudgetType = "billingbudgets.googleapis.com/Budget"
 const billingAccountsList = "cloudbilling.billingAccounts.list"
 const billingBudgetsList = "billingbudgets.billingAccounts.budgets.list"
+
+var errBillingAccountIndexDenied = errors.New("billing_account_index_denied")
 
 var billingAccountName = regexp.MustCompile(`^billingAccounts/[A-Z0-9]{6}-[A-Z0-9]{6}-[A-Z0-9]{6}$`)
 
@@ -113,12 +116,19 @@ func (c *client) billingAccounts(ctx context.Context) (map[string]map[string]any
 	return result, nil
 }
 
-func (c *client) billingBudgets(ctx context.Context, parent string) (map[string]map[string]any, error) {
+func (c *client) billingBudgets(ctx context.Context, parent string, projectScope ...string) (map[string]map[string]any, error) {
 	if !billingAccountName.MatchString(parent) {
 		return nil, groupDenied("billing_budget_parent_invalid")
 	}
-	// Scope filters track spending, not channel ownership, and would hide consumers.
-	rows, err := c.batchList(ctx, billingBudgetsList, map[string]any{"parent": parent, "pageSize": 100}, "budgets")
+	// Channel consumer discovery leaves scope empty; project inventory opts in.
+	parameters := map[string]any{"parent": parent, "pageSize": 100}
+	if len(projectScope) != 0 {
+		if len(projectScope) != 1 || projectScope[0] != "projects/"+c.project {
+			return nil, groupDenied("billing_budget_project_scope_invalid")
+		}
+		parameters["scope"] = projectScope[0]
+	}
+	rows, err := c.batchList(ctx, billingBudgetsList, parameters, "budgets")
 	if err != nil {
 		return nil, contracts.DependencyReadError(err)
 	}
@@ -143,6 +153,10 @@ func (c *client) visibleBillingBudgets(ctx context.Context) (map[string]map[stri
 	if err != nil {
 		return nil, err
 	}
+	return c.visibleBillingBudgetsFrom(ctx, accounts)
+}
+
+func (c *client) visibleBillingBudgetsFrom(ctx context.Context, accounts map[string]map[string]any) (map[string]map[string]any, error) {
 	ids := make([]string, 0, len(accounts))
 	for id := range accounts {
 		ids = append(ids, id)

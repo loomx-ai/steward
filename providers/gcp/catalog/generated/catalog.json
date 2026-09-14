@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "1fca9c7bea6a83e3c0e9c0456be6ff1affcf2f3d255163ccad72d8a3df16ebaf",
+    "checksum": "ea045d5f9df24e6947c6ab87bbd338bdedadc7cd6035b07e35739c87943422e8",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "2f22c1d40a9bb832baab2f1139e4423dda18ec27e93dccfd12dbc50d255ed2a9",
+  "content_checksum": "98db34b1f9780c894c08e126c3cea9cc5013bd79fc0051957b092c1432ea69ff",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -13220,6 +13220,67 @@
         "method": "GET",
         "path": "/v1/billingAccounts",
         "endpoint": "https://cloudbilling.googleapis.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudbilling.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudbilling.projects.getBillingInfo",
+      "name": "getBillingInfo",
+      "service": "cloudbilling",
+      "method": "GET",
+      "path": "/v1/{name}/billingInfo",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The resource name of the project for which billing information is retrieved. For example, `projects/tokyo-rain-123`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Encapsulation of billing information for a Google Cloud Console project. A project has at most one associated billing account at a time (but a billing account can be assigned to multiple projects).",
+        "id": "ProjectBillingInfo",
+        "properties": {
+          "billingAccountName": {
+            "description": "The resource name of the billing account associated with the project, if any. For example, `billingAccounts/012345-567890-ABCDEF`.",
+            "type": "string"
+          },
+          "billingEnabled": {
+            "description": "Output only. True if the project is associated with an open billing account, to which usage on the project is charged. False if the project is associated with a closed billing account, or no billing account at all, and therefore cannot use paid services.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "name": {
+            "description": "Output only. The resource name for the `ProjectBillingInfo`; has the form `projects/{project_id}/billingInfo`. For example, the resource name for the billing information for project `tokyo-rain-123` would be `projects/tokyo-rain-123/billingInfo`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "projectId": {
+            "description": "Output only. The ID of the project that this `ProjectBillingInfo` represents, such as `tokyo-rain-123`. This is a convenience field so that you don't need to parse the `name` field to obtain a project ID.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "cloudbilling",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}/billingInfo",
+        "endpoint": "https://cloudbilling.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
         "body_type": "json",
         "parameter_position": "query"
       },

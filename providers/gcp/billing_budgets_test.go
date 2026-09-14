@@ -79,6 +79,12 @@ func budgetScenario(t *testing.T, fallback roundTripFunc) *billingBudgetScenario
 		if req.Method != "GET" || len(body) != 0 {
 			t.Fatal("billing discovery wrote", req.Method, req.URL)
 		}
+		if req.URL.Host+req.URL.Path == "cloudbilling.googleapis.com/v1/projects/sample-project/billingInfo" {
+			if req.URL.RawQuery != "" {
+				t.Fatal("unexpected project billing query")
+			}
+			return apiResponse(req, 200, `{"name":"projects/sample-project/billingInfo","projectId":"sample-project","billingEnabled":false}`), nil
+		}
 		kind := ""
 		switch req.URL.Host + req.URL.Path {
 		case "cloudbilling.googleapis.com/v1/billingAccounts":
@@ -408,6 +414,7 @@ func TestBillingBudgetFixturesMatchNativeSchemas(t *testing.T) {
 		value                        map[string]any
 	}{
 		{"cloudbilling", "20260904", "14862c5e884d2f899280acdba70c187055a0d30052c10091b0428a2e92e65b25", "BillingAccount", billingAccountFixture()},
+		{"cloudbilling", "20260904", "14862c5e884d2f899280acdba70c187055a0d30052c10091b0428a2e92e65b25", "ProjectBillingInfo", map[string]any{"name": "projects/sample-project/billingInfo", "projectId": "sample-project", "billingAccountName": testBillingAccount, "billingEnabled": false}},
 		{"billingbudgets", "20260906", "43f6da9d356ad5d16fdcc1b1f10382f2c0b0a5e056a24719fcf25e1748ea03ce", "GoogleCloudBillingBudgetsV1Budget", billingBudgetFixture()},
 	} {
 		compiler := infraFixtureSchemas(t, "fixtures/billing-budget/"+test.file+"-schemas.json", test.revision, test.hash)

@@ -30,11 +30,18 @@ func TestBillingBudgetInventoryIndependentMockGCP(t *testing.T) {
 func TestBillingBudgetDeleteIndependentMockGCP(t *testing.T) {
 	testNotificationChannelIndependentMockGCP(t, "email", true, true, true)
 }
+func TestBillingBudgetProjectIndependentMockGCP(t *testing.T) {
+	testNotificationChannelIndependentMockGCP(t, "email", true, true, true, true)
+}
 func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, billing ...bool) {
+	projectBudget := len(billing) > 3 && billing[3]
 	cleanupBudget := len(billing) > 2 && billing[2]
 	inventoryAccount := "billingAccounts/ABCDEF-012345-678901"
 	if cleanupBudget {
 		inventoryAccount = "billingAccounts/ABCDEF-ABCDEF-ABCDEF"
+	}
+	if projectBudget {
+		inventoryAccount = "billingAccounts/ABCDEF-ABCDEF-012345"
 	}
 	inventoryBudget := len(billing) > 1 && billing[1]
 	withBudget := len(billing) != 0 && billing[0]
@@ -108,7 +115,13 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, bi
 		if (!inventoryBudget && account["name"] != testBillingAccount) || (inventoryBudget && account["name"] != inventoryAccount) {
 			t.Fatal("wrong native billing account")
 		}
+		if projectBudget {
+			native("PUT", "/v1/projects/sample-project/billingInfo", map[string]any{"billingAccountName": inventoryAccount})
+		}
 		budget := billingBudgetFixture()
+		if projectBudget {
+			object(budget["budgetFilter"])["projects"] = []any{"projects/123456"}
+		}
 		delete(budget, "name")
 		delete(budget, "etag")
 		object(budget["notificationsRule"])["monitoringNotificationChannels"] = []any{name}
@@ -128,6 +141,16 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, bi
 	billingFixtureCalls := 0
 	budgetRuntimeDeletes := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if projectBudget && req.URL.Host == "cloudbilling.googleapis.com" && req.URL.Path == "/v1/billingAccounts" {
+			if req.Method != "GET" || req.URL.RawQuery != "pageSize=100" {
+				t.Fatal(req.URL)
+			}
+			billingFixtureCalls++
+			return apiResponse(req, 403, `{"error":{"code":403}}`), nil
+		}
+		if projectBudget && req.URL.Host == "billingbudgets.googleapis.com" && strings.HasSuffix(req.URL.Path, "/budgets") && req.URL.Query().Get("scope") != "projects/sample-project" {
+			t.Fatal("unscoped project budget list", req.URL)
+		}
 		if req.URL.Host == "cloudbilling.googleapis.com" && delivery == "email" && !withBudget {
 			billingFixtureCalls++
 			return emptyBillingAccountsFixture(t, req), nil
@@ -200,6 +223,10 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, bi
 		if err != nil || len(batch.Items) != 1 || batch.Items[0].Name != "Updated native budget" || batch.Items[0].Normalized[billingBudgetReview] == before {
 			t.Fatal(batch, err)
 		}
+		req.KnownNativeMetadata = map[string]map[string]any{batch.Items[0].NativeID: batch.Items[0].Normalized}
+		if projectBudget && (batch.Items[0].Normalized[billingBudgetProjectReview] == nil || batch.Items[0].Normalized[billingBudgetAccountReview] != nil) {
+			t.Fatal("native project review missing")
+		}
 		if cleanupBudget {
 			item := batch.Items[0]
 			value := asset.Asset{ID: "native-budget", Identity: channel.Identity, Normalized: item.Normalized}
@@ -242,6 +269,12 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, bi
 		batch, err = r.List(t.Context(), req)
 		if err != nil || !batch.Complete || len(batch.Items) != 0 || len(batch.AbsentNativeIDs) != 1 || batch.AbsentNativeIDs[0] != req.KnownNativeIDs[0] {
 			t.Fatal(batch, err)
+		}
+		if projectBudget && billingFixtureCalls != 3 {
+			t.Fatal("unexpected account-denial fixture count", billingFixtureCalls)
+		}
+		if projectBudget {
+			t.Logf("Project billingInfo/scoped Budget lifecycle forwarded unchanged; %d explicit account-index 403 fixtures (mock does not enforce IAM or scope filtering)", billingFixtureCalls)
 		}
 		if cleanupBudget {
 			t.Logf("Native reviewed budget DELETE, JSON restart, own-404 settlement, retained channel and inventory reconciliation passed (%d forwarded calls; %d runtime DELETE)", len(calls), budgetRuntimeDeletes)

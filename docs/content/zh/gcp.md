@@ -420,14 +420,20 @@ AlertPolicy 扫描使用项目级原生 LIST 和 GET，也包含禁用或无效�
 范围得到完整确认。
 
 此路径需要账单账号可见权限以及 `billing.accounts.get`、`billing.budgets.list`
-和 `billing.budgets.get`。只有项目级预算权限、无法查看账单账号的情况尚未覆盖。
+和 `billing.budgets.get`。扫描也会读取所选项目的账单关联和单项目预算；此项目路径
+需要 `resourcemanager.projects.get` 与 `billing.resourcebudgets.read`，在账号清单为空
+或拒绝访问时仍可使用。
 参阅[原生预算访问控制要求](https://docs.cloud.google.com/billing/docs/how-to/budget-api-access-control)。
 
 
 预算清理需要重新扫描预算及其账单账号。删除前核对两者的可观测配置，工作进程重启后
 仍通过预算自身的 404 确认不存在；账号失权、账号消失或读取被拒绝不会成为删除证据。
 通知渠道和费用所属项目会被保留。还需要 `billing.budgets.delete` 权限，不使用关闭
-账单账号或删除项目的权限。参阅[原生预算删除契约](https://docs.cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets/delete)。
+账单账号或删除项目的权限。通过项目权限发现的预算，则复核单项目费用范围和项目的
+账单关联，并额外需要 `billing.resourcebudgets.write`。变更账单关联或项目失权会阻断
+清理及历史预算的不存在确认；其他账单配置变更需要重新扫描后复核。已可见账号内部的读取
+失败仍会使扫描失败并保留历史记录。项目范围的发现不代表邮件渠道消费方范围已完整。
+参阅[原生预算删除契约](https://docs.cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets/delete)。
 
 同一连接内对同一账号的预算写入按序执行。响应丢失时请继续原任务核验；无法确认的
 失败或取消请求仍保留写入范围。重复配置的连接与外部客户端不在此协调范围内。

@@ -13,8 +13,19 @@ import (
 )
 
 func TestBillingBudgetSQLiteInventoryRestartAndAbsence(t *testing.T) {
+	testBillingBudgetSQLiteInventory(t, false)
+}
+func TestBillingBudgetProjectSQLiteInventoryRestartAndAbsence(t *testing.T) {
+	testBillingBudgetSQLiteInventory(t, true)
+}
+func testBillingBudgetSQLiteInventory(t *testing.T, project bool) {
 	ctx := t.Context()
 	scenario, r, mode := billingInventoryScenario(t)
+	if project {
+		scenario = projectBudgetScenario(t)
+		r = scenario.r
+		mode = &scenario.mode
+	}
 	dsn := filepath.Join(t.TempDir(), "budgets.db")
 	repos, closeDB := monitoringSQLite(t, dsn)
 	defer func() { closeDB() }()

@@ -100,6 +100,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	mux.Handle("/v1/projects/", billingMux)
 	mux.Handle("/v1/billingAccounts", billingMux)
 	mux.Handle("/v1/billingAccounts/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(r.URL.Path, "/budgets") {
