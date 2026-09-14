@@ -20,6 +20,7 @@ import (
 	"github.com/loomx-ai/steward/internal/core/plan"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/persistence/sqlite"
+	providerruntime "github.com/loomx-ai/steward/internal/provider/runtime"
 )
 
 func TestRoutePolicySQLiteScanCleanupRestartAndReconciliation(t *testing.T) {
@@ -114,41 +115,7 @@ func routerComponentSQLiteCleanup(t *testing.T, nativeType string, bgp, setRefer
 	if err := repositories.Regions().PutRegion(ctx, asset.ConnectionRegion{ID: "region", ConnectionID: "connection", RegionID: "us-central1", DiscoveredName: "US Central", Origin: asset.RegionOriginAPI, Lifecycle: asset.RegionActive, CreatedAt: now, UpdatedAt: now}); err != nil {
 		t.Fatal(err)
 	}
-	scan := func() {
-		t.Helper()
-		creator, err := inventory.NewCreator(repositories, registry, inventory.WithCreatorClock(func() time.Time { return now }))
-		if err != nil {
-			t.Fatal(err)
-		}
-		created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: "connection", RequestedBy: "test", RegionMode: inventory.RegionModeSelected, RegionIDs: []string{"us-central1"}, ResourceKindIDs: kinds})
-		if err != nil || len(created.Shards) != len(kinds) || len(created.Jobs) != 1 {
-			t.Fatal("scan creation", created, err)
-		}
-		job, err := repositories.Jobs().ClaimNext(ctx, "policy-scan", now, time.Minute, execution.JobScan)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if err := inventory.NewScanHandler(repositories, registry, inventory.NewService(repositories.Inventory())).Handle(ctx, job); err != nil {
-			t.Fatal(err)
-		}
-		if err := repositories.Jobs().Complete(ctx, job.ID, "policy-scan", execution.JobSucceeded, "", now); err != nil {
-			t.Fatal(err)
-		}
-		if wall := time.Now().UTC(); wall.After(now) {
-			now = wall
-		}
-		now = now.Add(time.Second)
-		job, err = repositories.Jobs().ClaimNext(ctx, "policy-graph", now, time.Minute, execution.JobGraph)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if err := governance.NewGraphHandler(repositories, registry, nil).Handle(ctx, job); err != nil {
-			t.Fatal(err)
-		}
-		if err := repositories.Jobs().Complete(ctx, job.ID, "policy-graph", execution.JobSucceeded, "", now); err != nil {
-			t.Fatal(err)
-		}
-	}
+	scan := func() { now = scanRouterComponentAssets(t, repositories, registry, now, kinds) }
 	scan()
 	page, err := repositories.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10})
 	if err != nil || len(page.Items) != len(kinds) {
@@ -393,4 +360,42 @@ func routerComponentSQLiteCleanup(t *testing.T, nativeType string, bgp, setRefer
 			t.Fatal("referenced set was deleted", retainedSet, err)
 		}
 	}
+}
+
+func scanRouterComponentAssets(t *testing.T, repositories persistence.Repositories, registry *providerruntime.Registry, now time.Time, kinds []asset.ResourceKindID) time.Time {
+	t.Helper()
+	ctx := t.Context()
+	creator, err := inventory.NewCreator(repositories, registry, inventory.WithCreatorClock(func() time.Time { return now }))
+	if err != nil {
+		t.Fatal(err)
+	}
+	created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: "connection", RequestedBy: "test", RegionMode: inventory.RegionModeSelected, RegionIDs: []string{"us-central1"}, ResourceKindIDs: kinds})
+	if err != nil || len(created.Shards) != len(kinds) || len(created.Jobs) != 1 {
+		t.Fatal("scan creation", created, err)
+	}
+	job, err := repositories.Jobs().ClaimNext(ctx, "policy-scan", now, time.Minute, execution.JobScan)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := inventory.NewScanHandler(repositories, registry, inventory.NewService(repositories.Inventory())).Handle(ctx, job); err != nil {
+		t.Fatal(err)
+	}
+	if err := repositories.Jobs().Complete(ctx, job.ID, "policy-scan", execution.JobSucceeded, "", now); err != nil {
+		t.Fatal(err)
+	}
+	if wall := time.Now().UTC(); wall.After(now) {
+		now = wall
+	}
+	now = now.Add(time.Second)
+	job, err = repositories.Jobs().ClaimNext(ctx, "policy-graph", now, time.Minute, execution.JobGraph)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := governance.NewGraphHandler(repositories, registry, nil).Handle(ctx, job); err != nil {
+		t.Fatal(err)
+	}
+	if err := repositories.Jobs().Complete(ctx, job.ID, "policy-graph", execution.JobSucceeded, "", now); err != nil {
+		t.Fatal(err)
+	}
+	return now
 }

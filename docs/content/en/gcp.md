@@ -276,7 +276,8 @@ and [policy detail API](https://docs.cloud.google.com/compute/docs/reference/res
 Independent policy deletion additionally requires `compute.routers.get`,
 `compute.routers.deleteRoutePolicy` and `compute.regionOperations.get`.
 Run a fresh scan before creating the cleanup task so it includes the policy
-fingerprint, containing router ID and BGP peer configuration. Changes require a new review.
+fingerprint, containing router ID and BGP peer configuration. Other configuration
+changes require a new review; completed sibling policy removals are handled below.
 `bgpReferences` lists the affected peers and import/export directions.
 Steward uses the native [policy deletion API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteRoutePolicy),
 resumes its regional operation after restart and confirms policy absence while
@@ -292,8 +293,13 @@ request preserves other peer settings and omits unrelated router fields. Only
 after the regional operation finishes and the updated peers are visible does
 policy deletion begin. Both phases resume from persisted receipts after restart.
 
-Configuration changes, native dependency conflicts and permission failures are
-reported for review. These native mutations have no fingerprint precondition,
+Sequential deletions can use the same scan. Before updating peers, Steward reads
+the current configuration and preserves earlier removals only after the native API
+confirms those sibling policies are absent. New references, reordered policies,
+changed peers or settings, and unreadable sibling policies stop execution.
+
+Other configuration changes, native dependency conflicts and permission failures
+are reported for review. These native mutations have no fingerprint precondition,
 so avoid concurrent policy or BGP peer edits during cleanup. Parent-router
 cascade handling remains pending. Named sets and other policies are not selected
 for deletion by this action.

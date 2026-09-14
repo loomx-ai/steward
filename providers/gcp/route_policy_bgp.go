@@ -85,23 +85,68 @@ func routePolicyBGPReview(data map[string]any, policy string) (before, after []a
 	return before, after, nil
 }
 
-func (a *action) routePolicyBGPState(request contracts.ActionRequest, parent map[string]any) (bool, error) {
-	before, after, err := routePolicyBGPReview(request.Asset.Normalized, last(a.identity.NativeID))
+// Preserve successful sibling deletions without accepting new peers, settings,
+// references or evaluation order. A removed sibling reference is safe only when
+// its native policy is absent and the containing router still matches.
+func (a *action) routePolicyBGPMerge(ctx context.Context, request contracts.ActionRequest, parent map[string]any) ([]any, bool, error) {
+	before, _, err := routePolicyBGPReview(request.Asset.Normalized, last(a.identity.NativeID))
 	if err != nil {
-		return false, err
+		return nil, false, err
 	}
 	live, err := routePolicyBGPPeers(parent)
 	if err != nil {
-		return false, err
+		return nil, false, err
 	}
-	digest := firewallDigest(live)
-	if digest == firewallDigest(after) {
-		return false, nil
+	if len(before) != len(live) {
+		return nil, false, groupDenied("route_policy_bgp_configuration_changed")
 	}
-	if digest == firewallDigest(before) {
-		return true, nil
+	removed := map[string]bool{}
+	for i, value := range before {
+		old, current := cloneParameters(object(value)), cloneParameters(object(live[i]))
+		for _, direction := range []string{"importPolicies", "exportPolicies"} {
+			actual := array(current[direction])
+			index := 0
+			for _, policy := range array(old[direction]) {
+				if index < len(actual) && actual[index] == policy {
+					index++
+				} else {
+					removed[text(policy)] = true
+				}
+			}
+			if index != len(actual) {
+				return nil, false, groupDenied("route_policy_bgp_configuration_changed")
+			}
+			delete(old, direction)
+			delete(current, direction)
+		}
+		if firewallDigest(old) != firewallDigest(current) {
+			return nil, false, groupDenied("route_policy_bgp_configuration_changed")
+		}
 	}
-	return false, groupDenied("route_policy_bgp_configuration_changed")
+	delete(removed, last(a.identity.NativeID))
+	for name := range removed {
+		if _, err := a.client.routePolicyRead(ctx, a.routerComponentParent()+"/routePolicies/"+name); !isNotFound(err) {
+			if err != nil {
+				return nil, false, err
+			}
+			return nil, false, groupDenied("route_policy_removed_sibling_still_exists")
+		}
+	}
+	if len(removed) != 0 {
+		latest, err := a.routerComponentParentData(ctx, request)
+		if err != nil {
+			return nil, false, err
+		}
+		peers, err := routePolicyBGPPeers(latest)
+		if err != nil {
+			return nil, false, err
+		}
+		if firewallDigest(peers) != firewallDigest(live) {
+			return nil, false, groupDenied("route_policy_bgp_configuration_changed")
+		}
+	}
+	_, desired, err := routePolicyBGPReview(map[string]any{routePolicyPeers: live}, last(a.identity.NativeID))
+	return desired, firewallDigest(desired) != firewallDigest(live), err
 }
 
 func (a *action) routePolicyNativeRequestID(request contracts.ActionRequest, stage string) string {
@@ -112,9 +157,16 @@ func (a *action) routePolicyNativeRequestID(request contracts.ActionRequest, sta
 }
 
 func (a *action) detachRoutePolicy(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
-	_, peers, err := routePolicyBGPReview(request.Asset.Normalized, last(a.identity.NativeID))
+	parent, err := a.routerComponentParentData(ctx, request)
 	if err != nil {
 		return contracts.ActionResult{}, err
+	}
+	peers, attached, err := a.routePolicyBGPMerge(ctx, request, parent)
+	if err != nil {
+		return contracts.ActionResult{}, err
+	}
+	if !attached {
+		return a.deleteRouterComponent(ctx, request)
 	}
 	metadata, err := providerData()
 	if err != nil {

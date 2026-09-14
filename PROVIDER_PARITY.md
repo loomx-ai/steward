@@ -5766,3 +5766,29 @@ background evidence only, not acceptance evidence for this work.
 - Focused Router/NAT/policy/set/native-list regression passed (29.354s); focused
   race checks passed (74.025s), GCP/internal vet passed, and documentation checks
   passed for 30 chapters and 10 screenshots.
+
+
+### Sequential Cloud Router policy cleanup from one scan
+
+- Reproduced rejection of a second selected policy after the first policy removed
+  its BGP references. Each detachment now uses fresh native peers and preserves
+  earlier sibling removals only after their native policy GET confirms absence.
+  Membership, other peer settings and remaining evaluation order stay bound to
+  the original review; added/reordered references and unreadable siblings fail.
+  A second Router read checks identity, completeness and stable peers after
+  sibling queries. Original reviews, request UUIDs and receipt bindings persist.
+- Native regression cases cover partial target detachment, malformed/denied/live
+  siblings, parent absence/recreation/partial results, peer drift and a completed
+  sibling deletion just before PATCH construction. A real SQLite scan/graph/plan/
+  execution test selects both policies from one scan, reopens storage and runtime
+  between sequential action checkpoints, and verifies tombstones, retained parent
+  and later inventory reconciliation. See [route policy evidence](providers/gcp/fixtures/route-policy/README.md).
+- Catalog/source bytes and dependencies remain unchanged: 200 rules/785 operations,
+  SHA-256 `f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`.
+  Bilingual documentation describes the permitted sequential configuration change.
+- Parent/component concurrency, old-plan coordination, full Router cascade,
+  independent backend/live acceptance and broader provider families remain
+  unfinished. All eight overall acceptance criteria remain open.
+- Focused native/SQLite checks passed (7.672s); focused GCP race checks passed
+  (81.948s), GCP/internal vet passed, and isolated documentation checks passed
+  for 30 chapters and 10 screenshots.

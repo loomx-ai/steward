@@ -67,23 +67,35 @@ func (a *action) routerComponentParent() string {
 	return parent
 }
 
-func (a *action) checkRouterComponentParent(ctx context.Context, request contracts.ActionRequest) (bool, error) {
+func (a *action) routerComponentParentData(ctx context.Context, request contracts.ActionRequest) (map[string]any, error) {
 	kind, _ := findType(routerType)
 	endpoint, err := a.client.resourceURL(kind, a.routerComponentParent())
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	data, err := a.client.request(ctx, "GET", endpoint, nil)
 	if err != nil {
-		return false, contracts.DependencyReadError(err)
+		return nil, contracts.DependencyReadError(err)
+	}
+	if err := checkListCompleteness(data); err != nil {
+		return nil, err
 	}
 	if data["name"] != last(a.routerComponentParent()) || a.client.canonicalName(text(data["selfLink"])) != a.client.canonicalName(a.routerComponentParent()) || data["id"] != request.Asset.Normalized[a.routerComponentIncarnationKey()] {
-		return false, groupDenied("route_policy_router_recreated_or_changed")
+		return nil, groupDenied("route_policy_router_recreated_or_changed")
+	}
+	return data, nil
+}
+
+func (a *action) checkRouterComponentParent(ctx context.Context, request contracts.ActionRequest) (bool, error) {
+	data, err := a.routerComponentParentData(ctx, request)
+	if err != nil {
+		return false, err
 	}
 	if a.kind.NativeType == namedSetType {
 		return false, nil
 	}
-	return a.routePolicyBGPState(request, data)
+	_, attached, err := a.routePolicyBGPMerge(ctx, request, data)
+	return attached, err
 }
 
 func (a *action) routerComponentReadback(ctx context.Context, request contracts.ActionRequest) (read contracts.ReadbackResult, err error) {
@@ -250,6 +262,10 @@ func (a *action) executeRouterComponent(ctx context.Context, request contracts.A
 		}
 		return a.detachRoutePolicy(ctx, request)
 	}
+	return a.deleteRouterComponent(ctx, request)
+}
+
+func (a *action) deleteRouterComponent(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	parameters := cloneParameters(a.deleteParameters)
 	parameters["requestId"] = a.routerComponentRequestID(request)
 	bound, err := catalog.BindREST(a.deleteOperation, parameters)

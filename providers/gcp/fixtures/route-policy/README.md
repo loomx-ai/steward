@@ -46,7 +46,7 @@ Router List nor route-policy List/Get/Delete. The complete, non-truncated mockgc
 subtree `8b6f0584391a159b43ed7e5adf26580557872854` was checked for router handlers.
 No independent route-policy emulator or real-cloud test is claimed.
 
-Remaining work includes named-set dependencies,
+Remaining work includes computed named-set dependencies,
 parent-router cascade review, network-scan
 application acceptance and independent/live-cloud behavior verification. These
 milestones do not establish full Alibaba Cloud route-map cleanup parity.
@@ -110,8 +110,9 @@ member SHA-256 is
 The same Apache 2.0 license applies. It is source evidence, not a runtime dependency.
 
 Inventory stores a peer snapshot and exposes `bgpReferences`; old reviews need a
-new scan. Before mutation and during readback, live peers must equal the reviewed
-snapshot or the exact desired detachment. Receipts bind both phases and use
+new scan. Before mutation and during readback, live peers must retain the reviewed
+membership, settings and policy order. The selected policy may already be partly
+or fully detached; completed sibling deletions follow the checks below. Receipts bind both phases and use
 separate deterministic native request IDs. PATCH DONE or operation expiry alone
 cannot begin deletion; native peer readback must confirm detachment. A missing
 policy with dangling reviewed references still requires unlinking. Receipt loss
@@ -126,3 +127,37 @@ The SQLite scan/graph/cleanup/reconciliation test exercises both attached and
 unattached policies, reopening storage and recreating the runtime at each phase.
 The independent mockgcp audit above supplies no policy handlers; these tests
 remain protocol/application evidence, not independent backend or live-cloud proof.
+
+
+## Sequential policies from one scan
+
+The [native BGP removal guide](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/disabling-removing-bgp)
+requires GET followed by PATCH of the complete desired `bgpPeers` array. Reusing
+one policy's original snapshot after a sibling was deleted would restore the
+sibling reference; rejecting every such change instead prevented the second
+policy's cleanup. The regression test reproduced that rejection before this fix.
+
+The driver now constructs each detachment from a fresh native Router read. Live
+import/export lists must be ordered subsequences of the reviewed lists, with
+identical peer membership and other settings. Every removed sibling name must
+return its own native policy 404; the Router is then reread to reject parent
+recreation, incomplete responses or BGP changes during those absence checks.
+A still-present, denied or malformed sibling cannot authorize the merge. The
+immutable original review and both request UUIDs remain unchanged across restart.
+This permits sequential completed removals, not concurrent write coordination;
+Router PATCH still supplies no atomic configuration condition.
+
+`route_policy_multi_test.go` checks two policies sharing one scan, serialized
+receipts/runtime recreation, preservation of earlier removals and unrelated NAT
+and peer settings, partial target detachment, invalid sibling reads, parent
+changes and a sibling deletion completing immediately before the final PATCH
+read. `route_policy_multi_worker_test.go` runs real SQLite scan, graph, planning
+and sequential execution with database/runtime reopening between checkpoints,
+then verifies both tombstones, the retained Router and subsequent reconciliation.
+The native fixture uses immediately visible completed operations; existing BGP
+phase tests separately cover pending operations and delayed visibility. These
+are locally authored protocol/application tests, not independent emulator proof.
+
+```sh
+go test ./providers/gcp -run 'TestRoutePolicySequential|TestRoutePolicySibling|TestRoutePolicyLastRead|TestRoutePolicySQLiteSequential' -count=1
+```
