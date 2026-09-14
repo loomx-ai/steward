@@ -32,7 +32,7 @@ Communication Services 的电话号码、预留号码和房间使用独立的 Mi
 
 ## 盘点与清理范围
 
-Steward 识别 434 类资源，其中 405 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 451 类资源，其中 418 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -48,6 +48,7 @@ Steward 识别 434 类资源，其中 405 类具有原生清理操作（包括 B
 | Cosmos DB | NoSQL、MongoDB、Cassandra、Gremlin、Table 账号及数据库/容器，角色、服务、笔记本与私有连接；托管 Cassandra 和 Fleet | 先删除已审查的子资源及共享依赖；客户端加密密钥和内置角色随控制资源清理；Fleet 解绑保留账号 |
 | Azure DocumentDB | MongoDB 兼容集群及副本、防火墙规则、专用终结点连接与 Microsoft Entra 用户 | 先删除已审查的副本及子资源，再删除源集群或父资源；单独删除副本会保留源集群 |
 | Azure Data Explorer | Kusto 集群、数据库、跟随挂接、数据连接、主体、脚本与私有连接；自定义沙箱映像 | 先删除已审查的子资源及跟随挂接；只读数据库与活动映像随控制资源清理 |
+| Azure Synapse | 工作区、Spark 池和 SQL 池 | 支持盘点、工作区及默认 Data Lake 引用；清理尚未实现 |
 | Data Factory | 工厂、管道、数据集、数据流、链接服务、凭据、触发器、CDC、全局参数、集成运行时及节点、私有连接 | 审查工厂级联；先处理运行时及运行任务；托管虚拟网络随工厂清理 |
 | Data Migration | 经典服务、项目、任务/文件和服务任务；SQL/Mongo 迁移服务及面向 SQL、Cosmos DB 的迁移 | 审查子资源及迁移前置删除；先取消任务、处理运行时节点，再删除服务 |
 | Defender for Cloud | 订阅防护计划及支持的资源级计划状态 | 只读展示服务状态、覆盖率、扩展及继承关系 |
@@ -84,6 +85,8 @@ Steward 识别 434 类资源，其中 405 类具有原生清理操作（包括 B
 Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难恢复别名的授权视图、Uniform 伸缩集网络资源和 VPN 连接链路没有独立原生删除操作。默认命名空间授权规则 `RootManageSharedAccessKey` 也必须随命名空间删除。这些资源会纳入所属控制资源的删除影响；保留这类内置子资源会阻止删除所属控制资源。资源组、Key Vault 和 Container Apps 环境的清理仍未实现。
 
 Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
+
+Synapse 使用原生列表和详情读取。列表遗漏不会移除已知资源，只有该资源自身的 GET 确认不存在后才会关闭旧记录。默认 Data Lake 存储作为独立依赖保留。工作区代码工件、运行任务和经审查的清理流程仍在实现中。
 
 ## 清理保护
 

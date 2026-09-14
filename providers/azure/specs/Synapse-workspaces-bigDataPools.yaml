@@ -1,0 +1,67 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Synapse/workspaces/bigDataPools
+  class: compute.cluster
+presentation:
+  displayNames:
+    en-US: Synapse Spark pool
+    zh-CN: Synapse Spark 池
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: synapse
+  list:
+    operation: Azure.Microsoft.Synapse.BigDataPools_ListByWorkspace
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      workspaceName: parent.normalized.arm_parameters.workspaceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Synapse.BigDataPools_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: synapse
+    nativeType: Microsoft.Synapse/workspaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  sparkVersion:
+    path: sparkVersion
+    type: string
+  nodeCount:
+    path: nodeCount
+    type: number
+  nodeSize:
+    path: nodeSize
+    type: string
+  autoScale:
+    path: autoScale
+    type: object
+  autoPause:
+    path: autoPause
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Synapse/workspaces
+  targetIdPath: refs_microsoft_synapse_workspaces

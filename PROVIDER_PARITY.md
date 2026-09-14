@@ -6592,3 +6592,38 @@ verification, and all eight acceptance criteria remain open. The
 remaining workspace/child inventory, managed/default resource, active workload,
 data-plane, storage ownership, polling and readback work. No live cloud service or
 independent Synapse emulator was used.
+
+
+### Synapse workspace and compute inventory with known-resource reconciliation
+
+Added three explicit region-scoped specifications for Synapse workspaces, Spark
+pools and SQL pools, using the pinned 2021-06-01 native API. Product-list traversal
+is reused behind a dedicated non-authoritative `synapse` source with known-ID
+reconciliation. List/detail validation checks resource identities, subscription and
+parent boundaries, duplicate rows/pages, unfiltered pagination, complete responses
+and parent configuration consistency. Future native state strings are preserved;
+SQL inventory uses the pool's operational status instead of provisioning status.
+
+Known resources omitted from workspace or child lists are individually reread.
+Only a resource's own GET absence closes its observation; permission failures,
+partial responses and live children without a readable parent fail the scan.
+Region shards preserve live known resources from sibling regions. Workspace
+Data Lake references use current Storage list/detail evidence and remain external
+dependencies, with unresolved references retained explicitly and workspace
+configuration rechecked afterward. User-assigned identity references are typed.
+The shared Azure redactor now also covers sqlAdministratorLoginPassword.
+
+Tests exercise the native inventory protocol, parent/cursor changes, storage and
+identity boundaries, shared invocation/log privacy, and registered worker/SQLite
+scans including hidden parent lists, 403 preservation and exact 404 closure. The
+original native examples are unchanged; these are local protocol/application
+tests, not a live service or independent Synapse emulator.
+
+All three new kinds remain non-actionable while full child scope, code artifacts,
+running work, recovery semantics and reviewed deletion are implemented. Native
+DELETE operations remain in the catalog but are not resource cleanup bindings.
+The five matrix mappings reference the new existing workspace specification while
+all 159 statuses and all eight acceptance criteria remain open. The missing-spec
+backlog now has 17 Azure types and 23 references; existing specifications still
+require their full behavioral acceptance. English and Chinese coverage documents
+state the current capability and remaining limitations explicitly.

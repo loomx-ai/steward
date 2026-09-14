@@ -2,13 +2,13 @@
 
 Audit base: `0c43def71dc2fdef7d6fafe6b59fd8124e9e81d9`. This is a repository scope audit, not cloud feature acceptance.
 
-The matrix covers all 159 Alibaba Cloud specifications. The repository contains 204 GCP and 448 Azure specifications, but those counts do not prove equivalence. All 159 rows remain pending behavioral verification.
+The matrix covers all 159 Alibaba Cloud specifications. The repository now contains 204 GCP and 451 Azure specifications, but those counts do not prove equivalence. All 159 rows remain pending behavioral verification.
 
 The audit found invalid YAML, 28 Azure mapping references to 18 absent specifications, and an incorrect GCP SSH-key mapping to service-account keys. The corrected matrix keeps absent candidates in `unimplemented_resources`; it does not remove them from the requested scope.
 
 The new `go test ./providers` check runs in the existing `go test ./...` CI job. It detects invalid YAML, omitted or duplicated baseline resources, drift in baseline source/class/scope/actions/hooks/enrichment/parent discovery, unresolved implemented-resource references and stale implementation backlogs. A passing check verifies matrix consistency only.
 
-Synapse implementation has started with 22 pinned native ARM operations and 23 original examples, including explicit tests for source inconsistencies. This is a contract foundation only: its workspace specification, inventory, dependencies and cleanup remain unfinished. See [the native contract evidence](azure/fixtures/synapse/README.md). Its five matrix candidates remain in the missing-specification table below.
+Synapse now has explicit workspace, Spark-pool and SQL-pool specifications and native inventory, including known-resource reconciliation and default Data Lake references. Its five matrix entries moved to `resources` because a workspace specification exists; all remain pending verification. This is still incomplete Synapse support: code artifacts, runtime jobs, further child resources, complete dependencies and reviewed cleanup remain open. See [the native contract evidence](azure/fixtures/synapse/README.md). The remaining table contains 17 absent specification types (23 matrix references).
 
 ## Azure candidates without explicit resource specifications
 
@@ -16,7 +16,6 @@ These are candidates already named by the matrix. Missing specification files me
 
 | Candidate | Alibaba Cloud rows affected |
 | --- | --- |
-| `Microsoft.Synapse/workspaces` | `ACS::DataHub::Project`, `ACS::DataV::Workspace`, `ACS::DataWorks::Project`, `ACS::EmrServerlessSpark::Workspace`, `ACS::MaxCompute::Project` |
 | `Microsoft.Resources/deploymentStacks` | `ACS::BPStudio::Application`, `ACS::ROS::StackGroup`, `ACS::ROS::Stack` |
 | `Microsoft.DataProtection/backupVaults/backupPolicies` | `ACS::ECS::AutoSnapshotPolicy`, `ACS::DBS::BackupPlan` |
 | `Microsoft.Graph/groups` | `ACS::CloudSSO::Group`, `ACS::RAM::Group` |

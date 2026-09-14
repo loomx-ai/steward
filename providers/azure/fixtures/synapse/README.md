@@ -16,10 +16,26 @@ The catalog contains 22 operations from the stable **2021-06-01** contract:
 - Restorable dropped SQL pools: workspace list and get.
 
 The three ARM documents and four transitive reference documents carry the hashes
-of their complete upstream files. Existing catalog operations and resource
-bindings are unchanged. No Synapse resource specification, inventory source,
-relationship, cleanup action driver or product-parity claim is added in this step.
-The matrix's five Synapse mappings remain in `unimplemented_resources`.
+of their complete upstream files. The initial contract commit (`413ca97`) did
+not enable inventory or cleanup. The next milestone adds three explicit resource
+specifications and a `synapse` inventory source. Its five workspace matrix entries
+now reference the existing specification, while behavioral verification remains
+pending. Existing operations and original fixtures are unchanged.
+
+Native inventory validates list/detail identities, parent membership, configuration
+changes, pagination and incomplete responses. Known IDs are reconciled through
+individual GETs; source lists have no authority to erase omitted assets. Default
+Data Lake references resolve through the current subscription's Storage list and
+matching detail reads, without following storage URLs or claiming ownership.
+Unresolved storage remains visible. Workspaces are reread after dependency reads.
+
+The three resource kinds are currently non-actionable because reviewed cleanup
+is unfinished, despite the native DELETE operations being present in the catalog.
+This is an intermediate implementation stage, not the final read-only scope or a
+claim of functional parity. Integration runtimes, private connectivity, code
+artifacts, running jobs, recovery/retention and complete cleanup are still required.
+Runtime tests use adapted native shapes and an in-process HTTP transport; the
+registered scan tests use the real worker, registry and SQLite persistence.
 
 ## Reproduce the local checks
 
@@ -27,7 +43,7 @@ From the repository root:
 
 ```sh
 python3 -B scripts/test_sync_azure_catalog.py
-go test ./providers/azure -run 'TestSynapseNativeContracts|TestCatalogReproducibleAndSpecsExecutable' -count=1 -v
+go test ./providers/azure -run 'TestSynapse|TestCatalogReproducibleAndSpecsExecutable' -count=1 -v
 ```
 
 The checks bind the official requests, reject undeclared parameters, path traversal

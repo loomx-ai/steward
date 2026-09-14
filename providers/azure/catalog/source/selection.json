@@ -10928,6 +10928,54 @@
       "list_operations": [
         "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_List"
       ]
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces",
+      "class": "data.workspace",
+      "display_name": "Synapse workspace",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "workspaces",
+      "read_operations": [
+        "Azure.Microsoft.Synapse.Workspaces_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Synapse.Workspaces_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/bigDataPools",
+      "class": "compute.cluster",
+      "display_name": "Synapse Spark pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "bigDataPools",
+      "read_operations": [
+        "Azure.Microsoft.Synapse.BigDataPools_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Synapse.BigDataPools_ListByWorkspace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/sqlPools",
+      "class": "data.database",
+      "display_name": "Synapse SQL pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "sqlPools",
+      "read_operations": [
+        "Azure.Microsoft.Synapse.SqlPools_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Synapse.SqlPools_ListByWorkspace"
+      ]
     }
   ]
 }

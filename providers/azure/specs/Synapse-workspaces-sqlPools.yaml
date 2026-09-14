@@ -1,0 +1,64 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Synapse/workspaces/sqlPools
+  class: data.database
+presentation:
+  displayNames:
+    en-US: Synapse SQL pool
+    zh-CN: Synapse SQL 池
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: synapse
+  list:
+    operation: Azure.Microsoft.Synapse.SqlPools_ListByWorkspace
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      workspaceName: parent.normalized.arm_parameters.workspaceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Synapse.SqlPools_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: synapse
+    nativeType: Microsoft.Synapse/workspaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  status:
+    path: status
+    type: string
+  creationDate:
+    path: creationDate
+    type: string
+  collation:
+    path: collation
+    type: string
+  maxSizeBytes:
+    path: maxSizeBytes
+    type: number
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Synapse/workspaces
+  targetIdPath: refs_microsoft_synapse_workspaces

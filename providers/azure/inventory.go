@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource && request.Source != synapseSource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	synapse := request.ResourceKind != nil && synapseKind(request.ResourceKind.NativeType) != ""
+	if request.Source == synapseSource && !synapse || synapse && request.Source != "" && request.Source != inventorySource && request.Source != synapseSource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_synapse_inventory_source")
 	}
 	elastic := request.ResourceKind != nil && elasticSanKind(request.ResourceKind.NativeType) != ""
 	if request.Source == elasticSanSource && !elastic || elastic && request.Source != "" && request.Source != inventorySource && request.Source != elasticSanSource {
@@ -66,6 +70,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if synapse {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = synapseSource
+		return r.listSynapse(ctx, c, request)
 	}
 	if elastic {
 		if request.Source == inventorySource {
@@ -639,6 +650,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(nativeType, id, raw)
+	if err := c.synapseReferences(ctx, nativeType, raw, normalized, refs); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
 	if isAPIMType(nativeType) {
 		for typ, values := range normalized["_apim_external_references"].(map[string][]string) {
 			for _, value := range stringValues(values) {
@@ -757,6 +771,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	}
 	actionable := known && !kind.ReadOnly
 	state := text(object(raw["properties"])["provisioningState"])
+	if nativeType == synapseSQLType && text(object(raw["properties"])["status"]) != "" {
+		state = text(object(raw["properties"])["status"])
+	}
 	if isBatchType(nativeType) {
 		state = batchState(nativeType, raw)
 	}
@@ -780,6 +797,9 @@ func addReference(refs map[string][]string, target, id string) {
 	refs[target] = append(refs[target], id)
 }
 func references(nativeType, self string, raw map[string]any) map[string][]string {
+	if synapseKind(nativeType) != "" {
+		return map[string][]string{}
+	}
 	if insightsWorkbookKind(nativeType) != "" {
 		return workbookReferences(nativeType, self, raw)
 	}
@@ -1090,7 +1110,7 @@ func safeResource(value any) any {
 			switch strings.ToLower(strings.ReplaceAll(key, "_", "")) {
 			case "password", "adminpassword", "secret", "secrets", "clientsecret", "accesskey", "connectionstring", "connectionstrings",
 				"servicekey", "authorizationkey", "sharedkey", "presharedkey", "peeringsharedkey", "radiusserversecret", "authenticationkey", "saskey", "sastoken", "primarykey", "secondarykey", "accountkey",
-				"requestheaders", "httpheaders", "appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword",
+				"requestheaders", "httpheaders", "appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword", "sqladministratorloginpassword",
 				"command", "configmap", "workspacekey", "storageaccountkey", "securevalue", "keyvalue", "validationtoken", "validationdata", "customblockresponsebody", "defaultcustomblockresponsebody", "pfxblob", "files", "config", "testdata", "secretsfilehref", "customdomainverificationid", "appcommandline", "migrationtoken", "qnaazuresearchendpointkey", "scriptcontent", "scripturlsastoken", "requirementsfilecontent":
 				continue
 			}

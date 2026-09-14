@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "c674d6f534a3f704f893f9e25f2ecc080ad1ffc732ef7aa5ac776cbe90f44c9c",
+    "checksum": "66c8e71c110be1b72442fb09a8ed22381a24e0933f4ebfb6180f87b42e961fea",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "cefd2d9a66394dda22d564ede4475423982aa0d8da58a253be42c8f30c020dc5",
+  "content_checksum": "3ba4f4d1c0fdea398b2e24258f759df4de982d1fde4b667972f3ce3a9a9b36b3",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -140291,6 +140291,57 @@
         ],
         "list_operations": [
           "Azure.Microsoft.StreamAnalytics.StreamingJobs_Get"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces",
+      "class": "data.workspace",
+      "display_name": "Synapse workspace",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "workspaces",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.Workspaces_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.Workspaces_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/bigDataPools",
+      "class": "compute.cluster",
+      "display_name": "Synapse Spark pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "bigDataPools",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.BigDataPools_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.BigDataPools_ListByWorkspace"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/sqlPools",
+      "class": "data.database",
+      "display_name": "Synapse SQL pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "sqlPools",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.SqlPools_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.SqlPools_ListByWorkspace"
         ]
       }
     },

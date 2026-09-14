@@ -61,6 +61,7 @@ func (r *Runtime) InventorySources() []contracts.InventorySource {
 		{Name: dataFactoryInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: dataMigrationInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: communicationInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeGlobal}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
+		{Name: synapseSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: productInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, KindSpecific: true, NetworkClosure: true},
 	}
 }

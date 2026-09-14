@@ -28,6 +28,7 @@ type productCursor struct {
 	Resources []string `json:"resources,omitempty"`
 }
 type productTarget struct {
+	SynapsePrivateConfiguration         string         `json:"synapse_private_configuration,omitempty"`
 	DomainPrivateConfiguration          string         `json:"domain_private_configuration,omitempty"`
 	APIMPrivateConfiguration            string         `json:"apim_private_configuration,omitempty"`
 	BatchPrivateConfiguration           string         `json:"batch_private_configuration,omitempty"`
@@ -133,7 +134,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	var values []any
 	var next string
 	var provenance response
-	if isAPIMAPI(nativeType) {
+	if synapseKind(nativeType) != "" {
+		values, next, provenance, err = c.synapsePage(ctx, endpoint, u.Path, nativeType)
+	} else if isAPIMAPI(nativeType) {
 		values, next, provenance, err = c.apimAPIPage(ctx, target.ParentID)
 	} else if nativeType == apimIssueType {
 		values, next, provenance, err = c.apimIssuePage(ctx, target.ParentID)
@@ -221,6 +224,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product detail identity mismatch")
 		}
 		data := detail.data
+		if synapseKind(kind.NativeType) != "" {
+			if err := c.synapseReadResponse(detail, id, kind.NativeType); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			if !nativeConfigurationContains(synapseSnapshot(raw), synapseSnapshot(data)) {
+				return contracts.InventoryBatch{}, serviceDenied("synapse_listed_configuration_changed")
+			}
+		}
 		if isDomainType(kind.NativeType) && (!insightsARMReadValid(detail, id, kind.NativeType) || !nativeConfigurationContains(domainSnapshot(kind.NativeType, raw), domainSnapshot(kind.NativeType, data))) {
 			return contracts.InventoryBatch{}, serviceDenied("domain_listed_configuration_changed")
 		}
@@ -305,7 +316,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if !productScopeMatches(request, item) {
 			continue
 		}
-		item.Normalized["_inventory_source"] = productInventorySource
+		item.Normalized["_inventory_source"] = definition.Discovery.Source
 		if target.ParentID != "" {
 			key := referenceKey(target.ParentType)
 			references, _ := item.Normalized[key].([]string)
@@ -480,6 +491,14 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	if err := c.verifyCosmosProductParent(ctx, target, current.data); err != nil {
 		return err
 	}
+	if target.SynapsePrivateConfiguration != "" {
+		if err := c.synapseReadResponse(current, target.ParentID, target.ParentType); err != nil {
+			return err
+		}
+		if target.SynapsePrivateConfiguration != c.privateConfiguration(synapseSnapshot(current.data)) {
+			return errProductParentGenerationChanged
+		}
+	}
 	if target.APIMPrivateConfiguration != "" && target.APIMPrivateConfiguration != c.privateConfiguration(apimSnapshot(target.ParentType, current.data)) {
 		return errProductParentGenerationChanged
 	}
@@ -547,7 +566,7 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 func (r *Runtime) productTargets(ctx context.Context, c *client, request contracts.InventoryRequest, definition spec.ResourceKindSpec, ancestors []string) ([]productTarget, error) {
 	parents := []contracts.InventoryItem{{}}
 	if parent := definition.Discovery.Parent; parent != nil {
-		if parent.Source != productInventorySource {
+		if parent.Source != productInventorySource && !(parent.Source == synapseSource && synapseKind(parent.NativeType) == synapseType) {
 			return nil, fmt.Errorf("Azure product parent requires an authoritative source")
 		}
 		parents = nil
@@ -653,6 +672,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		if parent.NativeID != "" {
 			target.ParentID, target.ParentType, target.Location = parent.NativeID, parent.NativeType, parent.Location
 			target.Generation = productGeneration(parent.Raw)
+			if synapseKind(parent.NativeType) != "" {
+				target.SynapsePrivateConfiguration = text(parent.Normalized["_synapse_private_configuration"])
+			}
 			if isAPIMType(parent.NativeType) {
 				target.APIMPrivateConfiguration = text(parent.Normalized["_apim_private_configuration"])
 			}

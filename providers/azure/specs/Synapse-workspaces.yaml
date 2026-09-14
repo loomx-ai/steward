@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Synapse/workspaces
+  class: data.workspace
+presentation:
+  displayNames:
+    en-US: Synapse workspace
+    zh-CN: Synapse 工作区
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: synapse
+  list:
+    operation: Azure.Microsoft.Synapse.Workspaces_List
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Synapse.Workspaces_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  defaultDataLakeStorage:
+    path: defaultDataLakeStorage
+    type: object
+  managedResourceGroupName:
+    path: managedResourceGroupName
+    type: string
+  connectivityEndpoints:
+    path: connectivityEndpoints
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts/blobServices/containers
+  targetIdPath: refs_microsoft_storage_storageaccounts_blobservices_containers
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities

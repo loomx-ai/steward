@@ -255925,6 +255925,60 @@
       "scopeKinds": [
         "region"
       ]
+    },
+    {
+      "nativeType": "Microsoft.Synapse/workspaces",
+      "class": "data.workspace",
+      "displayName": "Synapse workspace",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "workspaces",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.Workspaces_Get"
+        ],
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.Workspaces_List"
+        ]
+      }
+    },
+    {
+      "nativeType": "Microsoft.Synapse/workspaces/bigDataPools",
+      "class": "compute.cluster",
+      "displayName": "Synapse Spark pool",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "bigDataPools",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.BigDataPools_Get"
+        ],
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.BigDataPools_ListByWorkspace"
+        ]
+      }
+    },
+    {
+      "nativeType": "Microsoft.Synapse/workspaces/sqlPools",
+      "class": "data.database",
+      "displayName": "Synapse SQL pool",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "sqlPools",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.SqlPools_Get"
+        ],
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.SqlPools_ListByWorkspace"
+        ]
+      }
     }
   ]
 }
