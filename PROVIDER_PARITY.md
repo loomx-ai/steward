@@ -4748,3 +4748,38 @@ background evidence only, not acceptance evidence for this work.
   (30 isolated/42 main chapters and all 10 original screenshots). All 65
   preexisting WIP hashes were preserved; every prior source fragment, resource
   rule and generated operation remains unchanged.
+
+
+## GCP Storage Pool native disk members
+
+- Pool product inventory now enumerates every native `storagePools.listDisks`
+  page, retaining disk capacities, usage, performance, attachments and snapshot
+  policies. Empty-page continuation is supported; missing empty `items` is valid
+  only with the native response discriminator. Explicit malformed arrays/tokens,
+  partial results, token cycles and failed pages fail the scan.
+- Member identities must be unique across pages and valid same-zone zonal disks.
+  Google's native error catalog documents same-organization cross-project sharing
+  despite the overview's same-project limitation. Shared foreign-project members
+  remain summaries without foreign API reads or actionable assets; only local
+  disk identities enter this connection's explicit network references. A final native pool read verifies selfLink, kind, zone, id and
+  creation timestamp against the enumerated pool; mutable usage may change.
+- Validated disk identities participate in network selection. Member summaries
+  remain pool metadata and never become reverse pool-to-disk delete dependencies;
+  the separate Disk shard remains authoritative for disk existence and its own
+  ordinary pool dependency. No pool cleanup action is enabled by this milestone.
+- Actual SQLite worker tests reopen database/runtime, preserve old members after
+  denied/partial member scans, reconcile a missing pool, then replace the surviving
+  pool's members with a complete empty native list. Protocol tests cover paging,
+  large integer precision, malformed responses, scope/identity conflicts, network
+  closure and parent replacement/absence. No independent emulator or live cloud
+  was started. Existing catalog source documents and generated operations remain
+  unchanged. List pagination is not a transactional membership snapshot; supported
+  pool cleanup still requires lifecycle and action validation. All eight overall
+  acceptance criteria remain open.
+- Validation: final `go test ./... -count=1` passed, including Azure (352.239s)
+  and GCP (167.678s). Final GCP Storage Pool/Compute/product/catalog/managed race
+  tests passed (26.792s), isolated focused tests passed (9.871s), and main focused
+  tests passed (9.577s). GCP vet and documentation checks passed (30 isolated/42
+  main chapters and all 10 original screenshots). All final checks include the
+  shared-project member implementation. All 65 preexisting WIP hashes and all
+  source/generated catalog files were preserved.

@@ -28,6 +28,9 @@ func TestStoragePoolNativeInventoryPagingAndScope(t *testing.T) {
 			second["storagePoolType"] = "exapool"
 			second["exapoolProvisionedCapacityGb"] = map[string]any{"hyperdiskBalancedCapacityGb": "20480"}
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				if response, ok := storagePoolInventoryResponse(req); ok {
+					return response, nil
+				}
 				if req.Method != "GET" || req.URL.Path != "/compute/v1/projects/sample-project/aggregated/storagePools" || req.URL.Query().Get("includeAllScopes") != "true" || req.URL.Query().Get("maxResults") != "100" {
 					t.Fatalf("unexpected native list %s %s", req.Method, req.URL)
 				}
@@ -89,6 +92,9 @@ func TestStoragePoolNativeInventoryRejectsUncertainResults(t *testing.T) {
 				raw["name"] = "different"
 			}
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				if response, ok := storagePoolInventoryResponse(req); ok {
+					return response, nil
+				}
 				if mode == "denied" {
 					return apiResponse(req, 403, `{"error":{"code":403}}`), nil
 				}
@@ -153,4 +159,25 @@ func TestStoragePoolDiskReferencesAndNativeBindings(t *testing.T) {
 	if !ok || len(definition.REST.DeleteOperations) != 0 {
 		t.Fatal("unreviewed delete binding")
 	}
+}
+
+// Default native member and own-read responses for inventory regression tests.
+func storagePoolInventoryResponse(req *http.Request) (*http.Response, bool) {
+	parts := strings.Split(req.URL.Path, "/")
+	if req.Method != "GET" || len(parts) < 9 || parts[5] != "zones" || parts[7] != "storagePools" {
+		return nil, false
+	}
+	data := storagePoolFixture(parts[6], parts[8])
+	if len(parts) == 10 && parts[9] == "listDisks" {
+		data = map[string]any{"kind": "compute#storagePoolListDisks", "items": []any{storagePoolDiskFixture(parts[6], parts[8]+"-disk")}}
+	} else if len(parts) != 9 {
+		return nil, false
+	}
+	body, _ := json.Marshal(data)
+	return apiResponse(req, 200, string(body)), true
+}
+
+func storagePoolDiskFixture(zone, name string) map[string]any {
+	root := "https://compute.googleapis.com/compute/v1/projects/sample-project/zones/" + zone
+	return map[string]any{"disk": root + "/disks/" + name, "name": name, "status": "READY", "type": root + "/diskTypes/hyperdisk-balanced", "sizeGb": "9007199254740993", "provisionedIops": "3000", "provisionedThroughput": "140", "usedBytes": "1099511627776", "creationTimestamp": "2026-09-01T00:00:00Z", "attachedInstances": []any{root + "/instances/vm"}, "resourcePolicies": []any{"https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/resourcePolicies/snapshots"}}
 }

@@ -100,3 +100,6 @@ fields:
   shareSettings:
     path: shareSettings
     type: object
+  memberDisks:
+    path: storage_pool_disks
+    type: array

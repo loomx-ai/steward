@@ -331,8 +331,12 @@ sharing settings remain available; int64 values stay strings. Both native
 `resourceStatus` and `status` usage objects are supported. Disk `storagePool`
 and node `storagePools` references use validated canonical pool identities.
 
-This milestone enables inventory and references. Complete `listDisks` membership,
-reviewed pool cleanup and independent emulator verification remain unfinished.
+Native `listDisks` membership is now paginated and retained with pool observations,
+including precise disk capacity/performance, attached instances and snapshot policies.
+Identity, duplicate and partial-result checks fail incomplete scans; pool readback
+rejects a replaced creation. Member disk references participate in network selection
+without adding reverse deletion dependencies. Reviewed pool cleanup and independent
+emulator verification remain unfinished.
 The original `list`, `get`, `listDisks` and `delete` methods are imported, but no
 pool delete action is registered yet. Storage Pools require their disks to be
 removed first; disk snapshots remain separate. Exapool deletion requires Google's

@@ -117,6 +117,21 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 				return nil, err
 			}
 		}
+		if operation.ID == "compute.storagePools.listDisks" {
+			if value, present := response.Data["nextPageToken"]; present {
+				if _, ok := value.(string); !ok {
+					return nil, groupDenied("storage_pool_disk_list_invalid")
+				}
+			}
+			if response.Data["kind"] != "compute#storagePoolListDisks" {
+				return nil, groupDenied("storage_pool_disk_list_invalid")
+			}
+			if value, present := response.Data["items"]; present {
+				if _, ok := value.([]any); !ok {
+					return nil, groupDenied("storage_pool_disk_list_invalid")
+				}
+			}
+		}
 		records, err := productRecords(response.Data, itemsPath)
 		if err != nil {
 			return nil, err

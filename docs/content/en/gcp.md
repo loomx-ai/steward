@@ -37,7 +37,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Service | Recognized resources | Cleanup |
 | --- | --- | --- |
 | Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
-| Hyperdisk Storage Pools | Native pools, capacity/performance usage, provisioning modes and disk references | Inventory; cleanup pending |
+| Hyperdisk Storage Pools | Native pools, capacity/performance usage, provisioning modes and disk members | Inventory; cleanup pending |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
 | Cloud Identity | Groups and member relationships in the configured directory | Reviewed group deletion; ordinary member links can also be removed independently |
 | Resource Manager | Organization containing the connected project, discovered through its folder ancestry | Read-only; the public v3 API has no organization delete method |
@@ -147,4 +147,6 @@ Cloud TPU APIs do not offer an atomic configuration or incarnation condition for
 
 Pool inventory uses native Compute aggregate lists and maps each zone to its scan region. It preserves provisioned capacity, IOPS and throughput, written/used capacity, disk counts, provisioning modes, Exapool capacity and sharing settings. Large integer values retain their native precision. Disk pool references remain ordinary dependencies; they do not imply a deletion cascade.
 
-Grant `compute.storagePools.list` for inventory and `compute.storagePools.get` for native reads. Denied or partial lists fail the scan and preserve existing observations. Complete member discovery and reviewed pool cleanup remain unfinished. Google requires Storage Pool disks to be removed before deleting the pool, while snapshots remain separate; Exapool deletion requires the account team. See [Google's pool management guide](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools). Pooling capacity and performance does not establish equivalence to Alibaba Cloud's exclusive physical storage.
+Inventory requires `compute.storagePools.list` and `compute.storagePools.get` (for member lists and pool readback). Denied or partial lists fail the scan and preserve existing observations. Member discovery follows all pages of `storagePools.listDisks`, preserving disk size, used bytes, IOPS, throughput, attachments and snapshot policies. Disks must belong to the pool’s zone; pool identity is rechecked after paging. Shared disks in other projects remain member summaries, without reading or managing those projects through this connection. Failed member reads preserve the previous observations. Disk records are reconciled by their own disk scans.
+
+Reviewed pool cleanup remains unfinished. Google requires Storage Pool disks to be removed before deleting the pool, while snapshots remain separate; Exapool deletion requires the account team. See [Google's pool management guide](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools). Pooling capacity and performance does not establish equivalence to Alibaba Cloud's exclusive physical storage.

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -18,6 +19,20 @@ import (
 func TestStoragePoolSQLiteScanFailureAndReconciliation(t *testing.T) {
 	phase := "first"
 	transport := func(req *http.Request) (*http.Response, error) {
+		if strings.HasSuffix(req.URL.Path, "/listDisks") {
+			if phase == "members-empty" {
+				return apiResponse(req, 200, `{"kind":"compute#storagePoolListDisks"}`), nil
+			}
+			if phase == "members-denied" {
+				return apiResponse(req, 403, `{"error":{"code":403}}`), nil
+			}
+			if phase == "members-partial" {
+				return apiResponse(req, 200, `{"kind":"compute#storagePoolListDisks","unreachables":["zone"]}`), nil
+			}
+		}
+		if response, ok := storagePoolInventoryResponse(req); ok {
+			return response, nil
+		}
 		if req.Method != "GET" || req.URL.Path != "/compute/v1/projects/sample-project/aggregated/storagePools" {
 			t.Fatalf("unexpected pool request %s %s", req.Method, req.URL)
 		}
@@ -25,7 +40,7 @@ func TestStoragePoolSQLiteScanFailureAndReconciliation(t *testing.T) {
 			return apiResponse(req, 403, `{"error":{"code":403}}`), nil
 		}
 		rows := map[string]any{"zones/us-central1-a": map[string]any{"storagePools": []any{storagePoolFixture("us-central1-a", "pool-a")}}}
-		if phase != "reconcile" {
+		if phase != "reconcile" && phase != "members-empty" {
 			rows["zones/us-central1-b"] = map[string]any{"storagePools": []any{storagePoolFixture("us-central1-b", "pool-b")}}
 		}
 		if phase == "partial" {
@@ -62,7 +77,7 @@ func TestStoragePoolSQLiteScanFailureAndReconciliation(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	for _, step := range []string{"first", "denied", "partial", "reconcile"} {
+	for _, step := range []string{"first", "denied", "partial", "members-denied", "members-partial", "reconcile", "members-empty"} {
 		phase = step
 		if step == "denied" {
 			repo, err = sqlite.Open(db, "../../migrations")
@@ -87,7 +102,7 @@ func TestStoragePoolSQLiteScanFailureAndReconciliation(t *testing.T) {
 		service := inventory.NewService(repo.Inventory(), inventory.WithClock(func() time.Time { return now }))
 		handler := inventory.NewScanHandler(repo, dataformVisibilityRuntime{adapter: runtime}, service)
 		err := handler.Handle(t.Context(), execution.Job{ID: execution.JobID("pool-" + step), Type: execution.JobScan, Payload: map[string]any{"scan_shard_id": string(shard.ID)}})
-		failed := step == "denied" || step == "partial"
+		failed := step == "denied" || step == "partial" || step == "members-denied" || step == "members-partial"
 		if (err != nil) != failed {
 			t.Fatal("wrong native scan outcome", step, err)
 		}
@@ -101,6 +116,14 @@ func TestStoragePoolSQLiteScanFailureAndReconciliation(t *testing.T) {
 		}
 		closed := 0
 		for _, value := range page.Items {
+			members, ok := value.Normalized["storage_pool_disks"].([]any)
+			expectedMembers := 1
+			if step == "members-empty" && value.ClosedAt == nil {
+				expectedMembers = 0
+			}
+			if !ok || len(members) != expectedMembers || expectedMembers > 0 && object(members[0])["sizeGb"] != "9007199254740993" {
+				t.Fatal("persisted pool members lost", step, value)
+			}
 			if value.ClosedAt != nil {
 				closed++
 			}
@@ -109,7 +132,7 @@ func TestStoragePoolSQLiteScanFailureAndReconciliation(t *testing.T) {
 			}
 		}
 		expected := 0
-		if step == "reconcile" {
+		if step == "reconcile" || step == "members-empty" {
 			expected = 1
 		}
 		if closed != expected {

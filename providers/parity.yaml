@@ -957,7 +957,7 @@ resources:
     - Microsoft.ElasticSan/elasticSans
   status: pending_verification
   notes: GCP now inventories native Hyperdisk Storage Pools with capacity/performance usage and
-    disk references; complete member discovery and pool cleanup remain unfinished. Pooled
+    native paginated disk members; pool cleanup remains unfinished. Pooled
     capacity is not proof of Alibaba's exclusive physical-resource isolation. Azure supports
     native Elastic SAN inventory and ordered cleanup of non-retained boundaries; retained
     group purge and retained-boundary cleanup still require verification.

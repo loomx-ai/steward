@@ -356,6 +356,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if !productScopeMatches(request, item) {
 			continue
 		}
+		if nativeType == storagePoolType {
+			if err := c.enrichStoragePool(ctx, &item, record.Data); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+		}
 		item.Normalized["_inventory_source"] = productInventorySource
 		if err := c.enrichDataformContainer(ctx, &item, record.Data); err != nil {
 			return contracts.InventoryBatch{}, err
