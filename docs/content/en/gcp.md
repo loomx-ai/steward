@@ -527,10 +527,23 @@ A budget disappearing from a visible list is not treated as deleted. Steward
 rereads saved budgets and confirms their accounts remain readable. Only the saved
 budget's own 404 establishes its absence; permission errors preserve history.
 Fresh budget observations can resolve notification-channel dependencies, but
-budgets currently have no cleanup action and email-channel cleanup remains blocked
-until consumer scope is fully established.
+email-channel cleanup remains blocked until consumer scope is fully established.
 
 This path requires billing-account visibility, `billing.accounts.get`,
 `billing.budgets.list` and `billing.budgets.get`. Project-only budget permissions
 without account visibility are not yet covered. See the
 [native Budget access-control requirements](https://docs.cloud.google.com/billing/docs/how-to/budget-api-access-control).
+
+
+Budget cleanup requires a fresh scan of both the budget and its account. It checks
+their observable configuration before native DELETE and confirms the budget's own
+404 after worker restart. Account loss and denied reads are not deletion evidence.
+Cleanup preserves notification channels and spending projects. It also requires
+`billing.budgets.delete`; no account-close or project-delete permission is used.
+See the [native Budget deletion contract](https://docs.cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets/delete).
+
+Writes to one account are serialized within a connection. If a response is lost,
+continue the original task; uncertain failed or canceled attempts retain their
+reservation. Duplicate connections and external clients are outside that scope.
+The native API has no conditional DELETE, and some Console-only settings are not
+exposed: changes by other clients can race the final read.

@@ -11,6 +11,7 @@ import (
 
 const billingBudgetSource = "billing-budgets-visible"
 const billingBudgetReview = "_billing_budget_configuration"
+const billingBudgetAccountReview = "_billing_budget_account_configuration"
 
 func redactBillingBudgetPayload(data map[string]any) {
 	name := strings.TrimPrefix(text(data["name"]), "//billingbudgets.googleapis.com/")
@@ -123,6 +124,7 @@ func (r *Runtime) listBillingBudgets(ctx context.Context, c *client, request con
 		}
 		safe["billing_account"] = parent
 		safe[billingBudgetReview] = firewallDigest(live.Data)
+		safe[billingBudgetAccountReview] = firewallDigest(account)
 		safe["_inventory_source"] = billingBudgetSource
 		safe = safePayload(safe)
 		batch.Items = append(batch.Items, contracts.InventoryItem{NativeType: billingBudgetType, NativeID: id, ResourceKind: r.resourceKind(billingBudgetType), Scope: contracts.InventoryScope{Kind: asset.ScopeGlobal, NativeID: c.project + "/global", Name: "Global", Location: "global"}, Name: text(live.Data["displayName"]), Location: "global", Normalized: safe, Raw: map[string]any{"name": id, "assetType": billingBudgetType, "resource": map[string]any{"data": safePayload(safe), "location": "global"}}})

@@ -6226,3 +6226,27 @@ Bilingual capability/permission documentation describes the actual read scope.
 Budget cleanup, project-only budget discovery, complete account/consumer coverage,
 external-writer coordination and real-cloud acceptance remain open. No full-goal
 acceptance criterion is closed by this milestone.
+
+### GCP reviewed Billing Budget cleanup milestone
+
+Budget cleanup now binds native synchronous DELETE to the frozen budget, account,
+connection and request review. A fresh scan captures account configuration as well
+as budget configuration. Readback brackets the budget's own GET with account reads;
+account disappearance cannot masquerade as budget deletion. Unsupported parameters,
+impacts, modified reviews, canceled requests and raw Invoke cannot bypass review.
+Receipts survive JSON restart and settle only after confirmed own absence; a lost
+response does not independently release the write scope.
+
+Shared persisted reservations serialize writes per connection/account and retain
+uncertain failed/canceled attempts. Real SQLite plan/worker restart verifies one
+DELETE and the final tombstone. Protocol tests cover drift, failures, cancellation,
+receipt corruption and recovery. The pinned independent backend verifies reviewed
+Budget DELETE, retained notification channel, own-404 settlement and inventory
+reconciliation (71 forwarded calls, one runtime DELETE); all prior channel/Budget
+native cases pass. Catalog retains 203 resource rules and now has 800 methods.
+
+Bilingual docs describe required read/delete permissions and rescan. Conditional
+DELETE is unavailable natively, Console-only settings remain unobservable, and
+external/cross-connection writers remain outside local coordination. Complete
+email-consumer scope, project-only budget discovery and real-cloud/full-goal
+acceptance remain unfinished. No overall acceptance criterion is closed.

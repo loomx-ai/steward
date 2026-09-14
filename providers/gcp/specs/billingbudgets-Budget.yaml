@@ -22,7 +22,7 @@ discovery:
       tokenPath: nextPageToken
       pageSizeParameter: pageSize
       maxPageSize: 100
-  detail:
+  detail: &read
     operation: billingbudgets.billingAccounts.budgets.get
     itemsPath: $
     identityPath: name
@@ -47,3 +47,10 @@ fields:
     type: array
 extensions:
   hook: gcp.resource
+actions:
+  delete:
+    operation: billingbudgets.billingAccounts.budgets.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *read

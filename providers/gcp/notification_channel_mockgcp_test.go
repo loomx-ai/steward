@@ -27,7 +27,15 @@ func TestBillingBudgetIndependentMockGCP(t *testing.T) {
 func TestBillingBudgetInventoryIndependentMockGCP(t *testing.T) {
 	testNotificationChannelIndependentMockGCP(t, "email", true, true)
 }
+func TestBillingBudgetDeleteIndependentMockGCP(t *testing.T) {
+	testNotificationChannelIndependentMockGCP(t, "email", true, true, true)
+}
 func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, billing ...bool) {
+	cleanupBudget := len(billing) > 2 && billing[2]
+	inventoryAccount := "billingAccounts/ABCDEF-012345-678901"
+	if cleanupBudget {
+		inventoryAccount = "billingAccounts/ABCDEF-ABCDEF-ABCDEF"
+	}
 	inventoryBudget := len(billing) > 1 && billing[1]
 	withBudget := len(billing) != 0 && billing[0]
 	endpoint := os.Getenv("STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL")
@@ -95,9 +103,9 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, bi
 		} else {
 			// This case may run alone. The mock has no account DELETE; create through
 			// a dedicated account identity when sharing the harness with the prior case.
-			account = native("POST", "/v1/billingAccounts", map[string]any{"name": "billingAccounts/ABCDEF-012345-678901", "displayName": "Inventory account"})
+			account = native("POST", "/v1/billingAccounts", map[string]any{"name": inventoryAccount, "displayName": "Inventory account"})
 		}
-		if (!inventoryBudget && account["name"] != testBillingAccount) || (inventoryBudget && account["name"] != "billingAccounts/ABCDEF-012345-678901") {
+		if (!inventoryBudget && account["name"] != testBillingAccount) || (inventoryBudget && account["name"] != inventoryAccount) {
 			t.Fatal("wrong native billing account")
 		}
 		budget := billingBudgetFixture()
@@ -118,17 +126,26 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, bi
 	}
 	calls := []string{}
 	billingFixtureCalls := 0
+	budgetRuntimeDeletes := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if req.URL.Host == "cloudbilling.googleapis.com" && delivery == "email" && !withBudget {
 			billingFixtureCalls++
 			return emptyBillingAccountsFixture(t, req), nil
 		}
 		billingRead := withBudget && (req.URL.Host == "cloudbilling.googleapis.com" || req.URL.Host == "billingbudgets.googleapis.com") && req.Method == "GET"
-		if (!billingRead && req.URL.Host != "monitoring.googleapis.com") || (req.Method != "GET" && (delivery == "email" || req.Method != "DELETE")) {
+		billingDelete := cleanupBudget && req.URL.Host == "billingbudgets.googleapis.com" && req.Method == "DELETE" && req.URL.Path == "/v1/"+budgetName
+		monitoringCall := req.URL.Host == "monitoring.googleapis.com" && (req.Method == "GET" || delivery != "email" && req.Method == "DELETE")
+		if !billingRead && !billingDelete && !monitoringCall {
 			t.Fatal("unexpected runtime request", req.Method, req.URL)
 		}
 		if req.Method == "DELETE" && strings.Contains(req.URL.Path, "/notificationChannels/") && req.URL.RawQuery != "force=false" {
 			t.Fatal("forced native channel delete")
+		}
+		if billingDelete {
+			budgetRuntimeDeletes++
+			if req.URL.RawQuery != "" {
+				t.Fatal("unexpected native budget delete query")
+			}
 		}
 		calls = append(calls, req.Method+" "+req.URL.Path)
 		local := req.Clone(req.Context())
@@ -183,13 +200,54 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, bi
 		if err != nil || len(batch.Items) != 1 || batch.Items[0].Name != "Updated native budget" || batch.Items[0].Normalized[billingBudgetReview] == before {
 			t.Fatal(batch, err)
 		}
-		native("DELETE", "/v1/"+budgetName, nil)
+		if cleanupBudget {
+			item := batch.Items[0]
+			value := asset.Asset{ID: "native-budget", Identity: channel.Identity, Normalized: item.Normalized}
+			value.Identity.NativeType, value.Identity.NativeID = billingBudgetType, item.NativeID
+			request := contracts.ActionRequest{Asset: value, Action: "delete", IdempotencyKey: "native-budget-delete"}
+			driver, err := r.ResolveAction(t.Context(), "connection", value)
+			if err != nil {
+				t.Fatal(err)
+			}
+			result, err := driver.Execute(t.Context(), request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			budgetExists = false
+			encoded, _ := json.Marshal(result)
+			var restored contracts.ActionResult
+			if err := json.Unmarshal(encoded, &restored); err != nil {
+				t.Fatal(err)
+			}
+			fresh := protocolRuntime(t, r.transport.RoundTrip)
+			driver, err = fresh.ResolveAction(t.Context(), "connection", value)
+			if err != nil {
+				t.Fatal(err)
+			}
+			wait, err := driver.Wait(t.Context(), request, restored)
+			if err != nil || !wait.Done {
+				t.Fatal(wait, err)
+			}
+			settled, err := driver.(contracts.MutationSettlementReader).MutationSettled(t.Context(), request, restored)
+			if err != nil || !settled.Settled || budgetRuntimeDeletes != 1 {
+				t.Fatal(settled, err, budgetRuntimeDeletes)
+			}
+			if native("GET", "/v3/"+name, nil)["name"] != name {
+				t.Fatal("budget cleanup removed channel")
+			}
+		} else {
+			native("DELETE", "/v1/"+budgetName, nil)
+		}
 		budgetExists = false
 		batch, err = r.List(t.Context(), req)
 		if err != nil || !batch.Complete || len(batch.Items) != 0 || len(batch.AbsentNativeIDs) != 1 || batch.AbsentNativeIDs[0] != req.KnownNativeIDs[0] {
 			t.Fatal(batch, err)
 		}
-		t.Logf("Native budget inventory, changed configuration and known-budget DELETE/GET-404 reconciliation passed (%d forwarded GETs)", len(calls))
+		if cleanupBudget {
+			t.Logf("Native reviewed budget DELETE, JSON restart, own-404 settlement, retained channel and inventory reconciliation passed (%d forwarded calls; %d runtime DELETE)", len(calls), budgetRuntimeDeletes)
+		} else {
+			t.Logf("Native budget inventory, changed configuration and known-budget DELETE/GET-404 reconciliation passed (%d forwarded GETs)", len(calls))
+		}
 		return
 	}
 	policySeed := alertPolicyFixture()

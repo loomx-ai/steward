@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "958c5dee1c6322aabe89057cf9ed72e882b777b15e24ea7b8abac394cba56319",
+    "checksum": "1fca9c7bea6a83e3c0e9c0456be6ff1affcf2f3d255163ccad72d8a3df16ebaf",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "5c95a88c427a771741c173692c4b9e1fd7ae923f33ca0e7920bc397161de28b7",
+  "content_checksum": "2f22c1d40a9bb832baab2f1139e4423dda18ec27e93dccfd12dbc50d255ed2a9",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -11924,6 +11924,47 @@
         "parameter_position": "query"
       },
       "source_uri": "https://bigtableadmin.googleapis.com/$discovery/rest?version=v2"
+    },
+    {
+      "id": "billingbudgets.billingAccounts.budgets.delete",
+      "name": "delete",
+      "service": "billingbudgets",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. Name of the budget to delete. Values are of the form `billingAccounts/{billingAccountId}/budgets/{budgetId}`.",
+            "location": "path",
+            "pattern": "^billingAccounts/[^/]+/budgets/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+        "id": "GoogleProtobufEmpty",
+        "properties": {},
+        "type": "object"
+      },
+      "call": {
+        "product": "billingbudgets",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://billingbudgets.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://billingbudgets.googleapis.com/$discovery/rest?version=v1"
     },
     {
       "id": "billingbudgets.billingAccounts.budgets.get",
@@ -114779,6 +114820,9 @@
         "collection": "budgets",
         "read_operations": [
           "billingbudgets.billingAccounts.budgets.get"
+        ],
+        "delete_operations": [
+          "billingbudgets.billingAccounts.budgets.delete"
         ],
         "list_operations": [
           "billingbudgets.billingAccounts.budgets.list"

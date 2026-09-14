@@ -1064,6 +1064,12 @@
         "billingbudgets.billingAccounts.budgets.list"
       ],
       "source_uri": "https://billingbudgets.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "source_uri": "https://billingbudgets.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "billingbudgets.billingAccounts.budgets.delete"
+      ]
     }
   ],
   "resource_types": [

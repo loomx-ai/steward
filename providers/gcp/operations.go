@@ -12,6 +12,9 @@ import (
 )
 
 func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (contracts.InvocationResult, error) {
+	if invocation.Operation == billingBudgetDelete {
+		return contracts.InvocationResult{}, groupDenied("billing_budget_requires_reviewed_action")
+	}
 	if invocation.Operation == "monitoring.projects.notificationChannels.delete" {
 		return contracts.InvocationResult{}, groupDenied("notification_channel_requires_reviewed_action")
 	}
@@ -194,10 +197,13 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		if _, _, err := billingBudgetName(nativeID); err != nil {
 			return catalog.Operation{}, nil, err
 		}
-		if method != "GET" {
+		operationID := "billingbudgets.billingAccounts.budgets.get"
+		if method == "DELETE" {
+			operationID = billingBudgetDelete
+		} else if method != "GET" {
 			return catalog.Operation{}, nil, groupDenied("billing_budget_method_unsupported")
 		}
-		operation, ok := metadata.catalog.Operation("billingbudgets.billingAccounts.budgets.get")
+		operation, ok := metadata.catalog.Operation(operationID)
 		if !ok {
 			return catalog.Operation{}, nil, groupDenied("billing_operation_missing")
 		}

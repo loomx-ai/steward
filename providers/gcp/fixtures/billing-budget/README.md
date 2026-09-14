@@ -17,8 +17,8 @@ cannot bypass it. Non-email channel refreshes require no Billing permissions.
 ## Native contracts and provenance
 
 Selected native operations are `cloudbilling.billingAccounts.list/get` and
-`billingbudgets.billingAccounts.budgets.list/get`. The inventory extension below adds a Budget resource rule; no Billing mutation,
-IAM change or notification-send operation is added.
+`billingbudgets.billingAccounts.budgets.list/get`. The inventory extension below adds a Budget resource rule; the subsequent reviewed-delete extension is described below. No IAM change or
+notification-send operation is added.
 
 - [Cloud Billing Discovery v1](https://cloudbilling.googleapis.com/$discovery/rest?version=v1),
   revision `20260904`, downloaded document SHA-256
@@ -32,7 +32,7 @@ IAM change or notification-send operation is added.
 The adjacent schema fixtures retain native schema objects and transitive `$ref`
 closure unchanged. Tests compile these independently from the generated catalog.
 The read foundation added four methods; the inventory extension brings the catalog
-to 203 resource rules and 799 methods.
+to 203 resource rules; reviewed DELETE brings the method count to 800.
 
 ## Verification
 
@@ -123,8 +123,61 @@ all four channel/Budget independent cases passed; the inventory case forwarded
 fabricated Billing responses are used. The mock's IAM/paging/concurrency limits
 and beta-proto v1 adaptation remain unchanged.
 
-Budget deletion remains a subsequent lifecycle step, requiring explicit reviewed
-scope and mutation/restart safeguards; the current Budget rule has no action.
+Budget deletion was subsequently added with the review and restart safeguards
+described below.
 Project-only budget permissions without account visibility are not covered by
 this account-scoped inventory path. Neither indexed budgets nor successful
 reconciliation establish complete external consumer coverage for email deletion.
+
+
+## Reviewed Budget deletion
+
+The Budget rule now exposes native `billingbudgets.billingAccounts.budgets.delete`
+from the same pinned v1 Discovery document (including `GoogleProtobufEmpty`).
+Previous method/schema fragments are unchanged. The native
+[DELETE contract](https://docs.cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets/delete)
+requires an empty body and returns an empty JSON object; it accepts no etag/CAS
+condition. Generic Invoke is blocked for this operation.
+
+A new inventory scan stores separate fingerprints of the complete observable
+budget and its account. Deletion requires both, the exact frozen asset and
+connection/partition, a nonempty idempotency key, matching account selector, and
+no action parameters, lifecycle impacts or prerequisites. Old assets lacking the
+account fingerprint need rescan. Preflight and execution repeat native account
+and budget GETs; account configuration changes, permission loss and budget drift
+block the write. Cancellation before execution or during the final read prevents
+DELETE. No channel, spending project or billing account is deleted by this action.
+
+An empty synchronous response produces a receipt bound to the frozen budget and
+account reviews, asset identity, action and idempotency key. Restart verifies the
+receipt and requires the budget's own GET 404 between successful matching account
+reads. DELETE 404 alone is not sufficient while GET still sees the budget.
+Unexpected operation bodies, modified receipts and lost responses cannot settle
+the mutation. Continue the original task to verify uncertain deletion; a lost
+receipt cannot independently release a failed task's write reservation.
+
+The existing persistent mutation reservation serializes Budget writes within one
+connection and billing account. Other accounts stay independent. Shared tests
+exercise ordering, invalid scope identities, blocked running/waiting/paused/failed/
+canceled attempts and terminal settlement. This does not coordinate duplicate
+connections to the same account or external cloud clients.
+
+Protocol tests cover observed budget/account/private/unknown-field drift,
+permission and identity failures, missing reviews, unsupported parameters/impacts,
+cancellation, live/absent targets, rejected and lost DELETE responses, own-404
+confirmation, JSON receipt restoration and settlement. A real SQLite cleanup
+plan/worker closes and reopens its database between action phases, emits DELETE
+once, waits while the target remains live and persists a tombstone after own 404.
+
+`TestBillingBudgetDeleteIndependentMockGCP` adds native reviewed DELETE, JSON
+restart, own-404 settlement, channel preservation and post-delete inventory
+reconciliation to the pinned independent harness. In the five-case run it passed
+with 71 forwarded calls and exactly one runtime Budget DELETE. The preceding
+channel, dependency and inventory native cases also passed. Native fixture writes
+remain outside the runtime path; no Billing response fixtures are used for the
+Budget cases.
+
+The API has no conditional DELETE and omits some Console-only settings. External
+changes can race the last read, and masked/unexposed fields cannot be compared.
+Budget lifecycle support does not establish complete email-channel consumer scope:
+email deletion, project-only discovery and real-cloud acceptance remain open.

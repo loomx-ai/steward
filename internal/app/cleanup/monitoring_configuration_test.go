@@ -21,22 +21,30 @@ func monitoringPolicyAsset(id, project string) asset.Asset {
 }
 func TestMonitoringPolicyPlansSerializeProjectWrites(t *testing.T)  { testMonitoringPlans(t, false) }
 func TestMonitoringChannelPlansSerializeProjectWrites(t *testing.T) { testMonitoringPlans(t, true) }
-func monitoringConfigurationAsset(id, project string, channel bool) asset.Asset {
+func monitoringConfigurationAsset(id, project string, channel bool, billing ...bool) asset.Asset {
 	value := monitoringPolicyAsset(id, project)
 	if channel {
 		value.Identity.NativeType = "monitoring.googleapis.com/NotificationChannel"
 		value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "/alertPolicies/", "/notificationChannels/", 1)
 	}
+	if len(billing) > 0 && billing[0] {
+		account := "012345-678901-ABCDEF"
+		if project != "sample-project" {
+			account = "ABCDEF-012345-678901"
+		}
+		value.Identity.NativeType = "billingbudgets.googleapis.com/Budget"
+		value.Identity.NativeID = "//billingbudgets.googleapis.com/billingAccounts/" + account + "/budgets/" + id
+	}
 	return value
 }
-func testMonitoringPlans(t *testing.T, channel bool) {
+func testMonitoringPlans(t *testing.T, channel bool, billing ...bool) {
 	input := plan.Input{CleanupTaskID: "monitoring-plan"}
 	for _, id := range []string{"a", "b", "c"} {
 		p := "sample-project"
 		if id == "c" {
 			p = "other-project"
 		}
-		value := monitoringConfigurationAsset(id, p, channel)
+		value := monitoringConfigurationAsset(id, p, channel, billing...)
 		if id == "b" {
 			value.Identity.Partition = "google-cloud"
 		}
@@ -55,17 +63,21 @@ func testMonitoringPlans(t *testing.T, channel bool) {
 		t.Fatal(result.Steps)
 	}
 	for _, step := range result.Steps {
-		if !strings.Contains(step.Evidence[routerMutationScope].(string), "monitoring.googleapis.com/projects/") {
+		scopePrefix := "monitoring.googleapis.com/projects/"
+		if len(billing) > 0 && billing[0] {
+			scopePrefix = "billingbudgets.googleapis.com/billingAccounts/"
+		}
+		if !strings.Contains(step.Evidence[routerMutationScope].(string), scopePrefix) {
 			t.Fatal(step)
 		}
 	}
 	for _, mode := range []string{"host", "collection", "extra", "query", "whitespace", "partition", "connection"} {
-		value := monitoringConfigurationAsset("a", "sample-project", channel)
+		value := monitoringConfigurationAsset("a", "sample-project", channel, billing...)
 		switch mode {
 		case "host":
-			value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "monitoring.googleapis.com", "evil.example", 1)
+			value.Identity.NativeID = strings.Replace(strings.Replace(value.Identity.NativeID, "monitoring.googleapis.com", "evil.example", 1), "billingbudgets.googleapis.com", "evil.example", 1)
 		case "collection":
-			value.Identity.NativeID = strings.Replace(strings.Replace(value.Identity.NativeID, "alertPolicies", "uptimeCheckConfigs", 1), "notificationChannels", "uptimeCheckConfigs", 1)
+			value.Identity.NativeID = strings.Replace(strings.Replace(strings.Replace(value.Identity.NativeID, "alertPolicies", "uptimeCheckConfigs", 1), "notificationChannels", "uptimeCheckConfigs", 1), "/budgets/", "/wrong/", 1)
 		case "extra":
 			value.Identity.NativeID += "/extra"
 		case "query":
@@ -88,7 +100,7 @@ func TestMonitoringPolicyProjectScopePersistsThroughFailures(t *testing.T) {
 func TestMonitoringChannelProjectScopePersistsThroughFailures(t *testing.T) {
 	testMonitoringScopeFailures(t, true)
 }
-func testMonitoringScopeFailures(t *testing.T, channel bool) {
+func testMonitoringScopeFailures(t *testing.T, channel bool, billing ...bool) {
 	ctx := t.Context()
 	db := filepath.Join(t.TempDir(), "monitoring.db")
 	repos, err := sqlite.Open(db, "../../../migrations")
@@ -96,8 +108,8 @@ func testMonitoringScopeFailures(t *testing.T, channel bool) {
 		t.Fatal(err)
 	}
 	now := time.Now().UTC()
-	prior := monitoringConfigurationAsset("nat-a", "sample-project", channel)
-	next := monitoringConfigurationAsset("policy-b", "sample-project", channel)
+	prior := monitoringConfigurationAsset("nat-a", "sample-project", channel, billing...)
+	next := monitoringConfigurationAsset("policy-b", "sample-project", channel, billing...)
 	for _, value := range []asset.Asset{prior, next} {
 		if err := repos.Inventory().PutAsset(ctx, value); err != nil {
 			t.Fatal(err)
@@ -130,7 +142,7 @@ func testMonitoringScopeFailures(t *testing.T, channel bool) {
 	}
 	other := current
 	other.Steps = append([]plan.CleanupTaskStep(nil), current.Steps...)
-	foreign := monitoringPolicyAsset("policy-b", "other-project")
+	foreign := monitoringConfigurationAsset("policy-b", "other-project", channel, billing...)
 	other.Steps[0].Evidence = map[string]any{plan.EvidencePlannedAsset: foreign}
 	if err := guardSharedConfiguration(ctx, repos, other, nil, ""); err != nil {
 		t.Fatal("other project blocked", err)
@@ -197,4 +209,9 @@ func TestMonitoringChannelRecoveryBindsFrozenPolicies(t *testing.T) {
 	if err := routerRecoveryImpacts(t.Context(), repos, task, root, &request); err == nil {
 		t.Fatal("recovery substituted live policy")
 	}
+}
+
+func TestBillingBudgetPlansSerializeAccountWrites(t *testing.T) { testMonitoringPlans(t, false, true) }
+func TestBillingBudgetAccountScopePersistsThroughFailures(t *testing.T) {
+	testMonitoringScopeFailures(t, false, true)
 }

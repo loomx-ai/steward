@@ -103,16 +103,17 @@ func TestBillingBudgetInventoryAndKnownReconciliation(t *testing.T) {
 				t.Fatal(batch)
 			}
 			item := batch.Items[0]
-			if item.NativeID != testBillingBudgetID || item.Normalized["billingAccount"] != testBillingAccount || item.Normalized[billingBudgetReview] != firewallDigest(s.budget) || item.Normalized["project_id"] != nil || item.Scope.NativeID != "sample-project/global" || slices.Contains(item.ResourceKind.Capabilities, asset.CapabilityActionable) {
+			if item.NativeID != testBillingBudgetID || item.Normalized["billingAccount"] != testBillingAccount || item.Normalized[billingBudgetReview] != firewallDigest(s.budget) || item.Normalized["project_id"] != nil || item.Scope.NativeID != "sample-project/global" || !slices.Contains(item.ResourceKind.Capabilities, asset.CapabilityActionable) {
 				t.Fatal(item)
 			}
 			payload, _ := json.Marshal(item)
 			if strings.Contains(string(payload), "PRIVATE_DELIVERY") || strings.Contains(string(payload), "PRIVATE_FILTER") {
 				t.Fatal("private budget settings escaped")
 			}
-			if _, err := r.ResolveAction(t.Context(), "connection", asset.Asset{Identity: asset.Identity{Provider: asset.ProviderGCP, NativeType: billingBudgetType, NativeID: item.NativeID}}); err == nil {
-				t.Fatal("unreviewed billing mutation exposed")
+			if _, err := r.ResolveAction(t.Context(), "connection", asset.Asset{Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", Partition: "gcp", NativeType: billingBudgetType, NativeID: item.NativeID}, Normalized: item.Normalized}); err != nil {
+				t.Fatal("reviewed budget action unavailable", err)
 			}
+
 		})
 	}
 }
@@ -247,8 +248,8 @@ func TestBillingBudgetReadBindingAndRedaction(t *testing.T) {
 	if err != nil || url != "https://billingbudgets.googleapis.com/v1/"+testBillingBudget {
 		t.Fatal(url, err)
 	}
-	if _, _, err := c.resourceOperation(kind, testBillingBudgetID, "DELETE"); err == nil {
-		t.Fatal("unexpected delete binding")
+	if operation, _, err := c.resourceOperation(kind, testBillingBudgetID, "DELETE"); err != nil || operation.ID != billingBudgetDelete {
+		t.Fatal("native delete binding missing", operation, err)
 	}
 	for _, id := range []string{testBillingBudget, testBillingBudgetID + "/extra", strings.Replace(testBillingBudgetID, "billingbudgets.googleapis.com", "foreign.test", 1)} {
 		if _, err := c.resourceURL(kind, id); err == nil {

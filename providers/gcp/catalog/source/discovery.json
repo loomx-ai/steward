@@ -134137,6 +134137,53 @@
       },
       "source_sha256": "43f6da9d356ad5d16fdcc1b1f10382f2c0b0a5e056a24719fcf25e1748ea03ce",
       "source_uri": "https://billingbudgets.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "source_uri": "https://billingbudgets.googleapis.com/$discovery/rest?version=v1",
+      "source_sha256": "43f6da9d356ad5d16fdcc1b1f10382f2c0b0a5e056a24719fcf25e1748ea03ce",
+      "document": {
+        "name": "billingbudgets",
+        "version": "v1",
+        "revision": "20260906",
+        "rootUrl": "https://billingbudgets.googleapis.com/",
+        "servicePath": "",
+        "methods": {
+          "billingbudgets.billingAccounts.budgets.delete": {
+            "parameterOrder": [
+              "name"
+            ],
+            "response": {
+              "$ref": "GoogleProtobufEmpty"
+            },
+            "description": "Deletes a budget. Returns successfully if already deleted.",
+            "path": "v1/{+name}",
+            "httpMethod": "DELETE",
+            "parameters": {
+              "name": {
+                "type": "string",
+                "location": "path",
+                "required": true,
+                "pattern": "^billingAccounts/[^/]+/budgets/[^/]+$",
+                "description": "Required. Name of the budget to delete. Values are of the form `billingAccounts/{billingAccountId}/budgets/{budgetId}`."
+              }
+            },
+            "flatPath": "v1/billingAccounts/{billingAccountsId}/budgets/{budgetsId}",
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-billing",
+              "https://www.googleapis.com/auth/cloud-platform"
+            ],
+            "id": "billingbudgets.billingAccounts.budgets.delete"
+          }
+        },
+        "schemas": {
+          "GoogleProtobufEmpty": {
+            "properties": {},
+            "type": "object",
+            "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+            "id": "GoogleProtobufEmpty"
+          }
+        }
+      }
     }
   ],
   "x-resource-types": [
@@ -138231,7 +138278,7 @@
       "nativeType": "billingbudgets.googleapis.com/Budget",
       "rest": {
         "collection": "budgets",
-        "delete_operations": [],
+        "delete_operations": ["billingbudgets.billingAccounts.budgets.delete"],
         "list_operations": [
           "billingbudgets.billingAccounts.budgets.list"
         ],

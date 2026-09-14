@@ -10,6 +10,19 @@ import (
 )
 
 func (a *action) MutationSettled(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.MutationSettlement, error) {
+	if a.kind.NativeType == billingBudgetType {
+		if err := a.billingBudgetActionIdentity(request); err != nil {
+			return contracts.MutationSettlement{}, err
+		}
+		if len(result.Data) == 0 {
+			return contracts.MutationSettlement{}, nil
+		}
+		wait, err := a.waitBillingBudget(ctx, request, result)
+		if err != nil || !wait.Done {
+			return contracts.MutationSettlement{}, err
+		}
+		return contracts.MutationSettlement{Settled: true, Operation: "billing-budget-synchronous-response:" + text(result.Data["review"])}, nil
+	}
 	if a.kind.NativeType == alertPolicyType || a.kind.NativeType == notificationChannelType {
 		if err := a.monitoringActionIdentity(request); err != nil {
 			return contracts.MutationSettlement{}, err
