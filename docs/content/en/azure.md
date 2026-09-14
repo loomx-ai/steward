@@ -86,7 +86,7 @@ Service Bus/Event Hubs network rule sets, Event Hubs network perimeter configura
 
 Service Bus autoforwarding dependencies resolve to a queue or topic in the same namespace. Event Hubs Capture references its destination storage account and Blob container. Namespace deletion does not select those storage resources, user-assigned identities or the separate private endpoint for deletion. Inventory and action permissions must include every reviewed child's native read operation; a failed child list is not an empty namespace. See Microsoft's [autoforwarding](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding) and [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) documentation.
 
-Synapse uses native lists and detail reads. A list omission does not remove a known resource; only its own GET confirming absence can close its previous record. Default Data Lake storage remains a separate dependency. Workspace code artifacts, running jobs and reviewed cleanup are still being implemented.
+Synapse uses native lists and detail reads. A list omission does not remove a known resource; only its own GET confirming absence can close its previous record. Default Data Lake storage remains a separate dependency. Native data-plane reads now support Spark jobs and sessions, notebooks and Spark job definitions with workspace ownership checks and a separate authentication audience. Code, job configuration and logs are omitted from returned data and diagnostics. Registering these as inventory assets and completing reviewed cleanup are still in progress.
 
 ## Cleanup protections
 

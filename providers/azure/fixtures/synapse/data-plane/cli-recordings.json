@@ -1,0 +1,298 @@
+[
+  {
+    "file": "test_notebook.yaml",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/c683a64f397974bae397d77a204e2ae86a908fa0/src/azure-cli/azure/cli/command_modules/synapse/tests/latest/recordings/test_notebook.yaml",
+    "source_sha256": "c712c41bae3470b6e5dfc5cfd9cc16b57ffab90bdb19337391ceda3fcfae35bd",
+    "recordings": [
+      {
+        "interaction_index": 24,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/notebooks/notebook?api-version=2020-12-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/synapse-cli000001/providers/Microsoft.Synapse/workspaces/clitest000003/notebooks/notebook",
+          "name": "notebook",
+          "type": "Microsoft.Synapse/workspaces/notebooks",
+          "properties": {
+            "nbformat": 4,
+            "nbformat_minor": 2,
+            "entityState": null,
+            "renameOperationDetails": null,
+            "bigDataPool": {
+              "referenceName": "testpool",
+              "type": "BigDataPoolReference"
+            },
+            "targetSparkConfiguration": null,
+            "sessionProperties": {
+              "driverMemory": "28g",
+              "driverCores": 4,
+              "executorMemory": "28g",
+              "executorCores": 4,
+              "numExecutors": 2,
+              "conf": null,
+              "runAsWorkspaceSystemIdentity": false
+            },
+            "metadata": {
+              "language_info": {
+                "name": "python"
+              },
+              "a365ComputeOptions": null,
+              "sessionKeepAliveTimeout": 0
+            },
+            "cells": [
+              {
+                "cell_type": "code",
+                "metadata": {},
+                "source": [
+                  "print(\"hello from portal\")"
+                ],
+                "outputs": []
+              }
+            ],
+            "folder": {
+              "name": "testfolder/testsubfolder"
+            },
+            "description": null
+          },
+          "etag": "000c4441-0000-0100-0000-648983c30000"
+        }
+      },
+      {
+        "interaction_index": 25,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/notebooks?api-version=2020-12-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/synapse-cli000001/providers/Microsoft.Synapse/workspaces/clitest000003/notebooks/notebook",
+              "name": "notebook",
+              "type": "Microsoft.Synapse/workspaces/notebooks",
+              "etag": "000c4441-0000-0100-0000-648983c30000",
+              "properties": {
+                "nbformat": 4,
+                "nbformat_minor": 2,
+                "entityState": null,
+                "renameOperationDetails": null,
+                "bigDataPool": {
+                  "referenceName": "testpool",
+                  "type": "BigDataPoolReference"
+                },
+                "targetSparkConfiguration": null,
+                "sessionProperties": {
+                  "driverMemory": "28g",
+                  "driverCores": 4,
+                  "executorMemory": "28g",
+                  "executorCores": 4,
+                  "numExecutors": 2,
+                  "conf": null,
+                  "runAsWorkspaceSystemIdentity": false
+                },
+                "metadata": {
+                  "language_info": {
+                    "name": "python"
+                  },
+                  "a365ComputeOptions": null,
+                  "sessionKeepAliveTimeout": 0
+                },
+                "cells": [
+                  {
+                    "cell_type": "code",
+                    "metadata": {},
+                    "source": [
+                      "print(\"hello from portal\")"
+                    ],
+                    "outputs": []
+                  }
+                ],
+                "folder": {
+                  "name": "testfolder/testsubfolder"
+                },
+                "description": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "interaction_index": 26,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/notebooks/notebook?api-version=2020-12-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/synapse-cli000001/providers/Microsoft.Synapse/workspaces/clitest000003/notebooks/notebook",
+          "name": "notebook",
+          "type": "Microsoft.Synapse/workspaces/notebooks",
+          "properties": {
+            "nbformat": 4,
+            "nbformat_minor": 2,
+            "entityState": null,
+            "renameOperationDetails": null,
+            "bigDataPool": {
+              "referenceName": "testpool",
+              "type": "BigDataPoolReference"
+            },
+            "targetSparkConfiguration": null,
+            "sessionProperties": {
+              "driverMemory": "28g",
+              "driverCores": 4,
+              "executorMemory": "28g",
+              "executorCores": 4,
+              "numExecutors": 2,
+              "conf": null,
+              "runAsWorkspaceSystemIdentity": false
+            },
+            "metadata": {
+              "language_info": {
+                "name": "python"
+              },
+              "a365ComputeOptions": null,
+              "sessionKeepAliveTimeout": 0
+            },
+            "cells": [
+              {
+                "cell_type": "code",
+                "metadata": {},
+                "source": [
+                  "print(\"hello from portal\")"
+                ],
+                "outputs": []
+              }
+            ],
+            "folder": {
+              "name": "testfolder/testsubfolder"
+            },
+            "description": null
+          },
+          "etag": "000c4441-0000-0100-0000-648983c30000"
+        }
+      },
+      {
+        "interaction_index": 30,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/notebooks/notebook?api-version=2020-12-01",
+        "status": 404,
+        "headers": {},
+        "body": {
+          "code": 404,
+          "message": "GetNotebook failed [statusCode from ADF: NotFound, ErrorMessage: {\"code\":\"NotFound\",\"message\":\"The document could not be retrieved because it does not exist.\",\"target\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/synapse-cli000001/providers/Microsoft.Synapse/workspaces/clitest000003/notebooks/notebook\",\"details\":null,\"error\":null}, workspace: clitest000003, notebook: notebook]",
+          "result": null,
+          "target": null,
+          "details": null,
+          "error": "Failed Component = DataFactoryResourceProvider, ErrorCode = 404, Error = NotFound "
+        }
+      }
+    ]
+  },
+  {
+    "file": "test_spark_job_definition.yaml",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/c683a64f397974bae397d77a204e2ae86a908fa0/src/azure-cli/azure/cli/command_modules/synapse/tests/latest/recordings/test_spark_job_definition.yaml",
+    "source_sha256": "033079355277b797e330400f307080b8a0664cba0f2d38dfe011038cc082650f",
+    "recordings": [
+      {
+        "interaction_index": 23,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/sparkJobDefinitions/SparkAutoCreate1?api-version=2020-12-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/synapse-cli000001/providers/Microsoft.Synapse/workspaces/clitest000003/sparkjobdefinitions/SparkAutoCreate1",
+          "name": "SparkAutoCreate1",
+          "type": "Microsoft.Synapse/workspaces/sparkjobdefinitions",
+          "properties": {
+            "targetBigDataPool": {
+              "type": "BigDataPoolReference",
+              "referenceName": "testpool"
+            },
+            "requiredSparkVersion": "2.4",
+            "language": "scala",
+            "jobProperties": {
+              "name": "SparkAutoCreate1",
+              "file": "abfss://aaa@foo.com/workspaces/bdbj20210802ws/batchjobs/Spark%20job%20definition%201/copy_opendataset_to_spark_table.py",
+              "className": "1",
+              "conf": {
+                "spark.dynamicAllocation.enabled": "false",
+                "spark.dynamicAllocation.minExecutors": "2",
+                "spark.dynamicAllocation.maxExecutors": "2",
+                "spark.autotune.trackingId": "7e2da5d9-a84d-4848-9812-3dd8e85a87ea"
+              },
+              "args": [],
+              "jars": [],
+              "files": [],
+              "driverMemory": "28g",
+              "driverCores": 4,
+              "executorMemory": "28g",
+              "executorCores": 4,
+              "numExecutors": 2
+            },
+            "folder": {
+              "name": "testfolder/testsubfolder"
+            }
+          },
+          "etag": "b9003004-0000-0100-0000-648986c80000"
+        }
+      },
+      {
+        "interaction_index": 24,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/sparkJobDefinitions?api-version=2020-12-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/synapse-cli000001/providers/Microsoft.Synapse/workspaces/clitest000003/sparkjobdefinitions/SparkAutoCreate1",
+              "name": "SparkAutoCreate1",
+              "type": "Microsoft.Synapse/workspaces/sparkjobdefinitions",
+              "etag": "b9003004-0000-0100-0000-648986c80000",
+              "properties": {
+                "targetBigDataPool": {
+                  "type": "BigDataPoolReference",
+                  "referenceName": "testpool"
+                },
+                "requiredSparkVersion": "2.4",
+                "language": "scala",
+                "jobProperties": {
+                  "name": "SparkAutoCreate1",
+                  "file": "abfss://aaa@foo.com/workspaces/bdbj20210802ws/batchjobs/Spark%20job%20definition%201/copy_opendataset_to_spark_table.py",
+                  "className": "1",
+                  "conf": {
+                    "spark.dynamicAllocation.enabled": "false",
+                    "spark.dynamicAllocation.minExecutors": "2",
+                    "spark.dynamicAllocation.maxExecutors": "2",
+                    "spark.autotune.trackingId": "7e2da5d9-a84d-4848-9812-3dd8e85a87ea"
+                  },
+                  "args": [],
+                  "jars": [],
+                  "files": [],
+                  "driverMemory": "28g",
+                  "driverCores": 4,
+                  "executorMemory": "28g",
+                  "executorCores": 4,
+                  "numExecutors": 2
+                },
+                "folder": {
+                  "name": "testfolder/testsubfolder"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "interaction_index": 28,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/sparkJobDefinitions/SparkAutoCreate1?api-version=2020-12-01",
+        "status": 404,
+        "headers": {},
+        "body": {
+          "code": "SparkJobDefinitionNotFound",
+          "message": "The SparkJobDefinition SparkAutoCreate1 was not found in (subscription=051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3 resourceGroup=synapse-cli000001 workspace=clitest000003)"
+        }
+      }
+    ]
+  }
+]

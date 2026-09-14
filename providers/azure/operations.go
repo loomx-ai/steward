@@ -70,10 +70,15 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if !ok || operation.Call == nil {
 		return contracts.InvocationResult{}, fmt.Errorf("unknown Azure operation %q", invocation.Operation)
 	}
-	// The native contracts are available before their workspace-bound OAuth
-	// transport and dependency reconciliation. Never fall through to ARM.
 	if operation.Call.Style == "azure-synapse-rest" {
-		return contracts.InvocationResult{}, serviceDenied("synapse_data_plane_not_implemented")
+		if operation.Call.Method != "GET" {
+			return contracts.InvocationResult{}, serviceDenied("synapse_data_mutation_not_implemented")
+		}
+		c, err := r.synapseClient(ctx, invocation.ConnectionID)
+		if err != nil {
+			return contracts.InvocationResult{}, err
+		}
+		return c.invokeRead(ctx, operation, invocation)
 	}
 	c, err := r.resolve(ctx, invocation.ConnectionID)
 	if err != nil {

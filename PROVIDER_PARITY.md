@@ -6649,3 +6649,34 @@ ownership, its separate OAuth audience, complete dependency inventory and cleanu
 are implemented. No live service or independent emulator was used. This is an
 intermediate contract milestone, not completed Synapse runtime support. All 159
 matrix statuses and all eight acceptance criteria remain open.
+
+
+### Synapse authorized data-plane reads
+
+Enabled eight native read operations for Spark batches/sessions, notebooks and
+Spark job definitions. A full subscription workspace index plus fresh matching
+workspace GET authorizes the development endpoint. Spark calls additionally
+verify their owning pool; workspace and pool configuration are re-read after the
+data-plane call. Independent service-principal OAuth tokens use the official
+Synapse scope, are cached per connection incarnation, and rotate with credentials.
+Unsupported credential transports fail without an ARM-token fallback.
+
+Native response validation rejects incomplete statuses, unexpected polling,
+wrong identities, malformed metadata, inconsistent Spark offsets/totals/members,
+and foreign artifact continuations. Spark next tokens are numeric offsets;
+artifact next tokens retain their scoped native URL. Results and diagnostics
+omit code, job configuration, logs, tags and future opaque fields. Tests exercise
+all eight Runtime.Invoke routes, token isolation/caching/rotation, owner-index
+paging failures, parent drift, identity/page/status errors, redirects, cancelled
+contexts and secret canaries. The original catalog and examples are unchanged.
+
+This is local protocol/application evidence, not live-cloud or emulator evidence.
+Jobs, sessions and artifacts still need asset registration, complete inventory
+reconciliation, dependency analysis and reviewed lifecycle actions. Cancellation
+remains explicitly gated and the three existing Synapse resource kinds remain
+non-actionable. All 159 parity rows and all eight acceptance criteria remain open.
+
+The same milestone also retains seven stable-version artifact GET responses from
+two pinned official Azure CLI recordings, with an offline-capable reproducer.
+Five successful list/detail responses and two 404s verify the native artifact
+identity and status handling without rewriting their wire version or bodies.

@@ -86,7 +86,7 @@ Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难�
 
 Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
 
-Synapse 使用原生列表和详情读取。列表遗漏不会移除已知资源，只有该资源自身的 GET 确认不存在后才会关闭旧记录。默认 Data Lake 存储作为独立依赖保留。工作区代码工件、运行任务和经审查的清理流程仍在实现中。
+Synapse 使用原生列表和详情读取。列表遗漏不会移除已知资源，只有该资源自身的 GET 确认不存在后才会关闭旧记录。默认 Data Lake 存储作为独立依赖保留。数据平面接口现支持读取 Spark 任务与会话、Notebook 和 Spark 作业定义，并校验工作区归属、使用独立认证 audience。返回数据和诊断日志不包含代码、任务配置和运行日志。将这些对象登记为盘点资产，以及经审查的清理流程，仍在实现中。
 
 ## 清理保护
 

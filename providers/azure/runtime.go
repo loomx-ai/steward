@@ -15,11 +15,12 @@ import (
 )
 
 type Runtime struct {
-	credentials contracts.CredentialSource
-	transport   http.RoundTripper
-	bundle      spec.Bundle
-	mu          sync.Mutex
-	clients     map[asset.ConnectionID]*client
+	credentials    contracts.CredentialSource
+	transport      http.RoundTripper
+	bundle         spec.Bundle
+	mu             sync.Mutex
+	clients        map[asset.ConnectionID]*client
+	synapseClients map[asset.ConnectionID]*synapseDataClient
 }
 
 func NewRuntime(credentials contracts.CredentialSource) (*Runtime, error) {

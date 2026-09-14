@@ -244,12 +244,15 @@ func TestSynapseDataNativeContracts(t *testing.T) {
 				}
 				schemas++
 			}
-			// No transport is selected until workspace ownership and Synapse OAuth are
-			// implemented. A zero Runtime would panic if Invoke resolved credentials.
-			var runtime Runtime
-			if _, err = runtime.Invoke(context.Background(), contracts.Invocation{Operation: op.ID, Parameters: params}); err == nil || !strings.Contains(err.Error(), "synapse_data_plane_not_implemented") {
-				t.Fatal("data-plane invocation escaped gate", err)
+			// Cancellation still requires reviewed lifecycle support. Its catalog
+			// contract must not make the mutation independently executable yet.
+			if method == "delete" {
+				var runtime Runtime
+				if _, err = runtime.Invoke(context.Background(), contracts.Invocation{Operation: op.ID, Parameters: params}); err == nil || !strings.Contains(err.Error(), "synapse_data_mutation_not_implemented") {
+					t.Fatal("mutation escaped lifecycle gate", err)
+				}
 			}
+
 		})
 	}
 	if len(seen) != 10 || schemas != 8 {

@@ -8,18 +8,21 @@ two already-pinned shared dependencies. Tests use only these local sources.
 
 The selected operations are Spark batch/session list, get and cancel, plus
 notebook and Spark-job-definition list and get. They establish the contracts
-needed to inspect work affected by pool/workspace cleanup. This milestone does
-not implement data-plane inventory, workspace-bound OAuth, cancellation or
-resource cleanup. `Runtime.Invoke` explicitly rejects this transport until those
-pieces exist. Existing ARM inventory and resource actions are unchanged.
+needed to inspect work affected by pool/workspace cleanup. The eight read
+operations now execute through workspace-bound OAuth and validate their native
+responses. Cancellation remains gated pending reviewed lifecycle support.
+Data-plane asset inventory and resource cleanup remain unfinished. Existing ARM
+inventory and resource actions are unchanged.
 
 ## Wire protocol
 
 - Requests target an explicit HTTPS workspace development endpoint such as
   `https://workspace.dev.azuresynapse.net`. The binder rejects foreign origins,
   credentials, ports, paths, queries and fragments. A valid URL alone does not
-  authorize access: runtime work still needs a fresh ARM workspace ownership
-  check, the Synapse OAuth audience and redirect restrictions.
+  authorize access: runtime resolves the full subscription workspace index,
+  reads the matching workspace, and verifies its returned development endpoint.
+  Spark requests additionally read their owning pool. Workspace/pool configuration
+  is rechecked after the data-plane call. Redirects are disabled.
 - Spark uses `/livyApi/versions/2020-12-01/sparkPools/{sparkPoolName}` and numeric
   int32 batch/session IDs. It does **not** use an `api-version` query parameter.
   Names remain single segments; traversal and encoded path delimiters fail.
@@ -64,10 +67,66 @@ response-schema failures rather than bypassing schema validation.
 
 Validation covers ten operations, ten original examples and eight response
 schemas, plus endpoint/version/ID/pagination rejection, deterministic import,
-and refusal to invoke the unfinished transport. This is offline contract testing;
-no live Azure resources or independent Synapse emulator were used.
+and refusal to invoke cancellation before lifecycle support. This is offline
+contract testing; no live Azure resources or independent Synapse emulator were used.
 
 Official API documentation:
 [Spark batch lists](https://learn.microsoft.com/en-us/rest/api/synapse/data-plane/spark-batch/get-spark-batch-jobs?view=rest-synapse-data-plane-2020-12-01),
 [Spark session lists](https://learn.microsoft.com/en-us/rest/api/synapse/data-plane/spark-session/get-spark-sessions?view=rest-synapse-data-plane-2020-12-01),
 [notebook lists](https://learn.microsoft.com/en-us/rest/api/synapse/data-plane/notebook/get-notebooks-by-workspace?view=rest-synapse-data-plane-2020-12-01).
+
+## Authorized read transport
+
+The read transport uses a separate cached OAuth client with
+`https://dev.azuresynapse.net/.default`, matching the
+[pinned official Python SDK configuration](https://github.com/Azure/azure-sdk-for-python/blob/419f6596a9a718f63321eeffcc23a762cbb039f4/sdk/synapse/azure-synapse-spark/azure/synapse/spark/_configuration.py)
+and [REST audience guidance](https://learn.microsoft.com/en-us/rest/api/synapse/).
+It uses the explicitly configured service principal, rotates its cache with the
+connection credential, and propagates cancellation. Other credential transport
+implementations are rejected without falling back to ARM credentials.
+
+All eight reads require a complete unfiltered workspace index and matching fresh
+workspace GET; list omission, authorization failure, duplicate IDs and changed
+parent configuration fail the call. This endpoint lookup is not inventory absence
+reconciliation and does not close any known asset. Spark reads additionally
+require a matching native pool GET before and after the data-plane read.
+
+Only 200 object responses qualify as current observations. 202/204/206/304,
+provider errors and unexpected polling headers fail. Spark validates numeric IDs,
+nonempty state, detailed owner/type fields and page offsets/totals/member counts;
+it returns the next numeric offset when more rows remain. Optional detailed
+objects may be null, as observed in official CLI recordings. Future state strings
+remain observations, not evidence of termination. Artifact reads require the
+matching workspace/type/name/ID, object properties, valid ETag shape and consistent
+response-header ETags. Artifact continuations stay on the same workspace and
+collection with the pinned API version; they remain native opaque URLs.
+
+Results and API diagnostics expose identity, state and pool references. Code
+cells, job arguments/configuration, logs, tags and unknown opaque fields stay
+private. Tests exercise actual Runtime.Invoke routing, token audiences/caching/
+rotation, both OAuth and service redirects, interrupted contexts, complete owner
+lookup, parent drift, bad statuses/IDs/pages and canary redaction. These tests use
+an in-process RoundTripper, not a live Azure service or independent emulator.
+
+This reader does not yet register jobs, sessions or artifacts as graph assets,
+reconcile complete inventories across changing pages, classify terminal work for
+cleanup, cancel work, or delete pools/workspaces. Those are required next steps;
+the existing three Synapse resource kinds remain non-actionable.
+
+### Stable-version CLI artifact recordings
+
+`cli-recordings.json` retains seven selected GET responses from the official
+Azure CLI notebook and Spark-job-definition scenarios at commit
+`c683a64f397974bae397d77a204e2ae86a908fa0`: five successful detail/list reads and
+two subsequent 404s. Their actual wire version is `2020-12-01`; no versions,
+identities or response-body values are rewritten. Source hashes and interaction
+indices are recorded in the extraction. Tests bind the recorded requests, accept
+their native identities in the matching workspace, reject a changed workspace,
+and keep 404 distinct from a valid observation.
+
+Reproduce with `python3 -B reproduce_recordings.py [directory-of-original-yaml]`
+from this directory (PyYAML required). With no directory, the script downloads
+only the two pinned official recording files. Request credentials and request
+bodies are excluded; response metadata and complete JSON bodies are retained.
+These historical CLI recordings complement local tests; they are not fresh
+live-cloud validation of Steward.
