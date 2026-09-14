@@ -457,3 +457,26 @@ router's NAT configuration externally while cleanup runs. See the
 [native PATCH and request-ID contract](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/patch).
 Selecting the parent Router includes reviewed NATs in its deletion impact.
 Google documents that [deleting a router also deletes its Cloud NAT gateways](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers).
+
+## Cloud Monitoring uptime checks
+
+Uptime Check scans read native project-scoped configurations and verify each LIST
+record against GET. HTTP, TCP, monitored resource/group and synthetic monitor
+settings, schedules, checker regions and user labels are retained. The native
+name is the identity; display names need not be unique. Failed or changed reads
+preserve prior observations; only a complete empty list establishes absence.
+
+Cleanup requires a freshly scanned configuration review. It rechecks the observable
+configuration before deletion and confirms absence with GET, including after a
+worker restart. Native DELETE is synchronous; an empty response alone does not
+prove absence. Request authentication, headers and body are redacted from asset
+and API output. Native masked secrets cannot be compared in plaintext, and the API
+has no etag condition to prevent an external edit after the last read.
+
+Permissions are `monitoring.uptimeCheckConfigs.list`,
+`monitoring.uptimeCheckConfigs.get`, and `monitoring.uptimeCheckConfigs.delete`.
+Delete associated alert policies first: the API rejects checks still referenced by
+those policies. Deleting a synthetic check retains its Cloud Run function.
+Steward currently deletes only the check; target/network relationships, group
+membership and automatic alert-policy ordering remain unfinished. See the
+[Monitoring deletion contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs/delete).

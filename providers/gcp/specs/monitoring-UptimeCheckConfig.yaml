@@ -60,6 +60,21 @@ fields:
   selectedRegions:
     path: selectedRegions
     type: array
+  syntheticMonitor:
+    path: syntheticMonitor
+    type: object
+  checkerType:
+    path: checkerType
+    type: string
+  disabled:
+    path: disabled
+    type: boolean
+  logCheckFailures:
+    path: logCheckFailures
+    type: boolean
+  userLabels:
+    path: userLabels
+    type: object
 extensions:
   hook: gcp.resource
 actions:

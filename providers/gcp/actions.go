@@ -27,7 +27,7 @@ type action struct {
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
-	if (isRouterComponent(value.Identity.NativeType) || value.Identity.NativeType == storagePoolType || value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType) || isIdentityGroup(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
+	if (value.Identity.NativeType == uptimeType || isRouterComponent(value.Identity.NativeType) || value.Identity.NativeType == storagePoolType || value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType) || isIdentityGroup(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
 		return nil, groupDenied("native_connection_changed")
 	}
 	kind, ok := findType(value.Identity.NativeType)
@@ -60,6 +60,9 @@ func (a *action) DeletionCheckTimeout() time.Duration {
 
 func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
+	if a.kind.NativeType == uptimeType {
+		return a.uptimePreflight(ctx, request)
+	}
 	if a.kind.NativeType == storagePoolType {
 		return a.storagePoolPreflight(ctx, request)
 	}
@@ -255,6 +258,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if check.Absent {
 		return contracts.ActionResult{}, nil
+	}
+	if a.kind.NativeType == uptimeType {
+		return a.executeUptime(ctx, request)
 	}
 	if a.kind.NativeType == routerType {
 		return a.deleteRouter(ctx, request)
@@ -472,6 +478,9 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if a.kind.NativeType == uptimeType {
+		return a.waitUptime(ctx, request, result)
+	}
 	if a.kind.NativeType == storagePoolType {
 		return a.storagePoolWait(ctx, request, result)
 	}
@@ -620,6 +629,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 	return contracts.WaitResult{Done: true}, nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if a.kind.NativeType == uptimeType {
+		return a.uptimeReadback(ctx, request)
+	}
 	if a.kind.NativeType == storagePoolType {
 		return a.storagePoolReadback(ctx, request)
 	}

@@ -254,6 +254,13 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	for key, value := range data {
 		normalized[key] = value
 	}
+	if nativeType == uptimeType {
+		if err := c.uptimeData(nativeID, data); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized[uptimeReview] = uptimeConfiguration(nativeID, data)
+		normalized["labels"] = data["userLabels"]
+	}
 	if nativeType == cloudNatType {
 		normalized[cloudNatReview] = cloudNatConfiguration(data)
 	}

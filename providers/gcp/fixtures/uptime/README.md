@@ -1,0 +1,100 @@
+# Cloud Monitoring Uptime Check evidence
+
+The retained Monitoring v3 Discovery fragment has revision `20260827`, full-source
+SHA-256 `e0bbea1b5a2a0b8af6f1a7528cffd239f27138891a1711417800963e4430db5e`.
+It already contains UptimeCheckConfig LIST/GET/DELETE and their native schemas.
+No source, generated catalog or module dependency change is needed (200 kinds,
+785 operations; catalog SHA-256
+`f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`).
+
+## Native contract and implementation
+
+The [resource schema](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs)
+defines a server-assigned project-scoped name, one monitored resource/group/synthetic
+target, HTTP or TCP configuration, schedules, checker regions and user labels.
+Headers encrypted with `maskHeaders` are obscured by native reads. Steward hashes
+the observable native configuration before redaction, including unknown fields,
+while ignoring the synthetic target's output-only Cloud Run revision. Project ID
+and number aliases share a review. LIST identities/configuration must match GET;
+malformed, missing or changed detail fails the scan rather than proving absence.
+Complete empty LIST establishes absence. Request auth, headers and body are
+redacted from stored assets and Invoke output; labels remain queryable.
+
+The [DELETE contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs/delete)
+returns an empty object synchronously and rejects referenced checks. It exposes
+no etag, request UUID or operation polling. Steward compares the frozen review in
+preflight and again immediately before DELETE. It checks the empty response,
+binds its local receipt to the selected asset/configuration/request, and confirms
+absence through a separate GET after restart. DELETE 404 requires a matching GET
+404; a still-present or changed resource is not success. Existing unreviewed
+observations must be rescanned. User-label protection remains effective.
+
+The [synthetic monitor guide](https://docs.cloud.google.com/monitoring/synthetic-monitors/manage)
+requires associated alert policies to be removed first and keeps the Cloud Run
+function after the check is deleted. This implementation deletes only the check;
+it does not delete functions, other monitored resources, metrics or alert policies.
+Encrypted values hidden by the API and changes after the final read are outside
+the observable review; no atomic precondition or hidden-secret comparison is claimed.
+
+## Retained verification
+
+```sh
+go test ./providers/gcp -run 'TestUptime|TestServiceResourceWireLifecycles/monitoring' -count=1
+go test -race ./providers/gcp -run TestUptime -count=1
+go test ./providers/gcp ./internal/...
+go vet ./providers/gcp ./internal/...
+node docs/check.mjs
+```
+
+Protocol tests cover native schemas and project aliases; HTTP/TCP/group/synthetic
+configuration; redaction and queries; page continuations, duplicates, empty and
+invalid lists; missing/denied detail; changed targets, headers and unknown fields;
+last-read drift; native errors and dependency refusal; synchronous response shape;
+receipt tampering, JSON restart and separate absence checks. Actual SQLite workers
+verify prior observation preservation, authoritative absence, recovery, one-step
+planning, persisted deletion state, restart without a second DELETE, tombstoning
+and reconciliation. These tests do not claim production IAM or backend semantics.
+
+The milestone passed full GCP (241.531s), all internal packages including
+architecture (26.993s) and cleanup (6.068s), focused race tests (12.201s),
+vet, and documentation checks (30 chapters, 10 screenshots) in the isolated
+checkout.
+
+## Independent backend boundary
+
+Google Config Connector mockgcp is pinned at
+`673a61419de1b8e4f7d26070ce20dde2daa61da8`. The complete, non-truncated subtree
+`8b6f0584391a159b43ed7e5adf26580557872854` contains
+[uptimecheck.go](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/673a61419de1b8e4f7d26070ce20dde2daa61da8/mockgcp/mockmonitoring/uptimecheck.go),
+which implements CREATE/GET/UPDATE/DELETE and native defaults/redaction. LIST is
+inherited as unimplemented. The opt-in test verifies that LIST fails and then
+observes an individually read native resource, runs Steward deletion, serializes
+and resumes the receipt, and verifies native 404. No substitute LIST is injected.
+The unchanged handlers do not enforce real IAM or alert-policy references, and
+redact every header regardless of maskHeaders; those limits remain explicit.
+
+Reuse the retained [Monitoring harness](../metrics-scope/testdata/mockgcp/main.go)
+inside a temporary sparse checkout containing `mockgcp`, `pkg`, and
+`third_party/github.com/hashicorp/terraform-provider-google-beta` at that revision.
+Copy it to `mockgcp/steward-uptime-harness/main.go`, then build from `mockgcp`:
+
+```sh
+GOWORK=off go build -o /tmp/steward-uptime-mockgcp ./steward-uptime-harness
+/tmp/steward-uptime-mockgcp
+```
+
+Use its printed loopback origin in another terminal from Steward's root:
+
+```sh
+STEWARD_UPTIME_MOCKGCP_URL=http://127.0.0.1:PORT \
+  go test ./providers/gcp -run '^TestUptimeIndependentMockGCP$' -count=1 -v
+```
+
+The independent run passed against the unchanged pinned handlers (0.690s package
+time, seven Monitoring calls), including the expected failure of unimplemented
+LIST. The upstream tracked files remained unchanged.
+
+Stop the temporary process and remove the checkout/binary after verification.
+All resources are in memory; OAuth and Resource Manager identity use test fixtures.
+Full target/network relationships, Monitoring groups, alert-policy dependency
+inventory/order and independent LIST or real-cloud acceptance remain unfinished.

@@ -5954,3 +5954,34 @@ against a still-occupied same-task scope while allowing the bound continuation.
   internal packages including architecture (25.397s) and cleanup (7.708s); focused
   race GCP (38.594s), cleanup (5.165s), server (5.912s); final parser/list-shape race
   (5.132s); vet and bilingual documentation checks (30 chapters, 10 screenshots).
+
+
+### Uptime Check native review and synchronous cleanup
+
+- Confirmed the existing Monitoring v3 native contract and strengthened Uptime
+  inventory with complete response/union/type checks and matching native GETs.
+  Store the observable native review before redaction, retain unknown fields, map
+  project aliases consistently and ignore only the documented synthetic output
+  revision. Capture user-label metadata and synthetic/checker/disabled fields.
+- Bind deletion to the frozen asset/configuration and recheck immediately before
+  synchronous DELETE. Validate the empty native response; a bound local receipt
+  resumes without polling invented operations or repeating deletion. Separate GET
+  confirms absence, including after DELETE 404. Configuration drift, malformed
+  responses, denied reads, protected labels and referenced-check errors stop cleanup.
+- Protocol/schema and actual SQLite scan/graph/planning/execution/reconciliation
+  tests cover failure-history preservation, recovery, native delete state and
+  restart. HTTP authentication, headers and request body are redacted. Native
+  masked values and post-read external edits cannot be atomically verified.
+- Audited the pinned Google mockgcp Uptime implementation: CREATE/GET/UPDATE/DELETE
+  exist, LIST is unimplemented. The retained opt-in test never supplies a substitute
+  list. See [Uptime Check evidence](providers/gcp/fixtures/uptime/README.md).
+- Native source/catalog and dependencies remain unchanged (200 rules, 785
+  operations; SHA-256 `f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`).
+  Target/network links, Monitoring groups, alert-policy relationships and ordering,
+  independent LIST/live acceptance and the broader provider gaps remain unfinished.
+  All eight overall acceptance criteria stay open.
+- Milestone validation passed: full isolated GCP (241.531s), all internal packages
+  including architecture (26.993s) and cleanup (6.068s), focused race (12.201s),
+  vet and documentation (30 chapters, 10 screenshots). Independent pinned
+  mockgcp GET/DELETE/restart/404 passed (0.690s, seven Monitoring calls);
+  its unimplemented LIST correctly failed. No upstream handlers were changed.

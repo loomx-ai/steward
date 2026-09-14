@@ -363,3 +363,20 @@ NAT 删除与父 Router、路由策略及命名集合共用顺序依赖和跨任
 [原生 PATCH 与请求 ID 契约](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/patch)。
 选择父 Router 清理时，已审查的 NAT 会纳入其删除影响。
 Google 明确说明，[删除路由器也会删除其中的 Cloud NAT 网关](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers)。
+
+## Cloud Monitoring 正常运行时间检查
+
+Uptime Check 扫描读取项目级原生配置，并逐项核验 LIST 与 GET。保留 HTTP、TCP、
+被监控资源或资源组、合成监控、周期、检查地域及用户标签。原生名称作为身份，
+显示名称不必唯一。读取失败或配置变化会保留历史观测；只有完整空清单才能确认不存在。
+
+清理需要重新扫描得到的配置审查凭证，并在删除前再次比较可观测配置，删除后通过
+GET 确认不存在，工作进程重启后同样复核。原生 DELETE 是同步操作，空响应本身不能
+证明资源已消失。请求认证、请求头和正文会从资产及 API 输出中脱敏。原生接口遮蔽
+的敏感值无法按明文比较；接口也不提供 etag 条件来防止最后一次读取后的外部修改。
+
+需要 `monitoring.uptimeCheckConfigs.list`、`monitoring.uptimeCheckConfigs.get`
+及 `monitoring.uptimeCheckConfigs.delete` 权限。需先删除相关告警策略，否则原生
+接口拒绝删除仍被引用的检查。删除合成检查会保留其 Cloud Run 函数。Steward 当前仅
+清理检查本身；目标及网络关系、资源组成员关系、自动告警依赖顺序仍待补齐。参阅
+[Monitoring 删除接口](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs/delete)。

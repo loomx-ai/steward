@@ -19,6 +19,13 @@ func safePayload(value map[string]any) map[string]any {
 	redact = func(value any) {
 		switch object := value.(type) {
 		case map[string]any:
+			if check, ok := object["httpCheck"].(map[string]any); ok {
+				for _, field := range []string{"authInfo", "headers", "body"} {
+					if _, present := check[field]; present {
+						check[field] = "[REDACTED]"
+					}
+				}
+			}
 			redactDataprocPayload(object)
 			// Service-specific SCC configuration is an untyped private payload.
 			// Keep declared service/module enablement metadata available.

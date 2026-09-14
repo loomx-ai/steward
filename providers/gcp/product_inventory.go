@@ -142,7 +142,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
-	if nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
+	if nativeType == uptimeType || nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -164,6 +164,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	}
 	if isInfra(nativeType) {
 		if err := infraListShape(result.Data, target.API.ItemsPath); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+	}
+	if nativeType == uptimeType {
+		if _, err := cloudNatObjects(result.Data, "uptimeCheckConfigs"); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+		if err := cloudNatScalars(result.Data, []string{"nextPageToken"}, nil, nil, nil); err != nil {
 			return contracts.InventoryBatch{}, err
 		}
 	}
@@ -281,6 +289,13 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		// Persisted Router observations require their own complete native GET.
 		if nativeType == routerType && len(ancestors) == 1 {
 			live, err := c.routerInventoryData(ctx, id, record.Data)
+			if err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			record.Data = live
+		}
+		if nativeType == uptimeType {
+			live, err := c.uptimeInventory(ctx, id, record.Data)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
