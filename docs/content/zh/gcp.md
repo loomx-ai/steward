@@ -65,6 +65,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
 | Hyperdisk 存储池 | 原生池、容量与性能用量、预配模式和磁盘成员 | 支持盘点和经审查的清理 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
+| Cloud Router 命名集合 | 各路由器的前缀/社区集合、CEL 元素和指纹 | 支持发现；删除及策略引用排序待实现 |
 | Cloud Router BGP 策略 | 各路由器的导入/导出策略、CEL 条款和指纹 | 支持解除 BGP 引用后原生独立删除 |
 | Cloud Identity | 配置目录中的身份组及成员关系 | 审查后删除身份组；普通成员关系也可独立删除 |
 | Resource Manager | 沿文件夹父级链发现当前项目所属的组织 | 只读；公开的 v3 API 没有组织删除方法 |
@@ -236,3 +237,16 @@ Steward 在各路由器所属地域分页列举策略，并逐条读取详情；
 配置变化、原生依赖冲突及权限失败会明确报告，供重新审查。这些原生修改没有指纹
 前置条件，清理期间应避免并发修改策略或 BGP 对等体。父路由器级联清理仍待实现。
 本操作不会将命名集合或其他策略纳入删除范围。
+
+## Cloud Router 命名集合
+
+扫描命名集合需要目标项目的 `compute.routers.list`、`compute.routers.listNamedSets`
+和 `compute.routers.getNamedSet` 权限。Steward 独立发现各路由器的集合，包括类型、
+描述、CEL 表达式元素和指纹。集合名只在所属路由器内唯一，因此资产标识包含地域及
+路由器。读取失败或结果不完整时保留此前观测记录。
+
+可用 `type = "compute.googleapis.com/NamedSet"` 和
+`properties.type = "NAMED_SET_TYPE_PREFIX"`（或 `NAMED_SET_TYPE_COMMUNITY`）筛选。
+详见[原生集合详情 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/getNamedSet)。
+命名集合删除和策略引用排序仍待实现。Google
+[禁止删除仍被同一路由器任意策略引用的集合](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/bgp-route-policies/update-named-sets)。

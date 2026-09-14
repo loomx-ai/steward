@@ -277,14 +277,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if bigtable && !strings.HasPrefix(id, target.ParentID+"/tables/") {
 			return contracts.InventoryBatch{}, groupDenied("bigtable_list_parent_changed")
 		}
-		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || bigquery || bigtable || nativeType == securityServiceType || nativeType == routePolicyType {
+		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || bigquery || bigtable || nativeType == securityServiceType || isRouterComponent(nativeType) {
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
 			var live map[string]any
-			if nativeType == routePolicyType {
-				live, err = c.routePolicyRead(ctx, id)
+			if isRouterComponent(nativeType) {
+				live, err = c.routerComponentRead(ctx, nativeType, id)
 			} else if isInfra(nativeType) {
 				live, err = c.infraRead(ctx, nativeType, id)
 			} else if isFusion(nativeType) {
@@ -304,8 +304,8 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				if identityErr != nil || liveID != id {
 					return contracts.InventoryBatch{}, groupDenied("bigquery_identity_changed")
 				}
-			} else if nativeType == routePolicyType {
-				// routePolicyRead verifies the native wrapper and router-local name.
+			} else if isRouterComponent(nativeType) {
+				// The component reader verifies the native wrapper and router-local name.
 			} else if bigtable {
 				if c.canonicalName("//bigtableadmin.googleapis.com/"+text(live["name"])) != id {
 					return contracts.InventoryBatch{}, groupDenied("bigtable_identity_changed")
@@ -403,6 +403,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, err
 		}
 		if target.ParentID != "" {
+			if nativeType == namedSetType {
+				item.Normalized[namedSetRouterID] = target.ParentUID
+			}
 			if nativeType == routePolicyType {
 				item.Normalized[routePolicyRouterID] = target.ParentUID
 				peers, err := routePolicyBGPFromCursor(target.ParentConfiguration)
@@ -716,11 +719,11 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				continue
 			}
 			for _, parent := range parents {
-				if kind.NativeType == routePolicyType && parent.Scope.NativeID != location {
+				if isRouterComponent(kind.NativeType) && parent.Scope.NativeID != location {
 					continue
 				}
 				resolved, err := productParameters(parameters, c, location, parent)
-				if kind.NativeType == routePolicyType && err == nil && resolved["router"] != last(parent.NativeID) {
+				if isRouterComponent(kind.NativeType) && err == nil && resolved["router"] != last(parent.NativeID) {
 					return nil, groupDenied("route_policy_router_identity_changed")
 				}
 				if err != nil {
@@ -961,13 +964,17 @@ func checkListCompleteness(data map[string]any) error {
 }
 
 func (c *client) productIdentity(kind resourceType, operation catalog.Operation, parameters map[string]any, identityPath string, record productRecord) (string, error) {
-	if kind.NativeType == routePolicyType {
+	if isRouterComponent(kind.NativeType) {
 		name, ok := record.Data["name"].(string)
 		if !ok {
 			return "", groupDenied("route_policy_name_invalid")
 		}
-		id := "//compute.googleapis.com/projects/" + text(parameters["project"]) + "/regions/" + text(parameters["region"]) + "/routers/" + text(parameters["router"]) + "/routePolicies/" + name
-		if _, _, err := c.routePolicyOperation(id, "GET"); err != nil {
+		collection := "routePolicies"
+		if kind.NativeType == namedSetType {
+			collection = "namedSets"
+		}
+		id := "//compute.googleapis.com/projects/" + text(parameters["project"]) + "/regions/" + text(parameters["region"]) + "/routers/" + text(parameters["router"]) + "/" + collection + "/" + name
+		if _, _, err := c.routerComponentOperation(kind.NativeType, id, "GET"); err != nil {
 			return "", err
 		}
 		return c.canonicalName(id), nil

@@ -100,6 +100,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
 | Hyperdisk Storage Pools | Native pools, capacity/performance usage, provisioning modes and disk members | Inventory and reviewed cleanup |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
+| Cloud Router named sets | Per-router prefix/community sets, CEL elements and fingerprint | Inventory; deletion and policy-reference ordering pending |
 | Cloud Router BGP policies | Per-router import/export policies, CEL terms and fingerprint | Independent native policy deletion with BGP reference detachment |
 | Cloud Identity | Groups and member relationships in the configured directory | Reviewed group deletion; ordinary member links can also be removed independently |
 | Resource Manager | Organization containing the connected project, discovered through its folder ancestry | Read-only; the public v3 API has no organization delete method |
@@ -295,3 +296,17 @@ reported for review. These native mutations have no fingerprint precondition,
 so avoid concurrent policy or BGP peer edits during cleanup. Parent-router
 cascade handling remains pending. Named sets and other policies are not selected
 for deletion by this action.
+
+## Cloud Router named sets
+
+Named-set scans need `compute.routers.list`, `compute.routers.listNamedSets` and
+`compute.routers.getNamedSet` in the selected project. Steward discovers each
+router's sets independently, including their type, description, CEL expression
+elements and fingerprint. Names are router-local; the inventory identity includes
+the region and router. Failed or incomplete reads preserve earlier observations.
+
+Filter with `type = "compute.googleapis.com/NamedSet"` and
+`properties.type = "NAMED_SET_TYPE_PREFIX"` (or `NAMED_SET_TYPE_COMMUNITY`).
+See [native set details](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/getNamedSet).
+Named-set deletion and policy-reference ordering remain pending. Google
+[prevents removal of a set referenced by any policy on its router](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/bgp-route-policies/update-named-sets).

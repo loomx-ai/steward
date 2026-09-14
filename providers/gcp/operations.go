@@ -52,15 +52,19 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 			}
 		}
 	}
-	if operation.ID == routePolicyGet || operation.ID == routePolicyList || operation.ID == routePolicyDelete {
+	if operation.ID == routePolicyGet || operation.ID == routePolicyList || operation.ID == routePolicyDelete || operation.ID == namedSetGet || operation.ID == namedSetList {
 		for _, key := range []string{"region", "router"} {
 			value, ok := parameters[key].(string)
 			if !ok || !routePolicySegment.MatchString(value) {
 				return contracts.InvocationResult{}, groupDenied("route_policy_parameter_invalid")
 			}
 		}
-		if operation.ID == routePolicyGet || operation.ID == routePolicyDelete {
-			value, ok := parameters["policy"].(string)
+		if operation.ID == routePolicyGet || operation.ID == routePolicyDelete || operation.ID == namedSetGet {
+			parameter := "policy"
+			if operation.ID == namedSetGet {
+				parameter = "namedSet"
+			}
+			value, ok := parameters[parameter].(string)
 			if !ok || !routePolicySegment.MatchString(value) {
 				return contracts.InvocationResult{}, groupDenied("route_policy_parameter_invalid")
 			}
@@ -132,8 +136,12 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if err != nil {
 		return result, err
 	}
-	if operation.ID == routePolicyGet {
-		if err := routePolicyData(object(result.Data["resource"]), text(parameters["policy"])); err != nil {
+	if operation.ID == routePolicyGet || operation.ID == namedSetGet {
+		kind, parameter := routePolicyType, "policy"
+		if operation.ID == namedSetGet {
+			kind, parameter = namedSetType, "namedSet"
+		}
+		if err := routerComponentData(kind, object(result.Data["resource"]), text(parameters[parameter])); err != nil {
 			return contracts.InvocationResult{}, err
 		}
 	}
@@ -182,8 +190,8 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 	if isIdentityGroup(kind.NativeType) {
 		return identityResourceOperation(metadata, kind.NativeType, nativeID, method)
 	}
-	if kind.NativeType == routePolicyType {
-		return c.routePolicyOperation(nativeID, method)
+	if isRouterComponent(kind.NativeType) {
+		return c.routerComponentOperation(kind.NativeType, nativeID, method)
 	}
 	if kind.NativeType == securitySubscriptionType {
 		return securitySubscriptionOperation(metadata, nativeID, method)

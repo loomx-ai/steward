@@ -15,7 +15,15 @@ func routePolicyFixture(name string) map[string]any {
 	return map[string]any{"name": name, "type": "ROUTE_POLICY_TYPE_IMPORT", "description": "Reviewed import policy", "fingerprint": "ZnAx", "terms": []any{map[string]any{"priority": 10, "match": map[string]any{"expression": "destination == '10.0.0.0/8'"}, "actions": []any{map[string]any{"expression": "accept()"}}}}}
 }
 
-func TestRoutePolicyNativeInventory(t *testing.T) {
+func TestRoutePolicyNativeInventory(t *testing.T) { testRouterComponentInventory(t, routePolicyType) }
+
+func testRouterComponentInventory(t *testing.T, nativeType string) {
+	list, get, query, collection, field := "listRoutePolicies", "getRoutePolicy", "policy", "routePolicies", "terms"
+	fixture := routePolicyFixture
+	if nativeType == namedSetType {
+		list, get, query, collection, field = "listNamedSets", "getNamedSet", "namedSet", "namedSets", "elements"
+		fixture = namedSetFixture
+	}
 	for _, scope := range []string{"us-central1", "project", "global"} {
 		t.Run(scope, func(t *testing.T) {
 			var reads []string
@@ -46,7 +54,7 @@ func TestRoutePolicyNativeInventory(t *testing.T) {
 					return dataformResponse(req, 200, result), nil
 				}
 				router := parts[8]
-				if strings.HasSuffix(req.URL.Path, "/listRoutePolicies") {
+				if strings.HasSuffix(req.URL.Path, "/"+list) {
 					if req.URL.Query().Get("maxResults") != "1" || req.URL.Query().Get("returnPartialSuccess") != "" {
 						t.Fatal("incorrect paging", req.URL)
 					}
@@ -62,15 +70,15 @@ func TestRoutePolicyNativeInventory(t *testing.T) {
 					result["result"] = []any{map[string]any{"name": name}}
 					return dataformResponse(req, 200, result), nil
 				}
-				if strings.HasSuffix(req.URL.Path, "/getRoutePolicy") {
-					name := req.URL.Query().Get("policy")
+				if strings.HasSuffix(req.URL.Path, "/"+get) {
+					name := req.URL.Query().Get(query)
 					reads = append(reads, region+"/"+router+"/"+name)
-					return dataformResponse(req, 200, map[string]any{"resource": routePolicyFixture(name)}), nil
+					return dataformResponse(req, 200, map[string]any{"resource": fixture(name)}), nil
 				}
 				t.Fatal("unexpected request", req.URL)
 				return nil, nil
 			})
-			kind := r.resourceKind(routePolicyType)
+			kind := r.resourceKind(nativeType)
 			request := contracts.InventoryRequest{ConnectionID: "connection", Source: productInventorySource, ResourceKind: &kind, Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: scope}, Limit: 1}
 			if scope == "project" {
 				request.Scope = asset.Scope{Kind: asset.ScopeProject, NativeID: "sample-project"}
@@ -89,13 +97,24 @@ func TestRoutePolicyNativeInventory(t *testing.T) {
 				}
 				for _, item := range batch.Items {
 					ids = append(ids, item.NativeID)
-					parent := strings.TrimSuffix(item.NativeID, "/routePolicies/"+item.Name)
-					if !slices.Contains(item.NetworkReferences, parent) || len(array(item.Normalized["terms"])) != 1 || item.Normalized["fingerprint"] != "ZnAx" || item.Actionable == nil || !*item.Actionable {
+					parent := strings.TrimSuffix(item.NativeID, "/"+collection+"/"+item.Name)
+					if !slices.Contains(item.NetworkReferences, parent) || len(array(item.Normalized[field])) != 1 || item.Normalized["fingerprint"] != "ZnAx" {
 						t.Fatalf("lost policy metadata or parent: %+v", item)
 					}
-					term := object(array(item.Normalized["terms"])[0])
-					if object(term["match"])["expression"] != "destination == '10.0.0.0/8'" || object(array(term["actions"])[0])["expression"] != "accept()" {
-						t.Fatal("native policy expressions lost", term)
+					if firewallDigest(item.Normalized[field]) != firewallDigest(fixture(item.Name)[field]) {
+						t.Fatal("native CEL expressions lost")
+					}
+					if nativeType == routePolicyType && (item.Actionable == nil || !*item.Actionable) {
+						t.Fatal("policy action missing")
+					}
+					if nativeType == namedSetType {
+						nativeKind, _ := findType(nativeType)
+						if item.Actionable != nil && *item.Actionable || len(nativeKind.DeleteOperations) != 0 {
+							t.Fatal("invented named-set cleanup support")
+						}
+						if item.Normalized[namedSetRouterID] == nil {
+							t.Fatal("missing parent incarnation")
+						}
 					}
 					if item.Scope.NativeID != item.Location || !strings.Contains(item.NativeID, "/regions/"+item.Location+"/routers/") {
 						t.Fatal("wrong region", item)

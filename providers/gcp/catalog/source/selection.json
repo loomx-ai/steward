@@ -1029,7 +1029,9 @@
         "compute.routers.getRoutePolicy",
         "compute.routers.listRoutePolicies",
         "compute.routers.deleteRoutePolicy",
-        "compute.routers.patch"
+        "compute.routers.patch",
+        "compute.routers.getNamedSet",
+        "compute.routers.listNamedSets"
       ]
     }
   ],
@@ -4642,6 +4644,22 @@
       "delete_operations": [
         "compute.routers.deleteRoutePolicy"
       ]
+    },
+    {
+      "native_type": "compute.googleapis.com/NamedSet",
+      "collection": "namedSets",
+      "class": "network.named_set",
+      "display_name": "Cloud Router named set",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.routers.getNamedSet"
+      ],
+      "list_operations": [
+        "compute.routers.listNamedSets"
+      ],
+      "delete_operations": []
     }
   ],
   "sdk_documents": [

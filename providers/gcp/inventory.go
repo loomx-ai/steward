@@ -240,8 +240,8 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 			return contracts.InventoryItem{}, err
 		}
 	}
-	if nativeType == routePolicyType {
-		if err := routePolicyData(data, last(nativeID)); err != nil {
+	if isRouterComponent(nativeType) {
+		if err := routerComponentData(nativeType, data, last(nativeID)); err != nil {
 			return contracts.InventoryItem{}, err
 		}
 	}

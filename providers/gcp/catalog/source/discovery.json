@@ -130045,6 +130045,124 @@
               "$ref": "Router"
             },
             "id": "compute.routers.patch"
+          },
+          "compute.routers.getNamedSet": {
+            "httpMethod": "GET",
+            "path": "projects/{project}/regions/{region}/routers/{router}/getNamedSet",
+            "flatPath": "projects/{project}/regions/{region}/routers/{router}/getNamedSet",
+            "response": {
+              "$ref": "RoutersGetNamedSetResponse"
+            },
+            "parameters": {
+              "namedSet": {
+                "location": "query",
+                "description": "The Named Set name for this request. Name must conform to RFC1035",
+                "type": "string"
+              },
+              "router": {
+                "required": true,
+                "type": "string",
+                "description": "Name of the Router resource to query for the named set. The name should\nconform to RFC1035.",
+                "location": "path"
+              },
+              "project": {
+                "location": "path",
+                "type": "string",
+                "required": true,
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "description": "Project ID for this request."
+              },
+              "region": {
+                "location": "path",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+                "required": true,
+                "type": "string",
+                "description": "Name of the region for this request."
+              }
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ],
+            "parameterOrder": [
+              "project",
+              "region",
+              "router"
+            ],
+            "description": "Returns specified Named Set",
+            "id": "compute.routers.getNamedSet"
+          },
+          "compute.routers.listNamedSets": {
+            "path": "projects/{project}/regions/{region}/routers/{router}/listNamedSets",
+            "description": "Retrieves a list of router named set subresources available to the\nspecified project.",
+            "id": "compute.routers.listNamedSets",
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ],
+            "parameters": {
+              "filter": {
+                "type": "string",
+                "location": "query",
+                "description": "A filter expression that filters resources listed in the response. Most\nCompute resources support two types of filter expressions:\nexpressions that support regular expressions and expressions that follow\nAPI improvement proposal AIP-160.\nThese two types of filter expressions cannot be mixed in one request.\n\nIf you want to use AIP-160, your expression must specify the field name, an\noperator, and the value that you want to use for filtering. The value\nmust be a string, a number, or a boolean. The operator\nmust be either `=`, `!=`, `>`, `<`, `<=`, `>=` or `:`.\n\nFor example, if you are filtering Compute Engine instances, you can\nexclude instances named `example-instance` by specifying\n`name != example-instance`.\n\nThe `:*` comparison can be used to test whether a key has been defined.\nFor example, to find all objects with `owner` label use:\n```\nlabels.owner:*\n```\n\nYou can also filter nested fields. For example, you could specify\n`scheduling.automaticRestart = false` to include instances only\nif they are not scheduled for automatic restarts. You can use filtering\non nested fields to filter based onresource labels.\n\nTo filter on multiple expressions, provide each separate expression within\nparentheses. For example:\n```\n(scheduling.automaticRestart = true)\n(cpuPlatform = \"Intel Skylake\")\n```\nBy default, each expression is an `AND` expression. However, you\ncan include `AND` and `OR` expressions explicitly.\nFor example:\n```\n(cpuPlatform = \"Intel Skylake\") OR\n(cpuPlatform = \"Intel Broadwell\") AND\n(scheduling.automaticRestart = true)\n```\n\nIf you want to use a regular expression, use the `eq` (equal) or `ne`\n(not equal) operator against a single un-parenthesized expression with or\nwithout quotes or against multiple parenthesized expressions. Examples:\n\n`fieldname eq unquoted literal`\n`fieldname eq 'single quoted literal'`\n`fieldname eq \"double quoted literal\"`\n`(fieldname1 eq literal) (fieldname2 ne \"literal\")`\n\nThe literal value is interpreted as a regular expression using GoogleRE2 library syntax.\nThe literal value must match the entire field.\n\nFor example, to filter for instances that do not end with name \"instance\",\nyou would use `name ne .*instance`.\n\nYou cannot combine constraints on multiple fields using regular\nexpressions."
+              },
+              "router": {
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+                "location": "path",
+                "required": true,
+                "description": "Name or id of the resource for this request.\nName should conform to RFC1035.",
+                "type": "string"
+              },
+              "returnPartialSuccess": {
+                "location": "query",
+                "description": "Opt-in for partial success behavior which provides partial results in case\nof failure. The default value is false.\n\nFor example, when partial success behavior is enabled, aggregatedList for a\nsingle zone scope either returns all resources in the zone or no resources,\nwith an error code.",
+                "type": "boolean"
+              },
+              "pageToken": {
+                "location": "query",
+                "description": "Specifies a page token to use. Set `pageToken` to the\n`nextPageToken` returned by a previous list request to get\nthe next page of results.",
+                "type": "string"
+              },
+              "orderBy": {
+                "type": "string",
+                "location": "query",
+                "description": "Sorts list results by a certain order. By default, results\nare returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation\ntimestamp using `orderBy=\"creationTimestamp desc\"`. This sorts\nresults based on the `creationTimestamp` field in\nreverse chronological order (newest result first). Use this to sort\nresources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by `name` or\n`creationTimestamp desc` is supported."
+              },
+              "maxResults": {
+                "minimum": "0",
+                "description": "The maximum number of results per page that should be returned.\nIf the number of available results is larger than `maxResults`,\nCompute Engine returns a `nextPageToken` that can be used to get\nthe next page of results in subsequent list requests. Acceptable values are\n`0` to `500`, inclusive. (Default: `500`)",
+                "location": "query",
+                "default": "500",
+                "type": "integer",
+                "format": "uint32"
+              },
+              "region": {
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+                "description": "Name of the region for this request.",
+                "type": "string",
+                "location": "path",
+                "required": true
+              },
+              "project": {
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "description": "Project ID for this request.",
+                "location": "path",
+                "type": "string",
+                "required": true
+              }
+            },
+            "parameterOrder": [
+              "project",
+              "region",
+              "router"
+            ],
+            "flatPath": "projects/{project}/regions/{region}/routers/{router}/listNamedSets",
+            "response": {
+              "$ref": "RoutersListNamedSets"
+            },
+            "httpMethod": "GET"
           }
         },
         "schemas": {
@@ -131762,6 +131880,224 @@
                   "ERRORS_ONLY",
                   "TRANSLATIONS_ONLY"
                 ]
+              }
+            }
+          },
+          "RoutersGetNamedSetResponse": {
+            "id": "RoutersGetNamedSetResponse",
+            "properties": {
+              "resource": {
+                "$ref": "NamedSet"
+              },
+              "etag": {
+                "type": "string",
+                "description": "end_interface: MixerGetResponseWithEtagBuilder"
+              }
+            },
+            "type": "object"
+          },
+          "NamedSet": {
+            "properties": {
+              "fingerprint": {
+                "format": "byte",
+                "type": "string",
+                "description": "A fingerprint for the Named Set being applied to this Router, which is\nessentially a hash of the Named Set used for optimistic locking.\nThe fingerprint is initially generated by Compute Engine and changes\nafter every request to modify or update the Named Set. You must always\nprovide an up-to-date fingerprint hash in order to update or change\nlabels.\n\nTo see the latest fingerprint, make a getNamedSet() request\nto retrieve a Named Set."
+              },
+              "type": {
+                "enumDescriptions": [
+                  "The Named Set is a Community Named Set.",
+                  "The Named Set is a Prefix Named Set."
+                ],
+                "description": "This named set's type",
+                "type": "string",
+                "enum": [
+                  "NAMED_SET_TYPE_COMMUNITY",
+                  "NAMED_SET_TYPE_PREFIX"
+                ]
+              },
+              "description": {
+                "description": "An optional description of named set.",
+                "type": "string"
+              },
+              "elements": {
+                "type": "array",
+                "description": "CEL expressions that are comparable to constructs of this set's type\n(see Policy Language).",
+                "items": {
+                  "$ref": "Expr"
+                }
+              },
+              "name": {
+                "description": "This set's name, which must be a resource ID segment and unique within all\nnamed sets owned by the Router. Name should conform to RFC1035.",
+                "type": "string"
+              }
+            },
+            "id": "NamedSet",
+            "type": "object"
+          },
+          "RoutersListNamedSets": {
+            "id": "RoutersListNamedSets",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "[Output Only] The unique identifier for the resource. This identifier is\ndefined by the server.",
+                "type": "string"
+              },
+              "selfLink": {
+                "readOnly": true,
+                "type": "string",
+                "description": "Output only. [Output Only] Server-defined URL for this resource."
+              },
+              "kind": {
+                "description": "Output only. [Output Only] Type of resource. Alwayscompute#routersListNamedSets for lists of named sets.",
+                "default": "compute#routersListNamedSets",
+                "type": "string",
+                "readOnly": true
+              },
+              "unreachables": {
+                "description": "Output only. [Output Only] Unreachable resources.",
+                "readOnly": true,
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "warning": {
+                "type": "object",
+                "description": "[Output Only] Informational warning message.",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "key": {
+                          "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "[Output Only] A warning data value corresponding to the key.",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "[Output Only] A human-readable description of the warning code."
+                  },
+                  "code": {
+                    "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                    "enum": [
+                      "CLEANUP_FAILED",
+                      "DEPRECATED_RESOURCE_USED",
+                      "DEPRECATED_TYPE_USED",
+                      "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                      "EXPERIMENTAL_TYPE_USED",
+                      "EXTERNAL_API_WARNING",
+                      "FIELD_VALUE_OVERRIDEN",
+                      "INJECTED_KERNELS_DEPRECATED",
+                      "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                      "LARGE_DEPLOYMENT_WARNING",
+                      "LIST_OVERHEAD_QUOTA_EXCEED",
+                      "MISSING_TYPE_DEPENDENCY",
+                      "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                      "NEXT_HOP_CANNOT_IP_FORWARD",
+                      "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                      "NEXT_HOP_INSTANCE_NOT_FOUND",
+                      "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                      "NEXT_HOP_NOT_RUNNING",
+                      "NOT_CRITICAL_ERROR",
+                      "NO_RESULTS_ON_PAGE",
+                      "PARTIAL_SUCCESS",
+                      "QUOTA_INFO_UNAVAILABLE",
+                      "REQUIRED_TOS_AGREEMENT",
+                      "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                      "RESOURCE_NOT_DELETED",
+                      "SCHEMA_VALIDATION_IGNORED",
+                      "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                      "UNDECLARED_PROPERTIES",
+                      "UNREACHABLE"
+                    ],
+                    "type": "string",
+                    "enumDescriptions": [
+                      "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                      "A link to a deprecated resource was created.",
+                      "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                      "The user created a boot disk that is larger than image size.",
+                      "When deploying and at least one of the resources has a type marked as\nexperimental",
+                      "Warning that is present in an external api call",
+                      "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                      "The operation involved use of an injected kernel, which is deprecated.",
+                      "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                      "When deploying a deployment with a exceedingly large number of resources",
+                      "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                      "A resource depends on a missing type",
+                      "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                      "The route's next hop instance cannot ip forward.",
+                      "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                      "The route's nextHopInstance URL refers to an instance that does not exist.",
+                      "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                      "The route's next hop instance does not have a status of RUNNING.",
+                      "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                      "No results are present on a particular list page.",
+                      "Success is reported, but some results may be missing due to errors",
+                      "Quota information is not available to client requests (e.g:\nregions.list).",
+                      "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                      "Warning that a resource is in use.",
+                      "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                      "When a resource schema validation is ignored.",
+                      "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                      "When undeclared properties in the schema are present",
+                      "A given scope cannot be reached."
+                    ],
+                    "enumDeprecated": [
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      true,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false
+                    ]
+                  }
+                }
+              },
+              "etag": {
+                "type": "string"
+              },
+              "result": {
+                "type": "array",
+                "items": {
+                  "$ref": "NamedSet"
+                },
+                "description": "[Output Only] A list of named sets."
+              },
+              "nextPageToken": {
+                "type": "string",
+                "description": "[Output Only] This token allows you to get the next page of results for\nlist requests. If the number of results is larger thanmaxResults, use the nextPageToken as a value for\nthe query parameter pageToken in the next list request.\nSubsequent list requests will have their own nextPageToken to\ncontinue paging through the results."
               }
             }
           }
@@ -135773,6 +136109,24 @@
         "delete_operations": [
           "compute.routers.deleteRoutePolicy"
         ]
+      }
+    },
+    {
+      "nativeType": "compute.googleapis.com/NamedSet",
+      "class": "network.named_set",
+      "displayName": "Cloud Router named set",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "namedSets",
+        "read_operations": [
+          "compute.routers.getNamedSet"
+        ],
+        "list_operations": [
+          "compute.routers.listNamedSets"
+        ],
+        "delete_operations": []
       }
     }
   ]

@@ -21,28 +21,46 @@ var routePolicySegment = regexp.MustCompile(`^[a-z]([-a-z0-9]{0,61}[a-z0-9])?$`)
 // Route policies have a router-local name and a query-addressed GET. This
 // composite inventory identity is not an independently callable REST path.
 func (c *client) routePolicyOperation(id, method string) (catalog.Operation, map[string]any, error) {
+	return c.routerComponentOperation(routePolicyType, id, method)
+}
+
+func isRouterComponent(kind string) bool { return kind == routePolicyType || kind == namedSetType }
+
+func (c *client) routerComponentOperation(kind, id, method string) (catalog.Operation, map[string]any, error) {
+	collection, query, operation := "routePolicies", "policy", routePolicyGet
+	if method == "DELETE" {
+		operation = routePolicyDelete
+	}
+	if kind == namedSetType {
+		collection, query, operation = "namedSets", "namedSet", namedSetGet
+		if method != "GET" {
+			return catalog.Operation{}, nil, groupDenied("named_set_method_unsupported")
+		}
+	} else if kind != routePolicyType {
+		return catalog.Operation{}, nil, groupDenied("router_component_type_invalid")
+	}
 	name := strings.TrimPrefix(id, "//compute.googleapis.com/")
 	parts := strings.Split(name, "/")
-	if (method != "GET" && method != "DELETE") || name == id || len(parts) != 8 || parts[0] != "projects" || (parts[1] != c.project && parts[1] != c.number) || parts[2] != "regions" || parts[4] != "routers" || parts[6] != "routePolicies" || !routePolicySegment.MatchString(parts[3]) || !routePolicySegment.MatchString(parts[5]) || !routePolicySegment.MatchString(parts[7]) {
+	if (method != "GET" && method != "DELETE") || name == id || len(parts) != 8 || parts[0] != "projects" || (parts[1] != c.project && parts[1] != c.number) || parts[2] != "regions" || parts[4] != "routers" || parts[6] != collection || !routePolicySegment.MatchString(parts[3]) || !routePolicySegment.MatchString(parts[5]) || !routePolicySegment.MatchString(parts[7]) {
 		return catalog.Operation{}, nil, groupDenied("route_policy_identity_invalid")
 	}
 	metadata, err := providerData()
 	if err != nil {
 		return catalog.Operation{}, nil, err
 	}
-	operation := routePolicyGet
-	if method == "DELETE" {
-		operation = routePolicyDelete
-	}
 	op, ok := metadata.catalog.Operation(operation)
 	if !ok {
 		return catalog.Operation{}, nil, groupDenied("route_policy_method_missing")
 	}
-	return op, map[string]any{"project": c.project, "region": parts[3], "router": parts[5], "policy": parts[7]}, nil
+	return op, map[string]any{"project": c.project, "region": parts[3], "router": parts[5], query: parts[7]}, nil
 }
 
 func (c *client) routePolicyRead(ctx context.Context, id string) (map[string]any, error) {
-	op, parameters, err := c.routePolicyOperation(id, "GET")
+	return c.routerComponentRead(ctx, routePolicyType, id)
+}
+
+func (c *client) routerComponentRead(ctx context.Context, kind, id string) (map[string]any, error) {
+	op, parameters, err := c.routerComponentOperation(kind, id, "GET")
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +73,7 @@ func (c *client) routePolicyRead(ctx context.Context, id string) (map[string]any
 		return nil, err
 	}
 	data := object(result.Data["resource"])
-	if err := routePolicyData(data, text(parameters["policy"])); err != nil {
+	if err := routerComponentData(kind, data, last(id)); err != nil {
 		return nil, err
 	}
 	return data, nil

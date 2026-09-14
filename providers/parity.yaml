@@ -422,6 +422,7 @@ resources:
     resources:
     - compute.googleapis.com/Router
     - compute.googleapis.com/RoutePolicy
+    - compute.googleapis.com/NamedSet
   azure:
     resources:
     - Microsoft.Network/virtualHubs/routeMaps
@@ -434,7 +435,9 @@ resources:
     Reviewed BGP import/export references are detached with native Router PATCH,
     preserving other peer settings and ordered policy lists. Persisted phases wait for
     detachment before deletion; permission failures, drift and native conflicts fail.
-    Native mutations lack a fingerprint precondition. Named-set dependencies, parent
+    Native mutations lack a fingerprint precondition. Named sets now have independent
+    native inventory with prefix/community types, CEL elements and fingerprint.
+    Named-set deletion and policy-reference dependencies, parent
     cascade and independent/live acceptance remain unfinished. Router deletion is not
     policy deletion parity.
 - alicloud: ACS::CEN::TrafficMarkingPolicy

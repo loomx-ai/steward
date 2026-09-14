@@ -4,7 +4,7 @@ The native contract is retained in `catalog/source/discovery.json` from the
 [Compute v1 Discovery document](https://www.googleapis.com/discovery/v1/apis/compute/v1/rest),
 revision `20260908`, full-response SHA-256
 `aa1078267f6ad9c82274e6c62572bae328b0de11c6f08861f20488b6617afda7`.
-Four unchanged method objects and their thirty-five transitive schemas are selected in a
+Six unchanged method objects (including named-set GET/LIST) and their thirty-eight transitive schemas are selected in a
 separate fragment, preserving all earlier native metadata.
 
 - [routers.listRoutePolicies](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/listRoutePolicies)

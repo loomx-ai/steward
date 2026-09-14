@@ -5504,3 +5504,39 @@ background evidence only, not acceptance evidence for this work.
   object remain unchanged. The commit contains 18 milestone files; all 65
   original WIP hashes are preserved. No runtime dependency or external test
   environment was added.
+
+### Native Cloud Router named-set inventory
+
+- Verified native v1 `routers.listNamedSets` / `routers.getNamedSet` and retained
+  their unchanged method/schema objects from the pinned Compute Discovery source.
+  The existing router fragment now has six methods and 38 transitive schemas.
+  Catalog counts are 199 resource rules and 784 operations; source provenance
+  and all prior native objects remain unchanged.
+- Named sets are independently indexed under their containing region/router,
+  with native prefix/community types, description, full CEL element objects and
+  opaque fingerprint. Native LIST uses `result` and GET wraps `resource` with a
+  `namedSet` query parameter. Shared router-component binding preserves selected
+  project/region/name boundaries without treating the inventory identity as a
+  REST endpoint. Parent router ID and dependency are recorded.
+- Native paging, same names on distinct routers, project/regional/global scope,
+  project-number aliases, incomplete lists, permission failures, detail 404,
+  malformed wrappers/fields, parent UID changes and cursor cycles are covered.
+  Shared SQLite worker tests verify query visibility, failure-preserved history,
+  authoritative empty closure and same-ID recovery for both policy and set kinds.
+  Independent JSON Schema validation covers native prefix/community fixtures.
+  Focused named-set/route-policy/catalog/property tests passed in 10.634s.
+- The native delete API exists. Official documentation forbids removal of a set
+  still referenced by any policy on its router. CEL reference interpretation,
+  dependency ordering, independent deletion and parent-router cascade remain
+  unfinished; this milestone does not expose a delete action or claim parity.
+  The inspected mockgcp Router file lacks named-set handlers. No independent
+  named-set backend or live-cloud acceptance is claimed; all eight criteria stay open.
+- Final verification: `go test ./providers/gcp ./internal/...` passed (GCP
+  183.243s, internal integration 23.994s). Focused named-set/route-policy/catalog/
+  property race checks passed in 33.827s; GCP vet passed. Main-workspace focused
+  checks passed in 10.498s. Documentation checks passed for 30 isolated/42 main
+  chapters and 10 screenshots. Catalog reproducibility checks passed with SHA-256
+  `c55ffc321e9236df385f2191ab93c126075685fc6a6afa69f91e11e64bb8a4ee`.
+  All 782 prior generated operations and previous native method/schema objects
+  remain unchanged. Only 19 milestone files are committed; all 65 original WIP
+  hashes are preserved. No runtime dependency or external environment was added.

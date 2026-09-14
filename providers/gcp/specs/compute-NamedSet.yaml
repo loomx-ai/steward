@@ -1,0 +1,61 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/NamedSet
+  class: network.named_set
+presentation:
+  displayNames:
+    en-US: Cloud Router named set
+    zh-CN: Cloud Router 命名集合
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    source: product-api
+    nativeType: compute.googleapis.com/Router
+  list:
+    operation: compute.routers.listNamedSets
+    parameters:
+      project: scope.project
+      region: scope.location
+      router: parent.normalized.name
+    itemsPath: result
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+  detail:
+    operation: compute.routers.getNamedSet
+    itemsPath: resource
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  type:
+    path: type
+    type: string
+  description:
+    path: description
+    type: string
+  elements:
+    path: elements
+    type: array
+  fingerprint:
+    path: fingerprint
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Router
+  targetIdPath: refs_compute_googleapis_com_Router

@@ -17,6 +17,16 @@ import (
 )
 
 func TestRoutePolicySQLiteFailureAbsenceAndRecovery(t *testing.T) {
+	testRouterComponentSQLiteRecovery(t, routePolicyType)
+}
+
+func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
+	list, get, field := "listRoutePolicies", "getRoutePolicy", "terms"
+	fixture := routePolicyFixture
+	if nativeType == namedSetType {
+		list, get, field = "listNamedSets", "getNamedSet", "elements"
+		fixture = namedSetFixture
+	}
 	ctx := t.Context()
 	phase := "first"
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
@@ -26,20 +36,20 @@ func TestRoutePolicySQLiteFailureAbsenceAndRecovery(t *testing.T) {
 		if strings.HasSuffix(req.URL.Path, "/routers") {
 			return dataformResponse(req, 200, map[string]any{"items": []any{map[string]any{"name": "router-a", "id": "1001", "selfLink": "https://www.googleapis.com" + req.URL.Path + "/router-a"}}}), nil
 		}
-		if strings.HasSuffix(req.URL.Path, "/listRoutePolicies") {
+		if strings.HasSuffix(req.URL.Path, "/"+list) {
 			if phase == "absent" {
 				return apiResponse(req, 200, `{"warning":{"code":"NO_RESULTS_ON_PAGE"}}`), nil
 			}
 			return apiResponse(req, 200, `{"result":[{"name":"policy-a"}]}`), nil
 		}
-		if strings.HasSuffix(req.URL.Path, "/getRoutePolicy") {
+		if strings.HasSuffix(req.URL.Path, "/"+get) {
 			if phase == "denied" {
 				return apiResponse(req, 403, `{}`), nil
 			}
 			if phase == "missing" {
 				return apiResponse(req, 404, `{}`), nil
 			}
-			data := routePolicyFixture("policy-a")
+			data := fixture("policy-a")
 			if phase == "changed" {
 				data["name"] = "other-policy"
 			}
@@ -58,7 +68,7 @@ func TestRoutePolicySQLiteFailureAbsenceAndRecovery(t *testing.T) {
 	now := time.Now().UTC()
 	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP, Partition: "gcp", Status: asset.ConnectionActive, CreatedAt: now, UpdatedAt: now}
 	scope := asset.Scope{ID: "region", ConnectionID: connection.ID, Kind: asset.ScopeRegion, NativeID: "us-central1", CreatedAt: now, UpdatedAt: now}
-	kind := r.resourceKind(routePolicyType)
+	kind := r.resourceKind(nativeType)
 	for _, write := range []func() error{
 		func() error { return repositories.Connections().PutConnection(ctx, connection) },
 		func() error { return repositories.Inventory().PutScope(ctx, scope) },
@@ -96,7 +106,7 @@ func TestRoutePolicySQLiteFailureAbsenceAndRecovery(t *testing.T) {
 		if err != nil || failed && (finished.Status != asset.ShardFailed || finished.Coverage.Complete) || !failed && (finished.Status != asset.ShardSucceeded || !finished.Coverage.Complete) {
 			t.Fatal("wrong coverage", step, finished, err)
 		}
-		expression, err := resourcequery.Parse(`properties.type = "ROUTE_POLICY_TYPE_IMPORT"`)
+		expression, err := resourcequery.Parse(`properties.type = "` + text(fixture("policy-a")["type"]) + `"`)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -128,7 +138,7 @@ func TestRoutePolicySQLiteFailureAbsenceAndRecovery(t *testing.T) {
 		if step == "recovered" {
 			fingerprint = "ZnAy"
 		}
-		if value.ID != first.ID || value.ClosedAt != nil || value.Normalized["fingerprint"] != fingerprint || len(array(value.Normalized["terms"])) != 1 {
+		if value.ID != first.ID || value.ClosedAt != nil || value.Normalized["fingerprint"] != fingerprint || len(array(value.Normalized[field])) != 1 {
 			t.Fatal("policy observation changed incorrectly", step, value)
 		}
 		if failed && !value.LastSeenAt.Equal(first.LastSeenAt) || step == "recovered" && !value.LastSeenAt.After(first.LastSeenAt) {
