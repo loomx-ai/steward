@@ -6568,3 +6568,27 @@ source consistency, not functional parity. All 159 statuses and all eight accept
 criteria remain open. [The gap report](providers/PARITY_GAPS.md) names each absent
 candidate and affected baseline and prioritizes Synapse, deployment stacks and
 backup/recovery implementations ahead of further localized polishing.
+
+### Synapse workspace and compute native contract foundation
+
+Added 22 official Synapse ARM operations for workspaces, Spark/SQL pools, SQL
+restore points, replication links, management operations, activity and restorable
+dropped SQL pools. The stable 2021-06-01 source is pinned to Microsoft REST-specs
+commit c20bf553ad64f20c6d5e3f56080380c086cb1fde. Three root Swagger documents and
+four transitive references retain full upstream fingerprints, with 23 unmodified
+native examples. Existing resource bindings and operations remain unchanged.
+
+Offline contract checks cover request binding, version/path/parameter rejection
+and 34 response schemas. They require the precise discrepancies in four example
+requests and two response bodies, rather than rewriting the original examples or
+relaxing production validation. The evidence also records mismatched resource IDs,
+illustrative external polling URLs and disagreement between long-running-operation
+metadata and example headers. These require separate runtime verification.
+
+This commit establishes native API contracts, not Synapse inventory or cleanup.
+The five matrix mappings remain unimplemented, all 159 row statuses remain pending
+verification, and all eight acceptance criteria remain open. The
+[Synapse fixture notes](providers/azure/fixtures/synapse/README.md) identify the
+remaining workspace/child inventory, managed/default resource, active workload,
+data-plane, storage ownership, polling and readback work. No live cloud service or
+independent Synapse emulator was used.

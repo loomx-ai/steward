@@ -11389,6 +11389,48 @@
       }
     },
     {
+      "dependency": true,
+      "document": {
+        "definitions": {
+          "ProxyResource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Resource"
+              }
+            ],
+            "description": "The resource model definition for a Azure Resource Manager proxy resource. It will not have tags and a location",
+            "title": "Proxy Resource",
+            "type": "object"
+          },
+          "Resource": {
+            "description": "Common fields that are returned in the response for all Azure Resource Manager resources",
+            "properties": {
+              "id": {
+                "description": "Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "The name of the resource",
+                "readOnly": true,
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the resource. E.g. \"Microsoft.Compute/virtualMachines\" or \"Microsoft.Storage/storageAccounts\"",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "title": "Resource",
+            "type": "object",
+            "x-ms-azure-resource": true
+          }
+        }
+      },
+      "source_sha256": "5727903ec2102686dfbda7228fd22ccad2e1f944d27d5877f6885b83d0d453de",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/common-types/resource-management/v1/types.json"
+    },
+    {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/common-types/resource-management/v2/types.json",
       "source_sha256": "ccb3b6327aad7d108bdaffca3eefcd15737032ec655ca3f933300e828047d723",
       "dependency": true,
@@ -11520,6 +11562,16 @@
               }
             },
             "x-ms-azure-resource": true
+          },
+          "ProxyResource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Resource"
+              }
+            ],
+            "description": "The resource model definition for a Azure Resource Manager proxy resource. It will not have tags and a location",
+            "title": "Proxy Resource",
+            "type": "object"
           }
         },
         "parameters": {
@@ -67613,6 +67665,2784 @@
       },
       "source_sha256": "b143c609ac0e3b8ee91b15f9628ee2740f726a0d7819ec6102a2cdbf8ac13065",
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/sqlvirtualmachine/resource-manager/Microsoft.SqlVirtualMachine/SqlVirtualMachine/stable/2023-10-01/sqlvm.json"
+    },
+    {
+      "dependency": true,
+      "document": {
+        "definitions": {
+          "PrivateEndpoint": {
+            "description": "Private endpoint details",
+            "properties": {
+              "id": {
+                "description": "Resource id of the private endpoint.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object",
+            "x-ms-azure-resource": true
+          },
+          "PrivateEndpointConnection": {
+            "allOf": [
+              {
+                "$ref": "../../../common-types/resource-management/v1/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "A private endpoint connection",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/PrivateEndpointConnectionProperties",
+                "description": "Private endpoint connection properties.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "PrivateEndpointConnectionProperties": {
+            "description": "Properties of a private endpoint connection.",
+            "properties": {
+              "privateEndpoint": {
+                "$ref": "#/definitions/PrivateEndpoint",
+                "description": "The private endpoint which the connection belongs to."
+              },
+              "privateLinkServiceConnectionState": {
+                "$ref": "#/definitions/PrivateLinkServiceConnectionState",
+                "description": "Connection state of the private endpoint connection."
+              },
+              "provisioningState": {
+                "description": "Provisioning state of the private endpoint connection.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "PrivateLinkServiceConnectionState": {
+            "description": "Connection state details of the private endpoint",
+            "properties": {
+              "actionsRequired": {
+                "description": "The actions required for private link service connection.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "description": {
+                "description": "The private link service connection description.",
+                "type": "string"
+              },
+              "status": {
+                "description": "The private link service connection status.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        }
+      },
+      "source_sha256": "a08467b10b1807c2341b80284f8e70b0c8c4813deb3daeda773088ed51fa0eff",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/common/v1/privateEndpointConnection.json"
+    },
+    {
+      "dependency": true,
+      "document": {
+        "definitions": {
+          "LibraryInfo": {
+            "description": "Library/package information of a Big Data pool powered by Apache Spark",
+            "properties": {
+              "containerName": {
+                "description": "Storage blob container name.",
+                "type": "string"
+              },
+              "creatorId": {
+                "description": "Creator Id of the library/package.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Name of the library.",
+                "type": "string"
+              },
+              "path": {
+                "description": "Storage blob path of library.",
+                "type": "string"
+              },
+              "provisioningStatus": {
+                "description": "Provisioning status of the library/package.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "type": {
+                "description": "Type of the library.",
+                "type": "string"
+              },
+              "uploadedTimestamp": {
+                "description": "The last update time of the library.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "title": "Information about a library/package created at the workspace level.",
+            "type": "object"
+          }
+        },
+        "parameters": {
+          "WorkspaceNameParameter": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        }
+      },
+      "source_sha256": "492a8ebe396cc1f02ece49dbf55ac27148660abde99dc7a1539e4245bb7925bf",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/common/v1/types.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "AutoPauseProperties": {
+            "description": "Auto-pausing properties of a Big Data pool powered by Apache Spark",
+            "properties": {
+              "delayInMinutes": {
+                "description": "Number of minutes of idle time before the Big Data pool is automatically paused.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "enabled": {
+                "description": "Whether auto-pausing is enabled for the Big Data pool.",
+                "type": "boolean"
+              }
+            },
+            "title": "Spark pool auto-pausing properties",
+            "type": "object"
+          },
+          "AutoScaleProperties": {
+            "description": "Auto-scaling properties of a Big Data pool powered by Apache Spark",
+            "properties": {
+              "enabled": {
+                "description": "Whether automatic scaling is enabled for the Big Data pool.",
+                "type": "boolean"
+              },
+              "maxNodeCount": {
+                "description": "The maximum number of nodes the Big Data pool can support.",
+                "format": "int32",
+                "type": "integer",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              },
+              "minNodeCount": {
+                "description": "The minimum number of nodes the Big Data pool can support.",
+                "format": "int32",
+                "type": "integer",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              }
+            },
+            "title": "Spark pool auto-scaling properties",
+            "type": "object"
+          },
+          "BigDataPoolResourceInfo": {
+            "allOf": [
+              {
+                "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "A Big Data pool",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/BigDataPoolResourceProperties",
+                "description": "Big Data pool properties",
+                "x-ms-client-flatten": true
+              }
+            },
+            "title": "Big Data pool",
+            "type": "object"
+          },
+          "BigDataPoolResourceInfoListResult": {
+            "description": "Collection of Big Data pool information",
+            "properties": {
+              "nextLink": {
+                "description": "Link to the next page of results",
+                "type": "string"
+              },
+              "value": {
+                "description": "List of Big Data pools",
+                "items": {
+                  "$ref": "#/definitions/BigDataPoolResourceInfo"
+                },
+                "type": "array"
+              }
+            },
+            "title": "Collection of Big Data pools",
+            "type": "object"
+          },
+          "BigDataPoolResourceProperties": {
+            "description": "Properties of a Big Data pool powered by Apache Spark",
+            "properties": {
+              "autoPause": {
+                "$ref": "#/definitions/AutoPauseProperties",
+                "description": "Auto-pausing properties"
+              },
+              "autoScale": {
+                "$ref": "#/definitions/AutoScaleProperties",
+                "description": "Auto-scaling properties"
+              },
+              "cacheSize": {
+                "description": "The cache size",
+                "format": "int32",
+                "type": "integer"
+              },
+              "creationDate": {
+                "description": "The time when the Big Data pool was created.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "customLibraries": {
+                "description": "List of custom libraries/packages associated with the spark pool.",
+                "items": {
+                  "$ref": "../../../../common/v1/types.json#/definitions/LibraryInfo"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "defaultSparkLogFolder": {
+                "description": "The default folder where Spark logs will be written.",
+                "type": "string"
+              },
+              "dynamicExecutorAllocation": {
+                "$ref": "#/definitions/DynamicExecutorAllocation",
+                "description": "Dynamic Executor Allocation"
+              },
+              "isAutotuneEnabled": {
+                "description": "Whether autotune is required or not.",
+                "title": "Enable Autotune",
+                "type": "boolean",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              },
+              "isComputeIsolationEnabled": {
+                "description": "Whether compute isolation is required or not.",
+                "type": "boolean"
+              },
+              "lastSucceededTimestamp": {
+                "description": "The time when the Big Data pool was updated successfully.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "libraryRequirements": {
+                "$ref": "#/definitions/LibraryRequirements",
+                "description": "Library version requirements"
+              },
+              "nodeCount": {
+                "description": "The number of nodes in the Big Data pool.",
+                "format": "int32",
+                "type": "integer",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              },
+              "nodeSize": {
+                "description": "The level of compute power that each node in the Big Data pool has.",
+                "enum": [
+                  "None",
+                  "Small",
+                  "Medium",
+                  "Large",
+                  "XLarge",
+                  "XXLarge",
+                  "XXXLarge"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "NodeSize"
+                }
+              },
+              "nodeSizeFamily": {
+                "description": "The kind of nodes that the Big Data pool provides.",
+                "enum": [
+                  "None",
+                  "MemoryOptimized",
+                  "HardwareAcceleratedFPGA",
+                  "HardwareAcceleratedGPU"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "NodeSizeFamily"
+                }
+              },
+              "provisioningState": {
+                "description": "The state of the Big Data pool.",
+                "type": "string"
+              },
+              "sessionLevelPackagesEnabled": {
+                "description": "Whether session level packages enabled.",
+                "type": "boolean"
+              },
+              "sparkConfigProperties": {
+                "$ref": "#/definitions/SparkConfigProperties",
+                "description": "Spark configuration file to specify additional properties"
+              },
+              "sparkEventsFolder": {
+                "description": "The Spark events folder",
+                "type": "string",
+                "x-ms-mutability": [
+                  "create",
+                  "read",
+                  "update"
+                ]
+              },
+              "sparkVersion": {
+                "description": "The Apache Spark version.",
+                "type": "string"
+              }
+            },
+            "title": "Spark pool properties",
+            "type": "object"
+          },
+          "DynamicExecutorAllocation": {
+            "description": "Dynamic Executor Allocation Properties",
+            "properties": {
+              "enabled": {
+                "description": "Indicates whether Dynamic Executor Allocation is enabled or not.",
+                "type": "boolean"
+              },
+              "maxExecutors": {
+                "description": "The maximum number of executors alloted",
+                "format": "int32",
+                "type": "integer"
+              },
+              "minExecutors": {
+                "description": "The minimum number of executors alloted",
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "LibraryRequirements": {
+            "description": "Library requirements for a Big Data pool powered by Apache Spark",
+            "properties": {
+              "content": {
+                "description": "The library requirements.",
+                "type": "string"
+              },
+              "filename": {
+                "description": "The filename of the library requirements file.",
+                "type": "string"
+              },
+              "time": {
+                "description": "The last update time of the library requirements file.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "title": "Spark pool library version requirements",
+            "type": "object"
+          },
+          "SparkConfigProperties": {
+            "description": "SparkConfig Properties for a Big Data pool powered by Apache Spark",
+            "properties": {
+              "configurationType": {
+                "description": "The type of the spark config properties file.",
+                "enum": [
+                  "File",
+                  "Artifact"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ConfigurationType"
+                },
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              },
+              "content": {
+                "description": "The spark config properties.",
+                "type": "string"
+              },
+              "filename": {
+                "description": "The filename of the spark config properties file.",
+                "type": "string"
+              },
+              "time": {
+                "description": "The last update time of the spark config properties file.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "title": "Spark pool Config Properties",
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "Azure Synapse Analytics APIs",
+          "title": "SynapseManagementClient",
+          "version": "2021-06-01"
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools": {
+            "get": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "List Big Data pools in a workspace.",
+              "operationId": "BigDataPools_ListByWorkspace",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "#/definitions/BigDataPoolResourceInfoListResult"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "List the Big Data pools in a workspace.",
+              "tags": [
+                "BigDataPools"
+              ],
+              "x-ms-examples": {
+                "List Big Data pools in a workspace": {
+                  "$ref": "./examples/ListBigDataPoolsInWorkspace.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools/{bigDataPoolName}": {
+            "delete": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Delete a Big Data pool from the workspace.",
+              "operationId": "BigDataPools_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "Big Data pool name",
+                  "in": "path",
+                  "name": "bigDataPoolName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/BigDataPoolResourceInfo"
+                  }
+                },
+                "202": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "#/definitions/BigDataPoolResourceInfo"
+                  }
+                },
+                "204": {
+                  "description": ""
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Delete a Big Data pool.",
+              "tags": [
+                "BigDataPools"
+              ],
+              "x-ms-examples": {
+                "Delete a Big Data pool": {
+                  "$ref": "./examples/DeleteBigDataPool.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "azure-async-operation"
+              }
+            },
+            "get": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Get a Big Data pool.",
+              "operationId": "BigDataPools_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "Big Data pool name",
+                  "in": "path",
+                  "name": "bigDataPoolName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "#/definitions/BigDataPoolResourceInfo"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Get Big Data pool",
+              "tags": [
+                "BigDataPools"
+              ],
+              "x-ms-examples": {
+                "Get a Big Data pool": {
+                  "$ref": "./examples/GetBigDataPool.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "2eb41d1fa6529a75ce5eac4ff095c9ad636e49ed9c7cde678ef4b02317ff6c62",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/bigDataPool.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "DataWarehouseUserActivities": {
+            "allOf": [
+              {
+                "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "User activities of a data warehouse",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/DataWarehouseUserActivitiesProperties",
+                "description": "Resource properties.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "DataWarehouseUserActivitiesProperties": {
+            "description": "User activities of a data warehouse. This currently includes the count of running or suspended queries. For more information, please view the sys.dm_pdw_exec_requests dynamic management view (DMV).",
+            "properties": {
+              "activeQueriesCount": {
+                "description": "Count of running and suspended queries.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "ReplicationLink": {
+            "allOf": [
+              {
+                "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "Represents a Sql pool replication link.",
+            "properties": {
+              "location": {
+                "description": "Location of the workspace that contains this firewall rule.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/ReplicationLinkProperties",
+                "description": "The properties representing the resource.",
+                "x-ms-client-flatten": true
+              },
+              "type": {
+                "description": "Type of resource this is.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ReplicationLinkListResult": {
+            "description": "Represents the response to a List Sql pool replication link request.",
+            "properties": {
+              "nextLink": {
+                "description": "Link to retrieve next page of results.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "The list of Sql pool replication links housed in the Sql pool.",
+                "items": {
+                  "$ref": "#/definitions/ReplicationLink"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "ReplicationLinkProperties": {
+            "description": "Represents the properties of a Sql pool replication link.",
+            "properties": {
+              "isTerminationAllowed": {
+                "description": "Legacy value indicating whether termination is allowed.  Currently always returns true.",
+                "readOnly": true,
+                "type": "boolean"
+              },
+              "partnerDatabase": {
+                "description": "The name of the partner Sql pool.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "partnerLocation": {
+                "description": "The Azure Region of the partner Sql pool.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "partnerRole": {
+                "description": "The role of the partner Sql pool in the replication link.",
+                "enum": [
+                  "Primary",
+                  "Secondary",
+                  "NonReadableSecondary",
+                  "Source",
+                  "Copy"
+                ],
+                "readOnly": true,
+                "type": "string",
+                "x-ms-enum": {
+                  "name": "ReplicationRole"
+                }
+              },
+              "partnerServer": {
+                "description": "The name of the workspace hosting the partner Sql pool.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "percentComplete": {
+                "description": "The percentage of seeding complete for the replication link.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "replicationMode": {
+                "description": "Replication mode of this replication link.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "replicationState": {
+                "description": "The replication state for the replication link.",
+                "enum": [
+                  "PENDING",
+                  "SEEDING",
+                  "CATCH_UP",
+                  "SUSPENDED"
+                ],
+                "readOnly": true,
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ReplicationState"
+                }
+              },
+              "role": {
+                "description": "The role of the Sql pool in the replication link.",
+                "enum": [
+                  "Primary",
+                  "Secondary",
+                  "NonReadableSecondary",
+                  "Source",
+                  "Copy"
+                ],
+                "readOnly": true,
+                "type": "string",
+                "x-ms-enum": {
+                  "name": "ReplicationRole"
+                }
+              },
+              "startTime": {
+                "description": "The start time for the replication link.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "RestorePoint": {
+            "allOf": [
+              {
+                "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "Database restore points.",
+            "properties": {
+              "location": {
+                "description": "Resource location.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/RestorePointProperties",
+                "description": "Resource properties.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "RestorePointListResult": {
+            "description": "A list of long term retention backups.",
+            "properties": {
+              "nextLink": {
+                "description": "Link to retrieve next page of results.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "Array of results.",
+                "items": {
+                  "$ref": "#/definitions/RestorePoint"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "RestorePointProperties": {
+            "description": "Properties of a database restore point",
+            "properties": {
+              "earliestRestoreDate": {
+                "description": "The earliest time to which this database can be restored",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "restorePointCreationDate": {
+                "description": "The time the backup was taken",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "restorePointLabel": {
+                "description": "The label of restore point for backup request by user",
+                "readOnly": true,
+                "type": "string"
+              },
+              "restorePointType": {
+                "description": "The type of restore point",
+                "enum": [
+                  "CONTINUOUS",
+                  "DISCRETE"
+                ],
+                "readOnly": true,
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": false,
+                  "name": "RestorePointType"
+                }
+              }
+            },
+            "type": "object"
+          },
+          "Sku": {
+            "description": "SQL pool SKU",
+            "properties": {
+              "capacity": {
+                "description": "If the SKU supports scale out/in then the capacity integer should be included. If scale out/in is not possible for the resource this may be omitted.",
+                "format": "int32",
+                "type": "integer",
+                "x-ms-mutability": [
+                  "create",
+                  "read",
+                  "update"
+                ]
+              },
+              "name": {
+                "description": "The SKU name",
+                "type": "string"
+              },
+              "tier": {
+                "description": "The service tier",
+                "type": "string",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              }
+            },
+            "title": "Sku",
+            "type": "object"
+          },
+          "SqlPool": {
+            "allOf": [
+              {
+                "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "A SQL Analytics pool",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/SqlPoolResourceProperties",
+                "description": "SQL pool properties",
+                "x-ms-client-flatten": true
+              },
+              "sku": {
+                "$ref": "#/definitions/Sku",
+                "description": "SQL pool SKU"
+              }
+            },
+            "title": "SQL pool",
+            "type": "object"
+          },
+          "SqlPoolBlobAuditingPolicySqlPoolOperationListResult": {
+            "description": "The response to a list Sql pool operations request",
+            "properties": {
+              "nextLink": {
+                "description": "Link to retrieve next page of results.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "Array of results.",
+                "items": {
+                  "$ref": "#/definitions/SqlPoolOperation"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "SqlPoolInfoListResult": {
+            "description": "List of SQL pools",
+            "properties": {
+              "nextLink": {
+                "description": "Link to the next page of results",
+                "type": "string"
+              },
+              "value": {
+                "description": "List of SQL pools",
+                "items": {
+                  "$ref": "#/definitions/SqlPool"
+                },
+                "type": "array"
+              }
+            },
+            "title": "SQL pool collection",
+            "type": "object"
+          },
+          "SqlPoolOperation": {
+            "allOf": [
+              {
+                "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "A Sql pool operation.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/SqlPoolOperationProperties",
+                "description": "Resource properties.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "SqlPoolOperationProperties": {
+            "description": "The properties of a Sql pool operation.",
+            "properties": {
+              "databaseName": {
+                "description": "The name of the Sql pool the operation is being performed on.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "description": {
+                "description": "The operation description.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "errorCode": {
+                "description": "The operation error code.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "errorDescription": {
+                "description": "The operation error description.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "errorSeverity": {
+                "description": "The operation error severity.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "estimatedCompletionTime": {
+                "description": "The estimated completion time of the operation.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "isCancellable": {
+                "description": "Whether the operation can be cancelled.",
+                "readOnly": true,
+                "type": "boolean"
+              },
+              "isUserError": {
+                "description": "Whether or not the error is a user error.",
+                "readOnly": true,
+                "type": "boolean"
+              },
+              "operation": {
+                "description": "The name of operation.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "operationFriendlyName": {
+                "description": "The friendly name of operation.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "percentComplete": {
+                "description": "The percentage of the operation completed.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "serverName": {
+                "description": "The name of the server.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "startTime": {
+                "description": "The operation start time.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "state": {
+                "description": "The operation state.",
+                "enum": [
+                  "Pending",
+                  "InProgress",
+                  "Succeeded",
+                  "Failed",
+                  "CancelInProgress",
+                  "Cancelled"
+                ],
+                "readOnly": true,
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ManagementOperationState"
+                }
+              }
+            },
+            "type": "object"
+          },
+          "SqlPoolResourceProperties": {
+            "description": "Properties of a SQL Analytics pool",
+            "properties": {
+              "collation": {
+                "default": "",
+                "description": "Collation mode",
+                "type": "string",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              },
+              "createMode": {
+                "description": "Specifies the mode of sql pool creation.\n\nDefault: regular sql pool creation.\n\nPointInTimeRestore: Creates a sql pool by restoring a point in time backup of an existing sql pool. sourceDatabaseId must be specified as the resource ID of the existing sql pool, and restorePointInTime must be specified.\n\nRecovery: Creates a sql pool by a geo-replicated backup. sourceDatabaseId  must be specified as the recoverableDatabaseId to restore.\n\nRestore: Creates a sql pool by restoring a backup of a deleted sql  pool. SourceDatabaseId should be the sql pool's original resource ID. SourceDatabaseId and sourceDatabaseDeletionDate must be specified.",
+                "enum": [
+                  "Default",
+                  "PointInTimeRestore",
+                  "Recovery",
+                  "Restore"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "createMode"
+                },
+                "x-ms-mutability": [
+                  "create",
+                  "update"
+                ]
+              },
+              "creationDate": {
+                "description": "Date the SQL pool was created",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "maxSizeBytes": {
+                "description": "Maximum size in bytes",
+                "format": "int64",
+                "type": "integer"
+              },
+              "provisioningState": {
+                "description": "Resource state",
+                "type": "string"
+              },
+              "recoverableDatabaseId": {
+                "description": "Backup database to restore from",
+                "type": "string"
+              },
+              "restorePointInTime": {
+                "description": "Snapshot time to restore",
+                "format": "date-time",
+                "type": "string",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              },
+              "sourceDatabaseDeletionDate": {
+                "description": "Specifies the time that the sql pool was deleted",
+                "format": "date-time",
+                "type": "string",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              },
+              "sourceDatabaseId": {
+                "description": "Source database to create from",
+                "type": "string",
+                "x-ms-mutability": [
+                  "create",
+                  "update"
+                ]
+              },
+              "status": {
+                "description": "Resource status",
+                "readOnly": true,
+                "type": "string"
+              },
+              "storageAccountType": {
+                "default": "GRS",
+                "description": "The storage account type used to store backups for this sql pool.",
+                "enum": [
+                  "GRS",
+                  "LRS"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "StorageAccountType"
+                }
+              }
+            },
+            "title": "SQL pool properties",
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "Azure Synapse Analytics APIs",
+          "title": "SynapseManagementClient",
+          "version": "2021-06-01"
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools": {
+            "get": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "List all SQL pools",
+              "operationId": "SqlPools_ListByWorkspace",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPoolInfoListResult"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "List SQL pools",
+              "tags": [
+                "SqlPools"
+              ],
+              "x-ms-examples": {
+                "List SQL Analytics pools in a workspace": {
+                  "$ref": "./examples/ListSqlPoolsInWorkspace.json"
+                },
+                "List SQL Analytics pools in a workspace with filter": {
+                  "$ref": "./examples/ListSqlPoolsInWorkspaceWithFilter.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}": {
+            "delete": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Delete a SQL pool",
+              "operationId": "SqlPools_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPool"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPool"
+                  }
+                },
+                "204": {
+                  "description": ""
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Delete SQL pool",
+              "tags": [
+                "SqlPools"
+              ],
+              "x-ms-examples": {
+                "Delete a SQL Analytics pool": {
+                  "$ref": "./examples/DeleteSqlPool.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Get SQL pool properties",
+              "operationId": "SqlPools_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPool"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Get SQL pool",
+              "tags": [
+                "SqlPools"
+              ],
+              "x-ms-examples": {
+                "Get a SQL Analytics pool": {
+                  "$ref": "./examples/GetSqlPool.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/dataWarehouseUserActivities/{dataWarehouseUserActivityName}": {
+            "get": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Gets the user activities of a SQL pool which includes running and suspended queries",
+              "operationId": "SqlPoolDataWarehouseUserActivities_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The activity name of the Sql pool. ",
+                  "enum": [
+                    "current"
+                  ],
+                  "in": "path",
+                  "name": "dataWarehouseUserActivityName",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-enum": {
+                    "modelAsString": true,
+                    "name": "DataWarehouseUserActivityName"
+                  }
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/DataWarehouseUserActivities"
+                  }
+                },
+                "default": {
+                  "description": "*** Error Responses: ***\n\n * 400 UpdateNotAllowedOnPausedDatabase - User attempted to perform an update on a paused database.\n\n * 400 FeatureDisabledOnSelectedEdition - User attempted to use a feature which is disabled on current database edition.\n\n * 404 SubscriptionDoesNotHaveServer - The requested server was not found\n\n * 404 DatabaseDoesNotExist - User has specified a database name that does not exist on this server instance.\n\n * 404 ResourceNotFound - The specified resource was not found."
+                }
+              },
+              "summary": "Get SQL pool user activities",
+              "tags": [
+                "SqlPools, SqlPoolUserActivities"
+              ],
+              "x-ms-examples": {
+                "Get a SQL Analytics pool user activity": {
+                  "$ref": "./examples/GetSqlPoolUserActivity.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/operationResults/{operationId}": {
+            "get": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Get the status of a SQL pool operation",
+              "operationId": "SqlPoolOperationResults_GetLocationHeaderResult",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "Operation ID",
+                  "in": "path",
+                  "name": "operationId",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPool"
+                  }
+                },
+                "201": {
+                  "description": "Created",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPool"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPool"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Get SQL pool operation status",
+              "tags": [
+                "Operations"
+              ],
+              "x-ms-examples": {
+                "Get the result of an operation on a SQL Analytics pool": {
+                  "$ref": "./examples/GetLocationHeaderResultWithSqlPool.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/operations": {
+            "get": {
+              "consumes": [],
+              "description": "Gets a list of operations performed on the SQL pool.",
+              "operationId": "SqlPoolOperations_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPoolBlobAuditingPolicySqlPoolOperationListResult"
+                  }
+                },
+                "default": {
+                  "description": "*** Error Responses: ***\n\n * 400 TierChangeUnsupportedDueToMemoryOptimizedObject - The database cannot update its sku because it has memory-optimized objects.\n\n * 400 SourceServerNotFound - The server part of a source database id provided in a CreateDatabaseAsCopy API call doesn't map to an existing server.\n\n * 400 ElasticPoolOverStorageUsage - Attempting to write data to a database when the storage limit of the elastic pool has been reached.\n\n * 400 InvalidAddSecondaryPermission - User does not have sufficient permission to add secondary on the specified server.\n\n * 400 UnsupportedServiceName - The specified name is an invalid name because it contains one or more unsupported unicode characters.\n\n * 400 CurrentDatabaseLogSizeExceedsMaxSize - User attempted to change the database to a sku with lower max log size than the current usage.\n\n * 400 CannotUpdateToFreeDatabase - Updating a database to the free sku is not supported.\n\n * 400 InvalidSku - The user specified an invalid sku.\n\n * 400 InvalidTierSkuCombination - The specified tier does not support the specified sku.\n\n * 400 ServerNotFound - The requested server was not found.\n\n * 400 TokenTooLong - The provided token is too long.\n\n * 400 FeatureDisabledOnSelectedEdition - User attempted to use a feature which is disabled on current database edition.\n\n * 400 OfferDisabledOnSubscription - Subscription offer type is restricted from provisioning the requested resource.\n\n * 400 InvalidTargetSubregion - The target server of a non-readable secondary is not in a DR paired Azure region.\n\n * 400 PartnerServerNotCompatible - The user is attempting to copy a database from a SAWA V1 server to a Sterling server or vice versa.\n\n * 400 IncorrectReplicationLinkState - The operation expects the database to be in an expected state on the replication link.\n\n * 400 ResourcePoolNotFound - Specified elastic pool does not exist in the specified logical server.\n\n * 400 ElasticPoolSkuCombinationInvalid - Elastic pool and sku can be specified together only if sku is specified as 'ElasticPool'.\n\n * 400 ElasticPoolTierCombinationInvalid - The database tier is different than the elastic pool service tier.\n\n * 400 ElasticPoolDatabaseCountOverLimit - Attempting to create or add database to elastic pool when the database count limit of the elastic pool has been reached.\n\n * 400 CannotChangeToOrFromDataWarehouseTier - User attempted to change the sku of a database from DataWarehouse tier to non DataWarehouse tiers or vice versa.\n\n * 400 CurrentDatabaseSizeExceedsMaxSize - User attempted to reduce the max size for a database to a size smaller than the current usage.\n\n * 400 ElasticPoolDecreaseStorageLimitBelowUsage - Attempting to decrease the storage limit of the elastic pool below its storage usage.\n\n * 400 UpdateNotAllowedOnPausedDatabase - User attempted to perform an update on a paused database.\n\n * 400 InvalidMaxSizeTierCombination - The specified tier does not support the specified database max size.\n\n * 400 RegionDoesNotSupportVersion - A user attempted to create a server of a specified version in a location where that server version isn't supported.\n\n * 400 InvalidTier - The user specified an invalid tier.\n\n * 400 CannotUseReservedDatabaseName - Cannot use reserved database name in this operation.\n\n * 400 SubscriptionNotFound - The requested subscription was not found.\n\n * 400 InvalidServerName - Invalid server name specified.\n\n * 400 CannotUseTrailingWhitespacesInDatabaseName - The database name validation failed.\n\n * 400 UpdateNotAllowedIfGeoDrOperationInProgress - The operation is disallowed because copy or failover operation for database '{0}' on server '{1}' is currently in progress.\n\n * 400 InvalidCollation - Collation is not recognized by the server.\n\n * 400 ElasticPoolOverFileSpace - Insufficient file space in the elastic pool.\n\n * 400 UpdateNotAllowedInCurrentReplicationState - The operation is disallowed on the database in its current replication state.\n\n * 400 GeoReplicaLimitReached - The per-replica replication limit was reached.\n\n * 400 ProvisioningDisabled - Displays error message from resources operation authorizer as is, without changes\n\n * 400 ReplicationSourceAndTargetMustHaveSameName - The replication source and target databases must have the same name.\n\n * 400 ReplicationSourceAndTargetMustBeInDifferentServers - The replication source and target databases must be in different logical servers.\n\n * 400 UnableToResolveRemoteServer - The remote partner server name could not be resolved due to an invalid server name or DNS connectivity issues.\n\n * 400 RemoteDatabaseCopyPermission - User does not have sufficient permission to create a database copy on the specified server.\n\n * 400 CannotMoveOrDropSyncMetadataDatabase - Cannot drop database used as sync metadata database.\n\n * 400 CannotMoveOrDropJobAccountDatabase - Cannot drop database associated with job account.\n\n * 400 JobAgentDatabaseEditionUnsupported - The specified database's service level objective is not supported for use as a job agent database.\n\n * 400 SourceDatabaseNotFound - The source database does not exist.\n\n * 400 ChangeUnsupportedOnEntity - User attempted an unsupported create/update/delete operation on a given entity.\n\n * 400 CannotMoveOrDropJobAccountDatabase - Cannot drop database associated with job account.\n\n * 400 CannotUseReservedDatabaseName - Cannot use reserved database name in this operation.\n\n * 400 CannotMoveOrDropSyncMetadataDatabase - Cannot drop database used as sync metadata database.\n\n * 404 SubscriptionDoesNotHaveServer - The requested server was not found\n\n * 404 OperationIdNotFound - The operation with Id does not exist.\n\n * 404 OperationIdNotFound - The operation with Id does not exist.\n\n * 404 ServerNotInSubscriptionResourceGroup - Specified server does not exist in the specified resource group and subscription.\n\n * 404 ServerNotInSubscription - Specified server does not exist on the specified subscription.\n\n * 404 CannotFindObject - Cannot find the object because it does not exist or you do not have permissions\n\n * 404 ServerNotInSubscriptionResourceGroup - Specified server does not exist in the specified resource group and subscription.\n\n * 404 ServerNotInSubscription - Specified server does not exist on the specified subscription.\n\n * 405 UnsupportedReplicationOperation - An unsupported replication operation was initiated on the database.\n\n * 409 OperationCancelled - The operation has been cancelled by user.\n\n * 409 OperationInterrupted - The operation on the resource could not be completed because it was interrupted by another operation on the same resource.\n\n * 409 SubscriptionDisabled - Subscription is disabled.\n\n * 409 ConflictingSystemOperationInProgress - A system maintenance operation is in progress on the database and further operations need to wait until it is completed.\n\n * 409 SkuAssignmentInProgress - The current assignment request cannot be processed because a previous request has not completed.\n\n * 409 ServerDtuQuotaExceeded - Could not perform the operation because server would exceed the allowed Database Throughput Unit quota.\n\n * 409 UnableToAlterDatabaseInReplication - User altered edition on a database in a replication relationship.\n\n * 409 CurrentMemoryUsageExceedsSkuQuota - User attempted an sku update operation that cannot be completed due to the higher resource consumption.\n\n * 409 UpdateSloInProgress - User tried to initiate an incompatible operation while a SLO update was in progress.\n\n * 409 ConflictingDatabaseOperation - There is already some operation on the database and the current operation should wait till it is done.\n\n * 409 SimultaneousSkuChangeNotAllowed - Service objective change operations cannot run on both databases of a replication relationship at the same time.\n\n * 409 InvalidOperationForDatabaseNotInReplicationRelationship - A replication seeding operation was performed on a database that is already in a replication relationship.\n\n * 409 InvalidOperationForDatabaseInReplicationRelationship - A replication seeding operation was performed on a database that is already in a replication relationship.\n\n * 409 DuplicateGeoDrRelation - The databases are already in a replication relation. This is a duplicate request.\n\n * 409 RemoteDatabaseExists - The destination database name already exists on the destination server.\n\n * 429 SubscriptionTooManyCreateUpdateRequests - Requests beyond max requests that can be processed by available resources.\n\n * 429 SubscriptionTooManyRequests - Requests beyond max requests that can be processed by available resources.\n\n * 500 OperationTimedOut - The operation timed out and automatically rolled back. Please retry the operation.\n\n * 500 ActivateOrDeactivateWorkflowThrottling - Activation or deactivation workflow failed because there are too many concurrent workflows\n\n * 503 TooManyRequests - Requests beyond max requests that can be processed by available resources.\n\n * 503 TooManyRequests - Requests beyond max requests that can be processed by available resources.\n\n * 504 RequestTimeout - Service request exceeded the allowed timeout."
+                }
+              },
+              "summary": "Gets a list of operations performed on the SQL pool",
+              "tags": [
+                "SqlPools, Operations"
+              ],
+              "x-ms-examples": {
+                "List the Sql Analytics pool management operations": {
+                  "$ref": "./examples/ListSqlPoolOperations.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/pause": {
+            "post": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Pause a SQL pool",
+              "operationId": "SqlPools_Pause",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPool"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPool"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Pause SQL pool",
+              "tags": [
+                "SqlPools"
+              ],
+              "x-ms-examples": {
+                "Pause a SQL Analytics pool": {
+                  "$ref": "./examples/PauseSqlPool.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/replicationLinks": {
+            "get": {
+              "consumes": [],
+              "description": "Lists a Sql pool's replication links.",
+              "operationId": "SqlPoolReplicationLinks_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/ReplicationLinkListResult"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Get SQL pool replication links",
+              "tags": [
+                "SqlPools, ReplicationLinks"
+              ],
+              "x-ms-examples": {
+                "Lists a Sql Analytic pool's replication links": {
+                  "$ref": "./examples/ListSqlPoolReplicationLinks.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/replicationLinks/{linkId}": {
+            "get": {
+              "consumes": [],
+              "description": "Get SQL pool replication link by name.",
+              "operationId": "SqlPoolReplicationLinks_GetByName",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The ID of the replication link.",
+                  "in": "path",
+                  "name": "linkId",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/ReplicationLink"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Get SQL pool replication link by name",
+              "tags": [
+                "SqlPools, ReplicationLinks"
+              ],
+              "x-ms-examples": {
+                "Lists a Sql Analytic pool's replication links": {
+                  "$ref": "./examples/SqlPoolReplicationLinks_GetByName.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/restorePoints": {
+            "get": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Get SQL pool backup information",
+              "operationId": "SqlPoolRestorePoints_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/RestorePointListResult"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Get SQL pool backup",
+              "tags": [
+                "SqlPools, Backup"
+              ],
+              "x-ms-examples": {
+                "Get a list of restore points of a SQL Analytics pool": {
+                  "$ref": "./examples/ListSqlPoolRestorePoints.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/restorePoints/{restorePointName}": {
+            "delete": {
+              "consumes": [],
+              "description": "Deletes a restore point.",
+              "operationId": "SqlPoolRestorePoints_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the restore point.",
+                  "in": "path",
+                  "name": "restorePointName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully deleted the restore point."
+                },
+                "204": {
+                  "description": "The specified restore point does not exist."
+                },
+                "default": {
+                  "description": "*** Error Responses: ***\n\n * 400 FeatureDisabledOnSelectedEdition - User attempted to use a feature which is disabled on current database edition.\n\n * 400 BackupNotAllowedOnDeactivatedDatabase - Cannot create restore point on a deactivated database.\n\n * 400 RestorePointLimitReached - A restore point cannot be created because database would exceed the allowed quota of restore points.\n\n * 400 RestorePointAttemptToDeleteSystemBackup - Cannot delete system restore point.\n\n * 404 DatabaseRestorePointNotFound - Can not find database restore point.\n\n * 404 SubscriptionDoesNotHaveServer - The requested server was not found\n\n * 404 DatabaseDoesNotExist - User has specified a database name that does not exist on this server instance.\n\n * 408 DatabaseRestorePointTimedOut - Create database restore point failed."
+                }
+              },
+              "tags": [
+                "SqlPools, RestorePoints"
+              ],
+              "x-ms-examples": {
+                "Deletes a restore point.": {
+                  "$ref": "./examples/SqlPoolRestorePointsDelete.json"
+                }
+              }
+            },
+            "get": {
+              "consumes": [],
+              "description": "Gets a restore point.",
+              "operationId": "SqlPoolRestorePoints_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the restore point.",
+                  "in": "path",
+                  "name": "restorePointName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully returned the restore point.",
+                  "schema": {
+                    "$ref": "#/definitions/RestorePoint"
+                  }
+                },
+                "default": {
+                  "description": "*** Error Responses: ***\n\n * 400 FeatureDisabledOnSelectedEdition - User attempted to use a feature which is disabled on current database edition.\n\n * 400 BackupNotAllowedOnDeactivatedDatabase - Cannot create restore point on a deactivated database.\n\n * 400 RestorePointLimitReached - A restore point cannot be created because database would exceed the allowed quota of restore points.\n\n * 400 RestorePointAttemptToDeleteSystemBackup - Cannot delete system restore point.\n\n * 404 DatabaseRestorePointNotFound - Can not find database restore point.\n\n * 404 SubscriptionDoesNotHaveServer - The requested server was not found\n\n * 404 DatabaseDoesNotExist - User has specified a database name that does not exist on this server instance.\n\n * 408 DatabaseRestorePointTimedOut - Create database restore point failed."
+                }
+              },
+              "tags": [
+                "SqlPools, RestorePoints"
+              ],
+              "x-ms-examples": {
+                "Gets a Sql pool restore point.": {
+                  "$ref": "./examples/SqlPoolRestorePointsGet.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/resume": {
+            "post": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Resume a SQL pool",
+              "operationId": "SqlPools_Resume",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "SQL pool name",
+                  "in": "path",
+                  "name": "sqlPoolName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPool"
+                  }
+                },
+                "202": {
+                  "description": "Accepted",
+                  "schema": {
+                    "$ref": "#/definitions/SqlPool"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Resume SQL pool",
+              "tags": [
+                "SqlPools"
+              ],
+              "x-ms-examples": {
+                "Resume a SQL Analytics pool": {
+                  "$ref": "./examples/ResumeSqlPool.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "dec5e9c22e154830020e949e28263675cbae12161fdab9eb4e464646ee6e0dac",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "CspWorkspaceAdminProperties": {
+            "description": "Initial workspace AAD admin properties for a CSP subscription",
+            "properties": {
+              "initialWorkspaceAdminObjectId": {
+                "description": "AAD object ID of initial workspace admin",
+                "type": "string",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "CustomerManagedKeyDetails": {
+            "description": "Details of the customer managed key associated with the workspace",
+            "properties": {
+              "kekIdentity": {
+                "$ref": "#/definitions/KekIdentityProperties",
+                "description": "Key encryption key"
+              },
+              "key": {
+                "$ref": "#/definitions/WorkspaceKeyDetails",
+                "description": "The key object of the workspace"
+              },
+              "status": {
+                "description": "The customer managed key status on the workspace",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "DataLakeStorageAccountDetails": {
+            "description": "Details of the data lake storage account associated with the workspace",
+            "properties": {
+              "accountUrl": {
+                "description": "Account URL",
+                "type": "string",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              },
+              "createManagedPrivateEndpoint": {
+                "description": "Create managed private endpoint to this storage account or not",
+                "type": "boolean",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              },
+              "filesystem": {
+                "description": "Filesystem name",
+                "type": "string",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              },
+              "resourceId": {
+                "description": "ARM resource Id of this storage account",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "EncryptionDetails": {
+            "description": "Details of the encryption associated with the workspace",
+            "properties": {
+              "cmk": {
+                "$ref": "#/definitions/CustomerManagedKeyDetails",
+                "description": "Customer Managed Key Details"
+              },
+              "doubleEncryptionEnabled": {
+                "description": "Double Encryption enabled",
+                "readOnly": true,
+                "type": "boolean"
+              }
+            },
+            "type": "object"
+          },
+          "KekIdentityProperties": {
+            "description": "Key encryption key properties",
+            "properties": {
+              "useSystemAssignedIdentity": {
+                "description": "Boolean specifying whether to use system assigned identity or not"
+              },
+              "userAssignedIdentity": {
+                "description": "User assigned identity resource Id",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ManagedIdentity": {
+            "description": "The workspace managed identity",
+            "properties": {
+              "principalId": {
+                "description": "The principal ID of the workspace managed identity",
+                "readOnly": true,
+                "type": "string"
+              },
+              "tenantId": {
+                "description": "The tenant ID of the workspace managed identity",
+                "format": "uuid",
+                "readOnly": true,
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of managed identity for the workspace",
+                "enum": [
+                  "None",
+                  "SystemAssigned",
+                  "SystemAssigned,UserAssigned"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": false,
+                  "name": "ResourceIdentityType"
+                }
+              },
+              "userAssignedIdentities": {
+                "$ref": "#/definitions/UserAssignedManagedIdentities",
+                "description": "The user assigned managed identities."
+              }
+            },
+            "type": "object"
+          },
+          "ManagedVirtualNetworkSettings": {
+            "description": "Managed Virtual Network Settings",
+            "properties": {
+              "allowedAadTenantIdsForLinking": {
+                "description": "Allowed Aad Tenant Ids For Linking",
+                "items": {
+                  "description": "Tenant Id",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "linkedAccessCheckOnTargetResource": {
+                "description": "Linked Access Check On Target Resource",
+                "type": "boolean",
+                "x-ms-mutability": [
+                  "create",
+                  "read",
+                  "update"
+                ]
+              },
+              "preventDataExfiltration": {
+                "description": "Prevent Data Exfiltration",
+                "type": "boolean"
+              }
+            },
+            "type": "object"
+          },
+          "PurviewConfiguration": {
+            "description": "Purview Configuration",
+            "properties": {
+              "purviewResourceId": {
+                "description": "Purview Resource ID",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "RestorableDroppedSqlPool": {
+            "allOf": [
+              {
+                "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "A restorable dropped Sql pool",
+            "properties": {
+              "location": {
+                "description": "The geo-location where the resource lives",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/RestorableDroppedSqlPoolProperties",
+                "description": "The properties of a restorable dropped Sql pool",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "RestorableDroppedSqlPoolListResult": {
+            "description": "The response to a list restorable dropped Sql pools request",
+            "properties": {
+              "value": {
+                "description": "A list of restorable dropped Sql pools",
+                "items": {
+                  "$ref": "#/definitions/RestorableDroppedSqlPool"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "RestorableDroppedSqlPoolProperties": {
+            "description": "The properties of a restorable dropped Sql pool",
+            "properties": {
+              "creationDate": {
+                "description": "The creation date of the database (ISO8601 format)",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "databaseName": {
+                "description": "The name of the database",
+                "readOnly": true,
+                "type": "string"
+              },
+              "deletionDate": {
+                "description": "The deletion date of the database (ISO8601 format)",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "earliestRestoreDate": {
+                "description": "The earliest restore date of the database (ISO8601 format)",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "edition": {
+                "description": "The edition of the database",
+                "readOnly": true,
+                "type": "string"
+              },
+              "elasticPoolName": {
+                "description": "The elastic pool name of the database",
+                "readOnly": true,
+                "type": "string"
+              },
+              "maxSizeBytes": {
+                "description": "The max size in bytes of the database",
+                "readOnly": true,
+                "type": "string"
+              },
+              "serviceLevelObjective": {
+                "description": "The service level objective name of the database",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "UserAssignedManagedIdentities": {
+            "additionalProperties": {
+              "$ref": "#/definitions/UserAssignedManagedIdentity"
+            },
+            "description": "The User Assigned Managed Identities.",
+            "type": "object"
+          },
+          "UserAssignedManagedIdentity": {
+            "description": "User Assigned Managed Identity",
+            "properties": {
+              "clientId": {
+                "description": "The client ID.",
+                "format": "uuid",
+                "readOnly": true,
+                "type": "string",
+                "x-nullable": true
+              },
+              "principalId": {
+                "description": "The principal ID.",
+                "format": "uuid",
+                "readOnly": true,
+                "type": "string",
+                "x-nullable": true
+              }
+            },
+            "type": "object"
+          },
+          "VirtualNetworkProfile": {
+            "description": "Virtual Network Profile",
+            "properties": {
+              "computeSubnetId": {
+                "description": "Subnet ID used for computes in workspace",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "Workspace": {
+            "allOf": [
+              {
+                "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "A workspace",
+            "properties": {
+              "identity": {
+                "$ref": "#/definitions/ManagedIdentity",
+                "description": "Identity of the workspace"
+              },
+              "properties": {
+                "$ref": "#/definitions/WorkspaceProperties",
+                "description": "Workspace resource properties",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "WorkspaceInfoListResult": {
+            "description": "List of workspaces",
+            "properties": {
+              "nextLink": {
+                "description": "Link to the next page of results",
+                "type": "string"
+              },
+              "value": {
+                "description": "List of workspaces",
+                "items": {
+                  "$ref": "#/definitions/Workspace"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "WorkspaceKeyDetails": {
+            "description": "Details of the customer managed key associated with the workspace",
+            "properties": {
+              "keyVaultUrl": {
+                "description": "Workspace Key sub-resource key vault url",
+                "type": "string"
+              },
+              "name": {
+                "description": "Workspace Key sub-resource name",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "WorkspaceProperties": {
+            "description": "Workspace properties",
+            "properties": {
+              "adlaResourceId": {
+                "description": "The ADLA resource ID.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "azureADOnlyAuthentication": {
+                "description": "Enable or Disable AzureADOnlyAuthentication on All Workspace subresource",
+                "type": "boolean",
+                "x-ms-mutability": [
+                  "create",
+                  "update"
+                ]
+              },
+              "connectivityEndpoints": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Connectivity endpoints",
+                "readOnly": true,
+                "type": "object"
+              },
+              "cspWorkspaceAdminProperties": {
+                "$ref": "#/definitions/CspWorkspaceAdminProperties",
+                "description": "Initial workspace AAD admin properties for a CSP subscription"
+              },
+              "defaultDataLakeStorage": {
+                "$ref": "#/definitions/DataLakeStorageAccountDetails",
+                "description": "Workspace default data lake storage account details"
+              },
+              "encryption": {
+                "$ref": "#/definitions/EncryptionDetails",
+                "description": "The encryption details of the workspace"
+              },
+              "extraProperties": {
+                "description": "Workspace level configs and feature flags",
+                "readOnly": true,
+                "type": "object"
+              },
+              "managedResourceGroupName": {
+                "description": "Workspace managed resource group. The resource group name uniquely identifies the resource group within the user subscriptionId. The resource group name must be no longer than 90 characters long, and must be alphanumeric characters (Char.IsLetterOrDigit()) and '-', '_', '(', ')' and'.'. Note that the name cannot end with '.'",
+                "type": "string",
+                "x-ms-mutability": [
+                  "create",
+                  "read"
+                ]
+              },
+              "managedVirtualNetwork": {
+                "description": "Setting this to 'default' will ensure that all compute for this workspace is in a virtual network managed on behalf of the user.",
+                "type": "string"
+              },
+              "managedVirtualNetworkSettings": {
+                "$ref": "#/definitions/ManagedVirtualNetworkSettings",
+                "description": "Managed Virtual Network Settings"
+              },
+              "privateEndpointConnections": {
+                "description": "Private endpoint connections to the workspace",
+                "items": {
+                  "$ref": "../../../../common/v1/privateEndpointConnection.json#/definitions/PrivateEndpointConnection"
+                },
+                "type": "array"
+              },
+              "provisioningState": {
+                "description": "Resource provisioning state",
+                "readOnly": true,
+                "type": "string"
+              },
+              "publicNetworkAccess": {
+                "default": "Enabled",
+                "description": "Enable or Disable public network access to workspace",
+                "enum": [
+                  "Enabled",
+                  "Disabled"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "WorkspacePublicNetworkAccess"
+                }
+              },
+              "purviewConfiguration": {
+                "$ref": "#/definitions/PurviewConfiguration",
+                "description": "Purview Configuration"
+              },
+              "settings": {
+                "additionalProperties": {
+                  "type": "object"
+                },
+                "description": "Workspace settings",
+                "readOnly": true,
+                "type": "object"
+              },
+              "sqlAdministratorLogin": {
+                "description": "Login for workspace SQL active directory administrator",
+                "type": "string"
+              },
+              "sqlAdministratorLoginPassword": {
+                "description": "SQL administrator login password",
+                "type": "string"
+              },
+              "trustedServiceBypassEnabled": {
+                "default": false,
+                "description": "Is trustedServiceBypassEnabled for the workspace",
+                "type": "boolean"
+              },
+              "virtualNetworkProfile": {
+                "$ref": "#/definitions/VirtualNetworkProfile",
+                "description": "Virtual Network profile"
+              },
+              "workspaceRepositoryConfiguration": {
+                "$ref": "#/definitions/WorkspaceRepositoryConfiguration",
+                "description": "Git integration settings"
+              },
+              "workspaceUID": {
+                "description": "The workspace unique identifier",
+                "format": "uuid",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "WorkspaceRepositoryConfiguration": {
+            "description": "Git integration settings",
+            "properties": {
+              "accountName": {
+                "description": "Account name",
+                "type": "string"
+              },
+              "collaborationBranch": {
+                "description": "Collaboration branch",
+                "type": "string"
+              },
+              "hostName": {
+                "description": "GitHub Enterprise host name. For example: `https://github.mydomain.com`",
+                "type": "string"
+              },
+              "lastCommitId": {
+                "description": "The last commit ID",
+                "type": "string"
+              },
+              "projectName": {
+                "description": "VSTS project name",
+                "type": "string"
+              },
+              "repositoryName": {
+                "description": "Repository name",
+                "type": "string"
+              },
+              "rootFolder": {
+                "description": "Root folder to use in the repository",
+                "type": "string"
+              },
+              "tenantId": {
+                "description": "The VSTS tenant ID",
+                "format": "uuid",
+                "type": "string"
+              },
+              "type": {
+                "description": "Type of workspace repositoryID configuration. Example WorkspaceVSTSConfiguration, WorkspaceGitHubConfiguration",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "Azure Synapse Analytics APIs",
+          "title": "SynapseManagementClient",
+          "version": "2021-06-01"
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/providers/Microsoft.Synapse/workspaces": {
+            "get": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Returns a list of workspaces in a subscription",
+              "operationId": "Workspaces_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "#/definitions/WorkspaceInfoListResult"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Workspaces"
+              ],
+              "x-ms-examples": {
+                "List workspaces in subscription": {
+                  "$ref": "./examples/ListWorkspacesInSubscription.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces": {
+            "get": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Returns a list of workspaces in a resource group",
+              "operationId": "Workspaces_ListByResourceGroup",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "#/definitions/WorkspaceInfoListResult"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Workspaces"
+              ],
+              "x-ms-examples": {
+                "List workspaces in resource group": {
+                  "$ref": "./examples/ListWorkspacesInResourceGroup.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}": {
+            "delete": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Deletes a workspace",
+              "operationId": "Workspaces_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/Workspace"
+                  }
+                },
+                "202": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "#/definitions/Workspace"
+                  }
+                },
+                "204": {
+                  "description": ""
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Workspaces"
+              ],
+              "x-ms-examples": {
+                "Delete a workspace": {
+                  "$ref": "./examples/DeleteWorkspace.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "consumes": [],
+              "deprecated": false,
+              "description": "Gets a workspace",
+              "operationId": "Workspaces_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "#/definitions/Workspace"
+                  }
+                },
+                "default": {
+                  "description": "",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Workspaces"
+              ],
+              "x-ms-examples": {
+                "Get a workspace": {
+                  "$ref": "./examples/GetWorkspace.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/restorableDroppedSqlPools": {
+            "get": {
+              "consumes": [],
+              "description": "Gets a list of deleted Sql pools that can be restored",
+              "operationId": "RestorableDroppedSqlPools_ListByWorkspace",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/RestorableDroppedSqlPoolListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "RestorableDroppedSqlPools"
+              ],
+              "x-ms-examples": {
+                "Get list of restorable dropped Sql pools": {
+                  "$ref": "./examples/RestorableDroppedSqlpoolList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": null
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/restorableDroppedSqlPools/{restorableDroppedSqlPoolId}": {
+            "get": {
+              "consumes": [],
+              "description": "Gets a deleted sql pool that can be restored",
+              "operationId": "RestorableDroppedSqlPools_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../common-types/resource-management/v2/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../common/v1/types.json#/parameters/WorkspaceNameParameter"
+                },
+                {
+                  "description": "The id of the deleted Sql Pool in the form of sqlPoolName,deletionTimeInFileTimeFormat",
+                  "in": "path",
+                  "name": "restorableDroppedSqlPoolId",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/RestorableDroppedSqlPool"
+                  }
+                },
+                "default": {
+                  "description": "Error",
+                  "schema": {
+                    "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "RestorableDroppedSqlPools"
+              ],
+              "x-ms-examples": {
+                "Get a restorable dropped Sql pool": {
+                  "$ref": "./examples/RestorableDroppedSqlPoolGet.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "ee0a9797f7d91b7f5b71d615459bc8adeeb0ad14fa1e96afbbfd42aed067397d",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/workspace.json"
     },
     {
       "dependency": false,

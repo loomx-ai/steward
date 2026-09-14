@@ -8,6 +8,8 @@ The audit found invalid YAML, 28 Azure mapping references to 18 absent specifica
 
 The new `go test ./providers` check runs in the existing `go test ./...` CI job. It detects invalid YAML, omitted or duplicated baseline resources, drift in baseline source/class/scope/actions/hooks/enrichment/parent discovery, unresolved implemented-resource references and stale implementation backlogs. A passing check verifies matrix consistency only.
 
+Synapse implementation has started with 22 pinned native ARM operations and 23 original examples, including explicit tests for source inconsistencies. This is a contract foundation only: its workspace specification, inventory, dependencies and cleanup remain unfinished. See [the native contract evidence](azure/fixtures/synapse/README.md). Its five matrix candidates remain in the missing-specification table below.
+
 ## Azure candidates without explicit resource specifications
 
 These are candidates already named by the matrix. Missing specification files mean they cannot be counted as implemented independent resource rules. API availability, exact equivalence and lifecycle behavior still require review; related functionality elsewhere in the provider does not establish coverage.

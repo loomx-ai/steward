@@ -1,0 +1,209 @@
+[
+  {
+    "file": "DeleteBigDataPool.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/DeleteBigDataPool.json",
+    "operation": "BigDataPools_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools/{bigDataPoolName}",
+    "method": "DELETE",
+    "document": "bigDataPool.json",
+    "source_sha256": "74ce2c635873e942f26687464a5fd02400950c6ae6c8d764bfd31728e6d83f98"
+  },
+  {
+    "file": "DeleteSqlPool.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/DeleteSqlPool.json",
+    "operation": "SqlPools_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}",
+    "method": "DELETE",
+    "document": "sqlPool.json",
+    "source_sha256": "0a407ce2b2d64e0f4e4e9ab8b385bd7e8f1cbb52e8a38623be0ec93ae99abad6"
+  },
+  {
+    "file": "DeleteWorkspace.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/DeleteWorkspace.json",
+    "operation": "Workspaces_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}",
+    "method": "DELETE",
+    "document": "workspace.json",
+    "source_sha256": "b60f7e268ea5cfa9758e2953bbc44bfa1f0dba6a2a05e6d8c9b6d23f4f2f513c"
+  },
+  {
+    "file": "GetBigDataPool.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/GetBigDataPool.json",
+    "operation": "BigDataPools_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools/{bigDataPoolName}",
+    "method": "GET",
+    "document": "bigDataPool.json",
+    "source_sha256": "bdd49446b42f73f65e3ab19bdb45887713089de837683d69e0b50ed3ffa8d9dc"
+  },
+  {
+    "file": "GetLocationHeaderResultWithSqlPool.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/GetLocationHeaderResultWithSqlPool.json",
+    "operation": "SqlPoolOperationResults_GetLocationHeaderResult",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/operationResults/{operationId}",
+    "method": "GET",
+    "document": "sqlPool.json",
+    "source_sha256": "35dfc5307aa51359346c0070bb5ef5d3a091ad95533e10efdd7bb8d27285786e"
+  },
+  {
+    "file": "GetSqlPool.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/GetSqlPool.json",
+    "operation": "SqlPools_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}",
+    "method": "GET",
+    "document": "sqlPool.json",
+    "source_sha256": "ee22f4c456f9fdb5a94ff2e5dd417f74c2df72dab9bf6c4cb35774e92af0f18d"
+  },
+  {
+    "file": "GetSqlPoolUserActivity.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/GetSqlPoolUserActivity.json",
+    "operation": "SqlPoolDataWarehouseUserActivities_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/dataWarehouseUserActivities/{dataWarehouseUserActivityName}",
+    "method": "GET",
+    "document": "sqlPool.json",
+    "source_sha256": "0b90846af987aec28854bde0e82ecedb4690e11b7227052c0d8b399345836c31"
+  },
+  {
+    "file": "GetWorkspace.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/GetWorkspace.json",
+    "operation": "Workspaces_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}",
+    "method": "GET",
+    "document": "workspace.json",
+    "source_sha256": "6101934c2a221110115721c0d843eb6f4aba0f1d7b0b52c34aabaed6e50bfd81"
+  },
+  {
+    "file": "ListBigDataPoolsInWorkspace.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/ListBigDataPoolsInWorkspace.json",
+    "operation": "BigDataPools_ListByWorkspace",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools",
+    "method": "GET",
+    "document": "bigDataPool.json",
+    "source_sha256": "8639699767514281d6b1c53351f6c6418b542d2db6040fd5bbbfe1f6b716c8c7"
+  },
+  {
+    "file": "ListSqlPoolOperations.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/ListSqlPoolOperations.json",
+    "operation": "SqlPoolOperations_List",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/operations",
+    "method": "GET",
+    "document": "sqlPool.json",
+    "source_sha256": "6bf8ee316c840cf4dac99881893ee6bc8ca8ba74f6c8fc1fae5dbfeb6c2cb0a8"
+  },
+  {
+    "file": "ListSqlPoolReplicationLinks.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/ListSqlPoolReplicationLinks.json",
+    "operation": "SqlPoolReplicationLinks_List",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/replicationLinks",
+    "method": "GET",
+    "document": "sqlPool.json",
+    "source_sha256": "ce77a3df8441f726fd010f3f5cb0aadf0be619ba6d750e16c6d6dbe9f906b497"
+  },
+  {
+    "file": "ListSqlPoolRestorePoints.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/ListSqlPoolRestorePoints.json",
+    "operation": "SqlPoolRestorePoints_List",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/restorePoints",
+    "method": "GET",
+    "document": "sqlPool.json",
+    "source_sha256": "5ffd8335aa088092b0c240a9683928b1cf47423cc361642e91ccab1e4ea99724"
+  },
+  {
+    "file": "ListSqlPoolsInWorkspace.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/ListSqlPoolsInWorkspace.json",
+    "operation": "SqlPools_ListByWorkspace",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools",
+    "method": "GET",
+    "document": "sqlPool.json",
+    "source_sha256": "38032681ac77d172dbbb3e6379b8b94e6591288c8cb216622a6fefae647defa5"
+  },
+  {
+    "file": "ListSqlPoolsInWorkspaceWithFilter.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/ListSqlPoolsInWorkspaceWithFilter.json",
+    "operation": "SqlPools_ListByWorkspace",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools",
+    "method": "GET",
+    "document": "sqlPool.json",
+    "source_sha256": "d70160071301855ba37d8c7cc41fcde9abb51747dab4a6db65e9490449f3e2c0"
+  },
+  {
+    "file": "ListWorkspacesInResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/ListWorkspacesInResourceGroup.json",
+    "operation": "Workspaces_ListByResourceGroup",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces",
+    "method": "GET",
+    "document": "workspace.json",
+    "source_sha256": "cce70776d1ec1cde4b743207095792b1afa7721a3cd46e2302ecb9bfc2e670c3"
+  },
+  {
+    "file": "ListWorkspacesInSubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/ListWorkspacesInSubscription.json",
+    "operation": "Workspaces_List",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Synapse/workspaces",
+    "method": "GET",
+    "document": "workspace.json",
+    "source_sha256": "199ea09b741cff7938c236019d23e00117449ca70340b6f40524a9698e105891"
+  },
+  {
+    "file": "PauseSqlPool.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/PauseSqlPool.json",
+    "operation": "SqlPools_Pause",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/pause",
+    "method": "POST",
+    "document": "sqlPool.json",
+    "source_sha256": "45c8f65c6b709183ed3df8b129da2f63661f40a66bae9a595e0d006b9af62a57"
+  },
+  {
+    "file": "RestorableDroppedSqlPoolGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/RestorableDroppedSqlPoolGet.json",
+    "operation": "RestorableDroppedSqlPools_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/restorableDroppedSqlPools/{restorableDroppedSqlPoolId}",
+    "method": "GET",
+    "document": "workspace.json",
+    "source_sha256": "6ab14dbab3a58048c89c4603471de4109f21031cb2f6df070e901e1899cc448a"
+  },
+  {
+    "file": "RestorableDroppedSqlpoolList.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/RestorableDroppedSqlpoolList.json",
+    "operation": "RestorableDroppedSqlPools_ListByWorkspace",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/restorableDroppedSqlPools",
+    "method": "GET",
+    "document": "workspace.json",
+    "source_sha256": "49ce7e63b4ef0189759d25a9dfdb98aa9c7727eb42120849e7334c52a12be1a7"
+  },
+  {
+    "file": "ResumeSqlPool.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/ResumeSqlPool.json",
+    "operation": "SqlPools_Resume",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/resume",
+    "method": "POST",
+    "document": "sqlPool.json",
+    "source_sha256": "3596960c4dd710d6e7517313865e707049b4ca8d0d0b3d64b86c49d0b04160a2"
+  },
+  {
+    "file": "SqlPoolReplicationLinks_GetByName.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/SqlPoolReplicationLinks_GetByName.json",
+    "operation": "SqlPoolReplicationLinks_GetByName",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/replicationLinks/{linkId}",
+    "method": "GET",
+    "document": "sqlPool.json",
+    "source_sha256": "e980b932dd5937ac255493e8327c11d9bccb78eef76fea337d948ceb04fa6fca"
+  },
+  {
+    "file": "SqlPoolRestorePointsDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/SqlPoolRestorePointsDelete.json",
+    "operation": "SqlPoolRestorePoints_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/restorePoints/{restorePointName}",
+    "method": "DELETE",
+    "document": "sqlPool.json",
+    "source_sha256": "21d15e223fc596f96675eda449642056255a34c44ac6f94adc03ff026bfdf035"
+  },
+  {
+    "file": "SqlPoolRestorePointsGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/SqlPoolRestorePointsGet.json",
+    "operation": "SqlPoolRestorePoints_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/restorePoints/{restorePointName}",
+    "method": "GET",
+    "document": "sqlPool.json",
+    "source_sha256": "f9cd1d68e6c9850d24c0fc23f08b0255bdf4a587666446d02882fbc4a91141d1"
+  }
+]

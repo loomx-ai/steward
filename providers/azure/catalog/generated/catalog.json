@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "954392676587937e397306311bbf54744fd245529364d546b38f9921c2121cbb",
+    "checksum": "c674d6f534a3f704f893f9e25f2ecc080ad1ffc732ef7aa5ac776cbe90f44c9c",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "5eecf071b80c63175427f08de6af21672c3699dfb1f2b2fc3b0ea60a72899c5d",
+  "content_checksum": "cefd2d9a66394dda22d564ede4475423982aa0d8da58a253be42c8f30c020dc5",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -124583,6 +124583,1836 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/transformations.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.BigDataPools_Delete",
+      "name": "BigDataPools_Delete",
+      "service": "Microsoft.Synapse",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools/{bigDataPoolName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "bigDataPoolName": {
+            "description": "Big Data pool name",
+            "in": "path",
+            "name": "bigDataPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A Big Data pool",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/BigDataPoolResourceProperties",
+            "description": "Big Data pool properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "title": "Big Data pool",
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools/{bigDataPoolName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/bigDataPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.BigDataPools_Get",
+      "name": "BigDataPools_Get",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools/{bigDataPoolName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "bigDataPoolName": {
+            "description": "Big Data pool name",
+            "in": "path",
+            "name": "bigDataPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A Big Data pool",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/BigDataPoolResourceProperties",
+            "description": "Big Data pool properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "title": "Big Data pool",
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools/{bigDataPoolName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/bigDataPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.BigDataPools_ListByWorkspace",
+      "name": "BigDataPools_ListByWorkspace",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of Big Data pool information",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of Big Data pools",
+            "items": {
+              "$ref": "#/definitions/BigDataPoolResourceInfo"
+            },
+            "type": "array"
+          }
+        },
+        "title": "Collection of Big Data pools",
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/bigDataPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.RestorableDroppedSqlPools_Get",
+      "name": "RestorableDroppedSqlPools_Get",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/restorableDroppedSqlPools/{restorableDroppedSqlPoolId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "restorableDroppedSqlPoolId": {
+            "description": "The id of the deleted Sql Pool in the form of sqlPoolName,deletionTimeInFileTimeFormat",
+            "in": "path",
+            "name": "restorableDroppedSqlPoolId",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A restorable dropped Sql pool",
+        "properties": {
+          "location": {
+            "description": "The geo-location where the resource lives",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/RestorableDroppedSqlPoolProperties",
+            "description": "The properties of a restorable dropped Sql pool",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/restorableDroppedSqlPools/{restorableDroppedSqlPoolId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/workspace.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.RestorableDroppedSqlPools_ListByWorkspace",
+      "name": "RestorableDroppedSqlPools_ListByWorkspace",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/restorableDroppedSqlPools",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response to a list restorable dropped Sql pools request",
+        "properties": {
+          "value": {
+            "description": "A list of restorable dropped Sql pools",
+            "items": {
+              "$ref": "#/definitions/RestorableDroppedSqlPool"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/restorableDroppedSqlPools",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/workspace.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPoolDataWarehouseUserActivities_Get",
+      "name": "SqlPoolDataWarehouseUserActivities_Get",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/dataWarehouseUserActivities/{dataWarehouseUserActivityName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "dataWarehouseUserActivityName": {
+            "description": "The activity name of the Sql pool. ",
+            "enum": [
+              "current"
+            ],
+            "in": "path",
+            "name": "dataWarehouseUserActivityName",
+            "required": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "DataWarehouseUserActivityName"
+            }
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "User activities of a data warehouse",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/DataWarehouseUserActivitiesProperties",
+            "description": "Resource properties.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/dataWarehouseUserActivities/{dataWarehouseUserActivityName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPoolOperationResults_GetLocationHeaderResult",
+      "name": "SqlPoolOperationResults_GetLocationHeaderResult",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/operationResults/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "operationId": {
+            "description": "Operation ID",
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A SQL Analytics pool",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SqlPoolResourceProperties",
+            "description": "SQL pool properties",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/Sku",
+            "description": "SQL pool SKU"
+          }
+        },
+        "title": "SQL pool",
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/operationResults/{operationId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPoolOperations_List",
+      "name": "SqlPoolOperations_List",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/operations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response to a list Sql pool operations request",
+        "properties": {
+          "nextLink": {
+            "description": "Link to retrieve next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "Array of results.",
+            "items": {
+              "$ref": "#/definitions/SqlPoolOperation"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/operations",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPoolReplicationLinks_GetByName",
+      "name": "SqlPoolReplicationLinks_GetByName",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/replicationLinks/{linkId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "linkId": {
+            "description": "The ID of the replication link.",
+            "in": "path",
+            "name": "linkId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Represents a Sql pool replication link.",
+        "properties": {
+          "location": {
+            "description": "Location of the workspace that contains this firewall rule.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ReplicationLinkProperties",
+            "description": "The properties representing the resource.",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "Type of resource this is.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/replicationLinks/{linkId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPoolReplicationLinks_List",
+      "name": "SqlPoolReplicationLinks_List",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/replicationLinks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents the response to a List Sql pool replication link request.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to retrieve next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of Sql pool replication links housed in the Sql pool.",
+            "items": {
+              "$ref": "#/definitions/ReplicationLink"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/replicationLinks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPoolRestorePoints_Delete",
+      "name": "SqlPoolRestorePoints_Delete",
+      "service": "Microsoft.Synapse",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/restorePoints/{restorePointName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "restorePointName": {
+            "description": "The name of the restore point.",
+            "in": "path",
+            "name": "restorePointName",
+            "required": true,
+            "type": "string"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/restorePoints/{restorePointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPoolRestorePoints_Get",
+      "name": "SqlPoolRestorePoints_Get",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/restorePoints/{restorePointName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "restorePointName": {
+            "description": "The name of the restore point.",
+            "in": "path",
+            "name": "restorePointName",
+            "required": true,
+            "type": "string"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Database restore points.",
+        "properties": {
+          "location": {
+            "description": "Resource location.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/RestorePointProperties",
+            "description": "Resource properties.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/restorePoints/{restorePointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPoolRestorePoints_List",
+      "name": "SqlPoolRestorePoints_List",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/restorePoints",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of long term retention backups.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to retrieve next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "Array of results.",
+            "items": {
+              "$ref": "#/definitions/RestorePoint"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/restorePoints",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPools_Delete",
+      "name": "SqlPools_Delete",
+      "service": "Microsoft.Synapse",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A SQL Analytics pool",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SqlPoolResourceProperties",
+            "description": "SQL pool properties",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/Sku",
+            "description": "SQL pool SKU"
+          }
+        },
+        "title": "SQL pool",
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPools_Get",
+      "name": "SqlPools_Get",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A SQL Analytics pool",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SqlPoolResourceProperties",
+            "description": "SQL pool properties",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/Sku",
+            "description": "SQL pool SKU"
+          }
+        },
+        "title": "SQL pool",
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPools_ListByWorkspace",
+      "name": "SqlPools_ListByWorkspace",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of SQL pools",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of SQL pools",
+            "items": {
+              "$ref": "#/definitions/SqlPool"
+            },
+            "type": "array"
+          }
+        },
+        "title": "SQL pool collection",
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPools_Pause",
+      "name": "SqlPools_Pause",
+      "service": "Microsoft.Synapse",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/pause",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A SQL Analytics pool",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SqlPoolResourceProperties",
+            "description": "SQL pool properties",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/Sku",
+            "description": "SQL pool SKU"
+          }
+        },
+        "title": "SQL pool",
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/pause",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.SqlPools_Resume",
+      "name": "SqlPools_Resume",
+      "service": "Microsoft.Synapse",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/resume",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sqlPoolName": {
+            "description": "SQL pool name",
+            "in": "path",
+            "name": "sqlPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A SQL Analytics pool",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SqlPoolResourceProperties",
+            "description": "SQL pool properties",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/Sku",
+            "description": "SQL pool SKU"
+          }
+        },
+        "title": "SQL pool",
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/resume",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.Workspaces_Delete",
+      "name": "Workspaces_Delete",
+      "service": "Microsoft.Synapse",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A workspace",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/ManagedIdentity",
+            "description": "Identity of the workspace"
+          },
+          "properties": {
+            "$ref": "#/definitions/WorkspaceProperties",
+            "description": "Workspace resource properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/workspace.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.Workspaces_Get",
+      "name": "Workspaces_Get",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A workspace",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/ManagedIdentity",
+            "description": "Identity of the workspace"
+          },
+          "properties": {
+            "$ref": "#/definitions/WorkspaceProperties",
+            "description": "Workspace resource properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/workspace.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.Workspaces_List",
+      "name": "Workspaces_List",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Synapse/workspaces",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of workspaces",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of workspaces",
+            "items": {
+              "$ref": "#/definitions/Workspace"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Synapse/workspaces",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/workspace.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.Workspaces_ListByResourceGroup",
+      "name": "Workspaces_ListByResourceGroup",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of workspaces",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of workspaces",
+            "items": {
+              "$ref": "#/definitions/Workspace"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/workspace.json"
     },
     {
       "id": "Azure.Microsoft.Web.AppServicePlans_Delete",
