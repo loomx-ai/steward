@@ -1,0 +1,18 @@
+{
+  "commit": "4dc7532ec124a797db0b78205a837a64ec49ed42",
+  "url": "https://raw.githubusercontent.com/googleapis/google-cloud-go/4dc7532ec124a797db0b78205a837a64ec49ed42/bigtable/bttest/inmem.go",
+  "sha256": "cd7f98bfcbfb91f20e29c8e0f77075894ead1a2d885e76f3b5c4b755b7f0ee35",
+  "module": "cloud.google.com/go/bigtable",
+  "version": "v1.57.1-0.20260911164137-4dc7532ec124",
+  "module_sum": "h1:iyCd5ZFTvySW8/2TMTnp33pgXchHEyD1P4NtIjMnZFY=",
+  "go_mod_sum": "h1:51/CYIIpOoGrZ6koxZ9F5MFMwhtluPPeh0BvCJjl5RQ=",
+  "official_emulator_documentation": "https://docs.cloud.google.com/bigtable/docs/emulator",
+  "transport": "Local HTTP REST to generated Google gRPC client, protojson encode/decode; no table response substitution",
+  "excluded_evidence": [
+    "Authentication/IAM",
+    "Instance and cluster management",
+    "View semantics (upstream ignores view)",
+    "Replication and backup metadata",
+    "Pagination semantics (upstream ListTables ignores page fields)"
+  ]
+}

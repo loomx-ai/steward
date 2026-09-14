@@ -5138,3 +5138,41 @@ background evidence only, not acceptance evidence for this work.
   main chapters and all 10 existing screenshots). All other packages passed in
   the initial full run; only its stale GCP URL fixture required the final rerun.
   The 65 original WIP file hashes were preserved; no runtime dependencies added.
+
+## Bigtable independent table emulator
+
+- Added an opt-in provider integration test and a separately versioned fixture
+  module for Google's unmodified bttest at commit
+  `4dc7532ec124a797db0b78205a837a64ec49ed42`. Source SHA and module checksums are
+  retained in [provenance](providers/gcp/fixtures/bigtable/provenance.json).
+  [Reproduction instructions](providers/gcp/fixtures/bigtable/README.md) include
+  loopback startup, enabled normal/race tests and cleanup. No runtime dependency,
+  production provider behavior, catalog, specification or UI was changed.
+- The bridge forwards the native table REST contracts to generated Google gRPC
+  clients and serializes actual protobuf responses. Table data and protection
+  checks come from bttest, never generated table fixtures. Instance discovery,
+  OAuth and CRM are explicitly provided by the test because the emulator does
+  not establish complete instance/cluster administration or IAM behavior.
+- Executed independent evidence: three created tables across two instance names,
+  including same-named tables and one protected table; names-only native lists
+  enriched by GET; searchable schema/granularity/protection; server rejection
+  of protected deletion and provider refusal to issue it; fixture-side native
+  unprotect followed by normal deletion; serialized state restored into a fresh
+  runtime; own404 confirmation, no repeat deletion and final empty lists.
+  Each run made 21 independent table calls and four synthetic parent-list calls.
+- The pinned emulator ignores view/page parameters and omits replication/backup
+  metadata. Those semantics, permissions, native instance cascade and SQLite
+  scan-failure preservation remain backed by separate protocol tests, not this
+  emulator. This is local emulator evidence, not a live-cloud acceptance claim.
+  All eight overall parity acceptance criteria remain open.
+
+- Verification: the GCP package suite with the emulator enabled passed (173.660s),
+  before the fixture helper was tightened to send empty GET/DELETE bodies instead
+  of JSON null. The final enabled independent test passed (0.720s), its final race
+  run passed (3.667s), and main Bigtable/database regressions with the emulator
+  enabled passed (4.926s). The earlier wider race selection passed (4.307s).
+  Provider/harness vet, nested-module checksums and documentation checks passed
+  (30 isolated / 42 main chapters, 10 existing screenshots). Passed invocations
+  confirmed empty native lists after deleting their own tables. The exact owned
+  emulator process was stopped, both HTTP/gRPC listeners verified closed and its
+  temporary binary removed. All 65 original WIP hashes remained unchanged.

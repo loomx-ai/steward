@@ -52,3 +52,9 @@ final absence, parent cursor generations, incomplete responses and redaction.
 `service_lifecycle_test.go` also solves actual impact plans, rejects unreviewed or
 retained cascade members, and checks descendants after a parent disappears and
 the driver restarts. These are protocol fixtures, not emulator evidence.
+
+[Bigtable independent emulator](bigtable/README.md) runs Google's pinned,
+unmodified bttest through a REST/gRPC transport bridge. Table metadata,
+protection and deletion/absence are independent evidence; parent instances,
+OAuth and CRM remain explicit fixtures. The README separates unsupported view,
+pagination, replica, backup and instance-cascade behavior from protocol tests.
