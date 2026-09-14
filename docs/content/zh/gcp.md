@@ -197,3 +197,10 @@ Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。可选择�
 权限失败或订阅返回不存在都会使扫描失败。参见
 [订阅接口契约](https://docs.cloud.google.com/security-command-center/docs/reference/rest/v1beta2/organizations/getSubscription)
 和 [Security Command Center 权限](https://docs.cloud.google.com/iam/docs/roles-permissions/securitycenter#securitycenter.subscription.get)。
+
+项目计费盘点展示各项目／地域上显式设置的 Security Command Center 套餐，单独保留该值，
+不据此推断组织继承套餐、试用期或到期时间。全局和区域记录使用不同身份。项目扫描使用服务原生地域列表，
+读取失败、返回身份变化或原地域从可见列表中消失时保留已有记录。请启用 **Security Center Management API**，授予
+`securitycentermanagement.locations.list` 和 `securitycentermanagement.billingMetadata.get`，
+并在扫描中包含全局范围以读取全局设置。这些记录只读。参见
+[项目计费接口契约](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations/getBillingMetadata)。

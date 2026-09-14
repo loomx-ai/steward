@@ -129387,6 +129387,22 @@
             "response": {
               "$ref": "ListSecurityCenterServicesResponse"
             }
+          },
+          "securitycentermanagement.projects.locations.getBillingMetadata": {
+            "id": "securitycentermanagement.projects.locations.getBillingMetadata",
+            "httpMethod": "GET",
+            "path": "v1/{+name}",
+            "parameters": {
+              "name": {
+                "type": "string",
+                "required": true,
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/billingMetadata$"
+              }
+            },
+            "response": {
+              "$ref": "BillingMetadata"
+            }
           }
         },
         "name": "securitycentermanagement",
@@ -129653,6 +129669,36 @@
               }
             },
             "type": "object"
+          },
+          "SecuritycentermanagementProjectsLocationsGetBillingMetadataRequest": {
+            "id": "SecuritycentermanagementProjectsLocationsGetBillingMetadataRequest",
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "required": true
+              }
+            },
+            "description": "A SecuritycentermanagementProjectsLocationsGetBillingMetadataRequest\nobject.\n\nFields:\n  name: Required. The resource to look up the billing tier for, in the\n    format\n    `organizations/{organization}/locations/{location}/billingMetadata` or\n    `projects/{project}/locations/{location}/billingMetadata`."
+          },
+          "BillingMetadata": {
+            "id": "BillingMetadata",
+            "type": "object",
+            "properties": {
+              "billingTier": {
+                "type": "string",
+                "enum": [
+                  "BILLING_TIER_UNSPECIFIED",
+                  "STANDARD",
+                  "PREMIUM",
+                  "ENTERPRISE"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "description": "Response message for SecurityCenterManagement.GetBillingMetadata.\n\nEnums:\n  BillingTierValueValuesEnum: The billing tier of the resource.\n\nFields:\n  billingTier: The billing tier of the resource.\n  name: Identifier. The full resource name of the billingMetadata, in one of\n    the following formats: *\n    `organizations/{organization}/locations/{location}/billingMetadata` *\n    `projects/{project}/locations/{location}/billingMetadata`"
           }
         },
         "servicePath": "",
@@ -133736,6 +133782,24 @@
         ],
         "list_operations": [
           "securitycenter.organizations.getSubscription"
+        ]
+      }
+    },
+    {
+      "nativeType": "securitycentermanagement.googleapis.com/BillingMetadata",
+      "class": "security.security_center",
+      "displayName": "Security Command Center project billing",
+      "scopeKinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "billingMetadata",
+        "read_operations": [
+          "securitycentermanagement.projects.locations.getBillingMetadata"
+        ],
+        "list_operations": [
+          "securitycentermanagement.projects.locations.getBillingMetadata"
         ]
       }
     }

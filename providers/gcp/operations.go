@@ -118,6 +118,11 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if err != nil {
 		return result, err
 	}
+	if operation.ID == securityBillingGet {
+		if err := c.securityBillingMetadata(result.Data, text(parameters["name"])); err != nil {
+			return contracts.InvocationResult{}, err
+		}
+	}
 	result.Data = safePayload(result.Data)
 	if operation.Call.Product == "config" {
 		result.Data = safeInfraPayload(result.Data)

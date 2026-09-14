@@ -37,7 +37,7 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 196 explicit resource rules and 777 selected methods
+The current catalog has 197 explicit resource rules and 778 selected methods
 from 57 selected Discovery fragments at 56 official URLs and one pinned Cloud SDK archive (Network Services and Security Center Management). Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
@@ -370,3 +370,10 @@ times. Discovery v1beta2 supplies the GET-only singleton contract. The selected
 project's organization ancestry is verified before and after the read; ancestor
 moves and visibility failures never delete historical observations. Organization
 subscriptions do not establish project-level billing entitlements.
+
+[Project billing evidence](../fixtures/security-billing/README.md) covers the
+Security Center Management billingMetadata singleton at native project locations.
+It preserves explicitly configured tier without inferring organization inheritance
+or trial history. Native location paging binds the project cursor; singleton GET
+failures preserve previous observations. The additional method/schema comes from
+the same unchanged, pinned SDK source files.

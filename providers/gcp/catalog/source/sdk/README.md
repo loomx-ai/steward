@@ -34,3 +34,7 @@ Security Center Management v1 GET/LIST metadata uses the same verified archive
 and static converter. Its service Discovery endpoint returned 403 during this
 review. [Service inventory evidence](../../../fixtures/security-services/README.md)
 records the native read-only scope and independent verification limits.
+
+Project `getBillingMetadata` also uses these unchanged Security Center Management
+sources. [Project billing evidence](../../../fixtures/security-billing/README.md)
+covers the native singleton GET, explicit tier semantics and location paging.

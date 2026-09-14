@@ -5274,3 +5274,47 @@ background evidence only, not acceptance evidence for this work.
   All 776 previous operations and 58 prior source fragments are unchanged. The
   original 65 working-tree files remain byte-identical. No test server or new
   dependency was introduced; only the 17 milestone files are included.
+
+
+### Security Center Management project billing (incomplete parity)
+
+- Added the native project/location billingMetadata singleton through the pinned,
+  unchanged SDK source already retained for security services. The static converter
+  and offline assertions cover native GET path, parameter, response and tier enum.
+  GCP now has 197 specifications and 778 operations; source counts remain 57
+  Discovery fragments at 56 distinct URLs plus two SDK service documents from the
+  same pinned archive. Existing operation/schema objects are preserved.
+- Native location discovery fans out project scans and binds cursors; each target
+  performs one singleton GET. Global and regional identities remain distinct,
+  including project-number aliases. Inventory and Invoke check returned identity
+  and tier shape; unknown enum strings remain visible. Metadata describes explicit
+  project tier, not inherited entitlement, onboarding or trial history.
+- Protocol checks cover all native tiers, omitted/future values, failed reads,
+  cross-project/location responses, location paging/changes, fake response paging,
+  read-only behavior and request IDs. Real scan-worker/SQLite tests keep the last
+  complete queryable billingTier after 403/404 or changed identity.
+- Initial focused checks caught the new scope expression missing from the shared
+  specification allowlist. After adding it, focused billing/service/catalog tests
+  passed (GCP 3.540s); the spec package selected no tests under that name filter.
+  Five offline SDK converter tests passed. Full/race/vet checks follow below.
+- The pinned mockgcp implementation has no SecurityCenterManagement server; these
+  are protocol and application integration tests. No emulator or live-cloud result
+  is claimed. Project trial history, ancestor service settings, organization regional
+  metadata and live regional behavior remain open; acceptance criteria stay open.
+- Authority review caught a further case: successful location discovery can lose
+  visibility of a prior location. Billing now has a dedicated non-authoritative,
+  kind-specific source, rejects authoritative product/network routing, and preserves
+  the previous SQLite observation even after that successful empty location scan.
+  Final verification below includes this correction.
+- Final verification: initial `go test ./...` passed (GCP 180.181s, Azure
+  351.326s). After the authority correction, `go test ./providers/gcp ./internal/...`
+  passed (GCP 175.884s), followed by a successful final `go test ./...` reusing the
+  verified provider results. Final focused race passed in 11.826s, main-workspace
+  focused tests in 3.833s, and vet passed. The focused catalog/spec package filters
+  selected no tests; their full suites passed. Five offline SDK checks and docs
+  checks for 30 isolated/42 main chapters plus 10 screenshots passed.
+  Repeated generation matched SHA-256
+  `16bc6d530b4057ee0a41c2c39d6666f242d293827ca012f4649917d828a237ec`.
+  All 777 prior operation objects and preexisting native method/schema objects
+  are unchanged. Only 20 milestone files are included; the original 65 WIP files
+  remain byte-identical. No server or new dependency was introduced.

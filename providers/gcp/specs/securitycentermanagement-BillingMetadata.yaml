@@ -1,0 +1,36 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: securitycentermanagement.googleapis.com/BillingMetadata
+  class: security.security_center
+presentation:
+  displayNames:
+    en-US: Security Command Center project billing
+    zh-CN: 安全指挥中心项目计费
+scope:
+  kind: region
+discovery:
+  source: security-billing
+  list:
+    operation: securitycentermanagement.projects.locations.getBillingMetadata
+    parameters:
+      name: scope.securityBillingName
+    itemsPath: $
+    identityPath: name
+  detail:
+    operation: securitycentermanagement.projects.locations.getBillingMetadata
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  billingTier:
+    path: billingTier
+    type: string
+extensions:
+  hook: gcp.resource

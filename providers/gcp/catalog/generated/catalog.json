@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "63d3e5c4ec31d07538e1878409a8f6f4378d9641054a4a9cf64b218cba5e77d4",
+    "checksum": "4d4e90222a77a639f018e7937cad26c4beac3dbbd77e02589b7f144eaded8129",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "8fb17162bb4f9d1b5c8e6c40e86676c148029f7f44fb906db1b6b11bd6c123c2",
+  "content_checksum": "ecd504218a754c45aa2b366cfacfedb51d18f758a984d316a5c738687b6cb720",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -105519,6 +105519,60 @@
       "source_uri": "https://securitycenter.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "securitycentermanagement.projects.locations.getBillingMetadata",
+      "name": "getBillingMetadata",
+      "service": "securitycentermanagement",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/billingMetadata$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response message for SecurityCenterManagement.GetBillingMetadata.\n\nEnums:\n  BillingTierValueValuesEnum: The billing tier of the resource.\n\nFields:\n  billingTier: The billing tier of the resource.\n  name: Identifier. The full resource name of the billingMetadata, in one of\n    the following formats: *\n    `organizations/{organization}/locations/{location}/billingMetadata` *\n    `projects/{project}/locations/{location}/billingMetadata`",
+        "id": "BillingMetadata",
+        "properties": {
+          "billingTier": {
+            "enum": [
+              "BILLING_TIER_UNSPECIFIED",
+              "STANDARD",
+              "PREMIUM",
+              "ENTERPRISE"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "securitycentermanagement",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://securitycentermanagement.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz",
+      "source_format": "google-cloud-sdk"
+    },
+    {
       "id": "securitycentermanagement.projects.locations.list",
       "name": "list",
       "service": "securitycentermanagement",
@@ -115024,6 +115078,24 @@
         ],
         "list_operations": [
           "securitycenter.organizations.getSubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "securitycentermanagement.googleapis.com/BillingMetadata",
+      "class": "security.security_center",
+      "display_name": "Security Command Center project billing",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "billingMetadata",
+        "read_operations": [
+          "securitycentermanagement.projects.locations.getBillingMetadata"
+        ],
+        "list_operations": [
+          "securitycentermanagement.projects.locations.getBillingMetadata"
         ]
       }
     },

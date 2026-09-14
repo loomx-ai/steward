@@ -242,3 +242,14 @@ on the organization, plus `resourcemanager.projects.get`,
 A permission failure or missing subscription response fails the scan. See the
 [subscription contract](https://docs.cloud.google.com/security-command-center/docs/reference/rest/v1beta2/organizations/getSubscription)
 and [Security Command Center permissions](https://docs.cloud.google.com/iam/docs/roles-permissions/securitycenter#securitycenter.subscription.get).
+
+Project billing inventory shows the Security Command Center tier explicitly set
+on each project/location. It keeps this value separate from the organization
+subscription and does not infer an inherited tier, trial period, or expiry date.
+Global and regional records retain distinct identities. Project scans follow the
+service's native location list; failed or changed reads preserve earlier records.
+A location disappearing from the visible list also preserves its last observation.
+Enable **Security Center Management API** and grant
+`securitycentermanagement.locations.list` and
+`securitycentermanagement.billingMetadata.get`. Include global scope to read global
+settings. These records are read-only. See the [project billing contract](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations/getBillingMetadata).

@@ -92,6 +92,12 @@ class SecurityServicesSDKMetadataTests(unittest.TestCase):
         fields = document["schemas"]["SecurityCenterService"]["properties"]
         self.assertIn("INGEST_ONLY", fields["effectiveEnablementState"]["enum"])
         self.assertEqual(document["schemas"]["SecurityCenterService.ModulesValue"]["additionalProperties"], {"$ref": "ModuleSettings"})
+        billing = methods["securitycentermanagement.projects.locations.getBillingMetadata"]
+        self.assertEqual(billing["httpMethod"], "GET")
+        self.assertEqual(billing["path"], "v1/{+name}")
+        self.assertEqual(billing["parameters"]["name"]["pattern"], "^projects/[^/]+/locations/[^/]+/billingMetadata$")
+        self.assertEqual(billing["response"], {"$ref": "BillingMetadata"})
+        self.assertEqual(document["schemas"]["BillingMetadata"]["properties"]["billingTier"]["enum"], ["BILLING_TIER_UNSPECIFIED", "STANDARD", "PREMIUM", "ENTERPRISE"])
         self.assertTrue(all(m["httpMethod"] == "GET" for m in methods.values()))
 
 

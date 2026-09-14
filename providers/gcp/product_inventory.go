@@ -43,7 +43,7 @@ type productRecord struct {
 func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, bool) {
 	for _, compiled := range r.bundle.Specs {
 		if compiled.ResourceKind.NativeType == nativeType {
-			return compiled.Definition, compiled.Definition.Discovery.Source == productInventorySource
+			return compiled.Definition, compiled.Definition.Discovery.Source == productInventorySource || compiled.Definition.Discovery.Source == securityBillingSource
 		}
 	}
 	return spec.ResourceKindSpec{}, false
@@ -61,6 +61,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return contracts.InventoryBatch{}, fmt.Errorf("GCP product inventory requires a resource kind")
 	}
 	nativeType := request.ResourceKind.NativeType
+	if nativeType == securityBillingType && request.Source != securityBillingSource {
+		return contracts.InventoryBatch{}, groupDenied("security_billing_source_invalid")
+	}
 	if isFirewall(nativeType) {
 		return r.listFirewall(ctx, c, request)
 	}
@@ -162,13 +165,13 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var records []productRecord
-	if nativeType != discoverySiteType {
+	if nativeType != discoverySiteType && nativeType != securityBillingType {
 		records, err = productRecords(result.Data, target.API.ItemsPath)
 	}
 	if err != nil {
 		return contracts.InventoryBatch{}, fmt.Errorf("%s: %w", target.API.Operation, err)
 	}
-	if nativeType == discoverySiteType && err == nil {
+	if (nativeType == discoverySiteType || nativeType == securityBillingType) && err == nil {
 		records = []productRecord{{Data: result.Data}}
 	}
 	identityPath := target.API.IdentityPath
@@ -386,6 +389,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			}
 		}
 		item.Normalized["_inventory_source"] = productInventorySource
+		if nativeType == securityBillingType {
+			item.Normalized["_inventory_source"] = securityBillingSource
+		}
 		if err := c.enrichDataformContainer(ctx, &item, record.Data); err != nil {
 			return contracts.InventoryBatch{}, err
 		}
@@ -597,7 +603,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		}
 		regional := false
 		for _, value := range parameters {
-			if value == "scope.location" || value == "scope.locationParent" || value == "scope.regionParent" || value == "scope.iapTunnelLocationParent" {
+			if value == "scope.location" || value == "scope.locationParent" || value == "scope.regionParent" || value == "scope.iapTunnelLocationParent" || value == "scope.securityBillingName" {
 				regional = true
 			}
 		}
@@ -785,6 +791,8 @@ func productParameters(input map[string]any, c *client, location string, parent 
 			result[key] = location
 		case "scope.locationParent":
 			result[key] = "projects/" + c.project + "/locations/" + location
+		case "scope.securityBillingName":
+			result[key] = "projects/" + c.project + "/locations/" + location + "/billingMetadata"
 		case "scope.regionParent":
 			result[key] = "projects/" + c.project + "/regions/" + location
 		case "scope.allLocationsParent":

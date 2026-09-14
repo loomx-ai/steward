@@ -4599,6 +4599,22 @@
       "list_operations": [
         "securitycenter.organizations.getSubscription"
       ]
+    },
+    {
+      "native_type": "securitycentermanagement.googleapis.com/BillingMetadata",
+      "class": "security.security_center",
+      "display_name": "Security Command Center project billing",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "collection": "billingMetadata",
+      "read_operations": [
+        "securitycentermanagement.projects.locations.getBillingMetadata"
+      ],
+      "list_operations": [
+        "securitycentermanagement.projects.locations.getBillingMetadata"
+      ]
     }
   ],
   "sdk_documents": [
@@ -4654,7 +4670,8 @@
       "methods": [
         "securitycentermanagement.projects.locations.list",
         "securitycentermanagement.projects.locations.securityCenterServices.list",
-        "securitycentermanagement.projects.locations.securityCenterServices.get"
+        "securitycentermanagement.projects.locations.securityCenterServices.get",
+        "securitycentermanagement.projects.locations.getBillingMetadata"
       ]
     }
   ]

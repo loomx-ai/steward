@@ -1,8 +1,11 @@
 package gcp
 
 const (
-	securityServiceHost = "securitycentermanagement.googleapis.com"
-	securityServiceType = securityServiceHost + "/SecurityCenterService"
+	securityServiceHost   = "securitycentermanagement.googleapis.com"
+	securityServiceType   = securityServiceHost + "/SecurityCenterService"
+	securityBillingType   = securityServiceHost + "/BillingMetadata"
+	securityBillingSource = "security-billing"
+	securityBillingGet    = "securitycentermanagement.projects.locations.getBillingMetadata"
 )
 
 // State strings remain forward compatible; malformed settings must not replace
@@ -34,6 +37,20 @@ func securityServiceSettings(data map[string]any) error {
 			if err := check(settings); err != nil {
 				return err
 			}
+		}
+	}
+	return nil
+}
+
+// Billing metadata describes the tier explicitly set on this project/location.
+// It does not describe an inherited tier or a subscription's trial/expiry dates.
+func (c *client) securityBillingMetadata(data map[string]any, name string) error {
+	if c.canonicalName("//"+securityServiceHost+"/"+text(data["name"])) != c.canonicalName("//"+securityServiceHost+"/"+name) {
+		return groupDenied("security_billing_identity_changed")
+	}
+	if value, present := data["billingTier"]; present {
+		if _, ok := value.(string); !ok {
+			return groupDenied("security_billing_tier_invalid")
 		}
 	}
 	return nil

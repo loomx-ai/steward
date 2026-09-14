@@ -2409,6 +2409,7 @@ resources:
     resources:
     - securitycenter.googleapis.com/Subscription
     - securitycentermanagement.googleapis.com/SecurityCenterService
+    - securitycentermanagement.googleapis.com/BillingMetadata
     - securitycenter.googleapis.com/NotificationConfig
   azure:
     resources:
@@ -2419,8 +2420,9 @@ resources:
     DescribeVersionConfig baseline. GCP now reads project Security Center Management service and module enablement through native
     locations/list/detail APIs, including intended versus effective state and update time. Native organization subscriptions additionally expose current tier, latest subscription type
     (including trial and pay-as-you-go), and start/end times through verified selected-project
-    ancestry. Project-level billing, ancestor service settings and independent behavior
-    verification remain pending.
+    ancestry. Project billingMetadata now preserves the tier explicitly configured at each native
+    location without inferring inherited entitlement or trial history. Project trial history,
+    ancestor service settings and independent behavior verification remain pending.
 - alicloud: ACS::TSDB::Instance
   spec: providers/alicloud/specs/tsdb-instance.yaml
   class: database.timeseries
