@@ -4638,3 +4638,37 @@ background evidence only, not acceptance evidence for this work.
   execution test also rescans all five resource kinds after cleanup and finds
   no remaining assets. All 1489 original operation definitions and original
   protocol fixtures remain unchanged. All 65 preexisting WIP hashes were preserved.
+
+
+## Elastic SAN retained snapshot-index reconciliation
+
+- Fixed full-family native inventory and graph reconciliation when a retained
+  group's snapshot index returns 404. The shared inventory collector records
+  unavailable membership consistently for SAN, volume and snapshot shards; every
+  known snapshot still receives its own read. Active-group index 404 and denied
+  parent/index/own reads remain failures. Unknown snapshots are not declared absent.
+- Snapshot collection availability now participates in two-pass consistency and
+  pagination fingerprints even when the collection contains no known resources.
+  Incomplete volume cleanup records carry a signed `snapshots_complete: false`
+  marker and remain protected. Existing complete cleanup records and execution
+  receipts retain their schema. Lifecycle reconstruction persists a volume
+  constraint instead of failing the whole scope or creating destructive bindings
+  from incomplete membership. A fresh complete scan removes the constraint.
+- Actual SQLite inventory/graph/plan tests reopen the database with a fresh
+  runtime, preserve a live known snapshot, preserve assets after permission
+  failure, reconcile an independently confirmed absent snapshot, and restore
+  volume cleanup eligibility after collection recovery. Independent known snapshot
+  selection remains available. Additional tests cover unknown membership, native
+  read failures, empty collection availability changes, cursors and signed-state
+  tampering. These are composed protocol fixtures and real SQLite persistence; no
+  live Azure or independent Elastic SAN emulator was used.
+- This resolves the previously documented full-family retained snapshot-index404
+  inventory/lifecycle edge. Retained-group purge, SAN retained-boundary cleanup
+  and externally deleted SAN reconciliation remain unfinished. All eight overall
+  acceptance criteria remain open. Catalogs, original API definitions and original
+  fixtures are unchanged.
+- Validation: final `go test ./... -count=1` passed, including Azure (352.438s)
+  and GCP (165.123s). Elastic SAN/catalog race tests passed (104.228s), isolated
+  focused tests passed (9.819s), and main focused tests passed (13.721s). Azure
+  vet and documentation checks passed (30 isolated/42 main chapters and all
+  10 original screenshots). All 65 preexisting WIP hashes were preserved.

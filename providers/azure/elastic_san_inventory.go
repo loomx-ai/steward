@@ -136,6 +136,12 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 		for _, retained := range modes {
 			rows, provenance, err := c.elasticSanIndex(ctx, typ, parent, retained)
 			if err != nil {
+				// A retained group may lose its snapshot index. Preserve that
+				// uncertainty across every shard; known own reads still run below.
+				if typ == elasticSanSnapshotType && nodes[parent].retained && isNotFound(err) {
+					snapshotUnavailable[parent] = true
+					return nil
+				}
 				return err
 			}
 			if provenance != "" {
@@ -244,11 +250,7 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 		for _, group := range slices.Sorted(maps.Keys(groups)) {
 			for _, childKind := range []string{elasticSanVolumeType, elasticSanSnapshotType} {
 				if err := collect(childKind, group); err != nil {
-					if childKind == elasticSanSnapshotType && nodes[group].retained && isNotFound(err) {
-						snapshotUnavailable[group] = true
-					} else {
-						return nil, nil, "", err
-					}
+					return nil, nil, "", err
 				}
 			}
 		}
@@ -304,11 +306,7 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			}
 			if kind == elasticSanVolumeType {
 				if err := collect(elasticSanSnapshotType, group); err != nil {
-					if nodes[group].retained && isNotFound(err) {
-						snapshotUnavailable[group] = true
-					} else {
-						return nil, nil, "", err
-					}
+					return nil, nil, "", err
 				}
 			}
 		}
@@ -367,7 +365,7 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 		refsByID[id] = refs
 		allBindings[id] = map[string]any{"raw": observation.raw, "retained": observation.retained, "authority": observation.authority}
 	}
-	items, bindings := []contracts.InventoryItem{}, map[string]any{"parents": c.privateConfiguration(allBindings)}
+	items, bindings := []contracts.InventoryItem{}, map[string]any{"parents": c.privateConfiguration(allBindings), "unavailable_snapshot_groups": snapshotUnavailable}
 	for _, id := range slices.Sorted(maps.Keys(nodes)) {
 		_, typ, _ := parseID(id)
 		if !strings.EqualFold(typ, kind) {
@@ -489,6 +487,9 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			if snapshotUnavailable[parent] {
 				reason = "elastic_san_retained_group_snapshot_index_unavailable"
 				state["protected"] = true
+				// Only incomplete records gain this signed marker. Existing complete
+				// cleanup records and execution receipts keep their original schema.
+				object(state["volume"])["snapshots_complete"] = false
 			}
 			value := asset.Asset{Identity: asset.Identity{NativeID: id, ConnectionID: request.ConnectionID}, Location: location, Normalized: normalized}
 			normalized[elasticSanSnapshotCleanup], normalized[elasticSanSnapshotCleanupProof] = state, c.elasticSanChildBinding(value, state)

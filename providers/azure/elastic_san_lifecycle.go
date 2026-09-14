@@ -29,6 +29,16 @@ func (s *serviceCascades) contributeElasticSanVolumes(ctx context.Context, asset
 		if _, err := s.client.elasticSanRecorded(value); err != nil {
 			return err
 		}
+		if object(state["volume"])["snapshots_complete"] == false {
+			if state["protected"] != true {
+				return serviceDenied("elastic_san_volume_graph_changed")
+			}
+			// Full inventory already performed known snapshot own reads. Persist
+			// incomplete membership instead of failing the entire scope graph or
+			// publishing destructive bindings from a partial member set.
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: elasticSanVolumeType, NativeID: value.Identity.NativeID, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: map[string]any{"reason": "elastic_san_volume_snapshot_membership_incomplete"}})
+			continue
+		}
 		expected := object(object(state["volume"])["snapshots"])
 		known := maps.Clone(expected)
 		if known == nil {
