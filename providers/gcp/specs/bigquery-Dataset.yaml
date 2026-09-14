@@ -32,7 +32,7 @@ discovery:
     identityPath: datasetReference.datasetId
 fields:
   name:
-    path: name
+    path: datasetReference.datasetId
     type: string
   projectId:
     path: project_id

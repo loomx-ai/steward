@@ -42,13 +42,30 @@ type = "compute.googleapis.com/FirewallPolicy" AND properties.shortName = "hiera
 type = "tpu.googleapis.com/QueuedResource" AND properties.lifecycleState = "ACTIVE"
 type = "run.googleapis.com/Service" AND state = "CONDITION_FAILED"
 type = "sqladmin.googleapis.com/Instance" AND tags.team = "analytics"
+type = "bigquery.googleapis.com/Table" AND properties.name = "events" AND properties.numRows = "9007199254740993"
+type = "compute.googleapis.com/SslCertificate" AND properties.managedStatus = "PROVISIONING_FAILED"
 ```
 
 Capacity and count fields represented as native 64-bit integer strings use quoted
 values. A firewall policy's `properties.name` is its native numeric name;
 `properties.shortName` is its display name. TPU queued resources expose their
 structured native `properties.state` alongside the searchable `properties.lifecycleState`.
-The top-level `state` search field remains available across resource types.
+The top-level `state` search field remains available across resource types, but
+stays empty when the API provides no resource state. Networks and firewall rules,
+for example, have no native state or labels property. When supplied, a route's
+`routeStatus` is its searchable state. Managed certificate status, PSC connection
+status and load-balancer migration state have their own named properties; they
+are not general resource health. See the [route](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routes)
+and [certificate](https://docs.cloud.google.com/compute/docs/reference/rest/v1/sslCertificates) API fields.
+
+BigQuery dataset/table `properties.name` is the short dataset/table ID; full
+resource IDs distinguish same-named tables in different datasets. Scans read
+native details after listing to obtain properties such as encryption settings,
+row counts and byte counts. The connection needs `bigquery.datasets.get` and
+`bigquery.tables.get` in addition to list access. A denied, missing or mismatched
+detail fails that scan shard and preserves existing inventory. See the
+[dataset](https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/datasets/get)
+and [table](https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/tables/get) detail methods.
 
 ## Inventory and supported cleanup
 

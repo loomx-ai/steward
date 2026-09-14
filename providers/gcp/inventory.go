@@ -438,7 +438,7 @@ func resourceState(data map[string]any) string {
 	if state := text(object(data["status"])["procurementStatus"]); state != "" {
 		return state
 	}
-	for _, field := range []string{"status", "state"} {
+	for _, field := range []string{"status", "state", "routeStatus"} {
 		if state := text(data[field]); state != "" {
 			return state
 		}

@@ -260,7 +260,8 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("GCP list returned duplicate resource %q", id)
 		}
 		seenIDs[id] = true
-		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
+		bigquery := nativeType == "bigquery.googleapis.com/Dataset" || nativeType == "bigquery.googleapis.com/Table"
+		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || bigquery {
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
@@ -280,7 +281,12 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
-			if isDataproc(nativeType) {
+			if bigquery {
+				liveID, identityErr := c.productIdentity(kind, operation, parameters, identityPath, productRecord{Data: live})
+				if identityErr != nil || liveID != id {
+					return contracts.InventoryBatch{}, groupDenied("bigquery_identity_changed")
+				}
+			} else if isDataproc(nativeType) {
 				if err := c.dataprocIdentity(nativeType, id, live); err != nil {
 					return contracts.InventoryBatch{}, err
 				}
@@ -902,6 +908,9 @@ func (c *client) productIdentity(kind resourceType, operation catalog.Operation,
 		}
 		if reference["projectId"] != c.project && reference["projectId"] != c.number {
 			return "", fmt.Errorf("BigQuery resource belongs to another project")
+		}
+		if text(productValue(record.Data, identityPath)) == "" {
+			return "", fmt.Errorf("BigQuery resource reference has no native identity")
 		}
 	}
 	name := text(productValue(record.Data, identityPath))

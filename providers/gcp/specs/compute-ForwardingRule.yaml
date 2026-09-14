@@ -34,9 +34,6 @@ fields:
   name:
     path: name
     type: string
-  state:
-    path: status
-    type: string
   projectId:
     path: project_id
     type: string
@@ -46,6 +43,12 @@ fields:
   labels:
     path: labels
     type: object
+  pscConnectionStatus:
+    path: pscConnectionStatus
+    type: string
+  externalManagedBackendBucketMigrationState:
+    path: externalManagedBackendBucketMigrationState
+    type: string
 extensions:
   hook: gcp.resource
 relationships:

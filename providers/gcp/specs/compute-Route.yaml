@@ -34,7 +34,7 @@ fields:
     path: name
     type: string
   state:
-    path: status
+    path: routeStatus
     type: string
   projectId:
     path: project_id
@@ -42,9 +42,6 @@ fields:
   zoneId:
     path: zone_id
     type: string
-  labels:
-    path: labels
-    type: object
 extensions:
   hook: gcp.resource
 relationships:

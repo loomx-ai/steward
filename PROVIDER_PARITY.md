@@ -4983,3 +4983,51 @@ background evidence only, not acceptance evidence for this work.
   matching race tests and were tested without a filter in main integration.
   Docs checks passed for 30 isolated and 42 main chapters plus 10 original
   screenshots. Eight owned files preserve all 65 original working-file hashes.
+
+## GCP Compute field contracts and BigQuery detail inventory
+
+- Audited all 52 Compute specifications against retained native detail schemas.
+  Removed 47 unsupported state/label declarations, mapped Route state to native
+  `routeStatus`, and exposed specific managed-certificate, PSC-connection and
+  load-balancer migration status fields without inventing general readiness.
+  The shared state reader uses supplied route status for inventory and readback;
+  missing route status remains unknown. Source evidence: the retained Compute
+  Discovery document and [Route](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routes),
+  [SSL certificate](https://docs.cloud.google.com/compute/docs/reference/rest/v1/sslCertificates),
+  [Network](https://docs.cloud.google.com/compute/docs/reference/rest/v1/networks)
+  and [Firewall](https://docs.cloud.google.com/compute/docs/reference/rest/v1/firewalls) API fields.
+- BigQuery dataset/table names resolve from native reference IDs. Inventory now
+  reads each listed resource's native GET response, including parent datasets,
+  before normalization. This supplies GET-only properties that list summaries
+  omit, such as dataset encryption/default expiration and table row/byte counts.
+  Native reference identities must match the project/dataset/table that was
+  listed; missing references cannot fall back to synthetic names. Failed or
+  mismatched details fail the batch instead of creating authoritative absence.
+  See the [dataset](https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/datasets/get)
+  and [table](https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/tables/get) detail APIs.
+- The retained schema guard now checks every field in all Compute and BigQuery
+  specs, plus TPU Reservation and Data Fusion namespace/DNS specs. It unwraps
+  list-detail arrays and resolves native references. Explicit adapter-derived
+  scope fields and StoragePool members/usage are handled separately; integer
+  schemas map to numeric properties without converting native int64 strings.
+  Previously corrected field contracts remain covered. Four old static audit
+  candidates were valid native fields hidden inside list response wrappers.
+- Native HTTP tests cover Compute status queries and unavailable fields, BigQuery
+  parent/table pagination, same-named tables in different datasets, exact large
+  integers, numeric project aliases, forbidden/missing/mismatched detail reads,
+  and list/delete/wait/readback with original native identity. View and materialized
+  view SQL is redacted before logs, inventory and public responses, while native
+  metadata and same-named ordinary labels remain intact. Bilingual docs
+  describe property availability and the additional BigQuery detail permissions.
+- These tests are protocol and retained-schema evidence, not independent emulator
+  or live-cloud evidence. The native catalog/API metadata is unchanged. All eight
+  overall acceptance criteria remain open; the remaining native field candidates
+  and broader lifecycle/end-to-end gaps still require verification.
+- Validation passed: full `go test ./... -count=1` (Azure 357.013s,
+  GCP 173.920s), followed after the SQL-redaction addition by the full GCP
+  suite (176.887s), inventory/query/server/HTTP suites and shared contracts.
+  Final affected GCP race tests passed (98.301s); vet and docs checks passed
+  (30 isolated / 42 main chapters and 10 original screenshots). Main integration
+  passed (GCP 11.476s, inventory 1.577s, resourcequery 0.391s, contracts 0.522s).
+  Forty-three owned files preserve all 65 original working-file hashes. No
+  temporary external server or cloud resources were created for this milestone.

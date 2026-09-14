@@ -20,6 +20,16 @@ func safePayload(value map[string]any) map[string]any {
 		switch object := value.(type) {
 		case map[string]any:
 			redactDataprocPayload(object)
+			// BigQuery view definitions can embed private SQL and literal secrets.
+			if _, table := object["tableReference"].(map[string]any); table {
+				for _, field := range []string{"view", "materializedView"} {
+					if definition, ok := object[field].(map[string]any); ok {
+						if _, exists := definition["query"]; exists {
+							definition["query"] = "[REDACTED]"
+						}
+					}
+				}
+			}
 			for key, child := range object {
 				switch strings.ToLower(key) {
 				case "error":

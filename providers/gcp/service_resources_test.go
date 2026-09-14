@@ -25,8 +25,8 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 		{"dns.googleapis.com/ManagedZone", "dns/v1", p + "managedZones/example", p + "managedZones", "managedZones", "global", "", `{"name":"example","dnsName":"example.com."}`},
 		{"dns.googleapis.com/Policy", "dns/v1", p + "policies/resolver", p + "policies", "policies", "global", "", `{"name":"resolver"}`},
 		{dnsRecordSetType, "dns/v1", p + "managedZones/example/rrsets/*.example.com./A", p + "managedZones/example/rrsets", "rrsets", "global", "", `{"name":"*.example.com.","type":"A","ttl":300,"rrdatas":["192.0.2.1"]}`},
-		{"bigquery.googleapis.com/Dataset", "bigquery/v2", p + "datasets/warehouse", p + "datasets", "datasets", "global", "", `{"name":"","datasetReference":{"projectId":"sample-project","datasetId":"warehouse"},"location":"US"}`},
-		{"bigquery.googleapis.com/Table", "bigquery/v2", p + "datasets/warehouse/tables/events", p + "datasets/warehouse/tables", "tables", "global", "", `{"name":"","tableReference":{"projectId":"sample-project","datasetId":"warehouse","tableId":"events"},"location":"EU"}`},
+		{"bigquery.googleapis.com/Dataset", "bigquery/v2", p + "datasets/warehouse", p + "datasets", "datasets", "global", "", `{"datasetReference":{"projectId":"sample-project","datasetId":"warehouse"},"location":"US"}`},
+		{"bigquery.googleapis.com/Table", "bigquery/v2", p + "datasets/warehouse/tables/events", p + "datasets/warehouse/tables", "tables", "global", "", `{"tableReference":{"projectId":"sample-project","datasetId":"warehouse","tableId":"events"},"location":"EU"}`},
 		{"firestore.googleapis.com/Database", "v1", p + "databases/(default)", p + "databases", "databases", "global", p + "databases/(default)/operations/delete", `{"uid":"database-uid","locationId":"nam5","etag":"reviewed-etag"}`},
 		{"bigtableadmin.googleapis.com/Instance", "v2", p + "instances/wide", p + "instances", "instances", "global", "", `{}`},
 		{"bigtableadmin.googleapis.com/Cluster", "v2", p + "instances/wide/clusters/zone-a", p + "instances/wide/clusters", "clusters", "us-central1", "", `{"location":"projects/sample-project/locations/us-central1-a"}`},
@@ -108,7 +108,7 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 			if err := json.Unmarshal([]byte(test.data), &data); err != nil {
 				t.Fatal(err)
 			}
-			if _, exists := data["name"]; !exists {
+			if _, exists := data["name"]; !exists && !strings.HasPrefix(test.kind, "bigquery.googleapis.com/") {
 				data["name"] = test.name
 			}
 			deleted, polls, reads := false, 0, 0
@@ -201,6 +201,13 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 				t.Fatalf("list=%+v error=%v", batch, err)
 			}
 			item := batch.Items[0]
+			if strings.HasPrefix(test.kind, "bigquery.googleapis.com/") {
+				value := asset.Asset{Identity: asset.Identity{NativeType: item.NativeType, NativeID: item.NativeID}, Normalized: item.Normalized}
+				assertGCPPropertyQuery(t, runtime, []asset.Asset{value}, test.kind, test.name, `properties.name = "`+last(test.name)+`"`)
+				if object(object(item.Raw["resource"])["data"])["name"] != nil {
+					t.Fatal("BigQuery native response acquired a synthetic name", item.Raw)
+				}
+			}
 			if test.kind == "networkservices.googleapis.com/MulticastDomain" && item.State != "ACTIVE" {
 				t.Fatalf("structured multicast state lost: %s", item.State)
 			}
@@ -241,6 +248,7 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 // and a project-scoped Bigtable parent for a cluster located in a zone.
 func serviceParentFixture(host, path string) (string, bool) {
 	fixtures := map[string]string{
+		"bigquery.googleapis.com/bigquery/v2/projects/sample-project/datasets/warehouse":                          `{"datasetReference":{"projectId":"sample-project","datasetId":"warehouse"},"location":"US"}`,
 		"apphub.googleapis.com/v1/projects/sample-project/locations/global/applications":                          `{"applications":[{"name":"projects/sample-project/locations/global/applications/shop"}]}`,
 		"backupdr.googleapis.com/v1/projects/sample-project/locations/-/backupVaults":                             `{"backupVaults":[{"name":"projects/sample-project/locations/us-central1/backupVaults/vault"}]}`,
 		"backupdr.googleapis.com/v1/projects/sample-project/locations/us-central1/backupVaults/vault/dataSources": `{"dataSources":[{"name":"projects/sample-project/locations/us-central1/backupVaults/vault/dataSources/vm"}]}`,

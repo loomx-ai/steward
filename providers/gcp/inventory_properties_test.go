@@ -142,41 +142,85 @@ func TestGCPChangedPropertyPathsMatchPinnedNativeSchemas(t *testing.T) {
 		t.Fatalf("unexpected API %s", req.URL)
 		return nil, nil
 	})
-	for kind, fields := range map[string][]string{
+	selected := map[string][]string{
 		"run.googleapis.com/Service": {"state"}, dataformInvocationType: {"invocationTiming"},
-		"pubsub.googleapis.com/Subscription": {"state"}, "pubsub.googleapis.com/Topic": {"state"}, "sqladmin.googleapis.com/Instance": {"state", "labels"}, "compute.googleapis.com/Subnetwork": {"state"},
-		"iam.googleapis.com/ServiceAccount": {"projectId"}, dataprocClusterType: {"projectId"}, dataprocPolicyType: {"name", "resourceId"}, dataprocTemplateType: {"name", "resourceId"}, firewallPolicyType: {"name", "shortName"}, tpuQueueType: {"state", "lifecycleState"},
-	} {
-		definition, _ := r.productDefinition(kind)
-		found := false
-		for _, doc := range source.Documents {
-			method, ok := doc.Document.Methods[definition.Discovery.Detail.Operation]
-			if !ok {
-				continue
+		"pubsub.googleapis.com/Subscription": {"state"}, "pubsub.googleapis.com/Topic": {"state"}, "sqladmin.googleapis.com/Instance": {"state", "labels"},
+		"iam.googleapis.com/ServiceAccount": {"projectId"}, dataprocClusterType: {"projectId"}, dataprocPolicyType: {"name", "resourceId"}, dataprocTemplateType: {"name", "resourceId"}, tpuQueueType: {"state", "lifecycleState"},
+	}
+	// Check every declared field for these audited families, including future
+	// additions. Product-specific derived values must be accounted for below.
+	for _, compiled := range r.bundle.Specs {
+		kind := compiled.ResourceKind.NativeType
+		if strings.HasPrefix(kind, "compute.googleapis.com/") || strings.HasPrefix(kind, "bigquery.googleapis.com/") || kind == tpuReservationType || kind == fusionNamespaceType || kind == fusionDNSType {
+			definition, _ := r.productDefinition(kind)
+			for field := range definition.Fields {
+				selected[kind] = append(selected[kind], field)
 			}
-			found = true
-			for _, field := range fields {
-				property := definition.Fields[field]
-				node := object(doc.Document.Schemas[method.Response.Ref])
-				for _, segment := range strings.Split(property.Path, ".") {
-					if ref := text(node["$ref"]); ref != "" {
-						node = object(doc.Document.Schemas[ref])
-					}
-					node = object(object(node["properties"])[segment])
-				}
-				if ref := text(node["$ref"]); ref != "" {
-					node = object(doc.Document.Schemas[ref])
-				}
-				if text(node["type"]) != string(property.Type) || node == nil {
-					t.Fatal("property differs from native schema", kind, field, property, node)
-				}
-			}
-			break
-		}
-		if !found {
-			t.Fatal("native source operation missing", kind)
 		}
 	}
+	for kind, fields := range selected {
+		t.Run(kind, func(t *testing.T) {
+			definition, _ := r.productDefinition(kind)
+			for _, doc := range source.Documents {
+				method, ok := doc.Document.Methods[definition.Discovery.Detail.Operation]
+				if !ok {
+					continue
+				}
+				schemas := doc.Document.Schemas
+				root := nativePropertySchema(schemas, object(schemas[method.Response.Ref]), definition.Discovery.Detail.ItemsPath)
+				// Some native resources have no GET and use a matching member of
+				// a list for detail/readback (TPU reservations, Data Fusion children).
+				if text(root["type"]) == "array" {
+					root = nativePropertySchema(schemas, object(root["items"]), "$")
+				}
+				for _, field := range fields {
+					property := definition.Fields[field]
+					path := property.Path
+					switch {
+					case path == "project_id" || path == "zone_id":
+						if property.Type != "string" {
+							t.Fatal("derived scope must be a string", field, property)
+						}
+						continue
+					case kind == storagePoolType && path == "storage_pool_disks":
+						// Native member discovery is covered by the StoragePool
+						// inventory/SQLite/restart suites, not its GET schema.
+						if property.Type != "array" {
+							t.Fatal("derived pool members must be an array", property)
+						}
+						continue
+					case kind == storagePoolType && (path == "pool_usage" || strings.HasPrefix(path, "pool_usage.")):
+						path = "resourceStatus" + strings.TrimPrefix(path, "pool_usage")
+					}
+					node := nativePropertySchema(schemas, root, path)
+					nativeType := text(node["type"])
+					if nativeType == "integer" {
+						nativeType = "number"
+					}
+					if nativeType != string(property.Type) || node == nil {
+						t.Error("property differs from native schema", field, property, node)
+					}
+				}
+				return
+			}
+			t.Fatal("native source operation missing", definition.Discovery.Detail.Operation)
+		})
+	}
+}
+
+func nativePropertySchema(schemas map[string]any, node map[string]any, path string) map[string]any {
+	for _, segment := range strings.Split(path, ".") {
+		if ref := text(node["$ref"]); ref != "" {
+			node = object(schemas[ref])
+		}
+		if segment != "$" && segment != "" {
+			node = object(object(node["properties"])[segment])
+		}
+	}
+	if ref := text(node["$ref"]); ref != "" {
+		node = object(schemas[ref])
+	}
+	return node
 }
 
 // An empty/unknown kind has no declared aliases and keeps its observed payload.
@@ -321,5 +365,73 @@ func TestGCPNestedFieldsPreserveNativePrecedence(t *testing.T) {
 	r.projectProperties(&item)
 	if !reflect.DeepEqual(item.Tags, map[string]string{"team": "native", "cost": ""}) {
 		t.Fatal("existing tags changed or non-string label became a tag", item.Tags)
+	}
+}
+
+func TestGCPComputeNativeStatusQueries(t *testing.T) {
+	cases := []struct {
+		kind, path, collection, field, value string
+		data                                 map[string]any
+	}{
+		{"Route", "global/routes", "routes", "state", "ACTIVE", map[string]any{"routeStatus": "ACTIVE"}},
+		{"Route", "global/routes", "routes", "state", "DROPPED", map[string]any{"routeStatus": "DROPPED"}},
+		{"Route", "global/routes", "routes", "state", "INACTIVE", map[string]any{"routeStatus": "INACTIVE"}},
+		{"Route", "global/routes", "routes", "state", "PENDING", map[string]any{"routeStatus": "PENDING"}},
+		{"Route", "global/routes", "routes", "", "", map[string]any{}},
+		{"Network", "global/networks", "networks", "", "", map[string]any{}},
+		{"GlobalForwardingRule", "global/forwardingRules", "forwardingRules", "pscConnectionStatus", "REJECTED", map[string]any{"pscConnectionStatus": "REJECTED"}},
+		{"SslCertificate", "aggregated/sslCertificates", "sslCertificates", "managedStatus", "PROVISIONING_FAILED", map[string]any{"managed": map[string]any{"status": "PROVISIONING_FAILED"}}},
+	}
+	for _, tt := range cases {
+		t.Run(tt.kind+"/"+tt.value, func(t *testing.T) {
+			data := tt.data
+			data["name"] = "fixture"
+			data["selfLink"] = "https://compute.googleapis.com/compute/v1/projects/sample-project/global/" + tt.collection + "/fixture"
+			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				if req.Method != "GET" || req.URL.Host != "compute.googleapis.com" || req.URL.Path != "/compute/v1/projects/sample-project/"+tt.path {
+					t.Fatalf("unexpected native request %s", req.URL)
+				}
+				var items any = []any{data}
+				if tt.kind == "SslCertificate" {
+					items = map[string]any{"global": map[string]any{tt.collection: items}}
+				}
+				return dataformResponse(req, 200, map[string]any{"items": items}), nil
+			})
+			kind := "compute.googleapis.com/" + tt.kind
+			batch, err := r.List(t.Context(), productRequest(r, kind, "global"))
+			if err != nil || len(batch.Items) != 1 {
+				t.Fatal(batch, err)
+			}
+			item := batch.Items[0]
+			wantState := ""
+			if tt.kind == "Route" {
+				wantState = tt.value
+			}
+			if item.State != wantState {
+				t.Fatal("native condition misrepresented as resource state", item)
+			}
+			if tt.field != "" {
+				value := asset.Asset{Identity: asset.Identity{NativeType: item.NativeType, NativeID: item.NativeID}, State: item.State, Normalized: item.Normalized}
+				query := `properties.` + tt.field + ` = "` + tt.value + `"`
+				if tt.kind == "Route" {
+					query += ` AND state = "` + tt.value + `"`
+				}
+				assertGCPPropertyQuery(t, r, []asset.Asset{value}, kind, "/fixture", query)
+			}
+			if object(object(item.Raw["resource"])["data"])["state"] != nil || item.Normalized["status"] != nil {
+				t.Fatal("native payload acquired a fabricated status", item)
+			}
+			if tt.kind == "Network" {
+				for _, field := range []string{"state", "labels"} {
+					expression, err := resourcequery.Parse(`properties.` + field + ` = "ACTIVE"`)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if err := expression.Validate([]asset.ResourceKind{r.resourceKind(kind)}); err == nil {
+						t.Fatal("nonexistent native field advertised", field)
+					}
+				}
+			}
+		})
 	}
 }

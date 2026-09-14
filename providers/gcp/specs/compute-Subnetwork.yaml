@@ -43,9 +43,6 @@ fields:
   zoneId:
     path: zone_id
     type: string
-  labels:
-    path: labels
-    type: object
 extensions:
   hook: gcp.resource
 relationships:

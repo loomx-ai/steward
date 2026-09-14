@@ -35,7 +35,7 @@ discovery:
     nativeType: bigquery.googleapis.com/Dataset
 fields:
   name:
-    path: name
+    path: tableReference.tableId
     type: string
   projectId:
     path: project_id
