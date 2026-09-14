@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Synapse/workspaces/sparkJobDefinitions
+  class: data.job_definition
+presentation:
+  displayNames:
+    en-US: Synapse Spark job definition
+    zh-CN: Synapse Spark 作业定义
+scope:
+  kind: region
+discovery:
+  source: synapse-data
+  list:
+    operation: Azure.Microsoft.Synapse.DataPlane.SparkJobDefinition_GetSparkJobDefinitionsByWorkspace
+    parameters:
+      endpoint: parent.normalized.connectivityEndpoints.dev
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Synapse.DataPlane.SparkJobDefinition_GetSparkJobDefinition
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: synapse
+    nativeType: Microsoft.Synapse/workspaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  workspace:
+    path: _synapse_workspace
+    type: string
+  pool:
+    path: _synapse_pool
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Synapse/workspaces
+  targetIdPath: refs_microsoft_synapse_workspaces
+- type: uses
+  targetType: Microsoft.Synapse/workspaces/bigDataPools
+  targetIdPath: refs_microsoft_synapse_workspaces_bigdatapools

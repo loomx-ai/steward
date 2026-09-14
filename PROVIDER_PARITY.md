@@ -6680,3 +6680,25 @@ The same milestone also retains seven stable-version artifact GET responses from
 two pinned official Azure CLI recordings, with an offline-capable reproducer.
 Five successful list/detail responses and two 404s verify the native artifact
 identity and status handling without rewriting their wire version or bodies.
+
+
+### Synapse data-plane asset inventory
+
+Registered Spark batches/sessions and notebook/Spark-job-definition artifacts as
+four non-actionable resource kinds, bringing Azure specifications to 455 while
+retaining 1,521 native operations and 418 cleanup bindings. Spark uses native Livy
+URLs and verified ARM pool ownership; artifacts use documented native identities.
+
+The new non-authoritative source reads complete native pages, verifies each
+member, resolves workspace/pool graph references, re-reads members/parents and
+checks a second child index. Connection-private fingerprints protect client
+pagination without retaining code in assets or cursors. Known list omissions get
+their own detail read: only child 404 closes a record; permission failures and
+missing parents leave the scan incomplete. Tests exercise native/client paging,
+configuration and membership changes, scoped known metadata, canary redaction,
+protection, dangling pool references and actual SQLite worker/graph reconciliation.
+
+This is local protocol and persistence evidence. Stable CLI artifact recordings
+remain unchanged. Full dependency coverage, terminal classification, cancellation,
+reviewed cleanup and live-cloud acceptance remain open. All 159 parity rows and
+all eight acceptance criteria remain open.

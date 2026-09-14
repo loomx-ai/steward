@@ -108,10 +108,36 @@ rotation, both OAuth and service redirects, interrupted contexts, complete owner
 lookup, parent drift, bad statuses/IDs/pages and canary redaction. These tests use
 an in-process RoundTripper, not a live Azure service or independent emulator.
 
-This reader does not yet register jobs, sessions or artifacts as graph assets,
-reconcile complete inventories across changing pages, classify terminal work for
-cleanup, cancel work, or delete pools/workspaces. Those are required next steps;
-the existing three Synapse resource kinds remain non-actionable.
+### Native data-plane inventory
+
+The `synapse-data` source registers four resource kinds: Spark batches, Spark
+sessions, notebooks and Spark job definitions. Spark identities are actual Livy
+URLs; their resource kinds group them beneath the ARM pool without inventing ARM
+job resources. Artifacts retain their documented ARM identities and native name
+selectors. These four additions bring the specification count to 455; the native
+operation count remains 1,521 and cleanup coverage remains 418.
+
+The source reads complete native indexes, validates each member with its own GET,
+resolves workspace/pool references, re-reads each member and parent, and compares
+a second complete child index before returning. Spark uses bounded offsets and a
+constant total; artifacts retain scoped native nextLink URLs. Duplicate members,
+cycles, configuration drift and incomplete responses fail the scan. This detects
+observed changes; the API does not provide an atomic cross-resource snapshot.
+Client cursors contain only an offset and connection-private fingerprint, never
+code or job configuration.
+
+Known objects omitted from lists receive their own GET. Only that object's 404
+closes its record; 403 or a missing/unreadable parent leaves the scan incomplete.
+Saved connection/workspace/endpoint selectors must still match fresh ownership
+reads. Region scans retain sibling-region objects. Missing artifact pool targets
+remain explicit unresolved references; forbidden targets fail the scan. The
+source is non-authoritative and emits explicit absence only on its final page.
+Tests cover native and client paging, changing indexes/parents, private canaries,
+known-object reconciliation, protection and actual SQLite worker/graph persistence.
+
+All seven Synapse resource kinds remain non-actionable. Terminal classification,
+cancellation, complete dependency coverage and pool/workspace cleanup remain
+required next steps. No live cloud or independent emulator validation is claimed.
 
 ### Stable-version CLI artifact recordings
 

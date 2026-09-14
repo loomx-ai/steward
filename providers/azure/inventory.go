@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource && request.Source != synapseSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource && request.Source != synapseSource && request.Source != synapseDataInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	synapseData := request.ResourceKind != nil && synapseDataKind(request.ResourceKind.NativeType).kind != ""
+	if request.Source == synapseDataInventorySource && !synapseData || synapseData && request.Source != "" && request.Source != inventorySource && request.Source != synapseDataInventorySource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_synapse_data_inventory_source")
 	}
 	synapse := request.ResourceKind != nil && synapseKind(request.ResourceKind.NativeType) != ""
 	if request.Source == synapseSource && !synapse || synapse && request.Source != "" && request.Source != inventorySource && request.Source != synapseSource {
@@ -70,6 +74,17 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if synapseData {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = synapseDataInventorySource
+		data, err := r.synapseResolvedClient(request.ConnectionID, c)
+		if err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+		return r.listSynapseData(ctx, data, request)
 	}
 	if synapse {
 		if request.Source == inventorySource {

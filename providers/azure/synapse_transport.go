@@ -36,6 +36,10 @@ func (r *Runtime) synapseClient(ctx context.Context, id asset.ConnectionID) (*sy
 	if err != nil {
 		return nil, err
 	}
+	return r.synapseResolvedClient(id, arm)
+}
+
+func (r *Runtime) synapseResolvedClient(id asset.ConnectionID, arm *client) (*synapseDataClient, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if c := r.synapseClients[id]; c != nil && c.arm == arm {

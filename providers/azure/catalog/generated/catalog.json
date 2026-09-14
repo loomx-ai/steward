@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "7a5f168d76252078e6a176eca150a4049ec0e8b49d6fc3b94eb82e5236d98d1a",
+    "checksum": "c1cbf75d89446646b9d9e198c194f707d9c6aab7511c196e21587c053121761e",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "6e4e04c2b4e9c8a51318e167d787c4b1664105bb4fcacb95418b650cd9e0f02c",
+  "content_checksum": "e6b39f3b139170273a825893f0ddf4bcdd23520dce4b5cbd6faa235c2583baa2",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -141370,6 +141370,74 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Synapse.BigDataPools_ListByWorkspace"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/bigDataPools/batches",
+      "class": "compute.batch_job",
+      "display_name": "Synapse Spark batch job",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "batches",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.DataPlane.SparkBatch_GetSparkBatchJob"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.DataPlane.SparkBatch_GetSparkBatchJobs"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/bigDataPools/sessions",
+      "class": "compute.session",
+      "display_name": "Synapse Spark session",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "sessions",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.DataPlane.SparkSession_GetSparkSession"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.DataPlane.SparkSession_GetSparkSessions"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/notebooks",
+      "class": "data.notebook",
+      "display_name": "Synapse notebook",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "notebooks",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.DataPlane.Notebook_GetNotebook"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.DataPlane.Notebook_GetNotebooksByWorkspace"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/sparkJobDefinitions",
+      "class": "data.job_definition",
+      "display_name": "Synapse Spark job definition",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "sparkJobDefinitions",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.DataPlane.SparkJobDefinition_GetSparkJobDefinition"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.DataPlane.SparkJobDefinition_GetSparkJobDefinitionsByWorkspace"
         ]
       }
     },

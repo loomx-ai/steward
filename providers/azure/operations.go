@@ -229,6 +229,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 	if insightsLegacyKind(kind.NativeType).kind != "" {
 		return c.insightsLegacyOperation(kind, nativeID, method)
 	}
+	if synapseDataKind(kind.NativeType).kind != "" {
+		return c.synapseDataOperation(kind, nativeID, method)
+	}
 	if isBatchDataType(kind.NativeType) {
 		return batchDataOperation(kind, nativeID, method)
 	}

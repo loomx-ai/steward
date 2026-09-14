@@ -11001,6 +11001,70 @@
       "list_operations": [
         "Azure.Microsoft.Synapse.SqlPools_ListByWorkspace"
       ]
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/bigDataPools/batches",
+      "collection": "batches",
+      "class": "compute.batch_job",
+      "display_name": "Synapse Spark batch job",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "Azure.Microsoft.Synapse.DataPlane.SparkBatch_GetSparkBatchJob"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Synapse.DataPlane.SparkBatch_GetSparkBatchJobs"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/bigDataPools/sessions",
+      "collection": "sessions",
+      "class": "compute.session",
+      "display_name": "Synapse Spark session",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "Azure.Microsoft.Synapse.DataPlane.SparkSession_GetSparkSession"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Synapse.DataPlane.SparkSession_GetSparkSessions"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/notebooks",
+      "collection": "notebooks",
+      "class": "data.notebook",
+      "display_name": "Synapse notebook",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "Azure.Microsoft.Synapse.DataPlane.Notebook_GetNotebook"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Synapse.DataPlane.Notebook_GetNotebooksByWorkspace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/sparkJobDefinitions",
+      "collection": "sparkJobDefinitions",
+      "class": "data.job_definition",
+      "display_name": "Synapse Spark job definition",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "Azure.Microsoft.Synapse.DataPlane.SparkJobDefinition_GetSparkJobDefinition"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Synapse.DataPlane.SparkJobDefinition_GetSparkJobDefinitionsByWorkspace"
+      ]
     }
   ]
 }

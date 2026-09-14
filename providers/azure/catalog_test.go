@@ -80,6 +80,14 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 			nativeID := operation.Call.Path
 			for _, match := range regexp.MustCompile(`\{([^}]+)\}`).FindAllStringSubmatch(nativeID, -1) {
 				value := "stewardtest"
+				if synapseDataKind(kind.NativeType).spark {
+					if match[1] == "livyApiVersion" {
+						value = synapseDataVersion
+					}
+					if match[1] == "batchId" || match[1] == "sessionId" {
+						value = "0"
+					}
+				}
 				if match[1] == "nspConfigName" {
 					value = "00000001-2222-3333-4444-111144444444.assoc1"
 				}
@@ -127,6 +135,13 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				nativeID = strings.ReplaceAll(nativeID, match[0], value)
 			}
 			wantPath := nativeID
+			if d := synapseDataKind(kind.NativeType); d.kind != "" {
+				if d.spark {
+					nativeID = "https://stewardtest.dev.azuresynapse.net" + nativeID
+				} else {
+					nativeID = resourceID(synapseType, "stewardtest") + "/" + d.collection + "/stewardtest"
+				}
+			}
 			if isBatchDataType(kind.NativeType) {
 				nativeID = "https://account.eastus2.batch.azure.com" + nativeID
 			}
@@ -146,7 +161,7 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				t.Fatalf("binding %s: %v", nativeID, err)
 			}
 			u, _ := url.Parse(endpoint)
-			if !strings.EqualFold(u.Path, wantPath) || u.Query().Get("api-version") != operation.Call.Version {
+			if !strings.EqualFold(u.Path, wantPath) || !synapseDataKind(kind.NativeType).spark && u.Query().Get("api-version") != operation.Call.Version || synapseDataKind(kind.NativeType).spark && (u.Query().Has("api-version") || !strings.Contains(u.Path, "/versions/"+synapseDataVersion+"/")) {
 				t.Fatalf("wrong request %s", endpoint)
 			}
 			if isCommunicationDataType(kind.NativeType) && (u.Path != wantPath || u.Host != "account.communication.azure.com") {

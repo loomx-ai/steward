@@ -32,7 +32,7 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 451 resource types; 418 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 455 resource types; 418 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -48,7 +48,7 @@ Steward recognizes 451 resource types; 418 have native cleanup actions, includin
 | Cosmos DB | Accounts and databases/containers for NoSQL, MongoDB, Cassandra, Gremlin and Table; roles, services, notebooks and private connections; managed Cassandra and Fleets | Reviewed children and shared dependencies precede parents; client encryption keys and built-in roles require their controller; Fleet unlinking preserves accounts |
 | Azure DocumentDB | MongoDB-compatible clusters and replicas, firewall rules, private endpoint connections and Microsoft Entra users | Reviewed replicas and children are deleted before their source/parent; deleting a replica preserves its source |
 | Azure Data Explorer | Kusto clusters, databases, follower attachments, data connections, principals, scripts and private connections; custom sandbox images | Reviewed children and follower attachments precede source deletion; read-only databases and active images require their controller |
-| Azure Synapse | Workspaces, Spark pools and SQL pools | Inventory with workspace and default Data Lake references; cleanup is not yet implemented |
+| Azure Synapse | Workspaces, Spark pools, SQL pools, Spark jobs and sessions, notebooks and Spark job definitions | Inventory with workspace, pool and default Data Lake references; cleanup is not yet implemented |
 | Data Factory | Factories, pipelines, datasets, dataflows, linked services, credentials, triggers, CDC, global parameters, integration runtimes/nodes and private connections | Reviewed factory cascades; runtime and work preparation; managed virtual networks require factory cleanup |
 | Data Migration | Classic services, projects, tasks/files and service tasks; SQL/Mongo migration services and migrations to SQL or Cosmos DB targets | Reviewed children and migration prerequisites; cancellation and runtime-node preparation before deletion |
 | Defender for Cloud | Subscription protection plans and supported resource-level plan states | Read-only service state, coverage, extensions and inheritance |
@@ -86,7 +86,7 @@ Service Bus/Event Hubs network rule sets, Event Hubs network perimeter configura
 
 Service Bus autoforwarding dependencies resolve to a queue or topic in the same namespace. Event Hubs Capture references its destination storage account and Blob container. Namespace deletion does not select those storage resources, user-assigned identities or the separate private endpoint for deletion. Inventory and action permissions must include every reviewed child's native read operation; a failed child list is not an empty namespace. See Microsoft's [autoforwarding](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding) and [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) documentation.
 
-Synapse uses native lists and detail reads. A list omission does not remove a known resource; only its own GET confirming absence can close its previous record. Default Data Lake storage remains a separate dependency. Native data-plane reads now support Spark jobs and sessions, notebooks and Spark job definitions with workspace ownership checks and a separate authentication audience. Code, job configuration and logs are omitted from returned data and diagnostics. Registering these as inventory assets and completing reviewed cleanup are still in progress.
+Synapse uses native lists and detail reads. A list omission does not remove a known resource; only its own GET confirming absence can close its previous record. Default Data Lake storage remains a separate dependency. Native data-plane reads now support Spark jobs and sessions, notebooks and Spark job definitions with workspace ownership checks and a separate authentication audience. Code, job configuration and logs are omitted from returned data and diagnostics. These four data-plane object types are also registered as inventory assets with workspace and pool references. Scans validate native pagination and preserve known objects omitted from lists. Cleanup is still in progress; these assets remain non-actionable.
 
 ## Cleanup protections
 

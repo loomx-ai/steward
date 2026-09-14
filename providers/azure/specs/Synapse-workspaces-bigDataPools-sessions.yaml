@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Synapse/workspaces/bigDataPools/sessions
+  class: compute.session
+presentation:
+  displayNames:
+    en-US: Synapse Spark session
+    zh-CN: Synapse Spark 会话
+scope:
+  kind: region
+discovery:
+  source: synapse-data
+  list:
+    operation: Azure.Microsoft.Synapse.DataPlane.SparkSession_GetSparkSessions
+    parameters:
+      detailed: true
+      size: 20
+      sparkPoolName: parent.normalized.arm_parameters.bigDataPoolName
+    itemsPath: sessions
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Synapse.DataPlane.SparkSession_GetSparkSession
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: synapse
+    nativeType: Microsoft.Synapse/workspaces/bigDataPools
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  workspace:
+    path: _synapse_workspace
+    type: string
+  pool:
+    path: _synapse_pool
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Synapse/workspaces
+  targetIdPath: refs_microsoft_synapse_workspaces
+- type: uses
+  targetType: Microsoft.Synapse/workspaces/bigDataPools
+  targetIdPath: refs_microsoft_synapse_workspaces_bigdatapools
