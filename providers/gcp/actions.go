@@ -27,6 +27,9 @@ type action struct {
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
+	if value.Identity.NativeType == notificationChannelType && value.Normalized["type"] == "email" {
+		return nil, groupDenied("notification_channel_budget_scope_required")
+	}
 	if (isMonitoringConfig(value.Identity.NativeType) || isRouterComponent(value.Identity.NativeType) || value.Identity.NativeType == storagePoolType || value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType) || isIdentityGroup(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
 		return nil, groupDenied("native_connection_changed")
 	}
@@ -714,6 +717,9 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 }
 
 func protectionReason(nativeType string, data map[string]any) string {
+	if nativeType == notificationChannelType && data["type"] == "email" {
+		return "notification_channel_budget_scope_required"
+	}
 	if nativeType == monitoredProjectType {
 		parts := strings.Split(text(data["name"]), "/")
 		if len(parts) >= 6 && parts[len(parts)-1] == parts[len(parts)-3] {

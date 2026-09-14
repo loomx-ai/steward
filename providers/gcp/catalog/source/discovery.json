@@ -133576,6 +133576,58 @@
       },
       "source_sha256": "9273bd1f36bbc4c94fb948450a2cf63f876e04ca8a1b331fd80158b152907019",
       "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
+    },
+    {
+      "document": {
+        "methods": {
+          "monitoring.projects.notificationChannels.delete": {
+            "description": "Deletes a notification channel.Design your application to single-thread API calls that modify the state of notification channels in a single project. This includes calls to CreateNotificationChannel, DeleteNotificationChannel and UpdateNotificationChannel.",
+            "flatPath": "v3/projects/{projectsId}/notificationChannels/{notificationChannelsId}",
+            "httpMethod": "DELETE",
+            "id": "monitoring.projects.notificationChannels.delete",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "force": {
+                "description": "If true, the notification channel will be deleted regardless of its use in alert policies (the policies will be updated to remove the channel). If false, this operation will fail if the notification channel is referenced by existing alerting policies.",
+                "location": "query",
+                "type": "boolean"
+              },
+              "name": {
+                "description": "Required. The channel for which to execute the request. The format is: projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID] ",
+                "location": "path",
+                "pattern": "^projects/[^/]+/notificationChannels/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v3/{+name}",
+            "response": {
+              "$ref": "Empty"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/monitoring"
+            ]
+          }
+        },
+        "name": "monitoring",
+        "revision": "20260903",
+        "rootUrl": "https://monitoring.googleapis.com/",
+        "schemas": {
+          "Empty": {
+            "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } ",
+            "id": "Empty",
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "servicePath": "",
+        "version": "v3"
+      },
+      "source_sha256": "9273bd1f36bbc4c94fb948450a2cf63f876e04ca8a1b331fd80158b152907019",
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
     }
   ],
   "x-resource-types": [
@@ -137650,6 +137702,9 @@
       "nativeType": "monitoring.googleapis.com/NotificationChannel",
       "rest": {
         "collection": "notificationChannels",
+        "delete_operations": [
+          "monitoring.projects.notificationChannels.delete"
+        ],
         "list_operations": [
           "monitoring.projects.notificationChannels.list"
         ],

@@ -18,10 +18,14 @@ func routerScope(identity asset.Identity) (string, error) {
 		return "", nil
 	}
 	// The persisted Router scope mechanism also coordinates Monitoring's
-	// project-wide single-writer requirement for synchronous policy deletion.
-	if identity.NativeType == "monitoring.googleapis.com/AlertPolicy" {
+	// project-wide single-writer requirement for synchronous policy/channel deletion.
+	if identity.NativeType == "monitoring.googleapis.com/AlertPolicy" || identity.NativeType == "monitoring.googleapis.com/NotificationChannel" {
+		collection := "alertPolicies"
+		if identity.NativeType == "monitoring.googleapis.com/NotificationChannel" {
+			collection = "notificationChannels"
+		}
 		parts := strings.Split(strings.TrimPrefix(identity.NativeID, "//monitoring.googleapis.com/"), "/")
-		if identity.ConnectionID == "" || (identity.Partition != "gcp" && identity.Partition != "google-cloud") || !strings.HasPrefix(identity.NativeID, "//monitoring.googleapis.com/") || len(parts) != 4 || parts[0] != "projects" || parts[2] != "alertPolicies" {
+		if identity.ConnectionID == "" || (identity.Partition != "gcp" && identity.Partition != "google-cloud") || !strings.HasPrefix(identity.NativeID, "//monitoring.googleapis.com/") || len(parts) != 4 || parts[0] != "projects" || parts[2] != collection {
 			return "", fmt.Errorf("invalid native Monitoring mutation identity")
 		}
 		for _, part := range parts {
@@ -29,7 +33,7 @@ func routerScope(identity asset.Identity) (string, error) {
 				return "", fmt.Errorf("invalid native Monitoring mutation segment")
 			}
 		}
-		return string(identity.ConnectionID) + "/gcp///monitoring.googleapis.com/projects/" + parts[1] + "/alertPolicies", nil
+		return string(identity.ConnectionID) + "/gcp///monitoring.googleapis.com/projects/" + parts[1] + "/" + collection, nil
 	}
 	suffix := ""
 	switch identity.NativeType {

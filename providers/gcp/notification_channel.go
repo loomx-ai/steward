@@ -74,7 +74,7 @@ func (c *client) notificationChannelRead(ctx context.Context, id string) (map[st
 	}
 	live, err := c.request(ctx, "GET", endpoint, nil)
 	if err != nil {
-		return nil, contracts.DependencyReadError(err)
+		return nil, err
 	}
 	if err := c.notificationChannelData(id, live); err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (c *client) notificationChannelInventory(ctx context.Context, id string, li
 	}
 	live, err := c.notificationChannelRead(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, contracts.DependencyReadError(err)
 	}
 	if notificationChannelConfiguration(id, listed) != notificationChannelConfiguration(id, live) {
 		return nil, groupDenied("notification_channel_configuration_changed")

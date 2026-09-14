@@ -12,6 +12,9 @@ import (
 )
 
 func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (contracts.InvocationResult, error) {
+	if invocation.Operation == "monitoring.projects.notificationChannels.delete" {
+		return contracts.InvocationResult{}, groupDenied("notification_channel_requires_reviewed_action")
+	}
 	metadata, err := providerData()
 	if err != nil {
 		return contracts.InvocationResult{}, err

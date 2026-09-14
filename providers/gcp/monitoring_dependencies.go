@@ -340,7 +340,7 @@ func (a *action) monitoringPrerequisites(request contracts.ActionRequest) error 
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		p := prerequisite.Asset
 		proof, err := hex.DecodeString(text(p.Normalized[alertPolicyReview]))
-		if a.kind.NativeType != uptimeType || err != nil || len(proof) != 32 || p.ID == "" || p.ID == request.Asset.ID || !prerequisite.Delete || prerequisite.ControllerID != request.Asset.ID || p.Identity.Provider != a.identity.Provider || p.Identity.ConnectionID != a.identity.ConnectionID || p.Identity.Partition != a.identity.Partition || p.Identity.NativeType != alertPolicyType || seen[p.Identity.NativeID] {
+		if (a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType) || err != nil || len(proof) != 32 || p.ID == "" || p.ID == request.Asset.ID || !prerequisite.Delete || prerequisite.ControllerID != request.Asset.ID || p.Identity.Provider != a.identity.Provider || p.Identity.ConnectionID != a.identity.ConnectionID || p.Identity.Partition != a.identity.Partition || p.Identity.NativeType != alertPolicyType || seen[p.Identity.NativeID] {
 			return groupDenied("monitoring_prerequisite_changed")
 		}
 		kind, _ := findType(alertPolicyType)
@@ -354,7 +354,7 @@ func (a *action) monitoringPrerequisites(request contracts.ActionRequest) error 
 	return nil
 }
 func (a *action) monitoringIncoming(ctx context.Context, request contracts.ActionRequest) error {
-	if a.kind.NativeType != uptimeType {
+	if a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType {
 		return nil
 	}
 	for _, p := range request.PrerequisiteDeletions {
@@ -365,6 +365,22 @@ func (a *action) monitoringIncoming(ctx context.Context, request contracts.Actio
 			}
 			return groupDenied("monitoring_prerequisite_still_exists")
 		}
+	}
+	if a.kind.NativeType == notificationChannelType {
+		policies, err := a.client.monitoringPolicySnapshot(ctx)
+		if err != nil {
+			return err
+		}
+		for _, policy := range policies {
+			refs, err := a.client.alertPolicyChannels(policy)
+			if err != nil {
+				return err
+			}
+			if slices.Contains(refs, a.identity.NativeID) {
+				return groupDenied("notification_channel_referenced_by_alert_policy")
+			}
+		}
+		return nil
 	}
 	policies, err := a.client.monitoringPolicies(ctx, last(a.identity.NativeID))
 	if err != nil {

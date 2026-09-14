@@ -8,6 +8,7 @@ import (
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/graph"
+	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 // Keep both native reference fields. A stale/invalid policy may still retain a
@@ -47,9 +48,8 @@ func (c *client) alertPolicyChannels(data map[string]any) ([]string, error) {
 }
 
 // This discovers concrete own-project AlertPolicy consumers. It does not prove
-// absence of Billing Budget or other external consumers and does not enable
-// channel deletion. Channel cleanup remains unavailable until those scopes and
-// the remaining native write contracts are supported.
+// absence of Billing Budget or other external consumers. Non-email cleanup also
+// uses the native non-forced deletion guard; email cleanup remains protected.
 func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Context, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
 	channels := []asset.Asset{}
@@ -67,7 +67,7 @@ func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Con
 		}
 		data, err := h.client.notificationChannelRead(ctx, value.Identity.NativeID)
 		if err != nil {
-			return err
+			return contracts.DependencyReadError(err)
 		}
 		if notificationChannelConfiguration(value.Identity.NativeID, data) != text(value.Normalized[notificationChannelReview]) {
 			return groupDenied("notification_channel_configuration_changed")

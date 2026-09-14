@@ -23,7 +23,7 @@ func uptimeScenario(t *testing.T) (*Runtime, *contracts.ActionRequest, *map[stri
 	return monitoringScenario(t, uptimeType)
 }
 
-func monitoringScenario(t *testing.T, kind string) (*Runtime, *contracts.ActionRequest, *map[string]any, *string, *int) {
+func monitoringScenario(t *testing.T, kind string, delivery ...string) (*Runtime, *contracts.ActionRequest, *map[string]any, *string, *int) {
 	t.Helper()
 	data := uptimeFixture()
 	name, id, collection := uptimeName, uptimeID, "uptimeCheckConfigs"
@@ -35,12 +35,21 @@ func monitoringScenario(t *testing.T, kind string) (*Runtime, *contracts.ActionR
 	}
 	if kind == notificationChannelType {
 		data = notificationChannelFixture()
+		if len(delivery) > 0 {
+			data["type"] = delivery[0]
+			if delivery[0] == "pubsub" {
+				data["labels"] = map[string]any{"topic": "projects/sample-project/topics/PRIVATE_CHANNEL_TOPIC"}
+			}
+		}
 		name, id, collection = notificationChannelName, notificationChannelID, "notificationChannels"
 	}
 	mode := ""
 	deletes := 0
 	reads := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if kind == notificationChannelType && req.Method == "GET" && req.URL.Path == "/v3/projects/sample-project/alertPolicies" {
+			return apiResponse(req, 200, `{}`), nil
+		}
 		if kind == uptimeType && req.Method == "GET" {
 			if req.URL.Host == loggingHost && req.URL.Path == "/v2/projects/sample-project/sinks" && req.URL.Query().Get("filter") == `in_scope("DEFAULT")` && req.URL.Query().Get("pageSize") == "1000" {
 				return apiResponse(req, 200, `{}`), nil
@@ -76,7 +85,11 @@ func monitoringScenario(t *testing.T, kind string) (*Runtime, *contracts.ActionR
 			}
 			return dataformResponse(req, 200, map[string]any{collection: []any{data}}), nil
 		}
-		if req.URL.Path != "/v3/"+name || len(req.URL.Query()) != 0 {
+		expectedQuery := ""
+		if kind == notificationChannelType && req.Method == "DELETE" {
+			expectedQuery = "force=false"
+		}
+		if req.URL.Path != "/v3/"+name || req.URL.RawQuery != expectedQuery {
 			t.Fatal(req.Method, req.URL)
 		}
 		if req.Method == "DELETE" {

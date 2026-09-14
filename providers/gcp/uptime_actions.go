@@ -3,6 +3,7 @@ package gcp
 import (
 	"context"
 	"encoding/hex"
+	"net/url"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -10,6 +11,9 @@ import (
 )
 
 func (a *action) monitoringActionIdentity(request contracts.ActionRequest) error {
+	if a.kind.NativeType == notificationChannelType && len(request.Parameters) != 0 {
+		return groupDenied("notification_channel_parameters_unsupported")
+	}
 	proof, err := hex.DecodeString(text(request.Asset.Normalized[monitoringReviewKey(request.Asset.Identity.NativeType)]))
 	if err != nil || len(proof) != 32 || request.Asset.ID == "" || request.Action != "delete" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || !gcpPartition(a.identity.Partition) || len(request.LifecycleImpacts) != 0 {
 		return groupDenied("monitoring_action_review_changed")
@@ -50,6 +54,9 @@ func (a *action) monitoringPreflight(ctx context.Context, request contracts.Acti
 
 func uptimePhase(request contracts.ActionRequest) map[string]any {
 	phase := "uptime_delete"
+	if request.Asset.Identity.NativeType == notificationChannelType {
+		phase = "notification_channel_delete"
+	}
 	if request.Asset.Identity.NativeType == alertPolicyType {
 		phase = "alert_policy_delete"
 	}
@@ -69,7 +76,7 @@ func (a *action) executeMonitoring(ctx context.Context, request contracts.Action
 	if !read.Exists {
 		return contracts.ActionResult{}, nil
 	}
-	if a.kind.NativeType == uptimeType {
+	if a.kind.NativeType == uptimeType || a.kind.NativeType == notificationChannelType {
 		if err := a.monitoringIncoming(ctx, request); err != nil {
 			return contracts.ActionResult{}, err
 		}
@@ -82,7 +89,11 @@ func (a *action) executeMonitoring(ctx context.Context, request contracts.Action
 			return contracts.ActionResult{}, nil
 		}
 	}
-	response, err := a.client.requestResult(ctx, "DELETE", a.endpoint, nil, nil)
+	var query url.Values
+	if a.kind.NativeType == notificationChannelType {
+		query = url.Values{"force": {"false"}}
+	}
+	response, err := a.client.requestResult(ctx, "DELETE", a.endpoint, query, nil)
 	if isNotFound(err) {
 		live, readErr := a.monitoringReadback(ctx, request)
 		if readErr != nil {

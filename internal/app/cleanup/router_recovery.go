@@ -12,7 +12,8 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-// Reconstruct the Router worker's frozen request in its original list order.
+// Reconstruct the worker's frozen request in its original list order.
+// Notification channels reuse the direct-prerequisite path for alert policies.
 // Router policies/sets are direct prerequisites; NATs are delegated impacts.
 // Recovery never substitutes current child configuration for a missing snapshot.
 func routerRecoveryImpacts(ctx context.Context, repositories persistence.Repositories, task persistence.CleanupTaskAggregate, step plan.CleanupTaskStep, request *contracts.ActionRequest) error {

@@ -6155,3 +6155,27 @@ Channel writes, Billing Budget/external consumer scope, masked-secret review and
 full lifecycle acceptance remain unfinished. Native Billing Budget documentation
 restricts channel references to email; this has not been used to bypass remaining
 cleanup checks. No acceptance criterion is marked complete by this milestone.
+
+### GCP non-email notification-channel cleanup milestone
+
+Added reviewed synchronous DELETE for non-email channels with `force=false` and
+no body. Generic Invoke cannot bypass the driver. Preflight and execute validate
+frozen configuration, protection labels, complete native policy snapshots and
+GET 404 for each selected policy prerequisite. A final channel read precedes the
+write; only native channel GET 404 settles deletion after restart. Receipts bind
+all reviewed prerequisites. Empty/lost responses do not release a mutation scope.
+
+The persistent connection/project reservation mechanism now coordinates channel
+writes and reconstructs frozen policy reviews during failed-attempt recovery.
+Shared tests cover write ordering/isolation and settlement invalidation. A real
+SQLite graph/plan/worker workflow verifies explicit policy-before-channel deletion
+through repeated database reopen and both final tombstones. The pinned independent
+Google mock exercises the corresponding native endpoints.
+
+Email channels remain protected and non-actionable because Billing Budget consumer
+discovery is still unfinished. The Budget API only supports email-channel targets;
+this distinction does not close the overall channel or provider acceptance scope.
+Masked native values and external writers remain API limits; cross-connection
+write coordination and real-cloud acceptance are still open. Native catalog now
+has 202 resource rules and 795 methods; prior source fragments remain unchanged.
+See [channel lifecycle evidence](providers/gcp/fixtures/notification-channel/README.md).

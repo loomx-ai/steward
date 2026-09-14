@@ -16,6 +16,12 @@ import (
 )
 
 func TestNotificationChannelIndependentMockGCP(t *testing.T) {
+	testNotificationChannelIndependentMockGCP(t, "email")
+}
+func TestNotificationChannelDeleteIndependentMockGCP(t *testing.T) {
+	testNotificationChannelIndependentMockGCP(t, "pubsub")
+}
+func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string) {
 	endpoint := os.Getenv("STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL")
 	if endpoint == "" {
 		t.Skip("set STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL to the pinned Monitoring harness")
@@ -54,6 +60,10 @@ func TestNotificationChannelIndependentMockGCP(t *testing.T) {
 		return data
 	}
 	seed := notificationChannelFixture()
+	seed["type"] = delivery
+	if delivery == "pubsub" {
+		seed["labels"] = map[string]any{"topic": "projects/sample-project/topics/PRIVATE_CHANNEL_TOPIC"}
+	}
 	for _, field := range []string{"name", "futureNativeField", "verificationStatus", "creationRecord", "mutationRecords"} {
 		delete(seed, field)
 	}
@@ -62,11 +72,19 @@ func TestNotificationChannelIndependentMockGCP(t *testing.T) {
 	if !strings.HasPrefix(name, "projects/sample-project/notificationChannels/") {
 		t.Fatal("unexpected native identity")
 	}
-	t.Cleanup(func() { native("DELETE", "/v3/"+name, nil) })
+	channelExists := true
+	t.Cleanup(func() {
+		if channelExists {
+			native("DELETE", "/v3/"+name, nil)
+		}
+	})
 	calls := []string{}
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
-		if req.URL.Host != "monitoring.googleapis.com" || req.Method != "GET" {
+		if req.URL.Host != "monitoring.googleapis.com" || (req.Method != "GET" && (delivery == "email" || req.Method != "DELETE")) {
 			t.Fatal("unexpected runtime request", req.Method, req.URL)
+		}
+		if req.Method == "DELETE" && strings.Contains(req.URL.Path, "/notificationChannels/") && req.URL.RawQuery != "force=false" {
+			t.Fatal("forced native channel delete")
 		}
 		calls = append(calls, req.Method+" "+req.URL.Path)
 		local := req.Clone(req.Context())
@@ -77,7 +95,11 @@ func TestNotificationChannelIndependentMockGCP(t *testing.T) {
 	var channel asset.Asset
 	for _, phase := range []string{"initial", "changed"} {
 		if phase == "changed" {
-			native("PATCH", "/v3/"+name+"?updateMask=labels", map[string]any{"name": name, "labels": map[string]any{"email_address": "PRIVATE_CHANNEL_NEW"}})
+			labels := map[string]any{"email_address": "PRIVATE_CHANNEL_NEW"}
+			if delivery == "pubsub" {
+				labels = map[string]any{"topic": "projects/sample-project/topics/PRIVATE_CHANNEL_NEW"}
+			}
+			native("PATCH", "/v3/"+name+"?updateMask=labels", map[string]any{"name": name, "labels": labels})
 		}
 		batch, err := r.List(t.Context(), productRequest(r, notificationChannelType, "global"))
 		if err != nil || !batch.Complete || len(batch.Items) != 1 {
@@ -85,7 +107,7 @@ func TestNotificationChannelIndependentMockGCP(t *testing.T) {
 		}
 		item := batch.Items[0]
 		b, _ := json.Marshal(item)
-		if item.NativeID != "//monitoring.googleapis.com/"+name || strings.Contains(string(b), "PRIVATE_CHANNEL") || item.Actionable == nil || *item.Actionable {
+		if item.NativeID != "//monitoring.googleapis.com/"+name || strings.Contains(string(b), "PRIVATE_CHANNEL") || item.Actionable == nil || *item.Actionable != (delivery != "email") {
 			t.Fatal("invalid native inventory")
 		}
 		proof := text(item.Normalized[notificationChannelReview])
@@ -95,7 +117,7 @@ func TestNotificationChannelIndependentMockGCP(t *testing.T) {
 		previous = proof
 		target := asset.Asset{ID: "native-channel", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", Partition: "gcp", NativeType: notificationChannelType, NativeID: item.NativeID}, Normalized: item.Normalized}
 		channel = target
-		if _, err := r.ResolveAction(t.Context(), "connection", target); err == nil {
+		if _, err := r.ResolveAction(t.Context(), "connection", target); (err == nil) != (delivery != "email") {
 			t.Fatal("read-only channel exposes cleanup")
 		}
 	}
@@ -113,7 +135,12 @@ func TestNotificationChannelIndependentMockGCP(t *testing.T) {
 	if !strings.HasPrefix(policyName, "projects/sample-project/alertPolicies/") {
 		t.Fatal("unexpected native policy identity")
 	}
-	t.Cleanup(func() { native("DELETE", "/v3/"+policyName, nil) })
+	policyExists := true
+	t.Cleanup(func() {
+		if policyExists {
+			native("DELETE", "/v3/"+policyName, nil)
+		}
+	})
 	batch, err := r.List(t.Context(), productRequest(r, alertPolicyType, "global"))
 	if err != nil || len(batch.Items) != 1 {
 		t.Fatal(batch, err)
@@ -130,6 +157,66 @@ func TestNotificationChannelIndependentMockGCP(t *testing.T) {
 	}
 	if len(calls) != 12 {
 		t.Fatal("unexpected native reads", calls)
+	}
+	if delivery != "email" {
+		driver, err := r.ResolveAction(t.Context(), "connection", channel)
+		if err != nil {
+			t.Fatal(err)
+		}
+		request := contracts.ActionRequest{Asset: channel, Action: "delete", IdempotencyKey: "native-channel", PrerequisiteDeletions: []contracts.ActionImpact{{Asset: policyAsset, ControllerID: channel.ID, Delete: true}}}
+		if _, err := driver.Execute(t.Context(), request); err == nil {
+			t.Fatal("native live policy was ignored")
+		}
+		policyDriver, err := r.ResolveAction(t.Context(), "connection", policyAsset)
+		if err != nil {
+			t.Fatal(err)
+		}
+		policyRequest := contracts.ActionRequest{Asset: policyAsset, Action: "delete", IdempotencyKey: "native-channel-policy"}
+		policyResult, err := policyDriver.Execute(t.Context(), policyRequest)
+		if err != nil {
+			t.Fatal(err)
+		}
+		policyWait, err := policyDriver.Wait(t.Context(), policyRequest, policyResult)
+		if err != nil || !policyWait.Done {
+			t.Fatal(policyWait, err)
+		}
+		policyExists = false
+		result, err := driver.Execute(t.Context(), request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		encoded, _ := json.Marshal(result)
+		if err := json.Unmarshal(encoded, &result); err != nil {
+			t.Fatal(err)
+		}
+		fresh := protocolRuntime(t, r.transport.RoundTrip)
+		driver, err = fresh.ResolveAction(t.Context(), "connection", channel)
+		if err != nil {
+			t.Fatal(err)
+		}
+		settled, err := driver.(contracts.MutationSettlementReader).MutationSettled(t.Context(), request, result)
+		if err != nil || !settled.Settled {
+			t.Fatal(settled, err)
+		}
+		wait, err := driver.Wait(t.Context(), request, result)
+		if err != nil || !wait.Done {
+			t.Fatal(wait, err)
+		}
+		channelExists = false
+		channelDeletes, policyDeletes := 0, 0
+		for _, call := range calls {
+			if call == "DELETE /v3/"+name {
+				channelDeletes++
+			}
+			if call == "DELETE /v3/"+policyName {
+				policyDeletes++
+			}
+		}
+		if channelDeletes != 1 || policyDeletes != 1 {
+			t.Fatal("duplicate native deletion", calls)
+		}
+		t.Logf("Independent native policy/channel ordered delete, force=false, JSON restart, settlement and 404 passed (%d forwarded calls)", len(calls))
+		return
 	}
 	t.Logf("Independent native LIST/GET, configuration refresh, redacted Invoke, native policy dependency and unavailable cleanup passed (%d forwarded GETs)", len(calls))
 }

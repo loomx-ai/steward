@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "28c55ac000ef95c10d3f5693abcb2ea1c8bf6681a67393b1ba55bcb1b0f95b52",
+    "checksum": "c116ab1effbcf7696074c0e87a7df80484863da577789d46ecc68ed273bcfba9",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "c3d668b52bf3e219d7bc0ccd5ee40e09bc43d52ba91354ce6ad995b331c8157e",
+  "content_checksum": "c1b79f20fecc1fe483c7753b467f80aa3f074fe349ccd6d4206180dfc2f94b2b",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -98589,6 +98589,52 @@
       "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "monitoring.projects.notificationChannels.delete",
+      "name": "delete",
+      "service": "monitoring",
+      "method": "DELETE",
+      "path": "/v3/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "force": {
+            "description": "If true, the notification channel will be deleted regardless of its use in alert policies (the policies will be updated to remove the channel). If false, this operation will fail if the notification channel is referenced by existing alerting policies.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "name": {
+            "description": "Required. The channel for which to execute the request. The format is: projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID] ",
+            "location": "path",
+            "pattern": "^projects/[^/]+/notificationChannels/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } ",
+        "id": "Empty",
+        "properties": {},
+        "type": "object"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v3",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v3/{name}",
+        "endpoint": "https://monitoring.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
+    },
+    {
       "id": "monitoring.projects.notificationChannels.get",
       "name": "get",
       "service": "monitoring",
@@ -117156,6 +117202,9 @@
         "collection": "notificationChannels",
         "read_operations": [
           "monitoring.projects.notificationChannels.get"
+        ],
+        "delete_operations": [
+          "monitoring.projects.notificationChannels.delete"
         ],
         "list_operations": [
           "monitoring.projects.notificationChannels.list"

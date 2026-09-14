@@ -41,6 +41,13 @@ func testMonitoringDependencySQLitePlanExecutionRestart(t *testing.T, logging bo
 	if logging {
 		s.loggingFilter(t, `labels.check_id="ＰＵＢＬＩＣ-ＣＨＥＣＫ" AND NOT jsonPayload.PRIVATE_STATE="ok"`)
 	}
+	testMonitoringDependencySQLiteScenario(t, s)
+}
+func TestNotificationChannelSQLitePlanExecutionRestart(t *testing.T) {
+	s, _, _, _ := channelDependencyFixture(t, "pubsub")
+	testMonitoringDependencySQLiteScenario(t, s)
+}
+func testMonitoringDependencySQLiteScenario(t *testing.T, s *monitoringDependencyScenario) {
 	ctx := t.Context()
 	dsn := filepath.Join(t.TempDir(), "monitoring.db")
 

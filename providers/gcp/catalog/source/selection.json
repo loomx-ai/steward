@@ -1045,6 +1045,7 @@
     },
     {
       "methods": [
+        "monitoring.projects.notificationChannels.delete",
         "monitoring.projects.notificationChannels.get",
         "monitoring.projects.notificationChannels.list"
       ],
@@ -4718,6 +4719,9 @@
     {
       "class": "observability.notification_channel",
       "collection": "notificationChannels",
+      "delete_operations": [
+        "monitoring.projects.notificationChannels.delete"
+      ],
       "display_name": "Cloud Monitoring notification channel",
       "list_operations": [
         "monitoring.projects.notificationChannels.list"

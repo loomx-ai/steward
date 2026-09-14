@@ -13,19 +13,30 @@ import (
 	"github.com/loomx-ai/steward/internal/core/plan"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/persistence/sqlite"
+	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 func monitoringPolicyAsset(id, project string) asset.Asset {
 	return asset.Asset{ID: asset.AssetID(id), Identity: asset.Identity{Provider: asset.ProviderGCP, Partition: "gcp", ConnectionID: "connection", NativeType: "monitoring.googleapis.com/AlertPolicy", NativeID: "//monitoring.googleapis.com/projects/" + project + "/alertPolicies/" + id}, Capabilities: asset.CapabilitySet{asset.CapabilityIndexed, asset.CapabilityActionable}}
 }
-func TestMonitoringPolicyPlansSerializeProjectWrites(t *testing.T) {
+func TestMonitoringPolicyPlansSerializeProjectWrites(t *testing.T)  { testMonitoringPlans(t, false) }
+func TestMonitoringChannelPlansSerializeProjectWrites(t *testing.T) { testMonitoringPlans(t, true) }
+func monitoringConfigurationAsset(id, project string, channel bool) asset.Asset {
+	value := monitoringPolicyAsset(id, project)
+	if channel {
+		value.Identity.NativeType = "monitoring.googleapis.com/NotificationChannel"
+		value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "/alertPolicies/", "/notificationChannels/", 1)
+	}
+	return value
+}
+func testMonitoringPlans(t *testing.T, channel bool) {
 	input := plan.Input{CleanupTaskID: "monitoring-plan"}
 	for _, id := range []string{"a", "b", "c"} {
 		p := "sample-project"
 		if id == "c" {
 			p = "other-project"
 		}
-		value := monitoringPolicyAsset(id, p)
+		value := monitoringConfigurationAsset(id, p, channel)
 		if id == "b" {
 			value.Identity.Partition = "google-cloud"
 		}
@@ -49,12 +60,12 @@ func TestMonitoringPolicyPlansSerializeProjectWrites(t *testing.T) {
 		}
 	}
 	for _, mode := range []string{"host", "collection", "extra", "query", "whitespace", "partition", "connection"} {
-		value := monitoringPolicyAsset("a", "sample-project")
+		value := monitoringConfigurationAsset("a", "sample-project", channel)
 		switch mode {
 		case "host":
 			value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "monitoring.googleapis.com", "evil.example", 1)
 		case "collection":
-			value.Identity.NativeID = strings.Replace(value.Identity.NativeID, "alertPolicies", "uptimeCheckConfigs", 1)
+			value.Identity.NativeID = strings.Replace(strings.Replace(value.Identity.NativeID, "alertPolicies", "uptimeCheckConfigs", 1), "notificationChannels", "uptimeCheckConfigs", 1)
 		case "extra":
 			value.Identity.NativeID += "/extra"
 		case "query":
@@ -72,6 +83,12 @@ func TestMonitoringPolicyPlansSerializeProjectWrites(t *testing.T) {
 	}
 }
 func TestMonitoringPolicyProjectScopePersistsThroughFailures(t *testing.T) {
+	testMonitoringScopeFailures(t, false)
+}
+func TestMonitoringChannelProjectScopePersistsThroughFailures(t *testing.T) {
+	testMonitoringScopeFailures(t, true)
+}
+func testMonitoringScopeFailures(t *testing.T, channel bool) {
 	ctx := t.Context()
 	db := filepath.Join(t.TempDir(), "monitoring.db")
 	repos, err := sqlite.Open(db, "../../../migrations")
@@ -79,8 +96,8 @@ func TestMonitoringPolicyProjectScopePersistsThroughFailures(t *testing.T) {
 		t.Fatal(err)
 	}
 	now := time.Now().UTC()
-	prior := monitoringPolicyAsset("nat-a", "sample-project")
-	next := monitoringPolicyAsset("policy-b", "sample-project")
+	prior := monitoringConfigurationAsset("nat-a", "sample-project", channel)
+	next := monitoringConfigurationAsset("policy-b", "sample-project", channel)
 	for _, value := range []asset.Asset{prior, next} {
 		if err := repos.Inventory().PutAsset(ctx, value); err != nil {
 			t.Fatal(err)
@@ -144,5 +161,40 @@ func TestMonitoringPolicyProjectScopePersistsThroughFailures(t *testing.T) {
 	}
 	if err := guardSharedConfiguration(ctx, repos, current, nil, ""); !errors.Is(err, persistence.ErrConflict) {
 		t.Fatal("stale proof survived action update", err)
+	}
+}
+
+func TestMonitoringChannelRecoveryBindsFrozenPolicies(t *testing.T) {
+	repos, err := sqlite.Open(filepath.Join(t.TempDir(), "channel-recovery.db"), "../../../migrations")
+	if err != nil {
+		t.Fatal(err)
+	}
+	channel := monitoringConfigurationAsset("channel", "sample-project", true)
+	policy := monitoringPolicyAsset("policy", "sample-project")
+	policy.Normalized = map[string]any{"_alert_policy_configuration": "reviewed"}
+	root := plan.CleanupTaskStep{ID: "channel", AssetID: channel.ID, Action: "delete", DependsOn: []plan.StepID{"policy"}, Evidence: map[string]any{plan.EvidencePlannedAsset: channel, plan.EvidenceRequiredDeletions: []plan.RequiredDeletion{{StepID: "policy", AssetID: policy.ID}}}}
+	child := plan.CleanupTaskStep{ID: "policy", AssetID: policy.ID, Action: "delete", Evidence: map[string]any{plan.EvidencePlannedAsset: policy}}
+	task := persistence.CleanupTaskAggregate{Steps: []plan.CleanupTaskStep{root, child}}
+	policy.Normalized = map[string]any{"_alert_policy_configuration": "later"}
+	if err := repos.Inventory().PutAsset(t.Context(), policy); err != nil {
+		t.Fatal(err)
+	}
+	request := contracts.ActionRequest{Asset: channel, Action: "delete"}
+	if err := routerRecoveryImpacts(t.Context(), repos, task, root, &request); err != nil || len(request.PrerequisiteDeletions) != 1 || request.PrerequisiteDeletions[0].Asset.Normalized["_alert_policy_configuration"] != "reviewed" {
+		t.Fatal(request, err)
+	}
+	first, err := sharedMutationDigest(execution.ExecutionAttempt{}, root, execution.ActionAttempt{}, task)
+	if err != nil {
+		t.Fatal(err)
+	}
+	task.Steps[1].Evidence = map[string]any{plan.EvidencePlannedAsset: policy}
+	second, err := sharedMutationDigest(execution.ExecutionAttempt{}, root, execution.ActionAttempt{}, task)
+	if err != nil || first == second {
+		t.Fatal("policy review did not invalidate channel settlement", err)
+	}
+	delete(task.Steps[1].Evidence, plan.EvidencePlannedAsset)
+	request.PrerequisiteDeletions = nil
+	if err := routerRecoveryImpacts(t.Context(), repos, task, root, &request); err == nil {
+		t.Fatal("recovery substituted live policy")
 	}
 }

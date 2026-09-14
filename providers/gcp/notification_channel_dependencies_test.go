@@ -11,14 +11,19 @@ import (
 	"github.com/loomx-ai/steward/internal/core/graph"
 )
 
-func channelDependencyFixture(t *testing.T) (*monitoringDependencyScenario, *map[string]any, *string, *int) {
+func channelDependencyFixture(t *testing.T, delivery ...string) (*monitoringDependencyScenario, *map[string]any, *string, *int) {
 	t.Helper()
-	channelRuntime, request, data, mode, deletes := monitoringScenario(t, notificationChannelType)
+	channelRuntime, request, data, mode, deletes := monitoringScenario(t, notificationChannelType, delivery...)
 	s := monitoringDependencyFixture(t)
 	policyTransport := s.r.transport
 	s.request = *request
+	s.request.Asset.Capabilities = asset.CapabilitySet{asset.CapabilityIndexed}
+	if len(delivery) > 0 && delivery[0] != "email" {
+		s.request.Asset.Capabilities = append(s.request.Asset.Capabilities, asset.CapabilityActionable)
+	}
+	s.uptimeData, s.uptimeMode, s.uptimeDeletes = data, mode, deletes
 	s.r = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
-		if req.Method != "GET" || req.URL.Host != "monitoring.googleapis.com" {
+		if req.Method != "GET" && req.Method != "DELETE" || req.URL.Host != "monitoring.googleapis.com" {
 			t.Fatal("unexpected channel dependency call", req.Method, req.URL)
 		}
 		if strings.Contains(req.URL.Path, "/notificationChannels/") {

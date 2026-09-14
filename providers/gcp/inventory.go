@@ -473,6 +473,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		state = text(data["effectiveEnablementState"])
 	}
 	actionable := known && len(kind.DeleteOperations) > 0
+	if nativeType == notificationChannelType && data["type"] == "email" {
+		actionable = false
+	}
 	if actionable {
 		_, _, err := c.resourceOperation(kind, nativeID, "DELETE")
 		actionable = err == nil

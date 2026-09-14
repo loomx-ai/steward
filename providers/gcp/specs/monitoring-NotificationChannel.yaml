@@ -59,3 +59,13 @@ fields:
     type: array
 extensions:
   hook: gcp.resource
+actions:
+  delete:
+    operation: monitoring.projects.notificationChannels.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: monitoring.projects.notificationChannels.get
+      itemsPath: $
+      identityPath: name
