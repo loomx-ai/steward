@@ -103,3 +103,15 @@ fields:
   memberDisks:
     path: storage_pool_disks
     type: array
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: compute.storagePools.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.storagePools.get
+      itemsPath: $
+      identityPath: name

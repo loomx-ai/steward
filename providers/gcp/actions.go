@@ -27,7 +27,7 @@ type action struct {
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
-	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType) || isIdentityGroup(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
+	if (value.Identity.NativeType == storagePoolType || value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType) || isIdentityGroup(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
 		return nil, groupDenied("native_connection_changed")
 	}
 	kind, ok := findType(value.Identity.NativeType)
@@ -60,6 +60,9 @@ func (a *action) DeletionCheckTimeout() time.Duration {
 
 func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
+	if a.kind.NativeType == storagePoolType {
+		return a.storagePoolPreflight(ctx, request)
+	}
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
 	}
@@ -350,6 +353,13 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 		return contracts.ActionResult{}, failure
 	}
 	operation, err := a.operationURL(data)
+	if a.kind.NativeType == storagePoolType {
+		operation, err = a.storagePoolOperation(data, request)
+		if err != nil {
+			return contracts.ActionResult{}, err
+		}
+		return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: operation, Data: map[string]any{"operation": operation, "storage_pool_receipt": storagePoolReceipt(request, operation)}, RetryAfter: 2 * time.Second}, nil
+	}
 	if isDiscovery(a.kind.NativeType) {
 		operation, err = a.discoveryOperation(data, response.RequestID)
 		if err != nil {
@@ -443,6 +453,9 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if a.kind.NativeType == storagePoolType {
+		return a.storagePoolWait(ctx, request, result)
+	}
 	if isIdentityGroup(a.kind.NativeType) {
 		return a.waitIdentityGroup(ctx, request, result)
 	}
@@ -585,6 +598,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 	return contracts.WaitResult{Done: true}, nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if a.kind.NativeType == storagePoolType {
+		return a.storagePoolReadback(ctx, request)
+	}
 	if isIdentityGroup(a.kind.NativeType) {
 		return a.identityReadback(ctx, request)
 	}

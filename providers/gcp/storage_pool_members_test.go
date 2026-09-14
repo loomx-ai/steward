@@ -199,11 +199,12 @@ func TestStoragePoolSharedProjectMembersStayWithinConnection(t *testing.T) {
 			data, _ := json.Marshal(map[string]any{"kind": "compute#storagePoolListDisks", "items": []any{foreign}})
 			return apiResponse(req, 200, string(data)), nil
 		}
-		if response, ok := storagePoolInventoryResponse(req); ok {
-			return response, nil
-		}
 		pool := storagePoolFixture("us-central1-a", "pool")
 		pool["shareSettings"] = map[string]any{"projectMap": map[string]any{"consumer-project": map[string]any{"projectId": "consumer-project"}}}
+		if strings.HasSuffix(req.URL.Path, "/storagePools/pool") {
+			data, _ := json.Marshal(pool)
+			return apiResponse(req, 200, string(data)), nil
+		}
 		data, _ := json.Marshal(map[string]any{"items": map[string]any{"zones/us-central1-a": map[string]any{"storagePools": []any{pool}}}})
 		return apiResponse(req, 200, string(data)), nil
 	})

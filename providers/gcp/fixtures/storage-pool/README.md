@@ -49,5 +49,29 @@ allowlists. Therefore member discovery accepts valid same-zone disk summaries in
 other projects, retaining sharing metadata without foreign-project API requests
 or actionable foreign assets. A dedicated test exercises that boundary. Member summaries do not replace authoritative
 Disk inventory and do not provide a transactionally frozen membership snapshot.
-Supported cleanup, independent emulator evidence and physical-isolation parity
-remain unfinished. Inventory alone does not complete the provider parity matrix.
+Independent emulator evidence and physical-isolation parity remain unfinished.
+This milestone does not complete the provider parity matrix.
+
+`storage_pool_cleanup_test.go` exercises the native delete/operation/own-readback
+protocol with synthetic responses, explicit member prerequisites, pool-only plan
+blocking, configuration/membership drift, denied reads, parent absence with a live
+disk, malformed or foreign operations, receipt restart and tampering, and native
+active-future-reservation rejection. Unknown types, Exapools and foreign-project
+members cannot issue a pool delete. Standard empty pools accept the native bare,
+relative and full-URL type forms. Snapshots are not deleted.
+`storage_pool_cleanup_worker_test.go` uses real SQLite, registered inventory,
+graph, planner and execution workers, reopening the database and runtime between
+execution rounds. It verifies ordered disk/pool deletion without replay and final
+full-scan reconciliation. The server contributor resolver test covers pool-only
+connection dispatch. These are protocol tests, not cloud or emulator recordings.
+
+The [creation guide](https://docs.cloud.google.com/compute/docs/disks/create-storage-pools)
+defines `hyperdisk-balanced` and `hyperdisk-throughput` type paths. The
+[delete API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/storagePools/delete)
+returns Compute Operation, supports requestId, and has no conditional resource-ID
+or etag field. IAM needs storagePools.delete and zoneOperations.get in addition to
+inventory permissions and independent disk get/delete permissions. The official
+error catalog documents `STORAGE_POOL_DELETE_HAS_ACTIVE_FR`; the native rejection
+is preserved without force or automatic reservation cancellation. Preflight's
+repeated complete member/own reads reduce stale-review risk but cannot freeze
+concurrent cloud changes atomically.

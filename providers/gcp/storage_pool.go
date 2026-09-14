@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+	"encoding/json"
 	"sort"
 	"strings"
 
@@ -58,6 +59,20 @@ func (c *client) enrichStoragePool(ctx context.Context, item *contracts.Inventor
 			item.NetworkReferences = append(item.NetworkReferences, id)
 		}
 	}
+	planned, err := c.storagePoolMembers(item.NativeID, members)
+	if err != nil {
+		return err
+	}
+	if storagePoolConfiguration(data) != storagePoolConfiguration(live) {
+		return groupDenied("storage_pool_configuration_changed")
+	}
+	encoded, _ := json.Marshal(planned)
+	proof := storagePoolConfiguration(data)
+	item.Normalized[poolConfigurationKey] = proof
+	item.Normalized[poolMembersKey] = string(encoded)
+	item.Normalized[poolSnapshotKey] = infraManifestHash(proof, string(encoded))
+	actionable := c.storagePoolProtection(data, planned) == ""
+	item.Actionable = &actionable
 	item.Normalized["storage_pool_disks"] = rows
 	item.Raw["storagePoolDisks"] = map[string]any{"items": rows}
 	return nil

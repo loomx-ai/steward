@@ -127,7 +127,7 @@ func TestStoragePoolSQLiteScanFailureAndReconciliation(t *testing.T) {
 			if value.ClosedAt != nil {
 				closed++
 			}
-			if value.Normalized["id"] != "9007199254740993" || value.Normalized["poolProvisionedCapacityGb"] != "20480" || value.Capabilities.Has(asset.CapabilityActionable) {
+			if value.Normalized["id"] != "9007199254740993" || value.Normalized["poolProvisionedCapacityGb"] != "20480" || !value.Capabilities.Has(asset.CapabilityActionable) {
 				t.Fatal("persisted pool metadata changed", value)
 			}
 		}

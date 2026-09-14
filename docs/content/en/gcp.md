@@ -37,7 +37,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Service | Recognized resources | Cleanup |
 | --- | --- | --- |
 | Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
-| Hyperdisk Storage Pools | Native pools, capacity/performance usage, provisioning modes and disk members | Inventory; cleanup pending |
+| Hyperdisk Storage Pools | Native pools, capacity/performance usage, provisioning modes and disk members | Inventory and reviewed cleanup |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
 | Cloud Identity | Groups and member relationships in the configured directory | Reviewed group deletion; ordinary member links can also be removed independently |
 | Resource Manager | Organization containing the connected project, discovered through its folder ancestry | Read-only; the public v3 API has no organization delete method |
@@ -149,4 +149,6 @@ Pool inventory uses native Compute aggregate lists and maps each zone to its sca
 
 Inventory requires `compute.storagePools.list` and `compute.storagePools.get` (for member lists and pool readback). Denied or partial lists fail the scan and preserve existing observations. Member discovery follows all pages of `storagePools.listDisks`, preserving disk size, used bytes, IOPS, throughput, attachments and snapshot policies. Disks must belong to the pool’s zone; pool identity is rechecked after paging. Shared disks in other projects remain member summaries, without reading or managing those projects through this connection. Failed member reads preserve the previous observations. Disk records are reconciled by their own disk scans.
 
-Reviewed pool cleanup remains unfinished. Google requires Storage Pool disks to be removed before deleting the pool, while snapshots remain separate; Exapool deletion requires the account team. See [Google's pool management guide](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools). Pooling capacity and performance does not establish equivalence to Alibaba Cloud's exclusive physical storage.
+Hyperdisk Balanced and Throughput pools support reviewed deletion. Select their local member disks separately; cleanup waits for each disk to be absent before deleting the pool. Changed configuration or membership requires a fresh scan. Snapshots remain separate. Exapools and pools with foreign-project members require external cleanup; refresh inventory after that cleanup. See [Google's pool management guide](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools).
+
+Deletion additionally requires `compute.storagePools.delete`, `compute.zoneOperations.get`, and `compute.disks.get` / `compute.disks.delete` for member cleanup. An active future reservation can block native deletion; Steward does not cancel it automatically. Avoid concurrent pool changes during cleanup: the native delete API has no conditional resource ID or etag. Pooling capacity and performance does not establish equivalence to Alibaba Cloud's exclusive physical storage.

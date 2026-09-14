@@ -347,7 +347,7 @@ func (r *computeContributorRuntime) ComputeLifecycle(_ context.Context, id asset
 }
 
 func TestGCPComputeContributorUsesExplicitConnectionAndReplacesStaticAttachments(t *testing.T) {
-	for _, nativeType := range []string{"compute.googleapis.com/InstanceGroupManager", "container.googleapis.com/Cluster", "container.googleapis.com/NodePool"} {
+	for _, nativeType := range []string{"compute.googleapis.com/StoragePool", "compute.googleapis.com/InstanceGroupManager", "container.googleapis.com/Cluster", "container.googleapis.com/NodePool"} {
 		t.Run(nativeType, func(t *testing.T) {
 			runtime := &computeContributorRuntime{}
 			resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})

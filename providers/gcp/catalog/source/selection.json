@@ -4558,6 +4558,9 @@
       ],
       "list_operations": [
         "compute.storagePools.aggregatedList"
+      ],
+      "delete_operations": [
+        "compute.storagePools.delete"
       ]
     }
   ],

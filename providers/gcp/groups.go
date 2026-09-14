@@ -547,5 +547,11 @@ func (h *computeGroups) Contribute(ctx context.Context, scope asset.ScopeID, ass
 	result.Bindings = append(result.Bindings, attachments.Bindings...)
 	result.Relationships = append(result.Relationships, attachments.Relationships...)
 	result.Unresolved = append(result.Unresolved, attachments.Unresolved...)
+	if err != nil {
+		return result, err
+	}
+	pools, err := h.contributeStoragePools(ctx, assets)
+	result.Relationships = append(result.Relationships, pools.Relationships...)
+	result.Unresolved = append(result.Unresolved, pools.Unresolved...)
 	return result, err
 }

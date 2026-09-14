@@ -61,7 +61,7 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 	case asset.ProviderGCP:
 		contributors := []governance.Contributor{gcp.NewInstanceDisks()}
 		for _, value := range assets {
-			if value.Identity.Provider != asset.ProviderGCP || (value.Identity.NativeType != "compute.googleapis.com/InstanceGroupManager" && value.Identity.NativeType != "container.googleapis.com/Cluster" && value.Identity.NativeType != "container.googleapis.com/NodePool") {
+			if value.Identity.Provider != asset.ProviderGCP || (value.Identity.NativeType != "compute.googleapis.com/StoragePool" && value.Identity.NativeType != "compute.googleapis.com/InstanceGroupManager" && value.Identity.NativeType != "container.googleapis.com/Cluster" && value.Identity.NativeType != "container.googleapis.com/NodePool") {
 				continue
 			}
 			provider, ok := runtime.(computeLifecycleRuntime)

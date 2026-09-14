@@ -373,6 +373,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		_, _, err := c.resourceOperation(kind, nativeID, "DELETE")
 		actionable = err == nil
 	}
+	if nativeType == storagePoolType {
+		actionable = false
+	} // Native member/configuration discovery enables reviewed pool cleanup.
 	sanitize := safePayload
 	if isInfra(nativeType) {
 		sanitize = safeInfraPayload

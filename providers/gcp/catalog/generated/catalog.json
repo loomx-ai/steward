@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "3953a92665ae21cc21d918b0d8f8819283cef756bd484640d41f1fa2bc804989",
+    "checksum": "f8e9ea099af9f41eaedcc97db6fdfebded1e350c3999754d4df9592a821af298",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "0df261b706bf6e059f63492d38c7fa5e8399b27c2cfd1c596645ac985bc99919",
+  "content_checksum": "ef974cca0522ab9752b325f9eec983e0b157e9ed2e1e6bc567c0316de163fc12",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -112571,6 +112571,9 @@
         "collection": "storagePools",
         "read_operations": [
           "compute.storagePools.get"
+        ],
+        "delete_operations": [
+          "compute.storagePools.delete"
         ],
         "list_operations": [
           "compute.storagePools.aggregatedList"

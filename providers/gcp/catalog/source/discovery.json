@@ -133225,6 +133225,9 @@
         ],
         "read_operations": [
           "compute.storagePools.get"
+        ],
+        "delete_operations": [
+          "compute.storagePools.delete"
         ]
       },
       "scopeKinds": [

@@ -335,10 +335,18 @@ Native `listDisks` membership is now paginated and retained with pool observatio
 including precise disk capacity/performance, attached instances and snapshot policies.
 Identity, duplicate and partial-result checks fail incomplete scans; pool readback
 rejects a replaced creation. Member disk references participate in network selection
-without adding reverse deletion dependencies. Reviewed pool cleanup and independent
-emulator verification remain unfinished.
-The original `list`, `get`, `listDisks` and `delete` methods are imported, but no
-pool delete action is registered yet. Storage Pools require their disks to be
-removed first; disk snapshots remain separate. Exapool deletion requires Google's
-account team. See [the official management guide](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools)
+without authorizing disk deletion. The native delete action is registered for reviewed
+Hyperdisk Balanced/Throughput cleanup. Authoritative prerequisites require separate
+selection and deletion of local disks; they do not change VM ownership or create a
+pool cascade. Exapools and pools with foreign-project members remain protected.
+
+Preflight compares native configuration and creation identity, reads two complete
+empty member lists and checks every known disk's own absence. Persisted operation
+receipts bind cleanup to the reviewed pool and members. Native operation completion
+and pool absence alone cannot hide a surviving known disk. Active future reservations
+remain native blockers; no force or automatic reservation cancellation is introduced.
+The delete API has no atomic resource-ID/etag condition. Independent emulator/live
+verification and physical-isolation parity remain unfinished. All 773 original
+operation objects remain unchanged; only resource action metadata was enabled.
+See [the official management guide](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools)
 and [source/test evidence](../fixtures/storage-pool/README.md).

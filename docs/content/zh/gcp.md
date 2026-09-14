@@ -37,7 +37,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | 产品 | 识别的资源 | 清理能力 |
 | --- | --- | --- |
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
-| Hyperdisk 存储池 | 原生池、容量与性能用量、预配模式和磁盘成员 | 支持盘点；清理待完成 |
+| Hyperdisk 存储池 | 原生池、容量与性能用量、预配模式和磁盘成员 | 支持盘点和经审查的清理 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
 | Cloud Identity | 配置目录中的身份组及成员关系 | 审查后删除身份组；普通成员关系也可独立删除 |
 | Resource Manager | 沿文件夹父级链发现当前项目所属的组织 | 只读；公开的 v3 API 没有组织删除方法 |
@@ -145,4 +145,6 @@ Cloud TPU 盘点需要 `tpu.locations.list`、`tpu.nodes.list`、`tpu.nodes.get`
 
 盘点需要 `compute.storagePools.list` 和 `compute.storagePools.get`（用于成员列表和池复查）。权限失败或部分列表会使扫描失败，并保留已有记录。成员发现遍历 `storagePools.listDisks` 的所有分页，保留磁盘容量、已用字节、IOPS、吞吐量、挂载实例及快照策略。成员磁盘须属于池所在可用区，分页结束后会复查池的创建身份。共享到其他项目的磁盘会保留成员摘要，当前连接不会因此读取或管理外部项目。成员读取失败时保留已有记录；磁盘资源自身仍由磁盘扫描确认存续。
 
-经审查的池清理仍待完成。Google 要求先移除 Storage Pool 中的磁盘才能删除池，快照独立保留；删除 Exapool 需要联系客户团队。参见 [Google 存储池管理指南](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools)。容量和性能池化不能据此认定与阿里云的物理资源独享完全等价。
+Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。需要单独选择池中的本地磁盘，清理会先确认每块磁盘已不存在，再删除池。配置或成员变化后需重新扫描。快照独立保留。Exapool 以及仍有跨项目成员的池需要在外部完成相应清理，之后重新扫描。参见 [Google 存储池管理指南](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools)。
+
+删除还需要 `compute.storagePools.delete`、`compute.zoneOperations.get`，成员磁盘清理需要 `compute.disks.get` / `compute.disks.delete`。有效的未来预留可能阻止原生删除，Steward 不会自动取消预留。清理期间应避免并发修改池：原生删除 API 不支持按资源 ID 或 etag 进行条件删除。容量和性能池化不能据此认定与阿里云的物理资源独享完全等价。

@@ -28,6 +28,12 @@ func TestStoragePoolNativeInventoryPagingAndScope(t *testing.T) {
 			second["storagePoolType"] = "exapool"
 			second["exapoolProvisionedCapacityGb"] = map[string]any{"hyperdiskBalancedCapacityGb": "20480"}
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				for _, pool := range []map[string]any{first, second} {
+					if strings.HasSuffix(text(pool["selfLink"]), req.URL.Path) {
+						body, _ := json.Marshal(pool)
+						return apiResponse(req, 200, string(body)), nil
+					}
+				}
 				if response, ok := storagePoolInventoryResponse(req); ok {
 					return response, nil
 				}
@@ -56,11 +62,11 @@ func TestStoragePoolNativeInventoryPagingAndScope(t *testing.T) {
 				t.Fatal("native scope", page, err)
 			}
 			for _, item := range page.Items {
-				if item.State != "READY" || item.Normalized["id"] != "9007199254740993" || item.Normalized["poolProvisionedCapacityGb"] != "20480" || object(item.Normalized["pool_usage"])["diskCount"] != "2" || item.Tags["team"] != "storage" || item.Actionable == nil || *item.Actionable {
+				if item.State != "READY" || item.Normalized["id"] != "9007199254740993" || item.Normalized["poolProvisionedCapacityGb"] != "20480" || object(item.Normalized["pool_usage"])["diskCount"] != "2" || item.Tags["team"] != "storage" || item.Actionable == nil || *item.Actionable != (item.Normalized["storagePoolType"] != "exapool") {
 					t.Fatal("native pool fields/capability lost", item)
 				}
-				if _, err := r.ResolveAction(t.Context(), "connection", asset.Asset{ID: "pool", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", NativeID: item.NativeID, NativeType: storagePoolType}, Normalized: item.Normalized}); err == nil {
-					t.Fatal("inventory enabled unreviewed pool deletion")
+				if _, err := r.ResolveAction(t.Context(), "connection", asset.Asset{ID: "pool", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", NativeID: item.NativeID, NativeType: storagePoolType}, Normalized: item.Normalized}); err != nil {
+					t.Fatal("missing pool action driver", err)
 				}
 			}
 			changed := request
@@ -156,8 +162,8 @@ func TestStoragePoolDiskReferencesAndNativeBindings(t *testing.T) {
 	}
 	// A disk keeps an ordinary dependency on its pool; no cascade is inferred.
 	definition, ok := metadata.catalog.ResourceType(storagePoolType)
-	if !ok || len(definition.REST.DeleteOperations) != 0 {
-		t.Fatal("unreviewed delete binding")
+	if !ok || !slices.Equal(definition.REST.DeleteOperations, []string{"compute.storagePools.delete"}) {
+		t.Fatal("native delete binding missing")
 	}
 }
 

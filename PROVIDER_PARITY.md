@@ -4783,3 +4783,40 @@ background evidence only, not acceptance evidence for this work.
   main chapters and all 10 original screenshots). All final checks include the
   shared-project member implementation. All 65 preexisting WIP hashes and all
   source/generated catalog files were preserved.
+
+
+## GCP reviewed Hyperdisk Storage Pool cleanup
+
+- Enabled native `compute.storagePools.delete` for reviewed Hyperdisk Balanced
+  and Throughput pools. All 773 operation objects and 194 resource rules remain
+  unchanged; resource metadata enables the existing native operation. Exapools,
+  unknown types and foreign-project members require external management.
+- Native configuration and canonical disk creation manifests bind inventory,
+  graph review, preflight and operation receipts. Complete repeated membership
+  reads detect changes; missing or changed disk inventory blocks pool cleanup.
+  Required-deletion edges require explicit disk selection and preserve independent
+  VM ownership. No disk cascade, snapshot deletion or reservation cancellation is
+  inferred. Active future reservations remain native API blockers.
+- Before DELETE, two complete empty lists and every known disk's own 404 are
+  required, together with unchanged READY pool configuration and protection labels.
+  Native operation identity/target/status, scoped polling and receipt binding are
+  checked; both pool and known disks must be independently absent for completion,
+  including after parent 404, operation expiry and database/runtime restart.
+- Real SQLite tests run registered scan, graph, plan and execution workers, reopen
+  between execution rounds, verify disk-before-pool ordering without replay and
+  reconcile final absence. Protocol tests cover omitted live members, permission
+  errors, replacement/configuration drift, foreign/shared resources, protected
+  types, altered requests/receipts and malformed/foreign native operations.
+- Official type, delete and management contracts are linked in the pool fixture
+  evidence. The pinned mockgcp still has no StoragePools service; no live cloud or
+  independent emulator was used. Native DELETE has no atomic resource-ID/etag
+  condition. Physical-isolation equivalence and all eight acceptance criteria
+  remain open; the parity matrix remains pending verification.
+- Validation passed: full isolated `go test ./... -count=1`, including Azure
+  (350.347s) and GCP (167.354s); focused GCP/server race tests (31.051s / 2.134s);
+  affected-package `go vet`; native pool/catalog/Compute/product/managed and server
+  resolver regression tests in both isolated and main workspaces. Documentation
+  checks passed for 30 isolated and 42 main chapters plus 10 original screenshots.
+  All 773 generated native operation objects compare equal to the previous commit.
+  The 23 owned files were isolated from all 65 preexisting working changes, whose
+  bytes were verified unchanged. No frontend code or live-cloud environment changed.
