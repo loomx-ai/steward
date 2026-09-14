@@ -4952,3 +4952,34 @@ background evidence only, not acceptance evidence for this work.
   unmodified. The exact server exited normally, and its temporary source checkout
   and binary were removed. Nineteen owned files preserve all 65 original working
   file hashes. No catalog/API generation or frontend changes were required.
+
+## GCP native nested state, labels and invocation timing
+
+- Corrected Cloud Run v2 Service's declared state to `terminalCondition.state`.
+  The shared native state reader now uses that nested condition when no existing
+  status/state is present, keeping inventory and action readback consistent.
+  An absent condition remains unknown, without inferring readiness from presence
+  or the `reconciling` flag. See the [Service API](https://docs.cloud.google.com/run/docs/reference/rest/v2/projects.locations.services).
+- Cloud SQL labels now resolve from `settings.userLabels`. Newly projected labels
+  also populate string-valued inventory tags, preserving existing tag entries.
+  Raw observations and native settings remain unchanged. See the
+  [Cloud SQL settings API](https://docs.cloud.google.com/sql/docs/mysql/admin-api/rest/v1/instances#Settings).
+- Removed WorkflowInvocation's unsupported `createTime` declaration; the native
+  `invocationTiming` object remains available. Execution timing is not represented
+  as resource creation time. See the [WorkflowInvocation API](https://docs.cloud.google.com/dataform/reference/rest/v1/projects.locations.repositories.workflowInvocations).
+- Extended the pinned Discovery schema checks and native HTTP inventory/query
+  regressions for all five Cloud Run condition states and missing conditions,
+  Cloud SQL tags, Dataform timing/configuration proofs and preservation of native
+  values. SQL physical-proof checks distinguish derived aliases from native
+  settings changes. Bilingual query examples cover Run failures and SQL tags.
+- This is a bounded correction of three confirmed native field mismatches; other
+  static audit candidates still need adapter-by-adapter review. All eight overall
+  acceptance criteria remain open. No new live-cloud or independent-server
+  validation is claimed for this milestone.
+- Validation passed: full `go test ./... -count=1` (GCP 173.508s,
+  Azure 352.356s); affected GCP race suite (204.812s); provider/inventory/query
+  vet; main integration (GCP 2.904s, inventory 4.489s, resourcequery 3.270s).
+  The race filter selected GCP tests only; inventory/query packages had no
+  matching race tests and were tested without a filter in main integration.
+  Docs checks passed for 30 isolated and 42 main chapters plus 10 original
+  screenshots. Eight owned files preserve all 65 original working-file hashes.

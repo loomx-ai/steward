@@ -43,7 +43,7 @@ fields:
     path: zone_id
     type: string
   labels:
-    path: labels
+    path: settings.userLabels
     type: object
 extensions:
   hook: gcp.resource

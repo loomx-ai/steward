@@ -40,6 +40,8 @@ For example:
 type = "compute.googleapis.com/StoragePool" AND properties.provisionedCapacityGiB = "20480"
 type = "compute.googleapis.com/FirewallPolicy" AND properties.shortName = "hierarchical-policy"
 type = "tpu.googleapis.com/QueuedResource" AND properties.lifecycleState = "ACTIVE"
+type = "run.googleapis.com/Service" AND state = "CONDITION_FAILED"
+type = "sqladmin.googleapis.com/Instance" AND tags.team = "analytics"
 ```
 
 Capacity and count fields represented as native 64-bit integer strings use quoted

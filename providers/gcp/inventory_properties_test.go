@@ -143,7 +143,8 @@ func TestGCPChangedPropertyPathsMatchPinnedNativeSchemas(t *testing.T) {
 		return nil, nil
 	})
 	for kind, fields := range map[string][]string{
-		"pubsub.googleapis.com/Subscription": {"state"}, "pubsub.googleapis.com/Topic": {"state"}, "sqladmin.googleapis.com/Instance": {"state"}, "compute.googleapis.com/Subnetwork": {"state"},
+		"run.googleapis.com/Service": {"state"}, dataformInvocationType: {"invocationTiming"},
+		"pubsub.googleapis.com/Subscription": {"state"}, "pubsub.googleapis.com/Topic": {"state"}, "sqladmin.googleapis.com/Instance": {"state", "labels"}, "compute.googleapis.com/Subnetwork": {"state"},
 		"iam.googleapis.com/ServiceAccount": {"projectId"}, dataprocClusterType: {"projectId"}, dataprocPolicyType: {"name", "resourceId"}, dataprocTemplateType: {"name", "resourceId"}, firewallPolicyType: {"name", "shortName"}, tpuQueueType: {"state", "lifecycleState"},
 	} {
 		definition, _ := r.productDefinition(kind)
@@ -212,5 +213,113 @@ func TestGCPPhysicalProofDistinguishesDerivedAndNativeProperties(t *testing.T) {
 	account["projectId"] = "other-project"
 	if expected == infraPhysicalVisible("iam.googleapis.com/ServiceAccount", account) {
 		t.Fatal("native project identity treated as a display alias")
+	}
+}
+
+// Native API payloads have no synthetic top-level state/labels/creation time.
+func TestGCPNestedNativeInventoryFields(t *testing.T) {
+	for _, state := range []string{"CONDITION_PENDING", "CONDITION_RECONCILING", "CONDITION_FAILED", "CONDITION_SUCCEEDED", "STATE_UNSPECIFIED", ""} {
+		t.Run("run/"+state, func(t *testing.T) {
+			data := map[string]any{"name": "projects/sample-project/locations/us-central1/services/web", "reconciling": true}
+			if state != "" {
+				data["terminalCondition"] = map[string]any{"type": "Ready", "state": state}
+			}
+			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				if req.Method != "GET" || req.URL.Host != "run.googleapis.com" || req.URL.Path != "/v2/projects/sample-project/locations/us-central1/services" {
+					t.Fatalf("unexpected native request %s", req.URL)
+				}
+				return dataformResponse(req, 200, map[string]any{"services": []any{data}}), nil
+			})
+			batch, err := r.List(t.Context(), productRequest(r, "run.googleapis.com/Service", "us-central1"))
+			if err != nil || len(batch.Items) != 1 {
+				t.Fatal(batch, err)
+			}
+			item := batch.Items[0]
+			if item.State != state || text(item.Normalized["state"]) != state || !reflect.DeepEqual(item.Normalized["terminalCondition"], data["terminalCondition"]) {
+				t.Fatal("Cloud Run condition lost or fabricated", item)
+			}
+			if state == "" {
+				if _, exists := item.Normalized["state"]; exists {
+					t.Fatal("missing condition acquired a state", item)
+				}
+			} else {
+				value := asset.Asset{Identity: asset.Identity{NativeType: item.NativeType, NativeID: item.NativeID}, State: item.State, Normalized: item.Normalized}
+				assertGCPPropertyQuery(t, r, []asset.Asset{value}, item.NativeType, "/services/web", `state = "`+state+`" AND properties.state = "`+state+`"`)
+			}
+			if object(object(item.Raw["resource"])["data"])["state"] != nil {
+				t.Fatal("native observation was changed", item.Raw)
+			}
+		})
+	}
+	t.Run("sql labels", func(t *testing.T) {
+		data := map[string]any{"name": "db", "region": "us-central1", "state": "RUNNABLE", "settings": map[string]any{"userLabels": map[string]any{"team": "analytics"}}}
+		r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+			if req.Method != "GET" || req.URL.Host != "sqladmin.googleapis.com" || req.URL.Path != "/sql/v1beta4/projects/sample-project/instances" {
+				t.Fatalf("unexpected native request %s", req.URL)
+			}
+			return dataformResponse(req, 200, map[string]any{"items": []any{data}}), nil
+		})
+		batch, err := r.List(t.Context(), productRequest(r, "sqladmin.googleapis.com/Instance", "us-central1"))
+		if err != nil || len(batch.Items) != 1 {
+			t.Fatal(batch, err)
+		}
+		item := batch.Items[0]
+		if item.Tags["team"] != "analytics" || object(item.Normalized["labels"])["team"] != "analytics" || !reflect.DeepEqual(item.Normalized["settings"], data["settings"]) {
+			t.Fatal("SQL labels missing or native settings changed", item)
+		}
+		value := asset.Asset{Identity: asset.Identity{NativeType: item.NativeType, NativeID: item.NativeID}, State: item.State, Tags: item.Tags, Normalized: item.Normalized}
+		assertGCPPropertyQuery(t, r, []asset.Asset{value}, item.NativeType, "/instances/db", `state = "RUNNABLE" AND tags.team = "analytics"`)
+		proof := infraPhysicalVisible(item.NativeType, data)
+		if proof != infraPhysicalVisible(item.NativeType, item.Normalized) {
+			t.Fatal("derived SQL labels changed the native physical proof")
+		}
+		changed := roundTripDataformJSON(t, item.Normalized)
+		object(object(changed["settings"])["userLabels"])["team"] = "changed"
+		if proof == infraPhysicalVisible(item.NativeType, changed) {
+			t.Fatal("native SQL label change bypassed the physical proof")
+		}
+		if object(object(item.Raw["resource"])["data"])["labels"] != nil {
+			t.Fatal("native observation was changed", item.Raw)
+		}
+	})
+	t.Run("dataform invocation timing", func(t *testing.T) {
+		s := newDataformScenario(t)
+		r := protocolRuntime(t, s.transport(t))
+		count := 0
+		for _, value := range s.inventory(t, r, "us-central1") {
+			if value.Identity.NativeType != dataformInvocationType {
+				continue
+			}
+			count++
+			original := s.resources[strings.TrimPrefix(value.Identity.NativeID, "//dataform.googleapis.com/")]
+			if value.Normalized["createTime"] != nil || !reflect.DeepEqual(value.Normalized["invocationTiming"], original["invocationTiming"]) {
+				t.Fatal("invocation timing became a resource creation time", value.Normalized)
+			}
+			if err := dataformSameResource(dataformInvocationType, value.Normalized, original); err != nil {
+				t.Fatal("native invocation proof changed", err)
+			}
+		}
+		if count == 0 {
+			t.Fatal("missing invocation fixture")
+		}
+		expression, err := resourcequery.Parse(`properties.createTime = "2025-01-01T00:00:00Z"`)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := expression.Validate([]asset.ResourceKind{r.resourceKind(dataformInvocationType)}); err == nil {
+			t.Fatal("nonexistent creation time still advertised as queryable")
+		}
+	})
+}
+
+func TestGCPNestedFieldsPreserveNativePrecedence(t *testing.T) {
+	if got := resourceState(map[string]any{"state": "ACTIVE", "terminalCondition": map[string]any{"state": "CONDITION_FAILED"}}); got != "ACTIVE" {
+		t.Fatal("native lifecycle state replaced", got)
+	}
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) { t.Fatal("unexpected API"); return nil, nil })
+	item := contracts.InventoryItem{NativeType: "sqladmin.googleapis.com/Instance", Tags: map[string]string{"team": "native"}, Normalized: map[string]any{"settings": map[string]any{"userLabels": map[string]any{"team": "derived", "cost": "", "invalid": true}}}}
+	r.projectProperties(&item)
+	if !reflect.DeepEqual(item.Tags, map[string]string{"team": "native", "cost": ""}) {
+		t.Fatal("existing tags changed or non-string label became a tag", item.Tags)
 	}
 }

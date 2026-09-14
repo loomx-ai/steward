@@ -34,7 +34,7 @@ fields:
     path: name
     type: string
   state:
-    path: status
+    path: terminalCondition.state
     type: string
   projectId:
     path: project_id

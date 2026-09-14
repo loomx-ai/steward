@@ -38,6 +38,8 @@ Steward 支持标准 Google Cloud 端点的服务账号 JSON 密钥，不会使�
 type = "compute.googleapis.com/StoragePool" AND properties.provisionedCapacityGiB = "20480"
 type = "compute.googleapis.com/FirewallPolicy" AND properties.shortName = "hierarchical-policy"
 type = "tpu.googleapis.com/QueuedResource" AND properties.lifecycleState = "ACTIVE"
+type = "run.googleapis.com/Service" AND state = "CONDITION_FAILED"
+type = "sqladmin.googleapis.com/Instance" AND tags.team = "analytics"
 ```
 
 容量、数量等原生 64 位整数字符串需要使用引号包裹查询值。防火墙策略的 `properties.name` 是原生数字名称，`properties.shortName` 是显示名称。TPU 排队资源保留结构化的 `properties.state`，可用 `properties.lifecycleState` 查询其中的状态值。各资源类型仍可使用顶层 `state` 字段搜索状态。

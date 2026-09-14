@@ -111,6 +111,17 @@ func (r *Runtime) projectProperties(item *contracts.InventoryItem) {
 	for field, value := range properties {
 		item.Normalized[field] = value
 	}
+	// Native nested labels become both query properties and inventory tags.
+	for key, value := range object(properties["labels"]) {
+		if label, ok := value.(string); ok {
+			if item.Tags == nil {
+				item.Tags = map[string]string{}
+			}
+			if _, exists := item.Tags[key]; !exists {
+				item.Tags[key] = label
+			}
+		}
+	}
 }
 
 func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
@@ -435,7 +446,7 @@ func resourceState(data map[string]any) string {
 			return state
 		}
 	}
-	return ""
+	return text(object(data["terminalCondition"])["state"])
 }
 
 func (c *client) canonicalName(value string) string {
