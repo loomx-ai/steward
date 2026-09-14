@@ -1977,7 +1977,8 @@ func isNetworkFoundation(value asset.Asset) bool {
 		"ACS::VPN::VpnGateway",
 		"ACS::CEN::TransitRouter",
 		"AWS::EC2::VPC",
-		"AWS::EC2::Subnet":
+		"AWS::EC2::Subnet",
+		"compute.googleapis.com/NamedSet":
 		return true
 	default:
 		return false

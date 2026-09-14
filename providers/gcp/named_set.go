@@ -1,6 +1,7 @@
 package gcp
 
 const namedSetType = "compute.googleapis.com/NamedSet"
+const namedSetDelete = "compute.routers.deleteNamedSet"
 const namedSetGet = "compute.routers.getNamedSet"
 const namedSetList = "compute.routers.listNamedSets"
 const namedSetRouterID = "_named_set_router_id"

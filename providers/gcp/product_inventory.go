@@ -405,6 +405,8 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if target.ParentID != "" {
 			if nativeType == namedSetType {
 				item.Normalized[namedSetRouterID] = target.ParentUID
+				actionable := firewallNumericID(target.ParentUID) && text(item.Normalized["fingerprint"]) != ""
+				item.Actionable = &actionable
 			}
 			if nativeType == routePolicyType {
 				item.Normalized[routePolicyRouterID] = target.ParentUID

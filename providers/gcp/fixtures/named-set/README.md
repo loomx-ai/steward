@@ -4,7 +4,7 @@ Native method and transitive schema objects are retained without alteration in
 `catalog/source/discovery.json`, from the [Compute v1 Discovery document](https://www.googleapis.com/discovery/v1/apis/compute/v1/rest),
 revision `20260908`, full-response SHA-256
 `aa1078267f6ad9c82274e6c62572bae328b0de11c6f08861f20488b6617afda7`.
-GET/LIST extend the existing router-policy fragment; previous method/schema
+GET/LIST/DELETE extend the existing router-policy fragment; previous method/schema
 objects and generated operations are unchanged.
 
 - [listNamedSets](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/listNamedSets)
@@ -46,14 +46,17 @@ ID with refreshed data. Shared tests also rerun route-policy behavior.
 
 The [pinned mockgcp Router implementation](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/673a61419de1b8e4f7d26070ce20dde2daa61da8/mockgcp/mockcompute/routersv1.go)
 implements parent Get/Insert/Patch/Update/Delete and embeds the unimplemented
-Router server; the inspected file has no named-set GET/LIST handlers. These
+Router server; the inspected file has no named-set GET/LIST/DELETE handlers. These
 fixtures are protocol/application evidence, not an independent named-set
 emulator or live-cloud verification.
 
 The native [deleteNamedSet API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteNamedSet)
-exists, but independent deletion, executable dependency ordering and parent-router
-cascade review remain unfinished. No delete action
-is exposed by this inventory milestone; this is not full route-policy parity.
+uses POST to the containing router with `namedSet` and optional UUID `requestId`
+query parameters, no request body, and a regional Compute Operation response.
+The revision-pinned native method is retained unchanged with its transitive
+Operation schema. All 784 previous generated operations are unchanged; the
+catalog now has 785 operations and 199 resource rules. Router cascade remains
+unfinished; this is not full route-policy parity.
 
 ## Policy reference syntax and graph evidence
 
@@ -79,3 +82,43 @@ scan/graph/cleanup/reconciliation scenario persists the exact policy-to-set
 that policy cleanup retains both router and set. An unresolved-reference scan
 preserves the earlier policy observation and freshness. These are
 parser/application tests, not independent cloud backend acceptance.
+
+## Native deletion and execution evidence
+
+[Native set management](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/bgp-route-policies/update-named-sets)
+forbids deletion while any policy on the router references a set. Preflight lists
+all policy pages and reads every policy detail, including unattached policies
+outside local inventory selections. Invalid or incomplete lists, repeated tokens,
+duplicate names, denied/missing details and unresolved CEL fail the check. Fresh
+router identity reads bracket the set/reference reads. The reviewed opaque
+fingerprint and native configuration must still match. The delete API has no
+fingerprint precondition; concurrent provider conflicts fail rather than bypassing
+native reference protection.
+
+Policy and set deletion share the existing regional operation state machine.
+Set receipts bind the native set, connection, parent incarnation, reviewed
+configuration, request UUID and regional operation. They reject policy detach
+phases. Retries preserve request IDs, operation DONE alone is insufficient, and
+expired operation records require independent absence readback. Permission errors,
+resource replacements and mismatched receipt echoes cannot establish completion.
+
+The shared protocol matrix runs against both APIs. Added cases cover all policy
+pages, literal/community references, non-reference strings, unresolved expressions,
+reintroduced references, malformed pagination, native Invoke scope/query binding
+and set element configuration changes. Actual SQLite scan/graph/planning/execution
+jobs verify set-only plans are blocked by known outside references, simultaneous
+policy/set cleanup orders BGP detach then policy deletion then set deletion, and
+set jobs invoked early do not mutate the cloud. Each asynchronous checkpoint
+reopens the database and resolves a fresh provider. One BGP PATCH, one policy
+DELETE and one set DELETE are observed, with final tombstones and retained router.
+Independent set-only cleanup and policy-only set retention are also tested.
+
+These tests are protocol/application evidence. The inspected mockgcp router
+implementation remains insufficient for independent named-set backend acceptance;
+no live-cloud acceptance is claimed. Computed CEL names and parent-router cascade
+review remain unfinished.
+
+The IAM permission sections of the official REST pages were checked for
+`routers.get`, `routers.getNamedSet`, `routers.listRoutePolicies`,
+`routers.getRoutePolicy`, `routers.deleteNamedSet` and `regionOperations.get`.
+Their published `compute.*` permission names match the bilingual setup guidance.

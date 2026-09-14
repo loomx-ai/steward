@@ -37,7 +37,7 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 199 explicit resource rules and 784 selected methods
+The current catalog has 199 explicit resource rules and 785 selected methods
 from 58 selected Discovery fragments at 56 official URLs and one pinned Cloud SDK archive (Network Services and Security Center Management). Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
@@ -400,8 +400,11 @@ see [protocol and emulator evidence](../fixtures/route-policy/README.md).
 Cloud Router named sets are independently discovered through native
 `listNamedSets` and wrapped `getNamedSet`, with prefix/community types, CEL
 expression elements, fingerprint and parent-router identity. Inventory shares
-scope/identity binding with route policies. Named-set deletion and policy
-reference ordering remain unfinished; see [native evidence](../fixtures/named-set/README.md).
+scope/identity binding with route policies. Native `deleteNamedSet` shares the
+regional operation/receipt state machine with policy deletion. Every router-local
+policy is reread before deleting a set; known dependencies order selected policy
+cleanup before set cleanup. Parent-router cascade remains unfinished; see
+[native evidence](../fixtures/named-set/README.md).
 
 Policy-to-set relationships use the pinned official CEL Go parser
 `cel.dev/cel-go v0.32.0` to inspect native `prefixSets` / `communitySets` call

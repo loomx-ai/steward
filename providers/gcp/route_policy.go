@@ -33,8 +33,8 @@ func (c *client) routerComponentOperation(kind, id, method string) (catalog.Oper
 	}
 	if kind == namedSetType {
 		collection, query, operation = "namedSets", "namedSet", namedSetGet
-		if method != "GET" {
-			return catalog.Operation{}, nil, groupDenied("named_set_method_unsupported")
+		if method == "DELETE" {
+			operation = namedSetDelete
 		}
 	} else if kind != routePolicyType {
 		return catalog.Operation{}, nil, groupDenied("router_component_type_invalid")

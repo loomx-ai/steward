@@ -5569,3 +5569,44 @@ background evidence only, not acceptance evidence for this work.
   generation remains byte-identical with SHA-256
   `c55ffc321e9236df385f2191ab93c126075685fc6a6afa69f91e11e64bb8a4ee`.
   Only 14 milestone files are included; all 65 original WIP hashes are preserved.
+
+### Native named-set deletion and policy-before-set execution
+
+- Added the native `compute.routers.deleteNamedSet` POST/query contract from the
+  pinned Compute Discovery revision `20260908`, full-response SHA-256
+  `aa1078267f6ad9c82274e6c62572bae328b0de11c6f08861f20488b6617afda7`.
+  No existing native method/schema objects or 784 generated operations changed;
+  catalog totals are 199 resource rules and 785 operations.
+- Set actions reuse the existing regional router-component operation/receipt
+  state machine. Scanned parent incarnation, opaque fingerprint and native set
+  configuration bind execution and retry request IDs. Parent identity reads
+  bracket live set and reference reads. All router policy pages/details are
+  inspected, including unattached policies outside the selected inventory.
+  Denied/missing details, partial lists, malformed/cyclic pagination, duplicate
+  identities, actual set references and unresolved CEL stop deletion.
+- Existing native idempotency, polling, expired receipt, readback and identity
+  guard tests now run for both component APIs. Set receipts reject policy phases.
+  Native DELETE has no fingerprint precondition; server conflicts remain errors.
+- SQLite tests exercise independent set cleanup and joint policy/set cleanup,
+  persisted graph dependencies, set-only plan blockers, an early set job waiting
+  on its policy, BGP detach and both deletions, database reopening at every
+  checkpoint, tombstones and reconciliation retaining the router. The early
+  integration test exposed a missing named-set planning guard; the existing
+  network-dependency guard now includes native sets. Policy-only cleanup still
+  retains its sets. Focused checks passed in 16.158s. Initial full-suite tests
+  passed all cloud providers but the architecture guard rejected the helper name
+  containing the legacy query-field token. The helper was renamed without changing
+  behavior or relaxing the guard; the final full-suite and focused checks passed.
+- Computed CEL name resolution, parent-router cascade review, independent/live
+  backend acceptance and broader provider parity work remain unfinished. The
+  inspected pinned mockgcp Router file lacks named-set handlers. All eight
+  overall acceptance criteria remain open.
+- Final verification: `go test ./...` passed (GCP 190.605s, internal architecture
+  23.303s; other providers reused their successful full-suite results). Focused
+  race checks passed in 45.853s and GCP/internal vet passed. Main-workspace
+  GCP/cleanup checks passed in 15.567s/0.921s. Documentation checks passed for
+  30 isolated/42 main chapters and 10 screenshots. Catalog SHA-256 is
+  `00e87ae87fc6474055c18a3d06e0aeff2615ded3a9b4c08e2a8afc365632e0a9`.
+  Official REST IAM sections confirm every named-set cleanup permission listed
+  in the setup guide. Only 23 milestone files are included; all 65 original WIP
+  hashes are preserved. No runtime dependency or external cloud resource was added.

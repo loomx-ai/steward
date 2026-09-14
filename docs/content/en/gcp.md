@@ -100,7 +100,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
 | Hyperdisk Storage Pools | Native pools, capacity/performance usage, provisioning modes and disk members | Inventory and reviewed cleanup |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
-| Cloud Router named sets | Per-router prefix/community sets, CEL elements and fingerprint | Inventory; deletion and policy-reference ordering pending |
+| Cloud Router named sets | Per-router prefix/community sets, CEL elements and fingerprint | Reviewed deletion after referring policies |
 | Cloud Router BGP policies | Per-router import/export policies, CEL terms and fingerprint | Independent native policy deletion with BGP reference detachment |
 | Cloud Identity | Groups and member relationships in the configured directory | Reviewed group deletion; ordinary member links can also be removed independently |
 | Resource Manager | Organization containing the connected project, discovered through its folder ancestry | Read-only; the public v3 API has no organization delete method |
@@ -308,7 +308,7 @@ the region and router. Failed or incomplete reads preserve earlier observations.
 Filter with `type = "compute.googleapis.com/NamedSet"` and
 `properties.type = "NAMED_SET_TYPE_PREFIX"` (or `NAMED_SET_TYPE_COMMUNITY`).
 See [native set details](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/getNamedSet).
-Named-set deletion and policy-reference ordering remain pending. Google
+Google
 [prevents removal of a set referenced by any policy on its router](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/bgp-route-policies/update-named-sets).
 
 Route-policy scans parse native CEL calls to `prefixSets('name')` and
@@ -317,4 +317,16 @@ both policies and named sets in a scan to see these graph relationships.
 Deleting a policy preserves its referenced sets. Strings and comments are not
 treated as calls, and expressions are not executed. Malformed CEL or a computed
 set name that cannot be resolved stops that policy scan shard and preserves
-previous observations. Named-set deletion and its execution ordering remain pending.
+previous observations.
+
+Named-set cleanup checks every policy on its router, including policies outside
+local scan selections. A known referring policy outside the cleanup selection
+blocks the plan. When both are selected, the policy is deleted first; deleting
+only a policy retains its sets. Deletion needs `compute.routers.get`,
+`compute.routers.listRoutePolicies`, `compute.routers.getRoutePolicy`,
+`compute.routers.getNamedSet`, `compute.routers.deleteNamedSet` and
+`compute.regionOperations.get`. Steward verifies the scanned set revision and
+router identity, waits for the regional operation, and confirms the set is absent.
+Incomplete policy reads, unresolved references, changed resources or provider
+conflicts stop cleanup. See the [native deletion API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteNamedSet).
+Parent-router cascade review remains unfinished.

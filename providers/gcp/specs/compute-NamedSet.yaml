@@ -59,3 +59,13 @@ relationships:
 - type: depends_on
   targetType: compute.googleapis.com/Router
   targetIdPath: refs_compute_googleapis_com_Router
+actions:
+  delete:
+    operation: compute.routers.deleteNamedSet
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.routers.getNamedSet
+      itemsPath: resource
+      identityPath: name

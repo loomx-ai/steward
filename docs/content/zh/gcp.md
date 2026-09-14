@@ -65,7 +65,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
 | Hyperdisk 存储池 | 原生池、容量与性能用量、预配模式和磁盘成员 | 支持盘点和经审查的清理 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
-| Cloud Router 命名集合 | 各路由器的前缀/社区集合、CEL 元素和指纹 | 支持发现；删除及策略引用排序待实现 |
+| Cloud Router 命名集合 | 各路由器的前缀/社区集合、CEL 元素和指纹 | 审查引用后删除，先清理引用它的策略 |
 | Cloud Router BGP 策略 | 各路由器的导入/导出策略、CEL 条款和指纹 | 支持解除 BGP 引用后原生独立删除 |
 | Cloud Identity | 配置目录中的身份组及成员关系 | 审查后删除身份组；普通成员关系也可独立删除 |
 | Resource Manager | 沿文件夹父级链发现当前项目所属的组织 | 只读；公开的 v3 API 没有组织删除方法 |
@@ -248,11 +248,19 @@ Steward 在各路由器所属地域分页列举策略，并逐条读取详情；
 可用 `type = "compute.googleapis.com/NamedSet"` 和
 `properties.type = "NAMED_SET_TYPE_PREFIX"`（或 `NAMED_SET_TYPE_COMMUNITY`）筛选。
 详见[原生集合详情 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/getNamedSet)。
-命名集合删除和策略引用排序仍待实现。Google
+Google
 [禁止删除仍被同一路由器任意策略引用的集合](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/bgp-route-policies/update-named-sets)。
 
 策略扫描会解析原生 CEL 中的 `prefixSets('name')` 和 `communitySets('name')` 调用，
 建立对同一路由器内命名集合的依赖。将策略和集合一同扫描，可在关系图中查看这些
 依赖；删除策略会保留其引用的集合。字符串、注释不视为调用，表达式不会被执行。
 CEL 语法错误或无法解析的计算所得集合名会使该策略扫描分片失败，并保留此前观测。
-命名集合删除及其执行排序仍待实现。
+清理命名集合时会检查所属路由器的所有策略，包括未纳入本地扫描的策略。如果已知
+引用策略不在清理范围内，计划会显示阻塞；同时选择策略和集合时，先删除策略。
+只删除策略会保留集合。清理需要 `compute.routers.get`、
+`compute.routers.listRoutePolicies`、`compute.routers.getRoutePolicy`、
+`compute.routers.getNamedSet`、`compute.routers.deleteNamedSet` 和
+`compute.regionOperations.get` 权限。Steward 校验扫描时的集合版本和路由器身份，
+等待地域操作完成，并确认集合已不存在。策略读取不完整、引用无法解析、资源发生
+变化或云端冲突都会停止清理。详见[原生删除 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteNamedSet)。
+父路由器的级联清理审查仍待补齐。

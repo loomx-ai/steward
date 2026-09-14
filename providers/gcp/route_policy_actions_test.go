@@ -12,6 +12,8 @@ import (
 )
 
 type routePolicyActionFixture struct {
+	policies       []map[string]any
+	policyLists    int
 	mode           string
 	patches        int
 	patchStatus    string
@@ -29,14 +31,26 @@ type routePolicyActionFixture struct {
 }
 
 func routePolicyActionRuntime(t *testing.T) (*Runtime, contracts.ActionRequest, *routePolicyActionFixture) {
+	return routerComponentActionRuntime(t, routePolicyType)
+}
+
+func routerComponentActionRuntime(t *testing.T, nativeType string) (*Runtime, contracts.ActionRequest, *routePolicyActionFixture) {
 	t.Helper()
 	parentID := "//compute.googleapis.com/projects/sample-project/regions/us-central1/routers/router-a"
 	policy := routePolicyFixture("policy-a")
+	collection, query, get, remove, parentKey := "routePolicies", "policy", "getRoutePolicy", "deleteRoutePolicy", routePolicyRouterID
+	if nativeType == namedSetType {
+		policy = namedSetFixture("set-a")
+		collection, query, get, remove, parentKey = "namedSets", "namedSet", "getNamedSet", "deleteNamedSet", namedSetRouterID
+	}
+	componentName := text(policy["name"])
 	fixture := &routePolicyActionFixture{exists: true, status: "RUNNING", policy: policy, parent: map[string]any{"name": "router-a", "id": "1001", "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/routers/router-a", "bgpPeers": []any{map[string]any{"name": "peer-a", "importPolicies": []any{"other-policy"}, "exportPolicies": []any{"export-policy"}}}}}
 	normalized := cloneParameters(policy)
-	normalized[routePolicyRouterID] = "1001"
-	normalized[routePolicyPeers], _ = routePolicyBGPPeers(fixture.parent)
-	request := contracts.ActionRequest{Asset: asset.Asset{ID: "policy", Identity: asset.Identity{Provider: asset.ProviderGCP, Partition: "gcp", ConnectionID: "connection", NativeType: routePolicyType, NativeID: parentID + "/routePolicies/policy-a"}, Normalized: normalized}, Action: "delete", IdempotencyKey: "delete-policy"}
+	normalized[parentKey] = "1001"
+	if nativeType == routePolicyType {
+		normalized[routePolicyPeers], _ = routePolicyBGPPeers(fixture.parent)
+	}
+	request := contracts.ActionRequest{Asset: asset.Asset{ID: "policy", Identity: asset.Identity{Provider: asset.ProviderGCP, Partition: "gcp", ConnectionID: "connection", NativeType: nativeType, NativeID: parentID + "/" + collection + "/" + componentName}, Normalized: normalized}, Action: "delete", IdempotencyKey: "delete-policy"}
 	runtime := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if req.URL.Host != "compute.googleapis.com" {
 			t.Fatal("unexpected host", req.URL)
@@ -46,10 +60,59 @@ func routePolicyActionRuntime(t *testing.T) (*Runtime, contracts.ActionRequest, 
 			if strings.HasSuffix(req.URL.Path, "/regions/us-central1/routers") {
 				return dataformResponse(req, 200, map[string]any{"items": []any{fixture.parent}}), nil
 			}
-			if strings.HasSuffix(req.URL.Path, "/routers/router-a/listRoutePolicies") {
+			if nativeType == namedSetType && strings.HasSuffix(req.URL.Path, "/listRoutePolicies") {
+				fixture.policyLists++
+				if req.URL.Query().Get("maxResults") != "500" || req.URL.Query().Get("namedSet") != "" {
+					t.Fatal("invalid policy list", req.URL)
+				}
+				if fixture.mode == "list-denied" {
+					return apiResponse(req, 403, `{}`), nil
+				}
+				if fixture.mode == "list-missing" {
+					return apiResponse(req, 404, `{}`), nil
+				}
+				result := map[string]any{}
+				values := []any{}
+				for _, policy := range fixture.policies {
+					values = append(values, map[string]any{"name": policy["name"]})
+				}
+				result["result"] = values
+				switch fixture.mode {
+				case "list-partial":
+					result["warning"] = map[string]any{"code": "PARTIAL_SUCCESS"}
+				case "list-invalid":
+					result["result"] = nil
+				case "list-token":
+					result["nextPageToken"] = 123
+				case "list-cycle":
+					result["result"] = []any{}
+					result["nextPageToken"] = "next"
+				case "list-pages":
+					if req.URL.Query().Get("pageToken") == "" {
+						result["result"] = []any{}
+						result["nextPageToken"] = "next"
+					}
+				}
+				return dataformResponse(req, 200, result), nil
+			}
+			if nativeType == namedSetType && strings.HasSuffix(req.URL.Path, "/getRoutePolicy") {
+				if fixture.mode == "reference-denied" {
+					return apiResponse(req, 403, `{}`), nil
+				}
+				if fixture.mode == "reference-missing" {
+					return apiResponse(req, 404, `{}`), nil
+				}
+				for _, policy := range fixture.policies {
+					if req.URL.Query().Get("policy") == policy["name"] {
+						return dataformResponse(req, 200, map[string]any{"resource": policy}), nil
+					}
+				}
+				t.Fatal("unexpected policy detail", req.URL)
+			}
+			if strings.HasSuffix(req.URL.Path, "/routers/router-a/"+map[string]string{routePolicyType: "listRoutePolicies", namedSetType: "listNamedSets"}[nativeType]) {
 				data := map[string]any{}
 				if fixture.exists {
-					data["result"] = []any{map[string]any{"name": "policy-a"}}
+					data["result"] = []any{map[string]any{"name": componentName}}
 				}
 				return dataformResponse(req, 200, data), nil
 			}
@@ -62,8 +125,8 @@ func routePolicyActionRuntime(t *testing.T) (*Runtime, contracts.ActionRequest, 
 				}
 				return dataformResponse(req, 200, fixture.parent), nil
 			}
-			if strings.HasSuffix(req.URL.Path, "/routers/router-a/getRoutePolicy") {
-				if req.URL.Query().Get("policy") != "policy-a" {
+			if strings.HasSuffix(req.URL.Path, "/routers/router-a/"+get) {
+				if req.URL.Query().Get(query) != componentName {
 					t.Fatal("wrong policy", req.URL)
 				}
 				if fixture.mode == "policy-denied" {
@@ -133,10 +196,10 @@ func routePolicyActionRuntime(t *testing.T) (*Runtime, contracts.ActionRequest, 
 			fixture.patchOperation = map[string]any{"name": "bgp-operation", "operationType": "patch", "status": "PENDING", "targetLink": fixture.parent["selfLink"], "targetId": "1001", "clientOperationId": req.URL.Query().Get("requestId")}
 			return dataformResponse(req, 200, fixture.patchOperation), nil
 		}
-		if req.Method == "POST" && strings.HasSuffix(req.URL.Path, "/routers/router-a/deleteRoutePolicy") {
+		if req.Method == "POST" && strings.HasSuffix(req.URL.Path, "/routers/router-a/"+remove) {
 			fixture.deletes++
 			fixture.requestIDs = append(fixture.requestIDs, req.URL.Query().Get("requestId"))
-			if req.URL.Query().Get("policy") != "policy-a" || len(req.URL.Query()) != 2 {
+			if req.URL.Query().Get(query) != componentName || len(req.URL.Query()) != 2 {
 				t.Fatal("wrong delete parameters", req.URL)
 			}
 			if req.Body != nil {
@@ -158,10 +221,10 @@ func routePolicyActionRuntime(t *testing.T) (*Runtime, contracts.ActionRequest, 
 			case "delete-retry":
 				return apiResponse(req, 503, `{}`), nil
 			}
-			fixture.operation = map[string]any{"name": "operation-a", "status": "PENDING", "operationType": "deleteRoutePolicy", "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/operations/operation-a", "targetLink": fixture.parent["selfLink"], "targetId": "1001", "clientOperationId": req.URL.Query().Get("requestId"), "httpErrorStatusCode": 0}
+			fixture.operation = map[string]any{"name": "operation-a", "status": "PENDING", "operationType": remove, "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/operations/operation-a", "targetLink": fixture.parent["selfLink"], "targetId": "1001", "clientOperationId": req.URL.Query().Get("requestId"), "httpErrorStatusCode": 0}
 			switch fixture.mode {
 			case "operation-policy-target":
-				fixture.operation["targetLink"] = text(fixture.parent["selfLink"]) + "/getRoutePolicy?policy=policy-a"
+				fixture.operation["targetLink"] = text(fixture.parent["selfLink"]) + "/" + get + "?" + query + "=" + componentName
 			case "operation-target":
 				fixture.operation["targetLink"] = "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/routers/other"
 			case "operation-scope":
@@ -177,7 +240,7 @@ func routePolicyActionRuntime(t *testing.T) (*Runtime, contracts.ActionRequest, 
 			case "operation-empty":
 				fixture.operation = map[string]any{}
 			case "operation-minimal":
-				fixture.operation = map[string]any{"name": "operation-a", "status": "PENDING", "operationType": "deleteRoutePolicy"}
+				fixture.operation = map[string]any{"name": "operation-a", "status": "PENDING", "operationType": remove}
 			}
 			return dataformResponse(req, 200, fixture.operation), nil
 		}
@@ -188,9 +251,16 @@ func routePolicyActionRuntime(t *testing.T) (*Runtime, contracts.ActionRequest, 
 }
 
 func TestRoutePolicyDeleteNativeOperationAndRestart(t *testing.T) {
+	testRouterComponentDeleteNativeOperationAndRestart(t, routePolicyType)
+}
+func TestNamedSetDeleteNativeOperationAndRestart(t *testing.T) {
+	testRouterComponentDeleteNativeOperationAndRestart(t, namedSetType)
+}
+
+func testRouterComponentDeleteNativeOperationAndRestart(t *testing.T, nativeType string) {
 	for _, mode := range []string{"", "operation-minimal", "operation-policy-target"} {
 		t.Run(mode, func(t *testing.T) {
-			r, request, fixture := routePolicyActionRuntime(t)
+			r, request, fixture := routerComponentActionRuntime(t, nativeType)
 			fixture.mode = mode
 			parentBefore, _ := json.Marshal(fixture.parent)
 			driver, err := r.ResolveAction(t.Context(), "connection", request.Asset)
@@ -249,9 +319,16 @@ func TestRoutePolicyDeleteNativeOperationAndRestart(t *testing.T) {
 }
 
 func TestRoutePolicyDeleteGuardsAndFailures(t *testing.T) {
+	testRouterComponentDeleteGuardsAndFailures(t, routePolicyType)
+}
+func TestNamedSetDeleteGuardsAndFailures(t *testing.T) {
+	testRouterComponentDeleteGuardsAndFailures(t, namedSetType)
+}
+
+func testRouterComponentDeleteGuardsAndFailures(t *testing.T, nativeType string) {
 	for _, mode := range []string{"parent-denied", "parent-missing", "policy-denied", "parent-recreated", "parent-identity", "policy-changed", "review-missing", "fingerprint-missing", "delete-denied", "delete-in-use", "delete-missing", "operation-target", "operation-scope", "operation-request", "operation-state", "operation-error", "operation-http-error", "operation-empty"} {
 		t.Run(mode, func(t *testing.T) {
-			r, request, fixture := routePolicyActionRuntime(t)
+			r, request, fixture := routerComponentActionRuntime(t, nativeType)
 			fixture.mode = mode
 			switch mode {
 			case "parent-recreated":
@@ -262,7 +339,7 @@ func TestRoutePolicyDeleteGuardsAndFailures(t *testing.T) {
 				fixture.policy = cloneParameters(fixture.policy)
 				fixture.policy["fingerprint"] = "ZnAy"
 			case "review-missing":
-				delete(request.Asset.Normalized, routePolicyRouterID)
+				delete(request.Asset.Normalized, map[string]string{routePolicyType: routePolicyRouterID, namedSetType: namedSetRouterID}[nativeType])
 			case "fingerprint-missing":
 				delete(request.Asset.Normalized, "fingerprint")
 			}
@@ -284,7 +361,14 @@ func TestRoutePolicyDeleteGuardsAndFailures(t *testing.T) {
 }
 
 func TestRoutePolicyDeleteIdempotencyAndAlreadyAbsent(t *testing.T) {
-	r, request, fixture := routePolicyActionRuntime(t)
+	testRouterComponentDeleteIdempotencyAndAlreadyAbsent(t, routePolicyType)
+}
+func TestNamedSetDeleteIdempotencyAndAlreadyAbsent(t *testing.T) {
+	testRouterComponentDeleteIdempotencyAndAlreadyAbsent(t, namedSetType)
+}
+
+func testRouterComponentDeleteIdempotencyAndAlreadyAbsent(t *testing.T, nativeType string) {
+	r, request, fixture := routerComponentActionRuntime(t, nativeType)
 	driver, err := r.ResolveAction(t.Context(), "connection", request.Asset)
 	if err != nil {
 		t.Fatal(err)
@@ -327,9 +411,16 @@ func TestRoutePolicyDeleteIdempotencyAndAlreadyAbsent(t *testing.T) {
 }
 
 func TestRoutePolicyDeleteReceiptAndPollingBoundaries(t *testing.T) {
+	testRouterComponentDeleteReceiptAndPollingBoundaries(t, routePolicyType)
+}
+func TestNamedSetDeleteReceiptAndPollingBoundaries(t *testing.T) {
+	testRouterComponentDeleteReceiptAndPollingBoundaries(t, namedSetType)
+}
+
+func testRouterComponentDeleteReceiptAndPollingBoundaries(t *testing.T, nativeType string) {
 	for _, mode := range []string{"receipt-policy", "receipt-connection", "receipt-operation", "receipt-key", "poll-denied", "poll-name", "poll-target", "poll-request", "poll-type", "poll-region", "poll-zone", "poll-error", "poll-empty-error", "parent-recreated", "replacement"} {
 		t.Run(mode, func(t *testing.T) {
-			r, request, fixture := routePolicyActionRuntime(t)
+			r, request, fixture := routerComponentActionRuntime(t, nativeType)
 			driver, err := r.ResolveAction(t.Context(), "connection", request.Asset)
 			if err != nil {
 				t.Fatal(err)
@@ -385,7 +476,14 @@ func TestRoutePolicyDeleteReceiptAndPollingBoundaries(t *testing.T) {
 }
 
 func TestRoutePolicyActionIdentityAndTermOrder(t *testing.T) {
-	r, request, fixture := routePolicyActionRuntime(t)
+	testRouterComponentActionIdentityAndTermOrder(t, routePolicyType)
+}
+func TestNamedSetActionIdentityAndTermOrder(t *testing.T) {
+	testRouterComponentActionIdentityAndTermOrder(t, namedSetType)
+}
+
+func testRouterComponentActionIdentityAndTermOrder(t *testing.T, nativeType string) {
+	r, request, fixture := routerComponentActionRuntime(t, nativeType)
 	if _, err := r.ResolveAction(t.Context(), "other", request.Asset); err == nil {
 		t.Fatal("cross-connection resolution accepted")
 	}
@@ -405,6 +503,9 @@ func TestRoutePolicyActionIdentityAndTermOrder(t *testing.T) {
 		if _, err := driver.Execute(t.Context(), copy); err == nil || fixture.reads != before {
 			t.Fatal("changed action reached cloud", err)
 		}
+	}
+	if nativeType == namedSetType {
+		return
 	}
 	first := object(array(fixture.policy["terms"])[0])
 	second := map[string]any{"priority": 20, "actions": []any{map[string]any{"expression": "drop()"}}}

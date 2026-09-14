@@ -439,8 +439,11 @@ resources:
     native inventory with prefix/community types, CEL elements and fingerprint.
     CEL literal prefix/community set references now create policy-to-set dependency
     edges; malformed or computed references fail the scan without closing history.
-    Named-set deletion, computed-name resolution, executable dependency ordering, parent
-    cascade and independent/live acceptance remain unfinished. Router deletion is not
+    Native named-set deletion now checks every live policy, preserves request identity,
+    persists regional operations and verifies absence. Known policy references block
+    set-only plans; selecting both orders policy deletion before set deletion.
+    Computed-name resolution, parent cascade and independent/live acceptance remain
+    unfinished. Router deletion is not
     policy deletion parity.
 - alicloud: ACS::CEN::TrafficMarkingPolicy
   spec: providers/alicloud/specs/cen-traffic-marking-policy.yaml

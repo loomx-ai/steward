@@ -1031,7 +1031,8 @@
         "compute.routers.deleteRoutePolicy",
         "compute.routers.patch",
         "compute.routers.getNamedSet",
-        "compute.routers.listNamedSets"
+        "compute.routers.listNamedSets",
+        "compute.routers.deleteNamedSet"
       ]
     }
   ],
@@ -4659,7 +4660,9 @@
       "list_operations": [
         "compute.routers.listNamedSets"
       ],
-      "delete_operations": []
+      "delete_operations": [
+        "compute.routers.deleteNamedSet"
+      ]
     }
   ],
   "sdk_documents": [

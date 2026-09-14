@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -32,25 +33,55 @@ func TestRoutePolicyNamedSetDependencyGraphAndRetainedSet(t *testing.T) {
 }
 
 func routePolicySQLiteCleanup(t *testing.T, bgp, setReferences bool) {
+	routerComponentSQLiteCleanup(t, routePolicyType, bgp, setReferences, false)
+}
+func TestNamedSetSQLiteScanCleanupRestartAndReconciliation(t *testing.T) {
+	routerComponentSQLiteCleanup(t, namedSetType, false, false, false)
+}
+func TestNamedSetSQLitePolicyBeforeSetDeletion(t *testing.T) {
+	routerComponentSQLiteCleanup(t, routePolicyType, true, true, true)
+}
+func routerComponentSQLiteCleanup(t *testing.T, nativeType string, bgp, setReferences, deleteSet bool) {
 	ctx := t.Context()
-	r, request, fixture := routePolicyActionRuntime(t)
+	r, request, fixture := routerComponentActionRuntime(t, nativeType)
 	if bgp {
 		routePolicyAttachFixture(t, &request, fixture)
 	}
-	kinds := []asset.ResourceKindID{r.resourceKind(routerType).ID, r.resourceKind(routePolicyType).ID}
+	kinds := []asset.ResourceKindID{r.resourceKind(routerType).ID, r.resourceKind(nativeType).ID}
+	setExists, setDeletes, setStatus := true, 0, "RUNNING"
+	var setOperation map[string]any
 	if setReferences {
 		object(array(fixture.policy["terms"])[0])["match"] = map[string]any{"expression": "destination.inAnyRange(prefixSets('local'))"}
 		kinds = append(kinds, r.resourceKind(namedSetType).ID)
 		original := r.transport
 		r = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 			if req.Method == "GET" && strings.HasSuffix(req.URL.Path, "/listNamedSets") {
+				if !setExists {
+					return apiResponse(req, 200, `{}`), nil
+				}
 				return apiResponse(req, 200, `{"result":[{"name":"local"}]}`), nil
 			}
 			if req.Method == "GET" && strings.HasSuffix(req.URL.Path, "/getNamedSet") {
 				if req.URL.Query().Get("namedSet") != "local" {
 					t.Fatal("foreign set request", req.URL)
 				}
+				if !setExists {
+					return apiResponse(req, 404, `{}`), nil
+				}
 				return dataformResponse(req, 200, map[string]any{"resource": namedSetFixture("local")}), nil
+			}
+			if req.Method == "POST" && strings.HasSuffix(req.URL.Path, "/deleteNamedSet") {
+				if !deleteSet || fixture.exists || fixture.deletes != 1 || req.URL.Query().Get("namedSet") != "local" || req.URL.Query().Get("requestId") == "" {
+					t.Fatal("set deleted before policy or wrong request", req.URL)
+				}
+				setDeletes++
+				setOperation = map[string]any{"name": "set-operation", "status": "PENDING", "operationType": "deleteNamedSet", "targetLink": fixture.parent["selfLink"], "targetId": "1001", "clientOperationId": req.URL.Query().Get("requestId")}
+				return dataformResponse(req, 200, setOperation), nil
+			}
+			if req.Method == "GET" && strings.HasSuffix(req.URL.Path, "/operations/set-operation") {
+				result := cloneParameters(setOperation)
+				result["status"] = setStatus
+				return dataformResponse(req, 200, result), nil
 			}
 			return original.RoundTrip(req)
 		})
@@ -114,7 +145,7 @@ func routePolicySQLiteCleanup(t *testing.T, bgp, setReferences bool) {
 	}
 	var policy, parent, set asset.Asset
 	for _, value := range page.Items {
-		if value.Identity.NativeType == routePolicyType {
+		if value.Identity.NativeType == nativeType {
 			policy = value
 		} else if value.Identity.NativeType == namedSetType {
 			set = value
@@ -122,7 +153,7 @@ func routePolicySQLiteCleanup(t *testing.T, bgp, setReferences bool) {
 			parent = value
 		}
 	}
-	if policy.ID == "" || !policy.Capabilities.Has(asset.CapabilityActionable) || policy.Normalized[routePolicyRouterID] != "1001" {
+	if policy.ID == "" || !policy.Capabilities.Has(asset.CapabilityActionable) || policy.Normalized[map[string]string{routePolicyType: routePolicyRouterID, namedSetType: namedSetRouterID}[nativeType]] != "1001" {
 		t.Fatal("scan did not capture deletable policy review", policy)
 	}
 	if bgp {
@@ -147,9 +178,28 @@ func routePolicySQLiteCleanup(t *testing.T, bgp, setReferences bool) {
 		}
 	}
 	planner := cleanup.NewService(repositories, registry, cleanup.WithClock(func() time.Time { return now }))
-	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: policy.ID}}, CreatedBy: "test"})
-	if err != nil || len(task.Steps) != 1 || task.Steps[0].AssetID != policy.ID {
+	selectors := []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: policy.ID}}
+	expectedSteps := 1
+	if deleteSet {
+		setOnly, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: set.ID}}, CreatedBy: "test"})
+		foundBlocker := false
+		for _, blocker := range setOnly.Task.Blockers {
+			if blocker.Code == plan.BlockCrossScopeDependency && blocker.AssetID == set.ID {
+				foundBlocker = true
+			}
+		}
+		if err != nil || !foundBlocker {
+			t.Fatal("referenced set-only plan was not blocked", setOnly, err)
+		}
+		selectors = append(selectors, plan.CleanupSelector{Kind: plan.SelectorAsset, AssetID: set.ID})
+		expectedSteps = 2
+	}
+	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: selectors, CreatedBy: "test"})
+	if err != nil || len(task.Steps) != expectedSteps || task.Steps[0].AssetID != policy.ID {
 		t.Fatal("independent policy plan", task, err)
+	}
+	if deleteSet && (task.Steps[1].AssetID != set.ID || !slices.Contains(task.Steps[1].DependsOn, task.Steps[0].ID)) {
+		t.Fatal("policy-before-set dependency absent", task.Steps)
 	}
 	attempt, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{CleanupTaskID: task.Task.ID, ConnectionID: "connection", RequestedBy: "test", IdempotencyKey: "policy-sqlite", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}})
 	if err != nil {
@@ -158,6 +208,29 @@ func routePolicySQLiteCleanup(t *testing.T, bgp, setReferences bool) {
 	job, err := repositories.Jobs().ClaimNext(ctx, "policy-worker", now, time.Minute, execution.JobExecute)
 	if err != nil {
 		t.Fatal(err)
+	}
+	var setJob execution.Job
+	if deleteSet {
+		second, err := repositories.Jobs().ClaimNext(ctx, "policy-worker", now, time.Minute, execution.JobExecute)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if job.TargetKey == string(set.ID) {
+			setJob = job
+			job = second
+		} else {
+			setJob = second
+		}
+		if job.TargetKey != string(policy.ID) || setJob.TargetKey != string(set.ID) {
+			t.Fatal("wrong jobs", job, setJob)
+		}
+		handler := cleanup.NewExecutionHandler(planner, cleanup.ActionResolverFunc(func(ctx context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
+			return r.ResolveAction(ctx, value.Identity.ConnectionID, value)
+		}))
+		var retry *cleanup.RetryError
+		if err := handler.Handle(ctx, setJob); !errors.As(err, &retry) || setDeletes != 0 || fixture.deletes != 0 {
+			t.Fatal("set ran before policy", err)
+		}
 	}
 	states := []execution.ActionStatus{execution.ActionWaiting, execution.ActionWaiting, execution.ActionReadingBack, execution.ActionSucceeded}
 	if bgp {
@@ -199,20 +272,71 @@ func routePolicySQLiteCleanup(t *testing.T, bgp, setReferences bool) {
 		if want == execution.ActionSucceeded && err != nil || want != execution.ActionSucceeded && !errors.As(err, &retry) {
 			t.Fatal("restarted worker", round, err)
 		}
-		phase := "route_policy_delete"
+		phase := map[string]string{routePolicyType: "route_policy_delete", namedSetType: "named_set_delete"}[nativeType]
 		deletes := 1
 		if bgp && round < 2 {
 			phase = routePolicyDetach
 			deletes = 0
 		}
 		actions, err := repositories.Executions().ListActions(ctx, attempt.ID)
-		if err != nil || len(actions) != 1 || actions[0].Status != want || actions[0].ProviderResult["phase"] != phase {
+		var current execution.ActionAttempt
+		for _, action := range actions {
+			if action.AssetID == policy.ID {
+				current = action
+			}
+		}
+		if err != nil || current.Status != want || current.ProviderResult["phase"] != phase {
 			t.Fatal("persisted native phase", round, actions, err)
 		}
 		if fixture.deletes != deletes || bgp && fixture.patches != 1 {
 			t.Fatal("restart repeated mutation", round, fixture.deletes, fixture.patches)
 		}
 		now = now.Add(3 * time.Second)
+	}
+	if deleteSet {
+		for round, want := range []execution.ActionStatus{execution.ActionWaiting, execution.ActionWaiting, execution.ActionReadingBack, execution.ActionSucceeded} {
+			repositories, err = sqlite.Open(db, "../../migrations")
+			if err != nil {
+				t.Fatal(err)
+			}
+			fresh := protocolRuntime(t, transport.RoundTrip)
+			planner = cleanup.NewService(repositories, identityRegistry(t, fresh), cleanup.WithClock(func() time.Time { return now }))
+			handler := cleanup.NewExecutionHandler(planner, cleanup.ActionResolverFunc(func(ctx context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
+				return fresh.ResolveAction(ctx, value.Identity.ConnectionID, value)
+			}))
+			if round == 1 {
+				setStatus = "DONE"
+			}
+			if round == 2 {
+				setExists = false
+			}
+			err = handler.Handle(ctx, setJob)
+			var retry *cleanup.RetryError
+			if want == execution.ActionSucceeded && err != nil || want != execution.ActionSucceeded && !errors.As(err, &retry) {
+				t.Fatal("set worker restart", round, err)
+			}
+			actions, err := repositories.Executions().ListActions(ctx, attempt.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var current execution.ActionAttempt
+			for _, action := range actions {
+				if action.AssetID == set.ID {
+					current = action
+				}
+			}
+			if current.Status != want || current.ProviderResult["phase"] != "named_set_delete" || setDeletes != 1 || fixture.deletes != 1 || fixture.patches != 1 {
+				t.Fatal("set checkpoint or mutation count", round, current, setDeletes)
+			}
+			now = now.Add(3 * time.Second)
+		}
+		deletedSet, err := repositories.Inventory().GetAsset(ctx, set.ID)
+		if err != nil || deletedSet.DeletedAt == nil {
+			t.Fatal("missing set tombstone", deletedSet, err)
+		}
+		if err := repositories.Jobs().Complete(ctx, setJob.ID, "policy-worker", execution.JobSucceeded, "", now); err != nil {
+			t.Fatal(err)
+		}
 	}
 	finished, err := repositories.Executions().GetExecution(ctx, attempt.ID)
 	if err != nil || finished.Status != execution.ExecutionSucceeded {
@@ -232,10 +356,10 @@ func routePolicySQLiteCleanup(t *testing.T, bgp, setReferences bool) {
 	now = now.Add(time.Minute)
 	scan()
 	page, err = repositories.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10})
-	if err != nil || len(page.Items) != len(kinds)-1 || fixture.deletes != 1 {
+	if err != nil || len(page.Items) != len(kinds)-expectedSteps || fixture.deletes != 1 {
 		t.Fatal("reconciliation changed parent or restored deleted policy", page, err)
 	}
-	if setReferences {
+	if setReferences && !deleteSet {
 		retainedSet, err := repositories.Inventory().GetAsset(ctx, set.ID)
 		if err != nil || retainedSet.ClosedAt != nil || retainedSet.DeletedAt != nil {
 			t.Fatal("referenced set was deleted", retainedSet, err)

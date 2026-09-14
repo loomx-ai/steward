@@ -130163,6 +130163,58 @@
               "$ref": "RoutersListNamedSets"
             },
             "httpMethod": "GET"
+          },
+          "compute.routers.deleteNamedSet": {
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute"
+            ],
+            "flatPath": "projects/{project}/regions/{region}/routers/{router}/deleteNamedSet",
+            "response": {
+              "$ref": "Operation"
+            },
+            "description": "Deletes Named Set",
+            "parameters": {
+              "region": {
+                "description": "Name of the region for this request.",
+                "required": true,
+                "type": "string",
+                "location": "path",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+              },
+              "requestId": {
+                "location": "query",
+                "type": "string",
+                "description": "An optional request ID to identify requests. Specify a unique request ID so\nthat if you must retry your request, the server will know to ignore the\nrequest if it has already been completed.\n\nFor example, consider a situation where you make an initial request and\nthe request times out. If you make the request again with the same\nrequest ID, the server can check if original operation with the same\nrequest ID was received, and if so, will ignore the second request. This\nprevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be\na valid UUID with the exception that zero UUID is not supported\n(00000000-0000-0000-0000-000000000000)."
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "required": true,
+                "location": "path",
+                "type": "string",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))"
+              },
+              "namedSet": {
+                "type": "string",
+                "location": "query",
+                "description": "The Named Set name for this request. Name must conform to RFC1035"
+              },
+              "router": {
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+                "location": "path",
+                "required": true,
+                "type": "string",
+                "description": "Name of the Router resource where Named Set is defined."
+              }
+            },
+            "parameterOrder": [
+              "project",
+              "region",
+              "router"
+            ],
+            "id": "compute.routers.deleteNamedSet",
+            "httpMethod": "POST",
+            "path": "projects/{project}/regions/{region}/routers/{router}/deleteNamedSet"
           }
         },
         "schemas": {
@@ -136126,7 +136178,9 @@
         "list_operations": [
           "compute.routers.listNamedSets"
         ],
-        "delete_operations": []
+        "delete_operations": [
+          "compute.routers.deleteNamedSet"
+        ]
       }
     }
   ]

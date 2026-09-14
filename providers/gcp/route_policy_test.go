@@ -109,8 +109,8 @@ func testRouterComponentInventory(t *testing.T, nativeType string) {
 					}
 					if nativeType == namedSetType {
 						nativeKind, _ := findType(nativeType)
-						if item.Actionable != nil && *item.Actionable || len(nativeKind.DeleteOperations) != 0 {
-							t.Fatal("invented named-set cleanup support")
+						if item.Actionable == nil || !*item.Actionable || !slices.Equal(nativeKind.DeleteOperations, []string{namedSetDelete}) {
+							t.Fatal("native named-set cleanup support missing")
 						}
 						if item.Normalized[namedSetRouterID] == nil {
 							t.Fatal("missing parent incarnation")

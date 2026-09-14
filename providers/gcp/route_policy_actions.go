@@ -29,31 +29,38 @@ func routePolicyConfiguration(data map[string]any) string {
 	return firewallDigest(value)
 }
 
-func (a *action) routePolicyActionIdentity(request contracts.ActionRequest) error {
-	if request.Action != "delete" || request.Asset.ID == "" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || !gcpPartition(a.identity.Partition) || a.kind.NativeType != routePolicyType || request.IdempotencyKey == "" || len(request.Parameters) != 0 || len(request.LifecycleImpacts) != 0 || len(request.PrerequisiteDeletions) != 0 {
+func (a *action) routerComponentActionIdentity(request contracts.ActionRequest) error {
+	if request.Action != "delete" || request.Asset.ID == "" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || !gcpPartition(a.identity.Partition) || !isRouterComponent(a.kind.NativeType) || request.IdempotencyKey == "" || len(request.Parameters) != 0 || len(request.LifecycleImpacts) != 0 || len(request.PrerequisiteDeletions) != 0 {
 		return groupDenied("route_policy_action_changed")
 	}
-	if _, _, err := a.client.routePolicyOperation(a.identity.NativeID, "DELETE"); err != nil {
+	if _, _, err := a.client.routerComponentOperation(a.kind.NativeType, a.identity.NativeID, "DELETE"); err != nil {
 		return err
 	}
-	if err := routePolicyData(request.Asset.Normalized, last(a.identity.NativeID)); err != nil {
+	if err := routerComponentData(a.kind.NativeType, request.Asset.Normalized, last(a.identity.NativeID)); err != nil {
 		return err
 	}
 	// Fingerprints are opaque native revision tokens, compared without rewriting.
-	if text(request.Asset.Normalized["fingerprint"]) == "" || !firewallNumericID(text(request.Asset.Normalized[routePolicyRouterID])) {
+	if text(request.Asset.Normalized["fingerprint"]) == "" || !firewallNumericID(text(request.Asset.Normalized[a.routerComponentIncarnationKey()])) {
 		return groupDenied("route_policy_review_missing")
+	}
+	if a.kind.NativeType == namedSetType {
+		return nil
 	}
 	_, _, err := routePolicyBGPReview(request.Asset.Normalized, last(a.identity.NativeID))
 	return err
 }
 
-func (a *action) routePolicyParent() string {
-	return strings.TrimSuffix(a.identity.NativeID, "/routePolicies/"+last(a.identity.NativeID))
+func (a *action) routerComponentParent() string {
+	parent, _, _ := strings.Cut(a.identity.NativeID, "/routePolicies/")
+	if a.kind.NativeType == namedSetType {
+		parent, _, _ = strings.Cut(a.identity.NativeID, "/namedSets/")
+	}
+	return parent
 }
 
-func (a *action) checkRoutePolicyParent(ctx context.Context, request contracts.ActionRequest) (bool, error) {
+func (a *action) checkRouterComponentParent(ctx context.Context, request contracts.ActionRequest) (bool, error) {
 	kind, _ := findType(routerType)
-	endpoint, err := a.client.resourceURL(kind, a.routePolicyParent())
+	endpoint, err := a.client.resourceURL(kind, a.routerComponentParent())
 	if err != nil {
 		return false, err
 	}
@@ -61,34 +68,42 @@ func (a *action) checkRoutePolicyParent(ctx context.Context, request contracts.A
 	if err != nil {
 		return false, contracts.DependencyReadError(err)
 	}
-	if data["name"] != last(a.routePolicyParent()) || a.client.canonicalName(text(data["selfLink"])) != a.client.canonicalName(a.routePolicyParent()) || data["id"] != request.Asset.Normalized[routePolicyRouterID] {
+	if data["name"] != last(a.routerComponentParent()) || a.client.canonicalName(text(data["selfLink"])) != a.client.canonicalName(a.routerComponentParent()) || data["id"] != request.Asset.Normalized[a.routerComponentIncarnationKey()] {
 		return false, groupDenied("route_policy_router_recreated_or_changed")
+	}
+	if a.kind.NativeType == namedSetType {
+		return false, nil
 	}
 	return a.routePolicyBGPState(request, data)
 }
 
-func (a *action) routePolicyReadback(ctx context.Context, request contracts.ActionRequest) (read contracts.ReadbackResult, err error) {
+func (a *action) routerComponentReadback(ctx context.Context, request contracts.ActionRequest) (read contracts.ReadbackResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
-	if err := a.routePolicyActionIdentity(request); err != nil {
+	if err := a.routerComponentActionIdentity(request); err != nil {
 		return read, err
 	}
 	if request.ExecutionResult != nil {
-		if _, err := a.routePolicyReceipt(request, *request.ExecutionResult); err != nil {
+		if _, err := a.routerComponentReceipt(request, *request.ExecutionResult); err != nil {
 			return read, err
 		}
 	}
-	if _, err := a.checkRoutePolicyParent(ctx, request); err != nil {
+	if _, err := a.checkRouterComponentParent(ctx, request); err != nil {
 		return read, err
 	}
-	live, err := a.client.routePolicyRead(ctx, a.identity.NativeID)
+	live, err := a.client.routerComponentRead(ctx, a.kind.NativeType, a.identity.NativeID)
 	if err != nil && !isNotFound(err) {
 		return read, err
 	}
-	if err == nil && routePolicyConfiguration(live) != routePolicyConfiguration(request.Asset.Normalized) {
+	if err == nil && a.routerComponentConfiguration(live) != a.routerComponentConfiguration(request.Asset.Normalized) {
 		return read, groupDenied("route_policy_configuration_changed")
 	}
 	read.Exists = err == nil
-	attached, err := a.checkRoutePolicyParent(ctx, request)
+	if a.kind.NativeType == namedSetType {
+		if err := a.namedSetUnreferenced(ctx); err != nil {
+			return read, err
+		}
+	}
+	attached, err := a.checkRouterComponentParent(ctx, request)
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
@@ -99,16 +114,16 @@ func (a *action) routePolicyReadback(ctx context.Context, request contracts.Acti
 	return read, nil
 }
 
-func (a *action) routePolicyPreflight(ctx context.Context, request contracts.ActionRequest) (contracts.PreflightResult, error) {
-	read, err := a.routePolicyReadback(ctx, request)
+func (a *action) routerComponentPreflight(ctx context.Context, request contracts.ActionRequest) (contracts.PreflightResult, error) {
+	read, err := a.routerComponentReadback(ctx, request)
 	return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists}, err
 }
 
-func (a *action) routePolicyRequestID(request contracts.ActionRequest) string {
-	return googleRequestID(request.IdempotencyKey + "/" + string(a.identity.ConnectionID) + "/" + a.identity.NativeID + "/" + text(request.Asset.Normalized[routePolicyRouterID]) + "/" + routePolicyConfiguration(request.Asset.Normalized) + "/" + firewallDigest(request.Asset.Normalized[routePolicyPeers]))
+func (a *action) routerComponentRequestID(request contracts.ActionRequest) string {
+	return googleRequestID(request.IdempotencyKey + "/" + string(a.identity.ConnectionID) + "/" + a.identity.NativeID + "/" + text(request.Asset.Normalized[a.routerComponentIncarnationKey()]) + "/" + a.routerComponentConfiguration(request.Asset.Normalized) + "/" + firewallDigest(request.Asset.Normalized[routePolicyPeers]))
 }
 
-func (a *action) routePolicyOperationURL(name string) (string, error) {
+func (a *action) routerComponentOperationURL(name string) (string, error) {
 	if !segmentPattern.MatchString(name) || name == "." || name == ".." {
 		return "", groupDenied("route_policy_operation_name_invalid")
 	}
@@ -124,8 +139,8 @@ func (a *action) routePolicyOperationURL(name string) (string, error) {
 	return bound.URL, err
 }
 
-func (a *action) routePolicyOperationResult(request contracts.ActionRequest, data map[string]any, operationType, requestID, stage string) (string, error) {
-	operation, err := a.routePolicyOperationURL(text(data["name"]))
+func (a *action) routerComponentOperationResult(request contracts.ActionRequest, data map[string]any, operationType, requestID, stage string) (string, error) {
+	operation, err := a.routerComponentOperationURL(text(data["name"]))
 	if err != nil {
 		return "", err
 	}
@@ -134,7 +149,7 @@ func (a *action) routePolicyOperationResult(request contracts.ActionRequest, dat
 	}
 	// Subresource mutations can identify their containing router. Optional native
 	// echoes must agree; the receipt also binds the exact policy and request ID.
-	if value, exists := data["targetLink"]; exists && a.client.canonicalName(text(value)) != a.client.canonicalName(a.routePolicyParent()) && (stage == routePolicyDetach || a.client.canonicalName(text(value)) != a.client.canonicalName(a.endpoint)) {
+	if value, exists := data["targetLink"]; exists && a.client.canonicalName(text(value)) != a.client.canonicalName(a.routerComponentParent()) && (stage == routePolicyDetach || a.client.canonicalName(text(value)) != a.client.canonicalName(a.endpoint)) {
 		return "", groupDenied("route_policy_operation_target_changed")
 	}
 	if value, exists := data["region"]; exists && a.client.canonicalName(text(value)) != a.client.canonicalName(strings.TrimSuffix(operation, "/operations/"+text(data["name"]))) {
@@ -143,7 +158,7 @@ func (a *action) routePolicyOperationResult(request contracts.ActionRequest, dat
 	if value, exists := data["zone"]; exists && value != "" {
 		return "", groupDenied("route_policy_operation_region_changed")
 	}
-	if value, exists := data["targetId"]; exists && value != request.Asset.Normalized[routePolicyRouterID] {
+	if value, exists := data["targetId"]; exists && value != request.Asset.Normalized[a.routerComponentIncarnationKey()] {
 		return "", groupDenied("route_policy_operation_target_changed")
 	}
 	if value, exists := data["clientOperationId"]; exists && value != a.routePolicyNativeRequestID(request, stage) {
@@ -171,16 +186,16 @@ func (a *action) routePolicyOperationResult(request contracts.ActionRequest, dat
 	return operation, nil
 }
 
-func (a *action) routePolicyStage(request contracts.ActionRequest, stage, operation, initial, operationType string) map[string]any {
-	return map[string]any{"phase": stage, "resource": a.identity.NativeID, "connection": string(a.identity.ConnectionID), "configuration": routePolicyConfiguration(request.Asset.Normalized), "parent_id": request.Asset.Normalized[routePolicyRouterID], "bgp_review": firewallDigest(request.Asset.Normalized[routePolicyPeers]), "request_id": a.routePolicyNativeRequestID(request, stage), "operation": operation, "initial_operation": initial, "operation_type": operationType}
+func (a *action) routerComponentStage(request contracts.ActionRequest, stage, operation, initial, operationType string) map[string]any {
+	return map[string]any{"phase": stage, "resource": a.identity.NativeID, "connection": string(a.identity.ConnectionID), "configuration": a.routerComponentConfiguration(request.Asset.Normalized), "parent_id": request.Asset.Normalized[a.routerComponentIncarnationKey()], "bgp_review": firewallDigest(request.Asset.Normalized[routePolicyPeers]), "request_id": a.routePolicyNativeRequestID(request, stage), "operation": operation, "initial_operation": initial, "operation_type": operationType}
 }
 
-func (a *action) routePolicyReceipt(request contracts.ActionRequest, result contracts.ActionResult) (string, error) {
+func (a *action) routerComponentReceipt(request contracts.ActionRequest, result contracts.ActionResult) (string, error) {
 	if len(result.Data) == 0 && result.ProviderOperationID == "" {
 		return "", nil
 	}
 	stage := text(result.Data["phase"])
-	if stage != routePolicyDetach && stage != "route_policy_delete" {
+	if stage != a.routerComponentDeletePhase() && (a.kind.NativeType != routePolicyType || stage != routePolicyDetach) {
 		return "", groupDenied("route_policy_receipt_phase_invalid")
 	}
 	for _, endpoint := range []string{result.ProviderOperationID, text(result.Data["operation"])} {
@@ -188,20 +203,20 @@ func (a *action) routePolicyReceipt(request contracts.ActionRequest, result cont
 		if err != nil {
 			return "", groupDenied("route_policy_receipt_invalid")
 		}
-		expected, err := a.routePolicyOperationURL(last(parsed.Path))
+		expected, err := a.routerComponentOperationURL(last(parsed.Path))
 		if err != nil || expected != endpoint {
 			return "", groupDenied("route_policy_receipt_invalid")
 		}
 	}
 	operation := text(result.Data["operation"])
-	if text(result.Data["operation_type"]) == "" || firewallDigest(result.Data) != firewallDigest(a.routePolicyStage(request, stage, operation, result.ProviderOperationID, text(result.Data["operation_type"]))) {
+	if text(result.Data["operation_type"]) == "" || firewallDigest(result.Data) != firewallDigest(a.routerComponentStage(request, stage, operation, result.ProviderOperationID, text(result.Data["operation_type"]))) {
 		return "", groupDenied("route_policy_receipt_changed")
 	}
 	return operation, nil
 }
 
-func (a *action) executeRoutePolicy(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
-	attached, err := a.checkRoutePolicyParent(ctx, request)
+func (a *action) executeRouterComponent(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
+	attached, err := a.checkRouterComponentParent(ctx, request)
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
@@ -212,14 +227,14 @@ func (a *action) executeRoutePolicy(ctx context.Context, request contracts.Actio
 		return a.detachRoutePolicy(ctx, request)
 	}
 	parameters := cloneParameters(a.deleteParameters)
-	parameters["requestId"] = a.routePolicyRequestID(request)
+	parameters["requestId"] = a.routerComponentRequestID(request)
 	bound, err := catalog.BindREST(a.deleteOperation, parameters)
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
 	response, err := a.client.requestResult(ctx, bound.Method, bound.URL, nil, bound.Body)
 	if isNotFound(err) {
-		read, err := a.routePolicyReadback(ctx, request)
+		read, err := a.routerComponentReadback(ctx, request)
 		if err != nil {
 			return contracts.ActionResult{}, err
 		}
@@ -231,18 +246,18 @@ func (a *action) executeRoutePolicy(ctx context.Context, request contracts.Actio
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
-	operation, err := a.routePolicyOperationResult(request, response.Data, "", response.RequestID, "route_policy_delete")
+	operation, err := a.routerComponentOperationResult(request, response.Data, "", response.RequestID, a.routerComponentDeletePhase())
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
-	return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: operation, Data: a.routePolicyStage(request, "route_policy_delete", operation, operation, text(response.Data["operationType"])), RetryAfter: 2 * time.Second}, nil
+	return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: operation, Data: a.routerComponentStage(request, a.routerComponentDeletePhase(), operation, operation, text(response.Data["operationType"])), RetryAfter: 2 * time.Second}, nil
 }
 
-func (a *action) waitRoutePolicy(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
-	if err := a.routePolicyActionIdentity(request); err != nil {
+func (a *action) waitRouterComponent(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if err := a.routerComponentActionIdentity(request); err != nil {
 		return contracts.WaitResult{}, err
 	}
-	operation, err := a.routePolicyReceipt(request, result)
+	operation, err := a.routerComponentReceipt(request, result)
 	if err != nil {
 		return contracts.WaitResult{}, err
 	}
@@ -253,7 +268,7 @@ func (a *action) waitRoutePolicy(ctx context.Context, request contracts.ActionRe
 			return contracts.WaitResult{}, err
 		}
 		if err == nil {
-			actual, err := a.routePolicyOperationResult(request, response.Data, text(result.Data["operation_type"]), response.RequestID, text(result.Data["phase"]))
+			actual, err := a.routerComponentOperationResult(request, response.Data, text(result.Data["operation_type"]), response.RequestID, text(result.Data["phase"]))
 			if err != nil {
 				return contracts.WaitResult{}, err
 			}
@@ -264,12 +279,12 @@ func (a *action) waitRoutePolicy(ctx context.Context, request contracts.ActionRe
 		}
 	}
 	request.ExecutionResult = &result
-	read, err := a.routePolicyReadback(ctx, request)
+	read, err := a.routerComponentReadback(ctx, request)
 	if err != nil {
 		return contracts.WaitResult{}, err
 	}
 	if text(result.Data["phase"]) == routePolicyDetach && !pending && read.Exists && read.State != routePolicyDetach {
-		next, err := a.executeRoutePolicy(ctx, request)
+		next, err := a.executeRouterComponent(ctx, request)
 		if err != nil {
 			return contracts.WaitResult{}, err
 		}

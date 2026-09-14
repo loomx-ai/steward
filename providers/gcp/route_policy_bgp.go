@@ -106,9 +106,9 @@ func (a *action) routePolicyBGPState(request contracts.ActionRequest, parent map
 
 func (a *action) routePolicyNativeRequestID(request contracts.ActionRequest, stage string) string {
 	if stage == routePolicyDetach {
-		return googleRequestID(a.routePolicyRequestID(request) + "/bgp")
+		return googleRequestID(a.routerComponentRequestID(request) + "/bgp")
 	}
-	return a.routePolicyRequestID(request)
+	return a.routerComponentRequestID(request)
 }
 
 func (a *action) detachRoutePolicy(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
@@ -144,11 +144,11 @@ func (a *action) detachRoutePolicy(ctx context.Context, request contracts.Action
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
-	endpoint, err := a.routePolicyOperationResult(request, response.Data, "", response.RequestID, routePolicyDetach)
+	endpoint, err := a.routerComponentOperationResult(request, response.Data, "", response.RequestID, routePolicyDetach)
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
-	return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: endpoint, Data: a.routePolicyStage(request, routePolicyDetach, endpoint, endpoint, text(response.Data["operationType"])), RetryAfter: 2 * time.Second}, nil
+	return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: endpoint, Data: a.routerComponentStage(request, routePolicyDetach, endpoint, endpoint, text(response.Data["operationType"])), RetryAfter: 2 * time.Second}, nil
 }
 
 // Cursor data contains only a snapshot of peers, never the router's secret keys.
