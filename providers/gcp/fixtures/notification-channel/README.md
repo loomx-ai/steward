@@ -1,6 +1,6 @@
 # Cloud Monitoring notification-channel inventory
 
-This milestone adds read-only native inventory. Cleanup and incoming dependencies
+This milestone adds read-only native inventory. Cleanup and complete incoming-scope coverage
 remain unfinished; neither the resource rule nor the spec exposes a delete action.
 
 ## Native contracts
@@ -84,9 +84,52 @@ STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL=http://127.0.0.1:PORT \
   go test ./providers/gcp -run '^TestNotificationChannelIndependentMockGCP$' -count=1 -v
 ```
 
-The independent run passed with five forwarded native GETs (0.15s test body).
-Native CREATE/UPDATE/DELETE only seed, change and remove the local mock fixture;
+The independent run initially passed with five forwarded native GETs. The incoming
+policy milestone extends it to twelve forwarded GETs (0.15s test body), including
+native AlertPolicy inventory and channel dependency discovery.
+Native CREATE/UPDATE/DELETE only seed, change and remove local channel/policy fixtures;
 the runtime performs read-only discovery and Invoke. No Monitoring response or
 handler is replaced. The native mock does not reproduce masking, IAM, realistic
 pagination, verification delivery, mutation history on update, or forced-delete
 reference guards. It cannot establish live-cloud or production acceptance.
+
+## Native AlertPolicy consumers
+
+The application now loads the existing Monitoring dependency contributor whenever
+active channels are present, including scans with no Uptime checks. It reads each
+channel before and after a complete own-project policy snapshot: unfiltered LIST
+across all pages, native GET for every policy, then repeated LIST. It reuses the
+same policy snapshot implementation used by Uptime scope discovery. Failure,
+partial data, malformed strategies, changed policy sets/configuration, or changed
+channel configuration prevents a successful graph replacement.
+
+Both `notificationChannels` and
+[`alertStrategy.notificationChannelStrategy[].notificationChannelNames`](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies#NotificationChannelStrategy)
+contribute references. Strategy-only references are conservatively retained even
+if a stale/invalid native policy no longer has a matching primary entry. Project
+ID/number aliases are canonicalized; disabled policies retain dependencies. Query
+expressions and delivery status do not establish that a channel is unused.
+
+A referenced current policy produces an authoritative required-deletion edge from
+channel to policy, with policy-before-channel ordering and automatic selection
+turned off. Missing, closed, foreign-connection or stale policy inventory stays
+unresolved and blocks cleanup. Duplicate ambiguous inventory fails the graph.
+Private channel labels and policy expressions never enter relationship evidence.
+Channel deletion is still unavailable, so these edges do not grant new write
+capabilities or implicitly select policies.
+
+Retained protocol tests cover paging, list/detail denial, malformed/partial data,
+configuration races, strategy shape, aliases, stale policy inventory and explicit
+edge semantics. Server tests cover channel-only and mixed channel/Uptime dispatch.
+Real SQLite close/reopen tests prove unresolved-to-resolved transitions, preservation
+of existing edges after native permission loss, and removal after a complete
+successful read establishes that the own-project reference was removed.
+
+This proves concrete own-project AlertPolicy references, not global absence of all
+consumers. Billing Budget references and possible external scopes remain outside
+this discovery. The native Budget contract specifically limits
+`monitoringNotificationChannels` to **email** channels; non-email delivery uses
+other mechanisms such as Pub/Sub. That distinction is evidence for further
+cleanup work, not authority to remove the current read-only restriction. Native
+non-forced deletion, write coordination, receipts/readback, masked configuration
+and complete reference-scope coverage still need implementation and verification.

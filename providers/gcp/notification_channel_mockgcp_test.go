@@ -74,6 +74,7 @@ func TestNotificationChannelIndependentMockGCP(t *testing.T) {
 		return http.DefaultTransport.RoundTrip(local)
 	})
 	var previous string
+	var channel asset.Asset
 	for _, phase := range []string{"initial", "changed"} {
 		if phase == "changed" {
 			native("PATCH", "/v3/"+name+"?updateMask=labels", map[string]any{"name": name, "labels": map[string]any{"email_address": "PRIVATE_CHANNEL_NEW"}})
@@ -93,6 +94,7 @@ func TestNotificationChannelIndependentMockGCP(t *testing.T) {
 		}
 		previous = proof
 		target := asset.Asset{ID: "native-channel", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", Partition: "gcp", NativeType: notificationChannelType, NativeID: item.NativeID}, Normalized: item.Normalized}
+		channel = target
 		if _, err := r.ResolveAction(t.Context(), "connection", target); err == nil {
 			t.Fatal("read-only channel exposes cleanup")
 		}
@@ -102,8 +104,32 @@ func TestNotificationChannelIndependentMockGCP(t *testing.T) {
 	if err != nil || strings.Contains(string(b), "PRIVATE_CHANNEL") {
 		t.Fatal("private native Invoke response", err)
 	}
-	if len(calls) != 5 {
+	policySeed := alertPolicyFixture()
+	delete(policySeed, "name")
+	delete(policySeed, "futureNativeField")
+	policySeed["notificationChannels"] = []any{name}
+	policy := native("POST", "/v3/projects/sample-project/alertPolicies", policySeed)
+	policyName := text(policy["name"])
+	if !strings.HasPrefix(policyName, "projects/sample-project/alertPolicies/") {
+		t.Fatal("unexpected native policy identity")
+	}
+	t.Cleanup(func() { native("DELETE", "/v3/"+policyName, nil) })
+	batch, err := r.List(t.Context(), productRequest(r, alertPolicyType, "global"))
+	if err != nil || len(batch.Items) != 1 {
+		t.Fatal(batch, err)
+	}
+	policyAsset := asset.Asset{ID: "native-policy", Identity: channel.Identity, Normalized: batch.Items[0].Normalized}
+	policyAsset.Identity.NativeType, policyAsset.Identity.NativeID = alertPolicyType, batch.Items[0].NativeID
+	contributor, err := r.MonitoringDependencies(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	contribution, err := contributor.Contribute(t.Context(), "global", []asset.Asset{channel, policyAsset})
+	if err != nil || len(contribution.Unresolved) != 0 || len(contribution.Relationships) != 1 || contribution.Relationships[0].SourceAssetID != channel.ID || contribution.Relationships[0].TargetAssetID != policyAsset.ID {
+		t.Fatal(contribution, err)
+	}
+	if len(calls) != 12 {
 		t.Fatal("unexpected native reads", calls)
 	}
-	t.Logf("Independent native LIST/GET, configuration refresh, redacted Invoke and unavailable cleanup passed (%d forwarded GETs)", len(calls))
+	t.Logf("Independent native LIST/GET, configuration refresh, redacted Invoke, native policy dependency and unavailable cleanup passed (%d forwarded GETs)", len(calls))
 }

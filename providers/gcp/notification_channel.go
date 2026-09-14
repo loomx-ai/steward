@@ -66,10 +66,7 @@ func (c *client) notificationChannelData(id string, data map[string]any) error {
 	return nil
 }
 
-func (c *client) notificationChannelInventory(ctx context.Context, id string, listed map[string]any) (map[string]any, error) {
-	if err := c.notificationChannelData(id, listed); err != nil {
-		return nil, err
-	}
+func (c *client) notificationChannelRead(ctx context.Context, id string) (map[string]any, error) {
 	kind, _ := findType(notificationChannelType)
 	endpoint, err := c.resourceURL(kind, id)
 	if err != nil {
@@ -80,6 +77,17 @@ func (c *client) notificationChannelInventory(ctx context.Context, id string, li
 		return nil, contracts.DependencyReadError(err)
 	}
 	if err := c.notificationChannelData(id, live); err != nil {
+		return nil, err
+	}
+	return live, nil
+}
+
+func (c *client) notificationChannelInventory(ctx context.Context, id string, listed map[string]any) (map[string]any, error) {
+	if err := c.notificationChannelData(id, listed); err != nil {
+		return nil, err
+	}
+	live, err := c.notificationChannelRead(ctx, id)
+	if err != nil {
 		return nil, err
 	}
 	if notificationChannelConfiguration(id, listed) != notificationChannelConfiguration(id, live) {

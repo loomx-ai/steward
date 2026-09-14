@@ -254,3 +254,82 @@ func TestLoggingRoutingSQLitePreservesBlockedPlanAfterReadFailure(t *testing.T) 
 		t.Fatal("graph/plan mutated cloud")
 	}
 }
+
+func TestNotificationChannelSQLiteDependencyHistory(t *testing.T) {
+	s, _, _, deletes := channelDependencyFixture(t)
+	ctx := t.Context()
+	dsn := filepath.Join(t.TempDir(), "channels.db")
+	repos, closeDB := monitoringSQLite(t, dsn)
+	now := time.Now().UTC()
+	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP, Partition: "gcp", Status: asset.ConnectionActive, CreatedAt: now, UpdatedAt: now}
+	scope := asset.Scope{ID: "global", ConnectionID: connection.ID, Kind: asset.ScopeGlobal, NativeID: "sample-project/global", CreatedAt: now, UpdatedAt: now}
+	kind := s.r.resourceKind(notificationChannelType)
+	value := s.request.Asset
+	value.ResourceKindID, value.ScopeID, value.FirstSeenAt, value.LastSeenAt = kind.ID, scope.ID, now, now
+	for _, err := range []error{repos.Connections().PutConnection(ctx, connection), repos.Inventory().PutScope(ctx, scope), repos.Inventory().PutResourceKind(ctx, kind), repos.Inventory().PutAsset(ctx, value)} {
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := repos.Inventory().CreateScanRun(ctx, asset.ScanRun{ID: "channels", ConnectionID: connection.ID, Status: asset.ScanSucceeded, CreatedAt: now}); err != nil {
+		t.Fatal(err)
+	}
+	if err := repos.Inventory().PutScanShard(ctx, asset.ScanShard{ID: "channels", ScanRunID: "channels", Provider: asset.ProviderGCP, ScopeID: scope.ID, ResourceKindID: kind.ID, Source: productInventorySource, Status: asset.ShardSucceeded, Authoritative: true, CreatedAt: now}); err != nil {
+		t.Fatal(err)
+	}
+	for round := 0; round < 4; round++ {
+		if round > 0 {
+			closeDB()
+			repos, closeDB = monitoringSQLite(t, dsn)
+		}
+		if round == 1 {
+			policyKind := s.r.resourceKind(alertPolicyType)
+			if err := repos.Inventory().PutResourceKind(ctx, policyKind); err != nil {
+				t.Fatal(err)
+			}
+			s.policy.ResourceKindID, s.policy.ScopeID, s.policy.FirstSeenAt, s.policy.LastSeenAt = policyKind.ID, scope.ID, now, now
+			if err := repos.Inventory().PutAsset(ctx, s.policy); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if round == 2 {
+			s.mode = "get-denied"
+		}
+		if round == 3 {
+			s.mode = ""
+			s.data["notificationChannels"] = []any{}
+		}
+		fresh := protocolRuntime(t, s.r.transport.RoundTrip)
+		handler := governance.NewGraphHandler(repos, identityRegistry(t, fresh), monitoringDependencyContributors{fresh})
+		err := handler.Handle(ctx, execution.Job{Type: execution.JobGraph, Payload: map[string]any{"scan_run_id": "channels"}})
+		if (err != nil) != (round == 2) {
+			t.Fatal(round, err)
+		}
+		unresolved, err := repos.Graph().ListUnresolvedByConnection(ctx, connection.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		edges, err := repos.Graph().ListRelationshipsForAsset(ctx, connection.ID, value.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		wantEdges, wantUnresolved := 0, 0
+		if round == 0 {
+			wantUnresolved = 1
+		}
+		if round == 1 || round == 2 {
+			wantEdges = 1
+		}
+		if len(edges) != wantEdges || len(unresolved) != wantUnresolved {
+			t.Fatal("restart or failed read changed authoritative graph", round, edges, unresolved)
+		}
+		b, _ := json.Marshal(map[string]any{"edges": edges, "unresolved": unresolved})
+		if strings.Contains(string(b), "PRIVATE_") {
+			t.Fatal("private channel or policy configuration persisted")
+		}
+	}
+	closeDB()
+	if *deletes != 0 || s.policyDeletes != 0 {
+		t.Fatal("graph mutated cloud")
+	}
+}

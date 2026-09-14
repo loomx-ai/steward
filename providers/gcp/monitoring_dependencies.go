@@ -99,6 +99,36 @@ func (c *client) monitoringPolicyList(ctx context.Context) (map[string]map[strin
 	return result, nil
 }
 
+// Both metric consumers and notification consumers need complete, stable native
+// policy reads. The caller determines which projects can contain references.
+func (c *client) monitoringPolicySnapshot(ctx context.Context) (map[string]map[string]any, error) {
+	listed, err := c.monitoringPolicyList(ctx)
+	if err != nil {
+		return nil, err
+	}
+	ids := make([]string, 0, len(listed))
+	for id := range listed {
+		ids = append(ids, id)
+	}
+	slices.Sort(ids)
+	result := map[string]map[string]any{}
+	for _, id := range ids {
+		live, err := c.alertPolicyInventory(ctx, id, listed[id])
+		if err != nil {
+			return nil, err
+		}
+		result[id] = live
+	}
+	again, err := c.monitoringPolicyList(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if monitoringPolicyReviews(listed) != monitoringPolicyReviews(again) {
+		return nil, groupDenied("monitoring_policy_set_changed")
+	}
+	return result, nil
+}
+
 func monitoringPolicyReviews(values map[string]map[string]any) string {
 	reviews := map[string]any{}
 	for id, value := range values {
@@ -202,31 +232,15 @@ func (c *client) monitoringPolicies(ctx context.Context, checks ...string) (map[
 		scope := readers[number]
 		reader := scope.client
 
-		listed, err := reader.monitoringPolicyList(ctx)
+		policies, err := reader.monitoringPolicySnapshot(ctx)
 		if err != nil {
 			return nil, err
 		}
-		ids := make([]string, 0, len(listed))
-		for id := range listed {
-			ids = append(ids, id)
-		}
-		slices.Sort(ids)
-		for _, id := range ids {
-			live, err := reader.alertPolicyInventory(ctx, id, listed[id])
-			if err != nil {
-				return nil, err
-			}
+		for id, live := range policies {
 			if _, exists := result[id]; exists {
 				return nil, groupDenied("monitoring_policy_duplicate")
 			}
 			result[id] = monitoringPolicy{Data: live, Metrics: scope.metrics, Local: number == c.number, LogRoutes: scope.routes}
-		}
-		again, err := reader.monitoringPolicyList(ctx)
-		if err != nil {
-			return nil, err
-		}
-		if monitoringPolicyReviews(listed) != monitoringPolicyReviews(again) {
-			return nil, groupDenied("monitoring_policy_set_changed")
 		}
 	}
 	again, err := c.monitoringScopingProjects(ctx)
@@ -247,7 +261,10 @@ func (c *client) monitoringPolicies(ctx context.Context, checks ...string) (map[
 }
 
 func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
-	result := governance.Contribution{}
+	result, err := h.notificationChannelDependencies(ctx, assets)
+	if err != nil {
+		return result, err
+	}
 	var checks []asset.Asset
 	for _, value := range assets {
 		if value.ClosedAt == nil && value.Identity.Provider == asset.ProviderGCP && value.Identity.ConnectionID == h.connection && value.Identity.NativeType == uptimeType {

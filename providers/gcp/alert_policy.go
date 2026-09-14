@@ -68,12 +68,8 @@ func (c *client) alertPolicyData(id string, data map[string]any) error {
 			return err
 		}
 	}
-	for _, raw := range array(data["notificationChannels"]) {
-		name, _ := raw.(string)
-		parts := strings.Split(name, "/")
-		if len(parts) != 4 || parts[0] != "projects" || parts[2] != "notificationChannels" || !uptimeSegment(parts[1]) || !uptimeSegment(parts[3]) {
-			return groupDenied("alert_policy_channel_invalid")
-		}
+	if _, err := c.alertPolicyChannels(data); err != nil {
+		return err
 	}
 	conditions, err := cloudNatObjects(data, "conditions")
 	if err != nil {

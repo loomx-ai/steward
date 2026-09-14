@@ -101,7 +101,7 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 			}
 		}
 		for _, value := range assets {
-			if value.Identity.Provider == asset.ProviderGCP && value.Identity.NativeType == "monitoring.googleapis.com/UptimeCheckConfig" {
+			if value.Identity.Provider == asset.ProviderGCP && (value.Identity.NativeType == "monitoring.googleapis.com/UptimeCheckConfig" || value.Identity.NativeType == "monitoring.googleapis.com/NotificationChannel") {
 				provider, ok := runtime.(monitoringDependenciesRuntime)
 				if !ok {
 					return nil, fmt.Errorf("GCP runtime does not expose Monitoring dependency discovery")

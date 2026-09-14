@@ -6133,3 +6133,25 @@ cleanup, masked configuration semantics and live acceptance remain open. See
 [notification-channel evidence](providers/gcp/fixtures/notification-channel/README.md)
 for contracts, test commands and independent pinned Google mockgcp boundaries.
 All eight acceptance criteria above remain open.
+
+
+### GCP notification-channel AlertPolicy dependency milestone
+
+Added live own-project AlertPolicy consumers to channel dependency graphs. Primary
+notification lists and repeated-notification strategies both contribute; disabled
+policies and strategy-only retained references cannot be treated as unused.
+Complete unfiltered policy LIST/GET/re-LIST and channel reads before/after reject
+permission failures, malformed data and concurrent visible configuration changes.
+The policy snapshot helper is shared with existing Uptime dependency discovery.
+
+Current policy inventory resolves authoritative, explicitly selected policy-before-
+channel edges; missing/stale/closed policy inventory remains blocking. Application
+dispatch supports channel-only scans. SQLite restart tests preserve established
+edges after failed reads and clear them only after successful native refresh.
+The unchanged pinned Google mock verifies the concrete native relationship with
+12 forwarded GETs. See [channel evidence](providers/gcp/fixtures/notification-channel/README.md).
+
+Channel writes, Billing Budget/external consumer scope, masked-secret review and
+full lifecycle acceptance remain unfinished. Native Billing Budget documentation
+restricts channel references to email; this has not been used to bypass remaining
+cleanup checks. No acceptance criterion is marked complete by this milestone.
