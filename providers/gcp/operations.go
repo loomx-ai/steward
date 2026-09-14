@@ -202,8 +202,8 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource identity")
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
-	if kind.NativeType == securityServiceType {
-		return c.securityServiceOperation(metadata, name, method)
+	if kind.NativeType == securityServiceType || kind.NativeType == securityBillingType {
+		return c.securitySettingsOperation(metadata, kind.NativeType, name, method)
 	}
 	if kind.NativeType == billingBudgetType {
 		if _, _, err := billingBudgetName(nativeID); err != nil {

@@ -18,12 +18,20 @@ import (
 
 // Failed singleton GETs preserve the previous complete, searchable billing tier.
 func TestSecurityBillingFailurePreservesSQLiteObservations(t *testing.T) {
+	for _, parent := range []string{"projects/sample-project", "organizations/123"} {
+		t.Run(parent, func(t *testing.T) { testSecurityBillingFailurePreservesSQLiteObservations(t, parent) })
+	}
+}
+func testSecurityBillingFailurePreservesSQLiteObservations(t *testing.T, parent string) {
 	ctx := context.Background()
 	failure := ""
-	name := "projects/sample-project/locations/eu/billingMetadata"
-	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+	name := parent + "/locations/eu/billingMetadata"
+	transport := func(req *http.Request) (*http.Response, error) {
 		if req.Method != "GET" || req.URL.Host != securityServiceHost {
 			t.Fatalf("unexpected request %s", req.URL)
+		}
+		if parent != "projects/sample-project" && req.URL.Path == "/v1/projects/sample-project/locations/eu/billingMetadata" {
+			return dataformResponse(req, 200, map[string]any{"name": "projects/sample-project/locations/eu/billingMetadata", "billingTier": "STANDARD"}), nil
 		}
 		switch req.URL.Path {
 		case "/v1/projects/sample-project/locations":
@@ -46,7 +54,20 @@ func TestSecurityBillingFailurePreservesSQLiteObservations(t *testing.T) {
 		}
 		t.Fatalf("unexpected request %s", req.URL)
 		return nil, nil
-	})
+	}
+	ancestry := newOrganizationScenario()
+	var r *Runtime
+	if parent == "projects/sample-project" {
+		r = protocolRuntime(t, transport)
+	} else {
+		ancestry.hook = func(req *http.Request) (*http.Response, bool) {
+			if failure == "ancestor_denied" && req.URL.Path == "/v3/organizations/123" {
+				return apiResponse(req, 403, `{}`), true
+			}
+			return nil, false
+		}
+		r = securityAncestorRuntime(t, ancestry, transport)
+	}
 	kind := r.resourceKind(securityBillingType)
 	var source contracts.InventorySource
 	for _, value := range r.InventorySources() {
@@ -75,7 +96,12 @@ func TestSecurityBillingFailurePreservesSQLiteObservations(t *testing.T) {
 	}
 	service := inventory.NewService(repositories.Inventory(), inventory.WithClock(func() time.Time { return now }))
 	handler := inventory.NewScanHandler(repositories, dataformVisibilityRuntime{adapter: r}, service)
-	for _, runID := range []string{"first", "denied", "missing", "changed", "hidden_location"} {
+	runs := []string{"first", "denied", "missing", "changed", "hidden_location"}
+	if parent != "projects/sample-project" {
+		runs = append(runs, "ancestor_denied", "ancestry_hidden")
+	}
+	var observed time.Time
+	for _, runID := range runs {
 		run := asset.ScanRun{ID: asset.ScanRunID(runID), ConnectionID: connection.ID, Status: asset.ScanPending, RequestedBy: "fixture", CreatedAt: now}
 		shard := asset.ScanShard{ID: asset.ScanShardID("security-billing-" + runID), ScanRunID: run.ID, Provider: asset.ProviderGCP, Source: source.Name, ScopeID: scope.ID, ResourceKindID: kind.ID, Authoritative: source.AuthoritativeDefault, Status: asset.ShardPending, CreatedAt: now}
 		if err := repositories.Inventory().CreateScanRun(ctx, run); err != nil {
@@ -84,9 +110,12 @@ func TestSecurityBillingFailurePreservesSQLiteObservations(t *testing.T) {
 		if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
 			t.Fatal(err)
 		}
+		if runID == "ancestry_hidden" {
+			ancestry.project["parent"] = ""
+		}
 		failure = runID
 		err := handler.Handle(ctx, execution.Job{ID: execution.JobID("security-billing-" + runID), Type: execution.JobScan, Payload: map[string]any{"scan_shard_id": string(shard.ID)}})
-		failed := runID != "first" && runID != "hidden_location"
+		failed := runID != "first" && runID != "hidden_location" && runID != "ancestry_hidden"
 		if !failed && err != nil || failed && err == nil {
 			t.Fatalf("scan %s: %v", runID, err)
 		}
@@ -98,15 +127,27 @@ func TestSecurityBillingFailurePreservesSQLiteObservations(t *testing.T) {
 			t.Fatalf("wrong coverage: %+v", finished)
 		}
 		page, err := repositories.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10})
-		if err != nil || len(page.Items) != 1 {
+		want := 1
+		if parent != "projects/sample-project" {
+			want = 2
+		}
+		if err != nil || len(page.Items) != want {
 			t.Fatalf("Service projection: %d %v", len(page.Items), err)
 		}
 		for _, value := range page.Items {
+			if value.Normalized["configurationParent"] != parent {
+				continue
+			}
+			if runID == "first" {
+				observed = value.LastSeenAt
+			} else if !value.LastSeenAt.Equal(observed) {
+				t.Fatal("unobserved billing marked fresh", value)
+			}
 			if value.ClosedAt != nil || value.DeletedAt != nil || value.Normalized["billingTier"] != "PREMIUM" {
 				t.Fatal("failed detail scan lost the last complete service", value)
 			}
 		}
-		expression, err := resourcequery.Parse(`properties.billingTier = "PREMIUM"`)
+		expression, err := resourcequery.Parse(`properties.billingTier = "PREMIUM" AND properties.configurationParent = "` + parent + `"`)
 		if err != nil {
 			t.Fatal(err)
 		}

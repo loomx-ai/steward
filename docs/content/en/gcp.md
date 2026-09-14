@@ -260,7 +260,7 @@ A permission failure or missing subscription response fails the scan. See the
 [subscription contract](https://docs.cloud.google.com/security-command-center/docs/reference/rest/v1beta2/organizations/getSubscription)
 and [Security Command Center permissions](https://docs.cloud.google.com/iam/docs/roles-permissions/securitycenter#securitycenter.subscription.get).
 
-Project billing inventory shows the Security Command Center tier explicitly set
+Billing inventory shows the Security Command Center tier explicitly set
 on each project/location. It keeps this value separate from the organization
 subscription and does not infer an inherited tier, trial period, or expiry date.
 Global and regional records retain distinct identities. Project scans follow the
@@ -270,6 +270,16 @@ Enable **Security Center Management API** and grant
 `securitycentermanagement.locations.list` and
 `securitycentermanagement.billingMetadata.get`. Include global scope to read global
 settings. These records are read-only. See the [project billing contract](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations/getBillingMetadata).
+
+Organization billing is read separately through the connected project's verified
+ancestry, at the same project-visible locations. `configurationParent` distinguishes
+project and organization values. Grant `securitycentermanagement.billingMetadata.get`
+on the organization and Resource Manager project/folder/organization GET permissions.
+A lost ancestor or hidden location preserves its last observation and timestamp;
+a denied, changed or missing native read fails that page. The API has no folder
+billing singleton. Organization billing is explicit configuration, not proof of
+project entitlement or trial history.
+
 
 ## Cloud Router route policies
 

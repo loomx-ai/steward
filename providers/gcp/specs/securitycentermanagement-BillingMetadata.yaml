@@ -6,8 +6,8 @@ metadata:
   class: security.security_center
 presentation:
   displayNames:
-    en-US: Security Command Center project billing
-    zh-CN: 安全指挥中心项目计费
+    en-US: Security Command Center billing
+    zh-CN: 安全指挥中心计费
 scope:
   kind: region
 discovery:
@@ -23,6 +23,9 @@ discovery:
     itemsPath: $
     identityPath: name
 fields:
+  configurationParent:
+    path: configurationParent
+    type: string
   name:
     path: name
     type: string

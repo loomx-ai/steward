@@ -1,12 +1,13 @@
 package gcp
 
 const (
-	securityServiceHost   = "securitycentermanagement.googleapis.com"
-	securityServiceSource = "security-services"
-	securityServiceType   = securityServiceHost + "/SecurityCenterService"
-	securityBillingType   = securityServiceHost + "/BillingMetadata"
-	securityBillingSource = "security-billing"
-	securityBillingGet    = "securitycentermanagement.projects.locations.getBillingMetadata"
+	securityServiceHost            = "securitycentermanagement.googleapis.com"
+	securityServiceSource          = "security-services"
+	securityServiceType            = securityServiceHost + "/SecurityCenterService"
+	securityBillingType            = securityServiceHost + "/BillingMetadata"
+	securityBillingSource          = "security-billing"
+	securityOrganizationBillingGet = "securitycentermanagement.organizations.locations.getBillingMetadata"
+	securityBillingGet             = "securitycentermanagement.projects.locations.getBillingMetadata"
 )
 
 // State strings remain forward compatible; malformed settings must not replace
@@ -43,7 +44,7 @@ func securityServiceSettings(data map[string]any) error {
 	return nil
 }
 
-// Billing metadata describes the tier explicitly set on this project/location.
+// Billing metadata describes the tier explicitly set on this project or organization/location.
 // It does not describe an inherited tier or a subscription's trial/expiry dates.
 func (c *client) securityBillingMetadata(data map[string]any, name string) error {
 	if c.canonicalName("//"+securityServiceHost+"/"+text(data["name"])) != c.canonicalName("//"+securityServiceHost+"/"+name) {

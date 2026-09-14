@@ -6441,3 +6441,26 @@ This is protocol and application evidence, not independent emulator or real-clou
 acceptance. Cluster settings, arbitrary private organization locations, project
 trial history and broader provider parity remain unfinished. All eight acceptance
 criteria remain open. No cloud resource or new dependency was created.
+
+
+### Security Command Center organization billing metadata
+
+The unchanged pinned SDK supplies the organization billingMetadata singleton GET.
+Inventory now reads it alongside project billing at project-visible locations,
+following verified project ancestry and retaining separate configurationParent and
+tier values. There is no invented folder billing or organization locations API,
+no subscription mutation and no inference of inherited project entitlement.
+
+The existing service ancestor guard binds every page and cursor, rechecks ancestry
+after reads and rejects unrelated organizations through Invoke. One native GET
+supplies each singleton; failed, malformed or changed reads cannot complete the
+page. Non-authoritative visibility preserves earlier organization observations
+when ancestors or locations disappear. SQLite worker/property-query tests verify
+separate project and organization tiers and unchanged historical timestamps.
+One SDK-derived operation is added; all 809 existing operations and the unchanged
+SDK members remain intact. Catalog generation, native property contracts and SDK
+conversion remain reproducible.
+
+This is native protocol and real application-persistence evidence. Independent
+emulation, real-cloud regional behavior, project trial history, cluster settings
+and broader provider acceptance remain unfinished. All eight criteria stay open.

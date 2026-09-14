@@ -218,6 +218,14 @@ Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。可选择�
 并在扫描中包含全局范围以读取全局设置。这些记录只读。参见
 [项目计费接口契约](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations/getBillingMetadata)。
 
+组织计费通过连接项目的已核验祖先链单独读取，使用相同的项目可见地域。
+`configurationParent` 区分项目和组织的值。需要在组织上授予
+`securitycentermanagement.billingMetadata.get`，并具备 Resource Manager 的项目、
+文件夹和组织 GET 权限。祖先或地域不再可见时保留原记录及观测时间；权限失败、
+资源缺失或身份变化会使该页失败。原生接口没有文件夹计费单例；组织计费值也不用于
+推断项目实际权益或试用历史。
+
+
 ## Cloud Router 路由策略
 
 扫描路由策略需要目标项目的 `compute.routers.list`、

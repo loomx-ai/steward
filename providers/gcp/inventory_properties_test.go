@@ -183,7 +183,7 @@ func TestGCPChangedPropertyPathsMatchPinnedNativeSchemas(t *testing.T) {
 							t.Fatal("budget property is not its native account parent", name, parent, err)
 						}
 						continue
-					case kind == securityServiceType && path == "configurationParent":
+					case (kind == securityServiceType || kind == securityBillingType) && path == "configurationParent":
 						// Adapter-derived container, not a native service field.
 						if field != "configurationParent" || property.Type != "string" || nativePropertySchema(schemas, root, "name")["type"] != "string" || object(root["properties"])[path] != nil {
 							t.Fatal("invalid derived security service parent", field, property)

@@ -4667,14 +4667,15 @@
     {
       "native_type": "securitycentermanagement.googleapis.com/BillingMetadata",
       "class": "security.security_center",
-      "display_name": "Security Command Center project billing",
+      "display_name": "Security Command Center billing",
       "scope_kinds": [
         "global",
         "region"
       ],
       "collection": "billingMetadata",
       "read_operations": [
-        "securitycentermanagement.projects.locations.getBillingMetadata"
+        "securitycentermanagement.projects.locations.getBillingMetadata",
+        "securitycentermanagement.organizations.locations.getBillingMetadata"
       ],
       "list_operations": [
         "securitycentermanagement.projects.locations.getBillingMetadata"
@@ -4829,7 +4830,8 @@
         "securitycentermanagement.folders.locations.securityCenterServices.list",
         "securitycentermanagement.folders.locations.securityCenterServices.get",
         "securitycentermanagement.organizations.locations.securityCenterServices.list",
-        "securitycentermanagement.organizations.locations.securityCenterServices.get"
+        "securitycentermanagement.organizations.locations.securityCenterServices.get",
+        "securitycentermanagement.organizations.locations.getBillingMetadata"
       ]
     }
   ]

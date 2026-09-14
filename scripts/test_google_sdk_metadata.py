@@ -109,6 +109,11 @@ class SecurityServicesSDKMetadataTests(unittest.TestCase):
         self.assertEqual(billing["parameters"]["name"]["pattern"], "^projects/[^/]+/locations/[^/]+/billingMetadata$")
         self.assertEqual(billing["response"], {"$ref": "BillingMetadata"})
         self.assertEqual(document["schemas"]["BillingMetadata"]["properties"]["billingTier"]["enum"], ["BILLING_TIER_UNSPECIFIED", "STANDARD", "PREMIUM", "ENTERPRISE"])
+        organization_billing = methods["securitycentermanagement.organizations.locations.getBillingMetadata"]
+        self.assertEqual(organization_billing["path"], "v1/{+name}")
+        self.assertEqual(organization_billing["parameters"]["name"]["pattern"], "^organizations/[^/]+/locations/[^/]+/billingMetadata$")
+        self.assertEqual(organization_billing["response"], {"$ref": "BillingMetadata"})
+        self.assertNotIn("securitycentermanagement.folders.locations.getBillingMetadata", methods)
         self.assertTrue(all(m["httpMethod"] == "GET" for m in methods.values()))
 
 

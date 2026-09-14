@@ -1,4 +1,4 @@
-# Security Center Management project billing
+# Security Center Management billing
 
 The native singleton method is
 [projects.locations.getBillingMetadata](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations/getBillingMetadata):
@@ -42,6 +42,29 @@ remains omission; a future enum is preserved as a string.
 The pinned Google mockgcp tree at
 `673a61419de1b8e4f7d26070ce20dde2daa61da8` has no SecurityCenterManagement server.
 This is protocol/application integration evidence, not independent emulator or
-real-cloud verification. No temporary test service was started. Organization
-regional billing metadata, project trial history and region-specific real-cloud
-behavior remain separate coverage.
+real-cloud verification. No temporary test service was started. Project trial history
+and region-specific real-cloud behavior remain separate coverage.
+
+## Organization billing
+
+The additional unchanged SDK method
+[organizations.locations.getBillingMetadata](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations/getBillingMetadata)
+uses `GET /v1/{name=organizations/*/locations/*/billingMetadata}`. It shares the
+native BillingMetadata response. The SDK declares no folder billing method or
+organization locations LIST. Discovery therefore reads the verified ancestor
+organization at each project-visible location, retaining distinct project and
+organization values. `configurationParent` derives from native name; ancestor
+records omit project ownership fields. No inherited entitlement is calculated.
+
+The existing service ancestry boundary is reused for singleton fanout, page-cursor
+binding and post-read revalidation. Public Invoke rejects unrelated organizations,
+folders, malformed locations and response identities before returning data. One
+native GET supplies each complete singleton. No fake collection or detail GET is
+added, and no new cloud service, source archive or dependency is introduced.
+
+Tests cover global/EU/project fanout, distinct tiers, omitted/future enums, native
+request IDs, exact read-only paths, permission/404/identity failures and ancestry
+changes during or between pages. Real SQLite scan-worker tests preserve searchable
+project/organization tiers and original timestamps through denied reads and lost
+ancestry/location visibility. These are protocol/application tests, not independent
+emulation or real-cloud acceptance. The original SDK member hashes remain unchanged.

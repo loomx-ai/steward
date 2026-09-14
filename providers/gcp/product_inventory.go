@@ -82,7 +82,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	}
 	ancestors = append(slices.Clone(ancestors), nativeType)
 	var serviceAncestry *organizationAncestry
-	if nativeType == securityServiceType {
+	if nativeType == securityServiceType || nativeType == securityBillingType {
 		chain, err := c.organizationAncestry(ctx)
 		if err != nil {
 			return contracts.InventoryBatch{}, err
@@ -157,7 +157,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
-	if nativeType == securityServiceType || nativeType == monitoringGroupType || isMonitoringConfig(nativeType) || nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
+	if nativeType == securityBillingType || nativeType == securityServiceType || nativeType == monitoringGroupType || isMonitoringConfig(nativeType) || nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -173,6 +173,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	}
 	if err != nil {
 		return contracts.InventoryBatch{}, err
+	}
+	if nativeType == securityBillingType {
+		if err := c.securityBillingMetadata(result.Data, text(parameters["name"])); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
 	}
 	if err = checkListCompleteness(result.Data); err != nil {
 		return contracts.InventoryBatch{}, fmt.Errorf("%s: %w", target.API.Operation, err)
@@ -1157,7 +1162,7 @@ func (c *client) productIdentity(kind resourceType, operation catalog.Operation,
 			return "", fmt.Errorf("GCP resource URL has no project")
 		}
 	}
-	if strings.HasPrefix(name, "projects/") || kind.NativeType == securityServiceType && (strings.HasPrefix(name, "folders/") || strings.HasPrefix(name, "organizations/")) {
+	if strings.HasPrefix(name, "projects/") || (kind.NativeType == securityServiceType || kind.NativeType == securityBillingType) && (strings.HasPrefix(name, "folders/") || strings.HasPrefix(name, "organizations/")) {
 		return c.canonicalName("//" + host + "/" + name), nil
 	}
 	if (!segmentPattern.MatchString(name) && !(kind.NativeType == dnsRecordSetType && dnsRecordName(name))) || name == "." || name == ".." {

@@ -2448,7 +2448,7 @@ resources:
     Service scans use non-authoritative visibility semantics: empty location or service lists
     preserve previous observations, while later detail reads update state. Native organization subscriptions additionally expose current tier, latest subscription type
     (including trial and pay-as-you-go), and start/end times through verified selected-project
-    ancestry. Project billingMetadata now preserves the tier explicitly configured at each native
+    ancestry. Project and ancestor-organization billingMetadata now preserve the tier explicitly configured at each native
     location without inferring inherited entitlement or trial history. Project trial history,
     cluster-specific settings and independent behavior verification remain pending. Ancestor folder
     and organization service settings are separately inventoried through a verified project parent

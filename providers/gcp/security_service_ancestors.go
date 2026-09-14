@@ -28,8 +28,18 @@ func securityServiceTargets(targets []productTarget, chain organizationAncestry)
 	for _, parent := range securityServiceAncestors(chain) {
 		for _, target := range targets {
 			target.Parameters = cloneParameters(target.Parameters)
-			target.Parameters["parent"] = parent + "/locations/" + last(text(target.Parameters["parent"]))
-			target.API.Operation = "securitycentermanagement." + strings.Split(parent, "/")[0] + ".locations.securityCenterServices.list"
+			if target.API.Operation == securityBillingGet {
+				// BillingMetadata has organization/project GETs, no folder API.
+				if !strings.HasPrefix(parent, "organizations/") {
+					continue
+				}
+				parts := strings.Split(text(target.Parameters["name"]), "/")
+				target.Parameters["name"] = parent + "/locations/" + parts[3] + "/billingMetadata"
+				target.API.Operation = securityOrganizationBillingGet
+			} else {
+				target.Parameters["parent"] = parent + "/locations/" + last(text(target.Parameters["parent"]))
+				target.API.Operation = "securitycentermanagement." + strings.Split(parent, "/")[0] + ".locations.securityCenterServices.list"
+			}
 			result = append(result, target)
 		}
 	}
@@ -51,6 +61,9 @@ func (c *client) verifySecurityServiceAncestry(ctx context.Context, first *organ
 }
 
 func securityServiceAncestorOperation(id string) bool {
+	if id == securityOrganizationBillingGet {
+		return true
+	}
 	for _, parent := range []string{"folders", "organizations"} {
 		for _, method := range []string{"get", "list"} {
 			if id == "securitycentermanagement."+parent+".locations.securityCenterServices."+method {
@@ -63,9 +76,14 @@ func securityServiceAncestorOperation(id string) bool {
 
 // Binding a native address does not grant ancestor authority. Inventory verifies
 // the full chain around the read; public Invoke uses the same boundary below.
-func (c *client) securityServiceOperation(metadata providerMetadata, name, method string) (catalog.Operation, map[string]any, error) {
+func (c *client) securitySettingsOperation(metadata providerMetadata, nativeType, name, method string) (catalog.Operation, map[string]any, error) {
 	parts := strings.Split(name, "/")
-	if method != "GET" || len(parts) != 6 || parts[2] != "locations" || parts[4] != "securityCenterServices" {
+	billing := nativeType == securityBillingType
+	valid := len(parts) == 6 && parts[4] == "securityCenterServices" && nativeType == securityServiceType
+	if billing {
+		valid = len(parts) == 5 && parts[4] == "billingMetadata" && (parts[0] == "projects" || parts[0] == "organizations")
+	}
+	if method != "GET" || !valid || parts[2] != "locations" {
 		return catalog.Operation{}, nil, groupDenied("security_service_identity_invalid")
 	}
 	for _, part := range parts {
@@ -80,7 +98,11 @@ func (c *client) securityServiceOperation(metadata providerMetadata, name, metho
 	} else if !firewallContainerName(strings.Join(parts[:2], "/")) {
 		return catalog.Operation{}, nil, groupDenied("security_service_container_invalid")
 	}
-	op, ok := metadata.catalog.Operation("securitycentermanagement." + parts[0] + ".locations.securityCenterServices.get")
+	operationID := "securitycentermanagement." + parts[0] + ".locations.securityCenterServices.get"
+	if billing {
+		operationID = "securitycentermanagement." + parts[0] + ".locations.getBillingMetadata"
+	}
+	op, ok := metadata.catalog.Operation(operationID)
 	if !ok {
 		return catalog.Operation{}, nil, groupDenied("security_service_method_missing")
 	}
@@ -92,8 +114,12 @@ func (c *client) invokeAncestorSecurityService(ctx context.Context, operation ca
 	if err != nil {
 		return contracts.InvocationResult{}, err
 	}
+	nativeType := securityServiceType
+	if operation.ID == securityOrganizationBillingGet {
+		nativeType = securityBillingType
+	}
 	key := "parent"
-	if strings.HasSuffix(operation.ID, ".get") {
+	if nativeType == securityBillingType || strings.HasSuffix(operation.ID, ".get") {
 		key = "name"
 	}
 	name := text(parameters[key])
@@ -109,7 +135,7 @@ func (c *client) invokeAncestorSecurityService(ctx context.Context, operation ca
 	if key == "parent" {
 		resourceName += "/securityCenterServices/scope-validation"
 	}
-	if _, _, err := c.securityServiceOperation(metadata, resourceName, "GET"); err != nil {
+	if _, _, err := c.securitySettingsOperation(metadata, nativeType, resourceName, "GET"); err != nil {
 		return contracts.InvocationResult{}, err
 	}
 	first, err := c.organizationAncestry(ctx)
@@ -148,10 +174,15 @@ func (c *client) invokeAncestorSecurityService(ctx context.Context, operation ca
 		if key == "name" && actual != name || key == "parent" && !strings.HasPrefix(actual, name+"/securityCenterServices/") || seen[actual] {
 			return contracts.InvocationResult{}, groupDenied("security_service_identity_changed")
 		}
-		if _, _, err = c.securityServiceOperation(metadata, actual, "GET"); err != nil {
+		if _, _, err = c.securitySettingsOperation(metadata, nativeType, actual, "GET"); err != nil {
 			return contracts.InvocationResult{}, err
 		}
-		if err = securityServiceSettings(record); err != nil {
+		if nativeType == securityBillingType {
+			err = c.securityBillingMetadata(record, name)
+		} else {
+			err = securityServiceSettings(record)
+		}
+		if err != nil {
 			return contracts.InvocationResult{}, err
 		}
 		seen[actual] = true

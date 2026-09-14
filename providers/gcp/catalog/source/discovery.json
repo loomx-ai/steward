@@ -129501,6 +129501,22 @@
             "response": {
               "$ref": "ListSecurityCenterServicesResponse"
             }
+          },
+          "securitycentermanagement.organizations.locations.getBillingMetadata": {
+            "httpMethod": "GET",
+            "id": "securitycentermanagement.organizations.locations.getBillingMetadata",
+            "parameters": {
+              "name": {
+                "location": "path",
+                "pattern": "^organizations/[^/]+/locations/[^/]+/billingMetadata$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "BillingMetadata"
+            }
           }
         },
         "name": "securitycentermanagement",
@@ -129864,6 +129880,17 @@
               },
               "showEligibleModulesOnly": {
                 "type": "boolean"
+              }
+            },
+            "type": "object"
+          },
+          "SecuritycentermanagementOrganizationsLocationsGetBillingMetadataRequest": {
+            "description": "A\nSecuritycentermanagementOrganizationsLocationsGetBillingMetadataRequest\nobject.\n\nFields:\n  name: Required. The resource to look up the billing tier for, in the\n    format\n    `organizations/{organization}/locations/{location}/billingMetadata` or\n    `projects/{project}/locations/{location}/billingMetadata`.",
+            "id": "SecuritycentermanagementOrganizationsLocationsGetBillingMetadataRequest",
+            "properties": {
+              "name": {
+                "required": true,
+                "type": "string"
               }
             },
             "type": "object"
@@ -138668,7 +138695,7 @@
     {
       "nativeType": "securitycentermanagement.googleapis.com/BillingMetadata",
       "class": "security.security_center",
-      "displayName": "Security Command Center project billing",
+      "displayName": "Security Command Center billing",
       "scopeKinds": [
         "global",
         "region"
@@ -138676,7 +138703,8 @@
       "rest": {
         "collection": "billingMetadata",
         "read_operations": [
-          "securitycentermanagement.projects.locations.getBillingMetadata"
+          "securitycentermanagement.projects.locations.getBillingMetadata",
+          "securitycentermanagement.organizations.locations.getBillingMetadata"
         ],
         "list_operations": [
           "securitycentermanagement.projects.locations.getBillingMetadata"
