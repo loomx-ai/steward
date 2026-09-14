@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: securitycentermanagement.googleapis.com/SecurityCenterService
+  class: security.security_center
+presentation:
+  displayNames:
+    en-US: Security Command Center service
+    zh-CN: 安全指挥中心服务
+  consoleLinkTemplate: https://console.cloud.google.com/security/command-center/settings/services?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: securitycentermanagement.projects.locations.securityCenterServices.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: securityCenterServices
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: securitycentermanagement.projects.locations.securityCenterServices.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: effectiveEnablementState
+    type: string
+  intendedEnablementState:
+    path: intendedEnablementState
+    type: string
+  effectiveEnablementState:
+    path: effectiveEnablementState
+    type: string
+  modules:
+    path: modules
+    type: object
+  updateTime:
+    path: updateTime
+    type: string
+extensions:
+  hook: gcp.resource

@@ -37,8 +37,8 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 194 explicit resource rules and 773 selected methods
-from 55 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
+The current catalog has 195 explicit resource rules and 776 selected methods
+from 55 official Discovery documents and one pinned Cloud SDK archive (Network Services and Security Center Management). Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
@@ -359,3 +359,7 @@ group absence. GKE retains its complete member and workload-finalizer readback.
 The shared prerequisite checker follows every reviewed intermediate controller;
 a supplied effective-controller label alone is insufficient. Planner and executor
 use the same check, retaining frozen member snapshots after worker restart.
+
+[Security Center Management inventory](../fixtures/security-services/README.md)
+adds project service enablement and module settings through native location, list
+and detail reads. These records have no cleanup action.

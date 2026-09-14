@@ -174,3 +174,14 @@ Cloud TPU 盘点需要 `tpu.locations.list`、`tpu.nodes.list`、`tpu.nodes.get`
 Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。可选择池中的本地磁盘，或选择负责删除这些磁盘的 VM、MIG、GKE 控制器；计划不会自动选择控制器。清理会先确认每块磁盘已不存在，再删除池；若计划决定保留成员磁盘，则禁止删除其存储池。配置或成员变化后需重新扫描。快照独立保留。Exapool 以及仍有跨项目成员的池需要在外部完成相应清理，之后重新扫描。参见 [Google 存储池管理指南](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools)。
 
 删除还需要 `compute.storagePools.delete`、`compute.zoneOperations.get`，成员磁盘清理需要 `compute.disks.get` / `compute.disks.delete`。有效的未来预留可能阻止原生删除，Steward 不会自动取消预留。清理期间应避免并发修改池：原生删除 API 不支持按资源 ID 或 etag 进行条件删除。容量和性能池化不能据此认定与阿里云的物理资源独享完全等价。
+
+安全指挥中心服务盘点会分别显示预期启用状态、实际生效状态，以及模块设置和更新时间。
+继承配置的实际状态可能因开通状态或计费资格而不同；`INGEST_ONLY` 表示仅接收发现结果，
+服务本身未启用。Steward 对这些设置提供只读盘点，不据此推断订阅套餐。
+请启用 **Security Center Management API**，并授予
+`securitycentermanagement.locations.list`、
+`securitycentermanagement.securityCenterServices.list` 和
+`securitycentermanagement.securityCenterServices.get`。项目扫描使用服务自身的地域列表；
+全局设置需要包含全局范围。详情读取失败会保留上次观测。参阅
+[服务设置契约](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations.securityCenterServices)和
+[读取权限](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations.securityCenterServices/get)。

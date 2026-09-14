@@ -213,3 +213,16 @@ Inventory requires `compute.storagePools.list` and `compute.storagePools.get` (f
 Hyperdisk Balanced and Throughput pools support reviewed deletion. Select their local member disks or a supported VM, MIG, or GKE controller that deletes those disks. The plan never selects a controller automatically. Cleanup waits for each disk to be absent before deleting the pool; a plan that retains a member disk cannot delete its pool. Changed configuration or membership requires a fresh scan. Snapshots remain separate. Exapools and pools with foreign-project members require external cleanup; refresh inventory after that cleanup. See [Google's pool management guide](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools).
 
 Deletion additionally requires `compute.storagePools.delete`, `compute.zoneOperations.get`, and `compute.disks.get` / `compute.disks.delete` for member cleanup. An active future reservation can block native deletion; Steward does not cancel it automatically. Avoid concurrent pool changes during cleanup: the native delete API has no conditional resource ID or etag. Pooling capacity and performance does not establish equivalence to Alibaba Cloud's exclusive physical storage.
+
+Security Command Center service inventory shows intended and effective enablement
+separately, including module settings and update time. An inherited setting may
+have a different effective state because of onboarding or billing eligibility;
+`INGEST_ONLY` means findings ingestion without the service being enabled. These
+service settings are read-only in Steward and do not represent a subscription tier.
+Enable **Security Center Management API** and grant
+`securitycentermanagement.locations.list`,
+`securitycentermanagement.securityCenterServices.list` and
+`securitycentermanagement.securityCenterServices.get`. Project scans use native
+service locations; include global scope for global settings. Failed detail reads
+preserve the previous observation. See the [service settings contract](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations.securityCenterServices)
+and [read permissions](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations.securityCenterServices/get).

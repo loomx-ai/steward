@@ -4562,6 +4562,22 @@
       "delete_operations": [
         "compute.storagePools.delete"
       ]
+    },
+    {
+      "native_type": "securitycentermanagement.googleapis.com/SecurityCenterService",
+      "class": "security.security_center",
+      "display_name": "Security Command Center service",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "collection": "securityCenterServices",
+      "read_operations": [
+        "securitycentermanagement.projects.locations.securityCenterServices.get"
+      ],
+      "list_operations": [
+        "securitycentermanagement.projects.locations.securityCenterServices.list"
+      ]
     }
   ],
   "sdk_documents": [
@@ -4607,6 +4623,17 @@
         "networkservices.projects.locations.multicastGroupConsumerActivations.list",
         "networkservices.projects.locations.multicastGroupConsumerActivations.get",
         "networkservices.projects.locations.multicastGroupConsumerActivations.delete"
+      ]
+    },
+    {
+      "source_uri": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz",
+      "source_sha256": "cecc5d244c10e3bc8ef7449937569c40339b90686b902fd48b4afc6f47ebfeb3",
+      "client_path": "lib/googlecloudsdk/generated_clients/apis/securitycentermanagement/v1/securitycentermanagement_v1_client.py",
+      "messages_path": "lib/googlecloudsdk/generated_clients/apis/securitycentermanagement/v1/securitycentermanagement_v1_messages.py",
+      "methods": [
+        "securitycentermanagement.projects.locations.list",
+        "securitycentermanagement.projects.locations.securityCenterServices.list",
+        "securitycentermanagement.projects.locations.securityCenterServices.get"
       ]
     }
   ]

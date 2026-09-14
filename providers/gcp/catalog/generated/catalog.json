@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "f8e9ea099af9f41eaedcc97db6fdfebded1e350c3999754d4df9592a821af298",
+    "checksum": "137450783144e56c7aa8f1f5dba4e1651e226168b067960362534df9d8eb1cfd",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "ef974cca0522ab9752b325f9eec983e0b157e9ed2e1e6bc567c0316de163fc12",
+  "content_checksum": "bdc9ddf8e8e5716b507e3813efba880a2f518ea0281abdac644d60393ce57158",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -105456,6 +105456,229 @@
       "source_uri": "https://securitycenter.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "securitycentermanagement.projects.locations.list",
+      "name": "list",
+      "service": "securitycentermanagement",
+      "method": "GET",
+      "path": "/v1/{name}/locations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "extraLocationTypes": {
+            "items": {
+              "type": "string"
+            },
+            "location": "query",
+            "type": "array"
+          },
+          "filter": {
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "location": "path",
+            "pattern": "^projects/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "pageSize": {
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response message for Locations.ListLocations.\n\nFields:\n  locations: A list of locations that matches the specified filter in the\n    request.\n  nextPageToken: The standard List next-page token.",
+        "id": "ListLocationsResponse",
+        "properties": {
+          "locations": {
+            "items": {
+              "$ref": "GoogleCloudLocationLocation"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "locations"
+      },
+      "call": {
+        "product": "securitycentermanagement",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}/locations",
+        "endpoint": "https://securitycentermanagement.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz",
+      "source_format": "google-cloud-sdk"
+    },
+    {
+      "id": "securitycentermanagement.projects.locations.securityCenterServices.get",
+      "name": "get",
+      "service": "securitycentermanagement",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/securityCenterServices/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "showEligibleModulesOnly": {
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a particular Security Command Center service. This includes\nsettings information such as top-level enablement in addition to individual\nmodule settings. Service settings can be configured at the organization,\nfolder, or project level. Service settings at the organization or folder\nlevel are inherited by those in descendant folders and projects.\n\nEnums:\n  EffectiveEnablementStateValueValuesEnum: Output only. The effective\n    enablement state for the service at its level of the resource hierarchy.\n    If the intended state is set to `INHERITED`, the effective state will be\n    inherited from the enablement state of an ancestor. This state may\n    differ from the intended enablement state due to billing eligibility or\n    onboarding status.\n  IntendedEnablementStateValueValuesEnum: Optional. The intended enablement\n    state for the service at its level of the resource hierarchy. A\n    `DISABLED` state will override all module enablement states to\n    `DISABLED`.\n\nMessages:\n  ModulesValue: Optional. The module configurations, including the\n    enablement state for the service's modules. The absence of a module in\n    the map implies that its configuration is inherited from its parents.\n  ServiceConfigValue: Optional. Additional service-specific configuration.\n    Not all services will utilize this field.\n\nFields:\n  effectiveEnablementState: Output only. The effective enablement state for\n    the service at its level of the resource hierarchy. If the intended\n    state is set to `INHERITED`, the effective state will be inherited from\n    the enablement state of an ancestor. This state may differ from the\n    intended enablement state due to billing eligibility or onboarding\n    status.\n  intendedEnablementState: Optional. The intended enablement state for the\n    service at its level of the resource hierarchy. A `DISABLED` state will\n    override all module enablement states to `DISABLED`.\n  modules: Optional. The module configurations, including the enablement\n    state for the service's modules. The absence of a module in the map\n    implies that its configuration is inherited from its parents.\n  name: Identifier. The name of the service, in one of the following\n    formats: * `organizations/{organization}/locations/{location}/securityCe\n    nterServices/{service}` *\n    `folders/{folder}/locations/{location}/securityCenterServices/{service}`\n    * `projects/{project}/locations/{location}/securityCenterServices/{servi\n    ce}` * `projects/{project}/locations/{location}/clusters/{cluster}/secur\n    ityCenterServices/{service}` The following values are valid for\n    `{service}`: * `container-threat-detection` * `event-threat-detection` *\n    `security-health-analytics` * `vm-threat-detection` * `web-security-\n    scanner` * `vm-threat-detection-aws` * `cloud-run-threat-detection` *\n    `external-exposure` * `vm-manager` * `ec2-vulnerability-assessment` *\n    `gce-vulnerability-assessment` * `azure-vulnerability-assessment` *\n    `notebook-security-scanner` * `artifact-analysis` * `agent-engine-\n    threat-detection`\n  serviceConfig: Optional. Additional service-specific configuration. Not\n    all services will utilize this field.\n  updateTime: Output only. The time the service was last updated. This could\n    be due to an explicit user update or due to a side effect of another\n    system change, such as billing subscription expiry.",
+        "id": "SecurityCenterService",
+        "properties": {
+          "effectiveEnablementState": {
+            "enum": [
+              "ENABLEMENT_STATE_UNSPECIFIED",
+              "INHERITED",
+              "ENABLED",
+              "DISABLED",
+              "INGEST_ONLY"
+            ],
+            "type": "string"
+          },
+          "intendedEnablementState": {
+            "enum": [
+              "ENABLEMENT_STATE_UNSPECIFIED",
+              "INHERITED",
+              "ENABLED",
+              "DISABLED",
+              "INGEST_ONLY"
+            ],
+            "type": "string"
+          },
+          "modules": {
+            "$ref": "SecurityCenterService.ModulesValue"
+          },
+          "name": {
+            "type": "string"
+          },
+          "serviceConfig": {
+            "$ref": "SecurityCenterService.ServiceConfigValue"
+          },
+          "updateTime": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "securitycentermanagement",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://securitycentermanagement.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz",
+      "source_format": "google-cloud-sdk"
+    },
+    {
+      "id": "securitycentermanagement.projects.locations.securityCenterServices.list",
+      "name": "list",
+      "service": "securitycentermanagement",
+      "method": "GET",
+      "path": "/v1/{parent}/securityCenterServices",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "pageSize": {
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "showEligibleModulesOnly": {
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response message for\nSecurityCenterManagement.ListSecurityCenterServices.\n\nFields:\n  nextPageToken: A pagination token. To retrieve the next page of results,\n    call the method again with this token.\n  securityCenterServices: The list of services.",
+        "id": "ListSecurityCenterServicesResponse",
+        "properties": {
+          "nextPageToken": {
+            "type": "string"
+          },
+          "securityCenterServices": {
+            "items": {
+              "$ref": "SecurityCenterService"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "securityCenterServices"
+      },
+      "call": {
+        "product": "securitycentermanagement",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/securityCenterServices",
+        "endpoint": "https://securitycentermanagement.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz",
+      "source_format": "google-cloud-sdk"
+    },
+    {
       "id": "servicedirectory.projects.locations.namespaces.delete",
       "name": "delete",
       "service": "servicedirectory",
@@ -114721,6 +114944,24 @@
         ],
         "list_operations": [
           "securitycenter.projects.notificationConfigs.list"
+        ]
+      }
+    },
+    {
+      "native_type": "securitycentermanagement.googleapis.com/SecurityCenterService",
+      "class": "security.security_center",
+      "display_name": "Security Command Center service",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "securityCenterServices",
+        "read_operations": [
+          "securitycentermanagement.projects.locations.securityCenterServices.get"
+        ],
+        "list_operations": [
+          "securitycentermanagement.projects.locations.securityCenterServices.list"
         ]
       }
     },

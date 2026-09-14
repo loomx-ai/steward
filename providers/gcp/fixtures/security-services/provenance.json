@@ -1,0 +1,11 @@
+{
+  "source_uri": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz",
+  "source_sha256": "cecc5d244c10e3bc8ef7449937569c40339b90686b902fd48b4afc6f47ebfeb3",
+  "client_path": "lib/googlecloudsdk/generated_clients/apis/securitycentermanagement/v1/securitycentermanagement_v1_client.py",
+  "messages_path": "lib/googlecloudsdk/generated_clients/apis/securitycentermanagement/v1/securitycentermanagement_v1_messages.py",
+  "files": {
+    "securitycentermanagement_v1_client.py": "a1e933e29d6955fc28197888adb2a245f8996a0fac9b52fcecccc80dae9799fb",
+    "securitycentermanagement_v1_messages.py": "48069707017881701427362670f4e01a4dd36b37971d97ffad430f172df3a3ef"
+  },
+  "evidence": "Unchanged official SDK sources; service responses in Go tests are synthetic protocol fixtures."
+}

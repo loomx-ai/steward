@@ -196,6 +196,12 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if err != nil {
 			return contracts.InventoryBatch{}, err
 		}
+		if nativeType == securityServiceType {
+			parent := c.canonicalName("//" + securityServiceHost + "/" + text(parameters["parent"]))
+			if !strings.HasPrefix(id, parent+"/securityCenterServices/") {
+				return contracts.InventoryBatch{}, groupDenied("security_service_list_parent_changed")
+			}
+		}
 		if nativeType == storagePoolType {
 			if err := c.storagePoolIdentity(id, record.Data, record.Location); err != nil {
 				return contracts.InventoryBatch{}, err
@@ -265,7 +271,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if bigtable && !strings.HasPrefix(id, target.ParentID+"/tables/") {
 			return contracts.InventoryBatch{}, groupDenied("bigtable_list_parent_changed")
 		}
-		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || bigquery || bigtable {
+		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || bigquery || bigtable || nativeType == securityServiceType {
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
@@ -293,6 +299,10 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			} else if bigtable {
 				if c.canonicalName("//bigtableadmin.googleapis.com/"+text(live["name"])) != id {
 					return contracts.InventoryBatch{}, groupDenied("bigtable_identity_changed")
+				}
+			} else if nativeType == securityServiceType {
+				if c.canonicalName("//"+securityServiceHost+"/"+text(live["name"])) != id {
+					return contracts.InventoryBatch{}, groupDenied("security_service_identity_changed")
 				}
 			} else if isDataproc(nativeType) {
 				if err := c.dataprocIdentity(nativeType, id, live); err != nil {

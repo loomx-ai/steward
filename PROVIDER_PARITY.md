@@ -5203,3 +5203,37 @@ background evidence only, not acceptance evidence for this work.
   passed (9.272s). Provider vet and documentation checks passed (30 isolated /
   42 main chapters, 10 existing screenshots). All 65 original WIP file hashes
   stayed unchanged; no cloud resources were created.
+
+## GCP Security Command Center service-state inventory
+
+- Added native project Security Center Management service settings to the mapped
+  read-only ThreatDetection baseline. Discovery enumerates service-visible
+  locations, complete paginated lists and detail GETs; it preserves intended and
+  effective enablement, module states and update time. State reflects effective
+  enablement, including INGEST_ONLY, without inferring subscription tier. No
+  protection-disable or subscription-change action is exposed.
+- Added three SDK-derived native operations and one specification (195 rules /
+  776 operations). The unchanged official SDK members share the existing pinned
+  archive and AST converter; anonymous Discovery was unavailable (403/404).
+  Source hashes, static conversion and native request/response contracts are
+  retained in [service evidence](providers/gcp/fixtures/security-services/README.md).
+  All 56 previous source objects and 773 existing operations remain unchanged.
+- Protocol tests cover global/EU fanout, two service pages, project-number aliases,
+  own detail metadata, complete module visibility, read-only behavior, private
+  configuration redaction, failed/foreign/partial reads and cursor boundaries.
+  Actual SQLite scan-worker tests preserve the last observation and searchable
+  effective/intended state after denied, missing or mismatched detail reads.
+- The pinned Google mockgcp source has no Security Center Management service.
+  This is native SDK/protocol/application evidence, not an independent emulator
+  or live-cloud run. Ancestor/cluster settings and billing tier/trial/expiry
+  coverage remain open, as do all eight overall acceptance criteria. Bilingual
+  capability and native permission documentation now describes the new coverage.
+
+- Verification: complete `go test ./...` passed, including GCP (175.705s) and
+  Azure (350.179s). Focused GCP/native-schema/location race checks passed (13.822s);
+  main service/native-schema/catalog checks passed (5.269s). Provider vet, all
+  five offline SDK conversion tests, deterministic catalog regeneration and
+  documentation checks passed (30 isolated / 42 main chapters, 10 screenshots).
+  Shared catalog/spec/contracts packages also passed in the full run; the focused
+  race filter selected no tests in those three packages. All 65 original WIP
+  hashes were preserved. No cloud resources, new dependencies or emulator started.

@@ -1,5 +1,6 @@
 """Offline conversion checks against pinned official Cloud SDK declarations."""
 import json
+import hashlib
 from pathlib import Path
 import unittest
 import importlib.util
@@ -66,6 +67,32 @@ class SDKMetadataTests(unittest.TestCase):
         # Parsing source declarations must never import or execute SDK code.
         actual = convert("raise RuntimeError('must never execute')\n" + self.client, self.messages, self.selection["methods"])
         self.assertEqual(actual, self.document)
+
+
+class SecurityServicesSDKMetadataTests(unittest.TestCase):
+    def test_pinned_source_conversion_and_native_contract(self):
+        entries = json.loads((ROOT / "selection.json").read_text())["sdk_documents"]
+        selected = next(e for e in entries if "/securitycentermanagement/" in e["client_path"])
+        client = (ROOT / "sdk" / Path(selected["client_path"]).name).read_text()
+        messages = (ROOT / "sdk" / Path(selected["messages_path"]).name).read_text()
+        provenance = json.loads((ROOT.parent.parent / "fixtures/security-services/provenance.json").read_text())
+        for filename, digest in provenance["files"].items():
+            self.assertEqual(hashlib.sha256((ROOT / "sdk" / filename).read_bytes()).hexdigest(), digest)
+        document = convert(client, messages, selected["methods"])
+        stored = next(e for e in json.loads((ROOT / "discovery.json").read_text())["documents"] if e["document"]["name"] == "securitycentermanagement")
+        self.assertEqual(stored["document"], document)
+        self.assertEqual(stored["source_sha256"], selected["source_sha256"])
+        self.assertEqual(stored["source_format"], "google-cloud-sdk")
+        methods = document["methods"]
+        listing = methods["securitycentermanagement.projects.locations.securityCenterServices.list"]
+        self.assertEqual(listing["httpMethod"], "GET")
+        self.assertEqual(listing["path"], "v1/{+parent}/securityCenterServices")
+        self.assertEqual(listing["parameters"]["parent"]["pattern"], "^projects/[^/]+/locations/[^/]+$")
+        self.assertEqual(listing["parameters"]["showEligibleModulesOnly"]["type"], "boolean")
+        fields = document["schemas"]["SecurityCenterService"]["properties"]
+        self.assertIn("INGEST_ONLY", fields["effectiveEnablementState"]["enum"])
+        self.assertEqual(document["schemas"]["SecurityCenterService.ModulesValue"]["additionalProperties"], {"$ref": "ModuleSettings"})
+        self.assertTrue(all(m["httpMethod"] == "GET" for m in methods.values()))
 
 
 if __name__ == "__main__":

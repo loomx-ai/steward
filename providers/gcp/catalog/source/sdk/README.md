@@ -1,11 +1,12 @@
 # Official Cloud SDK metadata
 
-These two generated Python files are unchanged source members from Google Cloud
+These four generated Python files are unchanged source members from Google Cloud
 CLI 583.0.0 core, build 20260831161632. `LICENSE` is copied from the same archive.
 
 - Official archive: https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz
 - SHA-256: `cecc5d244c10e3bc8ef7449937569c40339b90686b902fd48b4afc6f47ebfeb3`
-- Archive member prefix: `lib/googlecloudsdk/generated_clients/apis/networkservices/v1/`
+- Network Services member prefix: `lib/googlecloudsdk/generated_clients/apis/networkservices/v1/`
+- Security Center Management member prefix: `lib/googlecloudsdk/generated_clients/apis/securitycentermanagement/v1/`
 - Official release manifest: https://dl.google.com/dl/cloudsdk/channels/rapid/components-2.json
 
 Media CDN and Cloud Multicast have published REST methods omitted from anonymous
@@ -28,3 +29,8 @@ Published REST references:
 - https://docs.cloud.google.com/media-cdn/docs/reference/rest/v1/projects.locations.edgeCacheServices
 - https://docs.cloud.google.com/vpc/docs/multicast/reference/rest/v1/projects.locations.multicastDomains
 - https://docs.cloud.google.com/vpc/docs/multicast/delete-resources
+
+Security Center Management v1 GET/LIST metadata uses the same verified archive
+and static converter. Its service Discovery endpoint returned 403 during this
+review. [Service inventory evidence](../../../fixtures/security-services/README.md)
+records the native read-only scope and independent verification limits.

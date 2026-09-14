@@ -308,6 +308,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized["cleanup_protection_reason"] = "identity_group_locked_or_protected"
 	}
 	refs := references(c, data)
+	if nativeType == securityServiceType {
+		refs = map[string][]string{}
+	}
 	if isIdentityGroup(nativeType) {
 		refs = map[string][]string{}
 		if nativeType == identityMemberType {
@@ -410,6 +413,12 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		name = last(nativeID)
 	}
 	state := resourceState(data)
+	if nativeType == securityServiceType {
+		if err := securityServiceSettings(data); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		state = text(data["effectiveEnablementState"])
+	}
 	actionable := known && len(kind.DeleteOperations) > 0
 	if actionable {
 		_, _, err := c.resourceOperation(kind, nativeID, "DELETE")

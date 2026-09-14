@@ -20,6 +20,13 @@ func safePayload(value map[string]any) map[string]any {
 		switch object := value.(type) {
 		case map[string]any:
 			redactDataprocPayload(object)
+			// Service-specific SCC configuration is an untyped private payload.
+			// Keep declared service/module enablement metadata available.
+			if strings.Contains(text(object["name"]), "/securityCenterServices/") {
+				if _, present := object["serviceConfig"]; present {
+					object["serviceConfig"] = "[REDACTED]"
+				}
+			}
 			// BigQuery view definitions can embed private SQL and literal secrets.
 			if _, table := object["tableReference"].(map[string]any); table {
 				for _, field := range []string{"view", "materializedView"} {

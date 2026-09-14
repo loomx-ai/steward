@@ -2407,6 +2407,7 @@ resources:
     actions: []
   gcp:
     resources:
+    - securitycentermanagement.googleapis.com/SecurityCenterService
     - securitycenter.googleapis.com/NotificationConfig
   azure:
     resources:
@@ -2414,8 +2415,9 @@ resources:
   status: pending_verification
   notes: Azure reads native Defender protection tiers, sub-plans, trial and enablement times,
     extension status, coverage and resource-level inheritance, matching the read-only
-    DescribeVersionConfig baseline. GCP notification configuration alone does not establish
-    security-center service-state parity. Independent behavior verification remains pending.
+    DescribeVersionConfig baseline. GCP now reads project Security Center Management service and module enablement through native
+    locations/list/detail APIs, including intended versus effective state and update time. Billing
+    tier/trial/expiry, ancestor-level resources and independent behavior verification remain pending.
 - alicloud: ACS::TSDB::Instance
   spec: providers/alicloud/specs/tsdb-instance.yaml
   class: database.timeseries
