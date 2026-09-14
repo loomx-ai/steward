@@ -4882,3 +4882,30 @@ background evidence only, not acceptance evidence for this work.
   passed for 30 isolated and 42 main chapters plus 10 original screenshots.
   Exactly eight owned files were integrated, with all 65 original working-file
   hashes unchanged. No frontend changes or live-cloud tests were involved.
+
+## Future Reservation independent native server verification
+
+- Executed the retained opt-in test against Google's unmodified mockgcp at pinned
+  commit `673a61419de1b8e4f7d26070ce20dde2daa61da8`, using the existing Compute
+  harness. Repository-local dependencies were checked out and compiled without
+  changing upstream service source or module definitions.
+- Two native INSERTs and a fixture-side CANCEL exercise generated state, numeric
+  identity, matching usage and duration-derived timestamps. Steward's 18 forwarded
+  Compute calls include native aggregated inventory, regional selection, own
+  readback, DELETE, zonal operation polling and final absence. There are no
+  Compute response substitutions; only OAuth and CRM use connection fixtures.
+- Serialized requests/receipts resume in fresh runtimes without replaying either
+  delete. Deleting the first reservation preserves the other zone's reservation;
+  final own GET and aggregate absence agree. Unique fixture names and exact
+  resource cleanup allow isolated repeat runs against the same loopback server.
+- Reproduction and source fingerprints are retained in the fixture README.
+  Upstream does not model real procurement, fulfillment, IAM or list pagination.
+  Independent-server evidence does not establish cloud equivalence or close the
+  eight overall criteria. This milestone changes only tests and evidence docs.
+- Validation passed with the independent test enabled: isolated GCP suite
+  (168.400s), focused race suite (8.501s) and main integrated native/protocol suite
+  (6.957s). The standalone independent run passed (0.762s). GCP vet and docs checks
+  passed for 30 isolated and 42 main chapters plus 10 original screenshots.
+  The exact temporary server exited normally; its upstream checkout and binary
+  were removed. Three owned files were integrated, preserving all 65 preexisting
+  working-file hashes. Production code, API metadata and frontend remain unchanged.
