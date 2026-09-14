@@ -196,6 +196,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if err != nil {
 			return contracts.InventoryBatch{}, err
 		}
+		if nativeType == storagePoolType {
+			if err := c.storagePoolIdentity(id, record.Data, record.Location); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+		}
 		if isInfra(nativeType) {
 			if err := c.infraIdentity(nativeType, id, record.Data); err != nil {
 				return contracts.InventoryBatch{}, err

@@ -4709,3 +4709,42 @@ background evidence only, not acceptance evidence for this work.
   focused tests passed (12.866s), and main focused tests passed (13.484s). Azure
   vet and documentation checks passed (30 isolated/42 main chapters and all
   10 original screenshots). All 65 preexisting WIP hashes were preserved.
+
+
+## GCP Hyperdisk Storage Pool inventory and references
+
+- Added `compute.googleapis.com/StoragePool` as the native pooled-capacity
+  candidate for the EBS dedicated-storage-cluster row, replacing generic Disk.
+  The Alibaba baseline inventories cluster capacity/zone/properties without a
+  delete action. Physical-resource exclusivity remains a platform difference to
+  assess; pooled capacity alone does not establish identical isolation.
+- Imported five original Compute v1 storagePools methods and 26 transitive
+  schemas from revision `20260908`, full-response SHA-256
+  `30f29098aad84c7c4fb51eb657deebaec233799f13877e1cd0bb25738a02b4fd`.
+  The new fragment preserves every prior source document and all 768 existing
+  generated operations. The catalog now has 194 rules and 773 methods.
+- Native aggregated inventory covers project and regional scans with zonal
+  identity checks, empty-page continuation, partial-result failure and bound
+  cursors. Pool state is separate from structured usage; both native usage field
+  names are supported. Capacity, IOPS, throughput, provisioning types, disk
+  counts, Exapool capacity and sharing settings remain available, with int64
+  values retained as strings. Disk pool references are ordinary dependencies.
+- Real SQLite worker tests reopen the database/runtime, preserve observations
+  after denied/partial scans and reconcile a missing pool only after a complete
+  successful native list. Native wire tests cover identity/scope conflicts,
+  precision, paging, references and method bindings. These are composed protocol
+  fixtures, not live-cloud recordings. The pinned Google mockgcp Compute service
+  does not register StoragePools; no emulator was started for this milestone.
+- This milestone implements inventory and references. Complete listDisks member
+  discovery and reviewed pool cleanup remain unfinished; imported DELETE metadata
+  does not register a cleanup action. Google requires disks removed before Storage
+  Pool deletion and retains snapshots; Exapool deletion requires its account team.
+  Cross-project sharing and physical-isolation equivalence remain to verify.
+  All eight overall acceptance criteria remain open.
+- Validation: final `go test ./... -count=1` passed, including Azure (352.652s)
+  and GCP (164.193s). GCP Storage Pool/Compute/product/catalog race tests passed
+  (20.971s), isolated focused tests passed (6.492s), and main focused tests passed
+  (10.530s). GCP vet, seven Python catalog tests and documentation checks passed
+  (30 isolated/42 main chapters and all 10 original screenshots). All 65
+  preexisting WIP hashes were preserved; every prior source fragment, resource
+  rule and generated operation remains unchanged.

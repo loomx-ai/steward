@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "9749072fc673992a7959290c0dd56813f88e28d9a1893b1722388095324ed667",
+    "checksum": "3953a92665ae21cc21d918b0d8f8819283cef756bd484640d41f1fa2bc804989",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "70fdcfdf3042885accdd18a84df9f628637199eb6198f535ccbd00277087ea2b",
+  "content_checksum": "0df261b706bf6e059f63492d38c7fa5e8399b27c2cfd1c596645ac985bc99919",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -65852,6 +65852,1287 @@
       "source_uri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"
     },
     {
+      "id": "compute.storagePools.aggregatedList",
+      "name": "aggregatedList",
+      "service": "compute",
+      "method": "GET",
+      "path": "/compute/v1/projects/{project}/aggregated/storagePools",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "A filter expression that filters resources listed in the response. Most\nCompute resources support two types of filter expressions:\nexpressions that support regular expressions and expressions that follow\nAPI improvement proposal AIP-160.\nThese two types of filter expressions cannot be mixed in one request.\n\nIf you want to use AIP-160, your expression must specify the field name, an\noperator, and the value that you want to use for filtering. The value\nmust be a string, a number, or a boolean. The operator\nmust be either `=`, `!=`, `\u003e`, `\u003c`, `\u003c=`, `\u003e=` or `:`.\n\nFor example, if you are filtering Compute Engine instances, you can\nexclude instances named `example-instance` by specifying\n`name != example-instance`.\n\nThe `:*` comparison can be used to test whether a key has been defined.\nFor example, to find all objects with `owner` label use:\n```\nlabels.owner:*\n```\n\nYou can also filter nested fields. For example, you could specify\n`scheduling.automaticRestart = false` to include instances only\nif they are not scheduled for automatic restarts. You can use filtering\non nested fields to filter based onresource labels.\n\nTo filter on multiple expressions, provide each separate expression within\nparentheses. For example:\n```\n(scheduling.automaticRestart = true)\n(cpuPlatform = \"Intel Skylake\")\n```\nBy default, each expression is an `AND` expression. However, you\ncan include `AND` and `OR` expressions explicitly.\nFor example:\n```\n(cpuPlatform = \"Intel Skylake\") OR\n(cpuPlatform = \"Intel Broadwell\") AND\n(scheduling.automaticRestart = true)\n```\n\nIf you want to use a regular expression, use the `eq` (equal) or `ne`\n(not equal) operator against a single un-parenthesized expression with or\nwithout quotes or against multiple parenthesized expressions. Examples:\n\n`fieldname eq unquoted literal`\n`fieldname eq 'single quoted literal'`\n`fieldname eq \"double quoted literal\"`\n`(fieldname1 eq literal) (fieldname2 ne \"literal\")`\n\nThe literal value is interpreted as a regular expression using GoogleRE2 library syntax.\nThe literal value must match the entire field.\n\nFor example, to filter for instances that do not end with name \"instance\",\nyou would use `name ne .*instance`.\n\nYou cannot combine constraints on multiple fields using regular\nexpressions.",
+            "location": "query",
+            "type": "string"
+          },
+          "includeAllScopes": {
+            "description": "Indicates whether every visible scope for each scope type (zone, region,\nglobal) should be included in the response. For new resource types added\nafter this field, the flag has no effect as new resource types will always\ninclude every visible scope for each scope type in response. For resource\ntypes which predate this field, if this flag is omitted or false, only\nscopes of the scope types where the resource type is expected to be found\nwill be included.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "maxResults": {
+            "default": "500",
+            "description": "The maximum number of results per page that should be returned.\nIf the number of available results is larger than `maxResults`,\nCompute Engine returns a `nextPageToken` that can be used to get\nthe next page of results in subsequent list requests. Acceptable values are\n`0` to `500`, inclusive. (Default: `500`)",
+            "format": "uint32",
+            "location": "query",
+            "minimum": "0",
+            "type": "integer"
+          },
+          "orderBy": {
+            "description": "Sorts list results by a certain order. By default, results\nare returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation\ntimestamp using `orderBy=\"creationTimestamp desc\"`. This sorts\nresults based on the `creationTimestamp` field in\nreverse chronological order (newest result first). Use this to sort\nresources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by `name` or\n`creationTimestamp desc` is supported.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageToken": {
+            "description": "Specifies a page token to use. Set `pageToken` to the\n`nextPageToken` returned by a previous list request to get\nthe next page of results.",
+            "location": "query",
+            "type": "string"
+          },
+          "project": {
+            "description": "Project ID for this request.",
+            "location": "path",
+            "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+            "required": true,
+            "type": "string"
+          },
+          "returnPartialSuccess": {
+            "description": "Opt-in for partial success behavior which provides partial results in case\nof failure. The default value is false.\n\nFor example, when partial success behavior is enabled, aggregatedList for a\nsingle zone scope either returns all resources in the zone or no resources,\nwith an error code.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "serviceProjectNumber": {
+            "description": "The Shared VPC service project id or service project number for which\naggregated list request is invoked for subnetworks list-usable api.",
+            "format": "int64",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "id": "StoragePoolAggregatedList",
+        "properties": {
+          "etag": {
+            "type": "string"
+          },
+          "id": {
+            "description": "[Output Only] Unique identifier for the resource; defined by the server.",
+            "type": "string"
+          },
+          "items": {
+            "additionalProperties": {
+              "$ref": "StoragePoolsScopedList",
+              "description": "[Output Only] Name of the scope containing this set of storage pool."
+            },
+            "description": "A list of StoragePoolsScopedList resources.",
+            "type": "object"
+          },
+          "kind": {
+            "default": "compute#storagePoolAggregatedList",
+            "description": "Output only. [Output Only] Type of resource. Alwayscompute#storagePoolAggregatedList for aggregated lists of\nstorage pools.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "nextPageToken": {
+            "description": "[Output Only] This token allows you to get the next page of results for\nlist requests. If the number of results is larger thanmaxResults, use the nextPageToken as a value for\nthe query parameter pageToken in the next list request.\nSubsequent list requests will have their own nextPageToken to\ncontinue paging through the results.",
+            "type": "string"
+          },
+          "selfLink": {
+            "description": "Output only. [Output Only] Server-defined URL for this resource.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "unreachables": {
+            "description": "Output only. [Output Only] Unreachable resources.",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "warning": {
+            "description": "[Output Only] Informational warning message.",
+            "properties": {
+              "code": {
+                "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                "enum": [
+                  "CLEANUP_FAILED",
+                  "DEPRECATED_RESOURCE_USED",
+                  "DEPRECATED_TYPE_USED",
+                  "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                  "EXPERIMENTAL_TYPE_USED",
+                  "EXTERNAL_API_WARNING",
+                  "FIELD_VALUE_OVERRIDEN",
+                  "INJECTED_KERNELS_DEPRECATED",
+                  "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                  "LARGE_DEPLOYMENT_WARNING",
+                  "LIST_OVERHEAD_QUOTA_EXCEED",
+                  "MISSING_TYPE_DEPENDENCY",
+                  "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                  "NEXT_HOP_CANNOT_IP_FORWARD",
+                  "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                  "NEXT_HOP_INSTANCE_NOT_FOUND",
+                  "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                  "NEXT_HOP_NOT_RUNNING",
+                  "NOT_CRITICAL_ERROR",
+                  "NO_RESULTS_ON_PAGE",
+                  "PARTIAL_SUCCESS",
+                  "QUOTA_INFO_UNAVAILABLE",
+                  "REQUIRED_TOS_AGREEMENT",
+                  "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                  "RESOURCE_NOT_DELETED",
+                  "SCHEMA_VALIDATION_IGNORED",
+                  "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                  "UNDECLARED_PROPERTIES",
+                  "UNREACHABLE"
+                ],
+                "enumDeprecated": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  true,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "enumDescriptions": [
+                  "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                  "A link to a deprecated resource was created.",
+                  "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                  "The user created a boot disk that is larger than image size.",
+                  "When deploying and at least one of the resources has a type marked as\nexperimental",
+                  "Warning that is present in an external api call",
+                  "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                  "The operation involved use of an injected kernel, which is deprecated.",
+                  "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                  "When deploying a deployment with a exceedingly large number of resources",
+                  "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                  "A resource depends on a missing type",
+                  "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                  "The route's next hop instance cannot ip forward.",
+                  "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                  "The route's nextHopInstance URL refers to an instance that does not exist.",
+                  "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                  "The route's next hop instance does not have a status of RUNNING.",
+                  "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                  "No results are present on a particular list page.",
+                  "Success is reported, but some results may be missing due to errors",
+                  "Quota information is not available to client requests (e.g:\nregions.list).",
+                  "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                  "Warning that a resource is in use.",
+                  "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                  "When a resource schema validation is ignored.",
+                  "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                  "When undeclared properties in the schema are present",
+                  "A given scope cannot be reached."
+                ],
+                "type": "string"
+              },
+              "data": {
+                "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]",
+                "items": {
+                  "properties": {
+                    "key": {
+                      "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                      "type": "string"
+                    },
+                    "value": {
+                      "description": "[Output Only] A warning data value corresponding to the key.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "message": {
+                "description": "[Output Only] A human-readable description of the warning code.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "compute",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/compute/v1/projects/{project}/aggregated/storagePools",
+        "endpoint": "https://compute.googleapis.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"
+    },
+    {
+      "id": "compute.storagePools.delete",
+      "name": "delete",
+      "service": "compute",
+      "method": "DELETE",
+      "path": "/compute/v1/projects/{project}/zones/{zone}/storagePools/{storagePool}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "project": {
+            "description": "Project ID for this request.",
+            "location": "path",
+            "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+            "required": true,
+            "type": "string"
+          },
+          "requestId": {
+            "description": "An optional request ID to identify requests. Specify a unique request ID so\nthat if you must retry your request, the server will know to ignore the\nrequest if it has already been completed.\n\nFor example, consider a situation where you make an initial request and\nthe request times out. If you make the request again with the same\nrequest ID, the server can check if original operation with the same\nrequest ID was received, and if so, will ignore the second request. This\nprevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be\na valid UUID with the exception that zero UUID is not supported\n(00000000-0000-0000-0000-000000000000).",
+            "location": "query",
+            "type": "string"
+          },
+          "storagePool": {
+            "description": "Name of the storage pool to delete.",
+            "location": "path",
+            "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+            "required": true,
+            "type": "string"
+          },
+          "zone": {
+            "description": "The name of the zone for this request.",
+            "location": "path",
+            "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents an Operation resource.\n\nGoogle Compute Engine has three Operation resources:\n\n* [Global](/compute/docs/reference/rest/v1/globalOperations)\n* [Regional](/compute/docs/reference/rest/v1/regionOperations)\n* [Zonal](/compute/docs/reference/rest/v1/zoneOperations)\n\nYou can use an operation resource to manage asynchronous API requests.\nFor more information, readHandling\nAPI responses.\n\nOperations can be global, regional or zonal.\n   \n   - For global operations, use the `globalOperations`\n   resource. \n   - For regional operations, use the\n   `regionOperations` resource. \n   - For zonal operations, use\n   the `zoneOperations` resource.\n\n\n\nFor more information, read\nGlobal, Regional, and Zonal Resources.\n\nNote that completed Operation resources have a limited \nretention period.",
+        "id": "Operation",
+        "properties": {
+          "clientOperationId": {
+            "description": "[Output Only] The value of `requestId` if you provided it in the request.\nNot present otherwise.",
+            "type": "string"
+          },
+          "creationTimestamp": {
+            "description": "[Deprecated] This field is deprecated.",
+            "type": "string"
+          },
+          "description": {
+            "description": "[Output Only] A textual description of the operation, which is\nset when the operation is created.",
+            "type": "string"
+          },
+          "endTime": {
+            "description": "[Output Only] The time that this operation was completed. This value is inRFC3339\ntext format.",
+            "type": "string"
+          },
+          "error": {
+            "description": "[Output Only] If errors are generated during processing of the operation,\nthis field will be populated.",
+            "properties": {
+              "errors": {
+                "description": "[Output Only] The array of errors encountered while processing this\noperation.",
+                "items": {
+                  "description": "Represents a single error encountered during the processing of an\noperation.",
+                  "properties": {
+                    "code": {
+                      "description": "[Output Only] The error type identifier for this error.",
+                      "type": "string"
+                    },
+                    "errorDetails": {
+                      "description": "[Output Only] An optional list of messages that contain the error\ndetails. There is a set of defined message types to use for providing\ndetails.The syntax depends on the error code. For example,\nQuotaExceededInfo will have details when the error code is\nQUOTA_EXCEEDED.",
+                      "items": {
+                        "description": "Container for structured error details providing additional context\nspecific to the encountered error code.",
+                        "properties": {
+                          "errorInfo": {
+                            "$ref": "ErrorInfo",
+                            "description": "Error information containing structured domain, reason, and metadata."
+                          },
+                          "help": {
+                            "$ref": "Help",
+                            "description": "Links and information to help the user resolve the error."
+                          },
+                          "localizedMessage": {
+                            "$ref": "LocalizedMessage",
+                            "description": "A localized human-readable error message intended for end users."
+                          },
+                          "quotaInfo": {
+                            "$ref": "QuotaExceededInfo",
+                            "description": "Details about quota limits and metrics when a quota is exceeded."
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "location": {
+                      "description": "[Output Only] Indicates the field in the request that caused the error.\nThis property is optional.",
+                      "type": "string"
+                    },
+                    "message": {
+                      "description": "[Output Only] An optional, human-readable error message.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "getHealthOperationMetadata": {
+            "$ref": "GetHealthOperationMetadata",
+            "description": "Output only. Metadata for GetHealth operations.",
+            "readOnly": true
+          },
+          "getVersionOperationMetadata": {
+            "$ref": "GetVersionOperationMetadata"
+          },
+          "httpErrorMessage": {
+            "description": "[Output Only] If the operation fails, this field contains the HTTP error\nmessage that was returned, such as `NOT FOUND`.",
+            "type": "string"
+          },
+          "httpErrorStatusCode": {
+            "description": "[Output Only] If the operation fails, this field contains the HTTP error\nstatus code that was returned. For example, a `404` means the\nresource was not found.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "id": {
+            "description": "[Output Only] The unique identifier for the operation. This identifier is\ndefined by the server.",
+            "format": "uint64",
+            "type": "string"
+          },
+          "insertTime": {
+            "description": "[Output Only] The time that this operation was requested.\nThis value is inRFC3339\ntext format.",
+            "type": "string"
+          },
+          "instancesBulkInsertOperationMetadata": {
+            "$ref": "InstancesBulkInsertOperationMetadata"
+          },
+          "kind": {
+            "default": "compute#operation",
+            "description": "Output only. [Output Only] Type of the resource. Always `compute#operation` for\nOperation resources.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "[Output Only] Name of the operation.",
+            "type": "string"
+          },
+          "operationGroupId": {
+            "description": "Output only. [Output Only] An ID that represents a group of operations, such as when a\ngroup of operations results from a `bulkInsert` API request.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "operationType": {
+            "description": "[Output Only] The type of operation, such as `insert`,\n`update`, or `delete`, and so on.",
+            "type": "string"
+          },
+          "progress": {
+            "description": "[Output Only] An optional progress indicator that ranges from 0 to 100.\nThere is no requirement that this be linear or support any granularity of\noperations. This should not be used to guess when the operation will be\ncomplete. This number should monotonically increase as the operation\nprogresses.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "region": {
+            "description": "[Output Only] The URL of the region where the operation resides. Only\napplicable when performing regional operations.",
+            "type": "string"
+          },
+          "selfLink": {
+            "description": "[Output Only] Server-defined URL for the resource.",
+            "type": "string"
+          },
+          "setCommonInstanceMetadataOperationMetadata": {
+            "$ref": "SetCommonInstanceMetadataOperationMetadata",
+            "description": "Output only. [Output Only] If the operation is for projects.setCommonInstanceMetadata,\nthis field will contain information on all underlying zonal actions and\ntheir state.",
+            "readOnly": true
+          },
+          "startTime": {
+            "description": "[Output Only] The time that this operation was started by the server.\nThis value is inRFC3339\ntext format.",
+            "type": "string"
+          },
+          "status": {
+            "description": "[Output Only] The status of the operation, which can be one of the\nfollowing:\n`PENDING`, `RUNNING`, or `DONE`.",
+            "enum": [
+              "DONE",
+              "PENDING",
+              "RUNNING"
+            ],
+            "enumDescriptions": [
+              "The operation has completed processing successfully or with an error.",
+              "The operation is waiting to be processed.",
+              "The operation is actively being processed."
+            ],
+            "type": "string"
+          },
+          "statusMessage": {
+            "description": "[Output Only] An optional textual description of the current status of the\noperation.",
+            "type": "string"
+          },
+          "targetId": {
+            "description": "[Output Only] The unique target ID, which identifies a specific incarnation\nof the target resource.",
+            "format": "uint64",
+            "type": "string"
+          },
+          "targetLink": {
+            "description": "[Output Only] The URL of the resource that the operation modifies. For\noperations related to creating a snapshot, this points to the disk\nthat the snapshot was created from.",
+            "type": "string"
+          },
+          "user": {
+            "description": "[Output Only] User who requested the operation, for example:\n`user@example.com` or\n`alice_smith_identifier (global/workforcePools/example-com-us-employees)`.",
+            "type": "string"
+          },
+          "warnings": {
+            "description": "[Output Only] If warning messages are generated during processing of the\noperation, this field will be populated.",
+            "items": {
+              "properties": {
+                "code": {
+                  "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                  "enum": [
+                    "CLEANUP_FAILED",
+                    "DEPRECATED_RESOURCE_USED",
+                    "DEPRECATED_TYPE_USED",
+                    "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                    "EXPERIMENTAL_TYPE_USED",
+                    "EXTERNAL_API_WARNING",
+                    "FIELD_VALUE_OVERRIDEN",
+                    "INJECTED_KERNELS_DEPRECATED",
+                    "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                    "LARGE_DEPLOYMENT_WARNING",
+                    "LIST_OVERHEAD_QUOTA_EXCEED",
+                    "MISSING_TYPE_DEPENDENCY",
+                    "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                    "NEXT_HOP_CANNOT_IP_FORWARD",
+                    "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                    "NEXT_HOP_INSTANCE_NOT_FOUND",
+                    "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                    "NEXT_HOP_NOT_RUNNING",
+                    "NOT_CRITICAL_ERROR",
+                    "NO_RESULTS_ON_PAGE",
+                    "PARTIAL_SUCCESS",
+                    "QUOTA_INFO_UNAVAILABLE",
+                    "REQUIRED_TOS_AGREEMENT",
+                    "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                    "RESOURCE_NOT_DELETED",
+                    "SCHEMA_VALIDATION_IGNORED",
+                    "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                    "UNDECLARED_PROPERTIES",
+                    "UNREACHABLE"
+                  ],
+                  "enumDeprecated": [
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+                  ],
+                  "enumDescriptions": [
+                    "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                    "A link to a deprecated resource was created.",
+                    "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                    "The user created a boot disk that is larger than image size.",
+                    "When deploying and at least one of the resources has a type marked as\nexperimental",
+                    "Warning that is present in an external api call",
+                    "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                    "The operation involved use of an injected kernel, which is deprecated.",
+                    "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                    "When deploying a deployment with a exceedingly large number of resources",
+                    "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                    "A resource depends on a missing type",
+                    "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                    "The route's next hop instance cannot ip forward.",
+                    "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                    "The route's nextHopInstance URL refers to an instance that does not exist.",
+                    "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                    "The route's next hop instance does not have a status of RUNNING.",
+                    "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                    "No results are present on a particular list page.",
+                    "Success is reported, but some results may be missing due to errors",
+                    "Quota information is not available to client requests (e.g:\nregions.list).",
+                    "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                    "Warning that a resource is in use.",
+                    "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                    "When a resource schema validation is ignored.",
+                    "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                    "When undeclared properties in the schema are present",
+                    "A given scope cannot be reached."
+                  ],
+                  "type": "string"
+                },
+                "data": {
+                  "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]",
+                  "items": {
+                    "properties": {
+                      "key": {
+                        "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                        "type": "string"
+                      },
+                      "value": {
+                        "description": "[Output Only] A warning data value corresponding to the key.",
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "message": {
+                  "description": "[Output Only] A human-readable description of the warning code.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "zone": {
+            "description": "[Output Only] The URL of the zone where the operation resides. Only\napplicable when performing per-zone operations.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "compute",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/compute/v1/projects/{project}/zones/{zone}/storagePools/{storagePool}",
+        "endpoint": "https://compute.googleapis.com",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "requestId"
+      },
+      "source_uri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"
+    },
+    {
+      "id": "compute.storagePools.get",
+      "name": "get",
+      "service": "compute",
+      "method": "GET",
+      "path": "/compute/v1/projects/{project}/zones/{zone}/storagePools/{storagePool}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "project": {
+            "description": "Project ID for this request.",
+            "location": "path",
+            "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+            "required": true,
+            "type": "string"
+          },
+          "storagePool": {
+            "description": "Name of the storage pool to return.",
+            "location": "path",
+            "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+            "required": true,
+            "type": "string"
+          },
+          "zone": {
+            "description": "The name of the zone for this request.",
+            "location": "path",
+            "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a zonal storage pool resource.",
+        "id": "StoragePool",
+        "properties": {
+          "capacityProvisioningType": {
+            "description": "Provisioning type of the byte capacity of the pool.",
+            "enum": [
+              "ADVANCED",
+              "STANDARD",
+              "UNSPECIFIED"
+            ],
+            "enumDescriptions": [
+              "Advanced provisioning \"thinly\" allocates the related resource.",
+              "Standard provisioning allocates the related resource for the pool\ndisks' exclusive use.",
+              ""
+            ],
+            "type": "string"
+          },
+          "creationTimestamp": {
+            "description": "Output only. [Output Only] Creation timestamp inRFC3339\ntext format.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "description": {
+            "description": "An optional description of this resource. Provide this property when you\ncreate the resource.",
+            "type": "string"
+          },
+          "exapoolProvisionedCapacityGb": {
+            "$ref": "StoragePoolExapoolProvisionedCapacityGb",
+            "description": "Provisioned capacities for each SKU for this Exapool in GiB"
+          },
+          "id": {
+            "description": "Output only. [Output Only] The unique identifier for the resource. This identifier is\ndefined by the server.",
+            "format": "uint64",
+            "readOnly": true,
+            "type": "string"
+          },
+          "kind": {
+            "default": "compute#storagePool",
+            "description": "Output only. [Output Only] Type of the resource. Always compute#storagePool\nfor storage pools.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "labelFingerprint": {
+            "description": "A fingerprint for the labels being applied to this storage pool, which is\nessentially a hash of the labels set used for optimistic locking. The\nfingerprint is initially generated by Compute Engine and changes after\nevery request to modify or update labels. You must always provide an\nup-to-date fingerprint hash in order to update or change labels,\notherwise the request will fail with error412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to\nretrieve a storage pool.",
+            "format": "byte",
+            "type": "string"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Labels to apply to this storage pool. These can be later modified by\nthe setLabels method.",
+            "type": "object"
+          },
+          "name": {
+            "annotations": {
+              "required": [
+                "compute.storagePools.insert"
+              ]
+            },
+            "description": "Name of the resource. Provided by the client when the resource is created.\nThe name must be 1-63 characters long, and comply withRFC1035.\nSpecifically, the name must be 1-63 characters long and match the regular\nexpression `[a-z]([-a-z0-9]*[a-z0-9])?`\nwhich means the first character must be a lowercase letter, and all\nfollowing characters must be a dash, lowercase letter, or digit, except\nthe last character, which cannot be a dash.",
+            "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+            "type": "string"
+          },
+          "params": {
+            "$ref": "StoragePoolParams",
+            "description": "Input only. Additional params passed with the request, but not persisted\nas part of resource payload."
+          },
+          "performanceProvisioningType": {
+            "description": "Provisioning type of the performance-related parameters of the pool,\nsuch as throughput and IOPS.",
+            "enum": [
+              "ADVANCED",
+              "STANDARD",
+              "UNSPECIFIED"
+            ],
+            "enumDescriptions": [
+              "Advanced provisioning \"thinly\" allocates the related resource.",
+              "Standard provisioning allocates the related resource for the pool\ndisks' exclusive use.",
+              ""
+            ],
+            "type": "string"
+          },
+          "poolProvisionedCapacityGb": {
+            "annotations": {
+              "required": [
+                "compute.storagePools.insert"
+              ]
+            },
+            "description": "Size of the storage pool in GiB. For more information about the size\nlimits, see https://cloud.google.com/compute/docs/disks/storage-pools.",
+            "format": "int64",
+            "type": "string"
+          },
+          "poolProvisionedIops": {
+            "description": "Provisioned IOPS of the storage pool. Only relevant if the storage pool\ntype is hyperdisk-balanced.",
+            "format": "int64",
+            "type": "string"
+          },
+          "poolProvisionedThroughput": {
+            "description": "Provisioned throughput of the storage pool in MiB/s. Only relevant if the\nstorage pool type is hyperdisk-balanced or hyperdisk-throughput.",
+            "format": "int64",
+            "type": "string"
+          },
+          "resourceStatus": {
+            "$ref": "StoragePoolResourceStatus",
+            "description": "Output only. [Output Only] Status information for the storage pool resource.",
+            "readOnly": true
+          },
+          "selfLink": {
+            "description": "Output only. [Output Only] Server-defined fully-qualified URL for this resource.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "selfLinkWithId": {
+            "description": "Output only. [Output Only] Server-defined URL for this resource's resource id.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "shareSettings": {
+            "$ref": "StoragePoolShareSettings",
+            "description": "Share settings for the storage pool."
+          },
+          "state": {
+            "description": "Output only. [Output Only] The status of storage pool creation.\n   \n   \n     - CREATING: Storage pool is provisioning.\n     storagePool.\n     - FAILED: Storage pool creation failed.\n     - READY: Storage pool is ready for use.\n     - DELETING: Storage pool is deleting.",
+            "enum": [
+              "CREATING",
+              "DELETING",
+              "FAILED",
+              "READY"
+            ],
+            "enumDescriptions": [
+              "StoragePool is provisioning",
+              "StoragePool is deleting.",
+              "StoragePool creation failed.",
+              "StoragePool is ready for use."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "status": {
+            "$ref": "StoragePoolResourceStatus",
+            "description": "Output only. [Output Only] Status information for the storage pool resource.",
+            "readOnly": true
+          },
+          "storagePoolType": {
+            "description": "Type of the storage pool.",
+            "type": "string"
+          },
+          "zone": {
+            "description": "Output only. [Output Only] URL of the zone where the storage pool resides.\nYou must specify this field as part of the HTTP request URL. It is\nnot settable as a field in the request body.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "compute",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/compute/v1/projects/{project}/zones/{zone}/storagePools/{storagePool}",
+        "endpoint": "https://compute.googleapis.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"
+    },
+    {
+      "id": "compute.storagePools.list",
+      "name": "list",
+      "service": "compute",
+      "method": "GET",
+      "path": "/compute/v1/projects/{project}/zones/{zone}/storagePools",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "A filter expression that filters resources listed in the response. Most\nCompute resources support two types of filter expressions:\nexpressions that support regular expressions and expressions that follow\nAPI improvement proposal AIP-160.\nThese two types of filter expressions cannot be mixed in one request.\n\nIf you want to use AIP-160, your expression must specify the field name, an\noperator, and the value that you want to use for filtering. The value\nmust be a string, a number, or a boolean. The operator\nmust be either `=`, `!=`, `\u003e`, `\u003c`, `\u003c=`, `\u003e=` or `:`.\n\nFor example, if you are filtering Compute Engine instances, you can\nexclude instances named `example-instance` by specifying\n`name != example-instance`.\n\nThe `:*` comparison can be used to test whether a key has been defined.\nFor example, to find all objects with `owner` label use:\n```\nlabels.owner:*\n```\n\nYou can also filter nested fields. For example, you could specify\n`scheduling.automaticRestart = false` to include instances only\nif they are not scheduled for automatic restarts. You can use filtering\non nested fields to filter based onresource labels.\n\nTo filter on multiple expressions, provide each separate expression within\nparentheses. For example:\n```\n(scheduling.automaticRestart = true)\n(cpuPlatform = \"Intel Skylake\")\n```\nBy default, each expression is an `AND` expression. However, you\ncan include `AND` and `OR` expressions explicitly.\nFor example:\n```\n(cpuPlatform = \"Intel Skylake\") OR\n(cpuPlatform = \"Intel Broadwell\") AND\n(scheduling.automaticRestart = true)\n```\n\nIf you want to use a regular expression, use the `eq` (equal) or `ne`\n(not equal) operator against a single un-parenthesized expression with or\nwithout quotes or against multiple parenthesized expressions. Examples:\n\n`fieldname eq unquoted literal`\n`fieldname eq 'single quoted literal'`\n`fieldname eq \"double quoted literal\"`\n`(fieldname1 eq literal) (fieldname2 ne \"literal\")`\n\nThe literal value is interpreted as a regular expression using GoogleRE2 library syntax.\nThe literal value must match the entire field.\n\nFor example, to filter for instances that do not end with name \"instance\",\nyou would use `name ne .*instance`.\n\nYou cannot combine constraints on multiple fields using regular\nexpressions.",
+            "location": "query",
+            "type": "string"
+          },
+          "maxResults": {
+            "default": "500",
+            "description": "The maximum number of results per page that should be returned.\nIf the number of available results is larger than `maxResults`,\nCompute Engine returns a `nextPageToken` that can be used to get\nthe next page of results in subsequent list requests. Acceptable values are\n`0` to `500`, inclusive. (Default: `500`)",
+            "format": "uint32",
+            "location": "query",
+            "minimum": "0",
+            "type": "integer"
+          },
+          "orderBy": {
+            "description": "Sorts list results by a certain order. By default, results\nare returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation\ntimestamp using `orderBy=\"creationTimestamp desc\"`. This sorts\nresults based on the `creationTimestamp` field in\nreverse chronological order (newest result first). Use this to sort\nresources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by `name` or\n`creationTimestamp desc` is supported.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageToken": {
+            "description": "Specifies a page token to use. Set `pageToken` to the\n`nextPageToken` returned by a previous list request to get\nthe next page of results.",
+            "location": "query",
+            "type": "string"
+          },
+          "project": {
+            "description": "Project ID for this request.",
+            "location": "path",
+            "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+            "required": true,
+            "type": "string"
+          },
+          "returnPartialSuccess": {
+            "description": "Opt-in for partial success behavior which provides partial results in case\nof failure. The default value is false.\n\nFor example, when partial success behavior is enabled, aggregatedList for a\nsingle zone scope either returns all resources in the zone or no resources,\nwith an error code.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "zone": {
+            "description": "The name of the zone for this request.",
+            "location": "path",
+            "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of StoragePool resources.",
+        "id": "StoragePoolList",
+        "properties": {
+          "etag": {
+            "type": "string"
+          },
+          "id": {
+            "description": "[Output Only] Unique identifier for the resource; defined by the server.",
+            "type": "string"
+          },
+          "items": {
+            "description": "A list of StoragePool resources.",
+            "items": {
+              "$ref": "StoragePool"
+            },
+            "type": "array"
+          },
+          "kind": {
+            "default": "compute#storagePoolList",
+            "description": "Output only. [Output Only] Type of resource. Always compute#storagePoolList\nfor lists of storagePools.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "nextPageToken": {
+            "description": "[Output Only] This token allows you to get the next page of results for\nlist requests. If the number of results is larger thanmaxResults, use the nextPageToken as a value for\nthe query parameter pageToken in the next list request.\nSubsequent list requests will have their own nextPageToken to\ncontinue paging through the results.",
+            "type": "string"
+          },
+          "selfLink": {
+            "description": "Output only. [Output Only] Server-defined URL for this resource.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "unreachables": {
+            "description": "Output only. [Output Only] Unreachable resources.\nend_interface: MixerListResponseWithEtagBuilder",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "warning": {
+            "description": "[Output Only] Informational warning message.",
+            "properties": {
+              "code": {
+                "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                "enum": [
+                  "CLEANUP_FAILED",
+                  "DEPRECATED_RESOURCE_USED",
+                  "DEPRECATED_TYPE_USED",
+                  "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                  "EXPERIMENTAL_TYPE_USED",
+                  "EXTERNAL_API_WARNING",
+                  "FIELD_VALUE_OVERRIDEN",
+                  "INJECTED_KERNELS_DEPRECATED",
+                  "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                  "LARGE_DEPLOYMENT_WARNING",
+                  "LIST_OVERHEAD_QUOTA_EXCEED",
+                  "MISSING_TYPE_DEPENDENCY",
+                  "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                  "NEXT_HOP_CANNOT_IP_FORWARD",
+                  "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                  "NEXT_HOP_INSTANCE_NOT_FOUND",
+                  "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                  "NEXT_HOP_NOT_RUNNING",
+                  "NOT_CRITICAL_ERROR",
+                  "NO_RESULTS_ON_PAGE",
+                  "PARTIAL_SUCCESS",
+                  "QUOTA_INFO_UNAVAILABLE",
+                  "REQUIRED_TOS_AGREEMENT",
+                  "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                  "RESOURCE_NOT_DELETED",
+                  "SCHEMA_VALIDATION_IGNORED",
+                  "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                  "UNDECLARED_PROPERTIES",
+                  "UNREACHABLE"
+                ],
+                "enumDeprecated": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  true,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "enumDescriptions": [
+                  "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                  "A link to a deprecated resource was created.",
+                  "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                  "The user created a boot disk that is larger than image size.",
+                  "When deploying and at least one of the resources has a type marked as\nexperimental",
+                  "Warning that is present in an external api call",
+                  "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                  "The operation involved use of an injected kernel, which is deprecated.",
+                  "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                  "When deploying a deployment with a exceedingly large number of resources",
+                  "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                  "A resource depends on a missing type",
+                  "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                  "The route's next hop instance cannot ip forward.",
+                  "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                  "The route's nextHopInstance URL refers to an instance that does not exist.",
+                  "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                  "The route's next hop instance does not have a status of RUNNING.",
+                  "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                  "No results are present on a particular list page.",
+                  "Success is reported, but some results may be missing due to errors",
+                  "Quota information is not available to client requests (e.g:\nregions.list).",
+                  "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                  "Warning that a resource is in use.",
+                  "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                  "When a resource schema validation is ignored.",
+                  "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                  "When undeclared properties in the schema are present",
+                  "A given scope cannot be reached."
+                ],
+                "type": "string"
+              },
+              "data": {
+                "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]",
+                "items": {
+                  "properties": {
+                    "key": {
+                      "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                      "type": "string"
+                    },
+                    "value": {
+                      "description": "[Output Only] A warning data value corresponding to the key.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "message": {
+                "description": "[Output Only] A human-readable description of the warning code.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "compute",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/compute/v1/projects/{project}/zones/{zone}/storagePools",
+        "endpoint": "https://compute.googleapis.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"
+    },
+    {
+      "id": "compute.storagePools.listDisks",
+      "name": "listDisks",
+      "service": "compute",
+      "method": "GET",
+      "path": "/compute/v1/projects/{project}/zones/{zone}/storagePools/{storagePool}/listDisks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "A filter expression that filters resources listed in the response. Most\nCompute resources support two types of filter expressions:\nexpressions that support regular expressions and expressions that follow\nAPI improvement proposal AIP-160.\nThese two types of filter expressions cannot be mixed in one request.\n\nIf you want to use AIP-160, your expression must specify the field name, an\noperator, and the value that you want to use for filtering. The value\nmust be a string, a number, or a boolean. The operator\nmust be either `=`, `!=`, `\u003e`, `\u003c`, `\u003c=`, `\u003e=` or `:`.\n\nFor example, if you are filtering Compute Engine instances, you can\nexclude instances named `example-instance` by specifying\n`name != example-instance`.\n\nThe `:*` comparison can be used to test whether a key has been defined.\nFor example, to find all objects with `owner` label use:\n```\nlabels.owner:*\n```\n\nYou can also filter nested fields. For example, you could specify\n`scheduling.automaticRestart = false` to include instances only\nif they are not scheduled for automatic restarts. You can use filtering\non nested fields to filter based onresource labels.\n\nTo filter on multiple expressions, provide each separate expression within\nparentheses. For example:\n```\n(scheduling.automaticRestart = true)\n(cpuPlatform = \"Intel Skylake\")\n```\nBy default, each expression is an `AND` expression. However, you\ncan include `AND` and `OR` expressions explicitly.\nFor example:\n```\n(cpuPlatform = \"Intel Skylake\") OR\n(cpuPlatform = \"Intel Broadwell\") AND\n(scheduling.automaticRestart = true)\n```\n\nIf you want to use a regular expression, use the `eq` (equal) or `ne`\n(not equal) operator against a single un-parenthesized expression with or\nwithout quotes or against multiple parenthesized expressions. Examples:\n\n`fieldname eq unquoted literal`\n`fieldname eq 'single quoted literal'`\n`fieldname eq \"double quoted literal\"`\n`(fieldname1 eq literal) (fieldname2 ne \"literal\")`\n\nThe literal value is interpreted as a regular expression using GoogleRE2 library syntax.\nThe literal value must match the entire field.\n\nFor example, to filter for instances that do not end with name \"instance\",\nyou would use `name ne .*instance`.\n\nYou cannot combine constraints on multiple fields using regular\nexpressions.",
+            "location": "query",
+            "type": "string"
+          },
+          "maxResults": {
+            "default": "500",
+            "description": "The maximum number of results per page that should be returned.\nIf the number of available results is larger than `maxResults`,\nCompute Engine returns a `nextPageToken` that can be used to get\nthe next page of results in subsequent list requests. Acceptable values are\n`0` to `500`, inclusive. (Default: `500`)",
+            "format": "uint32",
+            "location": "query",
+            "minimum": "0",
+            "type": "integer"
+          },
+          "orderBy": {
+            "description": "Sorts list results by a certain order. By default, results\nare returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation\ntimestamp using `orderBy=\"creationTimestamp desc\"`. This sorts\nresults based on the `creationTimestamp` field in\nreverse chronological order (newest result first). Use this to sort\nresources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by `name` or\n`creationTimestamp desc` is supported.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageToken": {
+            "description": "Specifies a page token to use. Set `pageToken` to the\n`nextPageToken` returned by a previous list request to get\nthe next page of results.",
+            "location": "query",
+            "type": "string"
+          },
+          "project": {
+            "description": "Project ID for this request.",
+            "location": "path",
+            "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+            "required": true,
+            "type": "string"
+          },
+          "returnPartialSuccess": {
+            "description": "Opt-in for partial success behavior which provides partial results in case\nof failure. The default value is false.\n\nFor example, when partial success behavior is enabled, aggregatedList for a\nsingle zone scope either returns all resources in the zone or no resources,\nwith an error code.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "storagePool": {
+            "description": "Name of the storage pool to list disks of.",
+            "location": "path",
+            "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+            "required": true,
+            "type": "string"
+          },
+          "zone": {
+            "description": "The name of the zone for this request.",
+            "location": "path",
+            "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "id": "StoragePoolListDisks",
+        "properties": {
+          "etag": {
+            "type": "string"
+          },
+          "id": {
+            "description": "Output only. [Output Only] Unique identifier for the resource; defined by the server.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "items": {
+            "description": "A list of StoragePoolDisk resources.",
+            "items": {
+              "$ref": "StoragePoolDisk"
+            },
+            "type": "array"
+          },
+          "kind": {
+            "default": "compute#storagePoolListDisks",
+            "description": "Output only. [Output Only] Type of resource. Alwayscompute#storagePoolListDisks for lists of disks in a\nstoragePool.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "nextPageToken": {
+            "description": "Output only. [Output Only] This token allows you to get the next page of results for\nlist requests. If the number of results is larger thanmaxResults, use the nextPageToken as a value for\nthe query parameter pageToken in the next list request.\nSubsequent list requests will have their own nextPageToken to\ncontinue paging through the results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "selfLink": {
+            "description": "Output only. [Output Only] Server-defined URL for this resource.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "unreachables": {
+            "description": "Output only. [Output Only] Unreachable resources.\nend_interface: MixerListResponseWithEtagBuilder",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "warning": {
+            "description": "Output only. [Output Only] Informational warning message.",
+            "properties": {
+              "code": {
+                "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                "enum": [
+                  "CLEANUP_FAILED",
+                  "DEPRECATED_RESOURCE_USED",
+                  "DEPRECATED_TYPE_USED",
+                  "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                  "EXPERIMENTAL_TYPE_USED",
+                  "EXTERNAL_API_WARNING",
+                  "FIELD_VALUE_OVERRIDEN",
+                  "INJECTED_KERNELS_DEPRECATED",
+                  "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                  "LARGE_DEPLOYMENT_WARNING",
+                  "LIST_OVERHEAD_QUOTA_EXCEED",
+                  "MISSING_TYPE_DEPENDENCY",
+                  "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                  "NEXT_HOP_CANNOT_IP_FORWARD",
+                  "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                  "NEXT_HOP_INSTANCE_NOT_FOUND",
+                  "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                  "NEXT_HOP_NOT_RUNNING",
+                  "NOT_CRITICAL_ERROR",
+                  "NO_RESULTS_ON_PAGE",
+                  "PARTIAL_SUCCESS",
+                  "QUOTA_INFO_UNAVAILABLE",
+                  "REQUIRED_TOS_AGREEMENT",
+                  "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                  "RESOURCE_NOT_DELETED",
+                  "SCHEMA_VALIDATION_IGNORED",
+                  "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                  "UNDECLARED_PROPERTIES",
+                  "UNREACHABLE"
+                ],
+                "enumDeprecated": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  true,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "enumDescriptions": [
+                  "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                  "A link to a deprecated resource was created.",
+                  "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                  "The user created a boot disk that is larger than image size.",
+                  "When deploying and at least one of the resources has a type marked as\nexperimental",
+                  "Warning that is present in an external api call",
+                  "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                  "The operation involved use of an injected kernel, which is deprecated.",
+                  "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                  "When deploying a deployment with a exceedingly large number of resources",
+                  "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                  "A resource depends on a missing type",
+                  "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                  "The route's next hop instance cannot ip forward.",
+                  "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                  "The route's nextHopInstance URL refers to an instance that does not exist.",
+                  "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                  "The route's next hop instance does not have a status of RUNNING.",
+                  "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                  "No results are present on a particular list page.",
+                  "Success is reported, but some results may be missing due to errors",
+                  "Quota information is not available to client requests (e.g:\nregions.list).",
+                  "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                  "Warning that a resource is in use.",
+                  "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                  "When a resource schema validation is ignored.",
+                  "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                  "When undeclared properties in the schema are present",
+                  "A given scope cannot be reached."
+                ],
+                "type": "string"
+              },
+              "data": {
+                "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]",
+                "items": {
+                  "properties": {
+                    "key": {
+                      "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                      "type": "string"
+                    },
+                    "value": {
+                      "description": "[Output Only] A warning data value corresponding to the key.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "message": {
+                "description": "[Output Only] A human-readable description of the warning code.",
+                "type": "string"
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "compute",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/compute/v1/projects/{project}/zones/{zone}/storagePools/{storagePool}/listDisks",
+        "endpoint": "https://compute.googleapis.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"
+    },
+    {
       "id": "compute.subnetworks.delete",
       "name": "delete",
       "service": "compute",
@@ -111276,6 +112557,23 @@
         ],
         "list_operations": [
           "compute.sslPolicies.aggregatedList"
+        ]
+      }
+    },
+    {
+      "native_type": "compute.googleapis.com/StoragePool",
+      "class": "storage.dedicated_cluster",
+      "display_name": "Hyperdisk storage pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "storagePools",
+        "read_operations": [
+          "compute.storagePools.get"
+        ],
+        "list_operations": [
+          "compute.storagePools.aggregatedList"
         ]
       }
     },

@@ -37,6 +37,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | 产品 | 识别的资源 | 清理能力 |
 | --- | --- | --- |
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
+| Hyperdisk 存储池 | 原生池、容量与性能用量、预配模式和磁盘引用 | 支持盘点；清理待完成 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
 | Cloud Identity | 配置目录中的身份组及成员关系 | 审查后删除身份组；普通成员关系也可独立删除 |
 | Resource Manager | 沿文件夹父级链发现当前项目所属的组织 | 只读；公开的 v3 API 没有组织删除方法 |
@@ -136,3 +137,10 @@ Data Fusion 的支持范围使用管理 API，单个 CDAP 流水线、数据集�
 Cloud TPU 盘点需要 `tpu.locations.list`、`tpu.nodes.list`、`tpu.nodes.get`，以及读取已挂载数据盘的 `compute.disks.get`。排队资源 API 复用节点权限，[预留容量列表](https://docs.cloud.google.com/tpu/docs/reference/rest/v2alpha1/projects.locations.reservations/list)也需要 `tpu.nodes.get`。清理另需 `tpu.nodes.update`、`tpu.nodes.delete` 和 `tpu.operations.get`。参阅 [TPU 权限索引](https://docs.cloud.google.com/iam/docs/roles-permissions/tpu)。节点和模板的私有元数据在配置一致性检查后脱敏。
 
 这些 Cloud TPU 写入接口不支持以配置或资源创建身份作为原子条件，清理期间应避免并发修改。数据盘保留用于确保磁盘资源仍在，不会创建备份。上述范围使用 Cloud TPU API；包括 TPU7x 及后续版本在内的 Compute Engine/GKE TPU 使用[独立管理接口](https://docs.cloud.google.com/tpu/docs/tpus-in-compute-engine)。
+
+
+## Hyperdisk 存储池
+
+盘点使用 Compute 原生聚合列表，将各可用区映射到扫描区域，保留预配容量、IOPS、吞吐量、写入／使用容量、磁盘数量、预配模式、Exapool 容量及共享设置。大整数保持原生精度。磁盘的存储池引用只是普通依赖，不代表级联删除关系。
+
+盘点需要 `compute.storagePools.list`，原生读取需要 `compute.storagePools.get`。权限失败或部分列表会使扫描失败，并保留已有记录。完整成员发现和经审查的池清理仍待完成。Google 要求先移除 Storage Pool 中的磁盘才能删除池，快照独立保留；删除 Exapool 需要联系客户团队。参见 [Google 存储池管理指南](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools)。容量和性能池化不能据此认定与阿里云的物理资源独享完全等价。

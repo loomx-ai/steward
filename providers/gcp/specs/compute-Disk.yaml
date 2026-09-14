@@ -61,3 +61,6 @@ relationships:
 - type: depends_on
   targetType: compute.googleapis.com/ResourcePolicy
   targetIdPath: refs_compute_googleapis_com_ResourcePolicy
+- type: depends_on
+  targetType: compute.googleapis.com/StoragePool
+  targetIdPath: refs_compute_googleapis_com_StoragePool

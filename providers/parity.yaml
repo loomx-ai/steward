@@ -951,14 +951,16 @@ resources:
     actions: []
   gcp:
     resources:
-    - compute.googleapis.com/Disk
+    - compute.googleapis.com/StoragePool
   azure:
     resources:
     - Microsoft.ElasticSan/elasticSans
   status: pending_verification
-  notes: Azure now inventories native Elastic SANs and active/retained child resources; cleanup
-    remains under review. A generic GCP disk is not a dedicated storage-cluster equivalent;
-    assess the cloud resource model before declaring parity.
+  notes: GCP now inventories native Hyperdisk Storage Pools with capacity/performance usage and
+    disk references; complete member discovery and pool cleanup remain unfinished. Pooled
+    capacity is not proof of Alibaba's exclusive physical-resource isolation. Azure supports
+    native Elastic SAN inventory and ordered cleanup of non-retained boundaries; retained
+    group purge and retained-boundary cleanup still require verification.
 - alicloud: ACS::EBS::DiskReplicaGroup
   spec: providers/alicloud/specs/ebs-disk-replica-group.yaml
   class: storage.replica_group

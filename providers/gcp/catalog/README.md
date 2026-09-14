@@ -37,7 +37,7 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 193 explicit resource rules and 768 selected methods
+The current catalog has 194 explicit resource rules and 773 selected methods
 from 55 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
@@ -321,3 +321,20 @@ Reference material:
 The checked-in tests establish metadata consistency and protocol behavior. They
 do not establish live permissions, eventual inventory consistency, service
 availability, or independent emulator coverage.
+
+
+Hyperdisk Storage Pools use a separately pinned Compute v1 fragment at revision
+`20260908`, preserving all earlier method/schema snapshots. Native aggregate lists
+route zonal pools into their scan regions. Pool state, provisioned capacity,
+capacity/performance provisioning modes, usage, disk count, Exapool capacity and
+sharing settings remain available; int64 values stay strings. Both native
+`resourceStatus` and `status` usage objects are supported. Disk `storagePool`
+and node `storagePools` references use validated canonical pool identities.
+
+This milestone enables inventory and references. Complete `listDisks` membership,
+reviewed pool cleanup and independent emulator verification remain unfinished.
+The original `list`, `get`, `listDisks` and `delete` methods are imported, but no
+pool delete action is registered yet. Storage Pools require their disks to be
+removed first; disk snapshots remain separate. Exapool deletion requires Google's
+account team. See [the official management guide](https://docs.cloud.google.com/compute/docs/disks/manage-storage-pools)
+and [source/test evidence](../fixtures/storage-pool/README.md).

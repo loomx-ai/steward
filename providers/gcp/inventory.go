@@ -208,6 +208,12 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		}
 		normalized["labels"] = labels
 	}
+	if nativeType == storagePoolType {
+		normalized["pool_usage"] = data["resourceStatus"]
+		if normalized["pool_usage"] == nil {
+			normalized["pool_usage"] = data["status"]
+		}
+	}
 	normalized["_inventory_source"] = inventorySource
 	normalized["project_id"] = c.project
 	normalized["project_number"] = c.number
@@ -455,6 +461,8 @@ func references(c *client, data map[string]any) map[string][]string {
 	} {
 		fields[key] = "compute.googleapis.com/" + target
 	}
+	fields["storagePool"] = storagePoolType
+	fields["storagePools"] = storagePoolType
 	fields["bucketName"] = "storage.googleapis.com/Bucket"
 	for key, target := range map[string]string{
 		"authorizedNetwork": "compute.googleapis.com/Network", "networkUri": "compute.googleapis.com/Network", "networkUrl": "compute.googleapis.com/Network",
@@ -526,6 +534,9 @@ func references(c *client, data map[string]any) map[string][]string {
 			}
 			if target == "iam.googleapis.com/ServiceAccount" && (strings.HasSuffix(ref, "@"+c.project+".iam.gserviceaccount.com") || ref == c.number+"-compute@developer.gserviceaccount.com") && !strings.Contains(ref, "/") {
 				ref = "projects/" + c.project + "/serviceAccounts/" + ref
+			}
+			if target == storagePoolType && strings.HasPrefix(ref, "zones/") {
+				ref = "projects/" + c.project + "/" + ref
 			}
 			if strings.HasPrefix(ref, "projects/") && target != "" {
 				ref = "//" + strings.Split(target, "/")[0] + "/" + ref

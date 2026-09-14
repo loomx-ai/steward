@@ -1006,6 +1006,16 @@
         "cloudidentity.groups.memberships.get",
         "cloudidentity.groups.memberships.list"
       ]
+    },
+    {
+      "source_uri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest",
+      "methods": [
+        "compute.storagePools.aggregatedList",
+        "compute.storagePools.delete",
+        "compute.storagePools.get",
+        "compute.storagePools.list",
+        "compute.storagePools.listDisks"
+      ]
     }
   ],
   "resource_types": [
@@ -4533,6 +4543,21 @@
       ],
       "list_operations": [
         "cloudidentity.groups.memberships.list"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/StoragePool",
+      "class": "storage.dedicated_cluster",
+      "display_name": "Hyperdisk storage pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "storagePools",
+      "read_operations": [
+        "compute.storagePools.get"
+      ],
+      "list_operations": [
+        "compute.storagePools.aggregatedList"
       ]
     }
   ],

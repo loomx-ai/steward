@@ -1,0 +1,102 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/StoragePool
+  class: storage.dedicated_cluster
+presentation:
+  displayNames:
+    en-US: Hyperdisk storage pool
+    zh-CN: Hyperdisk 存储池
+  consoleLinkTemplate: https://console.cloud.google.com/compute/storage-pools?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.storagePools.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.storagePools.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.storagePools
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  description:
+    path: description
+    type: string
+  labels:
+    path: labels
+    type: object
+  storagePoolType:
+    path: storagePoolType
+    type: string
+  capacityProvisioningType:
+    path: capacityProvisioningType
+    type: string
+  performanceProvisioningType:
+    path: performanceProvisioningType
+    type: string
+  provisionedCapacityGiB:
+    path: poolProvisionedCapacityGb
+    type: string
+  provisionedIops:
+    path: poolProvisionedIops
+    type: string
+  provisionedThroughputMiBps:
+    path: poolProvisionedThroughput
+    type: string
+  usedCapacityBytes:
+    path: pool_usage.poolUsedCapacityBytes
+    type: string
+  usedIops:
+    path: pool_usage.poolUsedIops
+    type: string
+  usedThroughputMiBps:
+    path: pool_usage.poolUsedThroughput
+    type: string
+  diskCount:
+    path: pool_usage.diskCount
+    type: string
+  provisionedDiskCapacityGiB:
+    path: pool_usage.totalProvisionedDiskCapacityGb
+    type: string
+  lastResizeAt:
+    path: pool_usage.lastResizeTimestamp
+    type: string
+  exapoolCapacityGiB:
+    path: exapoolProvisionedCapacityGb
+    type: object
+  usage:
+    path: pool_usage
+    type: object
+  shareSettings:
+    path: shareSettings
+    type: object
