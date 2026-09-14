@@ -386,5 +386,23 @@ Cloud Run 函数、Cloud Run 服务、Service Directory 服务，以及 Kubernet
 仅选择检查不会自动选择或删除目标。
 
 Monitoring 资源组清单及成员关系、App Engine 和 AWS 目标解析、独立 Kubernetes
-Service 关系、旧版隐式内部检查器网络，以及告警策略清单与删除顺序仍待补齐。参阅
+Service 关系、旧版隐式内部检查器网络，以及告警条件引用与删除顺序仍待补齐。参阅
 [Monitoring 删除接口](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs/delete)。
+
+
+## Cloud Monitoring 告警策略
+
+AlertPolicy 扫描使用项目级原生 LIST 和 GET，也包含禁用或无效策略。保留启用状态、
+严重程度、用户标签、条件类型、通知渠道名称及创建/变更记录。说明文档和条件表达式
+先参与配置审查，再从持久化资产与 API 输出中脱敏。读取失败、不完整或配置变化时
+保留历史观测。
+
+删除需要重新扫描并匹配配置审查凭证。原生删除同步完成，重启后仍通过独立 GET
+确认不存在；通知渠道与监控目标不会随之删除。同一连接和项目内的策略写操作按序
+执行，未确认结束的请求继续占用写入范围；响应丢失时可继续原任务核验。重复配置的
+其他连接及外部客户端不在该协调范围内；接口也没有防止外部并发修改的原子版本条件。
+
+需要 `monitoring.alertPolicies.list`、`monitoring.alertPolicies.get` 和
+`monitoring.alertPolicies.delete` 权限。条件引用解析及告警先于 Uptime 的自动顺序
+仍待补齐；目前请先选择并完成关联告警策略的删除，再删除其 Uptime 检查。参阅
+[原生删除接口](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies/delete)。

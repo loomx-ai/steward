@@ -17,12 +17,21 @@ import (
 	"github.com/loomx-ai/steward/internal/core/plan"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/persistence/sqlite"
+	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 func TestUptimeSQLiteScanHistoryCleanupRestartAndReconciliation(t *testing.T) {
+	monitoringSQLiteWorkflow(t, uptimeType)
+}
+func TestAlertPolicySQLiteScanCleanupRestartAndReconciliation(t *testing.T) {
+	monitoringSQLiteWorkflow(t, alertPolicyType)
+}
+func monitoringSQLiteWorkflow(t *testing.T, nativeType string) {
 	ctx := t.Context()
-	r, _, data, mode, deletes := uptimeScenario(t)
-	*data = uptimeGCEFixture()
+	r, _, data, mode, deletes := monitoringScenario(t, nativeType)
+	if nativeType == uptimeType {
+		*data = uptimeGCEFixture()
+	}
 	db := filepath.Join(t.TempDir(), "uptime.db")
 	repos, err := sqlite.Open(db, "../../migrations")
 	if err != nil {
@@ -31,7 +40,7 @@ func TestUptimeSQLiteScanHistoryCleanupRestartAndReconciliation(t *testing.T) {
 	now := time.Now().UTC()
 	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP, Partition: "gcp", Status: asset.ConnectionActive, CreatedAt: now, UpdatedAt: now}
 	scope := asset.Scope{ID: "global", ConnectionID: connection.ID, Kind: asset.ScopeGlobal, NativeID: "sample-project/global", CreatedAt: now, UpdatedAt: now}
-	kind := r.resourceKind(uptimeType)
+	kind := r.resourceKind(nativeType)
 	for _, write := range []func() error{
 		func() error { return repos.Connections().PutConnection(ctx, connection) },
 		func() error { return repos.Inventory().PutScope(ctx, scope) },
@@ -69,7 +78,10 @@ func TestUptimeSQLiteScanHistoryCleanupRestartAndReconciliation(t *testing.T) {
 		now = now.Add(time.Second)
 	}
 	var first, current asset.Asset
-	for _, phase := range []string{"first", "get-denied", "gone", "detail-drift", "detail-target-invalid", "list-null", "list-token", "list-partial", "list-empty", "recovered"} {
+	for _, phase := range []string{"first", "get-denied", "gone", "detail-drift", "detail-target-invalid", "detail-enabled-missing", "list-null", "list-token", "list-partial", "list-empty", "recovered"} {
+		if nativeType == alertPolicyType && phase == "detail-target-invalid" || nativeType == uptimeType && phase == "detail-enabled-missing" {
+			continue
+		}
 		*mode = phase
 		failed := phase != "first" && phase != "list-empty" && phase != "recovered"
 		if phase == "recovered" {
@@ -97,18 +109,20 @@ func TestUptimeSQLiteScanHistoryCleanupRestartAndReconciliation(t *testing.T) {
 		if phase == "first" {
 			first = current
 		}
-		if failed && (!current.LastSeenAt.Equal(first.LastSeenAt) || current.Normalized[uptimeReview] != first.Normalized[uptimeReview]) {
+		if failed && (!current.LastSeenAt.Equal(first.LastSeenAt) || current.Normalized[monitoringReviewKey(nativeType)] != first.Normalized[monitoringReviewKey(nativeType)]) {
 			t.Fatal("failure replaced observation", phase)
 		}
-		if phase == "recovered" && (current.ID != first.ID || current.Normalized[uptimeReview] == first.Normalized[uptimeReview]) {
+		if phase == "recovered" && (current.ID != first.ID || current.Normalized[monitoringReviewKey(nativeType)] == first.Normalized[monitoringReviewKey(nativeType)]) {
 			t.Fatal("recovery failed to replace review")
 		}
 		encoded, _ := json.Marshal(current)
-		if strings.Contains(string(encoded), "PRIVATE_UPTIME") || strings.Contains(string(encoded), "UFJJVkFURV9VUFRJTUVfQk9EWQ==") {
+		if strings.Contains(string(encoded), "PRIVATE_UPTIME") || strings.Contains(string(encoded), "PRIVATE_ALERT") || strings.Contains(string(encoded), "UFJJVkFURV9VUFRJTUVfQk9EWQ==") {
 			t.Fatal("persisted native authentication")
 		}
 	}
-	assertUptimeSQLiteTargetGraph(t, repos, r, current)
+	if nativeType == uptimeType {
+		assertUptimeSQLiteTargetGraph(t, repos, r, current)
+	}
 	planner := cleanup.NewService(repos, registry, cleanup.WithClock(func() time.Time { return now }))
 	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: connection.ID, CreatedBy: "test", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: current.ID}}})
 	if err != nil || len(task.Steps) != 1 || len(task.ImpactItems) != 0 {
@@ -141,7 +155,7 @@ func TestUptimeSQLiteScanHistoryCleanupRestartAndReconciliation(t *testing.T) {
 			t.Fatal(round, err)
 		}
 		actions, err := repos.Executions().ListActions(ctx, attempt.ID)
-		if err != nil || len(actions) != 1 || actions[0].Status != want || actions[0].ProviderResult["phase"] != "uptime_delete" || *deletes != 1 {
+		if err != nil || len(actions) != 1 || actions[0].Status != want || actions[0].ProviderResult["phase"] != uptimePhase(contracts.ActionRequest{Asset: current})["phase"] || *deletes != 1 {
 			t.Fatal(round, actions, err, *deletes)
 		}
 		now = now.Add(3 * time.Second)
@@ -160,7 +174,11 @@ func TestUptimeSQLiteScanHistoryCleanupRestartAndReconciliation(t *testing.T) {
 	*mode = "list-empty"
 	scan("reconciliation", false)
 	page, err := repos.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10})
-	if err != nil || len(page.Items) != 1 || page.Items[0].ID != "uptime-target" || *deletes != 1 {
+	want := 0
+	if nativeType == uptimeType {
+		want = 1
+	}
+	if err != nil || len(page.Items) != want || want == 1 && page.Items[0].ID != "uptime-target" || *deletes != 1 {
 		t.Fatal(page, err, *deletes)
 	}
 }

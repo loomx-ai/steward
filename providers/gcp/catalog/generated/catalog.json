@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "484c0a2fe2e4131a2a328cd3073b02966704be767ec14f282ec48e098b8153e4",
+    "checksum": "c08442c9a418a949b416e0c251a656cdb5dd194f851ba582ed3e2e50c215676c",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "734872f07c0b04d8187d2307412f14ab6e2b290dfeeda0f9c50096c7c530a59f",
+  "content_checksum": "1bfb62a6b46a16a17faa0ecc5899cf9d77ac036916ef97f9b5befdceff3687e7",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -97755,6 +97755,258 @@
       "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "monitoring.projects.alertPolicies.delete",
+      "name": "delete",
+      "service": "monitoring",
+      "method": "DELETE",
+      "path": "/v3/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The alerting policy to delete. The format is: projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID] For more information, see AlertPolicy.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/alertPolicies/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } ",
+        "id": "Empty",
+        "properties": {},
+        "type": "object"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v3",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v3/{name}",
+        "endpoint": "https://monitoring.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
+    },
+    {
+      "id": "monitoring.projects.alertPolicies.get",
+      "name": "get",
+      "service": "monitoring",
+      "method": "GET",
+      "path": "/v3/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The alerting policy to retrieve. The format is: projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID] ",
+            "location": "path",
+            "pattern": "^projects/[^/]+/alertPolicies/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A description of the conditions under which some aspect of your system is considered to be \"unhealthy\" and the ways to notify people or services about this state. For an overview of alerting policies, see Introduction to Alerting (https://cloud.google.com/monitoring/alerts/).",
+        "id": "AlertPolicy",
+        "properties": {
+          "alertStrategy": {
+            "$ref": "AlertStrategy",
+            "description": "Control over how this alerting policy's notification channels are notified."
+          },
+          "combiner": {
+            "description": "How to combine the results of multiple conditions to determine if an incident should be opened. If condition_time_series_query_language is present, this must be COMBINE_UNSPECIFIED.",
+            "enum": [
+              "COMBINE_UNSPECIFIED",
+              "AND",
+              "OR",
+              "AND_WITH_MATCHING_RESOURCE"
+            ],
+            "enumDescriptions": [
+              "An unspecified combiner.",
+              "Combine conditions using the logical AND operator. An incident is created only if all the conditions are met simultaneously. This combiner is satisfied if all conditions are met, even if they are met on completely different resources.",
+              "Combine conditions using the logical OR operator. An incident is created if any of the listed conditions is met.",
+              "Combine conditions using logical AND operator, but unlike the regular AND option, an incident is created only if all conditions are met simultaneously on at least one resource."
+            ],
+            "type": "string"
+          },
+          "conditions": {
+            "description": "A list of conditions for the policy. The conditions are combined by AND or OR according to the combiner field. If the combined conditions evaluate to true, then an incident is created. A policy can have from one to six conditions. If condition_time_series_query_language is present, it must be the only condition. If condition_monitoring_query_language is present, it must be the only condition.",
+            "items": {
+              "$ref": "Condition"
+            },
+            "type": "array"
+          },
+          "creationRecord": {
+            "$ref": "MutationRecord",
+            "description": "A read-only record of the creation of the alerting policy. If provided in a call to create or update, this field will be ignored."
+          },
+          "displayName": {
+            "description": "A short name or phrase used to identify the policy in dashboards, notifications, and incidents. To avoid confusion, don't use the same display name for multiple policies in the same project. The name is limited to 512 Unicode characters.The convention for the display_name of a PrometheusQueryLanguageCondition is \"{rule group name}/{alert name}\", where the {rule group name} and {alert name} should be taken from the corresponding Prometheus configuration file. This convention is not enforced. In any case the display_name is not a unique key of the AlertPolicy.",
+            "type": "string"
+          },
+          "documentation": {
+            "$ref": "Documentation",
+            "description": "Documentation that is included with notifications and incidents related to this policy. Best practice is for the documentation to include information to help responders understand, mitigate, escalate, and correct the underlying problems detected by the alerting policy. Notification channels that have limited capacity might not show this documentation."
+          },
+          "enabled": {
+            "description": "Whether or not the policy is enabled. On write, the default interpretation if unset is that the policy is enabled. On read, clients should not make any assumption about the state if it has not been populated. The field should always be populated on List and Get operations, unless a field projection has been specified that strips it out.",
+            "type": "boolean"
+          },
+          "mutationRecord": {
+            "$ref": "MutationRecord",
+            "description": "A read-only record of the most recent change to the alerting policy. If provided in a call to create or update, this field will be ignored."
+          },
+          "name": {
+            "description": "Identifier. Required if the policy exists. The resource name for this policy. The format is: projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID] [ALERT_POLICY_ID] is assigned by Cloud Monitoring when the policy is created. When calling the alertPolicies.create method, do not include the name field in the alerting policy passed as part of the request.",
+            "type": "string"
+          },
+          "notificationChannels": {
+            "description": "Identifies the notification channels to which notifications should be sent when incidents are opened or closed or when new violations occur on an already opened incident. Each element of this array corresponds to the name field in each of the NotificationChannel objects that are returned from the ListNotificationChannels method. The format of the entries in this field is: projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID] ",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "severity": {
+            "description": "Optional. The severity of an alerting policy indicates how important incidents generated by that policy are. The severity level will be displayed on the Incident detail page and in notifications.",
+            "enum": [
+              "SEVERITY_UNSPECIFIED",
+              "CRITICAL",
+              "ERROR",
+              "WARNING"
+            ],
+            "enumDescriptions": [
+              "No severity is specified. This is the default value.",
+              "This is the highest severity level. Use this if the problem could cause significant damage or downtime.",
+              "This is the medium severity level. Use this if the problem could cause minor damage or downtime.",
+              "This is the lowest severity level. Use this if the problem is not causing any damage or downtime, but could potentially lead to a problem in the future."
+            ],
+            "type": "string"
+          },
+          "userLabels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "User-supplied key/value data to be used for organizing and identifying the AlertPolicy objects.The field can contain up to 64 entries. Each key and value is limited to 63 Unicode characters or 128 bytes, whichever is smaller. Labels and values can contain only lowercase letters, numerals, underscores, and dashes. Keys must begin with a letter.Note that Prometheus {alert name} is a valid Prometheus label names (https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels), whereas Prometheus {rule group} is an unrestricted UTF-8 string. This means that they cannot be stored as-is in user labels, because they may contain characters that are not allowed in user-label values.",
+            "type": "object"
+          },
+          "validity": {
+            "$ref": "Status",
+            "description": "Read-only description of how the alerting policy is invalid. This field is only set when the alerting policy is invalid. An invalid alerting policy will not generate incidents."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v3",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v3/{name}",
+        "endpoint": "https://monitoring.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
+    },
+    {
+      "id": "monitoring.projects.alertPolicies.list",
+      "name": "list",
+      "service": "monitoring",
+      "method": "GET",
+      "path": "/v3/{name}/alertPolicies",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. If provided, this field specifies the criteria that must be met by alert policies to be included in the response.For more details, see sorting and filtering (https://cloud.google.com/monitoring/api/v3/sorting-and-filtering).",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Required. The project (https://cloud.google.com/monitoring/api/v3#project_name) whose alert policies are to be listed. The format is: projects/[PROJECT_ID_OR_NUMBER] Note that this field names the parent container in which the alerting policies to be listed are stored. To retrieve a single alerting policy by name, use the GetAlertPolicy operation, instead.",
+            "location": "path",
+            "pattern": "^projects/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. A comma-separated list of fields by which to sort the result. Supports the same set of field references as the filter field. Entries can be prefixed with a minus sign to sort by the field in descending order.For more details, see sorting and filtering (https://cloud.google.com/monitoring/api/v3/sorting-and-filtering).",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. The maximum number of results to return in a single response.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. If this field is not empty then it must contain the nextPageToken value returned by a previous call to this method. Using this field causes the method to return more results from the previous method call.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The protocol for the ListAlertPolicies response.",
+        "id": "ListAlertPoliciesResponse",
+        "properties": {
+          "alertPolicies": {
+            "description": "The returned alert policies.",
+            "items": {
+              "$ref": "AlertPolicy"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "If there might be more results than were returned, then this field is set to a non-empty value. To see the additional results, use that value as page_token in the next call to this method.",
+            "type": "string"
+          },
+          "totalSize": {
+            "description": "The total number of alert policies in all pages. This number is only an estimate, and may change in subsequent pages. https://aip.dev/158",
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "alertPolicies"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v3",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v3/{name}/alertPolicies",
+        "endpoint": "https://monitoring.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
+    },
+    {
       "id": "monitoring.projects.dashboards.delete",
       "name": "delete",
       "service": "monitoring",
@@ -116244,6 +116496,26 @@
         ],
         "list_operations": [
           "managedkafka.projects.locations.clusters.topics.list"
+        ]
+      }
+    },
+    {
+      "native_type": "monitoring.googleapis.com/AlertPolicy",
+      "class": "observability.alert_policy",
+      "display_name": "Cloud Monitoring alert policy",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "alertPolicies",
+        "read_operations": [
+          "monitoring.projects.alertPolicies.get"
+        ],
+        "delete_operations": [
+          "monitoring.projects.alertPolicies.delete"
+        ],
+        "list_operations": [
+          "monitoring.projects.alertPolicies.list"
         ]
       }
     },

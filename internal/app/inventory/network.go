@@ -56,9 +56,9 @@ func networkItemTouches(item contracts.InventoryItem, members map[string]struct{
 			return true
 		}
 	}
-	// Uptime configuration includes arbitrary URLs, labels and response text.
+	// Monitoring configuration includes arbitrary URLs, labels and response text.
 	// Its provider derives the complete supported target references explicitly.
-	if item.ResourceKind.Provider == asset.ProviderGCP && item.NativeType == "monitoring.googleapis.com/UptimeCheckConfig" {
+	if item.ResourceKind.Provider == asset.ProviderGCP && (item.NativeType == "monitoring.googleapis.com/UptimeCheckConfig" || item.NativeType == "monitoring.googleapis.com/AlertPolicy") {
 		return false
 	}
 	for _, reference := range scalarReferences(item.Normalized, nil) {

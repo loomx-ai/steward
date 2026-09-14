@@ -20,8 +20,19 @@ func uptimeFixture() map[string]any {
 }
 
 func uptimeScenario(t *testing.T) (*Runtime, *contracts.ActionRequest, *map[string]any, *string, *int) {
+	return monitoringScenario(t, uptimeType)
+}
+
+func monitoringScenario(t *testing.T, kind string) (*Runtime, *contracts.ActionRequest, *map[string]any, *string, *int) {
 	t.Helper()
 	data := uptimeFixture()
+	name, id, collection := uptimeName, uptimeID, "uptimeCheckConfigs"
+	if kind == alertPolicyType {
+		data = alertPolicyFixture()
+		name = alertPolicyName
+		id = alertPolicyID
+		collection = "alertPolicies"
+	}
 	mode := ""
 	deletes := 0
 	reads := 0
@@ -29,28 +40,28 @@ func uptimeScenario(t *testing.T) (*Runtime, *contracts.ActionRequest, *map[stri
 		if req.URL.Host != "monitoring.googleapis.com" {
 			t.Fatal(req.URL)
 		}
-		if req.URL.Path == "/v3/projects/sample-project/uptimeCheckConfigs" && req.Method == "GET" {
+		if req.URL.Path == "/v3/projects/sample-project/"+collection && req.Method == "GET" {
 			switch mode {
 			case "list-empty":
 				return apiResponse(req, 200, `{}`), nil
 			case "list-denied":
 				return apiResponse(req, 403, `{}`), nil
 			case "list-null":
-				return apiResponse(req, 200, `{"uptimeCheckConfigs":null}`), nil
+				return apiResponse(req, 200, `{"`+collection+`":null}`), nil
 			case "list-token":
 				return apiResponse(req, 200, `{"nextPageToken":null}`), nil
 			case "list-partial":
 				return apiResponse(req, 200, `{"unreachable":["region"]}`), nil
 			case "list-duplicate":
-				return dataformResponse(req, 200, map[string]any{"uptimeCheckConfigs": []any{data, data}}), nil
+				return dataformResponse(req, 200, map[string]any{collection: []any{data, data}}), nil
 			case "list-paged":
 				if req.URL.Query().Get("pageToken") == "" {
 					return apiResponse(req, 200, `{"nextPageToken":"next"}`), nil
 				}
 			}
-			return dataformResponse(req, 200, map[string]any{"uptimeCheckConfigs": []any{data}}), nil
+			return dataformResponse(req, 200, map[string]any{collection: []any{data}}), nil
 		}
-		if req.URL.Path != "/v3/"+uptimeName || len(req.URL.Query()) != 0 {
+		if req.URL.Path != "/v3/"+name || len(req.URL.Query()) != 0 {
 			t.Fatal(req.Method, req.URL)
 		}
 		if req.Method == "DELETE" {
@@ -83,6 +94,10 @@ func uptimeScenario(t *testing.T) (*Runtime, *contracts.ActionRequest, *map[stri
 			return apiResponse(req, 403, `{}`), nil
 		case "get-partial":
 			return apiResponse(req, 200, `{"unreachable":["location"]}`), nil
+		case "detail-enabled-missing":
+			live := cloneParameters(data)
+			delete(live, "enabled")
+			return dataformResponse(req, 200, live), nil
 		case "detail-target-invalid":
 			live := cloneParameters(data)
 			live["monitoredResource"] = map[string]any{"type": "gce_instance", "labels": map[string]any{"project_id": "sample-project", "zone": "us-central1-a", "instance_id": "a-name"}}
@@ -98,12 +113,12 @@ func uptimeScenario(t *testing.T) (*Runtime, *contracts.ActionRequest, *map[stri
 		}
 		return dataformResponse(req, 200, data), nil
 	})
-	batch, err := r.List(t.Context(), productRequest(r, uptimeType, "global"))
-	if err != nil || len(batch.Items) != 1 {
+	batch, err := r.List(t.Context(), productRequest(r, kind, "global"))
+	if err != nil || len(batch.Items) != 1 || batch.Items[0].NativeID != id {
 		t.Fatal(batch, err)
 	}
 	item := batch.Items[0]
-	request := contracts.ActionRequest{Action: "delete", IdempotencyKey: "uptime-delete", Asset: asset.Asset{ID: "uptime", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", Partition: "gcp", NativeType: uptimeType, NativeID: item.NativeID}, Normalized: item.Normalized}}
+	request := contracts.ActionRequest{Action: "delete", IdempotencyKey: "uptime-delete", Asset: asset.Asset{ID: "uptime", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", Partition: "gcp", NativeType: kind, NativeID: item.NativeID}, Normalized: item.Normalized}}
 	reads = 0
 	return r, &request, &data, &mode, &deletes
 }

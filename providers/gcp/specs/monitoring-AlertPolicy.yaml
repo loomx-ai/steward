@@ -1,0 +1,80 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: monitoring.googleapis.com/AlertPolicy
+  class: observability.alert_policy
+presentation:
+  displayNames:
+    en-US: Cloud Monitoring alert policy
+    zh-CN: 云监控告警策略
+  consoleLinkTemplate: https://console.cloud.google.com/monitoring/alerting?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: monitoring.projects.alertPolicies.list
+    parameters:
+      name: scope.projectPath
+    itemsPath: alertPolicies
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: monitoring.projects.alertPolicies.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  enabled:
+    path: enabled
+    type: boolean
+  combiner:
+    path: combiner
+    type: string
+  severity:
+    path: severity
+    type: string
+  conditions:
+    path: conditions
+    type: array
+  userLabels:
+    path: userLabels
+    type: object
+  notificationChannels:
+    path: notificationChannels
+    type: array
+  creationRecord:
+    path: creationRecord
+    type: object
+  mutationRecord:
+    path: mutationRecord
+    type: object
+  alertStrategy:
+    path: alertStrategy
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: monitoring.projects.alertPolicies.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: monitoring.projects.alertPolicies.get
+      itemsPath: $
+      identityPath: name

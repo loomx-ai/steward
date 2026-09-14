@@ -17,6 +17,20 @@ func routerScope(identity asset.Identity) (string, error) {
 	if identity.Provider != asset.ProviderGCP {
 		return "", nil
 	}
+	// The persisted Router scope mechanism also coordinates Monitoring's
+	// project-wide single-writer requirement for synchronous policy deletion.
+	if identity.NativeType == "monitoring.googleapis.com/AlertPolicy" {
+		parts := strings.Split(strings.TrimPrefix(identity.NativeID, "//monitoring.googleapis.com/"), "/")
+		if identity.ConnectionID == "" || (identity.Partition != "gcp" && identity.Partition != "google-cloud") || !strings.HasPrefix(identity.NativeID, "//monitoring.googleapis.com/") || len(parts) != 4 || parts[0] != "projects" || parts[2] != "alertPolicies" {
+			return "", fmt.Errorf("invalid native Monitoring mutation identity")
+		}
+		for _, part := range parts {
+			if part == "" || part == "." || part == ".." || strings.ContainsAny(part, " ?#%\\\t\r\n") {
+				return "", fmt.Errorf("invalid native Monitoring mutation segment")
+			}
+		}
+		return string(identity.ConnectionID) + "/gcp///monitoring.googleapis.com/projects/" + parts[1] + "/alertPolicies", nil
+	}
 	suffix := ""
 	switch identity.NativeType {
 	case "compute.googleapis.com/Router":

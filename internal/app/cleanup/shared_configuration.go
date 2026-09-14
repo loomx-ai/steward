@@ -83,7 +83,7 @@ func guardSharedConfiguration(ctx context.Context, repositories persistence.Repo
 			}
 			otherScopes, err := taskRouterScopes(ctx, repositories, other)
 			if err != nil {
-				return fmt.Errorf("%w: cannot identify previous router updates: %w", persistence.ErrConflict, err)
+				return fmt.Errorf("%w: cannot identify previous shared provider updates: %w", persistence.ErrConflict, err)
 			}
 			for _, step := range other.Steps {
 				scope := otherScopes[step.AssetID]
@@ -92,10 +92,10 @@ func guardSharedConfiguration(ctx context.Context, repositories persistence.Repo
 				}
 				settled, err := settleSharedConfiguration(ctx, repositories, other, attempt, step, registry)
 				if err != nil {
-					return fmt.Errorf("%w: cannot verify previous router update: %w", persistence.ErrConflict, err)
+					return fmt.Errorf("%w: cannot verify previous shared provider update: %w", persistence.ErrConflict, err)
 				}
 				if !settled {
-					return fmt.Errorf("%w: another cleanup execution has an unresolved router update on this router", persistence.ErrConflict)
+					return fmt.Errorf("%w: another cleanup execution has an unresolved update in this provider mutation scope", persistence.ErrConflict)
 				}
 			}
 		}
@@ -180,7 +180,7 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 		return false, fmt.Errorf("mutation recovery identity changed")
 	}
 	// Each driver must prove every possible phase; Router requests also bind child review.
-	if reviewed.Identity.NativeType != "compute.googleapis.com/Router" && reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" && reviewed.Identity.NativeType != "compute.googleapis.com/RoutePolicy" && reviewed.Identity.NativeType != "compute.googleapis.com/NamedSet" {
+	if reviewed.Identity.NativeType != "compute.googleapis.com/Router" && reviewed.Identity.NativeType != "compute.googleapis.com/RouterNat" && reviewed.Identity.NativeType != "compute.googleapis.com/RoutePolicy" && reviewed.Identity.NativeType != "compute.googleapis.com/NamedSet" && reviewed.Identity.NativeType != "monitoring.googleapis.com/AlertPolicy" {
 		return false, nil
 	}
 	// ponytail: retain the database locks during rare recovery reads so a second

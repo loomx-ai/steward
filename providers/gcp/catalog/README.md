@@ -37,8 +37,8 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 200 explicit resource rules and 785 selected methods
-from 58 selected Discovery fragments at 56 official URLs and one pinned Cloud SDK archive (Network Services and Security Center Management). Extended Compute rules cover VPN and
+The current catalog has 201 explicit resource rules and 788 selected methods
+from 59 selected Discovery fragments at 56 official URLs and one pinned Cloud SDK archive (Network Services and Security Center Management). Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
@@ -418,3 +418,9 @@ there is no invented NAT endpoint. Independent deletion binds the native Router
 PATCH to the NAT rule. Explicit PATCH deletion bindings are classified as
 destructive without modifying their native method/schema documents. See
 [Cloud NAT evidence](../fixtures/cloud-nat/README.md).
+
+[AlertPolicy evidence](../fixtures/alert-policy/README.md) covers complete native
+policy reads, private configuration review, synchronous deletion and persisted
+project write coordination within one connection. Independent Google mockgcp
+LIST/GET/DELETE/empty-list verification passed; condition reference extraction
+and alert-before-Uptime planning remain unfinished.

@@ -142,7 +142,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
-	if nativeType == uptimeType || nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
+	if isMonitoringConfig(nativeType) || nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -167,8 +167,12 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, err
 		}
 	}
-	if nativeType == uptimeType {
-		if _, err := cloudNatObjects(result.Data, "uptimeCheckConfigs"); err != nil {
+	if isMonitoringConfig(nativeType) {
+		collection := "uptimeCheckConfigs"
+		if nativeType == alertPolicyType {
+			collection = "alertPolicies"
+		}
+		if _, err := cloudNatObjects(result.Data, collection); err != nil {
 			return contracts.InventoryBatch{}, err
 		}
 		if err := cloudNatScalars(result.Data, []string{"nextPageToken"}, nil, nil, nil); err != nil {
@@ -289,6 +293,13 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		// Persisted Router observations require their own complete native GET.
 		if nativeType == routerType && len(ancestors) == 1 {
 			live, err := c.routerInventoryData(ctx, id, record.Data)
+			if err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			record.Data = live
+		}
+		if nativeType == alertPolicyType {
+			live, err := c.alertPolicyInventory(ctx, id, record.Data)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}

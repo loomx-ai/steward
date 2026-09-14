@@ -10,6 +10,21 @@ import (
 )
 
 func (a *action) MutationSettled(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.MutationSettlement, error) {
+	if a.kind.NativeType == alertPolicyType {
+		if err := a.monitoringActionIdentity(request); err != nil {
+			return contracts.MutationSettlement{}, err
+		}
+		// A lost response cannot prove that a synchronous request has returned.
+		// Continue the original task to verify absence instead of releasing scope.
+		if len(result.Data) == 0 {
+			return contracts.MutationSettlement{}, nil
+		}
+		wait, err := a.waitMonitoring(ctx, request, result)
+		if err != nil || !wait.Done {
+			return contracts.MutationSettlement{}, err
+		}
+		return contracts.MutationSettlement{Settled: true, Operation: "monitoring-synchronous-response:" + text(result.Data["review"])}, nil
+	}
 	if !isRouterComponent(a.kind.NativeType) && a.kind.NativeType != routerType {
 		return contracts.MutationSettlement{}, groupDenied("mutation_settlement_unsupported")
 	}

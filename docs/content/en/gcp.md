@@ -487,5 +487,28 @@ selecting a check does not automatically select or delete its target.
 
 Monitoring group inventory/membership, App Engine and AWS target resolution,
 individual Kubernetes Service relationships, implicit legacy internal-checker
-networks, and alert-policy inventory/ordering remain unfinished. See the
+networks, and alert-policy condition references/ordering remain unfinished. See the
 [Monitoring deletion contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs/delete).
+
+
+## Cloud Monitoring alert policies
+
+AlertPolicy scans use native project LIST and GET, including disabled and invalid
+policies. They retain enabled state, severity, user labels, condition types,
+notification-channel names and creation/mutation records. Documentation and
+condition expressions are reviewed before being redacted from stored assets and
+API output. Failed, incomplete or changed reads preserve prior observations.
+
+Deleting a policy requires a fresh scan and a matching configuration review.
+Deletion is synchronous and confirmed by a separate GET after restart. Notification
+channels and monitored resources remain independent. Within one connection and
+project, cleanup serializes policy writes and keeps unresolved requests reserved;
+continue the original task when a response is missing. Duplicate connections and
+external clients are outside this reservation. The API has no atomic revision
+condition against concurrent external edits.
+
+Required permissions are `monitoring.alertPolicies.list`,
+`monitoring.alertPolicies.get` and `monitoring.alertPolicies.delete`. Condition
+reference extraction and automatic alert-before-Uptime ordering remain unfinished;
+select and finish the associated policy deletion before deleting its Uptime check.
+See the [native deletion contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies/delete).

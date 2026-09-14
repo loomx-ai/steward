@@ -1034,6 +1034,14 @@
         "compute.routers.listNamedSets",
         "compute.routers.deleteNamedSet"
       ]
+    },
+    {
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3",
+      "methods": [
+        "monitoring.projects.alertPolicies.delete",
+        "monitoring.projects.alertPolicies.get",
+        "monitoring.projects.alertPolicies.list"
+      ]
     }
   ],
   "resource_types": [
@@ -4680,6 +4688,24 @@
       ],
       "delete_operations": [
         "compute.routers.patch"
+      ]
+    },
+    {
+      "native_type": "monitoring.googleapis.com/AlertPolicy",
+      "collection": "alertPolicies",
+      "class": "observability.alert_policy",
+      "display_name": "Cloud Monitoring alert policy",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "monitoring.projects.alertPolicies.get"
+      ],
+      "delete_operations": [
+        "monitoring.projects.alertPolicies.delete"
+      ],
+      "list_operations": [
+        "monitoring.projects.alertPolicies.list"
       ]
     }
   ],

@@ -6007,3 +6007,34 @@ against a still-occupied same-task scope while allowing the bound continuation.
   ordering and independent LIST/live/full-application acceptance remain open.
   All eight overall acceptance criteria remain unfinished. See
   [Uptime evidence](providers/gcp/fixtures/uptime/README.md).
+
+
+### AlertPolicy native inventory and synchronous cleanup
+
+- Added the independently selected Monitoring v3 `20260903` fragment with three
+  native AlertPolicy methods and 26 transitive schemas; previous fragments remain
+  unchanged. The deterministic catalog now has 201 resource rules and 788 methods,
+  SHA-256 `0d7ba03c095a042eb22b677e7e4cc82cda08bbea73d929732d7c0182fa95c58c`.
+- Native LIST/GET agreement, condition unions, enabled state and complete identity
+  validation bind configuration reviews. Private documentation/expressions are
+  hashed before redaction; disabled and invalid policies remain discoverable.
+  Output-only validity does not change configuration identity.
+- Policies share Uptime's synchronous delete/receipt/readback engine. The existing
+  database-backed mutation mechanism serializes policy writes by project within
+  one connection, preserves blocked in-flight work, and records read-only terminal
+  settlement without rewriting failed actions to success. Lost receipts retain
+  scope until the original task can verify its outcome.
+- Protocol/schema, SQLite scan/cleanup/reconciliation, project ordering, restart
+  and settlement tests are retained. Independent unchanged Google mockgcp verified
+  LIST/GET/review/DELETE/restart/404/empty LIST (0.621s, eight Monitoring calls).
+  IAM, pagination and concurrency are outside that mock's implementation.
+- Condition-to-Uptime/metric/group/channel references, native incoming-reference
+  rechecks, alert-before-check planning, group/channel inventory, coordination
+  across duplicate connections, remaining provider families and full application/
+  live acceptance remain open. All eight overall criteria remain unfinished.
+  See [AlertPolicy evidence](providers/gcp/fixtures/alert-policy/README.md).
+
+- Isolated milestone validation passed: full GCP (237.872s), all internal packages
+  including architecture (25.650s) and cleanup (6.348s); focused race GCP (120.742s),
+  cleanup (9.576s), inventory (6.118s); vet and bilingual documentation checks
+  (30 chapters, 10 screenshots).
