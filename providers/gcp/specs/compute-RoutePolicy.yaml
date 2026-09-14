@@ -62,6 +62,9 @@ relationships:
 - type: depends_on
   targetType: compute.googleapis.com/Router
   targetIdPath: refs_compute_googleapis_com_Router
+- type: depends_on
+  targetType: compute.googleapis.com/NamedSet
+  targetIdPath: refs_compute_googleapis_com_NamedSet
 actions:
   delete:
     operation: compute.routers.deleteRoutePolicy

@@ -310,3 +310,11 @@ Filter with `type = "compute.googleapis.com/NamedSet"` and
 See [native set details](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/getNamedSet).
 Named-set deletion and policy-reference ordering remain pending. Google
 [prevents removal of a set referenced by any policy on its router](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/bgp-route-policies/update-named-sets).
+
+Route-policy scans parse native CEL calls to `prefixSets('name')` and
+`communitySets('name')` into dependencies on sets in the same router. Include
+both policies and named sets in a scan to see these graph relationships.
+Deleting a policy preserves its referenced sets. Strings and comments are not
+treated as calls, and expressions are not executed. Malformed CEL or a computed
+set name that cannot be resolved stops that policy scan shard and preserves
+previous observations. Named-set deletion and its execution ordering remain pending.

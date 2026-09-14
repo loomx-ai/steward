@@ -5,7 +5,7 @@ Native method and transitive schema objects are retained without alteration in
 revision `20260908`, full-response SHA-256
 `aa1078267f6ad9c82274e6c62572bae328b0de11c6f08861f20488b6617afda7`.
 GET/LIST extend the existing router-policy fragment; previous method/schema
-objects and generated operations are unchanged. No runtime dependency is added.
+objects and generated operations are unchanged.
 
 - [listNamedSets](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/listNamedSets)
   uses the selected project, region and router. The native list is `result`, with
@@ -25,7 +25,7 @@ inventory identity
 This is not a REST endpoint or a claimed Cloud Asset Inventory asset type.
 Native reads bind the actual GET/query contract. Inventory captures the parent
 router's ID and dependency, full expression objects and opaque fingerprint.
-No policy reference is inferred by matching text fragments in CEL expressions.
+Policy references are extracted from CEL syntax trees, as described below.
 
 Run from the repository root:
 
@@ -51,6 +51,31 @@ fixtures are protocol/application evidence, not an independent named-set
 emulator or live-cloud verification.
 
 The native [deleteNamedSet API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteNamedSet)
-exists, but independent deletion, CEL policy-reference relationships, dependency
-ordering and parent-router cascade review remain unfinished. No delete action
+exists, but independent deletion, executable dependency ordering and parent-router
+cascade review remain unfinished. No delete action
 is exposed by this inventory milestone; this is not full route-policy parity.
+
+## Policy reference syntax and graph evidence
+
+[Cloud Router's native attribute reference](https://docs.cloud.google.com/network-connectivity/docs/router/reference/bgp-route-policy-reference)
+defines `prefixSets` and `communitySets` calls with router-local names. The
+[official CEL implementation](https://cel.dev) is pinned as
+`cel.dev/cel-go v0.32.0`; that release's module has moved from the historical
+`github.com/google/cel-go` path. Module archive checksums are retained in
+`go.sum`. Existing module selections are unchanged; the added parser modules
+and their required dependencies are explicit in `go.mod`.
+
+The parser preserves source call nodes without macro expansion or evaluation.
+It decodes literal escapes, raw/triple-quoted strings and absolute function
+names, traverses nested calls and both match/action expressions, and deduplicates
+references. Comments and string contents do not create graph edges. Parser
+resource/depth limits apply. Invalid syntax, member-style set calls and
+non-literal set arguments fail the shard; computed-name resolution is still
+unfinished. Native policy expression text is not exposed in validation errors.
+
+`route_policy_references_test.go` covers these syntax distinctions. The SQLite
+scan/graph/cleanup/reconciliation scenario persists the exact policy-to-set
+`depends_on` edge, then restarts every BGP detach/delete checkpoint and verifies
+that policy cleanup retains both router and set. An unresolved-reference scan
+preserves the earlier policy observation and freshness. These are
+parser/application tests, not independent cloud backend acceptance.

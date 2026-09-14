@@ -53,6 +53,9 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 			if phase == "changed" {
 				data["name"] = "other-policy"
 			}
+			if phase == "unresolved-set" {
+				object(array(data["terms"])[0])["match"] = map[string]any{"expression": "prefixSets(name)"}
+			}
 			if phase == "recovered" {
 				data["fingerprint"] = "ZnAy"
 			}
@@ -87,7 +90,12 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 	}
 	handler := inventory.NewScanHandler(repositories, registry, inventory.NewService(repositories.Inventory()))
 	var first asset.Asset
-	for _, step := range []string{"first", "denied", "missing", "changed", "absent", "recovered"} {
+	steps := []string{"first", "denied", "missing", "changed"}
+	if nativeType == routePolicyType {
+		steps = append(steps, "unresolved-set")
+	}
+	steps = append(steps, "absent", "recovered")
+	for _, step := range steps {
 		phase = step
 		run := asset.ScanRun{ID: asset.ScanRunID(step), ConnectionID: connection.ID, Status: asset.ScanPending, RequestedBy: "test", CreatedAt: now}
 		shard := asset.ScanShard{ID: asset.ScanShardID(step), ScanRunID: run.ID, Provider: asset.ProviderGCP, Source: productInventorySource, ScopeID: scope.ID, ResourceKindID: kind.ID, Authoritative: true, Status: asset.ShardPending, CreatedAt: now}
@@ -97,7 +105,7 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 		if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
 			t.Fatal(err)
 		}
-		failed := step == "denied" || step == "missing" || step == "changed"
+		failed := step == "denied" || step == "missing" || step == "changed" || step == "unresolved-set"
 		err := handler.Handle(ctx, execution.Job{ID: execution.JobID(step), Type: execution.JobScan, Payload: map[string]any{"scan_shard_id": string(shard.ID)}})
 		if (err != nil) != failed {
 			t.Fatalf("%s scan: %v", step, err)

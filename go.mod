@@ -3,6 +3,7 @@ module github.com/loomx-ai/steward
 go 1.26
 
 require (
+	cel.dev/cel-go v0.32.0
 	github.com/alibabacloud-go/alibabacloud-gateway-fc v0.0.6
 	github.com/alibabacloud-go/alibabacloud-gateway-oss v0.0.26
 	github.com/alibabacloud-go/alibabacloud-gateway-sls v0.4.1
@@ -35,6 +36,7 @@ require (
 )
 
 require (
+	cel.dev/expr v0.25.1 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-oss-util v0.0.14 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-pop v0.1.4 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-sls-util v0.4.1 // indirect
@@ -52,6 +54,7 @@ require (
 	github.com/alibabacloud-go/tea-utils v1.4.5 // indirect
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9 // indirect
 	github.com/alibabacloud-go/tea-xml v1.1.3 // indirect
+	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.34 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.34 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.34 // indirect
@@ -84,10 +87,13 @@ require (
 	github.com/spf13/pflag v1.0.9 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
+	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f // indirect
 	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/sync v0.21.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20260420184626-e10c466a9529 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260420184626-e10c466a9529 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )

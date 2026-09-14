@@ -402,3 +402,9 @@ Cloud Router named sets are independently discovered through native
 expression elements, fingerprint and parent-router identity. Inventory shares
 scope/identity binding with route policies. Named-set deletion and policy
 reference ordering remain unfinished; see [native evidence](../fixtures/named-set/README.md).
+
+Policy-to-set relationships use the pinned official CEL Go parser
+`cel.dev/cel-go v0.32.0` to inspect native `prefixSets` / `communitySets` call
+nodes, including literal escapes and nested expressions. No expression is
+executed. Computed set names remain unresolved and fail the affected scan shard
+instead of silently omitting a dependency. API metadata/counts remain unchanged.

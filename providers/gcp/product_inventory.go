@@ -425,6 +425,17 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 					}
 				}
 				item.Normalized["bgpReferences"] = references
+				sets, err := routePolicySetReferences(item.Normalized)
+				if err != nil {
+					return contracts.InventoryBatch{}, err
+				}
+				setIDs := make([]string, 0, len(sets))
+				for _, name := range sets {
+					setIDs = append(setIDs, target.ParentID+"/namedSets/"+name)
+				}
+				item.Normalized[referenceKey(namedSetType)] = setIDs
+				item.NetworkReferences = append(item.NetworkReferences, setIDs...)
+
 				actionable := firewallNumericID(target.ParentUID) && text(item.Normalized["fingerprint"]) != ""
 				item.Actionable = &actionable
 			}

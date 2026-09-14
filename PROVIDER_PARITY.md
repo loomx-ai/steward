@@ -5540,3 +5540,32 @@ background evidence only, not acceptance evidence for this work.
   All 782 prior generated operations and previous native method/schema objects
   remain unchanged. Only 19 milestone files are committed; all 65 original WIP
   hashes are preserved. No runtime dependency or external environment was added.
+
+### CEL policy-to-named-set dependencies
+
+- Verified native `prefixSets` / `communitySets` reference forms and used the
+  official CEL parser, pinned at `cel.dev/cel-go v0.32.0` with Go module checksums.
+  The historical GitHub module path now declares `cel.dev/cel-go`. Parser AST
+  traversal replaces guessed text matching; expressions are never evaluated.
+  Existing selected module versions were compared before/after and are unchanged.
+- Both match and action expressions contribute same-router named-set dependency
+  IDs. Literal escapes, raw/triple-quoted strings, absolute calls, nested calls
+  and duplicate references are covered. Strings/comments do not create edges.
+  Malformed syntax, unresolved non-literal names and parser/depth limits fail the
+  affected scan shard. Computed-name resolution remains unfinished.
+- Native CEL dependency edges are persisted through real SQLite scan/graph jobs.
+  Policy-only cleanup, BGP detachment and worker restart preserve referenced
+  sets and routers. Unresolved-reference scans retain prior policy observations
+  and freshness. Final verification includes the unresolved-reference worker case.
+- Catalog contents, native source metadata, 199 resource rules and 784 API
+  operations remain unchanged. Named-set native deletion and executable ordering,
+  computed references, parent-router cascade and independent/live-cloud
+  verification remain unfinished. All eight overall parity criteria remain open.
+- Final verification: full `go test ./...` passed across all providers and internal
+  packages (GCP 193.263s, Azure 351.831s, Alibaba 11.601s, AWS 6.589s).
+  Focused policy/set/catalog/property race checks passed in 37.964s; GCP/internal
+  vet passed. Main-workspace focused checks passed in 13.848s. Documentation
+  checks passed for 30 isolated/42 main chapters and 10 screenshots. Catalog
+  generation remains byte-identical with SHA-256
+  `c55ffc321e9236df385f2191ab93c126075685fc6a6afa69f91e11e64bb8a4ee`.
+  Only 14 milestone files are included; all 65 original WIP hashes are preserved.

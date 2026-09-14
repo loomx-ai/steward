@@ -250,3 +250,9 @@ Steward 在各路由器所属地域分页列举策略，并逐条读取详情；
 详见[原生集合详情 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/getNamedSet)。
 命名集合删除和策略引用排序仍待实现。Google
 [禁止删除仍被同一路由器任意策略引用的集合](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/bgp-route-policies/update-named-sets)。
+
+策略扫描会解析原生 CEL 中的 `prefixSets('name')` 和 `communitySets('name')` 调用，
+建立对同一路由器内命名集合的依赖。将策略和集合一同扫描，可在关系图中查看这些
+依赖；删除策略会保留其引用的集合。字符串、注释不视为调用，表达式不会被执行。
+CEL 语法错误或无法解析的计算所得集合名会使该策略扫描分片失败，并保留此前观测。
+命名集合删除及其执行排序仍待实现。

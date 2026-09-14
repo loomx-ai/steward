@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"net/http"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -14,6 +15,7 @@ import (
 	"github.com/loomx-ai/steward/internal/app/inventory"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/core/graph"
 	"github.com/loomx-ai/steward/internal/core/plan"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/persistence/sqlite"
@@ -21,15 +23,37 @@ import (
 
 func TestRoutePolicySQLiteScanCleanupRestartAndReconciliation(t *testing.T) {
 	for _, bgp := range []bool{false, true} {
-		t.Run(map[bool]string{false: "unattached", true: "bgp-attached"}[bgp], func(t *testing.T) { routePolicySQLiteCleanup(t, bgp) })
+		t.Run(map[bool]string{false: "unattached", true: "bgp-attached"}[bgp], func(t *testing.T) { routePolicySQLiteCleanup(t, bgp, false) })
 	}
 }
 
-func routePolicySQLiteCleanup(t *testing.T, bgp bool) {
+func TestRoutePolicyNamedSetDependencyGraphAndRetainedSet(t *testing.T) {
+	routePolicySQLiteCleanup(t, true, true)
+}
+
+func routePolicySQLiteCleanup(t *testing.T, bgp, setReferences bool) {
 	ctx := t.Context()
 	r, request, fixture := routePolicyActionRuntime(t)
 	if bgp {
 		routePolicyAttachFixture(t, &request, fixture)
+	}
+	kinds := []asset.ResourceKindID{r.resourceKind(routerType).ID, r.resourceKind(routePolicyType).ID}
+	if setReferences {
+		object(array(fixture.policy["terms"])[0])["match"] = map[string]any{"expression": "destination.inAnyRange(prefixSets('local'))"}
+		kinds = append(kinds, r.resourceKind(namedSetType).ID)
+		original := r.transport
+		r = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+			if req.Method == "GET" && strings.HasSuffix(req.URL.Path, "/listNamedSets") {
+				return apiResponse(req, 200, `{"result":[{"name":"local"}]}`), nil
+			}
+			if req.Method == "GET" && strings.HasSuffix(req.URL.Path, "/getNamedSet") {
+				if req.URL.Query().Get("namedSet") != "local" {
+					t.Fatal("foreign set request", req.URL)
+				}
+				return dataformResponse(req, 200, map[string]any{"resource": namedSetFixture("local")}), nil
+			}
+			return original.RoundTrip(req)
+		})
 	}
 	transport := r.transport
 	registry := identityRegistry(t, r)
@@ -54,8 +78,8 @@ func routePolicySQLiteCleanup(t *testing.T, bgp bool) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: "connection", RequestedBy: "test", RegionMode: inventory.RegionModeSelected, RegionIDs: []string{"us-central1"}, ResourceKindIDs: []asset.ResourceKindID{r.resourceKind(routerType).ID, r.resourceKind(routePolicyType).ID}})
-		if err != nil || len(created.Shards) != 2 || len(created.Jobs) != 1 {
+		created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: "connection", RequestedBy: "test", RegionMode: inventory.RegionModeSelected, RegionIDs: []string{"us-central1"}, ResourceKindIDs: kinds})
+		if err != nil || len(created.Shards) != len(kinds) || len(created.Jobs) != 1 {
 			t.Fatal("scan creation", created, err)
 		}
 		job, err := repositories.Jobs().ClaimNext(ctx, "policy-scan", now, time.Minute, execution.JobScan)
@@ -85,13 +109,15 @@ func routePolicySQLiteCleanup(t *testing.T, bgp bool) {
 	}
 	scan()
 	page, err := repositories.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10})
-	if err != nil || len(page.Items) != 2 {
+	if err != nil || len(page.Items) != len(kinds) {
 		t.Fatal(page, err)
 	}
-	var policy, parent asset.Asset
+	var policy, parent, set asset.Asset
 	for _, value := range page.Items {
 		if value.Identity.NativeType == routePolicyType {
 			policy = value
+		} else if value.Identity.NativeType == namedSetType {
+			set = value
 		} else {
 			parent = value
 		}
@@ -103,6 +129,21 @@ func routePolicySQLiteCleanup(t *testing.T, bgp bool) {
 		encoded, _ := json.Marshal(policy.Normalized)
 		if strings.Contains(string(encoded), "router-only-secret") || len(array(policy.Normalized["bgpReferences"])) != 2 {
 			t.Fatal("missing references or leaked key", policy.Normalized["bgpReferences"])
+		}
+	}
+	if setReferences {
+		relationships, err := repositories.Graph().ListRelationshipsForAsset(ctx, "connection", policy.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		found := false
+		for _, relation := range relationships {
+			if relation.SourceAssetID == policy.ID && relation.TargetAssetID == set.ID && relation.Type == graph.RelationshipDependsOn {
+				found = true
+			}
+		}
+		if !found {
+			t.Fatal("missing persisted native set dependency", relationships)
 		}
 	}
 	planner := cleanup.NewService(repositories, registry, cleanup.WithClock(func() time.Time { return now }))
@@ -191,7 +232,13 @@ func routePolicySQLiteCleanup(t *testing.T, bgp bool) {
 	now = now.Add(time.Minute)
 	scan()
 	page, err = repositories.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10})
-	if err != nil || len(page.Items) != 1 || page.Items[0].ID != parent.ID || fixture.deletes != 1 {
+	if err != nil || len(page.Items) != len(kinds)-1 || fixture.deletes != 1 {
 		t.Fatal("reconciliation changed parent or restored deleted policy", page, err)
+	}
+	if setReferences {
+		retainedSet, err := repositories.Inventory().GetAsset(ctx, set.ID)
+		if err != nil || retainedSet.ClosedAt != nil || retainedSet.DeletedAt != nil {
+			t.Fatal("referenced set was deleted", retainedSet, err)
+		}
 	}
 }

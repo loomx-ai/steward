@@ -437,7 +437,9 @@ resources:
     detachment before deletion; permission failures, drift and native conflicts fail.
     Native mutations lack a fingerprint precondition. Named sets now have independent
     native inventory with prefix/community types, CEL elements and fingerprint.
-    Named-set deletion and policy-reference dependencies, parent
+    CEL literal prefix/community set references now create policy-to-set dependency
+    edges; malformed or computed references fail the scan without closing history.
+    Named-set deletion, computed-name resolution, executable dependency ordering, parent
     cascade and independent/live acceptance remain unfinished. Router deletion is not
     policy deletion parity.
 - alicloud: ACS::CEN::TrafficMarkingPolicy
