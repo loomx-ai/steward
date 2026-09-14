@@ -4853,3 +4853,32 @@ background evidence only, not acceptance evidence for this work.
   were staged; 64 unrelated working-file hashes remain unchanged and the existing
   worker modification remains an identical separate unstaged diff. Its only owned
   change calls the shared prerequisite validator. Catalog/API/spec bytes are unchanged.
+
+## Future Reservation native inventory and procurement state
+
+- Corrected procurement state to `status.procurementStatus` in the resource rule
+  and shared inventory/action readback parser. Planning status and amendment
+  history remain separate; unknown native state strings remain observable.
+- Materialized declared FutureReservation properties in normalized inventory,
+  including requested/fulfilled counts, matching usage, lock/amendment details,
+  generated-reservation URLs, commitment/time settings and storage capacities.
+  Native int64 strings retain precision. Native payloads remain available.
+- Creation history does not create deletion dependencies, child API access or
+  inferred pool ownership. The existing native deletion and own-resource absence
+  workflow remains; scheduled auto-deletion is not interpreted as a DELETE cascade.
+- Tests reuse pinned official schemas without changing the native catalog and
+  verify public field paths/types, every known procurement state plus a future
+  state, native pagination/scope, exact quantities and own-resource lifecycle.
+  SQLite scans survive database/runtime reopening and preserve existing assets
+  on denied, partial or malformed lists before complete reconciliation.
+- Evidence and commands are recorded in the future-reservation fixture README.
+  Google's pinned mockgcp has a candidate native implementation, inspected but
+  not executed in this milestone. No live cloud was used. The 194 rules and 773
+  operations remain unchanged; all eight overall acceptance criteria remain open.
+- Final validation passed: full isolated `go test ./... -count=1`, including
+  Azure (348.929s) and GCP (169.603s); focused GCP/inventory race tests
+  (26.351s / 1.682s); affected-package vet; main integrated native inventory,
+  lifecycle, catalog, compiler and projection regressions. Documentation checks
+  passed for 30 isolated and 42 main chapters plus 10 original screenshots.
+  Exactly eight owned files were integrated, with all 65 original working-file
+  hashes unchanged. No frontend changes or live-cloud tests were involved.

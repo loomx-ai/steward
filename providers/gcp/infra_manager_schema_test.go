@@ -27,7 +27,11 @@ func infraFixtureSchemas(t *testing.T, path, revision, hash string) *jsonschema.
 	if source["revision"] != revision || source["source_sha256"] != hash {
 		t.Fatal("unreviewed native schema provenance")
 	}
-	schemas := object(source["schemas"])
+	return discoveryFixtureSchemaCompiler(t, object(source["schemas"]))
+}
+
+func discoveryFixtureSchemaCompiler(t *testing.T, schemas map[string]any) *jsonschema.Compiler {
+	t.Helper()
 	var convert func(any)
 	convert = func(value any) {
 		switch v := value.(type) {

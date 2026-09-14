@@ -66,6 +66,9 @@ func TestComputeExtendedResourceWireLifecycles(t *testing.T) {
 			if strings.HasPrefix(test.scope, "regions/") {
 				data["region"] = "https://compute.googleapis.com/compute/v1/projects/sample-project/" + test.scope
 			}
+			if test.kind == "FutureReservation" {
+				data = futureReservationFixture("us-central1-a", "fixture")
+			}
 			deleted, polls, reads := false, 0, 0
 			transport := func(r *http.Request) (*http.Response, error) {
 				if r.URL.Host != "compute.googleapis.com" {
@@ -118,6 +121,9 @@ func TestComputeExtendedResourceWireLifecycles(t *testing.T) {
 				t.Fatalf("product list=%+v err=%v", page, err)
 			}
 			item := page.Items[0]
+			if test.kind == "FutureReservation" {
+				assertFutureReservationProperties(t, item)
+			}
 			if item.NativeID != "//compute.googleapis.com/"+name || item.Actionable == nil || !*item.Actionable {
 				t.Fatalf("wrong inventory identity/action: %+v", item)
 			}

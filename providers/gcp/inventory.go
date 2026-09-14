@@ -348,6 +348,16 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	if zone := text(data["zone"]); zone != "" {
 		normalized["zone_id"] = last(zone)
 	}
+	if nativeType == "compute.googleapis.com/FutureReservation" {
+		// Keep the native payload and materialize the declared properties so
+		// filters can address nested procurement metadata without losing int64s.
+		definition, _ := r.productDefinition(nativeType)
+		for field, property := range definition.Fields {
+			if value := productValue(normalized, property.Path); value != nil {
+				normalized[field] = value
+			}
+		}
+	}
 	networkRefs := []string{}
 	for target, values := range refs {
 		normalized[referenceKey(target)] = values
@@ -393,6 +403,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 }
 
 func resourceState(data map[string]any) string {
+	if state := text(object(data["status"])["procurementStatus"]); state != "" {
+		return state
+	}
 	for _, field := range []string{"status", "state"} {
 		if state := text(data[field]); state != "" {
 			return state

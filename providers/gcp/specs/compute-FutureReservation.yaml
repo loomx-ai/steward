@@ -35,7 +35,7 @@ fields:
     path: name
     type: string
   state:
-    path: status
+    path: status.procurementStatus
     type: string
   projectId:
     path: project_id
@@ -66,6 +66,78 @@ fields:
     type: object
   autoDeleteAutoCreatedReservations:
     path: autoDeleteAutoCreatedReservations
+    type: boolean
+  statusDetails:
+    path: status
+    type: object
+  requestedInstanceCount:
+    path: specificSkuProperties.totalCount
+    type: string
+  fulfilledCount:
+    path: status.fulfilledCount
+    type: string
+  lockTime:
+    path: status.lockTime
+    type: string
+  amendmentStatus:
+    path: status.amendmentStatus
+    type: string
+  autoCreatedReservations:
+    path: status.autoCreatedReservations
+    type: array
+  existingMatchingUsageInfo:
+    path: status.existingMatchingUsageInfo
+    type: object
+  resolvedSkuProperties:
+    path: status.specificSkuProperties
+    type: object
+  lastKnownGoodState:
+    path: status.lastKnownGoodState
+    type: object
+  storagePoolProvisionedCapacity:
+    path: status.storagePoolProvisionedCapacity
+    type: object
+  exapoolProvisionedCapacityGb:
+    path: status.exapoolProvisionedCapacityGb
+    type: object
+  storagePoolProperties:
+    path: storagePoolProperties
+    type: object
+  aggregateReservation:
+    path: aggregateReservation
+    type: object
+  commitmentInfo:
+    path: commitmentInfo
+    type: object
+  autoCreatedReservationsDeleteTime:
+    path: autoCreatedReservationsDeleteTime
+    type: string
+  autoCreatedReservationsDuration:
+    path: autoCreatedReservationsDuration
+    type: object
+  reservationMode:
+    path: reservationMode
+    type: string
+  reservationName:
+    path: reservationName
+    type: string
+  specificReservationRequired:
+    path: specificReservationRequired
+    type: boolean
+  schedulingType:
+    path: schedulingType
+    type: string
+  deploymentType:
+    path: deploymentType
+    type: string
+  namePrefix:
+    path: namePrefix
+    type: string
+  confidentialComputeType:
+    path: confidentialComputeType
+    type: string
+  enableEmergentMaintenance:
+    path: enableEmergentMaintenance
     type: boolean
 extensions:
   hook: gcp.resource
