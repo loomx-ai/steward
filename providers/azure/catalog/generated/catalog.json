@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "15ce319cf2a3348fb865249341cd816a0d6adac1996359e18929f6fb5ff528f8",
+    "checksum": "954392676587937e397306311bbf54744fd245529364d546b38f9921c2121cbb",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "aee40093d2151fa297538b5aa46f2fc3b74a00fb99452325fb7373c8c79f5b30",
+  "content_checksum": "5eecf071b80c63175427f08de6af21672c3699dfb1f2b2fc3b0ea60a72899c5d",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -135303,6 +135303,9 @@
         "collection": "elasticSans",
         "read_operations": [
           "Azure.Microsoft.ElasticSan.ElasticSans_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.ElasticSan.ElasticSans_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.ElasticSan.ElasticSans_ListBySubscription"

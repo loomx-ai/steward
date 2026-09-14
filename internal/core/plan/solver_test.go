@@ -887,3 +887,26 @@ func TestOptionalDirectChildRetainsHistoryUnlessSelected(t *testing.T) {
 		})
 	}
 }
+
+func TestNonActionableControllerCannotReleaseChildDeletions(t *testing.T) {
+	controller, child := actionable("controller"), actionable("child")
+	controller.Capabilities = asset.CapabilitySet{asset.CapabilityIndexed}
+	direct := binding("controller", "child", graph.OwnershipExclusive, graph.CleanupDirect, 1)
+	direct.DirectCleanupAllowed = true
+	input := plan.Input{CleanupTaskID: "blocked-parent", ResolvedAssetIDs: []asset.AssetID{controller.ID}, Assets: []asset.Asset{controller, child}, LifecycleBindings: []graph.LifecycleBinding{direct}}
+	result, err := plan.Solve(input)
+	if err != nil || !hasBlocker(result.Blockers, controller.ID, plan.BlockNotActionable) {
+		t.Fatalf("non-actionable controller released deletion: %+v, %v", result, err)
+	}
+	input.LifecycleBindings[0].CleanupPolicy = graph.CleanupRetain
+	result, err = plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 || len(result.Steps) != 0 {
+		t.Fatalf("retention-only scope was blocked: %+v, %v", result, err)
+	}
+	input.LifecycleBindings[0] = direct
+	input.ResolvedAssetIDs = []asset.AssetID{child.ID}
+	result, err = plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 || len(result.Steps) != 1 || result.Steps[0].AssetID != child.ID {
+		t.Fatalf("independent child was blocked: %+v, %v", result, err)
+	}
+}

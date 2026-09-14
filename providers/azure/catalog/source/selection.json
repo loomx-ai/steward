@@ -10813,7 +10813,9 @@
       "read_operations": [
         "Azure.Microsoft.ElasticSan.ElasticSans_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.ElasticSan.ElasticSans_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.ElasticSan.ElasticSans_ListBySubscription"
       ]

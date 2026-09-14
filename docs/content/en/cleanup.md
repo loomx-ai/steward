@@ -22,6 +22,8 @@ Account, project, region, and group targets can resolve to many resources. Check
 
 When a provider reports an unverified cleanup dependency, the task is blocked. Inspect its resource ID and evidence, then scan the resource and its dependencies again. This also protects resources deleted through a controller. A new dependency finding invalidates a previously reviewed plan, so review the refreshed task before execution.
 
+If a selected controller cannot be cleaned up, its dependent child deletion steps are blocked too. To clean up supported children independently, select those children without the controller and review the new task.
+
 ### Example: an unselected instance still uses the vSwitch
 
 The sample task selects `api-01`, `public-gateway`, and the `application` vSwitch. Another instance, `api-02`, is outside the selection but still uses that vSwitch.

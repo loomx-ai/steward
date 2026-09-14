@@ -174,3 +174,93 @@ func (s *serviceCascades) contributeElasticSanGroups(ctx context.Context, assets
 	}
 	return nil
 }
+
+// Groups retain their existing direct volume/snapshot ordering. SAN deletion
+// follows group deletion and independently selected private connections.
+func (s *serviceCascades) contributeElasticSanRoots(ctx context.Context, assets []asset.Asset, result *governance.Contribution) error {
+	byID := map[string]asset.Asset{}
+	for _, value := range assets {
+		if value.Identity.Provider == asset.ProviderAzure && value.Identity.ConnectionID == s.connectionID {
+			byID[value.Identity.NativeID] = value
+		}
+	}
+	for _, value := range assets {
+		if value.Identity.Provider != asset.ProviderAzure || value.Identity.ConnectionID != s.connectionID || value.Identity.NativeType != elasticSanType {
+			continue
+		}
+		unresolved := func(kind, id, reason string) {
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, ControllerID: value.ID, NativeType: kind, NativeID: id, Relationship: graph.RelationshipAttachedTo, Evidence: map[string]any{"reason": reason}})
+		}
+		if value.Normalized[elasticSanBoundary] == nil || value.Normalized[elasticSanSnapshotCleanup] == nil {
+			unresolved(elasticSanType, value.Identity.NativeID, "elastic_san_boundary_requires_refresh")
+			continue
+		}
+		cleanupState := object(value.Normalized[elasticSanSnapshotCleanup])
+		if value.Normalized[elasticSanSnapshotCleanupProof] != s.client.elasticSanChildBinding(value, cleanupState) {
+			return serviceDenied("elastic_san_root_graph_proof_changed")
+		}
+		boundary, err := s.client.elasticSanBoundaryRecorded(value)
+		if err != nil {
+			return err
+		}
+		if boundary["complete"] != true {
+			unresolved(elasticSanType, value.Identity.NativeID, "elastic_san_boundary_incomplete")
+			continue
+		}
+		action := &elasticSanChildAction{client: s.client, planned: value}
+		stale := false
+		for range 2 {
+			nodes, err := action.rootMembers(ctx, false)
+			if err != nil {
+				return err
+			}
+			current := s.client.elasticSanBoundaryState(value.Identity.NativeID, nodes, nil)
+			if s.client.privateConfiguration(current) != s.client.privateConfiguration(boundary) {
+				stale = true
+				break
+			}
+		}
+		if stale {
+			unresolved(elasticSanType, value.Identity.NativeID, "elastic_san_boundary_requires_refresh")
+			continue
+		}
+		children := object(object(value.Normalized[elasticSanSnapshotCleanup])["children"])
+		for _, id := range slices.Sorted(maps.Keys(object(boundary["members"]))) {
+			member := object(object(boundary["members"])[id])
+			kind := text(member["kind"])
+			target := byID[id]
+			if member["retained"] == true {
+				unresolved(kind, id, "elastic_san_retained_children_require_resolution")
+				continue
+			}
+			if target.ID == "" {
+				unresolved(kind, id, "elastic_san_member_requires_inventory")
+				continue
+			}
+			state := object(target.Normalized[elasticSanSnapshotCleanup])
+			if target.Identity.NativeType != kind || state["resource"] != object(children[id])["configuration"] || target.Normalized[elasticSanSnapshotCleanupProof] != s.client.elasticSanChildBinding(target, state) {
+				unresolved(kind, id, "elastic_san_member_requires_refresh")
+				continue
+			}
+			if kind != elasticSanGroupType && kind != elasticSanEndpointType {
+				parent := elasticSanParent(id, kind)
+				if object(boundary["members"])[parent] == nil {
+					unresolved(elasticSanGroupType, parent, "elastic_san_member_parent_requires_resolution")
+				}
+				continue
+			}
+			evidence := map[string]any{"resource_type": kind, "instance_id": id, "delete_by_default": true, "retention_supported": false}
+			if kind == elasticSanEndpointType {
+				evidence[graph.RelationshipEvidenceRequiredDeletion] = true
+				evidence[graph.RelationshipEvidenceAuthority] = graph.AuthorityAuthoritative
+				evidence[graph.RelationshipEvidenceAutomaticSelection] = false
+				evidence[graph.RelationshipEvidenceDeletionOrder] = graph.DeletionOrderTargetBeforeSource
+				result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: value.ID, TargetAssetID: target.ID, Type: graph.RelationshipDependsOn, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+			} else {
+				result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: value.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDirect, DirectCleanupAllowed: true, EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+				result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: value.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+			}
+		}
+	}
+	return nil
+}

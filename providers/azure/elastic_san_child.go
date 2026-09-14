@@ -17,7 +17,7 @@ const elasticSanSnapshotCleanupProof = "_elastic_san_snapshot_cleanup_proof"
 // Snapshot protocol keys and versions remain stable so existing saved executions
 // survive this extension. Resource IDs and signed inventory bind the native kind.
 func elasticSanIndependentChild(kind string) bool {
-	return kind == elasticSanSnapshotType || kind == elasticSanEndpointType || kind == elasticSanVolumeType || kind == elasticSanGroupType
+	return kind == elasticSanType || kind == elasticSanSnapshotType || kind == elasticSanEndpointType || kind == elasticSanVolumeType || kind == elasticSanGroupType
 }
 
 func (c *client) elasticSanChildProtection(kind string, raw map[string]any) string {
@@ -74,8 +74,28 @@ func (c *client) elasticSanChildRecord(value asset.Asset) error {
 	if value.Identity.NativeType == elasticSanVolumeType || value.Identity.NativeType == elasticSanGroupType {
 		expectedFields = 4
 	}
+	if value.Identity.NativeType == elasticSanType {
+		expectedFields = 5
+	}
 	if value.ID == "" || !elasticSanIndependentChild(value.Identity.NativeType) || (value.Identity.NativeType != elasticSanVolumeType && value.Normalized["retained"] != false) || len(state) != expectedFields || text(state["resource"]) == "" || text(state["etag"]) == "" || state["protected"] != false || value.Normalized["cleanup_protected"] != false || value.Normalized[elasticSanSnapshotCleanupProof] != c.elasticSanChildBinding(value, state) {
 		return serviceDenied("invalid_elastic_san_snapshot_cleanup_record")
+	}
+	if value.Identity.NativeType == elasticSanType {
+		boundary, err := c.elasticSanBoundaryRecorded(value)
+		if err != nil {
+			return err
+		}
+		children := object(state["children"])
+		if boundary["complete"] != true || state["boundary"] != value.Normalized[elasticSanBoundaryProof] || children == nil || len(children) != len(object(boundary["members"])) {
+			return serviceDenied("elastic_san_root_cleanup_context_changed")
+		}
+		for id, entry := range children {
+			child := object(entry)
+			member := object(object(boundary["members"])[id])
+			if len(child) != 2 || member["kind"] != child["kind"] || member["retained"] != false || text(child["configuration"]) == "" {
+				return serviceDenied("elastic_san_root_cleanup_member_changed")
+			}
+		}
 	}
 	if value.Identity.NativeType == elasticSanGroupType {
 		if _, err := c.elasticSanGroupRecorded(value); err != nil {
@@ -134,7 +154,11 @@ func (a *elasticSanChildAction) identity(request contracts.ActionRequest) error 
 	if request.Action != "delete" || request.Asset.ID != a.planned.ID || request.Asset.Identity != a.planned.Identity || request.Asset.Location != a.planned.Location || request.Asset.Normalized[elasticSanSnapshotCleanupProof] != a.planned.Normalized[elasticSanSnapshotCleanupProof] {
 		return serviceDenied("elastic_san_snapshot_request_changed")
 	}
-	if a.planned.Identity.NativeType == elasticSanVolumeType {
+	if a.planned.Identity.NativeType == elasticSanType {
+		if err := a.rootRequest(request); err != nil {
+			return err
+		}
+	} else if a.planned.Identity.NativeType == elasticSanVolumeType {
 		if err := a.volumeRequest(request); err != nil {
 			return err
 		}
@@ -195,7 +219,11 @@ func (a *elasticSanChildAction) Preflight(ctx context.Context, request contracts
 		if object(raw["properties"])["provisioningState"] == "Deleting" || a.planned.Identity.NativeType == elasticSanGroupType && object(raw["properties"])["provisioningState"] == "SoftDeleting" {
 			return contracts.PreflightResult{Allowed: true, Evidence: map[string]any{"elastic_san_wait": true}}, nil
 		}
-		if a.planned.Identity.NativeType == elasticSanVolumeType {
+		if a.planned.Identity.NativeType == elasticSanType {
+			if err := a.rootPreflight(ctx, raw); err != nil {
+				return check, err
+			}
+		} else if a.planned.Identity.NativeType == elasticSanVolumeType {
 			if err := a.volumePreflight(ctx, raw); err != nil {
 				return check, err
 			}
@@ -206,7 +234,7 @@ func (a *elasticSanChildAction) Preflight(ctx context.Context, request contracts
 		} else if reason := a.client.elasticSanChildProtection(a.planned.Identity.NativeType, raw); reason != "" {
 			return check, serviceDenied(reason)
 		}
-		if a.client.privateConfiguration(elasticSanChildVersion(a.planned.Identity.NativeType, raw)) != object(a.planned.Normalized[elasticSanSnapshotCleanup])["etag"] {
+		if a.planned.Identity.NativeType != elasticSanType && a.client.privateConfiguration(elasticSanChildVersion(a.planned.Identity.NativeType, raw)) != object(a.planned.Normalized[elasticSanSnapshotCleanup])["etag"] {
 			return check, serviceDenied("elastic_san_snapshot_etag_changed")
 		}
 		parents := []string{elasticSanRoot(a.planned.Identity.NativeID)}
@@ -316,6 +344,13 @@ func (a *elasticSanChildAction) Execute(ctx context.Context, request contracts.A
 func (a *elasticSanChildAction) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	if err := a.identity(request); err != nil {
 		return contracts.ReadbackResult{}, err
+	}
+	if a.planned.Identity.NativeType == elasticSanType {
+		raw, err := a.observe(ctx)
+		if err == nil && raw == nil {
+			err = a.rootChildrenFinished(ctx, true)
+		}
+		return contracts.ReadbackResult{Exists: raw != nil, State: text(object(raw["properties"])["provisioningState"])}, contracts.DependencyReadError(err)
 	}
 	if a.planned.Identity.NativeType == elasticSanGroupType {
 		_, out, err := a.groupObservation(ctx)

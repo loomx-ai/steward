@@ -4580,3 +4580,61 @@ background evidence only, not acceptance evidence for this work.
   30 isolated/42 main chapters and all 10 original screenshots. Existing native
   operation definitions, source catalogs and original protocol fixture bytes were
   unchanged. All 65 preexisting WIP hashes were preserved.
+
+
+## Elastic SAN ordered parent cleanup
+
+- Registered native `ElasticSans_Delete` with `2026-04-01-preview` and the existing
+  signed Location protocol. Catalog operations/specs stay 1489/448; delete actions
+  become 418. Existing snapshot/volume/group/connection persisted keys and receipts
+  remain compatible. SAN cleanup binds creation identity, writable configuration,
+  signed member boundary and reviewed child fingerprints.
+- Root lifecycle contributions require refreshed member assets, schedule groups
+  before the SAN and keep groups' volume/snapshot ordering. Private connections
+  remain independently selected required deletions. New/stale/unscanned members
+  produce persisted plan blockers. Protected roots do not prevent independently
+  reviewed child cleanup. Root requests verify the exact frozen group/connection
+  prerequisites and reject additional options or lifecycle impacts.
+- SAN DELETE runs only after active/retained group and volume collections, snapshot
+  and connection collections, and every known own-resource read establish that
+  children are absent. A missing collection can use known own reads only after
+  its parent's own absence; denied reads remain errors. Final root readback repeats
+  child verification, including after an expired operation callback. Successful
+  callbacks and missing parents cannot independently close assets.
+- Native read-only aggregate fields (the six fields marked readOnly in the pinned
+  ElasticSanProperties schema) may change as children are removed. Stable root
+  comparison preserves creation identity, tags, writable capacity, SKU, network
+  access and autoscale configuration; ETag changes alone do not reject completed
+  child steps. Resource-group protection and subscription management locks remain
+  checked before mutation. No client-side iSCSI command, force flag or implicit
+  retained-resource purge was added.
+- Existing retained children and Enabled group-retention policies protect root
+  cleanup before execution. If an unspecified native policy unexpectedly retains
+  a group/volume, the root's independent member reads refuse SAN DELETE. This is
+  supported ordered cleanup of non-retained boundaries, not completion of SAN
+  retained-boundary cleanup or retained-group purge. Those behaviors and the
+  retained snapshot-index reconciliation edge remain unfinished. All eight
+  overall acceptance criteria remain open.
+- Tests cover five-step SQLite planning and fresh database/runtime recovery with
+  one native DELETE per snapshot, volume, connection, group and SAN; explicit PEC
+  selection; stale-boundary plan blocking and refresh; exact prerequisite proofs;
+  native read-only changes; recreated/configured/protected/locked resources;
+  new/retained children; denied collection/own reads; disappearing collections,
+  surviving known children and expired callbacks. These are composed native
+  protocol fixtures plus real SQLite persistence, not live-cloud or independent
+  Elastic SAN ARM emulator evidence.
+- A shared planner guard now blocks direct child deletions when their selected
+  controller has no actionable capability. Independent child selections keep
+  their direct-cleanup fallback; retention-only read-only scopes keep their
+  existing skip behavior. This prevents an unsupported/protected SAN from
+  releasing child mutations while its own step is silently omitted. The native
+  retention regression verifies a blocked draft and refused execution creation.
+- Validation: final full repository tests passed, including Azure (373.104s) and
+  GCP (184.761s). Elastic SAN/catalog race tests passed (86.995s); final controller,
+  cleanup and SAN-root race tests passed (1.501s/5.501s/27.028s). Main focused
+  plan/cleanup/Azure tests passed (3.334s/2.592s/10.706s). Full repository vet,
+  all 10 Python catalog/CLI evidence tests, and documentation checks passed
+  (30 isolated/42 main chapters plus all 10 original screenshots). The SQLite
+  execution test also rescans all five resource kinds after cleanup and finds
+  no remaining assets. All 1489 original operation definitions and original
+  protocol fixtures remain unchanged. All 65 preexisting WIP hashes were preserved.

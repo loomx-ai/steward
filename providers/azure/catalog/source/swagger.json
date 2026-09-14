@@ -253002,7 +253002,9 @@
       "nativeType": "Microsoft.ElasticSan/elasticSans",
       "rest": {
         "collection": "elasticSans",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.ElasticSan.ElasticSans_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ElasticSan.ElasticSans_ListBySubscription"
         ],

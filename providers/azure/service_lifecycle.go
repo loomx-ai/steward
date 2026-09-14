@@ -464,6 +464,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeCommunication(ctx, assets, &result); err != nil {
 		return result, contracts.DependencyReadError(err)
 	}
+	if err := s.contributeElasticSanRoots(ctx, assets, &result); err != nil {
+		return result, err
+	}
 	if err := s.contributeElasticSanGroups(ctx, assets, &result); err != nil {
 		return result, contracts.DependencyReadError(err)
 	}

@@ -467,7 +467,14 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			bindings[id] = c.privateConfiguration(map[string]any{"inventory": record, "context": state})
 		}
 		actionable := false
-		if kind == elasticSanGroupType {
+		if kind == elasticSanType {
+			value := asset.Asset{Identity: asset.Identity{NativeID: id, ConnectionID: request.ConnectionID}, Location: location, Normalized: normalized}
+			state, reason := c.elasticSanRootCleanup(value, raw, nodes)
+			normalized[elasticSanSnapshotCleanup], normalized[elasticSanSnapshotCleanupProof] = state, c.elasticSanChildBinding(value, state)
+			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
+			actionable = reason == ""
+			bindings[id] = c.privateConfiguration(map[string]any{"inventory": record, "boundary": normalized[elasticSanBoundary], "cleanup": state})
+		} else if kind == elasticSanGroupType {
 			value := asset.Asset{Identity: asset.Identity{NativeID: id, ConnectionID: request.ConnectionID}, Location: location, Normalized: normalized}
 			state, reason := elasticSanGroupCleanup(c, value, raw, object(normalized[elasticSanGroupContext]), observation.retained)
 			normalized[elasticSanSnapshotCleanup], normalized[elasticSanSnapshotCleanupProof] = state, c.elasticSanChildBinding(value, state)

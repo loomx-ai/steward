@@ -26,6 +26,9 @@ func (c *client) elasticSanEndpointGroups(raw map[string]any) ([]string, error) 
 }
 
 func elasticSanChildSnapshot(kind string, raw map[string]any) map[string]any {
+	if kind == elasticSanType {
+		return elasticSanRootSnapshot(raw)
+	}
 	snapshot := hybridComputeChildSnapshot(raw)
 	if kind == elasticSanEndpointType {
 		state := object(object(snapshot["properties"])["privateLinkServiceConnectionState"])

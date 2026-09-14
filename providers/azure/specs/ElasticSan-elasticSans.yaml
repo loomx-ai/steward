@@ -36,3 +36,13 @@ fields:
   publicNetworkAccess: publicNetworkAccess
 extensions:
   hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.ElasticSan.ElasticSans_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ElasticSan.ElasticSans_Get
+      itemsPath: $
+      identityPath: id

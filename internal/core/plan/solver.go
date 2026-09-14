@@ -271,6 +271,12 @@ func solveOnce(input Input) (Result, error) {
 		}
 	}
 	for childID, controllerID := range directChildren {
+		// Do not release destructive child steps when their selected controller
+		// would be skipped. Independent child fallback removes this parent edge.
+		if controller := assets[controllerID]; !controller.Capabilities.Has(asset.CapabilityActionable) {
+			blockers.add(Blocker{Code: BlockNotActionable, AssetID: controllerID, ControllerID: controllerID, Message: "the selected lifecycle controller cannot be cleaned up"})
+			continue
+		}
 		value, ok := assets[childID]
 		if !ok || !value.Capabilities.Has(asset.CapabilityActionable) {
 			blockers.add(Blocker{Code: BlockNotActionable, AssetID: childID, ControllerID: controllerID, Message: "direct lifecycle cleanup requires an actionable child asset"})
