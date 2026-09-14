@@ -28,7 +28,19 @@ func (r monitoringDependencyContributors) ResolveContributors(ctx context.Contex
 	return []governance.Contributor{contributor}, err
 }
 func TestMonitoringDependencySQLitePlanExecutionRestart(t *testing.T) {
+	for _, logging := range []bool{false, true} {
+		name := "metric"
+		if logging {
+			name = "logging"
+		}
+		t.Run(name, func(t *testing.T) { testMonitoringDependencySQLitePlanExecutionRestart(t, logging) })
+	}
+}
+func testMonitoringDependencySQLitePlanExecutionRestart(t *testing.T, logging bool) {
 	s := monitoringDependencyFixture(t)
+	if logging {
+		s.loggingFilter(t, `labels.check_id="ＰＵＢＬＩＣ-ＣＨＥＣＫ" AND NOT jsonPayload.PRIVATE_STATE="ok"`)
+	}
 	ctx := t.Context()
 	dsn := filepath.Join(t.TempDir(), "monitoring.db")
 	open := func() (*sqlite.Repositories, func()) {

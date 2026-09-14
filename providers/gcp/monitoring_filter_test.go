@@ -100,9 +100,9 @@ func TestMonitoringFilterUnicodeCaseFolding(t *testing.T) {
 	}
 }
 
-func TestMonitoringLogCheckIDIsNotProofOfNoDependency(t *testing.T) {
+func TestMonitoringLogCheckIDDispatch(t *testing.T) {
 	policy := map[string]any{"conditions": []any{map[string]any{"conditionMatchedLog": map[string]any{"filter": `labels.check_id="public-check"`}}}}
-	if alertPolicyUptimeReference(policy, "public-check") != monitoringUnresolvedReference {
-		t.Fatal("Logging syntax cannot be treated as an unrelated metric filter")
+	if alertPolicyUptimeReference(policy, "public-check") != monitoringHasReference {
+		t.Fatal("Logging reference was not recognized")
 	}
 }

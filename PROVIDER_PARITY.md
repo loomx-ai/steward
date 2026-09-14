@@ -6070,3 +6070,27 @@ against a still-occupied same-task scope while allowing the bound continuation.
   a hybrid dependency/delete test with 6 explicitly modeled reverse-scope reads;
   unsupported native reverse lookup was first verified to block writes. This is
   not full independent Monitoring, IAM or reference-lock acceptance.
+
+### Logging conditions before Uptime deletion
+
+- Added separate Logging filter analysis for `conditionMatchedLog`, including
+  native Boolean precedence/NOT, comments, value lists, check-ID comparisons,
+  NFKC_Casefold strings, case-sensitive unanchored RE2 and supported casts,
+  extraction and IP functions. Unknown fields remain unknown through negation;
+  unsupported forms retain uncertainty and cannot establish absence.
+- Reused the installed Unicode library without a version bump. Official Unicode
+  mapping vectors plus all default-identity scalars caught a Cherokee case-folding
+  discrepancy; a narrow correction and stream-safety guard prevent false exclusions.
+  Unicode 15 is exercised on Go 1.26; Unicode 17 vectors are retained for Go 1.27.
+- Existing native incoming reads and final cleanup rereads now use this analysis.
+  Metric and Logging variants cover explicit graph selection and SQLite restart
+  through policy DELETE/404 before check DELETE, with private queries redacted.
+- Project-to-project and ancestor log routing are a separate open discovery gap:
+  MetricsScope enumeration alone does not find every Logging alert destination.
+  SEARCH analysis, uncertain cast/capture semantics, MQL/PromQL/SQL, groups/channels,
+  other provider gaps and all eight overall acceptance criteria remain open.
+  See [Logging evidence](providers/gcp/fixtures/alert-policy/README.md#logging-conditions-and-uptime-dependencies).
+- Final isolated checks passed: complete GCP 256.594s, all internal packages,
+  focused race (GCP 37.373s), vet, docs and 11,881 final fuzz executions. Official
+  Unicode data provides an independent normalization oracle; this does not claim
+  a native Logging query evaluator or a new live/emulator acceptance run.

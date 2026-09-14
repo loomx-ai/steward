@@ -417,7 +417,10 @@ func alertPolicyUptimeReference(data map[string]any, check string) monitoringRef
 				}
 			}
 		}
-		for _, key := range []string{"conditionMatchedLog", "conditionMonitoringQueryLanguage", "conditionPrometheusQueryLanguage", "conditionSql"} {
+		if body := object(condition["conditionMatchedLog"]); body != nil {
+			result = monitoringOr(result, loggingFilterReference(text(body["filter"]), check))
+		}
+		for _, key := range []string{"conditionMonitoringQueryLanguage", "conditionPrometheusQueryLanguage", "conditionSql"} {
 			if _, ok := condition[key]; ok {
 				result = monitoringOr(result, monitoringUnresolvedReference)
 			}

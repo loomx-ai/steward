@@ -161,9 +161,21 @@ func TestMonitoringDependencyNativeReads(t *testing.T) {
 	}
 }
 func TestMonitoringDependencyGraphAndExplicitSelection(t *testing.T) {
+	for _, logging := range []bool{false, true} {
+		name := "metric"
+		if logging {
+			name = "logging"
+		}
+		t.Run(name, func(t *testing.T) { testMonitoringDependencyGraphAndExplicitSelection(t, logging) })
+	}
+}
+func testMonitoringDependencyGraphAndExplicitSelection(t *testing.T, logging bool) {
 	for _, mode := range []string{"present", "disabled", "missing", "stale", "closed", "foreign-connection", "duplicate", "unknown", "unrelated", "target-changed"} {
 		t.Run(mode, func(t *testing.T) {
 			s := monitoringDependencyFixture(t)
+			if logging {
+				s.loggingFilter(t, `labels.check_id="ＰＵＢＬＩＣ-ＣＨＥＣＫ" AND NOT jsonPayload.PRIVATE_STATE="ok"`)
+			}
 			candidate := s.policy
 			values := []asset.Asset{s.request.Asset, candidate}
 			switch mode {
@@ -182,8 +194,16 @@ func TestMonitoringDependencyGraphAndExplicitSelection(t *testing.T) {
 			case "duplicate":
 				values = append(values, candidate)
 			case "unknown":
+				if logging {
+					s.loggingFilter(t, "PRIVATE_UNKNOWN")
+					break
+				}
 				object(array(s.data["conditions"])[0])["conditionThreshold"] = map[string]any{"filter": "PRIVATE_UNKNOWN"}
 			case "unrelated":
+				if logging {
+					s.loggingFilter(t, `labels.check_id="other"`)
+					break
+				}
 				object(object(array(s.data["conditions"])[0])["conditionThreshold"])["filter"] = `metric.type="compute.googleapis.com/usage"`
 			case "target-changed":
 				s.mode = mode
@@ -255,7 +275,7 @@ func TestMonitoringDependencyGraphAndExplicitSelection(t *testing.T) {
 	}
 }
 func TestMonitoringDependencyExecuteRechecksAndReceipt(t *testing.T) {
-	for _, mode := range []string{"reference", "unknown", "log-reference", "unrelated", "absent", "late-policy", "target-changed", "denied", "prerequisite-live", "prerequisite-absent", "prerequisite-invalid", "prerequisite-duplicate"} {
+	for _, mode := range []string{"reference", "unknown", "log-reference", "log-unrelated", "log-late", "log-unknown", "unrelated", "absent", "late-policy", "target-changed", "denied", "prerequisite-live", "prerequisite-absent", "prerequisite-invalid", "prerequisite-duplicate"} {
 		t.Run(mode, func(t *testing.T) {
 			s := monitoringDependencyFixture(t)
 			switch mode {
@@ -265,6 +285,13 @@ func TestMonitoringDependencyExecuteRechecksAndReceipt(t *testing.T) {
 				condition := object(array(s.data["conditions"])[0])
 				delete(condition, "conditionThreshold")
 				condition["conditionMatchedLog"] = map[string]any{"filter": `labels.check_id="public-check"`}
+			case "log-unrelated":
+				s.loggingFilter(t, `labels.check_id="other"`)
+			case "log-unknown":
+				s.loggingFilter(t, `PRIVATE_QUERY`)
+			case "log-late":
+				s.loggingFilter(t, `labels.check_id="public-check"`)
+				s.mode = "late-policy"
 			case "unrelated":
 				object(object(array(s.data["conditions"])[0])["conditionThreshold"])["filter"] = `metric.type="compute.googleapis.com/usage"`
 			case "absent":
@@ -289,7 +316,7 @@ func TestMonitoringDependencyExecuteRechecksAndReceipt(t *testing.T) {
 				t.Fatal(err)
 			}
 			result, err := driver.Execute(t.Context(), s.request)
-			good := mode == "unrelated" || mode == "absent" || mode == "prerequisite-absent"
+			good := mode == "unrelated" || mode == "log-unrelated" || mode == "absent" || mode == "prerequisite-absent"
 			if (err == nil) != good {
 				t.Fatal(mode, err)
 			}
@@ -396,4 +423,29 @@ func TestMonitoringDependencyForeignScopingProject(t *testing.T) {
 			}
 		})
 	}
+}
+
+// Rebuild the same native configuration proof and redacted inventory used by scans.
+func (s *monitoringDependencyScenario) loggingFilter(t *testing.T, filter string) {
+	t.Helper()
+	condition := object(array(s.data["conditions"])[0])
+	delete(condition, "conditionThreshold")
+	condition["conditionMatchedLog"] = map[string]any{"filter": filter}
+	c, err := s.r.resolve(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	payload, err := json.Marshal(s.data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var data map[string]any
+	if err = json.Unmarshal(payload, &data); err != nil {
+		t.Fatal(err)
+	}
+	item, err := s.r.inventoryItem(c, map[string]any{"assetType": alertPolicyType, "name": alertPolicyID, "resource": map[string]any{"data": data, "location": "global"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	s.policy.Normalized = item.Normalized
 }

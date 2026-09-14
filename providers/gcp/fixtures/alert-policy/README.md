@@ -203,3 +203,71 @@ counter. Neither AlertPolicy responses nor Uptime GET/DELETE responses were
 substituted. Uptime LIST remains unimplemented and is asserted to fail; native IAM,
 real reference locking, filter evaluation and a complete independent backend remain
 outside this emulator's coverage.
+
+## Logging conditions and Uptime dependencies
+
+`conditionMatchedLog` now has a separate bounded parser for the
+[Logging query language](https://docs.cloud.google.com/logging/docs/view/logging-query-language).
+It recognizes `labels.check_id`, case-sensitive map keys, case-insensitive protobuf
+field names, implicit AND, OR-before-AND, NOT/minus, parentheses, value lists,
+comments, comparisons, substring/existence and unanchored RE2 search. Regexes
+retain case and are not normalized. Unknown payload fields remain unknown under
+NOT: `NOT (labels.check_id="check" AND jsonPayload.state="up")` can still reference
+that check. They are only projected to possible references after the complete
+expression is evaluated. A global text match in the check ID proves a possible
+reference; a miss can still match other fields and does not prove exclusion.
+
+Ordinary strings use NFKC_Casefold rather than lowercase or simple case folding.
+The already installed `x/text v0.38.0` is now a direct dependency, without a version
+change. Retained [Unicode vectors](../../testdata/logging/) contain the complete
+NFKC_CF property mappings from official Unicode 15.0 and 17.0 normalization data,
+with source hashes and license. The conformance test checks every explicit mapping
+and every default-identity scalar for the active library Unicode version. Checking
+only changed mappings missed Cherokee capitals: the implementation preserves their
+specified identity mapping before calling x/text. Long combining sequences that
+cause x/text to insert stream-safety markers stay uncertain. Unicode 17 fixtures
+are retained for x/text's Go 1.27 build; this milestone runs on Go 1.26/Unicode 15.
+Because Logging does not document a pinned Unicode version, the 92 scalar mappings
+that differ between the retained versions stay uncertain in native comparisons.
+A separate exhaustive comparison of both official mapping sets verifies this guard.
+
+Supported function evaluation includes string-to-STRING/INT64/FLOAT64/BOOL casts,
+successful single-capture REGEXP_EXTRACT (including nested extraction/cast), and
+IP_IN_NET. SAMPLE at fraction 1 is known for a present check ID. Other fractions,
+SEARCH token analysis, failed/optional captures, unsupported casts/options,
+uncertain conversions and unknown resource fields retain uncertainty. Future or
+malformed syntax, invalid regexes, and character/depth/node overflow cannot prove
+absence. This is dependency analysis rather than a general-purpose Logging query
+engine; conservative references may require selecting an otherwise inactive policy.
+
+The existing native LIST/GET/repeated-LIST and cleanup rereads consume this analysis.
+Tests cover native-shaped log policies, explicit graph selection, stale/missing
+reviews, late incoming policies, blocked DELETE, exclusion, policy-before-check
+execution, private expression redaction and SQLite close/reopen recovery. The
+retained metric workflow also continues to run. No new cloud endpoint or persisted
+query representation is introduced.
+
+Project coverage remains a separate open requirement. According to
+[available log entries](https://docs.cloud.google.com/logging/docs/alerting/monitoring-logs#available-log-entries),
+project-to-project log routing can make destination-project policies scan the
+source project's logs. MetricsScope reverse discovery does not enumerate those
+routes; ancestor/intercepting sinks and routed destination projects need native
+inventory and permission checks. Logs Explorer scopes do not define alert scope.
+This milestone does not claim cross-project Logging dependency completeness,
+live alert evaluation, emulator filter evaluation or production IAM acceptance.
+MQL, PromQL, SQL, groups/channels and the overall parity acceptance remain open.
+
+Reproduce the focused conformance and workflow checks with:
+
+```sh
+go test ./providers/gcp -run 'TestLogging|TestMonitoringDependency|TestMonitoringLog' -count=1
+go test ./providers/gcp -run '^$' -fuzz '^FuzzLoggingFilter$' -fuzztime=20s -parallel=2
+```
+
+Final isolated verification passed: complete GCP 256.594s, all internal packages
+(architecture 27.480s, cleanup 5.548s), focused race GCP 37.373s / cleanup 2.142s /
+server 3.152s, vet and documentation checks (30 chapters, 10 screenshots). Final
+Logging fuzzing completed 11,881 executions in its 20-second budget without a crash.
+The complete GCP rerun includes the Unicode-version and IPv4-mapping uncertainty
+guards. The independent emulator was not rerun: no native wire contract changed,
+and its query evaluator was never claimed as an oracle for these expressions.
