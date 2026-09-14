@@ -3,7 +3,8 @@
 This directory supports registered Elastic SAN inventory for SANs, volume groups,
 volumes, snapshots, private endpoint connections and retained resources.
 Verified snapshot, volume and private-endpoint connection deletion are registered.
-Active group cleanup is now registered; SAN cleanup and retained-group purge remain pending. This family does not yet close the parity gap.
+Active group and SAN cleanup are registered with reviewed child prerequisites.
+Retained-group purge remains unverified. This family does not yet close the parity gap.
 
 ## Pinned REST source
 
@@ -87,8 +88,8 @@ fresh runtime, preserve live resources omitted from indexes, reconcile retained
 absence, and preserve observations after denied reads. Network closure, restored
 volume IDs, forged history and changing snapshots are also exercised. Snapshots
 and private endpoint connections with verified creation identity support deletion.
-Volumes now have the retention-aware lifecycle below; SAN/group cleanup remains
-under implementation.
+Volumes now have the retention-aware lifecycle below; active SAN/group cleanup
+requires a verified child boundary.
 
 ## Snapshot deletion and Location polling
 
@@ -206,6 +207,15 @@ retained native ID) from absent. Recreated, restored or ambiguous identities,
 permission failures, missing collections and remaining known snapshots prevent
 false completion. Expired callbacks still require the independent resource check.
 
+Soft deletion completes only when the matching retained volume reports `Deleted`.
+The pinned REST `ProvisioningStates` also declares `SoftDeleting`, `Deleting` and
+`Restoring`; appearing in the retained index alone is not a terminal outcome.
+The first two keep the action waiting; restoring, missing and unrecognized states
+fail the readback. Protocol regressions cover renamed and same-ID retained copies,
+completed/expired callbacks, and a serialized plan restored without an execution
+receipt. Recovery adopts the transition without issuing another DELETE. The CLI
+recording establishes the final Deleted state, not these intermediate timings.
+
 The SQLite integration performs inventory, graph, a two-step snapshot/volume plan,
 explicit confirmation, serialized jobs and reopened database/runtime recovery.
 It verifies one snapshot DELETE then one volume DELETE, retained outcome storage,
@@ -265,8 +275,8 @@ Unchanged CLI interactions 23 and 28 demonstrate a soft-deleted empty group
 keeping the same ARM ID and creation/configuration identity. This does not prove
 populated-group cascade behavior or retained-group purge semantics. Protocol
 tests and reopened SQLite inventory validate signed context, counters, omitted
-children, changed cursors and rejected forged history. Group/SAN deletion is
-not registered by this milestone; no live service or independent emulator ran.
+children, changed cursors and rejected forged history. Active group/SAN deletion was registered in subsequent milestones; no live
+service or independent emulator ran for this membership evidence.
 
 ## Active group cleanup and retained outcomes
 
@@ -286,3 +296,10 @@ one retained impact, reopens runtimes/databases between jobs, verifies one DELET
 per step, preserves the retained volume and reopens the same-ID retained group.
 This is offline protocol/application evidence, not a live preview deployment or
 an independent ARM emulator. Original fixture bytes remain unchanged.
+
+The pinned group DELETE operation has no `deleteType` parameter. In the original
+CLI soft-delete recording, interaction 24 deletes an active empty group, while
+interaction 46 permanently deletes a retained **volume**. There is no retained
+group DELETE or root SAN DELETE in that recording. Neither the shared Location
+contract nor volume purge evidence establishes permanent group deletion; do not
+infer such an operation from the volume API.

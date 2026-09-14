@@ -159,6 +159,78 @@ func TestElasticSanVolumeSoftDeleteAndSeparatePermanentRemoval(t *testing.T) {
 	}
 }
 
+// A completed operation callback does not make a transitional retained volume
+// terminal. Exercise both native naming forms and recovery without a receipt.
+func TestElasticSanVolumeSoftDeleteRequiresTerminalState(t *testing.T) {
+	for _, naming := range []string{"renamed", "same-id"} {
+		for _, status := range []string{"SoftDeleting", "Deleting", "Restoring", "Succeeded", "", "FutureState"} {
+			t.Run(naming+"/"+status, func(t *testing.T) {
+				f := newElasticSanVolumeFixture(t)
+				id := f.ids[elasticSanVolumeType]
+				a, req := f.volumeAction(t, id)
+				delete(f.values, f.ids[elasticSanSnapshotType])
+				result, err := a.Execute(t.Context(), req)
+				if err != nil {
+					t.Fatal(err)
+				}
+				retainedID := f.softDelete(id)
+				if naming == "same-id" {
+					raw := f.values[retainedID]
+					delete(f.values, retainedID)
+					delete(f.retained, retainedID)
+					retainedID = id
+					raw["id"], raw["name"] = id, last(id)
+					f.values[id], f.retained[id] = raw, true
+				}
+				object(f.values[retainedID]["properties"])["provisioningState"] = status
+				wait, err := a.Wait(t.Context(), req, result)
+				transitional := status == "SoftDeleting" || status == "Deleting"
+				if wait.Done || transitional && (err != nil || wait.State != status) || !transitional && err == nil {
+					t.Fatal("nonterminal retained state completed deletion", wait, err)
+				}
+				// An expired callback cannot turn the same observation into completion.
+				f.pollStatus = 404
+				wait, err = a.Wait(t.Context(), req, result)
+				if err == nil || wait.Done {
+					t.Fatal("expired callback hid nonterminal volume", wait, err)
+				}
+				f.pollStatus = 200
+				if transitional {
+					// Losing the execution receipt must still adopt the in-flight native
+					// deletion after restoring the signed plan into a fresh runtime.
+					encoded, err := json.Marshal(req)
+					if err != nil {
+						t.Fatal(err)
+					}
+					var restored contracts.ActionRequest
+					if err := json.Unmarshal(encoded, &restored); err != nil {
+						t.Fatal(err)
+					}
+					fresh, err := NewRuntime(f.runtime.credentials)
+					if err != nil {
+						t.Fatal(err)
+					}
+					fresh.transport = f.runtime.transport
+					a, err = fresh.ResolveAction(t.Context(), "connection", restored.Asset)
+					if err != nil {
+						t.Fatal(err)
+					}
+					result, err = a.Execute(t.Context(), restored)
+					if err != nil || f.volumeDeletes != 1 {
+						t.Fatal("recovery repeated native deletion", err, f.volumeDeletes)
+					}
+					req = restored
+				}
+				object(f.values[retainedID]["properties"])["provisioningState"] = "Deleted"
+				wait, err = a.Wait(t.Context(), req, result)
+				if err != nil || !wait.Done || object(wait.Data["outcome"])["retained_native_id"] != retainedID || f.volumeDeletes != 1 {
+					t.Fatal("terminal retained state not reconciled", wait, err)
+				}
+			})
+		}
+	}
+}
+
 func TestElasticSanVolumeGuardsAndExplicitForce(t *testing.T) {
 	for _, mode := range []string{"snapshot-omitted", "missing-review", "retained-review", "foreign-review", "new-snapshot", "retention", "created", "guid", "size", "managed", "lock", "forbidden", "missing-group", "force", "invalid-force"} {
 		t.Run(mode, func(t *testing.T) {

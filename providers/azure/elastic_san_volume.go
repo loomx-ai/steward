@@ -228,14 +228,23 @@ func (a *elasticSanChildAction) volumeObservation(ctx context.Context) (map[stri
 		if retainedPlan || !match.retained || object(volume["policy"])["policyState"] == "Disabled" || err == nil {
 			return nil, contracts.ReadbackResult{}, serviceDenied("elastic_san_volume_identity_moved")
 		}
-		return nil, contracts.ReadbackResult{State: "Deleted", Data: map[string]any{"outcome": "soft_deleted", "retained_native_id": matchID, "volumeId": guid}}, nil
-	}
-	if match.retained != retainedPlan {
+	} else if match.retained != retainedPlan {
 		// Some native versions retain the same ARM ID. Do not purge it implicitly.
-		if !retainedPlan && match.retained && object(volume["policy"])["policyState"] != "Disabled" && err != nil {
-			return nil, contracts.ReadbackResult{State: "Deleted", Data: map[string]any{"outcome": "soft_deleted", "retained_native_id": matchID, "volumeId": guid}}, nil
+		if retainedPlan || !match.retained || object(volume["policy"])["policyState"] == "Disabled" || err == nil {
+			return nil, contracts.ReadbackResult{}, serviceDenied("elastic_san_volume_population_changed")
 		}
-		return nil, contracts.ReadbackResult{}, serviceDenied("elastic_san_volume_population_changed")
+	}
+	if !retainedPlan && match.retained {
+		status := text(object(match.raw["properties"])["provisioningState"])
+		switch status {
+		case "Deleted":
+			return nil, contracts.ReadbackResult{State: status, Data: map[string]any{"outcome": "soft_deleted", "retained_native_id": matchID, "volumeId": guid}}, nil
+		case "SoftDeleting", "Deleting":
+			// The retained index can expose the volume before soft deletion ends.
+			return match.raw, contracts.ReadbackResult{Exists: true, State: status}, nil
+		default:
+			return nil, contracts.ReadbackResult{}, serviceDenied("elastic_san_volume_retained_state_changed")
+		}
 	}
 	return match.raw, contracts.ReadbackResult{Exists: true, State: text(object(match.raw["properties"])["provisioningState"])}, nil
 }

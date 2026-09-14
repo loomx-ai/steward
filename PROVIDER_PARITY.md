@@ -5176,3 +5176,30 @@ background evidence only, not acceptance evidence for this work.
   confirmed empty native lists after deleting their own tables. The exact owned
   emulator process was stopped, both HTTP/gRPC listeners verified closed and its
   temporary binary removed. All 65 original WIP hashes remained unchanged.
+
+## Elastic SAN soft-delete terminal-state verification
+
+- Fixed premature volume cleanup completion: a GUID-matched retained copy could
+  previously report `soft_deleted` while still `SoftDeleting`, `Deleting`, or in
+  an invalid state. Renamed and same-ID copies now require `Deleted`; transitions
+  keep waiting and unexpected states fail readback. Fresh-runtime recovery from
+  the signed plan adopts an ongoing soft deletion without another native DELETE.
+- The [pinned Azure REST contract](https://github.com/Azure/azure-rest-api-specs/blob/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json)
+  declares distinct provisioning states. Twelve protocol scenarios first failed
+  against the original implementation, then passed with the correction. They
+  cover both naming forms, transitional/restoring/unknown/missing states, completed
+  and expired callbacks, serialized restart and eventual terminal reconciliation.
+  These are composed protocol regressions, not observed live-cloud timings.
+- Re-audited the original CLI soft-delete recording: interaction 24 is ordinary
+  active empty-group deletion; 46 is retained-volume permanent deletion. It has
+  no retained-group DELETE or SAN DELETE, and the pinned group DELETE declares
+  no `deleteType`. Retained-group purge and SAN cleanup with retained children
+  remain unresolved; the volume parameter is not evidence of a group purge API.
+  No acceptance criterion, native catalog count or dependency changed.
+
+- Verification: all 12 new cases failed on the original implementation (0.868s)
+  and passed after the fix (0.965s). The complete Azure suite passed (348.784s),
+  all Elastic SAN race tests passed (117.987s), and main volume/group/SAN tests
+  passed (9.272s). Provider vet and documentation checks passed (30 isolated /
+  42 main chapters, 10 existing screenshots). All 65 original WIP file hashes
+  stayed unchanged; no cloud resources were created.

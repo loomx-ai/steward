@@ -216,7 +216,7 @@ func (a *elasticSanChildAction) Preflight(ctx context.Context, request contracts
 		if raw == nil {
 			return contracts.PreflightResult{Allowed: true, Absent: true}, nil
 		}
-		if object(raw["properties"])["provisioningState"] == "Deleting" || a.planned.Identity.NativeType == elasticSanGroupType && object(raw["properties"])["provisioningState"] == "SoftDeleting" {
+		if object(raw["properties"])["provisioningState"] == "Deleting" || (a.planned.Identity.NativeType == elasticSanGroupType || a.planned.Identity.NativeType == elasticSanVolumeType) && object(raw["properties"])["provisioningState"] == "SoftDeleting" {
 			return contracts.PreflightResult{Allowed: true, Evidence: map[string]any{"elastic_san_wait": true}}, nil
 		}
 		if a.planned.Identity.NativeType == elasticSanType {
