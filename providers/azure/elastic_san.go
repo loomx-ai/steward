@@ -82,14 +82,7 @@ func (c *client) elasticSanRead(ctx context.Context, id, kind string) (response,
 	if err != nil {
 		return res, err
 	}
-	if res.status != 200 || res.data["error"] != nil || operationLocation(res.header) != "" {
-		return res, serviceDenied("incomplete_elastic_san_read")
-	}
-	actual, err := c.elasticSanRecord(res.data, kind)
-	if err != nil || actual != id {
-		return res, serviceDenied("invalid_elastic_san_read_response")
-	}
-	return res, nil
+	return res, c.elasticSanReadResponse(res, id, kind)
 }
 
 // Keep header selection unchanged on every page. An incomplete collection,
@@ -134,23 +127,10 @@ func (c *client) elasticSanIndex(ctx context.Context, kind, parent string, retai
 	collection, _ := url.Parse(bound.URL)
 	rows, pages, identities, requestID := []any{}, map[string]bool{}, map[string]bool{}, ""
 	for next := bound.URL; next != ""; {
-		if err := c.validateURL(next); err != nil {
+		pageKey, err := c.elasticSanPageCursor(next, collection)
+		if err != nil {
 			return nil, "", err
 		}
-		u, err := url.Parse(next)
-		if err != nil || u.RawPath != "" || !strings.EqualFold(u.Path, collection.Path) {
-			return nil, "", serviceDenied("invalid_elastic_san_collection_cursor")
-		}
-		query, err := url.ParseQuery(u.RawQuery)
-		if err != nil || query.Get("api-version") != elasticSanVersion {
-			return nil, "", serviceDenied("invalid_elastic_san_cursor_version")
-		}
-		for name, values := range query {
-			if len(values) != 1 || values[0] == "" || !slices.Contains([]string{"api-version", "$skiptoken", "$skipToken", "skipToken", "continuationToken"}, name) {
-				return nil, "", serviceDenied("filtered_elastic_san_collection")
-			}
-		}
-		pageKey := strings.ToLower(u.Path) + "?" + query.Encode()
 		if pages[pageKey] {
 			return nil, "", serviceDenied("repeated_elastic_san_page")
 		}
@@ -159,16 +139,13 @@ func (c *client) elasticSanIndex(ctx context.Context, kind, parent string, retai
 		if err != nil {
 			return nil, "", err
 		}
-		if res.status != 200 || res.data["error"] != nil || operationLocation(res.header) != "" {
-			return nil, "", serviceDenied("incomplete_elastic_san_collection")
-		}
-		values, ok := res.data["value"].([]any)
-		if !ok {
-			return nil, "", serviceDenied("invalid_elastic_san_collection_value")
+		values, err := c.elasticSanPageResponse(res, kind, collection)
+		if err != nil {
+			return nil, "", err
 		}
 		for _, value := range values {
-			id, err := c.elasticSanRecord(object(value), kind)
-			if err != nil || identities[id] || elasticSanParent(id, kind) != parent {
+			id, _ := c.elasticSanRecord(object(value), kind)
+			if identities[id] {
 				return nil, "", serviceDenied("invalid_elastic_san_collection_record")
 			}
 			identities[id] = true
@@ -300,4 +277,115 @@ func (c *client) elasticSanRecord(raw map[string]any, kind string) (string, erro
 		}
 	}
 	return id, nil
+}
+
+func (c *client) elasticSanReadResponse(res response, id, kind string) error {
+	if res.status != 200 || res.data["error"] != nil || operationLocation(res.header) != "" {
+		return serviceDenied("incomplete_elastic_san_read")
+	}
+	actual, err := c.elasticSanRecord(res.data, kind)
+	if err != nil || actual != id {
+		return serviceDenied("invalid_elastic_san_read_response")
+	}
+	return nil
+}
+
+func (c *client) elasticSanPageCursor(next string, collection *url.URL) (string, error) {
+	if err := c.validateURL(next); err != nil {
+		return "", err
+	}
+	u, err := url.Parse(next)
+	if err != nil || u.RawPath != "" || !strings.EqualFold(u.Path, collection.Path) {
+		return "", serviceDenied("invalid_elastic_san_collection_cursor")
+	}
+	query, err := url.ParseQuery(u.RawQuery)
+	if err != nil || query.Get("api-version") != elasticSanVersion {
+		return "", serviceDenied("invalid_elastic_san_cursor_version")
+	}
+	original := collection.Query()
+	cursorFields := []string{"$skiptoken", "$skipToken", "skipToken", "continuationToken"}
+	for name, values := range query {
+		if len(values) != 1 || values[0] == "" || !slices.Contains(cursorFields, name) && !slices.Equal(values, original[name]) {
+			return "", serviceDenied("filtered_elastic_san_collection")
+		}
+	}
+	// Public snapshot lists can explicitly filter by volume. Inventory supplies
+	// no filter; in both cases the next page must preserve the original query.
+	for name, values := range original {
+		if !slices.Contains(cursorFields, name) && !slices.Equal(values, query[name]) {
+			return "", serviceDenied("elastic_san_cursor_query_changed")
+		}
+	}
+	return strings.ToLower(u.Path) + "?" + query.Encode(), nil
+}
+
+func (c *client) elasticSanPageResponse(res response, kind string, collection *url.URL) ([]any, error) {
+	if res.status != 200 || res.data["error"] != nil || operationLocation(res.header) != "" {
+		return nil, serviceDenied("incomplete_elastic_san_collection")
+	}
+	values, ok := res.data["value"].([]any)
+	if !ok {
+		return nil, serviceDenied("invalid_elastic_san_collection_value")
+	}
+	subscriptionList := kind == elasticSanType && strings.EqualFold(collection.Path, c.root()+"/providers/"+elasticSanType)
+	seen := map[string]bool{}
+	for _, value := range values {
+		id, err := c.elasticSanRecord(object(value), kind)
+		if err != nil || seen[id] {
+			return nil, serviceDenied("invalid_elastic_san_collection_record")
+		}
+		if !subscriptionList && !strings.EqualFold(id[:strings.LastIndex(id, "/")], collection.Path) {
+			return nil, serviceDenied("invalid_elastic_san_collection_record")
+		}
+		seen[id] = true
+	}
+	if value, exists := res.data["nextLink"]; exists && value != nil {
+		next, ok := value.(string)
+		if !ok {
+			return nil, serviceDenied("invalid_elastic_san_next_link")
+		}
+		if next != "" {
+			key, err := c.elasticSanPageCursor(next, collection)
+			if err != nil {
+				return nil, err
+			}
+			first, err := c.elasticSanPageCursor(collection.String(), collection)
+			if err != nil {
+				return nil, err
+			}
+			if key == first {
+				return nil, serviceDenied("repeated_elastic_san_page")
+			}
+		}
+	}
+	return values, nil
+}
+
+// Public reads use the same resource/page validation as native inventory. Invoke
+// returns one page; following its cursor remains the caller's responsibility.
+func (c *client) elasticSanInvocationResponse(operation, endpoint string, res response) error {
+	if !strings.HasPrefix(operation, "Azure.Microsoft.ElasticSan.") {
+		return nil
+	}
+	name := strings.TrimPrefix(operation, "Azure.Microsoft.ElasticSan.")
+	for _, kind := range []string{elasticSanType, elasticSanGroupType, elasticSanVolumeType, elasticSanSnapshotType, elasticSanEndpointType} {
+		read, list, _ := elasticSanOperations(kind)
+		if name != read && name != list && !(kind == elasticSanType && name == "ElasticSans_ListByResourceGroup") {
+			continue
+		}
+		u, err := url.Parse(endpoint)
+		if err != nil {
+			return err
+		}
+		if name == read {
+			id, err := c.elasticSanIdentity(u.Path, kind)
+			if err != nil {
+				return err
+			}
+			return c.elasticSanReadResponse(res, id, kind)
+		}
+		_, err = c.elasticSanPageResponse(res, kind, u)
+		return err
+	}
+	return nil
 }

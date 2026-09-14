@@ -6511,3 +6511,34 @@ retain the previous queryable settings and original last-seen timestamp.
 No native operation, SDK byte or resource specification changed. This is protocol
 and application-persistence evidence; independent cloud execution and automatic
 cluster inventory remain unfinished. All eight acceptance criteria remain open.
+
+
+### Elastic SAN public read validation and retention evidence audit
+
+Native GET and LIST validation is now shared by inventory and public Invoke for
+SANs, volume groups, volumes, snapshots and private endpoint connections, including
+SAN lists scoped to a resource group. Reads reject wrong owners/identities, invalid
+record metadata, incomplete HTTP responses and polling headers. Lists reject
+malformed/duplicate records and unsafe, unexpectedly filtered, cyclic or wrong-version nextLink
+values before returning a page. ARM case-insensitive identities, future state
+strings, request IDs, native cursors and retained-population selectors are preserved.
+Existing inventory still checks duplicates and cycles across all native pages.
+
+The new public-call regressions reproduce failures on 501cb20 and cover all five
+resource kinds. The privacy/header test now supplies a genuine subscription-bound
+ARM resource shape instead of an invalid placeholder ID. Catalogs, source metadata,
+raw native fixtures, mutation options and reviewed deletion behavior are unchanged.
+
+The pinned Microsoft CLI soft-delete scenario (source SHA-256
+c113f27158646c7b1c30fc6c32fa192ee8ef909b4851c688bae57d142b000325) confirms an empty
+active group's soft deletion and a separately selected retained volume's permanent
+deletion; it does not exercise retained-group purge or SAN deletion. The official
+2026-04-01-preview group DELETE still has no permanent-delete parameter. These
+sources do not establish retained-group purge semantics, so that capability and
+SAN cleanup across retained boundaries remain unfinished. All eight acceptance
+criteria remain open; this milestone adds protocol/application verification, not
+live Azure or independent Elastic SAN emulation.
+
+Explicit public snapshot filters remain supported, and every nextLink must preserve
+the original filter. The inventory path remains unfiltered. Regression cases cover
+filter preservation, replacement and removal.

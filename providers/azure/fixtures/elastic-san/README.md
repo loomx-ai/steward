@@ -303,3 +303,30 @@ interaction 46 permanently deletes a retained **volume**. There is no retained
 group DELETE or root SAN DELETE in that recording. Neither the shared Location
 contract nor volume purge evidence establishes permanent group deletion; do not
 infer such an operation from the volume API.
+
+
+## Public reads and retained-group evidence audit
+
+Public Invoke now reuses native inventory GET/page/cursor validation for SANs,
+volume groups, volumes, snapshots and private endpoint connections. It returns one
+page and preserves the native nextLink, request ID and explicit population selector.
+Malformed records, wrong subscription/parent identities, incomplete statuses,
+polling headers and unsafe pagination fail without exposing a partial page.
+Inventory retains its additional duplicate/cycle checks across pages. Resource-group
+SAN lists enforce that narrower boundary; subscription lists still accept valid
+SANs from different resource groups in the connected subscription.
+
+The unchanged Microsoft [soft-delete test source](https://github.com/Azure/azure-cli-extensions/blob/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/elastic-san/azext_elastic_san/tests/latest/test_elastic_san.py)
+was read directly (whole-file SHA-256
+`c113f27158646c7b1c30fc6c32fa192ee8ef909b4851c688bae57d142b000325`). Its
+`test_elastic_san_soft_delete_scenarios` deletes an empty active group, verifies one
+retained group, then independently soft-deletes, restores and permanently deletes
+a volume. There is no retained-group purge or SAN DELETE in this scenario. The
+[official CLI group DELETE reference](https://learn.microsoft.com/en-us/cli/azure/elastic-san/volume-group?view=azure-cli-latest#az-elastic-san-volume-group-delete)
+and pinned REST operation declare no `deleteType`. This narrows what the evidence
+proves; it does not justify treating a volume parameter as a group purge API.
+Retained-group purge and SAN cleanup across retained boundaries remain unfinished.
+
+Explicit public snapshot filters remain supported, and every nextLink must preserve
+the original filter. The inventory path remains unfiltered. Regression cases cover
+filter preservation, replacement and removal.

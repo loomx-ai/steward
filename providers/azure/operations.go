@@ -111,6 +111,9 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if err != nil {
 		return contracts.InvocationResult{}, err
 	}
+	if err := c.elasticSanInvocationResponse(operation.ID, request.URL, result); err != nil {
+		return contracts.InvocationResult{}, err
+	}
 	if strings.HasPrefix(operation.ID, "Azure.Microsoft.HybridCompute.") && request.Method == "DELETE" {
 		u, _ := url.Parse(request.URL)
 		id, _, err := parseID(u.Path)
