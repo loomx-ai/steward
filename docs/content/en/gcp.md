@@ -576,3 +576,20 @@ and `monitoring.groups.get` on the scoping project; member enumeration uses the
 same `monitoring.groups.get` permission.
 See the [native group contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups)
 and [member time-window contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups.members/list).
+
+Dependency refresh also reads all own-project groups, Uptime checks, alert policies
+and dashboards, comparing their native LIST/GET/re-LIST configurations. Permission
+failures, incomplete pages or drift fail the refresh and preserve the previous
+graph. Fresh child groups, Uptime group targets and policy filter references require
+explicit consumer selection; they never automatically select members or parents.
+This uses the corresponding `monitoring.uptimeCheckConfigs.list/get`,
+`monitoring.alertPolicies.list/get` and `monitoring.dashboards.list/get` permissions.
+
+Dashboard time-series filters and ratio denominators are inspected through the
+native schema. Text and log content do not count as group references. Dynamic
+`GROUP` filters, template variables, unknown structures and unparsed MQL/PromQL/SQL
+queries remain cleanup blockers when their references cannot be established.
+Referenced dashboards also remain blocked pending full configuration review of
+their cleanup action. Resource-group deletion is not yet enabled by this step.
+See [Monitoring group selectors](https://docs.cloud.google.com/monitoring/api/v3/filters)
+and the [dashboard contract](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards).

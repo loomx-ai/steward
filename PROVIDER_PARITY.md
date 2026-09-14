@@ -6294,3 +6294,25 @@ Catalog has 204 resource rules and 804 operations, with previous fragments intac
 
 Native group cleanup, remaining member/consumer mappings, real-cloud and full-app
 acceptance remain unfinished. All eight acceptance criteria remain open.
+
+
+### GCP Monitoring group consumer graph milestone
+
+The connected contributor now snapshots all own-project groups, Uptime checks,
+alert policies and dashboards with unfiltered LIST/GET/re-LIST and independent
+before/after target review. Fresh child/Uptime/policy references require explicit
+consumer selection. Stale, missing, foreign-connection and unresolved consumers
+remain blocking references. Group member observations retain no deletion authority.
+
+Dashboard group selectors are traversed through 61 unchanged native schemas,
+including ratio parts and dynamic GROUP filters. Unknown structures, query
+languages and unresolved template values stay blocked; dashboard cleanup still
+needs its own full configuration review. Known group selectors are object
+references even if other predicates currently match no time series.
+
+Protocol failure/drift cases, bidirectional hierarchy/required-deletion ordering,
+explicit-selection boundaries and SQLite graph close/reopen preservation are
+covered. These snapshots use explicit protocol fixtures; the independent backend
+still lacks native Group LIST. Catalog remains 204 rules and 804 operations.
+Group deletion, dashboard reviewed cleanup, broader consumer mappings, live-cloud
+and full-app acceptance remain unfinished. All eight acceptance criteria remain open.

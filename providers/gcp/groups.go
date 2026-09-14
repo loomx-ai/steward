@@ -154,6 +154,14 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 				return nil, err
 			}
 		}
+		if operation.ID == "monitoring.projects.groups.list" || operation.ID == "monitoring.projects.uptimeCheckConfigs.list" || operation.ID == "monitoring.projects.dashboards.list" {
+			if _, err := cloudNatObjects(response.Data, itemsPath); err != nil {
+				return nil, err
+			}
+			if err := cloudNatScalars(response.Data, []string{"nextPageToken"}, nil, nil, nil); err != nil {
+				return nil, err
+			}
+		}
 		if operation.ID == "monitoring.projects.alertPolicies.list" {
 			if _, err := cloudNatObjects(response.Data, "alertPolicies"); err != nil {
 				return nil, err

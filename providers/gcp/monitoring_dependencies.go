@@ -265,6 +265,12 @@ func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID
 	if err != nil {
 		return result, err
 	}
+	groups, err := h.monitoringGroupDependencies(ctx, assets)
+	if err != nil {
+		return result, err
+	}
+	result.Relationships = append(result.Relationships, groups.Relationships...)
+	result.Unresolved = append(result.Unresolved, groups.Unresolved...)
 	var checks []asset.Asset
 	for _, value := range assets {
 		if value.ClosedAt == nil && value.Identity.Provider == asset.ProviderGCP && value.Identity.ConnectionID == h.connection && value.Identity.NativeType == uptimeType {

@@ -453,3 +453,16 @@ AlertPolicy 扫描使用项目级原生 LIST 和 GET，也包含禁用或无效�
 范围项目上的 `monitoring.groups.list` 与 `monitoring.groups.get`；成员枚举同样使用
 `monitoring.groups.get`。参阅[原生组契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups)
 及[成员时间窗口契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.groups.members/list)。
+
+依赖刷新还会完整读取本项目的资源组、Uptime 检查、告警策略和仪表板，并比较原生
+LIST、GET、再次 LIST 的配置。失权、分页不完整或配置变化会使刷新失败，并保留已有
+关系图。已刷新且存在引用的子组、Uptime 检查和策略需要显式选择，不会自动选择成员
+或父组。此步骤还使用对应的 `monitoring.uptimeCheckConfigs.list/get`、
+`monitoring.alertPolicies.list/get` 和 `monitoring.dashboards.list/get` 权限。
+
+仪表板查询按原生结构检查，包括时间序列筛选和比值分母；文本和日志内容不会当作组
+引用。动态 `GROUP` 筛选、模板变量、未知结构及尚未解析的 MQL、PromQL、SQL 查询，
+在无法确定引用时会阻断清理。已确认引用的仪表板也暂时阻断，待其清理动作支持完整配置
+复核后接入。此步骤尚未开启资源组删除能力。参阅
+[Monitoring 组选择器](https://docs.cloud.google.com/monitoring/api/v3/filters)和
+[仪表板契约](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards)。

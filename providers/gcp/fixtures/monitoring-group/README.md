@@ -16,7 +16,8 @@ remain non-blocking unresolved observations with counts and the time interval;
 private labels and filter text never enter graph evidence or stored configuration.
 No member ownership, required deletion, cascade or retention binding is produced.
 Group delete is deliberately not advertised by this inventory milestone; native
-nonrecursive deletion and consumer review remain to be implemented.
+nonrecursive deletion remains to be implemented. Consumer graph coverage is
+described below.
 
 ## Pinned native metadata
 
@@ -63,3 +64,45 @@ IAM, recursive-delete or real-cloud acceptance is claimed.
 
 Cross-scope member mappings beyond current target types, group cleanup, full
 consumer discovery and application/real-cloud parity acceptance remain open.
+
+## Consumer graph milestone
+
+The connected Monitoring contributor now snapshots unfiltered own-project Group,
+UptimeCheckConfig, AlertPolicy and Dashboard collections. LIST/GET/re-LIST reviews
+bind complete observable configurations, including unknown fields. The target
+Group is independently reread before and after consumer discovery. Failures never
+replace persisted graphs with an apparent empty set. Child groups, Uptime resource
+group targets and native policy filter references yield explicit required-deletion
+edges only for matching, fresh, same-connection inventoried consumers. Informational
+child-to-parent edges and target-before-source consumer edges produce the same
+cleanup ordering. No member edge acquires required deletion or ownership.
+
+Dashboard query traversal uses the 61 unchanged reachable native schemas in
+`catalog/native/monitoring-dashboard.json`, copied from the already selected v1
+Discovery document (revision `20260827`, SHA-256
+`af1250b3492d3b37abc8c8e440cada94d8227aa11ddeef0f96f5c9f1b44f35c4`).
+The schema graph distinguishes native time-series filters and ratio parts from
+text/Logging filters, including all native layout paths. Unsupported query unions,
+unknown fields/enums, malformed structures and dynamic group selection remain
+unresolved. A configured default for a dynamic GROUP filter cannot prove that a
+different group is unused. Traversal is bounded by depth and node count. Raw query
+strings are not persisted in dependency evidence.
+
+The native [group selector contract](https://docs.cloud.google.com/monitoring/api/v3/filters)
+binds group IDs to the request's scoping project. Known metric-condition selectors
+are retained conservatively as policy references; this is not evidence that the
+current API accepts group selectors in new AlertPolicy writes. MQL/PromQL/SQL and
+unknown condition forms do not prove absence. Dashboard references remain blockers
+because their generic delete driver does not yet bind a full configuration review.
+[Dashboard native fields](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards)
+and [unfiltered Dashboard LIST](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/projects.dashboards/list)
+provide the collection and query contracts.
+
+Protocol tests cover all four collections, paging/continuation denial, own GET
+403/404, duplicate/malformed/incomplete responses, LIST/GET/re-LIST drift and final
+target drift. Real SQLite close/reopen graph tests retain edges and blockers on
+failed refreshes, then clear and restore them after successful native observations.
+The existing independent backend's missing native Group LIST remains a limit;
+these new consumer snapshots use explicit protocol fixtures, not claimed independent
+server or live-cloud coverage. Group DELETE, dashboard reviewed deletion and
+external-writer race protection remain unfinished.
