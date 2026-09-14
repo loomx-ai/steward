@@ -6115,3 +6115,21 @@ against a still-occupied same-task scope while allowing the bound continuation.
   the hybrid test. No native route/filter evaluator, cross-service atomic lock,
   live IAM or complete emulator acceptance is claimed. All eight overall parity
   criteria remain open. See [routing evidence](providers/gcp/fixtures/logging-routing/README.md).
+
+### GCP notification-channel inventory milestone
+
+Added native Monitoring NotificationChannel LIST/GET inventory, global resource
+properties, user-label tags and visible configuration fingerprints. Descriptor
+labels, descriptions and mutation actors are redacted before persistence and
+Invoke results. Native list/detail validation rejects partial, malformed, missing,
+denied or changed reads; SQLite tests preserve failed-scan history and reconcile
+complete empty lists. The source retains two official methods and three schemas;
+all previous fragments/rules remain unchanged (202 rules, 794 methods).
+
+This is read-only: native secrets are partially returned, and Billing Budget
+notification rules can reference channels in addition to alert policies. No delete
+or verification API is exposed. Complete incoming dependencies, safe reviewed
+cleanup, masked configuration semantics and live acceptance remain open. See
+[notification-channel evidence](providers/gcp/fixtures/notification-channel/README.md)
+for contracts, test commands and independent pinned Google mockgcp boundaries.
+All eight acceptance criteria above remain open.

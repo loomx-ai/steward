@@ -26,7 +26,14 @@ func TestUptimeSQLiteScanHistoryCleanupRestartAndReconciliation(t *testing.T) {
 func TestAlertPolicySQLiteScanCleanupRestartAndReconciliation(t *testing.T) {
 	monitoringSQLiteWorkflow(t, alertPolicyType)
 }
+func TestNotificationChannelSQLiteScanHistory(t *testing.T) {
+	monitoringSQLiteWorkflow(t, notificationChannelType)
+}
 func monitoringSQLiteWorkflow(t *testing.T, nativeType string) {
+	reviewKey := monitoringReviewKey(nativeType)
+	if nativeType == notificationChannelType {
+		reviewKey = notificationChannelReview
+	}
 	ctx := t.Context()
 	r, _, data, mode, deletes := monitoringScenario(t, nativeType)
 	if nativeType == uptimeType {
@@ -79,7 +86,7 @@ func monitoringSQLiteWorkflow(t *testing.T, nativeType string) {
 	}
 	var first, current asset.Asset
 	for _, phase := range []string{"first", "get-denied", "gone", "detail-drift", "detail-target-invalid", "detail-enabled-missing", "list-null", "list-token", "list-partial", "list-empty", "recovered"} {
-		if nativeType == alertPolicyType && phase == "detail-target-invalid" || nativeType == uptimeType && phase == "detail-enabled-missing" {
+		if nativeType != uptimeType && phase == "detail-target-invalid" || nativeType != alertPolicyType && phase == "detail-enabled-missing" {
 			continue
 		}
 		*mode = phase
@@ -109,16 +116,22 @@ func monitoringSQLiteWorkflow(t *testing.T, nativeType string) {
 		if phase == "first" {
 			first = current
 		}
-		if failed && (!current.LastSeenAt.Equal(first.LastSeenAt) || current.Normalized[monitoringReviewKey(nativeType)] != first.Normalized[monitoringReviewKey(nativeType)]) {
+		if failed && (!current.LastSeenAt.Equal(first.LastSeenAt) || current.Normalized[reviewKey] != first.Normalized[reviewKey]) {
 			t.Fatal("failure replaced observation", phase)
 		}
-		if phase == "recovered" && (current.ID != first.ID || current.Normalized[monitoringReviewKey(nativeType)] == first.Normalized[monitoringReviewKey(nativeType)]) {
+		if phase == "recovered" && (current.ID != first.ID || current.Normalized[reviewKey] == first.Normalized[reviewKey]) {
 			t.Fatal("recovery failed to replace review")
 		}
 		encoded, _ := json.Marshal(current)
-		if strings.Contains(string(encoded), "PRIVATE_UPTIME") || strings.Contains(string(encoded), "PRIVATE_ALERT") || strings.Contains(string(encoded), "UFJJVkFURV9VUFRJTUVfQk9EWQ==") {
+		if strings.Contains(string(encoded), "PRIVATE_UPTIME") || strings.Contains(string(encoded), "PRIVATE_ALERT") || strings.Contains(string(encoded), "PRIVATE_CHANNEL") || strings.Contains(string(encoded), "UFJJVkFURV9VUFRJTUVfQk9EWQ==") {
 			t.Fatal("persisted native authentication")
 		}
+	}
+	if nativeType == notificationChannelType {
+		if _, err := r.ResolveAction(ctx, connection.ID, current); err == nil || *deletes != 0 {
+			t.Fatal("read-only channel exposed cleanup", err, *deletes)
+		}
+		return
 	}
 	if nativeType == uptimeType {
 		assertUptimeSQLiteTargetGraph(t, repos, r, current)

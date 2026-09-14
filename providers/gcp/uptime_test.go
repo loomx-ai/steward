@@ -33,6 +33,10 @@ func monitoringScenario(t *testing.T, kind string) (*Runtime, *contracts.ActionR
 		id = alertPolicyID
 		collection = "alertPolicies"
 	}
+	if kind == notificationChannelType {
+		data = notificationChannelFixture()
+		name, id, collection = notificationChannelName, notificationChannelID, "notificationChannels"
+	}
 	mode := ""
 	deletes := 0
 	reads := 0

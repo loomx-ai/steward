@@ -1,0 +1,61 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: monitoring.googleapis.com/NotificationChannel
+  class: observability.notification_channel
+presentation:
+  displayNames:
+    en-US: Cloud Monitoring notification channel
+    zh-CN: 云监控通知渠道
+  consoleLinkTemplate: https://console.cloud.google.com/monitoring/alerting/notifications?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: monitoring.projects.notificationChannels.list
+    parameters:
+      name: scope.projectPath
+    itemsPath: notificationChannels
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: monitoring.projects.notificationChannels.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  enabled:
+    path: enabled
+    type: boolean
+  type:
+    path: type
+    type: string
+  verificationStatus:
+    path: verificationStatus
+    type: string
+  userLabels:
+    path: userLabels
+    type: object
+  creationRecord:
+    path: creationRecord
+    type: object
+  mutationRecords:
+    path: mutationRecords
+    type: array
+extensions:
+  hook: gcp.resource

@@ -254,6 +254,13 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	for key, value := range data {
 		normalized[key] = value
 	}
+	if nativeType == notificationChannelType {
+		if err := c.notificationChannelData(nativeID, data); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized[notificationChannelReview] = notificationChannelConfiguration(nativeID, data)
+		normalized["labels"] = data["userLabels"]
+	}
 	if nativeType == alertPolicyType {
 		if err := c.alertPolicyData(nativeID, data); err != nil {
 			return contracts.InventoryItem{}, err
@@ -336,7 +343,7 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized["cleanup_protection_reason"] = "identity_group_locked_or_protected"
 	}
 	refs := references(c, data)
-	if nativeType == alertPolicyType {
+	if nativeType == alertPolicyType || nativeType == notificationChannelType {
 		refs = map[string][]string{}
 	}
 	if nativeType == uptimeType {

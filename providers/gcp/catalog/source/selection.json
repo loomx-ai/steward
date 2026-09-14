@@ -1042,6 +1042,13 @@
         "monitoring.projects.alertPolicies.get",
         "monitoring.projects.alertPolicies.list"
       ]
+    },
+    {
+      "methods": [
+        "monitoring.projects.notificationChannels.get",
+        "monitoring.projects.notificationChannels.list"
+      ],
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3"
     }
   ],
   "resource_types": [
@@ -4706,6 +4713,21 @@
       ],
       "list_operations": [
         "monitoring.projects.alertPolicies.list"
+      ]
+    },
+    {
+      "class": "observability.notification_channel",
+      "collection": "notificationChannels",
+      "display_name": "Cloud Monitoring notification channel",
+      "list_operations": [
+        "monitoring.projects.notificationChannels.list"
+      ],
+      "native_type": "monitoring.googleapis.com/NotificationChannel",
+      "read_operations": [
+        "monitoring.projects.notificationChannels.get"
+      ],
+      "scope_kinds": [
+        "global"
       ]
     }
   ],
