@@ -2,6 +2,7 @@ package gcp
 
 const (
 	securityServiceHost   = "securitycentermanagement.googleapis.com"
+	securityServiceSource = "security-services"
 	securityServiceType   = securityServiceHost + "/SecurityCenterService"
 	securityBillingType   = securityServiceHost + "/BillingMetadata"
 	securityBillingSource = "security-billing"

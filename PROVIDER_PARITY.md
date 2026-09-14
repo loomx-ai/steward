@@ -5318,3 +5318,37 @@ background evidence only, not acceptance evidence for this work.
   All 777 prior operation objects and preexisting native method/schema objects
   are unchanged. Only 20 milestone files are included; the original 65 WIP files
   remain byte-identical. No server or new dependency was introduced.
+
+
+### Security service location visibility and scan authority
+
+- Reproduced a false-absence regression with the real SQLite scan worker: after
+  successfully observing an EU service, a successful empty project-visible
+  locations response removed that service from ordinary queries. The test failed
+  in 0.586s against the prior authoritative source. The native locations contract
+  describes project visibility, which does not prove that settings were deleted.
+- SecurityCenterService now uses its own kind-specific, non-authoritative
+  `security-services` source. Native location/list/detail discovery is unchanged.
+  Empty location/service lists preserve earlier observations; reappearing services
+  update their effective state. Unobserved records retain their last-seen time.
+  This is historical observation preservation, not a claim of current existence.
+- Actual scan-creator tests verify global/regional persisted shards use the new
+  authority. The SQLite regression covers failed details, identity changes, empty
+  locations/services, updated state, and old authoritative product-source jobs.
+  Legacy jobs fail safely and require fresh scans. Network routing and unrelated
+  kinds cannot use this metadata source; CAI still defers to native service scans.
+- Existing native operations, metadata and resource counts are unchanged (197
+  rules, 778 operations). No API deletion/disable behavior, new dependency or test
+  server was introduced. Tests remain protocol/application integration evidence,
+  not independent emulator or live-cloud validation. Ancestor service settings
+  and the full parity acceptance scope remain open.
+- Verification: `go test ./providers/gcp ./internal/...` passed (GCP 177.482s).
+  The final race suite, including the added last-seen assertions, passed in
+  11.720s; main-workspace focused checks passed in 3.841s. GCP vet passed.
+  Documentation checks passed for 30 isolated/42 main chapters and 10 screenshots.
+  The freshness fixture initially compared against the service's injected clock,
+  while the scan worker uses its own observation clock; it now compares actual
+  persisted observation times across scans. No production clock change was needed.
+  Native source/selection/generated catalog files remain byte-identical to the
+  previous commit. All 65 original WIP file hashes are preserved. This milestone
+  changes only 13 owned files and starts no external test environment.

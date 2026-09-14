@@ -125,7 +125,7 @@ func (r *Runtime) projectProperties(item *contracts.InventoryItem) {
 }
 
 func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource && request.Source != organizationInventorySource && request.Source != identityInventorySource && request.Source != securityBillingSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource && request.Source != organizationInventorySource && request.Source != identityInventorySource && request.Source != securityBillingSource && request.Source != securityServiceSource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported GCP inventory source")
 	}
 	c, err := r.resolve(ctx, request.ConnectionID)
@@ -147,10 +147,13 @@ func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) 
 		}
 		return r.listFirewall(ctx, c, request)
 	}
+	if request.Source == securityServiceSource && (request.ResourceKind == nil || request.ResourceKind.NativeType != securityServiceType || request.NetworkTarget != nil) {
+		return contracts.InventoryBatch{}, groupDenied("security_services_scope_invalid")
+	}
 	if request.Source == securityBillingSource && (request.ResourceKind == nil || request.ResourceKind.NativeType != securityBillingType || request.NetworkTarget != nil) {
 		return contracts.InventoryBatch{}, groupDenied("security_billing_scope_invalid")
 	}
-	if request.Source == productInventorySource || request.Source == securityBillingSource {
+	if request.Source == productInventorySource || request.Source == securityBillingSource || request.Source == securityServiceSource {
 		return r.listProduct(ctx, c, request, nil)
 	}
 	if request.Source == dataformInventorySource {

@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 func securityServiceData(name string) map[string]any {
@@ -51,7 +52,7 @@ func TestSecurityServicesNativeInventoryAndReadOnly(t *testing.T) {
 				reads = append(reads, name)
 				return dataformResponse(req, 200, securityServiceData(name)), nil
 			})
-			request := productRequest(r, securityServiceType, scope)
+			request := securityServiceRequest(r, scope)
 			var locations []string
 			for {
 				page, err := r.List(t.Context(), request)
@@ -60,7 +61,7 @@ func TestSecurityServicesNativeInventoryAndReadOnly(t *testing.T) {
 				}
 				for _, item := range page.Items {
 					locations = append(locations, item.Location)
-					if item.State != "INGEST_ONLY" || item.Normalized["state"] != "INGEST_ONLY" || item.Normalized["intendedEnablementState"] != "INHERITED" || len(object(item.Normalized["modules"])) != 1 || item.Actionable == nil || *item.Actionable {
+					if item.Normalized["_inventory_source"] != securityServiceSource || item.State != "INGEST_ONLY" || item.Normalized["state"] != "INGEST_ONLY" || item.Normalized["intendedEnablementState"] != "INHERITED" || len(object(item.Normalized["modules"])) != 1 || item.Actionable == nil || *item.Actionable {
 						t.Fatal("service settings lost", item)
 					}
 					encoded, _ := json.Marshal(item)
@@ -148,7 +149,7 @@ func TestSecurityServicesFailedReadsDoNotCompleteInventory(t *testing.T) {
 				}
 				return dataformResponse(req, 200, data), nil
 			})
-			request := productRequest(r, securityServiceType, "project")
+			request := securityServiceRequest(r, "project")
 			page, err := r.List(t.Context(), request)
 			if mode == "cursor-cycle" || mode == "locations-changed" {
 				if err != nil || page.NextCursor == "" {
@@ -162,6 +163,38 @@ func TestSecurityServicesFailedReadsDoNotCompleteInventory(t *testing.T) {
 			}
 			if mode == "locations-changed" && lists != 1 {
 				t.Fatal("changed location cursor issued another list", lists)
+			}
+		})
+	}
+}
+
+func securityServiceRequest(r *Runtime, scope string) contracts.InventoryRequest {
+	request := productRequest(r, securityServiceType, scope)
+	request.Source = securityServiceSource
+	return request
+}
+
+func TestSecurityServicesRejectLegacyAuthorityAndNetworkRouting(t *testing.T) {
+	for _, mode := range []string{"legacy", "kind", "nil_kind", "network"} {
+		t.Run(mode, func(t *testing.T) {
+			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				t.Fatal("invalid source reached native API", req.URL)
+				return nil, nil
+			})
+			request := securityServiceRequest(r, "global")
+			switch mode {
+			case "legacy":
+				request.Source = productInventorySource
+			case "kind":
+				kind := r.resourceKind(securityBillingType)
+				request.ResourceKind = &kind
+			case "nil_kind":
+				request.ResourceKind = nil
+			case "network":
+				request.NetworkTarget = &asset.ScanTarget{Kind: asset.ScanTargetVPC}
+			}
+			if _, err := r.List(t.Context(), request); err == nil {
+				t.Fatal("unsafe service source routing accepted")
 			}
 		})
 	}

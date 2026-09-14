@@ -20,8 +20,9 @@ inherited organization/folder policy, but their separate ancestor resources and
 cluster-specific settings are not registered by this rule. The service API has
 GET/LIST/PATCH and no resource DELETE. This inventory implements the read-only
 security-service-state baseline; it neither disables protection nor changes a
-subscription. Billing tier, trial and expiry information remain separate parity
-work. Unstructured serviceConfig is redacted before inventory, Invoke and logs.
+subscription. [Organization subscriptions](../security-subscription/README.md) and
+[explicit project billing](../security-billing/README.md) are separate inventory
+records. Unstructured serviceConfig is redacted before inventory, Invoke and logs.
 
 `security_services_test.go` covers two service pages in both global/EU locations,
 project-number canonicalization, complete detail state, no eligible-module filter,
@@ -46,3 +47,29 @@ Official contracts:
 - [Project service list](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations.securityCenterServices/list)
 - [Project service GET](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations.securityCenterServices/get)
 - [Project-visible locations](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations/list)
+
+## Visibility and scan authority
+
+The project locations API describes locations visible to the project, including
+private locations. A later successful list may stop exposing a prior location;
+this is not evidence that its security settings were deleted. Service settings
+have GET/LIST/PATCH, with no independent DELETE operation. Steward therefore uses
+the dedicated `security-services` source, which is kind-specific and
+non-authoritative. Empty location or service lists retain the previous observation;
+a later native GET updates it. An observation that was not read keeps its old
+last-seen time and is not presented as newly observed.
+
+The real SQLite regression first failed against the earlier authoritative source:
+a successful empty location list removed the previously searchable service. It
+now covers hidden locations, empty service lists, later effective-state updates,
+403/404, identity changes, and legacy authoritative jobs. A separate real scan
+creator test checks persisted global/regional shards use the new source without
+closure authority. Old `product-api` service jobs fail safely and require a fresh
+scan; they cannot close earlier observations. Network routing and other resource
+kinds are rejected at this source boundary. Cloud Asset Inventory still cannot
+overwrite the native service records.
+
+These tests exercise preservation of historical observations; they do not establish
+that every temporarily invisible service still exists. No synthetic deletion or
+protection-disable call is introduced. The catalog's 778 native operations and all
+source metadata remain unchanged by the authority correction.

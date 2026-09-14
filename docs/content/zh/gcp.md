@@ -182,7 +182,8 @@ Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。可选择�
 `securitycentermanagement.locations.list`、
 `securitycentermanagement.securityCenterServices.list` 和
 `securitycentermanagement.securityCenterServices.get`。项目扫描使用服务自身的地域列表；
-全局设置需要包含全局范围。详情读取失败会保留上次观测。参阅
+全局设置需要包含全局范围。详情读取失败会保留上次观测。地域或服务从列表中暂时消失时，
+保留旧记录及其原有观测时间；重新可见后继续更新状态。若更新前创建的待执行扫描失败，请重新启动扫描。参阅
 [服务设置契约](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations.securityCenterServices)和
 [读取权限](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations.securityCenterServices/get)。
 

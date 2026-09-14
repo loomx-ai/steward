@@ -224,7 +224,10 @@ Enable **Security Center Management API** and grant
 `securitycentermanagement.securityCenterServices.list` and
 `securitycentermanagement.securityCenterServices.get`. Project scans use native
 service locations; include global scope for global settings. Failed detail reads
-preserve the previous observation. See the [service settings contract](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations.securityCenterServices)
+preserve the previous observation. If a location or service stops appearing in a
+list, its last observation is retained with its original last-seen time; when it
+becomes visible again, inventory updates its state. Restart older pending scans
+if they fail after this update. See the [service settings contract](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations.securityCenterServices)
 and [read permissions](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations.securityCenterServices/get).
 
 Organization subscription inventory shows the current Security Command Center tier

@@ -377,3 +377,11 @@ It preserves explicitly configured tier without inferring organization inheritan
 or trial history. Native location paging binds the project cursor; singleton GET
 failures preserve previous observations. The additional method/schema comes from
 the same unchanged, pinned SDK source files.
+
+SecurityCenterService discovery uses the `security-services` source to preserve
+historical settings when locations or service names stop being visible. The source
+has no closure authority or network routing; later full native reads update the
+same record. [Visibility regression evidence](../fixtures/security-services/README.md)
+covers actual global/regional scan creation, SQLite preservation and safe rejection
+of legacy authoritative jobs. This changes the resource rule and bundle revision,
+not the native API catalog or its source provenance.

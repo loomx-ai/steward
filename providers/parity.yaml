@@ -2418,7 +2418,9 @@ resources:
   notes: Azure reads native Defender protection tiers, sub-plans, trial and enablement times,
     extension status, coverage and resource-level inheritance, matching the read-only
     DescribeVersionConfig baseline. GCP now reads project Security Center Management service and module enablement through native
-    locations/list/detail APIs, including intended versus effective state and update time. Native organization subscriptions additionally expose current tier, latest subscription type
+    locations/list/detail APIs, including intended versus effective state and update time.
+    Service scans use non-authoritative visibility semantics: empty location or service lists
+    preserve previous observations, while later detail reads update state. Native organization subscriptions additionally expose current tier, latest subscription type
     (including trial and pay-as-you-go), and start/end times through verified selected-project
     ancestry. Project billingMetadata now preserves the tier explicitly configured at each native
     location without inferring inherited entitlement or trial history. Project trial history,

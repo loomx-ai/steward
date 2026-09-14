@@ -43,7 +43,7 @@ type productRecord struct {
 func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, bool) {
 	for _, compiled := range r.bundle.Specs {
 		if compiled.ResourceKind.NativeType == nativeType {
-			return compiled.Definition, compiled.Definition.Discovery.Source == productInventorySource || compiled.Definition.Discovery.Source == securityBillingSource
+			return compiled.Definition, compiled.Definition.Discovery.Source == productInventorySource || compiled.Definition.Discovery.Source == securityBillingSource || compiled.Definition.Discovery.Source == securityServiceSource
 		}
 	}
 	return spec.ResourceKindSpec{}, false
@@ -61,6 +61,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return contracts.InventoryBatch{}, fmt.Errorf("GCP product inventory requires a resource kind")
 	}
 	nativeType := request.ResourceKind.NativeType
+	if nativeType == securityServiceType && request.Source != securityServiceSource {
+		return contracts.InventoryBatch{}, groupDenied("security_services_source_invalid")
+	}
 	if nativeType == securityBillingType && request.Source != securityBillingSource {
 		return contracts.InventoryBatch{}, groupDenied("security_billing_source_invalid")
 	}
@@ -389,8 +392,8 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			}
 		}
 		item.Normalized["_inventory_source"] = productInventorySource
-		if nativeType == securityBillingType {
-			item.Normalized["_inventory_source"] = securityBillingSource
+		if nativeType == securityBillingType || nativeType == securityServiceType {
+			item.Normalized["_inventory_source"] = request.Source
 		}
 		if err := c.enrichDataformContainer(ctx, &item, record.Data); err != nil {
 			return contracts.InventoryBatch{}, err

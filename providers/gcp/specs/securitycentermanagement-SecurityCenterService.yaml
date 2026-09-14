@@ -12,7 +12,7 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: product-api
+  source: security-services
   list:
     operation: securitycentermanagement.projects.locations.securityCenterServices.list
     parameters:

@@ -60,6 +60,8 @@ func (r *Runtime) InventorySources() []contracts.InventorySource {
 		{Name: firewallInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeGlobal}, KindSpecific: true},
 		// Directory lists are visibility filtered and the optional root can change.
 		{Name: identityInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeGlobal}, KindSpecific: true},
+		// Service/location visibility does not prove security settings were deleted.
+		{Name: securityServiceSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeRegion, asset.ScopeGlobal}, KindSpecific: true},
 		// Billing settings cannot be deleted; location visibility does not prove absence.
 		{Name: securityBillingSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeRegion, asset.ScopeGlobal}, KindSpecific: true},
 		// Project moves and lost ancestor visibility do not delete organizations.
