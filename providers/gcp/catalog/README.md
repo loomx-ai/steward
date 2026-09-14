@@ -37,8 +37,8 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 195 explicit resource rules and 776 selected methods
-from 55 official Discovery documents and one pinned Cloud SDK archive (Network Services and Security Center Management). Extended Compute rules cover VPN and
+The current catalog has 196 explicit resource rules and 777 selected methods
+from 57 selected Discovery fragments at 56 official URLs and one pinned Cloud SDK archive (Network Services and Security Center Management). Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
@@ -363,3 +363,10 @@ use the same check, retaining frozen member snapshots after worker restart.
 [Security Center Management inventory](../fixtures/security-services/README.md)
 adds project service enablement and module settings through native location, list
 and detail reads. These records have no cleanup action.
+
+[Security subscription evidence](../fixtures/security-subscription/README.md) covers
+native organization subscription tier, latest subscription type and start/end
+times. Discovery v1beta2 supplies the GET-only singleton contract. The selected
+project's organization ancestry is verified before and after the read; ancestor
+moves and visibility failures never delete historical observations. Organization
+subscriptions do not establish project-level billing entitlements.

@@ -226,3 +226,19 @@ Enable **Security Center Management API** and grant
 service locations; include global scope for global settings. Failed detail reads
 preserve the previous observation. See the [service settings contract](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations.securityCenterServices)
 and [read permissions](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations.securityCenterServices/get).
+
+Organization subscription inventory shows the current Security Command Center tier
+and the latest subscription's type, start time and end time. The latest subscription
+may already have ended; its dates do not imply that a paid tier is currently active.
+Steward preserves the native tier separately. Subscription inventory follows the
+selected project's organization and rechecks the ancestry after reading. A project
+move or lost access preserves the earlier observation. These records are read-only
+and do not describe a project's separate billing entitlement.
+
+Enable **Security Command Center API** and grant `securitycenter.subscription.get`
+on the organization, plus `resourcemanager.projects.get`,
+`resourcemanager.folders.get` on intervening folders, and
+`resourcemanager.organizations.get` for ancestry discovery. Include global scope.
+A permission failure or missing subscription response fails the scan. See the
+[subscription contract](https://docs.cloud.google.com/security-command-center/docs/reference/rest/v1beta2/organizations/getSubscription)
+and [Security Command Center permissions](https://docs.cloud.google.com/iam/docs/roles-permissions/securitycenter#securitycenter.subscription.get).

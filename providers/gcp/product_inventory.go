@@ -49,7 +49,7 @@ func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, b
 	return spec.ResourceKindSpec{}, false
 }
 func (r *Runtime) usesProductSource(nativeType string) bool {
-	if isDataformFolder(nativeType) || isFirewall(nativeType) || nativeType == organizationType {
+	if isDataformFolder(nativeType) || isFirewall(nativeType) || nativeType == organizationType || nativeType == securitySubscriptionType {
 		return true
 	}
 	_, ok := r.productDefinition(nativeType)

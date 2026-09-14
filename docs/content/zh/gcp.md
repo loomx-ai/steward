@@ -185,3 +185,15 @@ Hyperdisk Balanced 和 Throughput 存储池支持经审查的删除。可选择�
 全局设置需要包含全局范围。详情读取失败会保留上次观测。参阅
 [服务设置契约](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/organizations.locations.securityCenterServices)和
 [读取权限](https://docs.cloud.google.com/security-command-center/docs/reference/security-center-management/rest/v1/projects.locations.securityCenterServices/get)。
+
+组织订阅盘点展示 Security Command Center 当前套餐，以及最近一次订阅的类型、开始时间和结束时间。
+最近一次订阅可能已经结束；这些时间不代表当前仍在使用付费套餐，Steward 会单独保留原生套餐字段。
+盘点沿当前项目的祖先关系读取所属组织，并在读取后复核祖先关系。项目迁移或权限丢失会保留之前的记录。
+订阅记录只读，不代表项目自身的独立计费权益。
+
+请启用 **Security Command Center API**，在组织上授予 `securitycenter.subscription.get`，
+并授予祖先发现所需的 `resourcemanager.projects.get`、中间文件夹的
+`resourcemanager.folders.get` 和 `resourcemanager.organizations.get`。扫描需包含全局范围。
+权限失败或订阅返回不存在都会使扫描失败。参见
+[订阅接口契约](https://docs.cloud.google.com/security-command-center/docs/reference/rest/v1beta2/organizations/getSubscription)
+和 [Security Command Center 权限](https://docs.cloud.google.com/iam/docs/roles-permissions/securitycenter#securitycenter.subscription.get)。

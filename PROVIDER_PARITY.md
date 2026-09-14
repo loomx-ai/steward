@@ -5237,3 +5237,40 @@ background evidence only, not acceptance evidence for this work.
   Shared catalog/spec/contracts packages also passed in the full run; the focused
   race filter selected no tests in those three packages. All 65 original WIP
   hashes were preserved. No cloud resources, new dependencies or emulator started.
+
+
+### Security Command Center organization subscription (incomplete parity)
+
+- Added the native v1beta2 organization subscription singleton using the unchanged
+  official Discovery GET and transitive schemas (revision `20260828`, complete
+  source SHA-256 `490c89a11880b86749392ab72fab8ec2cdc55f80848d67b1da684c2977f2ab3c`).
+  GCP now has 196 specifications and 777 methods from 57 Discovery fragments at 56 distinct URLs and
+  two SDK service documents in the existing pinned Cloud SDK archive.
+- Inventory and Invoke verify selected-project organization ancestry before and
+  after the native read. They preserve current tier separately from the latest
+  subscription type/start/end dates, including historical or absent details.
+  Unknown enum strings remain visible; malformed shapes and identities fail.
+  Read-only ancestry discovery confers no authority to change subscriptions.
+- Real scan creation/worker/SQLite checks retain searchable trial/tier/time fields
+  across permission failure, 404, identity mismatch and a project losing its
+  organization. Non-authoritative ancestry coverage prevents false deletion.
+  Native schema/protocol tests also cover Enterprise, pay-as-you-go, future enums,
+  request IDs, scope boundaries and post-read ancestor changes.
+- Initial focused tests exposed a fixture header precedence mismatch (the shared
+  fixture already supplies X-Goog-Request-Id); the subscription fixture now sets
+  that native header. Final focused subscription/organization tests passed in
+  6.808s before the additional Invoke parameter/change cases entered full testing.
+- The pinned mockgcp implementation does not provide this v1beta2 subscription
+  endpoint. Protocol and database integration evidence does not establish emulator
+  or real-cloud acceptance. Project-level billing, regional endpoints and ancestor
+  service settings remain open; no acceptance checkbox is closed by this step.
+- Final verification: `go test ./...` passed (GCP 174.588s, Azure 349.132s).
+  Focused subscription/organization/catalog race tests passed in 13.991s; vet
+  passed. Main-workspace focused tests passed in 5.184s. Catalog/spec packages
+  selected no tests under that focused name filter; their ordinary full suites
+  passed. Documentation checks passed for 30 isolated/42 main chapters and 10
+  screenshots. Repeated generation matched catalog SHA-256
+  `7f2643f2bcf23fc6bbf0029a0c7db09a1eb30906b06c8403644502e2eefdf721`.
+  All 776 previous operations and 58 prior source fragments are unchanged. The
+  original 65 working-tree files remain byte-identical. No test server or new
+  dependency was introduced; only the 17 milestone files are included.

@@ -129661,6 +129661,114 @@
       "source_format": "google-cloud-sdk",
       "source_sha256": "cecc5d244c10e3bc8ef7449937569c40339b90686b902fd48b4afc6f47ebfeb3",
       "source_uri": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz"
+    },
+    {
+      "source_uri": "https://securitycenter.googleapis.com/$discovery/rest?version=v1beta2",
+      "source_sha256": "490c89a11880b86749392ab72fab8ec2cdc55f80848d67b1da684c2977f2ab3c",
+      "document": {
+        "name": "securitycenter",
+        "version": "v1beta2",
+        "rootUrl": "https://securitycenter.googleapis.com/",
+        "servicePath": "",
+        "revision": "20260828",
+        "methods": {
+          "securitycenter.organizations.getSubscription": {
+            "httpMethod": "GET",
+            "parameters": {
+              "name": {
+                "pattern": "^organizations/[^/]+/subscription$",
+                "required": true,
+                "type": "string",
+                "location": "path"
+              }
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/securitycenter"
+            ],
+            "parameterOrder": [
+              "name"
+            ],
+            "flatPath": "v1beta2/organizations/{organizationsId}/subscription",
+            "path": "v1beta2/{+name}",
+            "id": "securitycenter.organizations.getSubscription",
+            "description": "",
+            "response": {
+              "$ref": "Subscription"
+            }
+          }
+        },
+        "schemas": {
+          "Subscription": {
+            "type": "object",
+            "id": "Subscription",
+            "properties": {
+              "tier": {
+                "enum": [
+                  "TIER_UNSPECIFIED",
+                  "STANDARD",
+                  "PREMIUM",
+                  "ENTERPRISE",
+                  "ENTERPRISE_MC"
+                ],
+                "type": "string",
+                "enumDescriptions": [
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ]
+              },
+              "details": {
+                "$ref": "Details"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "Details": {
+            "id": "Details",
+            "properties": {
+              "type": {
+                "enumDescriptions": [
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                "type": "string",
+                "enum": [
+                  "TYPE_UNSPECIFIED",
+                  "STANDARD",
+                  "TRIAL",
+                  "ALPHA",
+                  "DEMO",
+                  "PAY_AS_YOU_GO",
+                  "SUBSCRIPTION",
+                  "SUB_FIXED",
+                  "SUB_BASE_OVERAGE"
+                ]
+              },
+              "endTime": {
+                "format": "google-datetime",
+                "type": "string"
+              },
+              "startTime": {
+                "type": "string",
+                "format": "google-datetime"
+              }
+            },
+            "type": "object"
+          }
+        }
+      }
     }
   ],
   "x-resource-types": [
@@ -133613,6 +133721,23 @@
         "global",
         "region"
       ]
+    },
+    {
+      "nativeType": "securitycenter.googleapis.com/Subscription",
+      "class": "security.security_center",
+      "displayName": "Security Command Center subscription",
+      "scopeKinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "subscription",
+        "read_operations": [
+          "securitycenter.organizations.getSubscription"
+        ],
+        "list_operations": [
+          "securitycenter.organizations.getSubscription"
+        ]
+      }
     }
   ]
 }

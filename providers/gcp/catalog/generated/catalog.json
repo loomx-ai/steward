@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "137450783144e56c7aa8f1f5dba4e1651e226168b067960362534df9d8eb1cfd",
+    "checksum": "63d3e5c4ec31d07538e1878409a8f6f4378d9641054a4a9cf64b218cba5e77d4",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "bdc9ddf8e8e5716b507e3813efba880a2f518ea0281abdac644d60393ce57158",
+  "content_checksum": "8fb17162bb4f9d1b5c8e6c40e86676c148029f7f44fb906db1b6b11bd6c123c2",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -105298,6 +105298,69 @@
       "source_uri": "https://secretmanager.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "securitycenter.organizations.getSubscription",
+      "name": "getSubscription",
+      "service": "securitycenter",
+      "method": "GET",
+      "path": "/v1beta2/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "location": "path",
+            "pattern": "^organizations/[^/]+/subscription$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "id": "Subscription",
+        "properties": {
+          "details": {
+            "$ref": "Details"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tier": {
+            "enum": [
+              "TIER_UNSPECIFIED",
+              "STANDARD",
+              "PREMIUM",
+              "ENTERPRISE",
+              "ENTERPRISE_MC"
+            ],
+            "enumDescriptions": [
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "securitycenter",
+        "version": "v1beta2",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1beta2/{name}",
+        "endpoint": "https://securitycenter.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://securitycenter.googleapis.com/$discovery/rest?version=v1beta2"
+    },
+    {
       "id": "securitycenter.projects.notificationConfigs.delete",
       "name": "delete",
       "service": "securitycenter",
@@ -114944,6 +115007,23 @@
         ],
         "list_operations": [
           "securitycenter.projects.notificationConfigs.list"
+        ]
+      }
+    },
+    {
+      "native_type": "securitycenter.googleapis.com/Subscription",
+      "class": "security.security_center",
+      "display_name": "Security Command Center subscription",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "subscription",
+        "read_operations": [
+          "securitycenter.organizations.getSubscription"
+        ],
+        "list_operations": [
+          "securitycenter.organizations.getSubscription"
         ]
       }
     },

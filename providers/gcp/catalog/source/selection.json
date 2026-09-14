@@ -1016,6 +1016,12 @@
         "compute.storagePools.list",
         "compute.storagePools.listDisks"
       ]
+    },
+    {
+      "source_uri": "https://securitycenter.googleapis.com/$discovery/rest?version=v1beta2",
+      "methods": [
+        "securitycenter.organizations.getSubscription"
+      ]
     }
   ],
   "resource_types": [
@@ -4577,6 +4583,21 @@
       ],
       "list_operations": [
         "securitycentermanagement.projects.locations.securityCenterServices.list"
+      ]
+    },
+    {
+      "native_type": "securitycenter.googleapis.com/Subscription",
+      "class": "security.security_center",
+      "display_name": "Security Command Center subscription",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "subscription",
+      "read_operations": [
+        "securitycenter.organizations.getSubscription"
+      ],
+      "list_operations": [
+        "securitycenter.organizations.getSubscription"
       ]
     }
   ],

@@ -1,0 +1,41 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: securitycenter.googleapis.com/Subscription
+  class: security.security_center
+presentation:
+  displayNames:
+    en-US: Security Command Center subscription
+    zh-CN: 安全指挥中心订阅
+scope:
+  kind: global
+discovery:
+  source: organization-ancestry
+  list:
+    operation: securitycenter.organizations.getSubscription
+    itemsPath: $
+    identityPath: name
+  detail:
+    operation: securitycenter.organizations.getSubscription
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  tier:
+    path: tier
+    type: string
+  subscriptionType:
+    path: details.type
+    type: string
+  startTime:
+    path: details.startTime
+    type: string
+  endTime:
+    path: details.endTime
+    type: string
+  details:
+    path: details
+    type: object

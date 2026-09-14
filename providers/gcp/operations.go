@@ -28,6 +28,12 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	for name, value := range invocation.Parameters {
 		parameters[name] = value
 	}
+	if operation.ID == securitySubscriptionGet {
+		if _, err := catalog.BindREST(operation, parameters); err != nil {
+			return contracts.InvocationResult{}, err
+		}
+		return c.invokeSecuritySubscription(ctx, parameters)
+	}
 	properties, _ := operation.InputSchema["properties"].(map[string]any)
 	for name, raw := range properties {
 		property := object(raw)
@@ -151,6 +157,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 	name := strings.TrimPrefix(nativeID, prefix)
 	if isIdentityGroup(kind.NativeType) {
 		return identityResourceOperation(metadata, kind.NativeType, nativeID, method)
+	}
+	if kind.NativeType == securitySubscriptionType {
+		return securitySubscriptionOperation(metadata, nativeID, method)
 	}
 	if kind.NativeType == organizationType {
 		return organizationOperation(metadata, nativeID, method)

@@ -104,7 +104,7 @@ func organizationIdentity(name string, data map[string]any) error {
 
 func (r *Runtime) listOrganization(ctx context.Context, c *client, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
 	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: true}
-	if request.Source != organizationInventorySource || request.ResourceKind == nil || request.ResourceKind.NativeType != organizationType || request.Cursor != "" || request.NetworkTarget != nil || request.Scope.Kind != asset.ScopeProject && request.Scope.Kind != asset.ScopeGlobal {
+	if request.Source != organizationInventorySource || request.ResourceKind == nil || (request.ResourceKind.NativeType != organizationType && request.ResourceKind.NativeType != securitySubscriptionType) || request.Cursor != "" || request.NetworkTarget != nil || request.Scope.Kind != asset.ScopeProject && request.Scope.Kind != asset.ScopeGlobal {
 		return batch, groupDenied("organization_inventory_scope_invalid")
 	}
 	if request.Scope.Kind == asset.ScopeGlobal && !slices.Contains([]string{"global", c.project + "/global", c.number + "/global"}, request.Scope.NativeID) {
@@ -113,6 +113,15 @@ func (r *Runtime) listOrganization(ctx context.Context, c *client, request contr
 	first, err := c.organizationAncestry(ctx)
 	if err != nil {
 		return batch, err
+	}
+	nativeType, host := request.ResourceKind.NativeType, resourceManagerHost
+	data := first.Organization
+	if nativeType == securitySubscriptionType && data != nil {
+		result, err := c.readSecuritySubscription(ctx, text(data["name"])+"/subscription")
+		if err != nil {
+			return batch, err
+		}
+		data, host, batch.RequestID = result.Data, securitySubscriptionHost, result.RequestID
 	}
 	second, err := c.organizationAncestry(ctx)
 	if err != nil {
@@ -124,8 +133,8 @@ func (r *Runtime) listOrganization(ctx context.Context, c *client, request contr
 	if first.Organization == nil {
 		return batch, nil
 	}
-	id := "//" + resourceManagerHost + "/" + text(first.Organization["name"])
-	item, err := r.inventoryItem(c, map[string]any{"name": id, "assetType": organizationType, "resource": map[string]any{"data": first.Organization, "location": "global"}})
+	id := "//" + host + "/" + text(data["name"])
+	item, err := r.inventoryItem(c, map[string]any{"name": id, "assetType": nativeType, "resource": map[string]any{"data": data, "location": "global"}})
 	if err != nil {
 		return batch, err
 	}
