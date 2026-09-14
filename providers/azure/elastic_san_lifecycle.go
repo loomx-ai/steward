@@ -59,6 +59,10 @@ func (s *serviceCascades) contributeElasticSanVolumes(ctx context.Context, asset
 			}
 		}
 		children, err := s.client.elasticSanVolumeSnapshots(ctx, value.Identity.NativeID, known)
+		if isNotFound(err) {
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: elasticSanVolumeType, NativeID: value.Identity.NativeID, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: map[string]any{"reason": "elastic_san_volume_membership_requires_refresh"}})
+			continue
+		}
 		if err != nil {
 			return err
 		}
@@ -111,10 +115,18 @@ func (s *serviceCascades) contributeElasticSanGroups(ctx context.Context, assets
 		stale := false
 		for range 2 {
 			own, err := s.client.elasticSanRead(ctx, value.Identity.NativeID, elasticSanGroupType)
+			if isNotFound(err) {
+				stale = true
+				break
+			}
 			if err != nil {
 				return err
 			}
 			nodes, err := a.groupMembers(ctx, false)
+			if isNotFound(err) {
+				stale = true
+				break
+			}
 			if err != nil {
 				return err
 			}
@@ -220,7 +232,23 @@ func (s *serviceCascades) contributeElasticSanRoots(ctx context.Context, assets 
 		action := &elasticSanChildAction{client: s.client, planned: value}
 		stale := false
 		for range 2 {
+			own, err := s.client.elasticSanRead(ctx, value.Identity.NativeID, elasticSanType)
+			if isNotFound(err) {
+				stale = true
+				break
+			}
+			if err != nil {
+				return err
+			}
+			if s.client.privateConfiguration(elasticSanRootSnapshot(own.data)) != cleanupState["resource"] {
+				stale = true
+				break
+			}
 			nodes, err := action.rootMembers(ctx, false)
+			if isNotFound(err) {
+				stale = true
+				break
+			}
 			if err != nil {
 				return err
 			}

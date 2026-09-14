@@ -4672,3 +4672,40 @@ background evidence only, not acceptance evidence for this work.
   focused tests passed (9.819s), and main focused tests passed (13.721s). Azure
   vet and documentation checks passed (30 isolated/42 main chapters and all
   10 original screenshots). All 65 preexisting WIP hashes were preserved.
+
+
+## Elastic SAN external deletion reconciliation
+
+- Known SAN identities now remain enumeration roots after their own disappearance.
+  Every relevant active/retained child population is still attempted. A collection
+  404 can fall back to known own reads only after its parent is independently
+  absent and has no live retained-index observation. Denied reads remain errors.
+  Collection availability is included in two-pass and cursor bindings.
+- Signed group history now preserves retained child classification during known
+  recovery, matching SAN history. An own404 for a previously retained resource
+  does not become absence when its retained index is unavailable; the scan stays
+  incomplete. Independently addressable retained survivors remain visible.
+- Native root own absence/configuration changes and missing group/volume member
+  reads produce persisted refresh constraints during lifecycle reconciliation.
+  They do not fail unrelated scope graph work or release controller child steps.
+  Full scans close only resources with independent disappearance evidence;
+  child-only scans do not close unscanned parents. Cleanup execution/readback
+  protocols and complete inventory/cleanup record schemas are unchanged.
+- SQLite full-family tests reopen the database and runtime after external
+  deletion, then verify complete disappearance and each of four surviving child
+  kinds, preserved region, blocked orphan controller plans, and final own absence.
+  Additional tests cover child-only graph refresh, changed root writable state,
+  permission errors, unavailable retained-index-only identities, surviving
+  retained own reads, live-parent collection404, and collection availability
+  changing between the two reads. Evidence is composed native-protocol fixtures
+  and actual SQLite persistence, not live Azure or an independent ARM emulator.
+- This resolves external deletion reconciliation for independently verifiable
+  known resources. Unavailable retained-index-only populations still require
+  native evidence. Retained-group purge and SAN retained-boundary cleanup remain
+  unfinished; all eight overall parity acceptance criteria remain open. Catalogs,
+  pinned API definitions and original fixtures remain unchanged.
+- Validation: final `go test ./... -count=1` passed, including Azure (359.057s)
+  and GCP (166.495s). Elastic SAN/catalog race tests passed (131.100s), isolated
+  focused tests passed (12.866s), and main focused tests passed (13.484s). Azure
+  vet and documentation checks passed (30 isolated/42 main chapters and all
+  10 original screenshots). All 65 preexisting WIP hashes were preserved.

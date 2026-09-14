@@ -60,6 +60,14 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 	groupHistory := map[string]map[string]any{}
 	boundaryHistory := map[string]map[string]any{}
 	snapshotUnavailable := map[string]bool{}
+	unavailableCollections := map[string]bool{}
+	collectionKey := func(typ, parent string, retained bool) string {
+		key := parent + "/" + strings.ToLower(last(typ))
+		if retained {
+			key += ":retained"
+		}
+		return key
+	}
 	prior, roots, groups := map[string]map[string]any{}, map[string]bool{}, map[string]bool{}
 	known, requestID := map[string]bool{}, ""
 	retainedHistory := map[string]bool{}
@@ -109,6 +117,9 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 				if err != nil {
 					return nil, nil, "", err
 				}
+				for child, entry := range object(groupHistory[id]["members"]) {
+					retainedHistory[child] = object(entry)["retained"] == true
+				}
 			}
 			prior[id], err = c.elasticSanRecorded(value)
 			if err != nil {
@@ -116,9 +127,7 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			}
 			retainedHistory[id] = prior[id]["retained"] == true
 		}
-		if kind != elasticSanType {
-			roots[elasticSanRoot(id)] = true
-		}
+		roots[elasticSanRoot(id)] = true
 		if kind == elasticSanVolumeType || kind == elasticSanSnapshotType {
 			groups[elasticSanParent(id, kind)] = true
 		}
@@ -141,6 +150,19 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 				if typ == elasticSanSnapshotType && nodes[parent].retained && isNotFound(err) {
 					snapshotUnavailable[parent] = true
 					return nil
+				}
+				if isNotFound(err) && parent != "" && nodes[parent].raw == nil {
+					_, parentKind, _ := parseID(parent)
+					own, readErr := read(parent, elasticSanKind(parentKind))
+					if readErr != nil {
+						return readErr
+					}
+					if own == nil {
+						// Keep trying both populations and all known own reads.
+						// Parent absence is not child absence or an empty index.
+						unavailableCollections[collectionKey(typ, parent, retained)] = true
+						continue
+					}
 				}
 				return err
 			}
@@ -184,6 +206,11 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 		}
 		raw, err := read(id, typ)
 		if err != nil || raw == nil {
+			if err == nil && retainedHistory[id] && unavailableCollections[collectionKey(typ, elasticSanParent(id, typ), true)] {
+				// A retained-index-only resource already returned own404 while
+				// present. Losing that index cannot now prove its disappearance.
+				return serviceDenied("elastic_san_retained_population_unavailable")
+			}
 			return err
 		}
 		retained := false
@@ -365,7 +392,7 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 		refsByID[id] = refs
 		allBindings[id] = map[string]any{"raw": observation.raw, "retained": observation.retained, "authority": observation.authority}
 	}
-	items, bindings := []contracts.InventoryItem{}, map[string]any{"parents": c.privateConfiguration(allBindings), "unavailable_snapshot_groups": snapshotUnavailable}
+	items, bindings := []contracts.InventoryItem{}, map[string]any{"parents": c.privateConfiguration(allBindings), "unavailable_snapshot_groups": snapshotUnavailable, "unavailable_collections": unavailableCollections}
 	for _, id := range slices.Sorted(maps.Keys(nodes)) {
 		_, typ, _ := parseID(id)
 		if !strings.EqualFold(typ, kind) {
