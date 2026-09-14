@@ -332,6 +332,19 @@ Incomplete policy reads, unresolved references, changed resources or provider
 conflicts stop cleanup. See the [native deletion API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteNamedSet).
 Parent-router cascade review remains unfinished.
 
+## Cloud Router inventory
+
+Router scans need `compute.routers.list` and `compute.routers.get`. Steward reads
+current detail for each listed router and checks its identity before recording
+NAT, BGP and interface configuration. A denied, missing, incomplete or mismatched
+detail response fails the scan source and preserves previous observations. MD5
+authentication material is redacted from inventory and API logs.
+
+Router cascade review is still being completed. Google documents that deleting
+a router also removes its NAT gateways; associated VPN tunnels and VLAN
+attachments must be removed first. See the [Router GET contract](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/get)
+and [router deletion guide](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers).
+
 ## Cloud NAT gateways
 
 Cloud NAT scans need `compute.routers.list` and `compute.routers.get` in the

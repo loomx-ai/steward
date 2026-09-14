@@ -1,6 +1,7 @@
 package gcp
 
 import (
+	"encoding/json"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -33,6 +34,15 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 		field = "rules"
 		reviewField, firstReview, recoveredReview = "sourceSubnetworkIpRangesToNat", "LIST_OF_SUBNETWORKS", "ALL_SUBNETWORKS_ALL_IP_RANGES"
 	}
+	if nativeType == routerType {
+		fixture = func(string) map[string]any {
+			data := routerInventoryFixture("/compute/v1/projects/sample-project/regions/us-central1/routers/router-a")
+			data["nats"] = []any{cloudNatFixture("nat-a")}
+			return data
+		}
+		field = "nats"
+		reviewField, firstReview, recoveredReview = "description", "current-router", "recovered-router"
+	}
 	ctx := t.Context()
 	phase := "first"
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
@@ -40,7 +50,26 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 			t.Fatal("unexpected API", req.URL)
 		}
 		if strings.HasSuffix(req.URL.Path, "/routers") {
+			if nativeType == routerType && phase == "absent" {
+				return apiResponse(req, 200, `{}`), nil
+			}
 			return dataformResponse(req, 200, map[string]any{"items": []any{map[string]any{"name": "router-a", "id": "1001", "selfLink": "https://www.googleapis.com" + req.URL.Path + "/router-a"}}}), nil
+		}
+		if nativeType == routerType && strings.HasSuffix(req.URL.Path, "/router-a") {
+			if phase == "denied" {
+				return apiResponse(req, 403, `{}`), nil
+			}
+			if phase == "missing" {
+				return apiResponse(req, 404, `{}`), nil
+			}
+			data := fixture("")
+			if phase == "changed" {
+				data["id"] = "2000"
+			}
+			if phase == "recovered" {
+				data[reviewField] = recoveredReview
+			}
+			return dataformResponse(req, 200, data), nil
 		}
 		if nativeType == cloudNatType && strings.HasSuffix(req.URL.Path, "/router-a") {
 			if phase == "denied" {
@@ -91,7 +120,8 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 		t.Fatal("unexpected request", req.URL)
 		return nil, nil
 	})
-	repositories, err := sqlite.Open(filepath.Join(t.TempDir(), "route-policy.db"), filepath.Join("..", "..", "migrations"))
+	dbPath := filepath.Join(t.TempDir(), "route-policy.db")
+	repositories, err := sqlite.Open(dbPath, filepath.Join("..", "..", "migrations"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -124,6 +154,13 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 	steps = append(steps, "absent", "recovered")
 	for _, step := range steps {
 		phase = step
+		if nativeType == routerType {
+			repositories, err = sqlite.Open(dbPath, filepath.Join("..", "..", "migrations"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			handler = inventory.NewScanHandler(repositories, registry, inventory.NewService(repositories.Inventory()))
+		}
 		run := asset.ScanRun{ID: asset.ScanRunID(step), ConnectionID: connection.ID, Status: asset.ScanPending, RequestedBy: "test", CreatedAt: now}
 		shard := asset.ScanShard{ID: asset.ScanShardID(step), ScanRunID: run.ID, Provider: asset.ProviderGCP, Source: productInventorySource, ScopeID: scope.ID, ResourceKindID: kind.ID, Authoritative: true, Status: asset.ShardPending, CreatedAt: now}
 		if err := repositories.Inventory().CreateScanRun(ctx, run); err != nil {
@@ -141,7 +178,11 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 		if err != nil || failed && (finished.Status != asset.ShardFailed || finished.Coverage.Complete) || !failed && (finished.Status != asset.ShardSucceeded || !finished.Coverage.Complete) {
 			t.Fatal("wrong coverage", step, finished, err)
 		}
-		expression, err := resourcequery.Parse(`properties.type = "` + text(fixture("policy-a")["type"]) + `"`)
+		query := `properties.type = "` + text(fixture("policy-a")["type"]) + `"`
+		if nativeType == routerType {
+			query = `properties.name = "router-a"`
+		}
+		expression, err := resourcequery.Parse(query)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -178,6 +219,15 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 		}
 		if value.ID != first.ID || value.ClosedAt != nil || value.Normalized[reviewField] != fingerprint || len(array(value.Normalized[field])) != 1 {
 			t.Fatal("policy observation changed incorrectly", step, value)
+		}
+		if nativeType == routerType {
+			if text(value.Normalized[routerReview]) == "" || text(value.Normalized[routerBaseReview]) == "" || step == "recovered" && value.Normalized[routerReview] == first.Normalized[routerReview] {
+				t.Fatal("Router review was lost or reused after configuration change", step)
+			}
+			encoded, _ := json.Marshal(value)
+			if strings.Contains(string(encoded), "router-only-secret") {
+				t.Fatal("persisted Router authentication key")
+			}
 		}
 		if failed && !value.LastSeenAt.Equal(first.LastSeenAt) || step == "recovered" && !value.LastSeenAt.After(first.LastSeenAt) {
 			t.Fatal("incorrect observation freshness", step)

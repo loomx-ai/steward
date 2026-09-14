@@ -277,6 +277,15 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("GCP list returned duplicate resource %q", id)
 		}
 		seenIDs[id] = true
+		// Parent enumeration only needs LIST identities for the child source.
+		// Persisted Router observations require their own complete native GET.
+		if nativeType == routerType && len(ancestors) == 1 {
+			live, err := c.routerInventoryData(ctx, id, record.Data)
+			if err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			record.Data = live
+		}
 		bigquery := nativeType == "bigquery.googleapis.com/Dataset" || nativeType == "bigquery.googleapis.com/Table"
 		bigtable := nativeType == "bigtableadmin.googleapis.com/Table"
 		if bigtable && !strings.HasPrefix(id, target.ParentID+"/tables/") {
@@ -393,6 +402,10 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		item, err := r.inventoryItem(c, raw)
 		if err != nil {
 			return contracts.InventoryBatch{}, err
+		}
+		if nativeType == routerType && len(ancestors) == 1 {
+			item.Normalized[routerReview] = routerConfiguration(record.Data, false)
+			item.Normalized[routerBaseReview] = routerConfiguration(record.Data, true)
 		}
 		if !productScopeMatches(request, item) {
 			continue

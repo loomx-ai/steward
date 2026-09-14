@@ -266,6 +266,17 @@ CEL 语法错误或无法解析的计算所得集合名会使该策略扫描分�
 变化或云端冲突都会停止清理。详见[原生删除 API](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/deleteNamedSet)。
 父路由器的级联清理审查仍待补齐。
 
+## Cloud Router 盘点
+
+Router 扫描需要 `compute.routers.list` 和 `compute.routers.get` 权限。
+Steward 会逐一读取路由器的当前详情，核实身份后记录 NAT、BGP 和接口配置。
+详情读取被拒绝、资源消失、结果不完整或身份不匹配时，该扫描源会失败，并保留
+已有观测记录。MD5 认证材料会从库存和 API 日志中脱敏。
+
+Router 级联清理审查仍在完善。Google 明确说明，删除路由器会一并移除 NAT 网关；
+关联的 VPN 隧道和 VLAN attachment 则需要先删除。参阅 [Router GET 契约](https://docs.cloud.google.com/compute/docs/reference/rest/v1/routers/get)
+和[路由器删除指南](https://docs.cloud.google.com/network-connectivity/docs/router/how-to/managing-routers)。
+
 ## Cloud NAT 网关
 
 扫描 Cloud NAT 需要目标项目的 `compute.routers.list` 和 `compute.routers.get`

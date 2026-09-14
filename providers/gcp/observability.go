@@ -39,6 +39,10 @@ func safePayload(value map[string]any) map[string]any {
 			}
 			for key, child := range object {
 				switch strings.ToLower(key) {
+				case "md5authenticationkeys":
+					// Native Router keys use the ordinary field name "key". This
+					// also covers Invoke bodies and unexpected secret-bearing GETs.
+					object[key] = "[REDACTED]"
 				case "error":
 					if detail, ok := child.(map[string]any); ok {
 						object[key] = map[string]any{"code": detail["code"], "status": detail["status"]}

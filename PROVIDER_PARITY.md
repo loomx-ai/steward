@@ -5731,3 +5731,38 @@ background evidence only, not acceptance evidence for this work.
 - Focused native/SQLite checks passed (GCP 26.441s, cleanup 0.397s). Focused
   race checks passed (GCP 76.327s, cleanup 8.573s), GCP/internal vet passed,
   and isolated documentation checks passed for 30 chapters and 10 screenshots.
+
+### Native Router configuration review and authentication redaction
+
+- The Router deletion audit reconfirmed documented NAT cascade and VPN/VLAN
+  prerequisites. Policy/named-set cascade remains unproven; independent cleanup
+  is the intended prerequisite path. Before introducing controller delegation,
+  Router observations now read current native GET detail instead of persisting
+  only LIST configuration. Listed numeric identity, scope and complete native
+  child containers are checked; failed detail cannot erase previous observations.
+- Full and base configuration digests are captured before redaction, preserving
+  unknown native configuration and ordered BGP policy semantics while normalizing
+  unordered named collections and documented output-only bookkeeping. Temporary
+  parent enumeration for component sources does not create Router observations
+  or repeat these detail reads.
+- Native MD5 authentication containers now receive explicit inventory/API-log
+  redaction. Request/response tests prove wire data is unchanged while secret
+  values stay out of logs. This covers native key input and unexpected key-bearing
+  GETs; the native key value field is documented input-only.
+- Native runtime tests cover pagination, regional/project/global/VPC scans,
+  mismatched identities, incomplete/denied detail, malformed containers, proof
+  drift and native-schema validation. SQLite scan tests reopen the database,
+  preserve failed-scan history and verify authoritative absence and same-ID
+  recovery with updated configuration proofs. Evidence and runnable commands are
+  in [Router review evidence](providers/gcp/fixtures/router/README.md).
+- All 60 native documents and generated catalog bytes remain unchanged (200 rules,
+  785 operations; SHA-256
+  `f0e0eaef95da03d8ca1e7bb36803248b2d9e33321b004b35dccdd925adb84f04`).
+  Bilingual docs now state Router GET permission and failed-detail behavior.
+- This is the inventory prerequisite for full Router lifecycle support. Controller
+  contribution, NAT impact/readback, policy/set prerequisites, parent/component
+  concurrency and independent backend/live acceptance remain unfinished. All
+  eight overall provider acceptance criteria remain open.
+- Focused Router/NAT/policy/set/native-list regression passed (29.354s); focused
+  race checks passed (74.025s), GCP/internal vet passed, and documentation checks
+  passed for 30 chapters and 10 screenshots.

@@ -20,7 +20,7 @@ func routePolicyAttachFixture(t *testing.T, request *contracts.ActionRequest, fi
 		map[string]any{"name": "peer-unrelated", "peerAsn": float64(64514), "importPolicies": []any{"other-policy"}},
 	}
 	fixture.parent["nats"] = []any{map[string]any{"name": "nat-a"}}
-	fixture.parent["interfaces"] = []any{map[string]any{"name": "interface-a", "linkedVpnTunnel": "tunnel-a"}}
+	fixture.parent["interfaces"] = []any{map[string]any{"name": "interface-a", "linkedVpnTunnel": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/vpnTunnels/tunnel-a"}}
 	fixture.parent["md5AuthenticationKeys"] = []any{map[string]any{"name": "key-a", "key": "router-only-secret"}}
 	peers, err := routePolicyBGPPeers(fixture.parent)
 	if err != nil {
