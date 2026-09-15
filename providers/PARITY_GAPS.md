@@ -111,3 +111,23 @@ The sharing regression test exercises both valid membership shapes through
 native own-read graph construction; it is a synthetic contract test, not a cloud
 recording or a completed cleanup acceptance record. Full Stack cleanup remains
 open alongside the rest of the 159-row scope.
+
+### Deployment Stack retained resource-group readback (2026-09-16)
+
+The native `ResourceGroups_Get` 2021-04-01 contract provides a resource ID and an
+immutable location, but no creation identifier. Stack outcome observation now
+accepts those available fields for an explicitly managed group whose reviewed
+native category is `detach`. It reads the group again after its members and
+records `resource_id_and_location` evidence separately from `creation_identity`.
+This does not prove the original incarnation against an external same-ID,
+same-location recreation. Any recorded creation identity must still match; the
+exception does not apply to other retained resource types. Execution reconciliation
+also requires the authenticated native operation to finish and deleted members
+to be absent.
+
+Protocol tests cover the documented field set, pending operations, missing groups,
+changed locations, failed reads and lost/changed recorded creation identities.
+The complete Stack action driver and end-to-end acceptance remain unfinished;
+all 159 parity rows and eight overall gates remain open.
+
+Source: [Resource Groups - Get (2021-04-01)](https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/get?view=rest-resources-2021-04-01).

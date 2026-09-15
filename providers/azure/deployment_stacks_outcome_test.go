@@ -162,7 +162,8 @@ func TestDeploymentStackOutcomeRetainsGroupAndDeletesListedResource(t *testing.T
 	group.Asset.Identity.NativeID = strings.Split(vm.Asset.Identity.NativeID, "/providers/")[0]
 	group.Asset.Identity.NativeType = groupType
 	group.Delete = false
-	raw := map[string]any{"id": group.Asset.Identity.NativeID, "type": groupType, "systemData": map[string]any{"createdAt": "2020-02-01T01:01:01Z"}}
+	group.Asset.Location = "eastus"
+	raw := map[string]any{"id": group.Asset.Identity.NativeID, "type": groupType, "location": "eastus", "systemData": map[string]any{"createdAt": "2020-02-01T01:01:01Z"}}
 	group.Asset.Normalized = map[string]any{"_arm_creation_generation": creationGeneration(raw)}
 	c, req := stackDeletePlanFixture(t, false, group, vm)
 	req.LifecycleImpacts[1].ControllerID = group.Asset.ID
@@ -178,7 +179,7 @@ func TestDeploymentStackOutcomeRetainsGroupAndDeletesListedResource(t *testing.T
 		return jsonResponse(404, map[string]any{}, nil), nil
 	})
 	out, err := c.deploymentStackObserveOutcome(t.Context(), req)
-	if err != nil || !out.StackAbsent || len(out.MembersAbsent) != 2 || out.MembersAbsent[group.Asset.ID] || !out.MembersAbsent[vm.Asset.ID] || seen[strings.ToLower(group.Asset.Identity.NativeID)] != 1 || seen[strings.ToLower(vm.Asset.Identity.NativeID)] != 1 {
+	if err != nil || !out.StackAbsent || len(out.MembersAbsent) != 2 || out.MembersAbsent[group.Asset.ID] || !out.MembersAbsent[vm.Asset.ID] || seen[strings.ToLower(group.Asset.Identity.NativeID)] != 2 || seen[strings.ToLower(vm.Asset.Identity.NativeID)] != 1 {
 		t.Fatal(out, err, seen)
 	}
 }
