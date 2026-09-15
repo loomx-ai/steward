@@ -2585,6 +2585,20 @@
         "Volumes_ReplicationStatus",
         "Volumes_Update"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/deploymentStacks.json",
+      "operations": [
+        "DeploymentStacks_DeleteAtManagementGroup",
+        "DeploymentStacks_DeleteAtResourceGroup",
+        "DeploymentStacks_DeleteAtSubscription",
+        "DeploymentStacks_GetAtManagementGroup",
+        "DeploymentStacks_GetAtResourceGroup",
+        "DeploymentStacks_GetAtSubscription",
+        "DeploymentStacks_ListAtManagementGroup",
+        "DeploymentStacks_ListAtResourceGroup",
+        "DeploymentStacks_ListAtSubscription"
+      ]
     }
   ],
   "resource_types": [

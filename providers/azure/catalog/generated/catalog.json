@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "2af4011b230be994d34282ff9116046994807ab411b495cbe946a6012bdf68cd",
+    "checksum": "94fcfadac7e8fb0902d130eaa13373ef00d3a0654dcb556f2b13b66d22c6437e",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "6139deaf2ca854bbcaa8bfaea3946fe6243d1cfacb64e3fea4f685e4948cbe71",
+  "content_checksum": "d1a47c84bc77a9d0ea4ac3f885a2f2d166ae2b68e37a5ebafde8fdfcac73b794",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -119262,6 +119262,996 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/resourcegraph/resource-manager/Microsoft.ResourceGraph/ResourceGraph/stable/2024-04-01/resourcegraph.json"
+    },
+    {
+      "id": "Azure.Microsoft.Resources.DeploymentStacks_DeleteAtManagementGroup",
+      "name": "DeploymentStacks_DeleteAtManagementGroup",
+      "service": "Microsoft.Resources",
+      "method": "DELETE",
+      "path": "/providers/Microsoft.Management/managementGroups/{managementGroupId}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "bypassStackOutOfSyncError": {
+            "description": "Flag to bypass service errors that indicate the stack resource list is not correctly synchronized.",
+            "in": "query",
+            "name": "bypassStackOutOfSyncError",
+            "required": false,
+            "type": "boolean",
+            "x-ms-parameter-location": "method"
+          },
+          "deploymentStackName": {
+            "description": "Name of the deployment stack.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "deploymentStackName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string"
+          },
+          "managementGroupId": {
+            "description": "The management group ID.",
+            "in": "path",
+            "minLength": 1,
+            "name": "managementGroupId",
+            "required": true,
+            "type": "string"
+          },
+          "unmanageAction.ManagementGroups": {
+            "description": "Flag to indicate delete rather than detach for unmanaged management groups.",
+            "enum": [
+              "delete",
+              "detach"
+            ],
+            "in": "query",
+            "name": "unmanageAction.ManagementGroups",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionManagementGroups",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UnmanageActionManagementGroupMode",
+              "values": [
+                {
+                  "description": "Delete the management groups from Azure.",
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "description": "Keep the management groups in Azure.",
+                  "name": "Detach",
+                  "value": "detach"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          },
+          "unmanageAction.ResourceGroups": {
+            "description": "Flag to indicate delete rather than detach for unmanaged resource groups.",
+            "enum": [
+              "delete",
+              "detach"
+            ],
+            "in": "query",
+            "name": "unmanageAction.ResourceGroups",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionResourceGroups",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UnmanageActionResourceGroupMode",
+              "values": [
+                {
+                  "description": "Delete the resource groups from Azure.",
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "description": "Keep the resource groups in Azure.",
+                  "name": "Detach",
+                  "value": "detach"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          },
+          "unmanageAction.Resources": {
+            "description": "Flag to indicate delete rather than detach for unmanaged resources.",
+            "enum": [
+              "delete",
+              "detach"
+            ],
+            "in": "query",
+            "name": "unmanageAction.Resources",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionResources",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UnmanageActionResourceMode",
+              "values": [
+                {
+                  "description": "Delete the resources from Azure",
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "description": "Keep the resources in Azure",
+                  "name": "Detach",
+                  "value": "detach"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          },
+          "unmanageAction.ResourcesWithoutDeleteSupport": {
+            "description": "Some resources do not support deletion.  This flag will denote how the stack should handle those resources.",
+            "enum": [
+              "detach",
+              "fail"
+            ],
+            "in": "query",
+            "name": "unmanageAction.ResourcesWithoutDeleteSupport",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionResourcesWithoutDeleteSupport",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ResourcesWithoutDeleteSupportAction",
+              "values": [
+                {
+                  "description": "Detach the specified resources from the deployment stack and continue.",
+                  "name": "Detach",
+                  "value": "detach"
+                },
+                {
+                  "description": "Fail the deployment stack if resources cannot be deleted.",
+                  "name": "Fail",
+                  "value": "fail"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Resources",
+        "version": "2025-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/providers/Microsoft.Management/managementGroups/{managementGroupId}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/deploymentStacks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Resources.DeploymentStacks_DeleteAtResourceGroup",
+      "name": "DeploymentStacks_DeleteAtResourceGroup",
+      "service": "Microsoft.Resources",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "bypassStackOutOfSyncError": {
+            "description": "Flag to bypass service errors that indicate the stack resource list is not correctly synchronized.",
+            "in": "query",
+            "name": "bypassStackOutOfSyncError",
+            "required": false,
+            "type": "boolean",
+            "x-ms-parameter-location": "method"
+          },
+          "deploymentStackName": {
+            "description": "Name of the deployment stack.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "deploymentStackName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "unmanageAction.ManagementGroups": {
+            "description": "Flag to indicate delete rather than detach for unmanaged management groups.",
+            "enum": [
+              "delete",
+              "detach"
+            ],
+            "in": "query",
+            "name": "unmanageAction.ManagementGroups",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionManagementGroups",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UnmanageActionManagementGroupMode",
+              "values": [
+                {
+                  "description": "Delete the management groups from Azure.",
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "description": "Keep the management groups in Azure.",
+                  "name": "Detach",
+                  "value": "detach"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          },
+          "unmanageAction.ResourceGroups": {
+            "description": "Flag to indicate delete rather than detach for unmanaged resource groups.",
+            "enum": [
+              "delete",
+              "detach"
+            ],
+            "in": "query",
+            "name": "unmanageAction.ResourceGroups",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionResourceGroups",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UnmanageActionResourceGroupMode",
+              "values": [
+                {
+                  "description": "Delete the resource groups from Azure.",
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "description": "Keep the resource groups in Azure.",
+                  "name": "Detach",
+                  "value": "detach"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          },
+          "unmanageAction.Resources": {
+            "description": "Flag to indicate delete rather than detach for unmanaged resources.",
+            "enum": [
+              "delete",
+              "detach"
+            ],
+            "in": "query",
+            "name": "unmanageAction.Resources",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionResources",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UnmanageActionResourceMode",
+              "values": [
+                {
+                  "description": "Delete the resources from Azure",
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "description": "Keep the resources in Azure",
+                  "name": "Detach",
+                  "value": "detach"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          },
+          "unmanageAction.ResourcesWithoutDeleteSupport": {
+            "description": "Some resources do not support deletion.  This flag will denote how the stack should handle those resources.",
+            "enum": [
+              "detach",
+              "fail"
+            ],
+            "in": "query",
+            "name": "unmanageAction.ResourcesWithoutDeleteSupport",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionResourcesWithoutDeleteSupport",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ResourcesWithoutDeleteSupportAction",
+              "values": [
+                {
+                  "description": "Detach the specified resources from the deployment stack and continue.",
+                  "name": "Detach",
+                  "value": "detach"
+                },
+                {
+                  "description": "Fail the deployment stack if resources cannot be deleted.",
+                  "name": "Fail",
+                  "value": "fail"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Resources",
+        "version": "2025-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/deploymentStacks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Resources.DeploymentStacks_DeleteAtSubscription",
+      "name": "DeploymentStacks_DeleteAtSubscription",
+      "service": "Microsoft.Resources",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "bypassStackOutOfSyncError": {
+            "description": "Flag to bypass service errors that indicate the stack resource list is not correctly synchronized.",
+            "in": "query",
+            "name": "bypassStackOutOfSyncError",
+            "required": false,
+            "type": "boolean",
+            "x-ms-parameter-location": "method"
+          },
+          "deploymentStackName": {
+            "description": "Name of the deployment stack.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "deploymentStackName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "unmanageAction.ManagementGroups": {
+            "description": "Flag to indicate delete rather than detach for unmanaged management groups.",
+            "enum": [
+              "delete",
+              "detach"
+            ],
+            "in": "query",
+            "name": "unmanageAction.ManagementGroups",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionManagementGroups",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UnmanageActionManagementGroupMode",
+              "values": [
+                {
+                  "description": "Delete the management groups from Azure.",
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "description": "Keep the management groups in Azure.",
+                  "name": "Detach",
+                  "value": "detach"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          },
+          "unmanageAction.ResourceGroups": {
+            "description": "Flag to indicate delete rather than detach for unmanaged resource groups.",
+            "enum": [
+              "delete",
+              "detach"
+            ],
+            "in": "query",
+            "name": "unmanageAction.ResourceGroups",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionResourceGroups",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UnmanageActionResourceGroupMode",
+              "values": [
+                {
+                  "description": "Delete the resource groups from Azure.",
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "description": "Keep the resource groups in Azure.",
+                  "name": "Detach",
+                  "value": "detach"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          },
+          "unmanageAction.Resources": {
+            "description": "Flag to indicate delete rather than detach for unmanaged resources.",
+            "enum": [
+              "delete",
+              "detach"
+            ],
+            "in": "query",
+            "name": "unmanageAction.Resources",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionResources",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UnmanageActionResourceMode",
+              "values": [
+                {
+                  "description": "Delete the resources from Azure",
+                  "name": "Delete",
+                  "value": "delete"
+                },
+                {
+                  "description": "Keep the resources in Azure",
+                  "name": "Detach",
+                  "value": "detach"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          },
+          "unmanageAction.ResourcesWithoutDeleteSupport": {
+            "description": "Some resources do not support deletion.  This flag will denote how the stack should handle those resources.",
+            "enum": [
+              "detach",
+              "fail"
+            ],
+            "in": "query",
+            "name": "unmanageAction.ResourcesWithoutDeleteSupport",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "unmanageActionResourcesWithoutDeleteSupport",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ResourcesWithoutDeleteSupportAction",
+              "values": [
+                {
+                  "description": "Detach the specified resources from the deployment stack and continue.",
+                  "name": "Detach",
+                  "value": "detach"
+                },
+                {
+                  "description": "Fail the deployment stack if resources cannot be deleted.",
+                  "name": "Fail",
+                  "value": "fail"
+                }
+              ]
+            },
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Resources",
+        "version": "2025-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/deploymentStacks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Resources.DeploymentStacks_GetAtManagementGroup",
+      "name": "DeploymentStacks_GetAtManagementGroup",
+      "service": "Microsoft.Resources",
+      "method": "GET",
+      "path": "/providers/Microsoft.Management/managementGroups/{managementGroupId}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "deploymentStackName": {
+            "description": "Name of the deployment stack.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "deploymentStackName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string"
+          },
+          "managementGroupId": {
+            "description": "The management group ID.",
+            "in": "path",
+            "minLength": 1,
+            "name": "managementGroupId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Deployment stack object.",
+        "properties": {
+          "location": {
+            "description": "The geo-location where the resource lives. Required for subscription and management group scoped stacks. The location is inherited from the resource group for resource group scoped stacks.",
+            "type": "string",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/DeploymentStackProperties",
+            "description": "Deployment stack properties.",
+            "x-ms-client-flatten": true
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Resource tags.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Resources",
+        "version": "2025-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/providers/Microsoft.Management/managementGroups/{managementGroupId}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/deploymentStacks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Resources.DeploymentStacks_GetAtResourceGroup",
+      "name": "DeploymentStacks_GetAtResourceGroup",
+      "service": "Microsoft.Resources",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "deploymentStackName": {
+            "description": "Name of the deployment stack.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "deploymentStackName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Deployment stack object.",
+        "properties": {
+          "location": {
+            "description": "The geo-location where the resource lives. Required for subscription and management group scoped stacks. The location is inherited from the resource group for resource group scoped stacks.",
+            "type": "string",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/DeploymentStackProperties",
+            "description": "Deployment stack properties.",
+            "x-ms-client-flatten": true
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Resource tags.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Resources",
+        "version": "2025-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/deploymentStacks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Resources.DeploymentStacks_GetAtSubscription",
+      "name": "DeploymentStacks_GetAtSubscription",
+      "service": "Microsoft.Resources",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "deploymentStackName": {
+            "description": "Name of the deployment stack.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "deploymentStackName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Deployment stack object.",
+        "properties": {
+          "location": {
+            "description": "The geo-location where the resource lives. Required for subscription and management group scoped stacks. The location is inherited from the resource group for resource group scoped stacks.",
+            "type": "string",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/DeploymentStackProperties",
+            "description": "Deployment stack properties.",
+            "x-ms-client-flatten": true
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Resource tags.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Resources",
+        "version": "2025-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Resources/deploymentStacks/{deploymentStackName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/deploymentStacks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Resources.DeploymentStacks_ListAtManagementGroup",
+      "name": "DeploymentStacks_ListAtManagementGroup",
+      "service": "Microsoft.Resources",
+      "method": "GET",
+      "path": "/providers/Microsoft.Management/managementGroups/{managementGroupId}/providers/Microsoft.Resources/deploymentStacks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "managementGroupId": {
+            "description": "The management group ID.",
+            "in": "path",
+            "minLength": 1,
+            "name": "managementGroupId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a DeploymentStack list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DeploymentStack items on this page",
+            "items": {
+              "$ref": "#/definitions/DeploymentStack"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Resources",
+        "version": "2025-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/providers/Microsoft.Management/managementGroups/{managementGroupId}/providers/Microsoft.Resources/deploymentStacks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/deploymentStacks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Resources.DeploymentStacks_ListAtResourceGroup",
+      "name": "DeploymentStacks_ListAtResourceGroup",
+      "service": "Microsoft.Resources",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Resources/deploymentStacks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a DeploymentStack list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DeploymentStack items on this page",
+            "items": {
+              "$ref": "#/definitions/DeploymentStack"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Resources",
+        "version": "2025-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Resources/deploymentStacks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/deploymentStacks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Resources.DeploymentStacks_ListAtSubscription",
+      "name": "DeploymentStacks_ListAtSubscription",
+      "service": "Microsoft.Resources",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Resources/deploymentStacks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a DeploymentStack list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DeploymentStack items on this page",
+            "items": {
+              "$ref": "#/definitions/DeploymentStack"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Resources",
+        "version": "2025-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Resources/deploymentStacks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/deploymentStacks.json"
     },
     {
       "id": "Azure.Microsoft.Search.NetworkSecurityPerimeterConfigurations_Get",

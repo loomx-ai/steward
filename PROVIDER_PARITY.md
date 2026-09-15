@@ -7406,3 +7406,26 @@ when the NIC index becomes unavailable. Old four-field group proofs need refresh
 Counts remain 469 specs / 1,570 operations / 431 cleanup bindings. Group/account
 cleanup and interface deletion effects remain unfinished. All 159 parity rows and
 eight acceptance gates remain open; these tests do not establish live acceptance.
+
+### Deployment Stacks native contracts and identity/privacy foundation
+
+Added nine native List/Get/Delete operations for resource-group, subscription and
+management-group scopes at stable API 2025-07-01, with transitive schemas and nine
+unchanged, fingerprinted official examples. Scope parsing and own-read response
+checks preserve the distinction between these identities; management-group
+parsing is not subscription authorization. Tests cover explicit native deletion/
+detachment query flags and the declared Location-based completion contract.
+
+The official subscription Get example has a resource-group response identity;
+all three List examples use a provisioning state absent from their own enum.
+Tests preserve and expose these inconsistencies rather than adjusting retained
+source payloads. API diagnostics now exclude private stack templates, parameter/
+output values, extension identifiers and free-form errors while retaining selected
+state and lifecycle decisions. [Fixture notes](providers/azure/fixtures/deployment-stacks/README.md)
+describe native callback-version differences and the evidence boundary.
+
+There are now 1,579 catalog operations; specifications and cleanup bindings remain
+469 and 431. This is not registered stack inventory or cleanup. The 16 absent Azure
+candidate types, six empty mappings, 159 pending rows and eight acceptance gates
+remain open. Next implement authorized scope discovery, complete membership and
+reviewed delete/detach semantics with persisted recovery and own readback.

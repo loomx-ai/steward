@@ -1,0 +1,53 @@
+{
+  "ref": "07a27fbba41f8597cdfe0f866fcbf9f7c37390f4",
+  "api_version": "2025-07-01",
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/deploymentStacks.json",
+  "source_sha256": "0817df7a4e678c850d504ba18119976e0b398793a8ff0399c244e0c1d1783d2c",
+  "files": {
+    "DeploymentStackManagementGroupList.json": {
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/examples/DeploymentStackManagementGroupList.json",
+      "sha256": "98ed440b003b3b887b7b7f5c0e00f385b1448546cda1271f653a02764a80b823",
+      "operation": "DeploymentStacks_ListAtManagementGroup"
+    },
+    "DeploymentStackManagementGroupGet.json": {
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/examples/DeploymentStackManagementGroupGet.json",
+      "sha256": "83483b6eb8b481334ae348abb9551461437014f2987bd2a7782cf3c8e29dbc77",
+      "operation": "DeploymentStacks_GetAtManagementGroup"
+    },
+    "DeploymentStackManagementGroupDelete.json": {
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/examples/DeploymentStackManagementGroupDelete.json",
+      "sha256": "d2557d5d5e36e29f73a24228920bd3c4022df4d6503b9642e361436f23ef2e78",
+      "operation": "DeploymentStacks_DeleteAtManagementGroup"
+    },
+    "DeploymentStackSubscriptionList.json": {
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/examples/DeploymentStackSubscriptionList.json",
+      "sha256": "c96a367fcba40196da3475fb66bfc159c69f521069f4e442e8cdce1ee8aae12c",
+      "operation": "DeploymentStacks_ListAtSubscription"
+    },
+    "DeploymentStackSubscriptionGet.json": {
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/examples/DeploymentStackSubscriptionGet.json",
+      "sha256": "19c8bfb75f0167267ebd98e576c974ee1dc238fd9b7a6c1ccdcb278603a856e3",
+      "operation": "DeploymentStacks_GetAtSubscription"
+    },
+    "DeploymentStackSubscriptionDelete.json": {
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/examples/DeploymentStackSubscriptionDelete.json",
+      "sha256": "bc5f2136537f89981b7e82b722109228c5863154d73781f27f046d376fa7cd9a",
+      "operation": "DeploymentStacks_DeleteAtSubscription"
+    },
+    "DeploymentStackResourceGroupList.json": {
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/examples/DeploymentStackResourceGroupList.json",
+      "sha256": "4e913aa902c0aed161dbf7a020b54c4a1386c9f5796b52b65fb06ffe7e8bd1ac",
+      "operation": "DeploymentStacks_ListAtResourceGroup"
+    },
+    "DeploymentStackResourceGroupGet.json": {
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/examples/DeploymentStackResourceGroupGet.json",
+      "sha256": "97bb200d77900d6e1ec2706a9350fff504c2ccc2b5c5bd658919f85f00c14902",
+      "operation": "DeploymentStacks_GetAtResourceGroup"
+    },
+    "DeploymentStackResourceGroupDelete.json": {
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/resources/resource-manager/Microsoft.Resources/deploymentStacks/stable/2025-07-01/examples/DeploymentStackResourceGroupDelete.json",
+      "sha256": "e71e70b595fef41afd3b0b5dc253eeedc2abe716e18fb42810009fff34c62a29",
+      "operation": "DeploymentStacks_DeleteAtResourceGroup"
+    }
+  }
+}
