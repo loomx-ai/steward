@@ -127,7 +127,7 @@ func TestNetappNativeInventory(t *testing.T) {
 			}
 			first := page.Items[0]
 			wire, _ := json.Marshal(first)
-			if strings.Contains(string(wire), "netapp-private-canary") || first.Actionable == nil || *first.Actionable != (kind.kind == netappVolumeType || netappRecoveryKind(kind.kind)) {
+			if strings.Contains(string(wire), "netapp-private-canary") || first.Actionable == nil || *first.Actionable != (kind.kind == netappVolumeType || netappDirectLeaf(kind.kind)) {
 				t.Fatal("unsafe inventory", string(wire))
 			}
 			if kind.kind == netappVolumeType {

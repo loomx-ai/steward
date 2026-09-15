@@ -46,7 +46,7 @@ func (c *client) netappVolumeContribution(parent asset.Asset, assets []asset.Ass
 		}
 		evidence := map[string]any{"resource_type": kind, "instance_id": id, "delete_by_default": true, "retention_supported": false, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceUnselectedControllerAction: graph.LifecycleUnselectedControllerSkip}
 		evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] = true
-		if kind == netappSnapshotType {
+		if netappDirectLeaf(kind) {
 			delete(evidence, graph.LifecycleEvidenceUnselectedControllerAction)
 		}
 		if target == nil {
@@ -59,7 +59,7 @@ func (c *client) netappVolumeContribution(parent asset.Asset, assets []asset.Ass
 		if target.Location != parent.Location || target.Normalized["_netapp_configuration"] != member["configuration"] {
 			return result, serviceDenied("netapp_volume_member_configuration_changed")
 		}
-		result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, DirectCleanupAllowed: kind == netappSnapshotType, EvidenceSource: netappVolumeLifecycleSource, Evidence: evidence, Confidence: 1})
+		result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, DirectCleanupAllowed: c.netappLeafDirectAllowed(*target), EvidenceSource: netappVolumeLifecycleSource, Evidence: evidence, Confidence: 1})
 		result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: netappVolumeLifecycleSource, Evidence: evidence, Confidence: 1})
 	}
 	return result, nil

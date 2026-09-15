@@ -1,5 +1,7 @@
 import {
   netappVolumeDeletionWarning,
+  netappSubvolumeDeletionWarning,
+  netappQuotaDeletionWarning,
   netappSnapshotDeletionWarning,
   netappBackupDeletionWarning,
 } from "./netappWarnings";
@@ -31,6 +33,17 @@ import {
   synapseSQLDeletionWarning,
   synapseRestorePointDeletionWarning,
 } from "./synapseWarnings";
+
+const lifecycleWarnings: Partial<Record<string, Record<Locale, string>>> = {
+  netapp_volume_delete: netappVolumeDeletionWarning,
+  netapp_snapshot_delete: netappSnapshotDeletionWarning,
+  netapp_backup_delete: netappBackupDeletionWarning,
+  netapp_subvolume_delete: netappSubvolumeDeletionWarning,
+  netapp_quota_delete: netappQuotaDeletionWarning,
+  synapse_workspace_delete: synapseWorkspaceDeletionWarning,
+  synapse_sql_delete: synapseSQLDeletionWarning,
+  synapse_restore_point_delete: synapseRestorePointDeletionWarning,
+};
 
 interface LocaleContextValue {
   locale: Locale;
@@ -90,24 +103,8 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   );
   const messageForCode = useCallback(
     (code: string, fallback: string, details: Record<string, unknown> = {}) =>
-      code === "netapp_snapshot_delete"
-        ? netappSnapshotDeletionWarning[locale]
-        : code === "netapp_backup_delete"
-          ? netappBackupDeletionWarning[locale]
-          : code === "netapp_volume_delete"
-            ? netappVolumeDeletionWarning[locale]
-            : code === "synapse_restore_point_delete"
-              ? synapseRestorePointDeletionWarning[locale]
-              : code === "synapse_sql_delete"
-                ? synapseSQLDeletionWarning[locale]
-                : code === "synapse_workspace_delete"
-                  ? synapseWorkspaceDeletionWarning[locale]
-                  : translateCode(
-                      locale,
-                      code,
-                      fallback,
-                      interpolationValues(details),
-                    ),
+      lifecycleWarnings[code]?.[locale] ??
+      translateCode(locale, code, fallback, interpolationValues(details)),
     [locale],
   );
   const formatError = useCallback(

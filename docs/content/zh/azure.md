@@ -348,7 +348,18 @@ AD 凭据和未识别的私有字段不会显示。
 读取不可用时不能清理。参见[删除快照](https://learn.microsoft.com/en-us/azure/azure-netapp-files/snapshots-delete)
 和[删除备份](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-delete)。
 
-子卷和配额规则的独立删除、复制终止、克隆管理及导出策略编辑仍在实现中。
+无活动复制的卷支持独立删除子卷及卷配额规则。删除子卷会移除其数据，并可能中断使用它的应用；
+父卷、其他子卷和恢复点将保留。删除配额规则会改变相关用户或组的存储限制，其他配额仍可能适用，
+文件不会因此删除。支持默认及单独的用户／组配额规则，也支持删除需要重建的失败规则。
+
+需要子卷或配额规则列表、读取和删除权限，以及卷、容量池、帐户、资源组、管理锁及活动复制的读取权限。
+已审阅路径、配额配置或父资源变化后需要重新生成计划。子卷功能禁用、还原、活动克隆、保护设置或读取不完整时，
+不允许独立删除；已知但漏列的资源仍会逐项读取。Azure 已[弃用子卷 CLI 命令](https://learn.microsoft.com/en-us/cli/azure/netappfiles/subvolume)，
+当前使用的 `2025-12-01` REST 版本仍提供删除接口。
+
+复制源上的配额变更会同步到目标卷。复制中的子资源清理、复制终止、克隆管理及导出策略编辑仍在实现中。
+参见[配额规则语义](https://learn.microsoft.com/en-us/azure/azure-netapp-files/manage-default-individual-user-group-quotas)
+和[删除子卷](https://learn.microsoft.com/en-us/rest/api/netapp/subvolumes/delete?view=rest-netapp-2025-12-01)。
 挂载目标是卷的只读属性，不能以删除整个卷替代移除挂载点。
 参见 [NetApp 访问权限](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions)
 和[删除卷](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete)。

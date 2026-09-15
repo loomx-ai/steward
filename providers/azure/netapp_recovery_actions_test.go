@@ -30,7 +30,7 @@ func newNetappRecoveryFixture(t *testing.T, kind string) *netappRecoveryFixture 
 	base := newNetappFixture(t)
 	account := strings.ToLower(resourceID(netappAccountType, "first"))
 	source := account + "/capacitypools/item/volumes/item"
-	id := source + "/snapshots/item"
+	id := source + "/" + strings.ToLower(last(kind)) + "/item"
 	if kind == netappBackupType {
 		id = account + "/backupvaults/item/backups/item"
 	}
@@ -86,7 +86,7 @@ func (f *netappRecoveryFixture) asset(t *testing.T) asset.Asset {
 	return asset.Asset{ID: "recovery", Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeType: f.kind, NativeID: item.NativeID}, Normalized: item.Normalized, Location: item.Location}
 }
 func TestNetappRecoveryNativeDurability(t *testing.T) {
-	for _, kind := range []string{netappSnapshotType, netappBackupType} {
+	for _, kind := range []string{netappSnapshotType, netappBackupType, netappSubvolumeType, netappQuotaType} {
 		t.Run(kind, func(t *testing.T) {
 			f := newNetappRecoveryFixture(t, kind)
 			value := f.asset(t)
@@ -226,7 +226,7 @@ func TestNetappBackupLatestPolicyRules(t *testing.T) {
 	}
 }
 func TestNetappRecoveryChangedBoundaryAndNativeGuards(t *testing.T) {
-	for _, kind := range []string{netappSnapshotType, netappBackupType} {
+	for _, kind := range []string{netappSnapshotType, netappBackupType, netappSubvolumeType, netappQuotaType} {
 		for _, fault := range []string{"own", "parent", "protected parent", "missing parent", "source permission", "new backup", "receipt", "impacts", "parameter", "proof", "native conflict"} {
 			t.Run(kind+"/"+fault, func(t *testing.T) {
 				f := newNetappRecoveryFixture(t, kind)
@@ -284,7 +284,7 @@ func TestNetappRecoveryChangedBoundaryAndNativeGuards(t *testing.T) {
 	}
 }
 func TestNetappRecoveryRecreationAndExpiredCallbacks(t *testing.T) {
-	for _, kind := range []string{netappSnapshotType, netappBackupType} {
+	for _, kind := range []string{netappSnapshotType, netappBackupType, netappSubvolumeType, netappQuotaType} {
 		t.Run(kind, func(t *testing.T) {
 			f := newNetappRecoveryFixture(t, kind)
 			value := f.asset(t)
@@ -310,7 +310,11 @@ func TestNetappRecoveryRecreationAndExpiredCallbacks(t *testing.T) {
 			if kind == netappBackupType {
 				key = "backupId"
 			}
-			object(f.objects[f.id]["properties"])[key] = testApplication
+			if netappIndependentChild(kind) {
+				f.objects[f.id]["systemData"] = map[string]any{"createdAt": "2026-03-03T17:00:41.656Z"}
+			} else {
+				object(f.objects[f.id]["properties"])[key] = testApplication
+			}
 			req.ExecutionResult = &result
 			if _, err := driver.Readback(t.Context(), req); err == nil {
 				t.Fatal("recreated recovery point matched old request")
@@ -319,7 +323,7 @@ func TestNetappRecoveryRecreationAndExpiredCallbacks(t *testing.T) {
 	}
 }
 func TestNetappRecoverySQLiteWorker(t *testing.T) {
-	for _, kind := range []string{netappSnapshotType, netappBackupType} {
+	for _, kind := range []string{netappSnapshotType, netappBackupType, netappSubvolumeType, netappQuotaType} {
 		t.Run(kind, func(t *testing.T) {
 			f := newNetappRecoveryFixture(t, kind)
 			kinds := []string{}
@@ -356,9 +360,16 @@ func TestNetappRecoverySQLiteWorker(t *testing.T) {
 			if kind == netappBackupType {
 				warningCode = plan.WarningNetappBackupDelete
 			}
+			warningText := "permanently removes"
+			if kind == netappSubvolumeType {
+				warningCode, warningText = plan.WarningNetappSubvolumeDelete, "removes its data"
+			}
+			if kind == netappQuotaType {
+				warningCode, warningText = plan.WarningNetappQuotaDelete, "Files and the parent volume are retained"
+			}
 			warned := false
 			for _, w := range task.Task.Warnings {
-				if w.Code == warningCode && strings.Contains(w.Message, "permanently removes") {
+				if w.Code == warningCode && strings.Contains(w.Message, warningText) {
 					warned = true
 				}
 			}

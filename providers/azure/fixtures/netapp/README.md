@@ -195,3 +195,62 @@ parents, native refusal, callback expiry and altered receipts. These are offline
 native recording/protocol/application tests, not an independent emulator or live
 Azure acceptance. Other resource mutations, combined protected-latest backup and
 volume ordering, replication/clone/export workflows and full parity remain open.
+
+
+## Independent subvolumes and quota rules
+
+Two further direct bindings use the existing durable native leaf DELETE protocol,
+without changing the proof namespace or saved receipts for snapshots/backups.
+Full private configurations are reviewed before DELETE. The parent volume/pool
+UUIDs, readable ancestors, inherited locks/tags, active replications, restore and
+clone state constrain the boundary. Parent subvolume support must be Enabled.
+Active replication blocks these independent actions: quota changes at a source
+propagate to destinations, and no unreviewed remote quota effect is authorized.
+Replicated-child cleanup remains implementation work.
+
+These child APIs have no immutable child UUID. Identity checks bind path/parentPath
+or quota type/target and native systemData.createdAt when supplied; parent UUIDs
+remain separate. Missing optional creation metadata does not invent an ID or
+silently disable the documented native operation. A same-name, identical child
+recreated without creation metadata cannot be distinguished by this API. Own live
+readback never proves deletion, and callbacks never substitute for own absence
+under readable parents. Quota limits and lifecycle state can evolve during native
+deletion; an existing rule remains present rather than being closed prematurely.
+Malformed targets/creation data, unknown or busy states and protection block direct
+actions. Failed rules/subvolumes can be removed; an omitted subvolume lifecycle
+state is supported as in the unmodified Microsoft GET example.
+
+Default and individual user/group quota targets are covered. Removing a rule can
+expose a different applicable quota and does not delete files. Subvolume deletion
+warns of data removal and application interruption while preserving the parent and
+other children/recovery points. English/Chinese warnings and documentation preserve
+these different consequences. The volume contributor grants direct permission only
+to eligible leaves; a full native graph cannot skip selected supported children
+or bypass their protection. Existing volume cascade remains separately reviewed.
+
+`child-recordings.json` extracts four own GETs and four quota DELETE/status/result
+interactions at Azure CLI revision `ea185727729efc032ad9d4eef9ec355ee74ebaae`.
+`test_subvolume_crud.yaml` has SHA-256
+`0ab3382b790841777ad6cab0b3d7a7c5348f6611296f6aa9d565d339005893e7`;
+`test_create_volume_quota_rule.yaml` has SHA-256
+`60d98b1270aa160e1ba02d96a7c78a9a07e443292513ca8790298fe8e682d1d7`.
+Bodies and indices are unchanged; request headers are omitted and only signing
+query values are redacted. Quota DELETE has no body or force flag, returns 202,
+then Deleting/Succeeded and an empty Location 200. The recording has no own GET
+proving absence. Subvolume creation metadata stays constant across its path update,
+but the quota recording changes systemData.createdAt after its PUT: it is context
+evidence, not proof of an immutable quota incarnation.
+
+The registered SQLite worker scans all 22 fixture assets, selects one subvolume or
+quota rule, resumes across failures and poll checkpoints and issues one DELETE.
+Only the selected asset closes; the other 21 remain. Additional tests cover full
+native graph blockers, disabled-subvolume known-ID reads, default/individual quota
+rules, failed/busy/unknown states, changed targets, parent UUID changes and altered
+receipts. Native recordings, protocol and application tests are distinct evidence;
+no live Azure or independent NetApp emulator acceptance is claimed.
+
+The CLI subvolume group is now deprecated, but the pinned stable 2025-12-01 REST
+still declares its operations. The separate Subvolumes_GetMetadata POST provides
+file metadata including creationTimeStamp; it is not substituted for an ordinary
+GET, is not in this selected catalog and has a different asynchronous response
+schema. More extensive clone/file metadata workflows remain unfinished.

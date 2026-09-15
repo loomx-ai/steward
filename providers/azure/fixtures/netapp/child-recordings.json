@@ -1,0 +1,117 @@
+{
+  "api_version": "2025-12-01",
+  "source_ref": "ea185727729efc032ad9d4eef9ec355ee74ebaae",
+  "redactions": "Only t,c,s,h signing query values are replaced. Request headers are omitted. Original response bodies are unchanged; indices are zero-based. No recording proves own-resource absence. Quota systemData.createdAt changes after the recorded update and is not an immutable UUID.",
+  "recordings": [
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/ea185727729efc032ad9d4eef9ec355ee74ebaae/src/azure-cli/azure/cli/command_modules/netappfiles/tests/latest/recordings/test_subvolume_crud.yaml",
+      "source_sha256": "0ab3382b790841777ad6cab0b3d7a7c5348f6611296f6aa9d565d339005893e7",
+      "metadata": [
+        {
+          "index": 39,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_subvolume_crud_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/subvolumes/cli-sub-vol-000005?api-version=2025-12-01",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_subvolume_crud_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/subvolumes/cli-sub-vol-000005\",\"name\":\"cli-acc-000002/cli-pool-000003/cli-vol-000004/cli-sub-vol-000005\",\"type\":\"Microsoft.NetApp/netAppAccounts/capacityPools/volumes/subvolumes\",\"properties\":{\"path\":\"/subvolume1\",\"provisioningState\":\"Succeeded\",\"size\":0},\"systemData\":{\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"createdAt\":\"2026-03-03T17:00:41.656Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\",\"lastModifiedAt\":\"2026-03-03T17:00:41.702Z\"}}"
+        },
+        {
+          "index": 43,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_subvolume_crud_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/subvolumes/cli-sub-vol-000005?api-version=2025-12-01",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_subvolume_crud_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/subvolumes/cli-sub-vol-000005\",\"name\":\"cli-acc-000002/cli-pool-000003/cli-vol-000004/cli-sub-vol-000005\",\"type\":\"Microsoft.NetApp/netAppAccounts/capacityPools/volumes/subvolumes\",\"properties\":{\"path\":\"/subvolume-update\",\"provisioningState\":\"Succeeded\",\"size\":0},\"systemData\":{\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"createdAt\":\"2026-03-03T17:00:41.656Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\",\"lastModifiedAt\":\"2026-03-03T17:00:46.138Z\"}}"
+        }
+      ],
+      "deletion": []
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/ea185727729efc032ad9d4eef9ec355ee74ebaae/src/azure-cli/azure/cli/command_modules/netappfiles/tests/latest/recordings/test_create_volume_quota_rule.yaml",
+      "source_sha256": "60d98b1270aa160e1ba02d96a7c78a9a07e443292513ca8790298fe8e682d1d7",
+      "metadata": [
+        {
+          "index": 40,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_quota_rule_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/volumeQuotaRules/cli-qr-000005?api-version=2025-12-01",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_quota_rule_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/volumeQuotaRules/cli-qr-000005\",\"name\":\"cli-acc-000002/cli-pool-000003/cli-vol-000004/cli-qr-000005\",\"type\":\"Microsoft.NetApp/netAppAccounts/capacityPools/volumes/volumeQuotaRules\",\"etag\":\"W/\\\"datetime'2026-03-03T19%3A50%3A54.9712088Z'\\\"\",\"location\":\"westcentralus\",\"properties\":{\"quotaTarget\":\"\",\"quotaSizeInKiBs\":100006,\"quotaType\":\"DefaultGroupQuota\",\"provisioningState\":\"Succeeded\"},\"systemData\":{\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"createdAt\":\"2026-03-03T19:50:48.9680667Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\",\"lastModifiedAt\":\"2026-03-03T19:50:48.9680667Z\"}}"
+        },
+        {
+          "index": 47,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_quota_rule_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/volumeQuotaRules/cli-qr-000005?api-version=2025-12-01",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_quota_rule_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/volumeQuotaRules/cli-qr-000005\",\"name\":\"cli-acc-000002/cli-pool-000003/cli-vol-000004/cli-qr-000005\",\"type\":\"Microsoft.NetApp/netAppAccounts/capacityPools/volumes/volumeQuotaRules\",\"etag\":\"W/\\\"datetime'2026-03-03T19%3A51%3A31.9613929Z'\\\"\",\"location\":\"westcentralus\",\"properties\":{\"quotaTarget\":\"\",\"quotaSizeInKiBs\":1000016,\"quotaType\":\"DefaultGroupQuota\",\"provisioningState\":\"Succeeded\"},\"systemData\":{\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"createdAt\":\"2026-03-03T19:51:26.0606897Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\",\"lastModifiedAt\":\"2026-03-03T19:51:26.0606897Z\"}}"
+        }
+      ],
+      "deletion": [
+        {
+          "index": 49,
+          "method": "DELETE",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_quota_rule_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/volumeQuotaRules/cli-qr-000005?api-version=2025-12-01",
+          "status": 202,
+          "headers": {
+            "azure-asyncoperation": [
+              "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/westcentralus/operationResults/3861bc1a-4ad0-4f6a-89f5-265278963e06?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h"
+            ],
+            "location": [
+              "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/westcentralus/operationResults/3861bc1a-4ad0-4f6a-89f5-265278963e06?api-version=2025-12-01&operationResultResponseType=Location&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "index": 50,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/westcentralus/operationResults/3861bc1a-4ad0-4f6a-89f5-265278963e06?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/westcentralus/operationResults/3861bc1a-4ad0-4f6a-89f5-265278963e06\",\"name\":\"3861bc1a-4ad0-4f6a-89f5-265278963e06\",\"status\":\"Deleting\",\"startTime\":\"2026-03-03T19:52:01.7506423Z\",\"endTime\":\"0001-01-01T00:00:00Z\",\"percentComplete\":0.0,\"properties\":{\"resourceName\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_quota_rule_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/volumeQuotaRules/cli-qr-000005\",\"action\":\"DELETE\"}}"
+        },
+        {
+          "index": 51,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/westcentralus/operationResults/3861bc1a-4ad0-4f6a-89f5-265278963e06?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/westcentralus/operationResults/3861bc1a-4ad0-4f6a-89f5-265278963e06\",\"name\":\"3861bc1a-4ad0-4f6a-89f5-265278963e06\",\"status\":\"Succeeded\",\"startTime\":\"2026-03-03T19:52:01.7506423Z\",\"endTime\":\"2026-03-03T19:52:03.8988716Z\",\"percentComplete\":100.0,\"properties\":{\"resourceName\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_quota_rule_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/volumeQuotaRules/cli-qr-000005\",\"action\":\"DELETE\"}}"
+        },
+        {
+          "index": 52,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/westcentralus/operationResults/3861bc1a-4ad0-4f6a-89f5-265278963e06?api-version=2025-12-01&operationResultResponseType=Location&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {},
+          "body": ""
+        }
+      ]
+    }
+  ]
+}

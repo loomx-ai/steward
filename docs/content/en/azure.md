@@ -358,8 +358,25 @@ vault/backup lists and source-volume reads. Unavailable reads prevent cleanup.
 See [snapshot deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/snapshots-delete)
 and [backup deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-delete).
 
-Independent subvolume/quota deletion, replication termination, clone management
-and export-policy editing remain under implementation. Mount targets are read-only
+Subvolumes and volume quota rules support independent deletion on volumes without
+active replication. Subvolume deletion removes its data and can interrupt its
+applications; the parent volume, other subvolumes and recovery points remain.
+Quota-rule deletion changes the applicable user/group storage limits; other quota
+rules can still apply, and files are retained. Both default and individual user
+and group quota rules are supported, including failed rules requiring removal.
+
+Grant subvolume or quota-rule list/read/delete permissions, volume/pool/account
+and resource-group reads, management-lock reads and active-replication list access.
+Changing a reviewed path, quota configuration or parent requires a fresh plan.
+Disabled subvolume operations, restores, active clones, protection and incomplete
+reads prevent independent deletion. Known resources omitted by lists still receive
+individual reads. Azure has [deprecated its subvolume CLI commands](https://learn.microsoft.com/en-us/cli/azure/netappfiles/subvolume),
+while the selected 2025-12-01 REST version still exposes their deletion API.
+
+Quota changes on a replication source propagate to its destination. Cleanup of
+replicated child rules, replication termination, clone management and export-policy
+editing remain under implementation. See [quota-rule semantics](https://learn.microsoft.com/en-us/azure/azure-netapp-files/manage-default-individual-user-group-quotas)
+and [subvolume deletion](https://learn.microsoft.com/en-us/rest/api/netapp/subvolumes/delete?view=rest-netapp-2025-12-01). Mount targets are read-only
 volume properties; deleting a volume is not a substitute for removing a mount.
 See [NetApp permissions](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions)
 and [deleting volumes](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete).

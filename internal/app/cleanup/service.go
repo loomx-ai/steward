@@ -1815,6 +1815,14 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if value.Identity.Provider == asset.ProviderAzure {
 				result = append(result, plan.Warning{Code: plan.WarningSynapseRestorePointDelete, AssetID: value.ID, Message: "Deleting this user-defined restore point removes that recovery option. The SQL pool, workspace and other backups are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
+		case "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/subvolumes":
+			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningNetappSubvolumeDelete, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningNetappSubvolumeDelete, AssetID: value.ID, Message: "Deleting this subvolume removes its data and can interrupt applications using it. The parent volume, other subvolumes, snapshots and backup-vault backups are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
+		case "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/volumeQuotaRules":
+			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningNetappQuotaDelete, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningNetappQuotaDelete, AssetID: value.ID, Message: "Deleting this quota rule changes the storage limit for its users or groups. Other applicable quota rules can still apply. Files and the parent volume are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
 		case "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/snapshots":
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningNetappSnapshotDelete, value.ID) {
 				result = append(result, plan.Warning{Code: plan.WarningNetappSnapshotDelete, AssetID: value.ID, Message: "Deleting this snapshot permanently removes that recovery point. The volume, other snapshots and backup-vault backups are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})

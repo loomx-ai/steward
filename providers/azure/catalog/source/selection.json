@@ -11350,7 +11350,9 @@
       "read_operations": [
         "Azure.Microsoft.NetApp.Subvolumes_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.NetApp.Subvolumes_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.NetApp.Subvolumes_ListByVolume"
       ]
@@ -11366,7 +11368,9 @@
       "read_operations": [
         "Azure.Microsoft.NetApp.VolumeQuotaRules_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.NetApp.VolumeQuotaRules_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.NetApp.VolumeQuotaRules_ListByVolume"
       ]

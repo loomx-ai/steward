@@ -48,7 +48,7 @@ func (c *client) netappRecoveryRecorded(value asset.Asset) (map[string]any, erro
 	kind := value.Identity.NativeType
 	id := value.Identity.NativeID
 	review := object(value.Normalized[netappRecoveryReview])
-	if !netappRecoveryKind(kind) || c.netappIdentity(id, kind) != nil || value.ID == "" || value.Identity.Provider != asset.ProviderAzure || value.Identity.ConnectionID == "" || value.Identity.Partition != "azure" || len(review) != 10 || value.Location != review["region"] || review["resource"] != value.Normalized["_netapp_configuration"] || value.Normalized[netappRecoveryProof] != c.netappRecoveryProofFor(id, value.Identity.ConnectionID, review) {
+	if !netappDirectLeaf(kind) || c.netappIdentity(id, kind) != nil || value.ID == "" || value.Identity.Provider != asset.ProviderAzure || value.Identity.ConnectionID == "" || value.Identity.Partition != "azure" || len(review) != 10 || value.Location != review["region"] || review["resource"] != value.Normalized["_netapp_configuration"] || value.Normalized[netappRecoveryProof] != c.netappRecoveryProofFor(id, value.Identity.ConnectionID, review) {
 		return nil, serviceDenied("invalid_netapp_recovery_review")
 	}
 	return review, nil
@@ -75,11 +75,8 @@ func (a *netappRecoveryAction) Readback(ctx context.Context, req contracts.Actio
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
-	createdKey := "created"
-	if kind == netappBackupType {
-		createdKey = "creationDate"
-	}
-	if netappRecoveryIncarnation(kind, res.data) != a.boundary["uid"] || object(res.data["properties"])[createdKey] != a.boundary["created"] {
+	uid, created := a.client.netappLeafIdentity(kind, res.data)
+	if uid != a.boundary["uid"] || created != a.boundary["created"] {
 		return contracts.ReadbackResult{}, serviceDenied("netapp_recovery_resource_recreated")
 	}
 	return contracts.ReadbackResult{Exists: true, State: text(object(res.data["properties"])["provisioningState"])}, nil
@@ -135,8 +132,13 @@ func (a *netappRecoveryAction) Execute(ctx context.Context, req contracts.Action
 			return result, err
 		}
 		operation := "Snapshots_Delete"
-		if a.planned.Identity.NativeType == netappBackupType {
+		switch a.planned.Identity.NativeType {
+		case netappBackupType:
 			operation = "Backups_Delete"
+		case netappSubvolumeType:
+			operation = "Subvolumes_Delete"
+		case netappQuotaType:
+			operation = "VolumeQuotaRules_Delete"
 		}
 		op, _ := metadata.catalog.Operation("Azure.Microsoft.NetApp." + operation)
 		parts := strings.Split(id, "/")
@@ -144,7 +146,14 @@ func (a *netappRecoveryAction) Execute(ctx context.Context, req contracts.Action
 		if a.planned.Identity.NativeType == netappBackupType {
 			params["backupVaultName"], params["backupName"] = parts[10], parts[12]
 		} else {
-			params["poolName"], params["volumeName"], params["snapshotName"] = parts[10], parts[12], parts[14]
+			leafParameter := "snapshotName"
+			switch a.planned.Identity.NativeType {
+			case netappSubvolumeType:
+				leafParameter = "subvolumeName"
+			case netappQuotaType:
+				leafParameter = "volumeQuotaRuleName"
+			}
+			params["poolName"], params["volumeName"], params[leafParameter] = parts[10], parts[12], parts[14]
 		}
 		bound, err := bindAzureREST(op, params)
 		if err != nil {

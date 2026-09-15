@@ -255,6 +255,15 @@ func (c *client) netappRecoveryParents(ctx context.Context, id, kind string) (ma
 			if props["volumeType"] == "DataProtection" && len(peers) != 0 {
 				ready = false
 			}
+			if netappIndependentChild(kind) {
+				// Quota changes on a replication source propagate to its destination.
+				// This action has no reviewed remote impact ledger and never terminates
+				// replication or mutates destination rules implicitly.
+				ready = ready && len(peers) == 0
+				if kind == netappSubvolumeType {
+					ready = ready && props["enableSubvolumes"] == "Enabled" && (props["volumeType"] == nil || props["volumeType"] == "Regular")
+				}
+			}
 		}
 	}
 	group := strings.Join(strings.Split(id, "/")[:5], "/")
@@ -274,7 +283,7 @@ func (c *client) netappRecoveryParents(ctx context.Context, id, kind string) (ma
 	return hashes, incarnations, region, protected || locked(id, locks), ready, nil
 }
 func (c *client) netappRecoveryBoundary(ctx context.Context, id, kind string, known map[string]any) (map[string]any, bool, error) {
-	if !netappRecoveryKind(kind) || c.netappIdentity(id, kind) != nil {
+	if !netappDirectLeaf(kind) || c.netappIdentity(id, kind) != nil {
 		return nil, false, serviceDenied("invalid_netapp_recovery_owner")
 	}
 	parents, incarnations, region, protected, ready, err := c.netappRecoveryParents(ctx, id, kind)
@@ -289,14 +298,14 @@ func (c *client) netappRecoveryBoundary(ctx context.Context, id, kind string, kn
 	review := map[string]any{"parents": parents, "incarnations": incarnations, "region": region, "protected": protected, "ready": ready, "resource": "", "uid": "", "created": "", "retention": map[string]any{}, "siblings": map[string]any{}}
 	if !absent {
 		props := object(own.data["properties"])
-		createdKey := "created"
-		if kind == netappBackupType {
-			createdKey = "creationDate"
+		uid, created := c.netappLeafIdentity(kind, own.data)
+		review["resource"], review["uid"], review["created"] = c.privateConfiguration(own.data), uid, created
+		if netappIndependentChild(kind) {
+			ready = ready && netappIndependentChildReady(kind, own.data)
+		} else {
+			_, validDate := netappRecoveryTime(created)
+			ready = ready && validDate && uuidPattern.MatchString(uid) && props["provisioningState"] == "Succeeded"
 		}
-		_, validDate := netappRecoveryTime(props[createdKey])
-		uid := netappRecoveryIncarnation(kind, own.data)
-		review["resource"], review["uid"], review["created"] = c.privateConfiguration(own.data), uid, props[createdKey]
-		ready = ready && validDate && uuidPattern.MatchString(uid) && props["provisioningState"] == "Succeeded"
 		if loc := text(own.data["location"]); loc != "" && resourceRegion(own.data) != region {
 			return nil, false, serviceDenied("netapp_recovery_region_changed")
 		}

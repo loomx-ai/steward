@@ -20,3 +20,17 @@ export const netappBackupDeletionWarning: Record<Locale, string> = {
   "zh-CN":
     "删除此备份将永久移除对应的恢复点。源卷和其他备份将保留。删除最后一个备份还会移除后续增量备份的参考点。",
 };
+
+export const netappSubvolumeDeletionWarning: Record<Locale, string> = {
+  "en-US":
+    "Deleting this subvolume removes its data and can interrupt applications using it. The parent volume, other subvolumes, snapshots and backup-vault backups are retained.",
+  "zh-CN":
+    "删除此子卷将移除其数据，并可能中断使用它的应用。父卷、其他子卷、快照及备份保管库内的备份将保留。",
+};
+
+export const netappQuotaDeletionWarning: Record<Locale, string> = {
+  "en-US":
+    "Deleting this quota rule changes the storage limit for its users or groups. Other applicable quota rules can still apply. Files and the parent volume are retained.",
+  "zh-CN":
+    "删除此配额规则将改变相关用户或组的存储限制，其他适用的配额规则仍可能生效。文件和父卷将保留。",
+};

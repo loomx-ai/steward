@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "28d5744e3743e1c0f1ffd47dc3ed61fa8215f4224ac5c5b7d09c6495bb16dcc5",
+    "checksum": "30e3819cb478185f276b6bde2ef091c0d0e2e64278b8524e4c38b000cdd08c84",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "f17d77a2b838b2f98602425b8a6dbfa326816c0725df990965701bbea1b1bb12",
+  "content_checksum": "a8ba6f0ed19bb4fc6a9c2e7389d6a047e856e526ebea9ddd999e8769f9a428bc",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -143451,6 +143451,9 @@
         "read_operations": [
           "Azure.Microsoft.NetApp.Subvolumes_Get"
         ],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.Subvolumes_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.NetApp.Subvolumes_ListByVolume"
         ]
@@ -143467,6 +143470,9 @@
         "collection": "volumeQuotaRules",
         "read_operations": [
           "Azure.Microsoft.NetApp.VolumeQuotaRules_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.VolumeQuotaRules_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.NetApp.VolumeQuotaRules_ListByVolume"

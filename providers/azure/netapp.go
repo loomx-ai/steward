@@ -400,14 +400,11 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 			if err := r.netappVolumeInventory(ctx, c, req, &item); err != nil {
 				return nil, nil, nil, "", err
 			}
-		} else if netappRecoveryKind(kind) {
+		} else if netappDirectLeaf(kind) {
 			if err := r.netappRecoveryInventory(ctx, c, req, &item); err != nil {
 				return nil, nil, nil, "", err
 			}
-		} else if netappVolumeChild(kind) {
-			item.Normalized["controller_only"] = true
-			item.Normalized["cleanup_protected"] = protectedAzureTags(object(raw["tags"]))
-			delete(item.Normalized, "cleanup_protection_reason")
+
 		}
 		items = append(items, item)
 	}

@@ -368,3 +368,36 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     });
   }
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  for (const code of ["netapp_subvolume_delete", "netapp_quota_delete"]) {
+    it(`explains native child deletion ${code} in ${locale}`, () => {
+      localStorage.setItem(localePreferenceKey, locale);
+      render(
+        <LocaleProvider>
+          <ErrorProbe error={{ code, message: "fallback" }} />
+        </LocaleProvider>,
+      );
+      const value = screen.getByTestId("error").textContent;
+      if (code === "netapp_subvolume_delete") {
+        expect(value).toContain(
+          locale === "zh-CN" ? "移除其数据" : "removes its data",
+        );
+        expect(value).toContain(
+          locale === "zh-CN" ? "可能中断" : "can interrupt",
+        );
+      } else {
+        expect(value).toContain(
+          locale === "zh-CN"
+            ? "其他适用的配额规则"
+            : "Other applicable quota rules",
+        );
+        expect(value).toContain(
+          locale === "zh-CN"
+            ? "文件和父卷将保留"
+            : "Files and the parent volume are retained",
+        );
+      }
+    });
+  }
+}

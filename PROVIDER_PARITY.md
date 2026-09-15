@@ -7141,3 +7141,32 @@ retains the workspace and both history records. This fixes existing capability
 integration rather than adding a cleanup binding. Counts remain 469 Azure specs,
 1,568 operations and 425 cleanup bindings; all 159 parity rows and eight acceptance
 gates remain open. These tests are offline application evidence, not live Azure.
+
+
+### NetApp independent subvolume and quota-rule cleanup
+
+Two native leaf DELETE bindings now support independent subvolume and quota-rule
+selection with durable receipts, parent UUID checks and own-resource completion.
+Both default and individual user/group quotas are handled, including Failed rules.
+Subvolume paths and quota targets/configurations are reviewed without inventing
+child UUIDs. Optional native creation metadata is context evidence: actual Azure
+CLI quota GETs show createdAt changing after PUT. Identical recreation without
+creation metadata remains unobservable. No force, replication termination or
+unreviewed remote quota propagation is performed; active replication blocks these
+leaf actions while replicated-child workflows remain unfinished.
+
+Four pinned own GETs and four quota deletion/poll interactions extend retained
+native evidence. Existing snapshot/backup receipts remain compatible. Real SQLite
+workers with a complete 22-asset graph delete one selected child and retain 21,
+resume each persisted phase and send one DELETE. Tests cover protection/replication
+blockers, missing parents, parent UUID changes, disabled-subvolume known reads,
+native state/target validation and failure recovery. Bilingual warnings distinguish
+subvolume data loss from quota-limit changes that retain files. These are offline
+protocol/recording/application tests, not live cloud or independent emulator tests.
+
+Azure now has 469 specifications, 1,568 operations and 427 cleanup bindings.
+Account/pool/vault/policy/group boundaries, replicated-child cleanup, replication
+termination, clone management, export-policy updates and combined protected-latest
+backup/source deletion remain unfinished. All 159 parity rows and eight acceptance
+gates remain open; the NAS mount-target mapping still needs its native equivalent
+workflow, not destructive volume deletion as a substitute.

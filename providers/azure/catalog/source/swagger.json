@@ -273634,7 +273634,9 @@
       "nativeType": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/subvolumes",
       "rest": {
         "collection": "subvolumes",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.Subvolumes_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.NetApp.Subvolumes_ListByVolume"
         ],
@@ -273652,7 +273654,9 @@
       "nativeType": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/volumeQuotaRules",
       "rest": {
         "collection": "volumeQuotaRules",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.VolumeQuotaRules_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.NetApp.VolumeQuotaRules_ListByVolume"
         ],
