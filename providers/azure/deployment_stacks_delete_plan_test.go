@@ -265,3 +265,64 @@ func TestDeploymentStackDeletePlanRequiresCreationEvidence(t *testing.T) {
 		}
 	}
 }
+
+func TestDeploymentStackDeletePlanFlatMembershipWithNestedExecution(t *testing.T) {
+	for _, mode := range []string{"delete_all", "retain_all", "delete_resources", "unlisted_child", "missing_child", "unknown_child", "retained_child", "wrong_group"} {
+		t.Run(mode, func(t *testing.T) {
+			c, initial := stackDeletePlanFixture(t, false)
+			vm := initial.LifecycleImpacts[0]
+			group := vm
+			group.Asset.ID = "managed-group"
+			group.Asset.Identity.NativeID = strings.Split(vm.Asset.Identity.NativeID, "/providers/")[0]
+			group.Asset.Identity.NativeType = groupType
+			group.Delete = mode != "retain_all" && mode != "delete_resources" && mode != "unlisted_child" && mode != "wrong_group"
+			vm.Delete = mode != "retain_all" && mode != "retained_child"
+			// Both resources appear in Azure's flat membership, while the reviewed
+			// plan routes the VM through its group. The native flags apply to both.
+			c, req := stackDeletePlanFixture(t, false, group, vm)
+			req.LifecycleImpacts[1].ControllerID = group.Asset.ID
+			review := object(req.Asset.Normalized[deploymentStackReviewKey])
+			members := object(review["members"])
+			switch mode {
+			case "unlisted_child":
+				delete(members, vm.Asset.Identity.NativeID)
+			case "missing_child":
+				req.LifecycleImpacts = req.LifecycleImpacts[:1]
+			case "unknown_child":
+				object(members[vm.Asset.Identity.NativeID])["status"] = "unknown"
+			case "wrong_group":
+				delete(members, strings.ToLower(group.Asset.Identity.NativeID))
+				group.Asset.Identity.NativeID += "other"
+				req.LifecycleImpacts[0] = group
+				members[strings.ToLower(group.Asset.Identity.NativeID)] = map[string]any{"type": groupType, "status": "managed", "deny_status": "none", "subscription_local": true}
+			}
+			req.Asset.Normalized[deploymentStackProofKey] = c.deploymentStackProof(req.Asset.Identity.NativeID, req.Asset.Identity.ConnectionID, review)
+			wire, _ := json.Marshal(req)
+			if err := json.Unmarshal(wire, &req); err != nil {
+				t.Fatal(err)
+			}
+			bound, saved, err := c.deploymentStackDeletePlan(req)
+			valid := mode == "delete_all" || mode == "retain_all" || mode == "delete_resources"
+			if !valid {
+				if err == nil || bound.URL != "" || saved != nil {
+					t.Fatal("invalid nested consequence accepted", bound, saved, err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			wantResource, wantGroup := "delete", "delete"
+			if mode == "retain_all" {
+				wantResource = "detach"
+			}
+			if mode != "delete_all" {
+				wantGroup = "detach"
+			}
+			parsed, _ := url.Parse(bound.URL)
+			if saved["unmanageAction.Resources"] != wantResource || saved["unmanageAction.ResourceGroups"] != wantGroup || parsed.Query().Get("unmanageAction.Resources") != wantResource || parsed.Query().Get("unmanageAction.ResourceGroups") != wantGroup {
+				t.Fatal("nested native member lost category choice", saved, bound.URL)
+			}
+		})
+	}
+}

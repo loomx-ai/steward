@@ -32,11 +32,14 @@ func (c *client) deploymentStackDeletePlan(req contracts.ActionRequest) (catalog
 			return fail("invalid_deployment_stack_delete_impact")
 		}
 		impacts[id], byAsset[value.ID] = impact, impact
-		if impact.ControllerID != root.ID {
-			continue
-		}
 		member := object(members[id])
-		if member == nil || !strings.EqualFold(text(member["type"]), kind) || member["subscription_local"] != true || member["status"] != "managed" || member["deny_status"] == "unknown" {
+		if member == nil {
+			if impact.ControllerID == root.ID {
+				return fail("deployment_stack_delete_member_changed")
+			}
+			continue // An implicit cascade child has no native Stack category flag.
+		}
+		if !strings.EqualFold(text(member["type"]), kind) || member["subscription_local"] != true || member["status"] != "managed" || member["deny_status"] == "unknown" {
 			return fail("deployment_stack_delete_member_changed")
 		}
 		category := "Resources"
@@ -56,19 +59,28 @@ func (c *client) deploymentStackDeletePlan(req contracts.ActionRequest) (catalog
 		modes[category] = mode
 	}
 	for id := range members {
-		impact, found := impacts[id]
-		if !found || impact.ControllerID != root.ID {
+		if _, found := impacts[id]; !found {
 			return fail("deployment_stack_member_missing_from_delete_plan")
 		}
 	}
-	// Nested impacts must reach a reviewed direct member. Their own native
-	// controller remains responsible for authenticating the nested membership.
+	// Native membership is flat; the reviewed execution plan can place a listed
+	// child under its resource controller. Every listed member still contributes
+	// its category flag. Native controllers must authenticate the nested edges.
 	for _, impact := range req.LifecycleImpacts {
 		seen := map[asset.AssetID]bool{impact.Asset.ID: true}
 		for current := impact; current.ControllerID != root.ID; {
 			parent, found := byAsset[current.ControllerID]
-			if !found || seen[parent.Asset.ID] || !parent.Delete && current.Delete {
+			if !found || seen[parent.Asset.ID] {
 				return fail("invalid_deployment_stack_nested_impact")
+			}
+			if !parent.Delete && current.Delete {
+				// deleteResources explicitly preserves managed groups while deleting
+				// their listed resources. Unlisted children cannot acquire this
+				// authority from a retained parent.
+				id := strings.ToLower(current.Asset.Identity.NativeID)
+				if object(members[id]) == nil || !strings.EqualFold(parent.Asset.Identity.NativeType, groupType) || !strings.HasPrefix(id, strings.ToLower(parent.Asset.Identity.NativeID)+"/") {
+					return fail("invalid_deployment_stack_nested_impact")
+				}
 			}
 			seen[parent.Asset.ID] = true
 			current = parent

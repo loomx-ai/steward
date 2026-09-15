@@ -153,3 +153,32 @@ func TestDeploymentStackOutcomeReadsNestedMembers(t *testing.T) {
 		})
 	}
 }
+
+func TestDeploymentStackOutcomeRetainsGroupAndDeletesListedResource(t *testing.T) {
+	c, initial := stackDeletePlanFixture(t, false)
+	vm := initial.LifecycleImpacts[0]
+	group := vm
+	group.Asset.ID = "retained-group"
+	group.Asset.Identity.NativeID = strings.Split(vm.Asset.Identity.NativeID, "/providers/")[0]
+	group.Asset.Identity.NativeType = groupType
+	group.Delete = false
+	raw := map[string]any{"id": group.Asset.Identity.NativeID, "type": groupType, "systemData": map[string]any{"createdAt": "2020-02-01T01:01:01Z"}}
+	group.Asset.Normalized = map[string]any{"_arm_creation_generation": creationGeneration(raw)}
+	c, req := stackDeletePlanFixture(t, false, group, vm)
+	req.LifecycleImpacts[1].ControllerID = group.Asset.ID
+	seen := map[string]int{}
+	c.http.Transport = roundTripFunc(func(q *http.Request) (*http.Response, error) {
+		if q.Method != "GET" {
+			t.Fatal(q.Method)
+		}
+		seen[strings.ToLower(q.URL.Path)]++
+		if strings.EqualFold(q.URL.Path, group.Asset.Identity.NativeID) {
+			return jsonResponse(200, raw, nil), nil
+		}
+		return jsonResponse(404, map[string]any{}, nil), nil
+	})
+	out, err := c.deploymentStackObserveOutcome(t.Context(), req)
+	if err != nil || !out.StackAbsent || len(out.MembersAbsent) != 2 || out.MembersAbsent[group.Asset.ID] || !out.MembersAbsent[vm.Asset.ID] || seen[strings.ToLower(group.Asset.Identity.NativeID)] != 1 || seen[strings.ToLower(vm.Asset.Identity.NativeID)] != 1 {
+		t.Fatal(out, err, seen)
+	}
+}
