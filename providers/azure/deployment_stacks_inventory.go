@@ -9,7 +9,7 @@ import (
 )
 
 // This subscription-bound reader does not authorize management-group access.
-// A stack's deploymentScope does not change the scope of its own deny settings.
+// A stack's deploymentScope does not authorize access to its storage scope.
 func (c *client) deploymentStackCollection(scope string) (string, error) {
 	kind, params, err := deploymentStackParameters(scope + "/providers/Microsoft.Resources/deploymentStacks/probe")
 	if err != nil || kind == "ManagementGroup" || !strings.EqualFold(text(params["subscriptionId"]), c.subscription) {

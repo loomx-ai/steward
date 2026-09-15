@@ -148,3 +148,14 @@ compiled parameters round-trip through authenticated polling receipts.
 This is parameter compilation, not live preflight or a registered cleanup action.
 Live member reads, protection/denial review, native child closure, prerequisite
 validation and final own-resource readback remain required before enabling deletion.
+
+The graph contributor now rereads the stack before and after its member reads,
+compares the complete private stack configuration with the authenticated scan,
+and reads resolved members through their catalog-selected native operations.
+Nested stacks use their own signed snapshot; other members use the existing
+private configuration and incarnation checks, including Cosmos wire identity.
+Missing, forbidden, asynchronous, mismatched and recreated member responses
+abort contribution instead of promoting stale observations. The SQLite graph
+worker test confirms that a failed live reread preserves previously persisted
+relationships. These reads establish observed membership only: parent/child
+closure, protection checks and destructive-action authorization remain separate.

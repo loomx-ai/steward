@@ -18,7 +18,21 @@ func stackGraphAssets(t *testing.T) (*client, asset.Asset, asset.Asset) {
 	c := directClient(nil)
 	id := strings.ToLower(c.root() + "/providers/Microsoft.Resources/deploymentStacks/stack")
 	member := asset.Asset{ID: "member", Identity: asset.Identity{Provider: asset.ProviderAzure, Partition: "azure", ConnectionID: "connection", NativeID: strings.ToLower(resourceID(vmType, "member")), NativeType: vmType}}
-	review, err := c.deploymentStackMemberReview(map[string]any{"id": id, "properties": map[string]any{"resources": []any{map[string]any{"id": member.Identity.NativeID, "status": "managed", "denyStatus": "denyDelete"}}}})
+	raw := map[string]any{"id": id, "type": deploymentStackType, "properties": map[string]any{"resources": []any{map[string]any{"id": member.Identity.NativeID, "status": "managed", "denyStatus": "denyDelete"}}}}
+	c.http.Transport = roundTripFunc(func(q *http.Request) (*http.Response, error) {
+		if q.Method != "GET" {
+			t.Fatal("unexpected mutation", q.Method)
+		}
+		if strings.EqualFold(q.URL.Path, id) {
+			return jsonResponse(200, raw, nil), nil
+		}
+		if strings.EqualFold(q.URL.Path, member.Identity.NativeID) {
+			return jsonResponse(200, map[string]any{"id": member.Identity.NativeID, "type": vmType}, nil), nil
+		}
+		t.Fatalf("unexpected graph read %s", q.URL.Path)
+		return nil, nil
+	})
+	review, err := c.deploymentStackMemberReview(raw)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -32,7 +46,7 @@ func stackGraphAssets(t *testing.T) (*client, asset.Asset, asset.Asset) {
 }
 func TestDeploymentStackGraphMembershipIsNotDelegation(t *testing.T) {
 	c, parent, member := stackGraphAssets(t)
-	out, err := c.deploymentStackContribution(parent, []asset.Asset{parent, member})
+	out, err := c.deploymentStackContribution(t.Context(), parent, []asset.Asset{parent, member})
 	if err != nil || len(out.Relationships) != 1 || len(out.Unresolved) != 0 || len(out.Bindings) != 0 {
 		t.Fatal(out, err)
 	}
@@ -76,7 +90,7 @@ func TestDeploymentStackGraphRejectsUnverifiedMembership(t *testing.T) {
 				object(object(review["members"])[member.Identity.NativeID])["subscription_local"] = false
 				parent.Normalized[deploymentStackProofKey] = c.deploymentStackProof(parent.Identity.NativeID, parent.Identity.ConnectionID, review)
 			}
-			out, err := c.deploymentStackContribution(parent, all)
+			out, err := c.deploymentStackContribution(t.Context(), parent, all)
 			if fault == "duplicate" {
 				if err == nil {
 					t.Fatal("duplicate member accepted")
@@ -179,6 +193,26 @@ func TestDeploymentStackWorkerPersistsMemberGraph(t *testing.T) {
 	if !found {
 		t.Fatal("native membership not persisted", edges)
 	}
+
+	// A failed live reread must preserve the last successful persisted graph.
+	previousEdges, _ := json.Marshal(edges)
+	f.fault = "drift"
+	for _, job := range jobs {
+		if job.Type == execution.JobGraph {
+			if err := governance.NewGraphHandler(repo, registry, fleetHubGraphContributors{f.runtime}).Handle(t.Context(), job); err == nil {
+				t.Fatal("stale live stack graph accepted")
+			}
+		}
+	}
+	afterEdges, err := repo.ListRelationshipsByConnection(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	encodedEdges, _ := json.Marshal(afterEdges)
+	if string(encodedEdges) != string(previousEdges) {
+		t.Fatal("failed graph read replaced verified relationships")
+	}
+	f.fault = ""
 	// Known resources survive an omitted parent index and a later failed scan.
 	proofs := map[asset.AssetID]any{}
 	for _, v := range values {
@@ -217,5 +251,53 @@ func TestDeploymentStackWorkerPersistsMemberGraph(t *testing.T) {
 				t.Fatal("rescan replaced stable member proof")
 			}
 		}
+	}
+}
+
+func TestDeploymentStackGraphLiveMemberFailures(t *testing.T) {
+	for _, fault := range []string{"stack_missing", "member_missing", "member_forbidden", "member_identity", "member_async", "member_recreated", "stack_changed_during_members"} {
+		t.Run(fault, func(t *testing.T) {
+			c, parent, member := stackGraphAssets(t)
+			original := c.http.Transport
+			stackReads, memberReads := 0, 0
+			c.http.Transport = roundTripFunc(func(q *http.Request) (*http.Response, error) {
+				if strings.EqualFold(q.URL.Path, parent.Identity.NativeID) {
+					stackReads++
+					if fault == "stack_missing" {
+						return jsonResponse(404, map[string]any{}, nil), nil
+					}
+					if fault == "stack_changed_during_members" && stackReads > 1 {
+						return jsonResponse(200, map[string]any{"id": parent.Identity.NativeID, "type": deploymentStackType, "properties": map[string]any{"resources": []any{}}}, nil), nil
+					}
+				} else if strings.EqualFold(q.URL.Path, member.Identity.NativeID) {
+					memberReads++
+					switch fault {
+					case "member_missing":
+						return jsonResponse(404, map[string]any{}, nil), nil
+					case "member_forbidden":
+						return jsonResponse(403, map[string]any{}, nil), nil
+					case "member_identity":
+						return jsonResponse(200, map[string]any{"id": member.Identity.NativeID + "other", "type": vmType}, nil), nil
+					case "member_async":
+						headers := http.Header{}
+						headers.Set("Azure-AsyncOperation", "https://management.azure.com/operation")
+						return jsonResponse(200, map[string]any{"id": member.Identity.NativeID, "type": vmType}, headers), nil
+					case "member_recreated":
+						return jsonResponse(200, map[string]any{"id": member.Identity.NativeID, "type": vmType, "etag": "new"}, nil), nil
+					}
+				}
+				return original.RoundTrip(q)
+			})
+			if fault == "member_recreated" {
+				member.Normalized = map[string]any{"_arm_generation": "old"}
+			}
+			out, err := c.deploymentStackContribution(t.Context(), parent, []asset.Asset{member})
+			if err == nil || len(out.Relationships)+len(out.Bindings)+len(out.Unresolved) != 0 {
+				t.Fatal("stale observations promoted", out, err)
+			}
+			if stackReads == 0 || fault != "stack_missing" && memberReads != 1 {
+				t.Fatal("native member not read", stackReads, memberReads)
+			}
+		})
 	}
 }

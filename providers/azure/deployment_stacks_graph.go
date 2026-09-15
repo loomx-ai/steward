@@ -1,6 +1,7 @@
 package azure
 
 import (
+	"context"
 	"maps"
 	"slices"
 	"strings"
@@ -20,7 +21,7 @@ func (c *client) deploymentStackProof(id string, connection asset.ConnectionID, 
 
 // These are observed membership edges only. Cleanup delegation additionally
 // requires live member/denial/cascade review and native operation readback.
-func (c *client) deploymentStackContribution(parent asset.Asset, assets []asset.Asset) (governance.Contribution, error) {
+func (c *client) deploymentStackContribution(ctx context.Context, parent asset.Asset, assets []asset.Asset) (governance.Contribution, error) {
 	out := governance.Contribution{}
 	unresolved := func(id, kind, reason string) {
 		out.Unresolved = append(out.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeID: id, NativeType: kind, ControllerID: parent.ID, Relationship: graph.RelationshipMemberOf, BlocksCleanup: true, Evidence: map[string]any{"reason": reason}})
@@ -34,6 +35,7 @@ func (c *client) deploymentStackContribution(parent asset.Asset, assets []asset.
 	if review["arm_members_complete"] != true {
 		unresolved(parent.Identity.NativeID, deploymentStackType, "deployment_stack_unresolved_members")
 	}
+	resolved := []asset.Asset{}
 	members := object(review["members"])
 	for _, id := range slices.Sorted(maps.Keys(members)) {
 		entry := object(members[id])
@@ -57,10 +59,16 @@ func (c *client) deploymentStackContribution(parent asset.Asset, assets []asset.
 			unresolved(id, kind, "deployment_stack_member_requires_refresh")
 			continue
 		}
+		resolved = append(resolved, *match)
 		evidence := map[string]any{"native_membership": true, "status": entry["status"], "deny_status": entry["deny_status"]}
 		out.Relationships = append(out.Relationships, graph.Relationship{SourceAssetID: match.ID, TargetAssetID: parent.ID, Type: graph.RelationshipMemberOf, Source: deploymentStackGraphSource, Evidence: evidence, Confidence: 1})
 		if entry["status"] != "managed" || entry["deny_status"] == "unknown" {
 			unresolved(id, kind, "deployment_stack_member_state_requires_review")
+		}
+	}
+	if len(out.Unresolved) == 0 {
+		if err := c.deploymentStackObserveMembers(ctx, parent, resolved); err != nil {
+			return governance.Contribution{}, err
 		}
 	}
 	return out, nil

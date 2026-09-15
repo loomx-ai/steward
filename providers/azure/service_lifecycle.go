@@ -515,7 +515,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	dnsOwners := map[string]asset.AssetID{}
 	for _, parent := range parents {
 		if parent.Identity.Provider == asset.ProviderAzure && strings.EqualFold(parent.Identity.NativeType, deploymentStackType) {
-			contribution, err := s.client.deploymentStackContribution(parent, assets)
+			contribution, err := s.client.deploymentStackContribution(ctx, parent, assets)
 			if err != nil {
 				return result, err
 			}
