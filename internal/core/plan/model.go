@@ -130,6 +130,8 @@ type WarningCode string
 const (
 	WarningSynapseWorkspaceDelete        WarningCode = "synapse_workspace_delete"
 	WarningSynapseSQLDelete              WarningCode = "synapse_sql_delete"
+	WarningNetappSnapshotDelete          WarningCode = "netapp_snapshot_delete"
+	WarningNetappBackupDelete            WarningCode = "netapp_backup_delete"
 	WarningNetappVolumeDelete            WarningCode = "netapp_volume_delete"
 	WarningSynapseRestorePointDelete     WarningCode = "synapse_restore_point_delete"
 	WarningManagedResourceDirectCleanup  WarningCode = "managed_resource_direct_cleanup"

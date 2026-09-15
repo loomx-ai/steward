@@ -7094,3 +7094,31 @@ NetApp children/backup cleanup, replication/clone/group workflows, complete poli
 consumers and export-policy editing remain open. The NAS mount parity row remains
 pending: a read-only volume mount target has no independent ARM delete. All 159
 parity rows and all eight acceptance gates remain open.
+
+
+### Azure NetApp independent snapshot and backup cleanup
+
+Two native cleanup bindings now delete individual snapshots and vault backups.
+Signed review binds resource incarnation, parent configuration and protection;
+backup review additionally checks every account vault, peer backups and current
+source policy. Completed distinct newer backups establish older status; latest
+snapshot-time ties remain protected with a current policy. A deleted source does
+not own or prevent backup removal. Missing optional chronology leaves the native
+restriction to Azure DELETE without force or policy changes; permission failures
+and malformed assignment data remain blocking. Inventory reuses verified data
+within each full pass while execution always performs fresh reads.
+
+Four pinned Azure CLI snapshot DELETE/status/result interactions and two original
+backup GET bodies extend the native evidence. SQLite restart tests select exactly
+one snapshot among 22 assets or one retained backup among six, issue one DELETE
+and close only that recovery point. Snapshot direct selection is no longer skipped
+by an unselected volume controller; reviewed volume cascade remains unchanged.
+Both languages explain permanent recovery-point loss and the final backup's
+incremental-reference consequence. Recording, protocol, restart, source-failure,
+recreation, latest/tie, malformed-policy and request-count tests are offline;
+no independent NetApp emulator or live Azure acceptance is claimed.
+
+Azure now has 469 specifications, 1,568 operations and 425 cleanup bindings.
+Independent subvolume/quota cleanup, combined protected-latest backup/volume
+ordering, replication/clone/group workflows, policy consumers and export updates
+remain unfinished. All 159 parity rows and all eight acceptance gates remain open.

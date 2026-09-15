@@ -1,4 +1,8 @@
-import { netappVolumeDeletionWarning } from "./netappWarnings";
+import {
+  netappVolumeDeletionWarning,
+  netappSnapshotDeletionWarning,
+  netappBackupDeletionWarning,
+} from "./netappWarnings";
 import {
   createContext,
   useCallback,
@@ -86,20 +90,24 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   );
   const messageForCode = useCallback(
     (code: string, fallback: string, details: Record<string, unknown> = {}) =>
-      code === "netapp_volume_delete"
-        ? netappVolumeDeletionWarning[locale]
-        : code === "synapse_restore_point_delete"
-          ? synapseRestorePointDeletionWarning[locale]
-          : code === "synapse_sql_delete"
-            ? synapseSQLDeletionWarning[locale]
-            : code === "synapse_workspace_delete"
-              ? synapseWorkspaceDeletionWarning[locale]
-              : translateCode(
-                  locale,
-                  code,
-                  fallback,
-                  interpolationValues(details),
-                ),
+      code === "netapp_snapshot_delete"
+        ? netappSnapshotDeletionWarning[locale]
+        : code === "netapp_backup_delete"
+          ? netappBackupDeletionWarning[locale]
+          : code === "netapp_volume_delete"
+            ? netappVolumeDeletionWarning[locale]
+            : code === "synapse_restore_point_delete"
+              ? synapseRestorePointDeletionWarning[locale]
+              : code === "synapse_sql_delete"
+                ? synapseSQLDeletionWarning[locale]
+                : code === "synapse_workspace_delete"
+                  ? synapseWorkspaceDeletionWarning[locale]
+                  : translateCode(
+                      locale,
+                      code,
+                      fallback,
+                      interpolationValues(details),
+                    ),
     [locale],
   );
   const formatError = useCallback(

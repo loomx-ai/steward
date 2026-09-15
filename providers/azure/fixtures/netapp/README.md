@@ -32,7 +32,7 @@ These are local protocol/application tests, not recordings, independent NetApp
 emulator evidence or live Azure acceptance.
 
 The original foundation enabled inventory only; reviewed ordinary volume deletion
-is now implemented as described below. Full replication,
+and independent snapshot/backup deletion are now implemented as described below. Full replication,
 clones, volume-group membership, identity/encryption references, policy consumers,
 retained-backup lifecycle and export-policy changes still need
 implementation and verification. The selected ListReplications operation is POST
@@ -105,7 +105,7 @@ as well as 202/204; this does not enable their independent cleanup actions.
 
 ## Reviewed volume cleanup
 
-Only the volume receives a direct cleanup binding. Its signed review includes
+At the volume milestone only the volume received a direct cleanup binding. Its signed review includes
 full private hashes of the volume, capacity pool, account and resource group;
 fileSystemId and poolId distinguish recreated resources. It enumerates active
 replications with native POST `listReplications` and `{"exclude":"Deleted"}`;
@@ -141,3 +141,57 @@ poll phase; one DELETE closes exactly four of 22 assets, retaining both backups.
 These remain local protocol/application tests, not live Azure acceptance or an
 independent NetApp emulator. Other native resource mutations and full parity remain
 unfinished.
+
+
+## Independent snapshot and backup cleanup
+
+Both recovery kinds now have direct DELETE bindings with signed review and durable
+receipts. Own immutable IDs and creation timestamps reject recreation; parent
+reads, inherited locks/tags and private configuration are rechecked. Selecting a
+snapshot alone no longer inherits the volume ledger's unselected-controller skip.
+Volume selection still reviews and delegates its three native child kinds.
+Independent recovery deletion has one step and no cascade impacts.
+
+Backup review enumerates every vault in the account and reads all backups, using
+snapshotCreationDate rather than creationDate. A distinct, successfully completed
+newer backup proves that the target is older; Creating/Failed/Deleting backups and
+aliases with the same backupId cannot provide that proof. Tied latest timestamps
+remain protected while the live source has backupPolicyId, even if policyEnforced
+is false. Historical backupPolicyResourceId does not establish current assignment.
+A source volume's own 404 permits retained-backup cleanup; 403/5xx or malformed
+assignment objects fail review. Nullable chronology does not prove known latest:
+native DELETE is allowed to enforce that opaque restriction without force or
+policy changes. Its refusal never closes the asset. Snapshot APIs do not expose a
+complete active-file-restore/baseline ledger, so native DELETE also remains the
+final authority for those restrictions.
+
+Each complete inventory pass reuses its already verified backup collection and
+source observations, avoiding repeated collection reads per backup. The second
+pass starts fresh, and mutation review never receives the inventory cache.
+Closed sibling review hints do not become ownership or permanent inventory scope;
+actual KnownNativeIDs still recover omitted live resources. The request-count test
+covers nine backups, native pagination and an omitted known backup.
+
+`recovery-recordings.json` retains four snapshot DELETE/poll interactions and two
+backup own GETs from Azure CLI commit
+`ea185727729efc032ad9d4eef9ec355ee74ebaae`, API 2025-12-01. Each record includes its
+source URL, whole-source SHA-256 and zero-based index. Snapshot source
+`test_create_delete_snapshots.yaml` has SHA-256
+`e005b63c13550051185d49fb5a6c6aa7590655f7103191a3c558f81d0e4bfe88`;
+backup source `test_create_delete_backup.yaml` has SHA-256
+`0e3fdbedf9da3e0cd9651753bcea87d1b54bade67a0910c158babf2d5f0c4160`.
+Bodies are unchanged; request headers are omitted and signing query values alone
+are redacted. Snapshot DELETE sends no force and returns empty 202, then status
+Deleting/Succeeded and an empty Location 200. This recording does not contain an
+own snapshot GET proving absence. Recorded backup IDs satisfy the generic native
+UUID pattern but are not UUID-v4 bit patterns; tests preserve the real values.
+
+SQLite scan/plan/execution tests reopen the database/runtime at each saved phase.
+Snapshot selection closes one of 22 assets; backup selection with its source
+already deleted closes one of six inventoried assets. Both send exactly one DELETE,
+retain all other resources and expose irreversible-loss warnings in English and
+Chinese. Separate tests cover read failures, stale context, recreation, missing
+parents, native refusal, callback expiry and altered receipts. These are offline
+native recording/protocol/application tests, not an independent emulator or live
+Azure acceptance. Other resource mutations, combined protected-latest backup and
+volume ordering, replication/clone/export workflows and full parity remain open.

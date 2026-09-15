@@ -11250,7 +11250,9 @@
       "read_operations": [
         "Azure.Microsoft.NetApp.Snapshots_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.NetApp.Snapshots_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.NetApp.Snapshots_List"
       ]
@@ -11298,7 +11300,9 @@
       "read_operations": [
         "Azure.Microsoft.NetApp.Backups_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.NetApp.Backups_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.NetApp.Backups_ListByVault"
       ]

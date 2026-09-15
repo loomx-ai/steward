@@ -339,3 +339,32 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     );
   });
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  for (const code of ["netapp_snapshot_delete", "netapp_backup_delete"]) {
+    it(`explains independent recovery deletion ${code} in ${locale}`, () => {
+      localStorage.setItem(localePreferenceKey, locale);
+      render(
+        <LocaleProvider>
+          <ErrorProbe error={{ code, message: "fallback" }} />
+        </LocaleProvider>,
+      );
+      const text = screen.getByTestId("error").textContent;
+      expect(text).toContain(
+        locale === "zh-CN"
+          ? "永久移除对应的恢复点"
+          : "permanently removes that recovery point",
+      );
+      if (code === "netapp_snapshot_delete")
+        expect(text).toContain(
+          locale === "zh-CN" ? "卷、其他快照" : "The volume, other snapshots",
+        );
+      else
+        expect(text).toContain(
+          locale === "zh-CN"
+            ? "后续增量备份的参考点"
+            : "reference point for future incremental backups",
+        );
+    });
+  }
+}

@@ -1815,6 +1815,14 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if value.Identity.Provider == asset.ProviderAzure {
 				result = append(result, plan.Warning{Code: plan.WarningSynapseRestorePointDelete, AssetID: value.ID, Message: "Deleting this user-defined restore point removes that recovery option. The SQL pool, workspace and other backups are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
+		case "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/snapshots":
+			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningNetappSnapshotDelete, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningNetappSnapshotDelete, AssetID: value.ID, Message: "Deleting this snapshot permanently removes that recovery point. The volume, other snapshots and backup-vault backups are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
+		case "Microsoft.NetApp/netAppAccounts/backupVaults/backups":
+			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningNetappBackupDelete, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningNetappBackupDelete, AssetID: value.ID, Message: "Deleting this backup permanently removes that recovery point. The source volume and other backups are retained. Deleting the final backup also removes the reference point for future incremental backups.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
 		case "Microsoft.NetApp/netAppAccounts/capacityPools/volumes":
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningNetappVolumeDelete, value.ID) {
 				result = append(result, plan.Warning{Code: plan.WarningNetappVolumeDelete, AssetID: value.ID, Message: "Deleting this volume removes its data, snapshots, subvolumes and quota rules. Stop applications and unmount the volume from all hosts before proceeding. Backups in backup vaults, the capacity pool and the NetApp account are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})

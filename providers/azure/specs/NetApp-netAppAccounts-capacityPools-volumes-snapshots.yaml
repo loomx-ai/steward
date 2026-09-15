@@ -71,3 +71,14 @@ relationships:
 - type: uses
   targetType: Microsoft.ManagedIdentity/userAssignedIdentities
   targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+
+actions:
+  delete:
+    operation: Azure.Microsoft.NetApp.Snapshots_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.NetApp.Snapshots_Get
+      itemsPath: $
+      identityPath: id

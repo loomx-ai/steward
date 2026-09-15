@@ -340,8 +340,26 @@ restores, clones, protection tags and locks prevent this cleanup. Changing the
 reviewed volume or its children requires a new plan. Execution resumes from saved
 acknowledgements and independently checks the volume and children for absence.
 
-Independent child/backup deletion, replication termination, clone management and
-export-policy editing remain under implementation. Mount targets are read-only
+Snapshots and backup-vault backups also support independent deletion. The plan
+warns that the selected recovery point is permanently lost; its source volume,
+other recovery points and parents remain. Deleting the final backup removes the
+reference point for future incremental backups. Backups remain eligible for review
+after their source volume is deleted.
+
+A known latest backup, including equal snapshot-time ties, is protected while a
+backup policy is assigned to the live source volume, even if policy enforcement
+is disabled. A newer backup must have completed successfully to establish that
+the selected backup is older. Missing optional chronology leaves the final
+restriction to Azure's native DELETE. Steward never forces deletion or changes
+the backup policy. Snapshot restore, clone and replication restrictions also remain
+subject to Azure's native checks. Grant snapshot or backup delete permission,
+resource/ancestor and management-lock reads; backup review also needs account-wide
+vault/backup lists and source-volume reads. Unavailable reads prevent cleanup.
+See [snapshot deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/snapshots-delete)
+and [backup deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-delete).
+
+Independent subvolume/quota deletion, replication termination, clone management
+and export-policy editing remain under implementation. Mount targets are read-only
 volume properties; deleting a volume is not a substitute for removing a mount.
 See [NetApp permissions](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions)
 and [deleting volumes](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete).

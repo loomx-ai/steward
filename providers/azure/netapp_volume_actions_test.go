@@ -287,7 +287,7 @@ func TestNetappVolumeLifecycleReview(t *testing.T) {
 		t.Fatal(contribution, err)
 	}
 	for _, b := range contribution.Bindings {
-		if b.ControllerAssetID != values[0].ID || b.CleanupPolicy != graph.CleanupDelegate || b.DirectCleanupAllowed || b.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] != true {
+		if b.ControllerAssetID != values[0].ID || b.CleanupPolicy != graph.CleanupDelegate || (b.DirectCleanupAllowed != (b.ManagedAssetID == values[1].ID)) || b.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] != true {
 			t.Fatal("invalid native ownership", b)
 		}
 	}
@@ -300,8 +300,8 @@ func TestNetappVolumeLifecycleReview(t *testing.T) {
 			t.Fatal("missing child allowed deletion")
 		}
 	}
-	if _, err := f.runtime.ResolveAction(t.Context(), "connection", values[1]); err == nil {
-		t.Fatal("cascade enabled independent snapshot deletion")
+	if _, err := f.runtime.ResolveAction(t.Context(), "connection", values[2]); err == nil {
+		t.Fatal("cascade enabled independent subvolume deletion")
 	}
 }
 func TestNetappVolumeExpiredCallbackRequiresWholeScopeAbsence(t *testing.T) {

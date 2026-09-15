@@ -353,6 +353,15 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		}
 		contextHashes[id] = fingerprint
 	}
+	if kind == netappBackupType {
+		cache := &netappRecoveryInventoryCache{backups: map[string]map[string]any{}, sources: map[string]netappSourceObservation{}}
+		for id, raw := range raws {
+			if strings.EqualFold(text(raw["type"]), netappBackupType) {
+				cache.backups[id] = raw
+			}
+		}
+		ctx = context.WithValue(ctx, netappRecoveryCacheKey{}, cache)
+	}
 	items := []contracts.InventoryItem{}
 	for _, id := range ids {
 		raw := raws[id]
@@ -389,6 +398,10 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		item := contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: text(raw["name"]), State: text(props["provisioningState"]), Location: region, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}, Tags: tags, Normalized: normalized, Raw: safe, NativeAliases: []string{id}, NetworkReferences: slices.Compact(network), Actionable: &actionable}
 		if kind == netappVolumeType {
 			if err := r.netappVolumeInventory(ctx, c, req, &item); err != nil {
+				return nil, nil, nil, "", err
+			}
+		} else if netappRecoveryKind(kind) {
+			if err := r.netappRecoveryInventory(ctx, c, req, &item); err != nil {
 				return nil, nil, nil, "", err
 			}
 		} else if netappVolumeChild(kind) {

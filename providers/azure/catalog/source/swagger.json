@@ -273522,7 +273522,9 @@
       "nativeType": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/snapshots",
       "rest": {
         "collection": "snapshots",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.Snapshots_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.NetApp.Snapshots_List"
         ],
@@ -273576,7 +273578,9 @@
       "nativeType": "Microsoft.NetApp/netAppAccounts/backupVaults/backups",
       "rest": {
         "collection": "backups",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.Backups_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.NetApp.Backups_ListByVault"
         ],

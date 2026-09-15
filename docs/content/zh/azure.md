@@ -336,7 +336,19 @@ AD 凭据和未识别的私有字段不会显示。
 存在活动复制、还原、克隆、保护标签或锁时不允许清理；卷或子资源发生变化后需要重新生成计划。
 执行中断后从已保存的回执继续，并逐一验证卷及子资源已经消失。
 
-子资源和备份的独立删除、复制终止、克隆管理及导出策略编辑仍在实现中。
+快照和备份库内的备份也支持独立删除。计划会提示所选恢复点将永久丢失，
+源卷、其他恢复点及父资源将保留。删除最后一个备份还会移除后续增量备份的参考点。
+源卷已删除时，保留备份仍可单独审阅和清理。
+
+源卷仍存在且分配了备份策略时，已确认的最新备份受保护；快照时间相同的并列最新备份也受保护，
+即使策略执行已禁用也不例外。只有成功完成的新备份才能证明所选备份较旧。
+可选时间字段缺失时，由 Azure 原生删除接口执行最终限制；Steward 不会强制删除或更改备份策略。
+快照的还原、克隆和复制限制同样由 Azure 原生接口校验。需要相应的快照或备份删除权限，
+资源、父级和管理锁读取权限；备份审阅还需要帐户内备份库和备份列表及源卷读取权限。
+读取不可用时不能清理。参见[删除快照](https://learn.microsoft.com/en-us/azure/azure-netapp-files/snapshots-delete)
+和[删除备份](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-delete)。
+
+子卷和配额规则的独立删除、复制终止、克隆管理及导出策略编辑仍在实现中。
 挂载目标是卷的只读属性，不能以删除整个卷替代移除挂载点。
 参见 [NetApp 访问权限](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions)
 和[删除卷](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete)。

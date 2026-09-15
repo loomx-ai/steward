@@ -62,6 +62,10 @@ func newNetappFixture(t *testing.T) *netappFixture {
 				object(raw["properties"])["enableSubvolumes"] = "Enabled"
 				object(raw["properties"])["subnetId"] = strings.ToLower(resourceID(vnetType, "network")) + "/subnets/subnet"
 			}
+			if kind.family == "Backups" {
+				object(raw["properties"])["volumeResourceId"] = parents[netappVolumeType]
+				object(raw["properties"])["backupId"] = "32d91255-643d-d8b0-b52e-6990f6813a32"
+			}
 			f.objects[id] = raw
 		}
 	}
@@ -123,7 +127,7 @@ func TestNetappNativeInventory(t *testing.T) {
 			}
 			first := page.Items[0]
 			wire, _ := json.Marshal(first)
-			if strings.Contains(string(wire), "netapp-private-canary") || first.Actionable == nil || *first.Actionable != (kind.kind == netappVolumeType) {
+			if strings.Contains(string(wire), "netapp-private-canary") || first.Actionable == nil || *first.Actionable != (kind.kind == netappVolumeType || netappRecoveryKind(kind.kind)) {
 				t.Fatal("unsafe inventory", string(wire))
 			}
 			if kind.kind == netappVolumeType {
