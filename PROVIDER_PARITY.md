@@ -7216,3 +7216,30 @@ This completes the association-discovery prerequisite, not policy/vault cleanup:
 reviewed unassignment, durable updates and parent deletion remain under work.
 Counts remain 469 specifications, 1,568 operations and 428 cleanup bindings.
 All 159 parity rows and eight acceptance gates remain open.
+
+### NetApp snapshot-policy unassignment and cleanup
+
+Snapshot-policy cleanup now reviews its current volumes, retains those volumes
+and their children, clears each snapshot-policy assignment with a minimal native
+PATCH, and deletes the policy only after independent reads verify unassignment.
+The policy stops scheduling future snapshots; existing data, snapshots, subvolumes,
+quota rules and backup-vault backups remain. New consumers, changed native IDs or
+configuration, protection, another assigned policy and unavailable parents block
+mutation. Stable comparisons exclude only reviewed read-only metadata and the
+specific assignment being removed; unrelated backup settings remain bound.
+
+A separately signed update protocol cannot reuse delete receipts. Each accepted
+update and policy DELETE is saved before another request; successful callbacks
+still wait for own-resource postconditions. The real SQLite worker test restarts
+storage and runtime over a complete 26-asset graph, sends two PATCHes and one DELETE
+once each, and retains 25 assets. Synchronous and asynchronous response tests cover
+lagging own GETs, callback identity changes, UUID mismatch and incomplete reads.
+Native 2025-12-01 schemas and pinned AzureRM clearing logic support the request
+shape; CLI PUT assignment recordings do not prove PATCH unassignment. Identical
+same-name policy recreation without creation metadata remains unobservable.
+
+Azure now has 469 specifications, 1,568 operations and 429 cleanup bindings.
+Backup-policy/vault unassignment, backup state sequencing, account/group cleanup,
+replication and remaining NAS workflows still need implementation and acceptance.
+All 159 parity rows and eight acceptance gates remain open; these are offline
+protocol and application tests, not live Azure completion evidence.

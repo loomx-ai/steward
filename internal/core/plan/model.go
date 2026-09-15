@@ -134,6 +134,7 @@ const (
 	WarningNetappBackupDelete            WarningCode = "netapp_backup_delete"
 	WarningNetappSubvolumeDelete                     = "netapp_subvolume_delete"
 	WarningNetappQuotaDelete                         = "netapp_quota_delete"
+	WarningNetappSnapshotPolicyDelete    WarningCode = "netapp_snapshot_policy_delete"
 	WarningNetappPoolDelete              WarningCode = "netapp_pool_delete"
 	WarningNetappVolumeDelete            WarningCode = "netapp_volume_delete"
 	WarningSynapseRestorePointDelete     WarningCode = "synapse_restore_point_delete"

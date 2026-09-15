@@ -521,6 +521,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			}
 			result.Relationships = append(result.Relationships, contribution.Relationships...)
 			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+			result.Bindings = append(result.Bindings, contribution.Bindings...)
 			continue
 		}
 		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == netappPoolType {

@@ -280,3 +280,28 @@ They distinguish suspended assignments from historical backup policy references.
 A complete 22-asset SQLite graph preserves its earlier observations after failed
 consumer reads. These tests do not implement or demonstrate policy/vault deletion,
 automatic unassignment, or live cloud acceptance.
+
+Snapshot-policy cleanup uses the selected `Volumes_Update` PATCH schema with only
+`properties.dataProtection.snapshot.snapshotPolicyId` set to the empty string.
+A pinned upstream implementation independently uses this shape for removal:
+[AzureRM volume helper](https://github.com/hashicorp/terraform-provider-azurerm/blob/2c9b06e2976765e90af69918b6793fb5b0ca8378/internal/services/netapp/netapp_volume_helper.go#L360),
+called by its volume PATCH update path. Microsoft requires policies to be removed
+from all volumes before policy deletion. This is API/schema and upstream-code
+evidence, not an Azure recording of a PATCH or unassignment. The separately
+retrieved Azure CLI binding recordings use PUT and do not establish unassignment.
+
+Update receipts use a separate `netapp-volume-patch-1` signature bound to the
+volume UUID and region. Status callbacks verify PATCH and the native resource;
+Location resource bodies verify the volume UUID. Completed callbacks still require
+an independent own GET with the same configuration and no policy assignment.
+Delete receipt validation and its signature namespace remain unchanged. Tests
+cover cross-protocol replay, wrong owners/UUIDs/regions, callback changes, expired
+callbacks, invalid acknowledgements and eventual own-read consistency. Root policy
+recreation has no native UUID; creation metadata helps when available but identical
+same-name recreation without it remains unobservable.
+
+A 26-asset SQLite fixture resumes two volume unassignments and one policy deletion
+across database/runtime restarts, retaining 25 assets. Its reviewed plan includes
+the two volumes and their six retained children. Independent volume selection
+still retains its own deletion step and does not select the policy. Both sync and
+async update protocols are tested offline; live Azure acceptance remains open.

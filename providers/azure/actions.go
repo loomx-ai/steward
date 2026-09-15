@@ -78,6 +78,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if dataFactoryKind(kind.NativeType) != "" {
 		return newDataFactoryAction(c, id, value, kind)
 	}
+	if kind.NativeType == netappSnapshotPolicyType {
+		return newNetappSnapshotPolicyAction(c, id, value)
+	}
 	if kind.NativeType == netappPoolType {
 		return newNetappPoolAction(c, id, value)
 	}

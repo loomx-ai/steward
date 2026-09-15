@@ -41,3 +41,10 @@ export const netappPoolDeletionWarning: Record<Locale, string> = {
   "zh-CN":
     "删除此容量池前，将先删除已审查的卷及其数据、快照、子卷和配额规则。继续前，请停止应用并卸载这些卷。NetApp 帐户和备份保管库内的备份将保留。",
 };
+
+export const netappSnapshotPolicyDeletionWarning: Record<Locale, string> = {
+  "en-US":
+    "Deleting this snapshot policy first removes its assignment from the reviewed volumes, stopping future snapshots scheduled by this policy. The volumes, their existing snapshots, subvolumes, quota rules and backup-vault backups are retained.",
+  "zh-CN":
+    "删除此快照策略前，将先解除它与已审查卷的绑定，并停止由此策略安排的后续快照。卷、已有快照、子卷、配额规则和备份保管库内的备份将保留。",
+};

@@ -140,6 +140,7 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 		pools[target] = true
 	}
 	parents := map[string]any{}
+	stablePools := map[string]string{}
 	for _, pool := range slices.Sorted(maps.Keys(pools)) {
 		own, err := c.netappRead(ctx, pool, netappPoolType)
 		if isNotFound(err) && !pools[pool] {
@@ -167,6 +168,7 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 			return nil, false, serviceDenied("netapp_assignment_pool_region_changed")
 		}
 		parents[pool] = c.privateConfiguration(own.data)
+		stablePools[pool] = c.privateConfiguration(netappPoolSnapshot(own.data))
 		rows, err := c.netappIndex(ctx, netappVolumeType, pool)
 		if err != nil {
 			return nil, false, contracts.DependencyReadError(err)
@@ -204,7 +206,7 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 			}
 			continue
 		}
-		consumers[volume] = map[string]any{"configuration": c.privateConfiguration(own.data), "uid": object(own.data["properties"])["fileSystemId"], "pool": parents[redisParentID(volume)]}
+		consumers[volume] = map[string]any{"configuration": c.privateConfiguration(own.data), "uid": object(own.data["properties"])["fileSystemId"], "pool": stablePools[redisParentID(volume)], "detached_configuration": c.privateConfiguration(netappDetachedSnapshotVolume(own.data))}
 	}
 	if kind == netappAccountType+"/backupPolicies" {
 		if value := object(raw["properties"])["volumesAssigned"]; value != nil {
@@ -230,7 +232,7 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 func (r *Runtime) netappAssignmentInventory(ctx context.Context, c *client, req contracts.InventoryRequest, item *contracts.InventoryItem, raw map[string]any) error {
 	id, kind := item.NativeID, item.NativeType
 	known := object(object(req.KnownNativeMetadata[id][netappAssignmentReview])["consumers"])
-	parents, _, region, _, _, err := c.netappRecoveryParents(ctx, id, kind)
+	parents, _, region, protected, ready, err := c.netappRecoveryParents(ctx, id, kind)
 	if err != nil {
 		return err
 	}
@@ -256,7 +258,15 @@ func (r *Runtime) netappAssignmentInventory(ctx context.Context, c *client, req 
 	if complete != laterComplete || c.privateConfiguration(first) != c.privateConfiguration(second) || c.privateConfiguration(own.data) != item.Normalized["_netapp_configuration"] || c.privateConfiguration(parents) != c.privateConfiguration(after) || location != region {
 		return serviceDenied("netapp_assignments_changed")
 	}
-	review := map[string]any{"consumers": first, "native_index_complete": complete, "parents": parents, "region": region, "configuration": item.Normalized["_netapp_configuration"]}
+	review := map[string]any{"consumers": first, "native_index_complete": complete, "parents": parents, "region": region, "configuration": item.Normalized["_netapp_configuration"], "policy_configuration": c.privateConfiguration(hybridComputeChildSnapshot(raw))}
+	if kind == netappSnapshotPolicyType {
+		allowed := ready && !protected && object(raw["properties"])["provisioningState"] == "Succeeded" && !protectedAzureTags(object(raw["tags"])) && text(raw["managedBy"]) == "" && complete
+		item.Actionable = &allowed
+		item.Normalized["cleanup_protected"] = !allowed
+		if allowed {
+			delete(item.Normalized, "cleanup_protection_reason")
+		}
+	}
 	item.Normalized[netappAssignmentReview] = review
 	item.Normalized[netappAssignmentProof] = c.netappAssignmentProofFor(id, req.ConnectionID, review)
 	return nil
@@ -272,7 +282,7 @@ func (c *client) netappAssignmentContribution(parent asset.Asset, assets []asset
 		}
 		result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: kind, NativeID: id, ControllerID: parent.ID, Relationship: graph.RelationshipUses, Evidence: map[string]any{"reason": reason}})
 	}
-	if len(review) != 5 || review["region"] != parent.Location || review["configuration"] != parent.Normalized["_netapp_configuration"] || parent.Normalized[netappAssignmentProof] != c.netappAssignmentProofFor(parent.Identity.NativeID, parent.Identity.ConnectionID, review) {
+	if len(review) != 6 || review["region"] != parent.Location || review["configuration"] != parent.Normalized["_netapp_configuration"] || parent.Normalized[netappAssignmentProof] != c.netappAssignmentProofFor(parent.Identity.NativeID, parent.Identity.ConnectionID, review) {
 		unresolved(parent.Identity.NativeID, "netapp_assignment_review_required")
 		return result, nil
 	}
@@ -294,6 +304,9 @@ func (c *client) netappAssignmentContribution(parent asset.Asset, assets []asset
 		if value.ID == "" || value.Location != parent.Location || value.Normalized["_netapp_configuration"] != entry["configuration"] || value.Normalized["fileSystemId"] != entry["uid"] {
 			unresolved(id, "netapp_assignment_volume_requires_refresh")
 			continue
+		}
+		if parent.Identity.NativeType == netappSnapshotPolicyType {
+			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: value.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipReferenced, CleanupPolicy: graph.CleanupRetain, DirectCleanupAllowed: true, EvidenceSource: "azure:netapp-assignments", Evidence: map[string]any{"resource_type": netappVolumeType, "instance_id": id, "delete_by_default": false, "retention_supported": true}, Confidence: 1})
 		}
 		result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: value.ID, TargetAssetID: parent.ID, Type: graph.RelationshipUses, Source: "azure:netapp-assignments", Evidence: map[string]any{"current_assignment": true}, Confidence: 1})
 	}

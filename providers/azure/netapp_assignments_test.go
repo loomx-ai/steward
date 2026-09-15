@@ -65,7 +65,7 @@ func TestNetappAssignmentInventoryAndKnownConsumers(t *testing.T) {
 				t.Fatal("current disabled assignment lost", review)
 			}
 			wire, _ := json.Marshal(item)
-			if strings.Contains(string(wire), "netapp-private-canary") || item.Actionable == nil || *item.Actionable {
+			if strings.Contains(string(wire), "netapp-private-canary") || item.Actionable == nil || *item.Actionable != (field.kind == netappSnapshotPolicyType) {
 				t.Fatal("unsafe assignment output", string(wire))
 			}
 			known := map[string]map[string]any{id: {netappAssignmentReview: review}}

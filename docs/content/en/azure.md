@@ -398,5 +398,23 @@ policies additionally need their associated-volume list permission. A suspended
 policy or disabled enforcement still counts as an assignment. Historical policy
 IDs stored in backups do not establish current assignments. Unavailable reads
 fail the scan and preserve existing observations. Incomplete native policy indexes
-remain unresolved. Automatic policy/vault unassignment and deletion are still
+remain unresolved. Automatic backup-policy/vault unassignment and deletion are still
 under implementation; the dependency observations do not authorize volume deletion.
+
+
+Snapshot policies support cleanup with their assigned volumes retained. The plan
+lists those volumes and their existing snapshots, subvolumes and quota rules as
+retained impacts. Execution removes the reviewed snapshot-policy assignment from
+each volume, confirms that the assignment is gone, then deletes the policy. Future
+snapshots scheduled by this policy stop; existing volume data, snapshots and vault
+backups remain. Independently selecting a volume still uses its volume cleanup
+workflow and does not select the snapshot policy.
+
+Grant volume update permission and snapshot-policy delete permission in addition
+to the assignment-discovery reads. New consumers, another assigned policy, changed
+volume settings, resource identities, protection or unavailable parents prevent
+mutation. Execution saves each update and deletion receipt across restarts. A
+completed callback is insufficient while the own volume read still shows the old
+assignment or the policy still exists. Snapshot policies expose no native UUID;
+identical same-name recreation without creation metadata cannot be distinguished.
+See [snapshot-policy deletion requirements](https://learn.microsoft.com/en-us/azure/azure-netapp-files/snapshots-manage-policy#delete-a-snapshot-policy).

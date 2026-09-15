@@ -430,3 +430,32 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     );
   });
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  it(`explains NetApp snapshot policy unassignment in ${locale}`, () => {
+    localStorage.setItem(localePreferenceKey, locale);
+    render(
+      <LocaleProvider>
+        <ErrorProbe
+          error={{ code: "netapp_snapshot_policy_delete", message: "fallback" }}
+        />
+      </LocaleProvider>,
+    );
+    const text = screen.getByTestId("error").textContent;
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "解除它与已审查卷的绑定"
+        : "removes its assignment from the reviewed volumes",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "停止由此策略安排的后续快照"
+        : "stopping future snapshots scheduled by this policy",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "备份保管库内的备份将保留"
+        : "backup-vault backups are retained",
+    );
+  });
+}

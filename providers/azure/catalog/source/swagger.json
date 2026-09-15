@@ -273600,7 +273600,9 @@
       "nativeType": "Microsoft.NetApp/netAppAccounts/snapshotPolicies",
       "rest": {
         "collection": "snapshotPolicies",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.SnapshotPolicies_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.NetApp.SnapshotPolicies_List"
         ],
