@@ -1,0 +1,132 @@
+{
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-powershell/0f16fd4a0b915406d3b0de1708942883bf0c0840/src/Synapse/Synapse.Test/SessionRecords/Microsoft.Azure.Commands.Synapse.Test.ScenarioTests.SqlPoolBackupTests/TestSqlPoolRestorePoint.json",
+  "source_sha256": "18f6d43cffd4ec109039078f94d36da9909182536e66ceb6d5b6ef9375d67c42",
+  "recordings": [
+    {
+      "interaction_index": 42,
+      "method": "GET",
+      "uri": "/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints?api-version=2021-06-01",
+      "status": 200,
+      "headers": {
+        "x-ms-request-id": [
+          "81fa7b5b-4082-41ea-a8bd-c8b9ec177858"
+        ],
+        "Content-Length": [
+          "475"
+        ]
+      },
+      "body": "{\r\n  \"value\": [\r\n    {\r\n      \"location\": \"North Europe\",\r\n      \"properties\": {\r\n        \"restorePointType\": \"DISCRETE\",\r\n        \"restorePointCreationDate\": \"2021-09-06T11:41:43Z\",\r\n        \"restorePointLabel\": \"ContosoRestorePoint\"\r\n      },\r\n      \"id\": \"/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints/132754021030000000\",\r\n      \"name\": \"132754021030000000\",\r\n      \"type\": \"Microsoft.Synapse/workspaces/sqlPools/restorePoints\"\r\n    }\r\n  ]\r\n}"
+    },
+    {
+      "interaction_index": 48,
+      "method": "POST",
+      "uri": "/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints?api-version=2021-06-01",
+      "status": 202,
+      "headers": {
+        "Location": [
+          "https://management.azure.com/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/operationResults/sql02ftr-132754021030000000?api-version=2021-06-01"
+        ],
+        "x-ms-request-id": [
+          "70d2fc4c-bb2f-4780-b799-d681cb90d73d"
+        ],
+        "Content-Length": [
+          "0"
+        ]
+      },
+      "body": "",
+      "request_body": {
+        "restorePointLabel": "ContosoRestorePoint"
+      }
+    },
+    {
+      "interaction_index": 54,
+      "method": "GET",
+      "uri": "/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints/132754021030000000?api-version=2021-06-01",
+      "status": 200,
+      "headers": {
+        "x-ms-request-id": [
+          "9699fdb2-b0fc-4b1c-b3cd-d96532e7addd"
+        ],
+        "Content-Length": [
+          "463"
+        ]
+      },
+      "body": "{\r\n  \"location\": \"North Europe\",\r\n  \"properties\": {\r\n    \"restorePointType\": \"DISCRETE\",\r\n    \"restorePointCreationDate\": \"2021-09-06T11:41:43Z\",\r\n    \"restorePointLabel\": \"ContosoRestorePoint\"\r\n  },\r\n  \"id\": \"/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints/132754021030000000\",\r\n  \"name\": \"132754021030000000\",\r\n  \"type\": \"Microsoft.Synapse/workspaces/sqlPools/restorePoints\"\r\n}"
+    },
+    {
+      "interaction_index": 55,
+      "method": "DELETE",
+      "uri": "/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints/132754021030000000?api-version=2021-06-01",
+      "status": 200,
+      "headers": {
+        "x-ms-request-id": [
+          "a6ab954c-7b33-49af-a292-a8c608c2ac06"
+        ],
+        "Content-Length": [
+          "0"
+        ]
+      },
+      "body": ""
+    },
+    {
+      "interaction_index": 58,
+      "method": "GET",
+      "uri": "/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints/132754021670000000?api-version=2021-06-01",
+      "status": 200,
+      "headers": {
+        "x-ms-request-id": [
+          "b27d7ca9-2195-41f6-9d7c-d1c68463e181"
+        ],
+        "Content-Length": [
+          "463"
+        ]
+      },
+      "body": "{\r\n  \"location\": \"North Europe\",\r\n  \"properties\": {\r\n    \"restorePointType\": \"DISCRETE\",\r\n    \"restorePointCreationDate\": \"2021-09-06T11:42:47Z\",\r\n    \"restorePointLabel\": \"ContosoRestorePoint\"\r\n  },\r\n  \"id\": \"/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints/132754021670000000\",\r\n  \"name\": \"132754021670000000\",\r\n  \"type\": \"Microsoft.Synapse/workspaces/sqlPools/restorePoints\"\r\n}"
+    },
+    {
+      "interaction_index": 59,
+      "method": "DELETE",
+      "uri": "/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints/132754021670000000?api-version=2021-06-01",
+      "status": 200,
+      "headers": {
+        "x-ms-request-id": [
+          "06a6cd89-c2ab-408a-8fb3-d2768b2d713f"
+        ],
+        "Content-Length": [
+          "0"
+        ]
+      },
+      "body": ""
+    },
+    {
+      "interaction_index": 62,
+      "method": "GET",
+      "uri": "/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints/132754022000000000?api-version=2021-06-01",
+      "status": 200,
+      "headers": {
+        "x-ms-request-id": [
+          "f2e9607c-79e7-4b4c-acc0-f845eadbb6b4"
+        ],
+        "Content-Length": [
+          "463"
+        ]
+      },
+      "body": "{\r\n  \"location\": \"North Europe\",\r\n  \"properties\": {\r\n    \"restorePointType\": \"DISCRETE\",\r\n    \"restorePointCreationDate\": \"2021-09-06T11:43:20Z\",\r\n    \"restorePointLabel\": \"ContosoRestorePoint\"\r\n  },\r\n  \"id\": \"/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints/132754022000000000\",\r\n  \"name\": \"132754022000000000\",\r\n  \"type\": \"Microsoft.Synapse/workspaces/sqlPools/restorePoints\"\r\n}"
+    },
+    {
+      "interaction_index": 63,
+      "method": "DELETE",
+      "uri": "/subscriptions/051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3/resourceGroups/sql-bk-cmdlet-test-rgps789/providers/Microsoft.Synapse/workspaces/sqlbkwsps789/sqlPools/sqlbkpoolps789/restorePoints/132754022000000000?api-version=2021-06-01",
+      "status": 200,
+      "headers": {
+        "x-ms-request-id": [
+          "c3ef32dd-a006-44af-b763-6d49321dd323"
+        ],
+        "Content-Length": [
+          "0"
+        ]
+      },
+      "body": ""
+    }
+  ]
+}

@@ -7000,7 +7000,32 @@ workers. A failed parent read retains records; a later own absence reconciles
 only the missing backup. SQL-only plan scope remains one independent step.
 
 Azure has 458 specifications, 1,531 unchanged operations and 421 cleanup bindings.
-No backup DELETE binding is enabled. Automatic restore points cannot be deleted
-by users; the `DISCRETE` enum alone is insufficient user-defined evidence. Backup
-restore, user-defined restore-point deletion and full retained lifecycle remain
-unfinished. All 159 parity rows and all eight acceptance criteria remain open.
+At this inventory milestone no backup DELETE binding was enabled. The next
+milestone below adds user-defined point deletion. Automatic restore points remain
+protected; backup restoration and full retained lifecycle remain unfinished. All 159 parity rows and all eight acceptance criteria remain open.
+
+
+### Synapse user-defined restore-point cleanup
+
+Restore points with a DISCRETE type, a nonblank native user-request label and a
+valid creation timestamp now support independent deletion. Two parent reads,
+creation identity, workspace UID, configuration hashes, management locks and
+protected tags bind inventory and the reviewed action. Automatic, unlabeled,
+undated, protected or unavailable points remain nonactionable. Parent-specific
+404 error codes are dependency failures, never evidence that a backup expired.
+
+Pinned Azure PowerShell recordings contain three own GET / empty 200 DELETE
+pairs. The native DELETE contract permits empty 200 or 204; it has no asynchronous
+polling contract. A signed acknowledgement is checkpointed before any follow-up
+read. Independent own absence with unchanged readable, ready parents completes
+the action. A fresh runtime and JSON-restored receipt never replay deletion.
+Deleting a point removes only that recovery option; SQL pools, workspaces and
+other backups remain. The plan displays this warning in English and Chinese.
+
+Tests cover recorded wire acknowledgements, invalid body/LRO responses, system
+backup rejection, changed or missing parents, recreation, forged review/receipt,
+permission failures and actual SQLite scan/plan/execution restarts. These are
+local protocol and worker tests, not live Azure or independent emulator evidence.
+Azure has 458 specifications, 1,531 operations and 422 cleanup bindings. Restoration,
+complete retained lifecycle, all 159 parity rows and all eight acceptance criteria
+remain open.

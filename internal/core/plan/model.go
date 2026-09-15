@@ -130,6 +130,7 @@ type WarningCode string
 const (
 	WarningSynapseWorkspaceDelete        WarningCode = "synapse_workspace_delete"
 	WarningSynapseSQLDelete              WarningCode = "synapse_sql_delete"
+	WarningSynapseRestorePointDelete     WarningCode = "synapse_restore_point_delete"
 	WarningManagedResourceDirectCleanup  WarningCode = "managed_resource_direct_cleanup"
 	WarningManagedByControllerSkipped    WarningCode = "managed_by_controller"
 	WarningNotActionableSkipped          WarningCode = "not_actionable"

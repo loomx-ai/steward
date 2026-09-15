@@ -13,3 +13,10 @@ export const synapseSQLDeletionWarning: Record<Locale, string> = {
   "zh-CN":
     "删除此 SQL 池将移除其数据库，并中断查询及使用方访问。工作区和其他池将保留。SQL 备份可能仍在 Azure 保留期内可恢复，此操作不会清除这些备份。",
 };
+
+export const synapseRestorePointDeletionWarning: Record<Locale, string> = {
+  "en-US":
+    "Deleting this user-defined restore point removes that recovery option. The SQL pool, workspace and other backups are retained.",
+  "zh-CN":
+    "删除此用户还原点将移除对应的恢复选项。SQL 池、工作区和其他备份将保留。",
+};

@@ -267218,7 +267218,9 @@
         "read_operations": [
           "Azure.Microsoft.Synapse.SqlPoolRestorePoints_Get"
         ],
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.Synapse.SqlPoolRestorePoints_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.Synapse.SqlPoolRestorePoints_List"
         ]

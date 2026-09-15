@@ -288,3 +288,27 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     );
   });
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  it(`explains restore-point-only deletion in ${locale}`, () => {
+    localStorage.setItem(localePreferenceKey, locale);
+    render(
+      <LocaleProvider>
+        <ErrorProbe
+          error={{ code: "synapse_restore_point_delete", message: "fallback" }}
+        />
+      </LocaleProvider>,
+    );
+    const text = screen.getByTestId("error").textContent;
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "移除对应的恢复选项"
+        : "removes that recovery option",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "SQL 池、工作区和其他备份将保留"
+        : "SQL pool, workspace and other backups are retained",
+    );
+  });
+}

@@ -320,4 +320,4 @@ Synapse 备份盘点现已包括可恢复的已删除 SQL 池和 SQL 池还原�
 
 需要工作区和 SQL 池列表／读取权限，以及所选备份类型的 `Microsoft.Synapse/workspaces/restorableDroppedSqlPools/read` 和 `Microsoft.Synapse/workspaces/sqlPools/restorePoints/read` 权限。已知记录漏列时会单独读取。父资源缺失或集合不可用会使扫描失败并保留原有记录：已删除工作区可能需要重建后才能查询其保留备份。只有在父级可读时，备份自身不存在的结果才能核销记录。
 
-本阶段新增盘点和查询关联；备份恢复及用户还原点清理仍待完成。自动还原点不能由用户删除，仅 `DISCRETE` 类型不足以证明该点由用户创建或可以删除。参见[Azure 备份保留说明](https://learn.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/backup-and-restore)和[从已删除工作区恢复](https://learn.microsoft.com/en-us/azure/synapse-analytics/backuprestore/restore-sql-pool-from-deleted-workspace)。
+当 Azure 返回 DISCRETE 类型、用户请求标签和有效创建时间时，可独立删除用户还原点。受保护或信息不完整的记录不可清理。删除会移除该恢复选项，SQL 池、工作区及其他备份将保留。Steward 保存删除回执，并在父资源未变更且可读取时独立确认该点已不存在。备份恢复和完整保留生命周期仍待完成。自动还原点不能由用户删除，仅 `DISCRETE` 类型不足以证明该点由用户创建或可以删除。参见[Azure 备份保留说明](https://learn.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/backup-and-restore)和[从已删除工作区恢复](https://learn.microsoft.com/en-us/azure/synapse-analytics/backuprestore/restore-sql-pool-from-deleted-workspace)。

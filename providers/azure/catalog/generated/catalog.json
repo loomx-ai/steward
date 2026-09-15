@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "6525aed40a6e2acbdd5f06ab1224097cf0cb98d254954947a30f94dfe8afedbe",
+    "checksum": "d4f6547ba6a7999a281ee45307ac2e7350eb431fae5a06b186fc54becb829c22",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "86c63181ef3ecd730d0d449bee126138b578fd2bce5e7f483fd6e5ef9cce8667",
+  "content_checksum": "6cadbb32a099b3ed0fb9ad2a9038246c41c1d4fca3ef31b6e095c5a38f38cc76",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -142165,6 +142165,9 @@
         "collection": "restorePoints",
         "read_operations": [
           "Azure.Microsoft.Synapse.SqlPoolRestorePoints_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Synapse.SqlPoolRestorePoints_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.Synapse.SqlPoolRestorePoints_List"

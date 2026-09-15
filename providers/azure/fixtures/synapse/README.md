@@ -215,10 +215,32 @@ SQLite scan/graph persistence with safe failure and subsequent own-absence
 reconciliation. Lookup-scope edges are `connected_to`, not ownership/deletion
 dependencies; SQL-only plans retain backup records.
 
-Restore-point cleanup is not enabled by inventory. The native type enum does not
+The initial backup inventory milestone did not enable restore-point cleanup. The native type enum does not
 by itself establish user ownership; Microsoft documents a system-backup deletion
 error and prohibits user deletion of automatic restore points. Restorable
 dropped pool metadata is not a live database and has no selected DELETE API.
 Native restore and complete backup lifecycle handling still need implementation.
 These tests are local protocol/worker evidence, not live Azure or independent
 emulator acceptance.
+
+
+### User-defined restore-point deletion recordings
+
+`powershell-restorepoint-recordings.json` is extracted by
+`reproduce_restorepoint_recordings.py` from the immutable official Azure PowerShell
+recording identified in its source URI and SHA-256. Pass the original JSON file
+as the script argument for offline reproduction. The eight selected interactions
+retain native response bodies and relevant response headers, excluding request
+credentials. Three own GET / DELETE pairs contain labeled DISCRETE points and
+literal empty 200 acknowledgements. The POST 202 response is creation evidence
+only; it does not establish asynchronous deletion. The selected entries are not
+claimed to be a chronological trace or to contain post-delete own 404 evidence.
+
+The native restorePointLabel schema identifies labels for user backup requests.
+Only a labeled DISCRETE point with a valid creation date is eligible; system
+points and incomplete metadata stay protected. The action accepts empty 200/204
+DELETE acknowledgements and independently verifies own absence with stable ready
+parents. Synthetic fault/restart tests complement the official response evidence;
+they do not claim live acceptance. Parent-specific 404 codes cannot erase backup
+observations. A dedicated SQLite worker test retains both parent pools/workspaces
+and every other backup while completing one selected point deletion.

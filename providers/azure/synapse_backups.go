@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"maps"
 	"slices"
 	"strings"
@@ -76,6 +77,10 @@ func (c *client) backupRead(ctx context.Context, id, kind string) (response, err
 	}
 	res, err := c.request(ctx, "GET", apiURL(id, synapseVersion))
 	if err != nil {
+		var call *contracts.ProviderCallError
+		if isNotFound(err) && errors.As(err, &call) && slices.Contains([]string{"SubscriptionDoesNotHaveServer", "DatabaseDoesNotExist", "SourceDatabaseNotFound", "ParentResourceNotFound", "ResourceGroupNotFound"}, call.Provider.Code) {
+			err = contracts.DependencyReadError(err)
+		}
 		return res, err
 	}
 	if res.status != 200 || res.data["error"] != nil || operationLocation(res.header) != "" {
@@ -344,6 +349,17 @@ func (r *Runtime) listSynapseBackups(ctx context.Context, c *client, req contrac
 		actionable := false
 		safe := map[string]any{"id": id, "type": kind, "name": raw["name"], "location": region, "properties": safeProps}
 		items = append(items, contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}, Name: text(raw["name"]), State: "Retained", Location: region, Tags: map[string]string{}, Raw: safe, Normalized: normalized, NativeAliases: []string{id}, NetworkReferences: network, Actionable: &actionable})
+	}
+	if kind == synapseRestorePointType {
+		for i := range items {
+			if err := r.restorePointInventory(ctx, c, req, &items[i]); err != nil {
+				return batch, err
+			}
+			review := object(items[i].Normalized[synapseRestoreReview])
+			if review["workspace"] != parents[strings.Join(strings.Split(items[i].NativeID, "/")[:9], "/")] || review["pool"] != parents[redisParentID(items[i].NativeID)] {
+				return batch, serviceDenied("synapse_restore_point_inventory_parent_changed")
+			}
+		}
 	}
 	boundary := req
 	boundary.Cursor, boundary.Limit = "", 0

@@ -75,3 +75,14 @@ relationships:
 - type: connected_to
   targetType: Microsoft.Synapse/workspaces/sqlPools
   targetIdPath: refs_microsoft_synapse_workspaces_sqlpools
+
+actions:
+  delete:
+    operation: Azure.Microsoft.Synapse.SqlPoolRestorePoints_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Synapse.SqlPoolRestorePoints_Get
+      itemsPath: $
+      identityPath: id

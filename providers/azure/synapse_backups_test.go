@@ -97,7 +97,7 @@ func TestSynapseBackupInventoryAndKnownAbsence(t *testing.T) {
 				t.Fatal(first, err)
 			}
 			item := first.Items[0]
-			if item.Actionable == nil || *item.Actionable || item.State != "Retained" || first.RequestID != "backup-own-request" {
+			if item.Actionable == nil || *item.Actionable != (kind == synapseRestorePointType) || item.State != "Retained" || first.RequestID != "backup-own-request" {
 				t.Fatal(item)
 			}
 			raw, _ := json.Marshal(item)
@@ -337,5 +337,34 @@ func TestSynapseBackupOptionalDates(t *testing.T) {
 				t.Fatal("malformed native date accepted")
 			}
 		})
+	}
+}
+
+func TestSynapseBackupParentErrorCodesNeverErase(t *testing.T) {
+	for _, kind := range []string{synapseRestorePointType, synapseDroppedType} {
+		for _, code := range []string{"SubscriptionDoesNotHaveServer", "DatabaseDoesNotExist", "SourceDatabaseNotFound", "ParentResourceNotFound", "ResourceGroupNotFound"} {
+			t.Run(kind+"/"+code, func(t *testing.T) {
+				f := newSynapseBackupFixture(t)
+				req := backupRequest(f.runtime, kind)
+				req.Scope = asset.Scope{Kind: asset.ScopeRegion, NativeID: "eastus"}
+				batch, err := f.runtime.List(t.Context(), req)
+				if err != nil || len(batch.Items) != 1 {
+					t.Fatal(batch, err)
+				}
+				id := batch.Items[0].NativeID
+				req.KnownNativeIDs = []string{id}
+				f.hidden[id] = true
+				f.intercepted = func(q *http.Request) (*http.Response, bool) {
+					if strings.EqualFold(q.URL.Path, id) {
+						return jsonResponse(404, map[string]any{"error": map[string]any{"code": code}}, nil), true
+					}
+					return nil, false
+				}
+				failed, err := f.runtime.List(t.Context(), req)
+				if err == nil || isNotFound(err) || failed.Complete || len(failed.AbsentNativeIDs) != 0 {
+					t.Fatal("parent error erased backup", failed, err)
+				}
+			})
+		}
 	}
 }
