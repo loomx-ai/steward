@@ -60,6 +60,23 @@ func (r *Runtime) netappGroupInventory(ctx context.Context, c *client, req contr
 	if !complete || c.privateConfiguration(members) != c.privateConfiguration(after) {
 		return serviceDenied("netapp_group_members_changed")
 	}
+	knownInterfaces := object(object(object(req.KnownNativeMetadata[id][netappGroupReview])["network"])["interfaces"])
+	network, err := c.netappGroupNetwork(ctx, region, members, knownInterfaces)
+	if err != nil {
+		return err
+	}
+	interfaceHints := maps.Clone(knownInterfaces)
+	if interfaceHints == nil {
+		interfaceHints = map[string]any{}
+	}
+	maps.Copy(interfaceHints, object(network["interfaces"]))
+	laterNetwork, err := c.netappGroupNetwork(ctx, region, members, interfaceHints)
+	if err != nil {
+		return err
+	}
+	if c.privateConfiguration(network) != c.privateConfiguration(laterNetwork) {
+		return serviceDenied("netapp_group_network_changed")
+	}
 	own, err := c.netappRead(ctx, id, netappGroupType)
 	if err != nil {
 		return err
@@ -71,7 +88,7 @@ func (r *Runtime) netappGroupInventory(ctx context.Context, c *client, req contr
 	if c.privateConfiguration(own.data) != item.Normalized["_netapp_configuration"] || c.privateConfiguration(parents) != c.privateConfiguration(later) || other != region {
 		return serviceDenied("netapp_group_context_changed")
 	}
-	review := map[string]any{"members": members, "parents": parents, "region": region, "configuration": item.Normalized["_netapp_configuration"]}
+	review := map[string]any{"members": members, "parents": parents, "region": region, "configuration": item.Normalized["_netapp_configuration"], "network": network}
 	item.Normalized[netappGroupReview], item.Normalized[netappGroupProof] = review, c.netappGroupProofFor(id, req.ConnectionID, review)
 	// Group deletion also removes service-managed NICs. Membership alone cannot
 	// authorize that cascade; keep the group protected until those effects are modeled.
@@ -83,7 +100,7 @@ func (c *client) netappGroupContribution(parent asset.Asset, assets []asset.Asse
 		out.Unresolved = append(out.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: netappVolumeType, NativeID: id, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, BlocksCleanup: true, Evidence: map[string]any{"reason": reason}})
 	}
 	review := object(parent.Normalized[netappGroupReview])
-	if len(review) != 4 || parent.Identity.Partition != "azure" || c.netappIdentity(parent.Identity.NativeID, netappGroupType) != nil || review["configuration"] != parent.Normalized["_netapp_configuration"] || review["region"] != parent.Location || parent.Normalized[netappGroupProof] != c.netappGroupProofFor(parent.Identity.NativeID, parent.Identity.ConnectionID, review) {
+	if len(review) != 5 || object(review["network"]) == nil || parent.Identity.Partition != "azure" || c.netappIdentity(parent.Identity.NativeID, netappGroupType) != nil || review["configuration"] != parent.Normalized["_netapp_configuration"] || review["region"] != parent.Location || parent.Normalized[netappGroupProof] != c.netappGroupProofFor(parent.Identity.NativeID, parent.Identity.ConnectionID, review) {
 		unresolved(parent.Identity.NativeID, "netapp_group_requires_refresh")
 		return out, nil
 	}

@@ -502,3 +502,19 @@ themselves establish a workload attachment. Cleanup rereads the interface, so a
 workload appearing after inventory blocks execution. This metadata does not grant
 any controller permission to delete the NIC. NetApp group ownership and automatic
 interface deletion still require their own reviewed lifecycle implementation.
+
+
+Group inventory now records NIC correlations from complete subscription-wide NIC
+lists and independent interface reads. It combines the primary sibling-set IPs
+with every available volume mount target, then verifies matching subnet/IP pairs,
+native interface GUIDs and linked workload IDs in two passes. Grant
+`Microsoft.Network/networkInterfaces/read` across the connection subscription.
+Previously observed interfaces remain own-read hints when omitted by the list.
+Unavailable or changing reads fail the group scan and retain its prior review.
+
+Absent mount metadata or interface matches, missing native GUIDs, unknown/shared
+workloads and transitional interfaces leave the correlation incomplete. Only
+canonical linked volume IDs are retained; arbitrary workload values and private
+NIC fields are excluded. Correlation does not prove exclusive group ownership or
+authorize deletion. Groups remain protected while interface lifecycle effects are
+implemented. Existing four-field group reviews require a refreshed scan.

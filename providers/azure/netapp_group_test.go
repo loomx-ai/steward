@@ -196,14 +196,21 @@ func TestNetappGroupWorkerGraphAndFailedRescan(t *testing.T) {
 			}
 		})
 	}
-	f.override = func(q *http.Request) (*http.Response, bool) {
-		if strings.EqualFold(q.URL.Path, volume) {
-			return jsonResponse(503, nil, nil), true
+	for _, failed := range []string{volume, "/subscriptions/" + testSubscription + "/providers/microsoft.network/networkinterfaces"} {
+		f.override = func(q *http.Request) (*http.Response, bool) {
+			if strings.EqualFold(q.URL.Path, failed) {
+				return jsonResponse(503, nil, nil), true
+			}
+			return fleetGraphEmptyIndexes(t, q)
 		}
-		return fleetGraphEmptyIndexes(t, q)
-	}
-	after := azureNativeWorkerScan(t, f.runtime, netappSource, repo, registry, []string{netappGroupType}, true, true)
-	if len(after) != len(values) {
-		t.Fatal("failed group rescan removed resources")
+		after := azureNativeWorkerScan(t, f.runtime, netappSource, repo, registry, []string{netappGroupType}, true, true)
+		if len(after) != len(values) {
+			t.Fatal("failed group rescan removed resources")
+		}
+		for _, observed := range after {
+			if observed.ID == group.ID && observed.Normalized[netappGroupProof] != group.Normalized[netappGroupProof] {
+				t.Fatal("failed network read replaced group review")
+			}
+		}
 	}
 }

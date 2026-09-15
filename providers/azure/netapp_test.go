@@ -86,6 +86,10 @@ func newNetappFixture(t *testing.T) *netappFixture {
 			}
 		}
 		path := strings.ToLower(q.URL.Path)
+		if q.Method == "GET" && path == "/subscriptions/"+testSubscription+"/providers/microsoft.network/networkinterfaces" && q.URL.Query().Get("api-version") == "2024-05-01" {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
+
 		if q.Method == "POST" && strings.HasSuffix(path, "/querynetworksiblingset") && q.URL.Query().Get("api-version") == netappVersion {
 			var body map[string]any
 			if json.NewDecoder(q.Body).Decode(&body) != nil || len(body) != 2 {

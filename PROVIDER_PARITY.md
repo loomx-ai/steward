@@ -7382,3 +7382,27 @@ This is a protection prerequisite, not NetApp group cleanup support. NIC identit
 verified group ownership, shared-interface effects and own absence after native
 group deletion remain unfinished. Counts stay 469 specs / 1,570 operations / 431
 cleanup bindings. All 159 parity rows and eight completion gates remain open.
+
+
+### NetApp group primary and secondary interface correlation
+
+Group inventory now has a signed fifth review field for native network evidence.
+Repeated volume own reads and sibling-set queries supply primary mount IPs;
+validated own mount targets add secondary IPv4 addresses. Complete native NIC
+ListAll pagination supplies candidates, and each candidate is read independently.
+Matching subnet/IP pairs, native NIC GUIDs and canonical hosted workload IDs are
+recorded under private configuration hashes. Missing UUIDs/targets/interfaces,
+unknown/shared workloads and transitional state keep the correlation incomplete.
+Correlation is not exclusive ownership and does not enable group deletion.
+
+Two passes reject changing interface identities/configuration, ambiguous IPs or
+GUIDs, malformed addresses and unavailable reads. Old interface hints survive
+index omissions, including a 404/reappearance between passes. Private NIC fields
+and unqualified workload strings are not persisted. HTTP tests cover primary and
+secondary NICs, pagination with stale list payloads, incomplete evidence and fault
+responses; the SQLite group rescan test preserves prior observations and proof
+when the NIC index becomes unavailable. Old four-field group proofs need refresh.
+
+Counts remain 469 specs / 1,570 operations / 431 cleanup bindings. Group/account
+cleanup and interface deletion effects remain unfinished. All 159 parity rows and
+eight acceptance gates remain open; these tests do not establish live acceptance.
