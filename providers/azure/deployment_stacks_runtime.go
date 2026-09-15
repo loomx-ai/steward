@@ -53,6 +53,7 @@ func (r *Runtime) deploymentStackSnapshot(ctx context.Context, c *client, req co
 	items := []contracts.InventoryItem{}
 	absent := []string{}
 	for _, scope := range ordered {
+		groupLocation := ""
 		if !strings.EqualFold(scope, c.root()) {
 			res, err := c.request(ctx, "GET", apiURL(scope, resourcesVersion))
 			if err != nil {
@@ -75,6 +76,7 @@ func (r *Runtime) deploymentStackSnapshot(ctx context.Context, c *client, req co
 			if res.status != 200 || !strings.EqualFold(text(res.data["id"]), scope) || !strings.EqualFold(text(res.data["type"]), groupType) || res.data["error"] != nil || operationLocation(res.header) != "" {
 				return nil, nil, serviceDenied("invalid_deployment_stack_group_read")
 			}
+			groupLocation = text(res.data["location"])
 		}
 		rows, gone, err := c.deploymentStackInventory(ctx, scope, scopes[scope])
 		if err != nil {
@@ -84,11 +86,17 @@ func (r *Runtime) deploymentStackSnapshot(ctx context.Context, c *client, req co
 		for _, raw := range rows {
 			id := strings.ToLower(text(raw["id"]))
 			state := text(object(raw["properties"])["provisioningState"])
+			location := text(raw["location"])
+			if location == "" {
+				// Resource-group stack GETs can omit location. Use the current
+				// parent GET, never the group index or a cached creation response.
+				location = groupLocation
+			}
 			safe := object(deploymentStackSafeValue(raw))
 			normalized := map[string]any{"name": last(id), "state": state, "subscriptionId": c.subscription, "scope_id": scope, "_inventory_source": deploymentStackSource, "_deployment_stack_review": raw["_deployment_stack_review"], "cleanup_protected": true, "cleanup_protection_reason": "deployment_stack_cleanup_not_implemented"}
 			normalized[deploymentStackProofKey] = c.deploymentStackProof(id, req.ConnectionID, object(raw[deploymentStackReviewKey]))
 			actionable := false
-			items = append(items, contracts.InventoryItem{NativeID: id, NativeType: deploymentStackType, ResourceKind: r.resourceKind(deploymentStackType), Name: last(id), State: state, Location: text(raw["location"]), Scope: contracts.InventoryScope{Kind: asset.ScopeGlobal, NativeID: c.subscription + "/global", Name: "Global"}, Normalized: normalized, Raw: safe, NativeAliases: []string{id}, Actionable: &actionable})
+			items = append(items, contracts.InventoryItem{NativeID: id, NativeType: deploymentStackType, ResourceKind: r.resourceKind(deploymentStackType), Name: last(id), State: state, Location: location, Scope: contracts.InventoryScope{Kind: asset.ScopeGlobal, NativeID: c.subscription + "/global", Name: "Global"}, Normalized: normalized, Raw: safe, NativeAliases: []string{id}, Actionable: &actionable})
 		}
 	}
 	sort.Slice(items, func(i, j int) bool { return items[i].NativeID < items[j].NativeID })

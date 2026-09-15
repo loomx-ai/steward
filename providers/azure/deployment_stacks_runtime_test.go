@@ -12,11 +12,14 @@ import (
 )
 
 type stackRuntimeFixture struct {
-	runtime *Runtime
-	fault   string
-	reads   int
-	hidden  bool
-	members map[string][]any
+	runtime       *Runtime
+	fault         string
+	reads         int
+	hidden        bool
+	members       map[string][]any
+	groupLocation string
+	stackLocation string
+	groupReads    int
 }
 
 func newStackRuntimeFixture(t *testing.T) *stackRuntimeFixture {
@@ -32,17 +35,22 @@ func newStackRuntimeFixture(t *testing.T) *stackRuntimeFixture {
 			if f.fault == "group_index" {
 				return jsonResponse(403, map[string]any{}, nil), nil
 			}
-			rows := []any{map[string]any{"id": group, "type": groupType}}
+			rows := []any{map[string]any{"id": group, "type": groupType, "location": "staleindexregion"}}
 			if f.hidden {
 				rows = []any{}
 			}
 			return jsonResponse(200, map[string]any{"value": rows}, nil), nil
 		}
 		if path == group {
+			f.groupReads++
 			if f.fault == "group_missing" {
 				return jsonResponse(404, map[string]any{}, nil), nil
 			}
-			return jsonResponse(200, map[string]any{"id": group, "type": groupType}, nil), nil
+			location := f.groupLocation
+			if f.fault == "group_location_drift" && f.groupReads > 1 {
+				location = "eastus"
+			}
+			return jsonResponse(200, map[string]any{"id": group, "type": groupType, "location": location}, nil), nil
 		}
 		if strings.HasSuffix(path, "/providers/microsoft.resources/deploymentstacks") {
 			if f.fault == "stack_index" {
@@ -65,7 +73,7 @@ func newStackRuntimeFixture(t *testing.T) *stackRuntimeFixture {
 			if members == nil {
 				members = []any{}
 			}
-			return jsonResponse(200, map[string]any{"id": path, "type": deploymentStackType, "name": "stack", "properties": map[string]any{"provisioningState": state, "resources": members, "parameters": map[string]any{"value": secret}}}, nil), nil
+			return jsonResponse(200, map[string]any{"id": path, "type": deploymentStackType, "name": "stack", "location": f.stackLocation, "properties": map[string]any{"provisioningState": state, "resources": members, "parameters": map[string]any{"value": secret}}}, nil), nil
 		}
 		t.Fatalf("unexpected path %s", path)
 		return nil, nil
@@ -214,4 +222,51 @@ func TestDeploymentStackResourceOperationScopes(t *testing.T) {
 			t.Fatal("unapproved scope accepted")
 		}
 	}
+}
+
+func TestDeploymentStackRuntimeParentLocation(t *testing.T) {
+	for _, own := range []string{"", "westus2"} {
+		t.Run("own_"+own, func(t *testing.T) {
+			f := newStackRuntimeFixture(t)
+			f.groupLocation, f.stackLocation = "westcentralus", own
+			req := stackRuntimeRequest(f.runtime)
+			batch, err := f.runtime.List(context.Background(), req)
+			if err != nil || !batch.Complete || len(batch.Items) != 2 {
+				t.Fatal(batch, err)
+			}
+			for _, item := range batch.Items {
+				want := own
+				if strings.Contains(item.NativeID, "/resourcegroups/") && own == "" {
+					want = f.groupLocation
+				}
+				if item.Location != want {
+					t.Fatalf("%s: got location %q, want %q", item.NativeID, item.Location, want)
+				}
+			}
+		})
+	}
+	t.Run("between_snapshots", func(t *testing.T) {
+		f := newStackRuntimeFixture(t)
+		f.groupLocation, f.fault = "westcentralus", "group_location_drift"
+		batch, err := f.runtime.List(context.Background(), stackRuntimeRequest(f.runtime))
+		if err == nil || batch.Complete || len(batch.Items) != 0 {
+			t.Fatal("parent location drift accepted", batch, err)
+		}
+	})
+	t.Run("between_pages", func(t *testing.T) {
+		f := newStackRuntimeFixture(t)
+		f.groupLocation = "westcentralus"
+		req := stackRuntimeRequest(f.runtime)
+		req.Limit = 1
+		batch, err := f.runtime.List(context.Background(), req)
+		if err != nil || batch.NextCursor == "" {
+			t.Fatal(batch, err)
+		}
+		req.Cursor = batch.NextCursor
+		f.groupLocation = "eastus"
+		batch, err = f.runtime.List(context.Background(), req)
+		if err == nil || batch.Complete || len(batch.Items) != 0 {
+			t.Fatal("cursor survived parent location drift", batch, err)
+		}
+	})
 }

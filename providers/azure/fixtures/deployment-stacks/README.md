@@ -124,3 +124,11 @@ responses through the client; the management-group episode and the episode using
 Legacy operation-result diagnostics also discard unexpected private payloads.
 These primitives are not yet wired to a cleanup action, and poll completion does
 not claim that the stack or its members are absent.
+
+Resource-group stack inventory now fills an omitted stack location from the
+current parent resource-group GET. It does not borrow a subscription location or
+trust the resource-group index's location. A supplied stack location takes
+precedence. Both snapshot comparison and persisted pagination cursors cover the
+resolved location, so parent-location drift invalidates an incomplete scan.
+Missing location remains missing; this inventory fallback is not authorization
+for a deletion callback, which still requires execution-time scope revalidation.
