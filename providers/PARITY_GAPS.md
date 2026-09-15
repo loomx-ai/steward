@@ -243,3 +243,25 @@ preflight/closure, parent deletion and final member readback, including access
 failures, changed configuration, changed receipts and reappearing children.
 Complete Stack orchestration, graph registration and acceptance remain open;
 this does not close any of the 159 parity rows or eight overall gates.
+
+### Stack final product readback (2026-09-16)
+
+Final Stack observation now joins its authenticated native operation and ARM
+outcomes with the actual product Readback for every reviewed deleted member.
+Completed independent member checkpoints are authenticated before native reads
+and restore the exact product request, including completed prerequisites. Native
+cascading without a member checkpoint leaves ExecutionResult absent, so product
+readers retain their own requirements for operation evidence or residual reads;
+no member operation is invented from a Stack receipt. Product readback and own
+GET must both establish absence. A second ARM outcome pass catches Stack
+recreation and retained-resource loss during product reads.
+
+Protocol tests cover completed member JSON recovery, native cascading, pending
+or failed Stack operations, lingering products despite ARM absence, forbidden
+product reads, changed receipts, Stack recreation and lost retained groups.
+Dedicated-host parent/child execution tests now continue through final readback
+after Stack disappearance for both product and flat Stack controllers. Completed
+native receipts still trigger fresh product and retained-resource observations.
+ProductsReconciled is not a final action completion certificate: deny-assignment
+release, complete orchestration and graph/action registration remain open, as do
+all 159 parity rows and eight overall gates.

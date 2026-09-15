@@ -228,6 +228,12 @@ func (c *client) deploymentStackMemberExecutionResult(req contracts.ActionReques
 // only the requested member's result, never absence of its whole controller tree.
 func (c *client) deploymentStackMemberReadback(ctx context.Context, member contracts.ActionRequest, driver contracts.ActionDriver, result contracts.ActionResult) (contracts.ReadbackResult, error) {
 	member.ExecutionResult = &result
+	return c.deploymentStackProductReadback(ctx, member, driver)
+}
+
+// A native Stack cascade has no independent member execution result. Preserve
+// that distinction so each product can require its own receipt where necessary.
+func (c *client) deploymentStackProductReadback(ctx context.Context, member contracts.ActionRequest, driver contracts.ActionDriver) (contracts.ReadbackResult, error) {
 	read, err := driver.Readback(ctx, member)
 	if err != nil {
 		return contracts.ReadbackResult{}, err

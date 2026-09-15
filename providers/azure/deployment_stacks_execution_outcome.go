@@ -33,12 +33,19 @@ func (c *client) deploymentStackObserveExecution(ctx context.Context, req contra
 	if err != nil {
 		return out, err
 	}
-	out.ResourcesReconciled = out.Operation.Done && out.Outcome.StackAbsent
+	out.ResourcesReconciled = deploymentStackResourcesReconciled(req, out.Operation, out.Outcome)
+	return out, nil
+}
+
+func deploymentStackResourcesReconciled(req contracts.ActionRequest, operation contracts.WaitResult, outcome deploymentStackOutcome) bool {
+	if !operation.Done || !outcome.StackAbsent {
+		return false
+	}
 	for _, impact := range req.LifecycleImpacts {
-		absent, observed := out.Outcome.MembersAbsent[impact.Asset.ID]
+		absent, observed := outcome.MembersAbsent[impact.Asset.ID]
 		if !observed || impact.Delete != absent {
-			out.ResourcesReconciled = false
+			return false
 		}
 	}
-	return out, nil
+	return true
 }

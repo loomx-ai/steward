@@ -38,6 +38,7 @@ func testDeploymentStackCompletedPrerequisitePreflight(t *testing.T, flat bool) 
 				properties["resources"] = append(properties["resources"].([]any), map[string]any{"id": child.Identity.NativeID, "status": "managed", "denyStatus": "none"})
 			}
 			gone, active, parentGone, executingParent := false, false, false, false
+			stackGone := false
 			parentDeletes := 0
 			deletes, calls, parentReads, childReads, lists := 0, 0, 0, 0, 0
 			r := protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
@@ -58,6 +59,9 @@ func testDeploymentStackCompletedPrerequisitePreflight(t *testing.T, flat bool) 
 				}
 				switch path := strings.ToLower(q.URL.Path); path {
 				case req.Asset.Identity.NativeID:
+					if stackGone {
+						return jsonResponse(404, map[string]any{}, nil), nil
+					}
 					return jsonResponse(200, root, nil), nil
 				case parent.Identity.NativeID:
 					if q.Method == "DELETE" {
@@ -288,6 +292,15 @@ func testDeploymentStackCompletedPrerequisitePreflight(t *testing.T, flat bool) 
 				closure, err = r.deploymentStackObserveServiceClosureWithProgress(t.Context(), req, deploymentStackProgress{Executions: []map[string]any{saved, out.Data}})
 				if err != nil || len(closure.Parents)+len(closure.DirectChildren) != 0 {
 					t.Fatal("completed parent was enumerated as an active service", closure, err)
+				}
+				stackGone = true
+				nativeReceipt, err := c.deploymentStackExecutionReceipt(req, "eastus", response{status: 204})
+				if err != nil {
+					t.Fatal(err)
+				}
+				final, err := r.deploymentStackObserveProductOutcome(t.Context(), req, "eastus", nativeReceipt, saved, out.Data)
+				if err != nil || !final.ProductsReconciled || len(final.Products) != 2 || parentDeletes != 1 || deletes != 1 {
+					t.Fatal("final product readback lost parent prerequisite context", final, err)
 				}
 				after, _ = json.Marshal(req)
 				if string(before) != string(after) {
