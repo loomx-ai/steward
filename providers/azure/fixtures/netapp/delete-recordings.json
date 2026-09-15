@@ -1,0 +1,187 @@
+{
+  "api_version": "2025-12-01",
+  "source_ref": "ea185727729efc032ad9d4eef9ec355ee74ebaae",
+  "redactions": "Only t, c, s, h URL query values are replaced with redacted-<key>. Request headers are omitted. Response bodies and selected protocol headers are otherwise unchanged. Indices are zero-based. Volume recording uses forceDelete=true; it establishes polling behavior, not ordinary volume cascade semantics. No recording proves own-resource absence.",
+  "recordings": [
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/ea185727729efc032ad9d4eef9ec355ee74ebaae/src/azure-cli/azure/cli/command_modules/netappfiles/tests/latest/recordings/test_create_delete_volumes.yaml",
+      "source_sha256": "e9a5fbb664b1f859c4c2057c899ca90c426c5a5b146cedee1f78a977db04b173",
+      "interactions": [
+        {
+          "index": 37,
+          "method": "DELETE",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004?forceDelete=true&api-version=2025-12-01",
+          "status": 202,
+          "headers": {
+            "azure-asyncoperation": [
+              "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/1b99d7ee-6146-4a14-9b51-ad4c85315a76?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h"
+            ],
+            "location": [
+              "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/1b99d7ee-6146-4a14-9b51-ad4c85315a76?api-version=2025-12-01&operationResultResponseType=Location&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "index": 38,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/1b99d7ee-6146-4a14-9b51-ad4c85315a76?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/1b99d7ee-6146-4a14-9b51-ad4c85315a76\",\"name\":\"1b99d7ee-6146-4a14-9b51-ad4c85315a76\",\"status\":\"Deleting\",\"startTime\":\"2026-03-03T17:27:56.8584348Z\",\"endTime\":\"0001-01-01T00:00:00Z\",\"percentComplete\":0.0,\"properties\":{\"resourceName\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004\",\"action\":\"DELETE\"}}"
+        },
+        {
+          "index": 74,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/1b99d7ee-6146-4a14-9b51-ad4c85315a76?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/1b99d7ee-6146-4a14-9b51-ad4c85315a76\",\"name\":\"1b99d7ee-6146-4a14-9b51-ad4c85315a76\",\"status\":\"Succeeded\",\"startTime\":\"2026-03-03T17:27:56.8584348Z\",\"endTime\":\"2026-03-03T17:46:28.6599404Z\",\"percentComplete\":100.0,\"properties\":{\"resourceName\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004\",\"action\":\"DELETE\"}}"
+        },
+        {
+          "index": 75,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/1b99d7ee-6146-4a14-9b51-ad4c85315a76?api-version=2025-12-01&operationResultResponseType=Location&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {},
+          "body": ""
+        }
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/ea185727729efc032ad9d4eef9ec355ee74ebaae/src/azure-cli/azure/cli/command_modules/netappfiles/tests/latest/recordings/test_create_delete_backup.yaml",
+      "source_sha256": "0e3fdbedf9da3e0cd9651753bcea87d1b54bade67a0910c158babf2d5f0c4160",
+      "interactions": [
+        {
+          "index": 79,
+          "method": "DELETE",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_backup_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/backupVaults/cli-backupvault-000006/backups/cli-backup-000005?api-version=2025-12-01",
+          "status": 202,
+          "headers": {
+            "azure-asyncoperation": [
+              "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/897800a5-5243-41e5-9ed2-149c990079c0?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h"
+            ],
+            "location": [
+              "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/897800a5-5243-41e5-9ed2-149c990079c0?api-version=2025-12-01&operationResultResponseType=Location&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "index": 80,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/897800a5-5243-41e5-9ed2-149c990079c0?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/897800a5-5243-41e5-9ed2-149c990079c0\",\"name\":\"897800a5-5243-41e5-9ed2-149c990079c0\",\"status\":\"Deleting\",\"startTime\":\"2026-03-02T16:55:47.5724487Z\",\"endTime\":\"0001-01-01T00:00:00Z\",\"percentComplete\":0.0,\"properties\":{\"resourceName\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_backup_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/backupVaults/cli-backupvault-000006/backups/cli-backup-000005\",\"action\":\"DELETE\"}}"
+        },
+        {
+          "index": 82,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/897800a5-5243-41e5-9ed2-149c990079c0?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/897800a5-5243-41e5-9ed2-149c990079c0\",\"name\":\"897800a5-5243-41e5-9ed2-149c990079c0\",\"status\":\"Succeeded\",\"startTime\":\"2026-03-02T16:55:47.5724487Z\",\"endTime\":\"2026-03-02T16:56:20.0140561Z\",\"percentComplete\":100.0,\"properties\":{\"resourceName\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_backup_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/backupVaults/cli-backupvault-000006/backups/cli-backup-000005\",\"action\":\"DELETE\"}}"
+        },
+        {
+          "index": 83,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/897800a5-5243-41e5-9ed2-149c990079c0?api-version=2025-12-01&operationResultResponseType=Location&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {},
+          "body": ""
+        }
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/ea185727729efc032ad9d4eef9ec355ee74ebaae/src/azure-cli/azure/cli/command_modules/netappfiles/tests/latest/recordings/test_create_delete_pool.yaml",
+      "source_sha256": "3d1d176950a75fa578e554110e111cfb5cce5de678ff17ba3cc5460bf9d40522",
+      "interactions": [
+        {
+          "index": 7,
+          "method": "DELETE",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_pool_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003?api-version=2025-12-01",
+          "status": 202,
+          "headers": {
+            "azure-asyncoperation": [
+              "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/c0d3269e-6e3a-417e-8646-907a0d4681af?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h"
+            ],
+            "location": [
+              "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/c0d3269e-6e3a-417e-8646-907a0d4681af?api-version=2025-12-01&operationResultResponseType=Location&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "index": 8,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/c0d3269e-6e3a-417e-8646-907a0d4681af?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/c0d3269e-6e3a-417e-8646-907a0d4681af\",\"name\":\"c0d3269e-6e3a-417e-8646-907a0d4681af\",\"status\":\"Succeeded\",\"startTime\":\"2026-03-02T13:14:10.4928567Z\",\"endTime\":\"2026-03-02T13:14:10.7625419Z\",\"percentComplete\":100.0,\"properties\":{\"resourceName\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_pool_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003\",\"action\":\"DELETE\"}}"
+        },
+        {
+          "index": 9,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/c0d3269e-6e3a-417e-8646-907a0d4681af?api-version=2025-12-01&operationResultResponseType=Location&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {},
+          "body": ""
+        }
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/ea185727729efc032ad9d4eef9ec355ee74ebaae/src/azure-cli/azure/cli/command_modules/netappfiles/tests/latest/recordings/test_subvolume_crud.yaml",
+      "source_sha256": "0ab3382b790841777ad6cab0b3d7a7c5348f6611296f6aa9d565d339005893e7",
+      "interactions": [
+        {
+          "index": 45,
+          "method": "DELETE",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_subvolume_crud_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/subvolumes/cli-sub-vol-000005?api-version=2025-12-01",
+          "status": 202,
+          "headers": {
+            "azure-asyncoperation": [
+              "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/fcb62628-daf0-4adc-9499-4648fe87b303?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h"
+            ],
+            "location": [
+              "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/fcb62628-daf0-4adc-9499-4648fe87b303?api-version=2025-12-01&operationResultResponseType=Location&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h"
+            ]
+          },
+          "body": ""
+        },
+        {
+          "index": 46,
+          "method": "GET",
+          "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/fcb62628-daf0-4adc-9499-4648fe87b303?api-version=2025-12-01&t=redacted-t&c=redacted-c&s=redacted-s&h=redacted-h",
+          "status": 200,
+          "headers": {
+            "content-type": [
+              "application/json; charset=utf-8"
+            ]
+          },
+          "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/operationResults/fcb62628-daf0-4adc-9499-4648fe87b303\",\"name\":\"fcb62628-daf0-4adc-9499-4648fe87b303\",\"status\":\"Succeeded\",\"startTime\":\"2026-03-03T17:00:50.6922368Z\",\"endTime\":\"2026-03-03T17:00:50.8534603Z\",\"percentComplete\":100.0,\"properties\":{\"resourceName\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_subvolume_crud_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/subvolumes/cli-sub-vol-000005\",\"action\":\"DELETE\"}}"
+        }
+      ]
+    }
+  ]
+}

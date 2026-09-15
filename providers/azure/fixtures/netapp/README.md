@@ -74,3 +74,27 @@ only the declared parameters. They do not modify fixtures or expand the API:
 Every retained example's declared request binds against the generated catalog.
 In particular ListReplications remains POST with its declared optional body,
 whereas the two GET operations above do not acquire a body from their examples.
+
+## Native deletion polling
+
+`delete-recordings.json` extracts 13 interactions from four Azure CLI recordings
+at commit `ea185727729efc032ad9d4eef9ec355ee74ebaae`, all using API `2025-12-01`.
+Each extraction retains the original source URL, whole-source SHA-256 and
+zero-based interaction indices. Bodies are unchanged; request headers are omitted
+and only the `t`, `c`, `s`, `h` signing query values are redacted in URLs.
+The volume recording explicitly requests `forceDelete=true`; it is evidence for
+the acknowledgement/polling protocol, not for an ordinary volume cascade.
+
+The native 202 acknowledgement contains Azure-AsyncOperation and Location URLs
+under the same subscription, region and operationResults UUID. Status GET returns
+an operation identity and DELETE target; after Succeeded, Location GET returns an
+empty 200. Subvolume's recording stops after status success, without a Location
+observation. Tests preserve this gap and keep that operation incomplete.
+
+The shared NetApp helper validates endpoint roles, native signed query fields,
+operation/target identity, response status and empty result shape. Receipts bind
+the resource, region and credential context; serialized phases survive fresh
+runtime instances. An operation's terminal receipt prevents repeated polling but
+never proves resource absence. Expired callbacks, permissions errors, unknown
+states, changed URLs and modified receipts cannot report successful deletion.
+No resource cleanup action is enabled by this polling milestone.
