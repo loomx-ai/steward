@@ -1,0 +1,96 @@
+[
+  {
+    "file": "test_notebook.yaml",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/c683a64f397974bae397d77a204e2ae86a908fa0/src/azure-cli/azure/cli/command_modules/synapse/tests/latest/recordings/test_notebook.yaml",
+    "source_sha256": "c712c41bae3470b6e5dfc5cfd9cc16b57ffab90bdb19337391ceda3fcfae35bd",
+    "recordings": [
+      {
+        "interaction_index": 27,
+        "method": "DELETE",
+        "uri": "https://clitest000003.dev.azuresynapse.net/notebooks/notebook?api-version=2020-12-01",
+        "status": 202,
+        "headers": {
+          "location": [
+            "https://clitest000003.dev.azuresynapse.net/notebookOperationResults/1c2dd3ea-ca8d-4d13-8d41-f991b377cee9?api-version=2020-12-01"
+          ]
+        },
+        "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/synapse-cli000001/providers/Microsoft.Synapse/workspaces/clitest000003/notebooks/notebook\",\"recordId\":0,\"state\":\"Deleting\",\"created\":\"0001-01-01T00:00:00\",\"changed\":\"0001-01-01T00:00:00\",\"type\":\"Notebook\",\"name\":\"notebook\",\"operationId\":\"1c2dd3ea-ca8d-4d13-8d41-f991b377cee9\"}"
+      },
+      {
+        "interaction_index": 28,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/notebookOperationResults/1c2dd3ea-ca8d-4d13-8d41-f991b377cee9?api-version=2020-12-01",
+        "status": 202,
+        "headers": {
+          "location": [
+            "https://clitest000003.dev.azuresynapse.net/notebookOperationResults/1c2dd3ea-ca8d-4d13-8d41-f991b377cee9?api-version=2020-12-01"
+          ]
+        },
+        "body": "{\"status\":\"InProgress\"}"
+      },
+      {
+        "interaction_index": 29,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/notebookOperationResults/1c2dd3ea-ca8d-4d13-8d41-f991b377cee9?api-version=2020-12-01",
+        "status": 200,
+        "headers": {},
+        "body": ""
+      },
+      {
+        "interaction_index": 30,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/notebooks/notebook?api-version=2020-12-01",
+        "status": 404,
+        "headers": {},
+        "body": "{\"code\":404,\"message\":\"GetNotebook failed [statusCode from ADF: NotFound, ErrorMessage: {\\\"code\\\":\\\"NotFound\\\",\\\"message\\\":\\\"The document could not be retrieved because it does not exist.\\\",\\\"target\\\":\\\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/synapse-cli000001/providers/Microsoft.Synapse/workspaces/clitest000003/notebooks/notebook\\\",\\\"details\\\":null,\\\"error\\\":null}, workspace: clitest000003, notebook: notebook]\",\"result\":null,\"target\":null,\"details\":null,\"error\":\"Failed Component = DataFactoryResourceProvider, ErrorCode = 404, Error = NotFound \"}"
+      }
+    ]
+  },
+  {
+    "file": "test_spark_job_definition.yaml",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/c683a64f397974bae397d77a204e2ae86a908fa0/src/azure-cli/azure/cli/command_modules/synapse/tests/latest/recordings/test_spark_job_definition.yaml",
+    "source_sha256": "033079355277b797e330400f307080b8a0664cba0f2d38dfe011038cc082650f",
+    "recordings": [
+      {
+        "interaction_index": 25,
+        "method": "DELETE",
+        "uri": "https://clitest000003.dev.azuresynapse.net/sparkJobDefinitions/SparkAutoCreate1?api-version=2020-12-01",
+        "status": 202,
+        "headers": {
+          "location": [
+            "https://clitest000003.dev.azuresynapse.net/operationResults/262fb2ad-c0f7-4010-8f9e-4932c93397b2?api-version=2020-12-01"
+          ]
+        },
+        "body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/synapse-cli000001/providers/Microsoft.Synapse/workspaces/clitest000003/sparkJobDefinitions/SparkAutoCreate1\",\"recordId\":0,\"state\":\"Deleting\",\"created\":\"0001-01-01T00:00:00\",\"changed\":\"0001-01-01T00:00:00\",\"type\":\"SparkJobDefinition\",\"name\":\"SparkAutoCreate1\",\"operationId\":\"262fb2ad-c0f7-4010-8f9e-4932c93397b2\"}"
+      },
+      {
+        "interaction_index": 26,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/operationResults/262fb2ad-c0f7-4010-8f9e-4932c93397b2?api-version=2020-12-01",
+        "status": 202,
+        "headers": {
+          "location": [
+            "https://clitest000003.dev.azuresynapse.net/operationResults/262fb2ad-c0f7-4010-8f9e-4932c93397b2?api-version=2020-12-01"
+          ]
+        },
+        "body": "{\"status\":\"InProgress\"}"
+      },
+      {
+        "interaction_index": 27,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/operationResults/262fb2ad-c0f7-4010-8f9e-4932c93397b2?api-version=2020-12-01",
+        "status": 200,
+        "headers": {},
+        "body": ""
+      },
+      {
+        "interaction_index": 28,
+        "method": "GET",
+        "uri": "https://clitest000003.dev.azuresynapse.net/sparkJobDefinitions/SparkAutoCreate1?api-version=2020-12-01",
+        "status": 404,
+        "headers": {},
+        "body": "{\"code\":\"SparkJobDefinitionNotFound\",\"message\":\"The SparkJobDefinition SparkAutoCreate1 was not found in (subscription=051ddeca-1ed6-4d8b-ba6f-1ff561e5f3b3 resourceGroup=synapse-cli000001 workspace=clitest000003)\"}"
+      }
+    ]
+  }
+]

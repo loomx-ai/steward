@@ -81,6 +81,9 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		if operation.Call.Method == "DELETE" {
 			return c.invokeCancel(ctx, operation, invocation)
 		}
+		if synapseArtifactOperation(operation.ID) != "" {
+			return c.invokeArtifactOperation(ctx, operation, invocation)
+		}
 		return c.invokeRead(ctx, operation, invocation)
 	}
 	c, err := r.resolve(ctx, invocation.ConnectionID)

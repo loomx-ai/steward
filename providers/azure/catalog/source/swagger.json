@@ -11442,6 +11442,65 @@
                 "$ref": "#/definitions/Resource"
               }
             ]
+          },
+          "ErrorResponse": {
+            "title": "Error Response",
+            "description": "Common error response for all Azure Resource Manager APIs to return error details for failed operations. (This also follows the OData error response format.)",
+            "type": "object",
+            "properties": {
+              "code": {
+                "readOnly": true,
+                "type": "string",
+                "description": "The error code."
+              },
+              "message": {
+                "readOnly": true,
+                "type": "string",
+                "description": "The error message."
+              },
+              "target": {
+                "readOnly": true,
+                "type": "string",
+                "description": "The error target."
+              },
+              "details": {
+                "readOnly": true,
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ErrorResponse"
+                },
+                "x-ms-identifiers": [
+                  "message",
+                  "target"
+                ],
+                "description": "The error details."
+              },
+              "additionalInfo": {
+                "readOnly": true,
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ErrorAdditionalInfo"
+                },
+                "x-ms-identifiers": [],
+                "description": "The error additional info."
+              }
+            }
+          },
+          "ErrorAdditionalInfo": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "readOnly": true,
+                "type": "string",
+                "description": "The additional info type."
+              },
+              "info": {
+                "readOnly": true,
+                "type": "object",
+                "description": "The additional info."
+              }
+            },
+            "description": "The resource management error additional info."
           }
         }
       },
@@ -67897,6 +67956,17 @@
                 "description": "Completion percentage of the operation"
               }
             }
+          },
+          "ErrorContract": {
+            "title": "Error details.",
+            "description": "Contains details when the response code indicates an error.",
+            "type": "object",
+            "properties": {
+              "error": {
+                "description": "The error details.",
+                "$ref": "../../../common-types/resource-management/v1/types.json#/definitions/ErrorResponse"
+              }
+            }
           }
         },
         "parameters": {
@@ -76993,6 +77063,90 @@
                   }
                 }
               }
+            },
+            "delete": {
+              "tags": [
+                "notebooks"
+              ],
+              "operationId": "Notebook_DeleteNotebook",
+              "x-ms-examples": {
+                "Notebooks_Delete": {
+                  "$ref": "./examples/Notebooks_Delete.json"
+                }
+              },
+              "description": "Deletes a Note book.",
+              "x-ms-long-running-operation": true,
+              "parameters": [
+                {
+                  "$ref": "#/parameters/NotebookName"
+                },
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK."
+                },
+                "202": {
+                  "description": "Accepted."
+                },
+                "204": {
+                  "description": "No Content."
+                },
+                "default": {
+                  "description": "An error response received from the Azure Synapse service.",
+                  "schema": {
+                    "$ref": "../../../../common/v1/types.json#/definitions/CloudError"
+                  }
+                }
+              }
+            }
+          },
+          "/notebookOperationResults/{operationId}": {
+            "get": {
+              "tags": [
+                "OperationResult"
+              ],
+              "operationId": "NotebookOperationResult_Get",
+              "description": "Get notebook operation result",
+              "x-ms-examples": {
+                "List Sql Pools": {
+                  "$ref": "./examples/NotebookOperationResult_Get.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                },
+                {
+                  "name": "operationId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "Operation ID."
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": ""
+                },
+                "201": {
+                  "description": ""
+                },
+                "202": {
+                  "description": ""
+                },
+                "204": {
+                  "description": ""
+                },
+                "default": {
+                  "schema": {
+                    "$ref": "../../../../common/v1/types.json#/definitions/ErrorContract"
+                  },
+                  "description": ""
+                }
+              }
             }
           }
         },
@@ -77066,6 +77220,143 @@
             "required": true,
             "type": "string",
             "x-ms-parameter-location": "method"
+          },
+          "Endpoint": {
+            "name": "endpoint",
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "required": true,
+            "type": "string",
+            "in": "path",
+            "x-ms-skip-url-encoding": true,
+            "x-ms-parameter-location": "client",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/operations.json",
+      "source_sha256": "0dbf5472682d60aa8e22a773952c2d40759385e01ae9d4a82a6fbc0da79c53da",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "version": "2020-12-01",
+          "title": "ArtifactsClient"
+        },
+        "schemes": [
+          "https"
+        ],
+        "x-ms-parameterized-host": {
+          "hostTemplate": "{endpoint}",
+          "useSchemePrefix": false,
+          "parameters": [
+            {
+              "$ref": "#/parameters/Endpoint"
+            }
+          ]
+        },
+        "paths": {
+          "/operationResults/{operationId}": {
+            "get": {
+              "tags": [
+                "OperationResult"
+              ],
+              "operationId": "OperationResult_Get",
+              "description": "Get operation result",
+              "x-ms-examples": {
+                "List Sql Pools": {
+                  "$ref": "./examples/OperationResult_Get.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                },
+                {
+                  "name": "operationId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "Operation ID."
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": ""
+                },
+                "201": {
+                  "description": ""
+                },
+                "202": {
+                  "description": ""
+                },
+                "204": {
+                  "description": ""
+                },
+                "default": {
+                  "schema": {
+                    "$ref": "../../../../common/v1/types.json#/definitions/ErrorContract"
+                  },
+                  "description": ""
+                }
+              }
+            }
+          },
+          "/operationStatuses/{operationId}": {
+            "get": {
+              "tags": [
+                "OperationResult"
+              ],
+              "operationId": "OperationStatus_Get",
+              "description": "Get operation status",
+              "x-ms-examples": {
+                "List Sql Pools": {
+                  "$ref": "./examples/OperationStatus_Get.json"
+                }
+              },
+              "parameters": [
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                },
+                {
+                  "name": "operationId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "Operation ID."
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": ""
+                },
+                "201": {
+                  "description": ""
+                },
+                "202": {
+                  "description": ""
+                },
+                "204": {
+                  "description": ""
+                },
+                "default": {
+                  "schema": {
+                    "$ref": "../../../../common/v1/types.json#/definitions/ErrorContract"
+                  },
+                  "description": ""
+                }
+              }
+            }
+          }
+        },
+        "parameters": {
+          "ApiVersionParameter": {
+            "name": "api-version",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "The Synapse client API Version."
           },
           "Endpoint": {
             "name": "endpoint",
@@ -77178,6 +77469,44 @@
                 },
                 "304": {
                   "description": "Not modified."
+                },
+                "default": {
+                  "description": "An error response received from the Azure Synapse service.",
+                  "schema": {
+                    "$ref": "../../../../common/v1/types.json#/definitions/CloudError"
+                  }
+                }
+              }
+            },
+            "delete": {
+              "tags": [
+                "pipelines"
+              ],
+              "operationId": "Pipeline_DeletePipeline",
+              "x-ms-examples": {
+                "Pipelines_Delete": {
+                  "$ref": "./examples/Pipelines_Delete.json"
+                }
+              },
+              "description": "Deletes a pipeline.",
+              "x-ms-long-running-operation": true,
+              "parameters": [
+                {
+                  "$ref": "#/parameters/pipelineName"
+                },
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK."
+                },
+                "202": {
+                  "description": "Accepted."
+                },
+                "204": {
+                  "description": "No Content."
                 },
                 "default": {
                   "description": "An error response received from the Azure Synapse service.",
@@ -78326,6 +78655,44 @@
                 },
                 "304": {
                   "description": "Not modified."
+                },
+                "default": {
+                  "description": "An error response received from the Azure Synapse service.",
+                  "schema": {
+                    "$ref": "../../../../common/v1/types.json#/definitions/CloudError"
+                  }
+                }
+              }
+            },
+            "delete": {
+              "tags": [
+                "sparkJobDefinitions"
+              ],
+              "operationId": "SparkJobDefinition_DeleteSparkJobDefinition",
+              "x-ms-examples": {
+                "SparkJobDefinitions_Delete": {
+                  "$ref": "./examples/SparkJobDefinitions_Delete.json"
+                }
+              },
+              "description": "Deletes a Spark Job Definition.",
+              "x-ms-long-running-operation": true,
+              "parameters": [
+                {
+                  "$ref": "#/parameters/sparkJobDefinitionName"
+                },
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK."
+                },
+                "202": {
+                  "description": "Accepted."
+                },
+                "204": {
+                  "description": "No Content."
                 },
                 "default": {
                   "description": "An error response received from the Azure Synapse service.",

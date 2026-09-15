@@ -180,7 +180,7 @@ func synapseDataSafeValue(value any) any {
 		result := map[string]any{}
 		for key, v := range value {
 			switch strings.ToLower(key) {
-			case "id", "name", "type", "etag", "properties", "bigdatapool", "targetbigdatapool", "referencename", "workspacename", "sparkpoolname", "jobtype", "result", "state", "currentstate", "livyinfo", "schedulerinfo", "plugininfo", "from", "total", "sessions", "value", "request_id", "status_code", "body", "method", "path", "query":
+			case "id", "name", "type", "etag", "properties", "bigdatapool", "targetbigdatapool", "referencename", "workspacename", "sparkpoolname", "jobtype", "result", "state", "status", "currentstate", "livyinfo", "schedulerinfo", "plugininfo", "from", "total", "sessions", "value", "request_id", "status_code", "body", "method", "path", "query":
 				result[key] = synapseDataSafeValue(v)
 			}
 		}

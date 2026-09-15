@@ -6812,3 +6812,32 @@ The native APIs provide no atomic conditional cancellation or cross-resource loc
 local tests establish observed-drift checks, not an atomic guarantee against later
 external writers. No fresh live-cloud or independent emulator run is claimed. All
 159 parity rows and all eight acceptance criteria remain pending.
+
+
+### Synapse artifact asynchronous deletion contract and polling
+
+Added six native data-plane operations: Notebook, Spark-job-definition and Pipeline
+DELETE, NotebookOperationResult_Get, OperationResult_Get and OperationStatus_Get.
+The original Swagger examples and transitive model definitions are pinned without
+rewrites. All prior 1,525 operations and 455 resource bindings remain unchanged;
+the operation count is 1,531 and cleanup bindings remain 419.
+
+Official CLI recordings reveal 202 deletion metadata bodies and distinct Notebook
+versus generic result paths omitted from the empty Swagger examples. Eight original
+DELETE/result/own-GET interactions are retained with exact body strings, source
+hashes and a reproducible extractor. The native artifact receipt validator binds
+artifact/workspace identity and callback collection/version/operation identity.
+Signed receipts support restoration, pending status and empty terminal results;
+callback failures and completed operations never establish asset absence.
+
+The three native operation GETs now execute through scoped Synapse OAuth and
+workspace authorization, with request correlation, final workspace checks and
+private-data redaction. Tests cover historical evidence, actual empty response
+bodies, restored/tampered receipts, callback boundaries, failed/unknown states,
+error envelopes, forbidden/missing callbacks and secret canaries.
+
+This milestone does not yet enable artifact DELETE invocation or cleanup bindings.
+Reviewed dependency/active-work handling, artifact action/worker persistence,
+Pipeline inventory and complete workspace/SQL cleanup remain required. No fresh
+live-cloud or independent emulator validation is claimed. All 159 parity rows and
+all eight acceptance criteria remain open.

@@ -106,5 +106,59 @@
     "path": "/pipelines",
     "method": "GET",
     "document": "pipelines.json"
+  },
+  {
+    "file": "Notebooks_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/Notebooks_Delete.json",
+    "source_sha256": "9fee16a935beb4bf87161a78123971d1988c071afb37b6283afbf39a972208d5",
+    "operation": "Notebook_DeleteNotebook",
+    "path": "/notebooks/{notebookName}",
+    "method": "DELETE",
+    "document": "notebooks.json"
+  },
+  {
+    "file": "NotebookOperationResult_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/NotebookOperationResult_Get.json",
+    "source_sha256": "a9be905095fe8cc96c4fd51ce6d1e96ad6fa60e84a275846efe408790f2d3882",
+    "operation": "NotebookOperationResult_Get",
+    "path": "/notebookOperationResults/{operationId}",
+    "method": "GET",
+    "document": "notebooks.json"
+  },
+  {
+    "file": "SparkJobDefinitions_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/SparkJobDefinitions_Delete.json",
+    "source_sha256": "83113aeb430fb589f1dc76e9bd25ccc7f88ea12420d6920445074b6561d936fa",
+    "operation": "SparkJobDefinition_DeleteSparkJobDefinition",
+    "path": "/sparkJobDefinitions/{sparkJobDefinitionName}",
+    "method": "DELETE",
+    "document": "sparkJobDefinitions.json"
+  },
+  {
+    "file": "Pipelines_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/Pipelines_Delete.json",
+    "source_sha256": "e62a553e9aa6cfc93b3962df79685f012698cba5bf88468b67c9d98c2b12cd45",
+    "operation": "Pipeline_DeletePipeline",
+    "path": "/pipelines/{pipelineName}",
+    "method": "DELETE",
+    "document": "pipelines.json"
+  },
+  {
+    "file": "OperationResult_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/OperationResult_Get.json",
+    "source_sha256": "a9be905095fe8cc96c4fd51ce6d1e96ad6fa60e84a275846efe408790f2d3882",
+    "operation": "OperationResult_Get",
+    "path": "/operationResults/{operationId}",
+    "method": "GET",
+    "document": "operations.json"
+  },
+  {
+    "file": "OperationStatus_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/OperationStatus_Get.json",
+    "source_sha256": "a9be905095fe8cc96c4fd51ce6d1e96ad6fa60e84a275846efe408790f2d3882",
+    "operation": "OperationStatus_Get",
+    "path": "/operationStatuses/{operationId}",
+    "method": "GET",
+    "document": "operations.json"
   }
 ]

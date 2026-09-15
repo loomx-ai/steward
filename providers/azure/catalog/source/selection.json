@@ -2507,14 +2507,17 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/notebooks.json",
       "operations": [
         "Notebook_GetNotebook",
-        "Notebook_GetNotebooksByWorkspace"
+        "Notebook_GetNotebooksByWorkspace",
+        "Notebook_DeleteNotebook",
+        "NotebookOperationResult_Get"
       ]
     },
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJobDefinitions.json",
       "operations": [
         "SparkJobDefinition_GetSparkJobDefinition",
-        "SparkJobDefinition_GetSparkJobDefinitionsByWorkspace"
+        "SparkJobDefinition_GetSparkJobDefinitionsByWorkspace",
+        "SparkJobDefinition_DeleteSparkJobDefinition"
       ]
     },
     {
@@ -2528,7 +2531,15 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/pipelines.json",
       "operations": [
         "Pipeline_GetPipeline",
-        "Pipeline_GetPipelinesByWorkspace"
+        "Pipeline_GetPipelinesByWorkspace",
+        "Pipeline_DeletePipeline"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/operations.json",
+      "operations": [
+        "OperationResult_Get",
+        "OperationStatus_Get"
       ]
     }
   ],

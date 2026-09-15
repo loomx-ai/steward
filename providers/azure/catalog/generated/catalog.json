@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "66dab44df07b21264e1b253cb856d052d1a2277c0df218ba07a462c82e8908e1",
+    "checksum": "0880d69030d7f125a90a6e2d9166062dabe8750a4b1997885024d6cbf435f991",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "6352a3a4363e9f54622d256d2cd2c614ee6b84baa491966a9c3bb515097ab927",
+  "content_checksum": "907a927499e4ff9082274e3595e27dc9fee83f360e61eb3b94752455e5c70bc0",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -124829,6 +124829,111 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/bigDataPool.json"
     },
     {
+      "id": "Azure.Microsoft.Synapse.DataPlane.NotebookOperationResult_Get",
+      "name": "NotebookOperationResult_Get",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/notebookOperationResults/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "operationId": {
+            "description": "Operation ID.",
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/notebookOperationResults/{operationId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/notebooks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.Notebook_DeleteNotebook",
+      "name": "Notebook_DeleteNotebook",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "DELETE",
+      "path": "/notebooks/{notebookName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "notebookName": {
+            "description": "The notebook name.",
+            "in": "path",
+            "name": "notebookName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/notebooks/{notebookName}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/notebooks.json"
+    },
+    {
       "id": "Azure.Microsoft.Synapse.DataPlane.Notebook_GetNotebook",
       "name": "Notebook_GetNotebook",
       "service": "Microsoft.Synapse.DataPlane",
@@ -124989,6 +125094,166 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/notebooks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.OperationResult_Get",
+      "name": "OperationResult_Get",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/operationResults/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "operationId": {
+            "description": "Operation ID.",
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/operationResults/{operationId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/operations.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.OperationStatus_Get",
+      "name": "OperationStatus_Get",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/operationStatuses/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "operationId": {
+            "description": "Operation ID.",
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/operationStatuses/{operationId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/operations.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.Pipeline_DeletePipeline",
+      "name": "Pipeline_DeletePipeline",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "DELETE",
+      "path": "/pipelines/{pipelineName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "pipelineName": {
+            "description": "The pipeline name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "pipelineName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/pipelines/{pipelineName}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/pipelines.json"
     },
     {
       "id": "Azure.Microsoft.Synapse.DataPlane.Pipeline_GetPipeline",
@@ -125521,6 +125786,59 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJob.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.SparkJobDefinition_DeleteSparkJobDefinition",
+      "name": "SparkJobDefinition_DeleteSparkJobDefinition",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "DELETE",
+      "path": "/sparkJobDefinitions/{sparkJobDefinitionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "sparkJobDefinitionName": {
+            "description": "The spark job definition name.",
+            "in": "path",
+            "name": "sparkJobDefinitionName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/sparkJobDefinitions/{sparkJobDefinitionName}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJobDefinitions.json"
     },
     {
       "id": "Azure.Microsoft.Synapse.DataPlane.SparkJobDefinition_GetSparkJobDefinition",

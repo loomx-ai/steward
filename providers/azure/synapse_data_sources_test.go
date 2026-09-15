@@ -32,6 +32,7 @@ func TestSynapseDataNativeContracts(t *testing.T) {
 		t.Fatal("invalid native catalog")
 	}
 	fingerprints := map[string]string{
+		"operations.json":                     "0dbf5472682d60aa8e22a773952c2d40759385e01ae9d4a82a6fbc0da79c53da",
 		"pipelines.json":                      "3194d25d995fe5ab4758d0b5f6232fb8e6c08229ebf6b039db698a47c30c3383",
 		"entityTypes/Pipeline.json":           "d8441092487af547c940b94f258a09db0b19c1d1788619e25c27c7131d5ba203",
 		"artifacts.json":                      "2275c21e0d42c917744079880d69ef85608471ae4b8eda759de2a3fc15f0f5dc",
@@ -62,12 +63,12 @@ func TestSynapseDataNativeContracts(t *testing.T) {
 			documents[doc.SourceURI] = object(v)
 		}
 	}
-	if len(fingerprints) != 0 || len(documents) != 8 {
+	if len(fingerprints) != 0 || len(documents) != 9 {
 		t.Fatal("missing sources", fingerprints)
 	}
 	payload, err = os.ReadFile("fixtures/synapse/data-plane/sources.json")
 	var manifest []map[string]string
-	if err != nil || json.Unmarshal(payload, &manifest) != nil || len(manifest) != 12 {
+	if err != nil || json.Unmarshal(payload, &manifest) != nil || len(manifest) != 18 {
 		t.Fatal("invalid data-plane manifest")
 	}
 	expectedFailures := map[string][]string{}
@@ -129,7 +130,7 @@ func TestSynapseDataNativeContracts(t *testing.T) {
 				t.Fatal("unqualified native endpoint accepted", err)
 			}
 			params["endpoint"] = "https://" + strings.ToLower(text(params["endpoint"]))
-			if method == "delete" {
+			if method == "delete" && entry["document"] == "sparkJob.json" {
 				if params["livyApiVersion"] != "2019-11-01-preview" || params["detailed"] != true {
 					t.Fatal("native cancellation discrepancy changed")
 				}
@@ -249,7 +250,7 @@ func TestSynapseDataNativeContracts(t *testing.T) {
 
 		})
 	}
-	if len(seen) != 12 || schemas != 10 {
+	if len(seen) != 18 || schemas != 13 {
 		t.Fatal("incomplete native coverage", len(seen), schemas)
 	}
 }

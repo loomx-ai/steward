@@ -1,14 +1,15 @@
 # Synapse Spark and artifact data-plane contracts
 
-The twelve JSON examples are byte-for-byte copies from Azure's
+The eighteen JSON examples are byte-for-byte copies from Azure's
 [2020-12-01 data-plane specifications](https://github.com/Azure/azure-rest-api-specs/tree/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01).
 `sources.json` records each URL, SHA-256, operation and request path. The catalog
-snapshots eight documents (four roots and four model dependencies), alongside
+snapshots nine documents (five roots and four model dependencies), alongside
 two already-pinned shared dependencies. Tests use only these local sources.
 
 The selected operations are Spark batch/session list, get and cancel, plus
-notebook, Spark-job-definition and Pipeline list and get. They establish the contracts
-needed to inspect work affected by pool/workspace cleanup. The ten read
+notebook, Spark-job-definition and Pipeline list/get/delete, and artifact operation
+result/status reads. They establish the contracts needed for pool/workspace and
+artifact cleanup. The thirteen read
 operations now execute through workspace-bound OAuth and validate their native
 responses. Native cancellation is available through Runtime.Invoke with ownership,
 protection and readback checks. Four data-plane asset kinds have inventory support.
@@ -117,7 +118,7 @@ sessions, notebooks and Spark job definitions. Spark identities are actual Livy
 URLs; their resource kinds group them beneath the ARM pool without inventing ARM
 job resources. Artifacts retain their documented ARM identities and native name
 selectors. These four additions bring the specification count to 455; the native
-operation count is now 1,525 after the ARM polling and Pipeline read additions; cleanup
+operation count is now 1,531 after the ARM and artifact polling additions; cleanup
 coverage is now 419 with the reviewed Spark pool action.
 
 The source reads complete native indexes, validates each member with its own GET,
@@ -239,3 +240,44 @@ Protocol tests cover restored
 manifests, omitted records, forbidden reads, configuration/index/parent drift,
 incarnations, nested Pipeline references and private payloads. No live service or
 independent emulator validation is claimed.
+
+
+### Native artifact deletion and data-plane polling
+
+The catalog adds Notebook, Spark-job-definition and Pipeline DELETE and three
+native data-plane result/status GETs. Original examples declare empty 200/202/204
+DELETE responses and empty 200/201/202/204 operation responses. They contain no
+conditional If-Match deletion parameter. The DELETE operations remain gated in
+Runtime.Invoke until reviewed artifact cleanup and dependencies are integrated;
+this transport milestone adds no cleanup binding. The three operation GETs are
+available with native parameter binding, workspace authorization and separate
+Synapse OAuth, correlation headers and post-read workspace configuration checks.
+
+The pinned official CLI evidence shows why empty Swagger examples alone are
+insufficient: Notebook and Spark-job-definition DELETE actually return 202 with
+an artifact-state body and Location. The body includes native identity, type,
+name, state=Deleting, recordId and operationId. Notebook uses
+`/notebookOperationResults/{operationId}`; Spark job definitions use
+`/operationResults/{operationId}`. A subsequent 202 carries status=InProgress,
+followed by an empty 200; only the separate artifact GET then returns 404.
+`cli-artifact-deletion-recordings.json` preserves these eight original interactions,
+including body strings and real wire versions. It is reproduced with
+`python3 -B reproduce_artifact_deletion_recordings.py [original-yaml-directory]`.
+No request credentials or request bodies are exported. The two pinned CLI source
+hashes are the same as the artifact-read recordings; extraction SHA-256 is
+`d821c44e9a211ab3e76f388df0f30a9e68768f73e0964b946db772ec63eaefcd`.
+
+Receipt validation binds canonical artifact/workspace identity, native operation
+collection, operation ID and API version. Foreign, duplicate and changed callbacks
+fail. Signed receipts survive JSON recovery and support status followed by result
+polling; completed receipts do not repeat HTTP calls. Polling uses the Synapse
+transport, including a scoped empty-201 adapter, never ARM tokens. Unknown or failed
+states and callback 403/404 are not completion or asset-absence evidence. API logs
+and returned receipts omit opaque properties. Protocol tests cover recorded
+receipts, empty wire responses, token separation, correlation, retries, restored
+receipts, tampering, error envelopes, invalid body shapes and private canaries.
+
+Artifact deletion drivers still require reviewed incoming references, active-work
+handling, protection, persistence integration and each artifact's own final GET.
+Pipeline asset inventory and additional dependency families also remain open.
+No fresh live-cloud or independent emulator validation is claimed.

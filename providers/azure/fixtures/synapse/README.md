@@ -91,7 +91,7 @@ Official contract entry points:
 [Spark pools](https://learn.microsoft.com/en-us/rest/api/synapse/resourcemanager/big-data-pools?view=rest-synapse-resourcemanager-2021-06-01),
 [SQL pools](https://learn.microsoft.com/en-us/rest/api/synapse/resourcemanager/sql-pools?view=rest-synapse-resourcemanager-2021-06-01).
 
-The [Spark and artifact data-plane evidence](data-plane/README.md) covers twelve
+The [Spark and artifact data-plane evidence](data-plane/README.md) covers eighteen
 additional native operations. It has a separate transport contract and original
 example manifest; scoped native reads/cancellation and asset inventory are
 implemented. Spark pool cleanup composes these protocols; workspace/SQL cleanup
