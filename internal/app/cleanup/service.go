@@ -1811,6 +1811,10 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			continue
 		}
 		switch value.Identity.NativeType {
+		case "Microsoft.Synapse/workspaces/sqlPools":
+			if value.Identity.Provider == asset.ProviderAzure {
+				result = append(result, plan.Warning{Code: plan.WarningSynapseSQLDelete, AssetID: value.ID, Message: "Deleting this SQL pool removes its database and interrupts queries and consumers. The workspace and other pools are retained. SQL backups may remain recoverable under Azure retention; this operation does not purge them.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
 		case "Microsoft.Synapse/workspaces":
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningSynapseWorkspaceDelete, value.ID) {
 				result = append(result, plan.Warning{Code: plan.WarningSynapseWorkspaceDelete, AssetID: value.ID, Message: "Deleting this workspace removes its SQL pools, compute engines, code artifacts and workspace metadata, and interrupts workspace workloads. Linked Data Lake storage is retained. SQL backups may remain recoverable under Azure retention; this operation does not purge them.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})

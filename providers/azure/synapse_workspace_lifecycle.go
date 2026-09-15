@@ -67,7 +67,7 @@ func (c *client) synapseWorkspaceContribution(parent asset.Asset, assets []asset
 		if metadata && target.Normalized["_synapse_workspace"] != parent.Identity.NativeID {
 			return result, serviceDenied("synapse_workspace_member_owner_changed")
 		}
-		result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, DirectCleanupAllowed: kind == synapseSparkType, EvidenceSource: synapseWorkspaceLifecycleSource, Evidence: evidence, Confidence: 1})
+		result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, DirectCleanupAllowed: kind == synapseSparkType || kind == synapseSQLType, EvidenceSource: synapseWorkspaceLifecycleSource, Evidence: evidence, Confidence: 1})
 		result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: synapseWorkspaceLifecycleSource, Evidence: evidence, Confidence: 1})
 	}
 	return result, nil

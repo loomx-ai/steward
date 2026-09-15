@@ -54,6 +54,9 @@ func newSynapseDataInventoryFixture(t *testing.T) *synapseDataInventoryFixture {
 			if path == "/subscriptions/"+testSubscription+"/resourcegroups" || path == "/subscriptions/"+testSubscription+"/providers/microsoft.authorization/locks" {
 				return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
 			}
+			if strings.HasSuffix(path, "/replicationlinks") {
+				return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
+			}
 			if path == strings.ToLower(text(f.workspace["id"]))+"/sqlpools" {
 				return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
 			}

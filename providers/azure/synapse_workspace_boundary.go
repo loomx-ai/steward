@@ -226,6 +226,13 @@ func (c *synapseDataClient) workspaceBoundary(ctx context.Context, w synapseWork
 	protected := text(group.data["managedBy"]) != "" || protectedAzureTags(object(group.data["tags"])) || protectedAzureTags(object(w.raw["tags"])) || locked(w.id, locks)
 	for id, raw := range rawMembers {
 		if synapseKind(text(raw["type"])) == synapseSparkType || synapseKind(text(raw["type"])) == synapseSQLType {
+			if synapseKind(text(raw["type"])) == synapseSQLType {
+				links, err := c.arm.sqlReplication(ctx, id, nil)
+				if err != nil {
+					return nil, err
+				}
+				protected = protected || len(links) != 0
+			}
 			stamp, e := time.Parse(time.RFC3339Nano, text(object(raw["properties"])["creationDate"]))
 			protected = protected || e != nil || stamp.IsZero()
 		} else if !synapseDataKind(text(object(members[id])["kind"])).spark {

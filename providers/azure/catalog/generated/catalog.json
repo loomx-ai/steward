@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "b6b522a6c42d9e5cad37450ecbff269fc8489dff93c4145faee990df24f38d92",
+    "checksum": "42c91ee70f27101e0093861b9e13d227096b424b41ccd4b6c7a94aca5e636722",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "59ca22bf96b7797ef4c962f0ca0d76d7d3ed8e295926c29e25d448cb078e88f1",
+  "content_checksum": "a23677d55e8d87c2507285151efba3c4aebe320284852c8254c67ca91e8a0207",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -142128,6 +142128,9 @@
         "collection": "sqlPools",
         "read_operations": [
           "Azure.Microsoft.Synapse.SqlPools_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Synapse.SqlPools_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.Synapse.SqlPools_ListByWorkspace"

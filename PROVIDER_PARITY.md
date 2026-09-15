@@ -6944,3 +6944,33 @@ records. English/Chinese plan warnings, documentation and actual SQLite plan
 assertions enforce that distinction. Restorable dropped pools and restore points
 have native catalog operations but still need registered inventory and lifecycle
 handling. Counts are unchanged and full parity remains unverified.
+
+### Synapse independent SQL pool cleanup
+
+Dedicated SQL pools now bind native `SqlPools_Delete` to a reviewed action.
+Inventory signs private pool/workspace/group configuration, creation identity,
+readiness, protection and replication evidence into its cursor. Complete native
+replication pages and each link's own GET are checked twice; known list omissions
+use scoped own reads. Foreign hints, incomplete reads, changed parents/configuration,
+protection and locks prevent deletion. Existing links block pool-only deletion;
+workspace cascading also checks for SQL peers. A direct SQL selection retains
+its workspace and other pools, without silently selecting the workspace controller.
+
+Online and Paused states are supported. The bilingual warning describes database
+removal and interruption of queries/consumers, and explicitly distinguishes native
+live-pool removal from backup purge. This does not assert consumer quiescence.
+It aligns with the baseline's native logical deletion scope (MaxCompute uses
+`isLogical: true`) rather than requiring unsupported physical backup erasure.
+
+Signed DELETE receipts are returned before further reads, restored through fresh
+runtimes, and checkpoint terminal polling before own-resource verification.
+Callback success or 404 cannot close a live SQL pool; own 404 can finish an expired
+operation. Tests cover a real SQLite scan/plan/worker pipeline, pool-only scope,
+paused pools, recreated identities, replication pagination/omissions, missing
+dependencies, protection, tampered reviews/receipts and post-acceptance read errors.
+
+Azure now has 456 specifications, 1,531 operations and 421 cleanup bindings.
+Native operations and prior bindings remain unchanged. Independent code-artifact
+cleanup, registered backup/restore-point resources, full consumer coverage and
+live acceptance remain unfinished. All 159 parity rows and all eight acceptance
+criteria remain open.

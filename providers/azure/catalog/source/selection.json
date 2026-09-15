@@ -11026,7 +11026,9 @@
       "read_operations": [
         "Azure.Microsoft.Synapse.SqlPools_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.Synapse.SqlPools_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.Synapse.SqlPools_ListByWorkspace"
       ]

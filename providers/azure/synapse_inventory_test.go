@@ -87,6 +87,9 @@ func newSynapseInventoryFixture(t *testing.T) *synapseInventoryFixture {
 		if strings.Contains(path, "/microsoft.synapse/") && req.URL.Query().Get("api-version") != synapseVersion {
 			t.Fatal("wrong Synapse version", req.URL)
 		}
+		if strings.HasSuffix(path, "/replicationlinks") {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
 		header := http.Header{"X-Ms-Request-Id": {"synapse-inventory-request"}}
 		if path == root+"/resourcegroups/test" {
 			return jsonResponse(200, map[string]any{"id": path, "name": "test", "type": groupType, "location": "eastus", "properties": map[string]any{}}, header), nil
@@ -145,7 +148,7 @@ func TestSynapseNativeInventoryAndReferences(t *testing.T) {
 				if kind == synapseSQLType && (item.State != "Online" || item.Normalized["state"] != "Online") {
 					t.Fatal("SQL activity state lost", item.State)
 				}
-				if item.NativeType != kind || item.Actionable == nil || *item.Actionable != (kind == synapseSparkType || kind == synapseType) || kind == synapseSQLType && item.Normalized["cleanup_protection_reason"] != "synapse_cleanup_not_implemented" || text(item.Normalized["_synapse_private_configuration"]) == "" {
+				if item.NativeType != kind || item.Actionable == nil || !*item.Actionable || text(item.Normalized["_synapse_private_configuration"]) == "" {
 					t.Fatal("incorrect inventory readiness", item)
 				}
 				if kind == synapseType {
@@ -313,7 +316,7 @@ func TestSynapseInventoryParentAndCursorConsistency(t *testing.T) {
 				request := productRequest(f.runtime, kind)
 				request.Limit = 1
 				batch, err := f.runtime.List(t.Context(), request)
-				if kind == synapseSparkType && mode == "duplicate-page" {
+				if mode == "duplicate-page" {
 					if err == nil || len(batch.Items) != 0 || batch.Complete {
 						t.Fatal("duplicate index accepted", batch, err)
 					}
@@ -462,7 +465,7 @@ func TestSynapseRegisteredInventoryAndKnownAbsence(t *testing.T) {
 		t.Fatal("registered inventory incomplete", len(values))
 	}
 	for _, value := range values {
-		if string(value.ID) == value.Identity.NativeID || value.Normalized["_inventory_source"] != synapseSource || value.Capabilities.Has(asset.CapabilityActionable) != (value.Identity.NativeType == synapseSparkType || value.Identity.NativeType == synapseType) {
+		if string(value.ID) == value.Identity.NativeID || value.Normalized["_inventory_source"] != synapseSource || !value.Capabilities.Has(asset.CapabilityActionable) {
 			t.Fatal("registered resource identity/readiness changed", value)
 		}
 	}

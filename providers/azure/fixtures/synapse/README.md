@@ -30,8 +30,8 @@ Data Lake references resolve through the current subscription's Storage list and
 matching detail reads, without following storage URLs or claiming ownership.
 Unresolved storage remains visible. Workspaces are reread after dependency reads.
 
-Spark pools and workspaces now have reviewed cleanup drivers. SQL pools remain
-controller-only while standalone cleanup is unfinished. Workspace cleanup removes
+Spark pools, SQL pools and workspaces now have reviewed cleanup drivers.
+SQL pool-only deletion retains its workspace and other pools. Workspace cleanup removes
 live resource records, not retained SQL backups; see the Microsoft
 [deleted-workspace restore guide](https://learn.microsoft.com/en-us/azure/synapse-analytics/backuprestore/restore-sql-pool-from-deleted-workspace).
 This is an intermediate implementation stage, not the final read-only scope or a
@@ -173,3 +173,22 @@ and cursor drift. These are local tests; no fresh live-cloud or independent emul
 validation is claimed. Native APIs do not provide an atomic cross-resource lock
 or conditional cancellation incarnation, so concurrent changes after the last
 validated read cannot be excluded atomically. Complete Synapse parity remains open.
+
+### Independent dedicated SQL pool deletion
+
+The SQL pool action uses the original `SqlPools_Delete` and signed native ARM
+poller. It reviews the pool creation/configuration, workspace, resource group,
+protection and locks. Replication links use complete native pages and own GETs;
+known omitted links cannot disappear without their own 404. A changed index,
+unreadable link or existing peer prevents an independent action. Workspace
+cleanup also checks replication links before cascading its SQL pools. Original
+`ListSqlPoolReplicationLinks.json` identities are adapted only to test scope.
+
+Online and Paused pools are supported. The action does not enumerate arbitrary
+SQL consumers or claim query quiescence: the reviewed native deletion interrupts
+queries and consumer access. Backups are retained according to Azure policy,
+not purged. The driver returns acceptance before another HTTP request, checkpoints
+terminal operation state, and requires own pool absence. SQLite worker tests
+reopen persistence and resolve a new runtime between retries, verifying one SQL
+DELETE and continued workspace/Spark pool records. These are offline protocol
+tests, not independent-emulator or live Azure acceptance.

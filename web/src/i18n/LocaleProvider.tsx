@@ -21,7 +21,10 @@ import {
   type MessageKey,
 } from "./messages";
 
-import { synapseWorkspaceDeletionWarning } from "./synapseWarnings";
+import {
+  synapseWorkspaceDeletionWarning,
+  synapseSQLDeletionWarning,
+} from "./synapseWarnings";
 
 interface LocaleContextValue {
   locale: Locale;
@@ -81,9 +84,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   );
   const messageForCode = useCallback(
     (code: string, fallback: string, details: Record<string, unknown> = {}) =>
-      code === "synapse_workspace_delete"
-        ? synapseWorkspaceDeletionWarning[locale]
-        : translateCode(locale, code, fallback, interpolationValues(details)),
+      code === "synapse_sql_delete"
+        ? synapseSQLDeletionWarning[locale]
+        : code === "synapse_workspace_delete"
+          ? synapseWorkspaceDeletionWarning[locale]
+          : translateCode(locale, code, fallback, interpolationValues(details)),
     [locale],
   );
   const formatError = useCallback(

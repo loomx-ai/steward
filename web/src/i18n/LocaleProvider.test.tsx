@@ -264,3 +264,27 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     );
   });
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  it(`explains SQL pool-only deletion in ${locale}`, () => {
+    localStorage.setItem(localePreferenceKey, locale);
+    render(
+      <LocaleProvider>
+        <ErrorProbe
+          error={{ code: "synapse_sql_delete", message: "fallback" }}
+        />
+      </LocaleProvider>,
+    );
+    const text = screen.getByTestId("error").textContent;
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "工作区和其他池将保留"
+        : "workspace and other pools are retained",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "此操作不会清除这些备份"
+        : "this operation does not purge them",
+    );
+  });
+}
