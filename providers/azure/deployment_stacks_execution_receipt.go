@@ -23,6 +23,14 @@ func (c *client) deploymentStackExecutionBinding(req contracts.ActionRequest, re
 	if _, err := c.deploymentStackVerifyReceipt(req.Asset.Identity.NativeID, region, native); err != nil {
 		return "", err
 	}
+	payload, err := deploymentStackRequestPayload(req)
+	if err != nil {
+		return "", err
+	}
+	return c.privateConfiguration(map[string]any{"protocol": "deployment-stack-execution-1", "request": payload, "region": region, "native": native}), nil
+}
+
+func deploymentStackRequestPayload(req contracts.ActionRequest) (string, error) {
 	canonical := req
 	canonical.ExecutionResult = nil
 	canonical.LifecycleImpacts = slices.Clone(req.LifecycleImpacts)
@@ -34,7 +42,7 @@ func (c *client) deploymentStackExecutionBinding(req contracts.ActionRequest, re
 	if err != nil {
 		return "", serviceDenied("invalid_deployment_stack_execution_request")
 	}
-	return c.privateConfiguration(map[string]any{"protocol": "deployment-stack-execution-1", "request": string(payload), "region": region, "native": native}), nil
+	return string(payload), nil
 }
 
 func (c *client) deploymentStackExecutionReceipt(req contracts.ActionRequest, region string, res response) (map[string]any, error) {
