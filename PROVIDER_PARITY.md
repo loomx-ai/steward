@@ -6841,3 +6841,28 @@ Reviewed dependency/active-work handling, artifact action/worker persistence,
 Pipeline inventory and complete workspace/SQL cleanup remain required. No fresh
 live-cloud or independent emulator validation is claimed. All 159 parity rows and
 all eight acceptance criteria remain open.
+
+### Synapse Pipeline inventory and code-asset references
+
+Pipeline now has a registered `synapse-data` inventory binding and `data.pipeline`
+specification. It reuses the pinned stable 2020-12-01 list/detail operations,
+complete native pagination, known-ID own-read reconciliation, private snapshots
+and parent checks. Azure now has 456 specifications, 1,531 operations and 419
+cleanup bindings; prior operations and resource bindings are unchanged.
+
+Native SynapseNotebook, SparkJob and ExecutePipeline activity references are
+extracted through ForEach, Until, IfCondition and Switch containers. Static
+Notebook, job-definition, Pipeline and Spark-pool references are independently
+read twice and contribute `uses` edges. Missing dependencies remain referenced;
+unscanned targets become graph diagnostics. Expressions and malformed references
+are marked unresolved without persisting expression bodies. User parameters and
+code are not interpreted as references. Private dependency fingerprints are part
+of the inventory cursor, so changed dependency configuration invalidates paging.
+
+Offline tests cover nested activity shapes, private data, actual SQLite scan/graph
+persistence, unresolved child pipelines, list omissions, exact own-404 closure,
+permission failures, dependency changes and native/client pagination. This does
+not enable artifact cleanup. Triggers, active Pipeline runs, other activity
+dependencies and full artifact/workspace/SQL lifecycle remain open. No new
+live-cloud or independent emulator validation is claimed. All 159 parity rows
+and all eight acceptance criteria remain open.

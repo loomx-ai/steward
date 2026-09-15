@@ -11,6 +11,7 @@ import (
 const synapseDataInventorySource = "synapse-data"
 const synapseBatchType = synapseSparkType + "/batches"
 const synapseSessionType = synapseSparkType + "/sessions"
+const synapsePipelineType = synapseType + "/pipelines"
 const synapseNotebookType = synapseType + "/notebooks"
 const synapseJobDefinitionType = synapseType + "/sparkJobDefinitions"
 
@@ -21,6 +22,7 @@ type synapseDataDefinition struct {
 
 func synapseDataKind(kind string) synapseDataDefinition {
 	for _, d := range []synapseDataDefinition{
+		synapsePipelineDefinition,
 		{synapseBatchType, "batches", "SparkBatch_GetSparkBatchJobs", "SparkBatch_GetSparkBatchJob", "batchId", true},
 		{synapseSessionType, "sessions", "SparkSession_GetSparkSessions", "SparkSession_GetSparkSession", "sessionId", true},
 		{synapseNotebookType, "notebooks", "Notebook_GetNotebooksByWorkspace", "Notebook_GetNotebook", "notebookName", false},

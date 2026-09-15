@@ -11092,6 +11092,22 @@
       "list_operations": [
         "Azure.Microsoft.Synapse.DataPlane.SparkJobDefinition_GetSparkJobDefinitionsByWorkspace"
       ]
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/pipelines",
+      "collection": "pipelines",
+      "class": "data.pipeline",
+      "display_name": "Synapse pipeline",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "Azure.Microsoft.Synapse.DataPlane.Pipeline_GetPipeline"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Synapse.DataPlane.Pipeline_GetPipelinesByWorkspace"
+      ]
     }
   ]
 }

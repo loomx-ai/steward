@@ -378,7 +378,11 @@ func (r *Runtime) synapseDataInventoryItem(ctx context.Context, c *synapseDataCl
 	if poolID != "" {
 		addReference(refs, synapseSparkType, poolID)
 	}
-	if !d.spark {
+	if d.kind == synapsePipelineType {
+		if err := c.synapsePipelineReferences(ctx, target, raw, refs, normalized); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+	} else if !d.spark {
 		key := "bigDataPool"
 		if d.kind == synapseJobDefinitionType {
 			key = "targetBigDataPool"

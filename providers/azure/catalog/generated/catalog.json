@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "0880d69030d7f125a90a6e2d9166062dabe8750a4b1997885024d6cbf435f991",
+    "checksum": "249070444d20aa8eee318107a0b075e906d8cb00570eb7fee4c45a2ff5e1d8e7",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "907a927499e4ff9082274e3595e27dc9fee83f360e61eb3b94752455e5c70bc0",
+  "content_checksum": "f580848c8b51d5732f3a732732c8042decf6dd7ed6bcd7b61f8c977964f3b572",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -142077,6 +142077,23 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Synapse.DataPlane.Notebook_GetNotebooksByWorkspace"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Synapse/workspaces/pipelines",
+      "class": "data.pipeline",
+      "display_name": "Synapse pipeline",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "pipelines",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.DataPlane.Pipeline_GetPipeline"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.DataPlane.Pipeline_GetPipelinesByWorkspace"
         ]
       }
     },
