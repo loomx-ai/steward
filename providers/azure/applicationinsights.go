@@ -107,7 +107,7 @@ func applicationInsightsSafeValue(value any) any {
 
 func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 	u, err := url.Parse(endpoint)
-	if err == nil && u.Host == "management.azure.com" && strings.Contains(strings.ToLower(u.Path), "/providers/microsoft.resources/deploymentstacks") {
+	if err == nil && u.Host == "management.azure.com" && (strings.Contains(strings.ToLower(u.Path), "/providers/microsoft.resources/deploymentstacks") || armPathProvider(u.Path) == "microsoft.resources" && strings.Contains(strings.ToLower(u.Path), "/deploymentstackoperationstatus/")) {
 		return safePayload(object(deploymentStackSafeValue(value)))
 	}
 	if err == nil && u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.netapp" {

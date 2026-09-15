@@ -97,3 +97,19 @@ actual global shard creation, canonical subscription/global scope persistence,
 member graph reconciliation, omitted-parent recovery and failed-rescan preservation.
 It also verifies that the runtime's global scope matches the scan creator's scope.
 Management-group inventory and native cleanup remain unimplemented.
+
+
+`delete-recordings.json` retains selected DELETE and polling interactions from
+the three pinned official CLI recordings above, including exact response headers,
+bodies and signed callback URLs. Source hashes and a fixed extraction hash guard
+provenance. Seven deletion episodes include 48 status polls; callback body IDs and
+names match the operation path and UUID. The recorded states are `deleting`,
+`deletingResources` and `succeeded`. Recorded action flags must match the original
+DELETE query. URL tests reject altered scopes, regions, versions, flags and partial
+signatures. Poll diagnostics remove free-form messages and private nested data.
+
+These are offline protocol validators, not a wired deletion action. Their support
+for management-group callback syntax does not authorize management-group operations.
+Operation success alone does not establish stack or member absence: the recordings
+do not immediately perform that own-resource readback. Persistent receipts, cleanup
+consequence review and final own-resource checks still require implementation.
