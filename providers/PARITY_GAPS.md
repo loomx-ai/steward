@@ -149,3 +149,21 @@ These checks are a stage in the unfinished Stack action: they do not establish
 that Stack DELETE performs a product's preparation or purge. Direct-child
 execution, complete action/graph integration and end-to-end acceptance remain
 open, together with all 159 parity rows and eight overall gates.
+
+The independent-member execution stage now invokes the registered product's
+Execute, Wait and Readback, with a checkpoint bound to the complete Stack request,
+member and native result. A persisted checkpoint resumes without reissuing the
+initial Execute. Completion requires product readback and a fresh member-own 404;
+resuming a completed checkpoint repeats these reads. Errors never cause automatic
+detachment, deny-setting changes or out-of-sync bypass. Complete Stack preflight,
+dependency ordering, and integration of completed members into later Stack
+closure checks are still required before this stage can enable Stack cleanup.
+
+A historical Azure service regression could leave Stack deletion failing after
+its resource group was already gone. The team
+[identified the already-deleted-parent case in July 2025](https://github.com/Azure/deployment-stacks/issues/225#issuecomment-3050579345)
+and [reported the fix rolled out in September 2025](https://github.com/Azure/deployment-stacks/issues/225#issuecomment-3286793197).
+This is evidence for treating native operation status separately from resource
+absence, not a current ordering guarantee or a reason to reproduce that historical
+bug in the implementation. Member-execution tests are synthetic protocol tests;
+they do not establish live-cloud acceptance or close any parity gate.
