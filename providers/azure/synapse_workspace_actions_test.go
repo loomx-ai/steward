@@ -316,7 +316,12 @@ func TestSynapseWorkspaceCleanupWorkerAndRetention(t *testing.T) {
 	}
 	warning := false
 	for _, v := range task.Task.Warnings {
-		warning = warning || v.Code == plan.WarningSynapseWorkspaceDelete
+		if v.Code == plan.WarningSynapseWorkspaceDelete {
+			warning = true
+			if !strings.Contains(v.Message, "this operation does not purge them") || strings.Contains(v.Message, "permanently") {
+				t.Fatal("workspace removal falsely promises backup purge", v.Message)
+			}
+		}
 	}
 	if !warning {
 		t.Fatal("destructive scope warning missing")

@@ -6930,3 +6930,17 @@ Azure now has 456 specifications, 1,531 operations and 420 cleanup bindings. Thi
 is offline protocol/worker validation, not fresh live-cloud or independent-emulator
 acceptance. Standalone SQL/artifact cleanup and wider provider gaps remain open;
 all 159 parity rows and all eight acceptance criteria remain open.
+
+### Synapse deletion versus recoverable SQL backup retention
+
+The workspace warning now distinguishes live-resource deletion from backup purge.
+Microsoft documents [SQL restoration after workspace deletion](https://learn.microsoft.com/en-us/azure/synapse-analytics/backuprestore/restore-sql-pool-from-deleted-workspace).
+Its [backup retention documentation](https://learn.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/backup-and-restore)
+also explains the final snapshot on dropping an active dedicated SQL pool and
+the exception for a paused pool. Recovery depends on available restore points;
+this implementation neither promises recovery nor purges retained backups.
+Workspace/pool own GET absence closes only live resource records, not backup
+records. English/Chinese plan warnings, documentation and actual SQLite plan
+assertions enforce that distinction. Restorable dropped pools and restore points
+have native catalog operations but still need registered inventory and lifecycle
+handling. Counts are unchanged and full parity remains unverified.

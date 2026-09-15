@@ -248,10 +248,14 @@ for (const locale of ["en-US", "zh-CN"] as const) {
       </LocaleProvider>,
     );
     const text = screen.getByTestId("error").textContent;
+    expect(text).not.toContain(locale === "zh-CN" ? "永久" : "permanently");
     expect(text).toContain(
       locale === "zh-CN"
-        ? "永久移除 SQL 池数据"
-        : "permanently removes SQL pool data",
+        ? "此操作不会清除这些备份"
+        : "this operation does not purge them",
+    );
+    expect(text).toContain(
+      locale === "zh-CN" ? "移除 SQL 池" : "removes its SQL pools",
     );
     expect(text).toContain(
       locale === "zh-CN"

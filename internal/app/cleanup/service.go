@@ -1813,7 +1813,7 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 		switch value.Identity.NativeType {
 		case "Microsoft.Synapse/workspaces":
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningSynapseWorkspaceDelete, value.ID) {
-				result = append(result, plan.Warning{Code: plan.WarningSynapseWorkspaceDelete, AssetID: value.ID, Message: "Deleting this workspace permanently removes SQL pool data, compute engines, code artifacts and workspace metadata, and interrupts workspace workloads. Linked Data Lake storage is retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+				result = append(result, plan.Warning{Code: plan.WarningSynapseWorkspaceDelete, AssetID: value.ID, Message: "Deleting this workspace removes its SQL pools, compute engines, code artifacts and workspace metadata, and interrupts workspace workloads. Linked Data Lake storage is retained. SQL backups may remain recoverable under Azure retention; this operation does not purge them.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
 		case "Microsoft.HybridCompute/licenses", "Microsoft.HybridCompute/machines", "Microsoft.HybridCompute/machines/extensions", "Microsoft.HybridCompute/machines/runCommands", "Microsoft.HybridCompute/machines/licenseProfiles":
 			if value.Identity.Provider != asset.ProviderAzure {

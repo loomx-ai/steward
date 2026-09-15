@@ -30,8 +30,10 @@ Data Lake references resolve through the current subscription's Storage list and
 matching detail reads, without following storage URLs or claiming ownership.
 Unresolved storage remains visible. Workspaces are reread after dependency reads.
 
-Spark pools now have a reviewed cleanup driver. Workspaces and SQL pools remain
-non-actionable while their reviewed cleanup is unfinished.
+Spark pools and workspaces now have reviewed cleanup drivers. SQL pools remain
+controller-only while standalone cleanup is unfinished. Workspace cleanup removes
+live resource records, not retained SQL backups; see the Microsoft
+[deleted-workspace restore guide](https://learn.microsoft.com/en-us/azure/synapse-analytics/backuprestore/restore-sql-pool-from-deleted-workspace).
 This is an intermediate implementation stage, not the final read-only scope or a
 claim of functional parity. Integration runtimes, private connectivity, code
 artifacts, running jobs, recovery/retention and complete cleanup are still required.
