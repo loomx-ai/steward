@@ -310,3 +310,27 @@ does not waive retained-attachment preparation, other product lifecycles, group
 closure, the native Stack operation, or final outcome/deny evidence. Complete
 orchestration and action/graph registration remain unfinished; all 159 parity
 rows and eight overall gates remain open.
+
+### Resumable independent prerequisite execution (2026-09-16)
+
+A prerequisite-stage executor now persists the active native member checkpoint
+and completed progress together, bound to the entire frozen Stack request. Each
+call advances at most one member lifecycle phase. An active Wait/Readback resumes
+before any fresh service membership enumeration, because an accepted deletion
+can already make the target's GET return 404. Only a verified complete member
+checkpoint moves into completed progress. A later call rechecks native closure
+and selects the next independently executed prerequisite in its verified order.
+Even a completed stage checkpoint repeats current closure and member readbacks.
+
+Both the outer state and nested preparation/member receipts are checked before
+native HTTP. Changed jobs, unknown state fields, altered receipts, duplicate or
+nonterminal completed entries, and attempts to replace progress on resume fail.
+Two-host protocol tests persist every phase through JSON, cover synchronous and
+pending/failed native operations, verify one DELETE per child, and reject lost
+permissions, changed Stack state and reappearing completed children. The stage
+never deletes a parent merely because it has no remaining prerequisites.
+
+Stage Done is not Stack cleanup Done. Complete scope review and retention
+preparation precede it; remaining product lifecycles, group closure, native Stack
+execution and final product/deny evidence still need orchestration and action/
+graph registration. All 159 parity rows and eight overall gates remain open.
