@@ -109,6 +109,7 @@ func TestLiveProtectionPreventsMutation(t *testing.T) {
 		locks      []any
 		reason     string
 	}{
+		{name: "nic", kind: nicType, properties: map[string]any{"hostedWorkloads": []any{resourceID(netappVolumeType, "volume")}}, reason: "azure_hosted_workload_managed_nic"},
 		{name: "disk", kind: diskType, managedBy: resourceID("Microsoft.ContainerService/managedClusters", "cluster"), reason: "azure_managed_resource"},
 		{name: "vm", kind: vmType, properties: map[string]any{}, locks: []any{map[string]any{"id": "/subscriptions/" + testSubscription + "/providers/Microsoft.Authorization/locks/protect", "properties": map[string]any{"level": "CanNotDelete"}}}, reason: "azure_management_lock"},
 	}

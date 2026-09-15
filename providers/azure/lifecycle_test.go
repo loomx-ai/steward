@@ -383,7 +383,7 @@ func TestAzureRetentionSurvivesWorkerRestartAndPreservesNICSettings(t *testing.T
 }
 
 func TestAzureCascadePreflightRejectsMissingImpactDriftAndLiveLocks(t *testing.T) {
-	for _, mode := range []string{"missing-impact", "missing-nested-impact", "changed-nic-ip", "changed-delete-option", "nested-lock", "child-permission", "child-managed-group", "foreign-impact", "malformed-vm", "unknown-nic-field"} {
+	for _, mode := range []string{"missing-impact", "missing-nested-impact", "changed-nic-ip", "changed-delete-option", "nested-lock", "child-permission", "child-managed-group", "foreign-impact", "malformed-vm", "unknown-nic-field", "hosted-workload", "malformed-hosted-workloads"} {
 		t.Run(mode, func(t *testing.T) {
 			request, _ := attachmentPlanRequest(t, "ip")
 			live := attachmentResources()
@@ -408,6 +408,10 @@ func TestAzureCascadePreflightRejectsMissingImpactDriftAndLiveLocks(t *testing.T
 				request.LifecycleImpacts[0].Asset.Identity.ConnectionID = "another"
 			case "malformed-vm":
 				object(live["vm"]["properties"])["storageProfile"] = map[string]any{"osDisk": map[string]any{"deleteOption": "Delete"}}
+			case "hosted-workload":
+				object(live["nic"]["properties"])["hostedWorkloads"] = []any{resourceID(netappVolumeType, "volume")}
+			case "malformed-hosted-workloads":
+				object(live["nic"]["properties"])["hostedWorkloads"] = map[string]any{}
 			case "unknown-nic-field":
 				object(live["nic"]["properties"])["futureSetting"] = "do-not-erase"
 			}

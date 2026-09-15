@@ -878,6 +878,15 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 	if (kind.NativeType == scaleSetVMType || kind.NativeType == vmType) && (object(properties["protectionPolicy"])["protectFromScaleSetActions"] == true || object(properties["protectionPolicy"])["protectFromScaleIn"] == true) {
 		return "azure_scale_set_instance_protected"
 	}
+	if kind.NativeType == nicType && properties["hostedWorkloads"] != nil {
+		// ARM declares a read-only array of linked workloads. Nonempty or
+		// malformed metadata cannot establish an independently deletable NIC.
+		// Do not infer the owning controller from a workload name or mount IP.
+		workloads, ok := properties["hostedWorkloads"].([]any)
+		if !ok || len(workloads) != 0 {
+			return "azure_hosted_workload_managed_nic"
+		}
+	}
 	if kind.NativeType == nicType && text(object(properties["privateEndpoint"])["id"]) != "" {
 		return "azure_private_endpoint_managed_nic"
 	}

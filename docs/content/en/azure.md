@@ -493,3 +493,12 @@ reviewed peer independently returns 404; this allows earlier volume prerequisite
 to complete without silently dropping live peers. Existing volume observations
 must be refreshed to acquire the network review. Network IPs are not NIC resource
 IDs: NIC ownership, protection and deletion-effect verification remain unfinished.
+
+
+Network interfaces reporting nonempty `hostedWorkloads` are protected from direct
+cleanup and from VM cascades that would delete or rewrite the interface. Malformed
+workload metadata is also protected; missing, null or empty arrays do not by
+themselves establish a workload attachment. Cleanup rereads the interface, so a
+workload appearing after inventory blocks execution. This metadata does not grant
+any controller permission to delete the NIC. NetApp group ownership and automatic
+interface deletion still require their own reviewed lifecycle implementation.

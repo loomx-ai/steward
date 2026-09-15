@@ -7366,3 +7366,19 @@ effects remain unfinished; primary IPs do not establish exclusive ownership.
 
 Counts are 469 specs, 1,570 operations and 431 cleanup bindings. All 159 parity rows
 and all eight completion gates remain open; offline evidence is not live acceptance.
+
+
+### Hosted-workload NIC protection prerequisite
+
+NIC own metadata now blocks direct cleanup and VM cascades that would delete or
+rewrite an interface with nonempty or malformed `hostedWorkloads`. Inventory marks
+these interfaces protected, not controller-deletable: linked workload metadata
+alone does not establish reviewed ownership. Missing/null/empty arrays remain
+compatible with ordinary NICs. Execution rechecks live NIC reads, including nested
+NIC retention updates during VM cleanup. Tests cover metadata shapes, inventory,
+direct preflight/execution and nested cascade rejection without mutations.
+
+This is a protection prerequisite, not NetApp group cleanup support. NIC identity,
+verified group ownership, shared-interface effects and own absence after native
+group deletion remain unfinished. Counts stay 469 specs / 1,570 operations / 431
+cleanup bindings. All 159 parity rows and eight completion gates remain open.
