@@ -113,3 +113,14 @@ for management-group callback syntax does not authorize management-group operati
 Operation success alone does not establish stack or member absence: the recordings
 do not immediately perform that own-resource readback. Persistent receipts, cleanup
 consequence review and final own-resource checks still require implementation.
+
+The HTTP polling client now accepts signed, owner-bound receipts that survive JSON
+checkpoint storage. It supports synchronous empty DELETE responses, native status
+callbacks, declared Location callbacks and the status-to-result transition when
+both headers are present. A changed receipt is rejected before any HTTP request.
+Five supported official subscription/resource-group episodes replay 34 real poll
+responses through the client; the management-group episode and the episode using
+`bypassStackOutOfSyncError=true` remain explicitly rejected by execution policy.
+Legacy operation-result diagnostics also discard unexpected private payloads.
+These primitives are not yet wired to a cleanup action, and poll completion does
+not claim that the stack or its members are absent.
