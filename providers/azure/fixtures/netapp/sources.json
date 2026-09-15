@@ -1,0 +1,246 @@
+{
+  "api_version": "2025-12-01",
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json",
+  "source_sha256": "4034f2911268b68d91f60f0cb4b24740b2e241b527e62c253815b4cd11071470",
+  "operations": [
+    "Accounts_Delete",
+    "Accounts_Get",
+    "Accounts_ListBySubscription",
+    "BackupPolicies_Delete",
+    "BackupPolicies_Get",
+    "BackupPolicies_List",
+    "BackupVaults_Delete",
+    "BackupVaults_Get",
+    "BackupVaults_ListByNetAppAccount",
+    "Backups_Delete",
+    "Backups_Get",
+    "Backups_ListByVault",
+    "Pools_Delete",
+    "Pools_Get",
+    "Pools_List",
+    "SnapshotPolicies_Delete",
+    "SnapshotPolicies_Get",
+    "SnapshotPolicies_List",
+    "SnapshotPolicies_ListVolumes",
+    "Snapshots_Delete",
+    "Snapshots_Get",
+    "Snapshots_List",
+    "Subvolumes_Delete",
+    "Subvolumes_Get",
+    "Subvolumes_ListByVolume",
+    "VolumeGroups_Delete",
+    "VolumeGroups_Get",
+    "VolumeGroups_ListByNetAppAccount",
+    "VolumeQuotaRules_Delete",
+    "VolumeQuotaRules_Get",
+    "VolumeQuotaRules_ListByVolume",
+    "Volumes_Delete",
+    "Volumes_Get",
+    "Volumes_List",
+    "Volumes_ListReplications",
+    "Volumes_ReplicationStatus",
+    "Volumes_Update"
+  ],
+  "examples": [
+    {
+      "file": "Accounts_Delete.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Accounts_Delete.json",
+      "sha256": "e916437d46bef716bf5d1d2423276fa8c9215ee112479ef4a827f35302bd9459"
+    },
+    {
+      "file": "Accounts_Get.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Accounts_Get.json",
+      "sha256": "f502dc56751705c63f3fce851f840e3dbcf70b85208d6e8b4adfa86d13240739"
+    },
+    {
+      "file": "Accounts_ListBySubscription.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Accounts_ListBySubscription.json",
+      "sha256": "a9d988db0798f40fcf44829627a1c49d3c68836999f17ad70e48db1ea4b4b969"
+    },
+    {
+      "file": "BackupPolicies_Delete.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/BackupPolicies_Delete.json",
+      "sha256": "09ce78d84646129a8d7c0d4aa9631d4dbd7b0100dc7151d70d61313419d42617"
+    },
+    {
+      "file": "BackupPolicies_Get.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/BackupPolicies_Get.json",
+      "sha256": "6df004a7d40f871239b34a9f05715c299b8af19acc99f6d3e4e9f94d2a351951"
+    },
+    {
+      "file": "BackupPolicies_List.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/BackupPolicies_List.json",
+      "sha256": "2314dad21f726058ff6f83ecfc1c2808b7bc218c1b328e621094015e2bcb417e"
+    },
+    {
+      "file": "BackupVaults_Delete.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/BackupVaults_Delete.json",
+      "sha256": "e996c678a812d57e1ca87b78e98f1df132afa70daf9c525f464af4066737725c"
+    },
+    {
+      "file": "BackupVaults_Get.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/BackupVaults_Get.json",
+      "sha256": "eaaab8216b552dd9339eb2dc3e53f2690cdb15c6a06b882bf9dc07f68d17c0b8"
+    },
+    {
+      "file": "BackupVaults_List.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/BackupVaults_List.json",
+      "sha256": "0d9416bdc6aa071f9cd8888c575f5204be78b4fccebb42de48559dd50ad11282"
+    },
+    {
+      "file": "BackupsUnderBackupVault_Delete.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/BackupsUnderBackupVault_Delete.json",
+      "sha256": "40d0d19fb740986d50466d835ff00d657374da5322fb80071a789a7e7d6de939"
+    },
+    {
+      "file": "BackupsUnderBackupVault_Get.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/BackupsUnderBackupVault_Get.json",
+      "sha256": "cc84ca60048adb17657ef6f73154e4ee648ece08f3270fbeaf67827e8e0ef8e0"
+    },
+    {
+      "file": "Backups_List.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/BackupsUnderBackupVault_List.json",
+      "sha256": "47e58d452ece2fd8554a4b34bc80555b68de91e02703426a303410a821803614"
+    },
+    {
+      "file": "Pools_Delete.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Pools_Delete.json",
+      "sha256": "0650731ec4232225bbba5db73a73d119beb0b2491267f629345171c7d617416c"
+    },
+    {
+      "file": "Pools_Get.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Pools_Get.json",
+      "sha256": "8333e06e9ea549a74ac63433fa9566610f5eeecc6a52414ad3f52ad42bb6045a"
+    },
+    {
+      "file": "Pools_Get_CustomThroughput.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Pools_Get_CustomThroughput.json",
+      "sha256": "11ebdc36f1203bbe20ac8112bc654df5c82b99ebf92d78cd7b43ed42ae2b66ec"
+    },
+    {
+      "file": "Pools_List.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Pools_List.json",
+      "sha256": "5f30128f3f4f03954a3b371bc09ae1a539b9716b064736c749fc4c2c8c7788be"
+    },
+    {
+      "file": "SnapshotPolicies_Delete.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/SnapshotPolicies_Delete.json",
+      "sha256": "31306f66eee790aae7a27bb1d591797657ab2e07b21f53cb9c7f498dc6550840"
+    },
+    {
+      "file": "SnapshotPolicies_Get.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/SnapshotPolicies_Get.json",
+      "sha256": "77dd9446733328c5e6ebb4f695e285fe87dc68b4b23f866a31589f36711f2d26"
+    },
+    {
+      "file": "SnapshotPolicies_List.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/SnapshotPolicies_List.json",
+      "sha256": "8d61696af368c5c485a9a8aef4496ad177d651b6b96af3fb8934a4697623d67e"
+    },
+    {
+      "file": "SnapshotPolicies_ListVolumes.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/SnapshotPolicies_ListVolumes.json",
+      "sha256": "4c73870b60fe614d9fa6db6905be0813975e5d8366e34715206946aea8f9f572"
+    },
+    {
+      "file": "Snapshots_Delete.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Snapshots_Delete.json",
+      "sha256": "6057480f6c0be4384f7fbf0e28da4755e676f49d676f1e1e4dc100ec77e83db3"
+    },
+    {
+      "file": "Snapshots_Get.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Snapshots_Get.json",
+      "sha256": "dab5abe3c4cfcf9aa1a09474580b085b1f4d24a6827abc8ecafa2ac6d14d4311"
+    },
+    {
+      "file": "Snapshots_List.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Snapshots_List.json",
+      "sha256": "71bfb3c383a52bfe4f8efa79f1c4280ebdebfdde2e22edfc3899830481893c75"
+    },
+    {
+      "file": "Subvolumes_Delete.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Subvolumes_Delete.json",
+      "sha256": "1e0d4ebbada50d3ada5a9ed300f282ec76837ac791deb521cedec3d15cf30426"
+    },
+    {
+      "file": "Subvolumes_Get.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Subvolumes_Get.json",
+      "sha256": "7f05db791e220aedb6a7cd1d9849c43b474b8c35002583985edc3156bc6d4ea7"
+    },
+    {
+      "file": "Subvolumes_List.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Subvolumes_List.json",
+      "sha256": "f6a2f6045e8fc723ab2d328f68224222fae2dc911bb880c42474b7ad00627151"
+    },
+    {
+      "file": "VolumeGroups_Delete.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/VolumeGroups_Delete.json",
+      "sha256": "f08fd197f0268371d2cfd0ddb9e88df449caef931a5fd4aadea6e770fd367e7e"
+    },
+    {
+      "file": "VolumeGroups_Get_Oracle.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/VolumeGroups_Get_Oracle.json",
+      "sha256": "ee8980ac786f00ffd689ad4d3041bc1337935be9bde0a72a79c6093c355c6e43"
+    },
+    {
+      "file": "VolumeGroups_Get_SapHana.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/VolumeGroups_Get_SapHana.json",
+      "sha256": "798e783e84ad668937c2cdc091d18867af3b3c9818af856bab00aa023f9f0002"
+    },
+    {
+      "file": "VolumeGroups_List_Oracle.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/VolumeGroups_List_Oracle.json",
+      "sha256": "cbbc7a25673595ad6e2b4c937d0c324249766c3c2f3339b4056e91f17a6245f0"
+    },
+    {
+      "file": "VolumeGroups_List_SapHana.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/VolumeGroups_List_SapHana.json",
+      "sha256": "5729c40050a433913cbf94e4eb77c40c1a5e112c71dd7ea84868cec7aff1e03d"
+    },
+    {
+      "file": "VolumeQuotaRules_Delete.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/VolumeQuotaRules_Delete.json",
+      "sha256": "b01cc899221bcddf5f9e8f35865911b5a9a3e46fb2484192e20fef1de7462357"
+    },
+    {
+      "file": "VolumeQuotaRules_Get.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/VolumeQuotaRules_Get.json",
+      "sha256": "2903160cdccc2928e776e1a11c4d2fce88473a87ca93cb016cbc31bf492da5da"
+    },
+    {
+      "file": "VolumeQuotaRules_List.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/VolumeQuotaRules_List.json",
+      "sha256": "83b4a1501fc68ae065f8942cc225a719fbf34b21e861cecf8b7e662aea12e414"
+    },
+    {
+      "file": "Volumes_Delete.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Volumes_Delete.json",
+      "sha256": "74b74b09408e1b51290b9accbe45e18bbf0384407fec9e7f9c5c105b220eee3e"
+    },
+    {
+      "file": "Volumes_Get.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Volumes_Get.json",
+      "sha256": "0734a13e4b32ace984baa3496b120f7861c83392ff7614c35a49e2534036ba5c"
+    },
+    {
+      "file": "Volumes_List.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Volumes_List.json",
+      "sha256": "fe8493cb6bf4c72312384ef44889cbafe43560d9a98a7a272f3f19d5dd221a24"
+    },
+    {
+      "file": "Volumes_ListReplications.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Volumes_ListReplications.json",
+      "sha256": "10fddda6a498fe7d3fb561e29905f87cf1a339965a6a3c41d12e0ec22a34a454"
+    },
+    {
+      "file": "Volumes_ReplicationStatus.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Volumes_ReplicationStatus.json",
+      "sha256": "957ba11c4d9658527525a5c1b77b04576da76d0af3b99973c7ee495e1c64816c"
+    },
+    {
+      "file": "Volumes_Update.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Volumes_Update.json",
+      "sha256": "56deaafb0da0f1b9f7df275610d12e0d0f8d10e5882487587013f5f1d044a9ec"
+    }
+  ]
+}

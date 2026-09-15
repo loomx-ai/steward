@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource && request.Source != synapseSource && request.Source != synapseDataInventorySource && request.Source != synapseBackupSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource && request.Source != synapseSource && request.Source != synapseDataInventorySource && request.Source != synapseBackupSource && request.Source != netappSource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	netapp := request.ResourceKind != nil && netappKind(request.ResourceKind.NativeType).kind != ""
+	if request.Source == netappSource && !netapp || netapp && request.Source != "" && request.Source != inventorySource && request.Source != netappSource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_netapp_source")
 	}
 	backup := request.ResourceKind != nil && synapseBackupKind(request.ResourceKind.NativeType) != ""
 	if request.Source == synapseBackupSource && !backup || backup && request.Source != "" && request.Source != inventorySource && request.Source != synapseBackupSource {
@@ -78,6 +82,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if netapp {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = netappSource
+		return r.listNetapp(ctx, c, request)
 	}
 	if backup {
 		if request.Source == inventorySource {

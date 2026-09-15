@@ -321,3 +321,17 @@ Synapse 备份盘点现已包括可恢复的已删除 SQL 池和 SQL 池还原�
 需要工作区和 SQL 池列表／读取权限，以及所选备份类型的 `Microsoft.Synapse/workspaces/restorableDroppedSqlPools/read` 和 `Microsoft.Synapse/workspaces/sqlPools/restorePoints/read` 权限。已知记录漏列时会单独读取。父资源缺失或集合不可用会使扫描失败并保留原有记录：已删除工作区可能需要重建后才能查询其保留备份。只有在父级可读时，备份自身不存在的结果才能核销记录。
 
 当 Azure 返回 DISCRETE 类型、用户请求标签和有效创建时间时，可独立删除用户还原点。受保护或信息不完整的记录不可清理。删除会移除该恢复选项，SQL 池、工作区及其他备份将保留。Steward 保存删除回执，并在父资源未变更且可读取时独立确认该点已不存在。备份恢复和完整保留生命周期仍待完成。自动还原点不能由用户删除，仅 `DISCRETE` 类型不足以证明该点由用户创建或可以删除。参见[Azure 备份保留说明](https://learn.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/backup-and-restore)和[从已删除工作区恢复](https://learn.microsoft.com/en-us/azure/synapse-analytics/backuprestore/restore-sql-pool-from-deleted-workspace)。
+
+
+### Azure NetApp Files
+
+盘点覆盖帐户、容量池、卷、快照、子卷、配额规则、卷组、快照和备份策略、备份库及备份。
+Steward 沿原生父资源 API 发现资源，并逐项读取验证，包括已知但未出现在列表中的资源。
+父资源读取失败时保留已有记录。备份和子卷的区域继承自已验证的父资源。
+卷的子网与 VNet 关联用于网络选择；备份与源卷的关联不授予级联删除权限。
+AD 凭据和未识别的私有字段不会显示。
+
+清理与导出策略编辑仍在实现中。挂载目标是卷的只读属性，不能以删除整个卷替代移除挂载点。
+卷删除、复制、克隆、快照及保留备份需要分别核验生命周期。
+参见 [NetApp 访问权限](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions)
+和[删除卷](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete)。

@@ -2541,6 +2541,48 @@
         "OperationResult_Get",
         "OperationStatus_Get"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json",
+      "operations": [
+        "Accounts_Delete",
+        "Accounts_Get",
+        "Accounts_ListBySubscription",
+        "BackupPolicies_Delete",
+        "BackupPolicies_Get",
+        "BackupPolicies_List",
+        "BackupVaults_Delete",
+        "BackupVaults_Get",
+        "BackupVaults_ListByNetAppAccount",
+        "Backups_Delete",
+        "Backups_Get",
+        "Backups_ListByVault",
+        "Pools_Delete",
+        "Pools_Get",
+        "Pools_List",
+        "SnapshotPolicies_Delete",
+        "SnapshotPolicies_Get",
+        "SnapshotPolicies_List",
+        "SnapshotPolicies_ListVolumes",
+        "Snapshots_Delete",
+        "Snapshots_Get",
+        "Snapshots_List",
+        "Subvolumes_Delete",
+        "Subvolumes_Get",
+        "Subvolumes_ListByVolume",
+        "VolumeGroups_Delete",
+        "VolumeGroups_Get",
+        "VolumeGroups_ListByNetAppAccount",
+        "VolumeQuotaRules_Delete",
+        "VolumeQuotaRules_Get",
+        "VolumeQuotaRules_ListByVolume",
+        "Volumes_Delete",
+        "Volumes_Get",
+        "Volumes_List",
+        "Volumes_ListReplications",
+        "Volumes_ReplicationStatus",
+        "Volumes_Update"
+      ]
     }
   ],
   "resource_types": [
@@ -11145,6 +11187,182 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Synapse.SqlPoolRestorePoints_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts",
+      "class": "storage.dedicated_cluster",
+      "display_name": "NetApp account",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "netAppAccounts",
+      "read_operations": [
+        "Azure.Microsoft.NetApp.Accounts_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.NetApp.Accounts_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/capacityPools",
+      "class": "storage.dedicated_cluster",
+      "display_name": "NetApp capacity pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "capacityPools",
+      "read_operations": [
+        "Azure.Microsoft.NetApp.Pools_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.NetApp.Pools_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
+      "class": "storage.filesystem",
+      "display_name": "NetApp volume",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "volumes",
+      "read_operations": [
+        "Azure.Microsoft.NetApp.Volumes_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.NetApp.Volumes_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/snapshots",
+      "class": "storage.snapshot",
+      "display_name": "NetApp snapshot",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "snapshots",
+      "read_operations": [
+        "Azure.Microsoft.NetApp.Snapshots_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.NetApp.Snapshots_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/backupPolicies",
+      "class": "storage.backup_policy",
+      "display_name": "NetApp backup policy",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "backupPolicies",
+      "read_operations": [
+        "Azure.Microsoft.NetApp.BackupPolicies_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.NetApp.BackupPolicies_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/backupVaults",
+      "class": "storage.backup_vault",
+      "display_name": "NetApp backup vault",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "backupVaults",
+      "read_operations": [
+        "Azure.Microsoft.NetApp.BackupVaults_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.NetApp.BackupVaults_ListByNetAppAccount"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/backupVaults/backups",
+      "class": "storage.backup",
+      "display_name": "NetApp backup",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "backups",
+      "read_operations": [
+        "Azure.Microsoft.NetApp.Backups_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.NetApp.Backups_ListByVault"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/snapshotPolicies",
+      "class": "storage.snapshot_policy",
+      "display_name": "NetApp snapshot policy",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "snapshotPolicies",
+      "read_operations": [
+        "Azure.Microsoft.NetApp.SnapshotPolicies_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.NetApp.SnapshotPolicies_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/volumeGroups",
+      "class": "storage.volume_group",
+      "display_name": "NetApp volume group",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "volumeGroups",
+      "read_operations": [
+        "Azure.Microsoft.NetApp.VolumeGroups_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.NetApp.VolumeGroups_ListByNetAppAccount"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/subvolumes",
+      "class": "storage.filesystem",
+      "display_name": "NetApp subvolume",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "subvolumes",
+      "read_operations": [
+        "Azure.Microsoft.NetApp.Subvolumes_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.NetApp.Subvolumes_ListByVolume"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/volumeQuotaRules",
+      "class": "storage.quota",
+      "display_name": "NetApp volume quota rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "volumeQuotaRules",
+      "read_operations": [
+        "Azure.Microsoft.NetApp.VolumeQuotaRules_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.NetApp.VolumeQuotaRules_ListByVolume"
       ]
     }
   ]

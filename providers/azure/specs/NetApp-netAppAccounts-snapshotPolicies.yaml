@@ -1,0 +1,73 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.NetApp/netAppAccounts/snapshotPolicies
+  class: storage.snapshot_policy
+presentation:
+  displayNames:
+    en-US: NetApp snapshot policy
+    zh-CN: NetApp 快照策略
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: netapp
+  list:
+    operation: Azure.Microsoft.NetApp.SnapshotPolicies_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.NetApp.SnapshotPolicies_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: netapp
+    nativeType: Microsoft.NetApp/netAppAccounts
+fields:
+  name: name
+  state: state
+  subscriptionId: subscriptionId
+  resourceGroup: resourceGroup
+  tags: tags
+  poolId: poolId
+  size: size
+  serviceLevel: serviceLevel
+  qosType: qosType
+  usageThreshold: usageThreshold
+  fileSystemId: fileSystemId
+  creationToken: creationToken
+  protocolTypes: protocolTypes
+  subnetId: subnetId
+  networkFeatures: networkFeatures
+  effectiveNetworkFeatures: effectiveNetworkFeatures
+  mountTargets: mountTargets
+  exportPolicy: exportPolicy
+  volumeType: volumeType
+  isRestoring: isRestoring
+  created: created
+  snapshotId: snapshotId
+  backupId: backupId
+  creationDate: creationDate
+  completionDate: completionDate
+  snapshotCreationDate: snapshotCreationDate
+  backupType: backupType
+  label: label
+  enabled: enabled
+  dailyBackupsToKeep: dailyBackupsToKeep
+  weeklyBackupsToKeep: weeklyBackupsToKeep
+  monthlyBackupsToKeep: monthlyBackupsToKeep
+  volumesAssigned: volumesAssigned
+  path: path
+  quotaSizeInKiBs: quotaSizeInKiBs
+  quotaTarget: quotaTarget
+  quotaType: quotaType
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.NetApp/netAppAccounts
+  targetIdPath: refs_microsoft_netapp_netappaccounts
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities

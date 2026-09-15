@@ -55,7 +55,7 @@ func TestCatalogReproducibleAndSpecsExecutable(t *testing.T) {
 			// Native inheritance, replication, Batch tasks, and APIM revisions,
 			// backend pools/fragments use explicit same-kind resource references.
 			apimReference := isAPIMType(kind.NativeType) && (last(kind.NativeType) == "apis" || last(kind.NativeType) == "backends" || last(kind.NativeType) == "policyFragments")
-			if relation.TargetType == kind.NativeType && !apimReference && kind.NativeType != "Microsoft.Network/firewallPolicies" && kind.NativeType != "Microsoft.Network/trafficManagerProfiles" && kind.NativeType != serviceBusQueueType && kind.NativeType != cognitiveDeploymentType && kind.NativeType != cosmosMongoRoleType && kind.NativeType != mongoClusterType && kind.NativeType != kustoType && kind.NativeType != batchTaskType && kind.NativeType != synapsePipelineType {
+			if relation.TargetType == kind.NativeType && !apimReference && kind.NativeType != "Microsoft.Network/firewallPolicies" && kind.NativeType != "Microsoft.Network/trafficManagerProfiles" && kind.NativeType != serviceBusQueueType && kind.NativeType != cognitiveDeploymentType && kind.NativeType != cosmosMongoRoleType && kind.NativeType != mongoClusterType && kind.NativeType != kustoType && kind.NativeType != batchTaskType && kind.NativeType != synapsePipelineType && kind.NativeType != netappVolumeType {
 				t.Fatalf("unexpected blanket/self dependency for %s", kind.NativeType)
 			}
 		}

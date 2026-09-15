@@ -1721,7 +1721,6 @@ resources:
   azure:
     resources:
     - Microsoft.Storage/storageAccounts/fileServices/shares
-    unimplemented_resources:
     - Microsoft.NetApp/netAppAccounts/capacityPools/volumes
   status: pending_verification
 - alicloud: ACS::NAS::MountTarget
@@ -1737,12 +1736,16 @@ resources:
     resources:
     - file.googleapis.com/Instance
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.NetApp/netAppAccounts/capacityPools/volumes
   status: pending_verification
-  notes: Filestore mounts are network/file-share properties; do not delete the whole filesystem to remove
-    one client mount.
+  notes: Filestore mounts are network/file-share properties. NetApp mountTargets are read-only volume
+    properties; NFS access rules use the volume export policy. Neither is an independent mount-target
+    DELETE resource. NetApp inventory is implemented; export-policy changes and lifecycle cleanup
+    remain unfinished. Do not delete the whole filesystem to remove one client mount.
+  sources:
+  - https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions
+  - https://learn.microsoft.com/en-us/cli/azure/netappfiles/volume/export-policy
 - alicloud: ACS::NAT::NatGateway
   spec: providers/alicloud/specs/nat-gateway.yaml
   class: network.nat_gateway

@@ -7029,3 +7029,36 @@ local protocol and worker tests, not live Azure or independent emulator evidence
 Azure has 458 specifications, 1,531 operations and 422 cleanup bindings. Restoration,
 complete retained lifecycle, all 159 parity rows and all eight acceptance criteria
 remain open.
+
+
+### Azure NetApp Files native inventory foundation
+
+Eleven registered resource kinds now discover NetApp accounts, capacity pools,
+volumes, snapshots, subvolumes, quota rules, volume groups, snapshot/backup policies,
+backup vaults and backups. The stable 2025-12-01 source is pinned to an immutable
+Azure REST API specifications commit, with 37 native operations, two transitive
+common-type documents and 40 unmodified examples with checksums. All existing
+source documents, operations and resource bindings remain unchanged.
+
+Native parent indexes and own GETs are checked twice. Known IDs recover omitted
+parent and child lists; parent or collection failures preserve observations.
+Only own resource absence with readable parents closes a known child. Regionless
+backup/subvolume proxy resources inherit their verified parent region. Compound
+native names and short volume-group names are validated. Native subnet/VNet,
+parent, backup-source and directly supplied policy/replication references retain
+their specific types. Private future fields affect fingerprints without appearing
+in public records or API diagnostics. Client pages bind the complete snapshot.
+
+SQLite scan/graph/reconciliation tests register all 11 kinds across two regions,
+keep 22 observations through parent failure and close only one own-absent snapshot
+after the parent is readable again. Protocol tests cover paging, permission and
+scope failures, known omissions, cursor changes and secret canaries. This is local
+protocol/application evidence, not live Azure or independent emulator acceptance.
+
+The NAS mapping now references an existing NetApp specification, but remains
+pending: mountTargets are read-only volume properties, and export-policy updates
+are not independent mount-target deletion. Resource cleanup is not yet enabled.
+Replication/clone/group boundaries, policy consumers, encryption identities,
+retained backups, export updates and durable deletion remain implementation work.
+Azure now has 469 specs, 1,568 operations and 422 cleanup bindings; the missing-spec
+backlog is 16 Azure types / 21 references. All 159 rows and eight gates remain open.

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "d4f6547ba6a7999a281ee45307ac2e7350eb431fae5a06b186fc54becb829c22",
+    "checksum": "dea37f02ab22ddeef8443e2218d4e385620fdf95a67b3ba08a9c5377fe29d03d",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "6cadbb32a099b3ed0fb9ad2a9038246c41c1d4fca3ef31b6e095c5a38f38cc76",
+  "content_checksum": "10503af81bacbaf56d5e8e507ed65eab38a51b4fbfa2ea999edcb16d52206dbc",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -104228,6 +104228,3267 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitoringservice/resource-manager/Microsoft.Monitor/Accounts/stable/2023-04-03/monitoringAccounts_API.json"
     },
     {
+      "id": "Azure.Microsoft.NetApp.Accounts_Delete",
+      "name": "Accounts_Delete",
+      "service": "Microsoft.NetApp",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Accounts_Get",
+      "name": "Accounts_Get",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "NetApp account resource",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "../../../../../../common-types/resource-management/v6/managedidentity.json#/definitions/ManagedServiceIdentity",
+            "description": "The managed service identities assigned to this resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/AccountProperties",
+            "description": "NetApp Account properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Accounts_ListBySubscription",
+      "name": "Accounts_ListBySubscription",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.NetApp/netAppAccounts",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of NetApp account resources",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The NetAppAccount items on this page",
+            "items": {
+              "$ref": "#/definitions/NetAppAccount"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.NetApp/netAppAccounts",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.BackupPolicies_Delete",
+      "name": "BackupPolicies_Delete",
+      "service": "Microsoft.NetApp",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupPolicies/{backupPolicyName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "backupPolicyName": {
+            "description": "Backup policy Name which uniquely identify backup policy.",
+            "in": "path",
+            "name": "backupPolicyName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupPolicies/{backupPolicyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.BackupPolicies_Get",
+      "name": "BackupPolicies_Get",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupPolicies/{backupPolicyName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "backupPolicyName": {
+            "description": "Backup policy Name which uniquely identify backup policy.",
+            "in": "path",
+            "name": "backupPolicyName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Backup policy information",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/BackupPolicyProperties",
+            "description": "Backup policy Properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupPolicies/{backupPolicyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.BackupPolicies_List",
+      "name": "BackupPolicies_List",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupPolicies",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Backup Policies",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The BackupPolicy items on this page",
+            "items": {
+              "$ref": "#/definitions/BackupPolicy"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupPolicies",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.BackupVaults_Delete",
+      "name": "BackupVaults_Delete",
+      "service": "Microsoft.NetApp",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "backupVaultName": {
+            "description": "The name of the Backup Vault",
+            "in": "path",
+            "name": "backupVaultName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.BackupVaults_Get",
+      "name": "BackupVaults_Get",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "backupVaultName": {
+            "description": "The name of the Backup Vault",
+            "in": "path",
+            "name": "backupVaultName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Backup Vault information",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/BackupVaultProperties",
+            "description": "Backup Vault Properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.BackupVaults_ListByNetAppAccount",
+      "name": "BackupVaults_ListByNetAppAccount",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Backup Vaults",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The BackupVault items on this page",
+            "items": {
+              "$ref": "#/definitions/BackupVault"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Backups_Delete",
+      "name": "Backups_Delete",
+      "service": "Microsoft.NetApp",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}/backups/{backupName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "backupName": {
+            "description": "The name of the backup",
+            "in": "path",
+            "name": "backupName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_.]{0,255}$",
+            "required": true,
+            "type": "string"
+          },
+          "backupVaultName": {
+            "description": "The name of the Backup Vault",
+            "in": "path",
+            "name": "backupVaultName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}/backups/{backupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Backups_Get",
+      "name": "Backups_Get",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}/backups/{backupName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "backupName": {
+            "description": "The name of the backup",
+            "in": "path",
+            "name": "backupName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_.]{0,255}$",
+            "required": true,
+            "type": "string"
+          },
+          "backupVaultName": {
+            "description": "The name of the Backup Vault",
+            "in": "path",
+            "name": "backupVaultName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Backup under a Backup Vault",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/BackupProperties",
+            "description": "Backup Properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}/backups/{backupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Backups_ListByVault",
+      "name": "Backups_ListByVault",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}/backups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "An option to specify the VolumeResourceId. If present, then only returns the backups under the specified volume",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "backupVaultName": {
+            "description": "The name of the Backup Vault",
+            "in": "path",
+            "name": "backupVaultName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Backups",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Backup items on this page",
+            "items": {
+              "$ref": "#/definitions/Backup"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}/backups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Pools_Delete",
+      "name": "Pools_Delete",
+      "service": "Microsoft.NetApp",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Pools_Get",
+      "name": "Pools_Get",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Capacity pool resource",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/PoolProperties",
+            "description": "Capacity pool properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Pools_List",
+      "name": "Pools_List",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of capacity pool resources",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The CapacityPool items on this page",
+            "items": {
+              "$ref": "#/definitions/CapacityPool"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.SnapshotPolicies_Delete",
+      "name": "SnapshotPolicies_Delete",
+      "service": "Microsoft.NetApp",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/snapshotPolicies/{snapshotPolicyName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "snapshotPolicyName": {
+            "description": "The name of the snapshot policy",
+            "in": "path",
+            "name": "snapshotPolicyName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/snapshotPolicies/{snapshotPolicyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.SnapshotPolicies_Get",
+      "name": "SnapshotPolicies_Get",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/snapshotPolicies/{snapshotPolicyName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "snapshotPolicyName": {
+            "description": "The name of the snapshot policy",
+            "in": "path",
+            "name": "snapshotPolicyName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Snapshot policy information",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/SnapshotPolicyProperties",
+            "description": "Snapshot policy Properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/snapshotPolicies/{snapshotPolicyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.SnapshotPolicies_List",
+      "name": "SnapshotPolicies_List",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/snapshotPolicies",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Snapshot Policies",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The SnapshotPolicy items on this page",
+            "items": {
+              "$ref": "#/definitions/SnapshotPolicy"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/snapshotPolicies",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.SnapshotPolicies_ListVolumes",
+      "name": "SnapshotPolicies_ListVolumes",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/snapshotPolicies/{snapshotPolicyName}/volumes",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "snapshotPolicyName": {
+            "description": "The name of the snapshot policy",
+            "in": "path",
+            "name": "snapshotPolicyName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Volumes associated with snapshot policy",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Volume items on this page",
+            "items": {
+              "$ref": "#/definitions/Volume"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/snapshotPolicies/{snapshotPolicyName}/volumes",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Snapshots_Delete",
+      "name": "Snapshots_Delete",
+      "service": "Microsoft.NetApp",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/snapshots/{snapshotName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "snapshotName": {
+            "description": "The name of the snapshot",
+            "in": "path",
+            "name": "snapshotName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/snapshots/{snapshotName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Snapshots_Get",
+      "name": "Snapshots_Get",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/snapshots/{snapshotName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "snapshotName": {
+            "description": "The name of the snapshot",
+            "in": "path",
+            "name": "snapshotName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Snapshot of a Volume",
+        "properties": {
+          "location": {
+            "description": "Resource location",
+            "type": "string",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/SnapshotProperties",
+            "description": "Snapshot Properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "location"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/snapshots/{snapshotName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Snapshots_List",
+      "name": "Snapshots_List",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/snapshots",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Snapshots",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Snapshot items on this page",
+            "items": {
+              "$ref": "#/definitions/Snapshot"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/snapshots",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Subvolumes_Delete",
+      "name": "Subvolumes_Delete",
+      "service": "Microsoft.NetApp",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/subvolumes/{subvolumeName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "subvolumeName": {
+            "description": "The name of the subvolume.",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "subvolumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/subvolumes/{subvolumeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Subvolumes_Get",
+      "name": "Subvolumes_Get",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/subvolumes/{subvolumeName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "subvolumeName": {
+            "description": "The name of the subvolume.",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "subvolumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Subvolume Information properties\nDeprecated. This resource type will be removed in a future API version.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SubvolumeProperties",
+            "description": "Subvolume Properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/subvolumes/{subvolumeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Subvolumes_ListByVolume",
+      "name": "Subvolumes_ListByVolume",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/subvolumes",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Subvolumes",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The SubvolumeInfo items on this page",
+            "items": {
+              "$ref": "#/definitions/SubvolumeInfo"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/subvolumes",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.VolumeGroups_Delete",
+      "name": "VolumeGroups_Delete",
+      "service": "Microsoft.NetApp",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/volumeGroups/{volumeGroupName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeGroupName": {
+            "description": "The name of the volumeGroup",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeGroupName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/volumeGroups/{volumeGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.VolumeGroups_Get",
+      "name": "VolumeGroups_Get",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/volumeGroups/{volumeGroupName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeGroupName": {
+            "description": "The name of the volumeGroup",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeGroupName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Volume group resource for create",
+        "properties": {
+          "location": {
+            "description": "Resource location",
+            "type": "string",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/VolumeGroupProperties",
+            "description": "Volume group properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/volumeGroups/{volumeGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.VolumeGroups_ListByNetAppAccount",
+      "name": "VolumeGroups_ListByNetAppAccount",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/volumeGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of volume group resources",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The VolumeGroup items on this page",
+            "items": {
+              "$ref": "#/definitions/VolumeGroup"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/volumeGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.VolumeQuotaRules_Delete",
+      "name": "VolumeQuotaRules_Delete",
+      "service": "Microsoft.NetApp",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/volumeQuotaRules/{volumeQuotaRuleName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "volumeQuotaRuleName": {
+            "description": "The name of volume quota rule",
+            "in": "path",
+            "name": "volumeQuotaRuleName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/volumeQuotaRules/{volumeQuotaRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.VolumeQuotaRules_Get",
+      "name": "VolumeQuotaRules_Get",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/volumeQuotaRules/{volumeQuotaRuleName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "volumeQuotaRuleName": {
+            "description": "The name of volume quota rule",
+            "in": "path",
+            "name": "volumeQuotaRuleName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Quota Rule of a Volume",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/VolumeQuotaRulesProperties",
+            "description": "Volume Quota Rule Properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/volumeQuotaRules/{volumeQuotaRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.VolumeQuotaRules_ListByVolume",
+      "name": "VolumeQuotaRules_ListByVolume",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/volumeQuotaRules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Volume Quota Rules",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The VolumeQuotaRule items on this page",
+            "items": {
+              "$ref": "#/definitions/VolumeQuotaRule"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/volumeQuotaRules",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Volumes_Delete",
+      "name": "Volumes_Delete",
+      "service": "Microsoft.NetApp",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "forceDelete": {
+            "description": "An option to force delete the volume. Will cleanup resources connected to the particular volume",
+            "in": "query",
+            "name": "forceDelete",
+            "required": false,
+            "type": "boolean"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Volumes_Get",
+      "name": "Volumes_Get",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Volume resource",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/VolumeProperties",
+            "description": "Volume properties",
+            "x-ms-client-flatten": true
+          },
+          "zones": {
+            "description": "The availability zones.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Volumes_List",
+      "name": "Volumes_List",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of volume resources",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Volume items on this page",
+            "items": {
+              "$ref": "#/definitions/Volume"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Volumes_ListReplications",
+      "name": "Volumes_ListReplications",
+      "service": "Microsoft.NetApp",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/listReplications",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "body": {
+            "description": "The content of the action request",
+            "in": "body",
+            "name": "body",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/ListReplicationsRequest"
+            }
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List Replications",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Replication items on this page",
+            "items": {
+              "$ref": "#/definitions/Replication"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/listReplications",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Volumes_ReplicationStatus",
+      "name": "Volumes_ReplicationStatus",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/replicationStatus",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Replication status",
+        "properties": {
+          "errorMessage": {
+            "description": "Displays error message if the replication is in an error state",
+            "type": "string"
+          },
+          "healthy": {
+            "description": "Replication health check",
+            "type": "boolean"
+          },
+          "mirrorState": {
+            "$ref": "#/definitions/MirrorState",
+            "description": "The status of the replication"
+          },
+          "relationshipStatus": {
+            "$ref": "#/definitions/VolumeReplicationRelationshipStatus",
+            "description": "Status of the mirror relationship"
+          },
+          "totalProgress": {
+            "description": "The progress of the replication",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/replicationStatus",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Volumes_Update",
+      "name": "Volumes_Update",
+      "service": "Microsoft.NetApp",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "body": {
+            "description": "Volume object supplied in the body of the operation.",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VolumePatch"
+            }
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Volume resource",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/VolumeProperties",
+            "description": "Volume properties",
+            "x-ms-client-flatten": true
+          },
+          "zones": {
+            "description": "The availability zones.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "PATCH",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
       "id": "Azure.Microsoft.Network.ApplicationGateways_Delete",
       "name": "ApplicationGateways_Delete",
       "service": "Microsoft.Network",
@@ -140047,6 +143308,193 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts",
+      "class": "storage.dedicated_cluster",
+      "display_name": "NetApp account",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "netAppAccounts",
+        "read_operations": [
+          "Azure.Microsoft.NetApp.Accounts_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.NetApp.Accounts_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/backupPolicies",
+      "class": "storage.backup_policy",
+      "display_name": "NetApp backup policy",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "backupPolicies",
+        "read_operations": [
+          "Azure.Microsoft.NetApp.BackupPolicies_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.NetApp.BackupPolicies_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/backupVaults",
+      "class": "storage.backup_vault",
+      "display_name": "NetApp backup vault",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "backupVaults",
+        "read_operations": [
+          "Azure.Microsoft.NetApp.BackupVaults_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.NetApp.BackupVaults_ListByNetAppAccount"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/backupVaults/backups",
+      "class": "storage.backup",
+      "display_name": "NetApp backup",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "backups",
+        "read_operations": [
+          "Azure.Microsoft.NetApp.Backups_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.NetApp.Backups_ListByVault"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/capacityPools",
+      "class": "storage.dedicated_cluster",
+      "display_name": "NetApp capacity pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "capacityPools",
+        "read_operations": [
+          "Azure.Microsoft.NetApp.Pools_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.NetApp.Pools_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
+      "class": "storage.filesystem",
+      "display_name": "NetApp volume",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "volumes",
+        "read_operations": [
+          "Azure.Microsoft.NetApp.Volumes_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.NetApp.Volumes_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/snapshots",
+      "class": "storage.snapshot",
+      "display_name": "NetApp snapshot",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "snapshots",
+        "read_operations": [
+          "Azure.Microsoft.NetApp.Snapshots_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.NetApp.Snapshots_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/subvolumes",
+      "class": "storage.filesystem",
+      "display_name": "NetApp subvolume",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "subvolumes",
+        "read_operations": [
+          "Azure.Microsoft.NetApp.Subvolumes_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.NetApp.Subvolumes_ListByVolume"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/volumeQuotaRules",
+      "class": "storage.quota",
+      "display_name": "NetApp volume quota rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "volumeQuotaRules",
+        "read_operations": [
+          "Azure.Microsoft.NetApp.VolumeQuotaRules_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.NetApp.VolumeQuotaRules_ListByVolume"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/snapshotPolicies",
+      "class": "storage.snapshot_policy",
+      "display_name": "NetApp snapshot policy",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "snapshotPolicies",
+        "read_operations": [
+          "Azure.Microsoft.NetApp.SnapshotPolicies_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.NetApp.SnapshotPolicies_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.NetApp/netAppAccounts/volumeGroups",
+      "class": "storage.volume_group",
+      "display_name": "NetApp volume group",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "volumeGroups",
+        "read_operations": [
+          "Azure.Microsoft.NetApp.VolumeGroups_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.NetApp.VolumeGroups_ListByNetAppAccount"
         ]
       }
     },

@@ -321,3 +321,20 @@ Synapse backup inventory now includes recoverable dropped SQL pools and SQL pool
 Grant workspace and SQL pool list/read access, plus `Microsoft.Synapse/workspaces/restorableDroppedSqlPools/read` and `Microsoft.Synapse/workspaces/sqlPools/restorePoints/read` for the selected backup kinds. Known records omitted by lists are checked individually. Missing parents or unavailable collections fail the scan and preserve existing observations: a deleted workspace may need to be recreated before retained backups can be queried. Only a backup's own absence under a readable parent can reconcile its record.
 
 User-defined restore points can be deleted independently when Azure supplies a DISCRETE type, a user-request label and a valid creation date. Protected or incomplete records remain unavailable for cleanup. Deleting a point removes that recovery option and retains the SQL pool, workspace and other backups. Steward saves the deletion receipt and verifies the point is absent with unchanged, readable parents. Backup restoration and complete retained lifecycle handling remain unfinished. Automatic restore points cannot be deleted by users. `DISCRETE` alone is not treated as proof that a point was user-created or may be removed. See [Azure backup retention](https://learn.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/backup-and-restore) and [recovery from a deleted workspace](https://learn.microsoft.com/en-us/azure/synapse-analytics/backuprestore/restore-sql-pool-from-deleted-workspace).
+
+
+### Azure NetApp Files
+
+Inventory includes accounts, capacity pools, volumes, snapshots, subvolumes,
+quota rules, volume groups, snapshot/backup policies, backup vaults and backups.
+It follows native parent APIs and verifies individual resources, including known
+resources missing from lists. Failed parent reads preserve existing records.
+Backup and subvolume locations come from their verified parents. Volume subnet
+and VNet links support network selection; backup-to-source links do not authorize
+cascading removal. AD credentials and private unknown fields are not displayed.
+
+Cleanup and export-policy editing are still under implementation. Mount targets
+are read-only volume properties; deleting a volume is not a substitute for removing
+a mount. Volume deletion, replication, clones, snapshots and retained backups
+need separate lifecycle checks. See [NetApp permissions](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions)
+and [deleting volumes](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete).
