@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "30e3819cb478185f276b6bde2ef091c0d0e2e64278b8524e4c38b000cdd08c84",
+    "checksum": "37026e7126e72fe1df88f355c172db1d2bf1e631210f59d9edd2ba4d689d4999",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "a8ba6f0ed19bb4fc6a9c2e7389d6a047e856e526ebea9ddd999e8769f9a428bc",
+  "content_checksum": "92e9dff375e9dfd075ddf1d0391130c44ee1b2cfbb2eee3a22b7ff743f2f3a6c",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -143393,6 +143393,9 @@
         "collection": "capacityPools",
         "read_operations": [
           "Azure.Microsoft.NetApp.Pools_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.Pools_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.NetApp.Pools_List"

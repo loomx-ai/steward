@@ -396,7 +396,11 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		region := regions[id]
 		safe := map[string]any{"id": id, "type": kind, "name": raw["name"], "location": region, "tags": tags, "properties": props}
 		item := contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: text(raw["name"]), State: text(props["provisioningState"]), Location: region, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}, Tags: tags, Normalized: normalized, Raw: safe, NativeAliases: []string{id}, NetworkReferences: slices.Compact(network), Actionable: &actionable}
-		if kind == netappVolumeType {
+		if kind == netappPoolType {
+			if err := r.netappPoolInventory(ctx, c, req, &item); err != nil {
+				return nil, nil, nil, "", err
+			}
+		} else if kind == netappVolumeType {
 			if err := r.netappVolumeInventory(ctx, c, req, &item); err != nil {
 				return nil, nil, nil, "", err
 			}

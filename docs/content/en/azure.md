@@ -380,3 +380,14 @@ and [subvolume deletion](https://learn.microsoft.com/en-us/rest/api/netapp/subvo
 volume properties; deleting a volume is not a substitute for removing a mount.
 See [NetApp permissions](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions)
 and [deleting volumes](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete).
+
+Capacity pool cleanup deletes each reviewed volume before deleting the empty pool.
+Review the volumes and their snapshots, subvolumes and quota rules in the plan;
+stop applications and unmount these volumes before execution. Keeping a volume
+blocks pool removal. The NetApp account and backup-vault backups are retained.
+Grant capacity-pool delete permission in addition to volume cleanup permissions,
+pool and volume list/read access, account/resource-group reads and management-lock
+reads. Missing permissions, new volumes, changed writable configuration or changed
+native identities require a fresh review. Restarting execution resumes saved native
+operations; completion requires the pool's own absence under readable parents.
+See [Azure storage hierarchy](https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-understand-storage-hierarchy).

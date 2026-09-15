@@ -273484,7 +273484,9 @@
       "nativeType": "Microsoft.NetApp/netAppAccounts/capacityPools",
       "rest": {
         "collection": "capacityPools",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.Pools_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.NetApp.Pools_List"
         ],

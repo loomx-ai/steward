@@ -363,3 +363,10 @@ AD 凭据和未识别的私有字段不会显示。
 挂载目标是卷的只读属性，不能以删除整个卷替代移除挂载点。
 参见 [NetApp 访问权限](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions)
 和[删除卷](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete)。
+
+容量池清理会先逐一删除已审阅的卷，再删除空容量池。请检查计划中的卷及其快照、子卷和配额规则，
+执行前停止应用并卸载这些卷。保留任一卷会阻止容量池删除；NetApp 帐户和备份保管库内的备份将保留。
+除卷清理权限外，还需要容量池删除权限、容量池和卷的列表／读取权限，以及帐户、资源组和管理锁读取权限。
+权限缺失、新增卷、可写配置或原生资源标识变化均需要重新审阅。执行重启后会恢复已保存的原生操作，
+只有父资源仍可读取且容量池自身已不存在时才确认完成。
+参见 [Azure 存储层级](https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-understand-storage-hierarchy)。

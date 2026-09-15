@@ -254,3 +254,13 @@ still declares its operations. The separate Subvolumes_GetMetadata POST provides
 file metadata including creationTimeStamp; it is not substituted for an ordinary
 GET, is not in this selected catalog and has a different asynchronous response
 schema. More extensive clone/file metadata workflows remain unfinished.
+
+Capacity-pool ordering is tested with an application fixture, not an additional
+Azure recording. Two volumes and their six dependent children are removed before
+Pools_Delete; a real SQLite worker resumes each receipt after reopening storage
+and rebuilding the runtime. The account and vault backups survive. The pinned
+PoolProperties schema marks totalThroughputMibps and utilizedThroughputMibps as
+readOnly: these counters, etags and modification metadata may change between
+volume deletions. Writable and unknown properties, creation metadata and poolId
+remain bound. Existing Pools_Delete examples provide native acknowledgement
+coverage; the synthetic multi-volume workflow is not live Azure acceptance.

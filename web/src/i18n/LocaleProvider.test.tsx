@@ -401,3 +401,32 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     });
   }
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  it(`explains ordered NetApp capacity pool deletion in ${locale}`, () => {
+    localStorage.setItem(localePreferenceKey, locale);
+    render(
+      <LocaleProvider>
+        <ErrorProbe
+          error={{ code: "netapp_pool_delete", message: "fallback" }}
+        />
+      </LocaleProvider>,
+    );
+    const text = screen.getByTestId("error").textContent;
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "先删除已审查的卷"
+        : "first deletes its reviewed volumes",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "停止应用并卸载这些卷"
+        : "Stop applications and unmount these volumes",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "备份保管库内的备份将保留"
+        : "backup-vault backups are retained",
+    );
+  });
+}

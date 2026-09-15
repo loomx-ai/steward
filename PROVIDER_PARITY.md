@@ -7170,3 +7170,27 @@ termination, clone management, export-policy updates and combined protected-late
 backup/source deletion remain unfinished. All 159 parity rows and eight acceptance
 gates remain open; the NAS mount-target mapping still needs its native equivalent
 workflow, not destructive volume deletion as a substitute.
+
+### NetApp ordered capacity-pool cleanup
+
+Capacity pools now review their complete volume membership and require independent
+volume cleanup steps before Pools_Delete. Keeping a volume blocks deletion; the
+account and backup-vault backups remain. Signed volume prerequisites, repeated
+own reads, native UUID checks and complete collection reads reject stale, missing
+or newly added members. Only native read-only throughput counters, etags and
+modification metadata are excluded from stable pool configuration so a completed
+volume deletion does not invalidate the remaining reviewed steps.
+
+A real SQLite execution over 26 assets removes two volumes, their six children and
+the pool in order, retains 17 assets, and resumes persisted native phases without
+replaying any of its three DELETE requests. Failure tests cover omitted known
+volumes, unavailable collections, forbidden own reads, stale graph reviews,
+configuration changes and retained prerequisites. English and Chinese warnings
+explain ordered data loss and retained backups. This is offline native-protocol
+and application evidence, not live Azure or independent emulator acceptance.
+
+Azure has 469 specifications, 1,568 operations and 428 cleanup bindings. Account,
+vault, policy and group workflows, replicated-child cleanup, replication
+termination, clone management, export-policy updates and combined protected-latest
+backup/source deletion remain unfinished. All 159 parity rows and eight acceptance
+gates remain open; mount-target equivalence still requires its own native workflow.

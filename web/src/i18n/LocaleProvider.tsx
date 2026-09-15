@@ -1,4 +1,5 @@
 import {
+  netappPoolDeletionWarning,
   netappVolumeDeletionWarning,
   netappSubvolumeDeletionWarning,
   netappQuotaDeletionWarning,
@@ -35,6 +36,7 @@ import {
 } from "./synapseWarnings";
 
 const lifecycleWarnings: Partial<Record<string, Record<Locale, string>>> = {
+  netapp_pool_delete: netappPoolDeletionWarning,
   netapp_volume_delete: netappVolumeDeletionWarning,
   netapp_snapshot_delete: netappSnapshotDeletionWarning,
   netapp_backup_delete: netappBackupDeletionWarning,

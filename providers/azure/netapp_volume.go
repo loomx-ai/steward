@@ -118,7 +118,11 @@ func (c *client) netappVolumeBoundary(ctx context.Context, id string, known map[
 			return nil, contracts.DependencyReadError(err)
 		}
 		raws[entry.id] = res.data
-		review[entry.key] = c.privateConfiguration(res.data)
+		snapshot := res.data
+		if entry.kind == netappPoolType {
+			snapshot = netappPoolSnapshot(res.data)
+		}
+		review[entry.key] = c.privateConfiguration(snapshot)
 		protected = protected || protectedAzureTags(object(res.data["tags"])) || text(res.data["managedBy"]) != ""
 		if entry.kind != groupType {
 			current := resourceRegion(res.data)

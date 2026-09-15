@@ -34,3 +34,10 @@ export const netappQuotaDeletionWarning: Record<Locale, string> = {
   "zh-CN":
     "删除此配额规则将改变相关用户或组的存储限制，其他适用的配额规则仍可能生效。文件和父卷将保留。",
 };
+
+export const netappPoolDeletionWarning: Record<Locale, string> = {
+  "en-US":
+    "Deleting this capacity pool first deletes its reviewed volumes and their data, snapshots, subvolumes and quota rules. Stop applications and unmount these volumes before proceeding. The NetApp account and backup-vault backups are retained.",
+  "zh-CN":
+    "删除此容量池前，将先删除已审查的卷及其数据、快照、子卷和配额规则。继续前，请停止应用并卸载这些卷。NetApp 帐户和备份保管库内的备份将保留。",
+};
