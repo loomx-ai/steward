@@ -10,7 +10,7 @@ import (
 )
 
 func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
-	for _, mode := range []string{"complete", "no_receipt", "waiting_receipt", "duplicate", "changed_job", "changed_receipt", "second_receipt_invalid", "recreated", "forbidden", "parent_config_changed", "parent_protected", "missing_parent_fingerprint", "second_parent_change", "child_returns_during_parent_read", "root_change", "parent_config_changed_same_etag"} {
+	for _, mode := range []string{"complete", "no_receipt", "waiting_receipt", "duplicate", "changed_job", "changed_receipt", "second_receipt_invalid", "recreated", "forbidden", "parent_config_changed", "parent_protected", "missing_parent_fingerprint", "second_parent_change", "child_returns_during_parent_read", "root_change", "parent_config_changed_same_etag", "execute_parent", "execute_parent_forbidden", "execute_parent_changed_context", "execute_parent_invalid_projection", "execute_parent_child_returns", "execute_parent_resume_progress"} {
 		t.Run(mode, func(t *testing.T) {
 			parent := actionAsset(hostGroupType, "parent")
 			child := actionAsset(hostType, "child")
@@ -24,14 +24,18 @@ func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
 			_, req := stackDeletePlanFixture(t, false, contracts.ActionImpact{Asset: parent, ControllerID: "stack", Delete: true}, contracts.ActionImpact{Asset: child, ControllerID: parent.ID, Delete: true})
 			req.IdempotencyKey = "completed-child-job"
 			root := map[string]any{"id": req.Asset.Identity.NativeID, "type": deploymentStackType, "systemData": map[string]any{"createdAt": "2020-02-01T01:01:01.1075056Z"}, "properties": map[string]any{"resources": []any{map[string]any{"id": parent.Identity.NativeID, "status": "managed", "denyStatus": "none"}}}}
-			gone, active := false, false
+			gone, active, parentGone, executingParent := false, false, false, false
+			parentDeletes := 0
 			deletes, calls, parentReads, childReads, lists := 0, 0, 0, 0, 0
 			r := protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
 				if active {
 					calls++
-					if q.Method != "GET" {
+					if q.Method != "GET" && !executingParent {
 						t.Fatal("completed prerequisite validation mutated state", q.Method, q.URL)
 					}
+				}
+				if q.Method != "GET" && (q.Method != "DELETE" || !strings.EqualFold(q.URL.Path, parent.Identity.NativeID) && !strings.EqualFold(q.URL.Path, child.Identity.NativeID)) {
+					t.Fatal("unexpected mutation", q.Method, q.URL)
 				}
 				if reply, handled := emptyMonitorIndexResponse(t, q); handled {
 					return reply, nil
@@ -43,6 +47,17 @@ func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
 				case req.Asset.Identity.NativeID:
 					return jsonResponse(200, root, nil), nil
 				case parent.Identity.NativeID:
+					if q.Method == "DELETE" {
+						parentDeletes++
+						if mode == "execute_parent_forbidden" {
+							return jsonResponse(403, map[string]any{}, nil), nil
+						}
+						parentGone = true
+						return jsonResponse(200, map[string]any{}, nil), nil
+					}
+					if parentGone {
+						return jsonResponse(404, map[string]any{}, nil), nil
+					}
 					if active {
 						parentReads++
 						if parentReads > 1 && mode == "second_parent_change" {
@@ -55,6 +70,9 @@ func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
 					}
 					return jsonResponse(200, parentRaw, nil), nil
 				case child.Identity.NativeID:
+					if mode == "execute_parent_child_returns" && parentGone {
+						gone = false
+					}
 					if q.Method == "DELETE" {
 						deletes++
 						gone = true
@@ -157,9 +175,70 @@ func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
 			if string(before) != string(after) || deletes != 1 {
 				t.Fatal("progress changed the frozen request or repeated deletion")
 			}
-			if mode == "complete" {
+			if mode == "complete" || strings.HasPrefix(mode, "execute_parent") {
 				if err != nil || len(checks) != 1 || checks[0].Member != parent.ID || !checks[0].Check.Allowed || lists == 0 || parentReads < 4 || childReads < 4 {
 					t.Fatal("native parent preflight did not accept verified prerequisite", checks, err, lists, parentReads, childReads)
+				}
+				if mode == "complete" {
+					return
+				}
+				executingParent = true
+				out, err := r.deploymentStackExecuteMemberWithProgress(t.Context(), req, parent.ID, nil, progress)
+				if mode == "execute_parent_forbidden" {
+					if err == nil || out.Data != nil || parentDeletes != 1 || deletes != 1 {
+						t.Fatal("native parent refusal was bypassed", out, err, parentDeletes, deletes)
+					}
+					return
+				}
+				if err != nil || out.Done || len(out.Data) != 5 || parentDeletes != 1 || deletes != 1 {
+					t.Fatal("parent did not execute with its completed prerequisite", out, err, parentDeletes, deletes)
+				}
+				beforeResume := calls
+				for step := 0; step < 3; step++ {
+					wire, err := json.Marshal(out.Data)
+					var parentReceipt map[string]any
+					if err != nil || json.Unmarshal(wire, &parentReceipt) != nil {
+						t.Fatal("could not persist native parent request", err)
+					}
+					stored := object(parentReceipt["request"])
+					if object(object(stored["asset"])["normalized"])["_arm_generation"] != parent.Normalized["_arm_generation"] {
+						t.Fatal("recorded product request discarded original generation")
+					}
+					if mode == "execute_parent_changed_context" {
+						stored["idempotency_key"] = "changed"
+					}
+					if mode == "execute_parent_invalid_projection" {
+						delete(stored, "prerequisite_deletions")
+						parentReceipt["binding"], err = c.deploymentStackMemberExecutionBinding(req, parentReceipt)
+						if err != nil {
+							t.Fatal(err)
+						}
+					}
+					if mode == "execute_parent_resume_progress" {
+						out, err = r.deploymentStackExecuteMemberWithProgress(t.Context(), req, parent.ID, parentReceipt, progress)
+					} else {
+						out, err = r.deploymentStackExecuteMember(t.Context(), req, parent.ID, parentReceipt)
+					}
+					if mode != "execute_parent" {
+						if err == nil || out.Done || out.Data != nil || parentDeletes != 1 || deletes != 1 {
+							t.Fatal("invalid parent resume succeeded", out, err)
+						}
+						if mode != "execute_parent_child_returns" && calls != beforeResume {
+							t.Fatal("invalid stored request reached native HTTP", calls, beforeResume)
+						}
+						return
+					}
+					if err != nil || out.Done != (step > 0) || len(out.Data) != 5 || parentDeletes != 1 || deletes != 1 {
+						t.Fatal("parent resume lost its native request or repeated deletion", out, err, step)
+					}
+				}
+				observed, err := r.deploymentStackObserveProgress(t.Context(), req, deploymentStackProgress{Executions: []map[string]any{saved, out.Data}})
+				if err != nil || len(observed.Completed) != 2 || len(observed.Members) != 0 || parentDeletes != 1 || deletes != 1 {
+					t.Fatal("completed parent/child receipts did not reconcile", observed, err)
+				}
+				after, _ = json.Marshal(req)
+				if string(before) != string(after) {
+					t.Fatal("parent execution mutated the frozen Stack request")
 				}
 				return
 			}

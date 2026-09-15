@@ -50,11 +50,7 @@ func (r *Runtime) deploymentStackObserveProgress(ctx context.Context, req contra
 	out = deploymentStackObservedProgress{Members: map[asset.AssetID]asset.Asset{}, Completed: map[asset.AssetID]bool{}}
 	for _, saved := range progress.Executions {
 		id := asset.AssetID(text(saved["member"]))
-		member, err := c.deploymentStackMemberRequest(req, id)
-		if err != nil {
-			return out, err
-		}
-		phase, result, err := c.deploymentStackMemberExecutionResult(req, id, saved)
+		member, phase, result, err := c.deploymentStackMemberExecutionResult(req, id, saved)
 		if err != nil {
 			return out, err
 		}

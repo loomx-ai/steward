@@ -183,5 +183,22 @@ missing/incomplete/duplicate/tampered receipts, child reappearance, read failure
 and parent/root changes. Member requests now use deterministic impact and
 prerequisite ordering, preserving native receipt bindings when the semantically
 identical Stack request is reordered between VM execution phases. Full service
-and group closure, parent execution with completed prerequisites, Stack action
-registration, graph integration and all overall acceptance gates remain open.
+and group closure, Stack action registration, graph integration and all overall
+acceptance gates remain open.
+
+Parent member execution now accepts verified progress at operation start and
+persists the exact derived product request with its native result. Resume verifies
+both the complete original Stack request and the permissible product projection,
+then reuses that request for the native waiter and readback. Existing four-field
+member receipts remain supported; new receipts with derived requests have five
+fields. Progress cannot be replaced during resume. Original asset generations
+remain in the native request so the actual product driver still checks its own
+prerequisites and configuration before deletion.
+
+Protocol tests cover host deletion followed by host-group deletion, JSON resume,
+combined parent/child completion, native refusal, changed stored requests,
+invalid projections and reappearing prerequisites. The VM case also covers prior
+Stack retention preparation with a frozen pre-update generation, followed by
+native execution without repeating the retention writes. This advances member
+orchestration; full Stack service/group closure and controller/graph registration
+remain unfinished, and no overall parity gate is closed.

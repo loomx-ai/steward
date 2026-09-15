@@ -184,103 +184,141 @@ func TestDeploymentStackMemberExecution(t *testing.T) {
 }
 
 func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
-	live := attachmentResources()
-	var req contracts.ActionRequest
-	var root map[string]any
-	writes := []string{}
-	deleted := false
-	r := protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
-		if reply, handled := emptyMonitorIndexResponse(t, q); handled {
-			return reply, nil
-		}
-		if reply, handled := emptyDiagnosticSourceIndexResponse(t, q); handled {
-			return reply, nil
-		}
-		if strings.EqualFold(q.URL.Path, req.Asset.Identity.NativeID) && q.Method == "GET" {
-			return jsonResponse(200, root, nil), nil
-		}
-		if q.Method == "GET" && (strings.HasSuffix(strings.ToLower(q.URL.Path), "/locks") || strings.EqualFold(q.URL.Path, text(live["vm"]["id"])+"/extensions")) {
-			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
-		}
-		if q.Method == "GET" && strings.HasSuffix(strings.ToLower(q.URL.Path), "/resourcegroups/test") {
-			return jsonResponse(200, map[string]any{"id": q.URL.Path, "type": groupType}, nil), nil
-		}
-		for name, raw := range live {
-			if !strings.EqualFold(q.URL.Path, text(raw["id"])) {
-				continue
-			}
-			if q.Method == "GET" {
-				if deleted && (name == "vm" || name == "nic") {
-					return jsonResponse(404, map[string]any{}, nil), nil
+	for _, mode := range []string{"native_phases", "prepared"} {
+		t.Run(mode, func(t *testing.T) {
+			live := attachmentResources()
+			var req contracts.ActionRequest
+			var root map[string]any
+			writes := []string{}
+			deleted := false
+			r := protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
+				if reply, handled := emptyMonitorIndexResponse(t, q); handled {
+					return reply, nil
 				}
-				return jsonResponse(200, raw, nil), nil
-			}
-			writes = append(writes, q.Method+" "+name)
-			if q.Method == "DELETE" && name == "vm" {
-				deleted = true
-				delete(live["boot"], "managedBy")
-				delete(live["data"], "managedBy")
-				return jsonResponse(200, map[string]any{}, nil), nil
-			}
-			if q.Method != "PUT" && q.Method != "PATCH" || name != "vm" && name != "nic" {
-				t.Fatal("unreviewed product mutation", q.Method, name)
-			}
-			var body map[string]any
-			if err := json.NewDecoder(q.Body).Decode(&body); err != nil {
+				if reply, handled := emptyDiagnosticSourceIndexResponse(t, q); handled {
+					return reply, nil
+				}
+				if strings.EqualFold(q.URL.Path, req.Asset.Identity.NativeID) && q.Method == "GET" {
+					return jsonResponse(200, root, nil), nil
+				}
+				if q.Method == "GET" && (strings.HasSuffix(strings.ToLower(q.URL.Path), "/locks") || strings.EqualFold(q.URL.Path, text(live["vm"]["id"])+"/extensions")) {
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+				}
+				if q.Method == "GET" && strings.HasSuffix(strings.ToLower(q.URL.Path), "/resourcegroups/test") {
+					return jsonResponse(200, map[string]any{"id": q.URL.Path, "type": groupType}, nil), nil
+				}
+				for name, raw := range live {
+					if !strings.EqualFold(q.URL.Path, text(raw["id"])) {
+						continue
+					}
+					if q.Method == "GET" {
+						if deleted && (name == "vm" || name == "nic") {
+							return jsonResponse(404, map[string]any{}, nil), nil
+						}
+						return jsonResponse(200, raw, nil), nil
+					}
+					writes = append(writes, q.Method+" "+name)
+					if q.Method == "DELETE" && name == "vm" {
+						deleted = true
+						delete(live["boot"], "managedBy")
+						delete(live["data"], "managedBy")
+						return jsonResponse(200, map[string]any{}, nil), nil
+					}
+					if q.Method != "PUT" && q.Method != "PATCH" || name != "vm" && name != "nic" {
+						t.Fatal("unreviewed product mutation", q.Method, name)
+					}
+					var body map[string]any
+					if err := json.NewDecoder(q.Body).Decode(&body); err != nil {
+						t.Fatal(err)
+					}
+					previous := object(raw["properties"])
+					if q.Method == "PUT" {
+						raw["properties"] = body["properties"]
+						for _, key := range []string{"resourceGuid", "virtualMachine", "privateEndpoint", "hostedWorkloads"} {
+							if value, found := previous[key]; found {
+								object(raw["properties"])[key] = value
+							}
+						}
+					} else {
+						for key, value := range object(body["properties"]) {
+							previous[key] = value
+						}
+					}
+					raw["etag"] = "after-" + name
+					return jsonResponse(200, raw, nil), nil
+				}
+				t.Fatalf("unexpected product phase request %s %s", q.Method, q.URL)
+				return nil, nil
+			})
+			c, err := r.resolve(t.Context(), "connection")
+			if err != nil {
 				t.Fatal(err)
 			}
-			previous := object(raw["properties"])
-			if q.Method == "PUT" {
-				raw["properties"] = body["properties"]
-				for _, key := range []string{"resourceGuid", "virtualMachine", "privateEndpoint", "hostedWorkloads"} {
-					if value, found := previous[key]; found {
-						object(raw["properties"])[key] = value
+			req, root = stackAttachmentRequest(t, c)
+			progress := deploymentStackProgress{}
+			if mode == "prepared" {
+				for i := range req.LifecycleImpacts {
+					if req.LifecycleImpacts[i].Asset.ID == "vm" {
+						req.LifecycleImpacts[i].Asset.Normalized["_arm_generation"] = productGeneration(live["vm"])
 					}
 				}
-			} else {
-				for key, value := range object(body["properties"]) {
-					previous[key] = value
+				var preparation map[string]any
+				ready := false
+				for step := 0; step < 4; step++ {
+					out, err := c.deploymentStackPrepareMember(t.Context(), req, "vm", preparation)
+					if err != nil {
+						t.Fatal("Stack retention preparation failed", err)
+					}
+					wire, err := json.Marshal(out.Data)
+					if err != nil || json.Unmarshal(wire, &preparation) != nil {
+						t.Fatal("could not persist preparation", err)
+					}
+					if out.Done {
+						ready = true
+						break
+					}
+				}
+				if !ready {
+					t.Fatal("Stack preparation did not complete")
+				}
+				progress.Preparations = []map[string]any{preparation}
+			}
+			var saved map[string]any
+			completed := false
+			for step := 0; step < 8; step++ {
+				// The full request binding treats impact order as immaterial; the native
+				// product receipt must use the same deterministic member projection.
+				slices.Reverse(req.LifecycleImpacts)
+				var out contracts.WaitResult
+				var err error
+				if step == 0 {
+					out, err = r.deploymentStackExecuteMemberWithProgress(t.Context(), req, "vm", nil, progress)
+				} else {
+					out, err = r.deploymentStackExecuteMember(t.Context(), req, "vm", saved)
+				}
+				if err != nil {
+					t.Fatal("product phase failed", step, writes, err)
+				}
+				wire, err := json.Marshal(out.Data)
+				if err != nil || json.Unmarshal(wire, &saved) != nil {
+					t.Fatal("product receipt could not survive restart", err)
+				}
+				if out.Done {
+					completed = true
+					break
 				}
 			}
-			raw["etag"] = "after-" + name
-			return jsonResponse(200, raw, nil), nil
-		}
-		t.Fatalf("unexpected product phase request %s %s", q.Method, q.URL)
-		return nil, nil
-	})
-	c, err := r.resolve(t.Context(), "connection")
-	if err != nil {
-		t.Fatal(err)
-	}
-	req, root = stackAttachmentRequest(t, c)
-	var saved map[string]any
-	completed := false
-	for step := 0; step < 8; step++ {
-		// The full request binding treats impact order as immaterial; the native
-		// product receipt must use the same deterministic member projection.
-		slices.Reverse(req.LifecycleImpacts)
-		out, err := r.deploymentStackExecuteMember(t.Context(), req, "vm", saved)
-		if err != nil {
-			t.Fatal("product phase failed", step, writes, err)
-		}
-		wire, err := json.Marshal(out.Data)
-		if err != nil || json.Unmarshal(wire, &saved) != nil {
-			t.Fatal("product receipt could not survive restart", err)
-		}
-		if out.Done {
-			completed = true
-			break
-		}
-	}
-	if !completed || strings.Join(writes, ",") != "PUT nic,PATCH vm,DELETE vm" {
-		t.Fatal("product phases skipped or repeated", completed, writes)
-	}
-	out, err := r.deploymentStackExecuteMember(t.Context(), req, "vm", saved)
-	if err != nil || !out.Done || len(writes) != 3 {
-		t.Fatal("completed product execution repeated a mutation", out, err, writes)
-	}
-	observed, err := r.deploymentStackObserveProgress(t.Context(), req, deploymentStackProgress{Executions: []map[string]any{out.Data}})
-	if err == nil || observed.Completed != nil || observed.Members != nil || len(writes) != 3 {
-		t.Fatal("VM completion silently certified its deleted NIC", observed, err, writes)
+			if !completed || strings.Join(writes, ",") != "PUT nic,PATCH vm,DELETE vm" {
+				t.Fatal("product phases skipped or repeated", completed, writes)
+			}
+			out, err := r.deploymentStackExecuteMember(t.Context(), req, "vm", saved)
+			if err != nil || !out.Done || len(writes) != 3 {
+				t.Fatal("completed product execution repeated a mutation", out, err, writes)
+			}
+			observed, err := r.deploymentStackObserveProgress(t.Context(), req, deploymentStackProgress{Executions: []map[string]any{out.Data}})
+			if err == nil || observed.Completed != nil || observed.Members != nil || len(writes) != 3 {
+				t.Fatal("VM completion silently certified its deleted NIC", observed, err, writes)
+			}
+		})
 	}
 }

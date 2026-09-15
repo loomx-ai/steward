@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"maps"
+	"strings"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -33,6 +34,13 @@ func (c *client) deploymentStackMemberExecutionBinding(req contracts.ActionReque
 // each returned checkpoint before calling again. This never deletes the Stack,
 // detaches its membership, changes deny settings or bypasses an out-of-sync error.
 func (r *Runtime) deploymentStackExecuteMember(ctx context.Context, req contracts.ActionRequest, id asset.AssetID, saved map[string]any) (out contracts.WaitResult, err error) {
+	return r.deploymentStackExecuteMemberWithProgress(ctx, req, id, saved, deploymentStackProgress{})
+}
+
+// Progress is supplied only when starting an operation. Its derived product
+// request is then authenticated and persisted with the native result, so resumes
+// do not need to reconstruct prerequisites from changing inventory.
+func (r *Runtime) deploymentStackExecuteMemberWithProgress(ctx context.Context, req contracts.ActionRequest, id asset.AssetID, saved map[string]any, progress deploymentStackProgress) (out contracts.WaitResult, err error) {
 	// A missing member or its dependency is not proof that the Stack is absent.
 	defer func() { err = contracts.DependencyReadError(err) }()
 	c, err := r.resolve(ctx, req.Asset.Identity.ConnectionID)
@@ -46,10 +54,34 @@ func (r *Runtime) deploymentStackExecuteMember(ctx context.Context, req contract
 	if _, err := deploymentStackRequestPayload(req); err != nil {
 		return contracts.WaitResult{}, err
 	}
+	hasProgress := len(progress.Preparations)+len(progress.Executions) != 0
+	if saved != nil && hasProgress {
+		return contracts.WaitResult{}, serviceDenied("deployment_stack_member_progress_changed_during_resume")
+	}
+	configurations := map[string]any{}
+	recordRequest := saved != nil && saved["request"] != nil
+	if hasProgress {
+		observed, err := r.deploymentStackObserveProgress(ctx, req, progress)
+		if err != nil {
+			return contracts.WaitResult{}, err
+		}
+		if observed.Completed[id] {
+			return contracts.WaitResult{}, serviceDenied("deployment_stack_member_already_completed")
+		}
+		member, err = c.deploymentStackProductRequest(req, id, observed.Completed)
+		if err != nil {
+			return contracts.WaitResult{}, err
+		}
+		configurations, err = c.deploymentStackPreparedConfigurations(req, progress.Preparations)
+		if err != nil {
+			return contracts.WaitResult{}, err
+		}
+		recordRequest = true
+	}
 	phase := "execute"
 	var result contracts.ActionResult
 	if saved != nil {
-		phase, result, err = c.deploymentStackMemberExecutionResult(req, id, saved)
+		member, phase, result, err = c.deploymentStackMemberExecutionResult(req, id, saved)
 		if err != nil {
 			return contracts.WaitResult{}, err
 		}
@@ -63,6 +95,9 @@ func (r *Runtime) deploymentStackExecuteMember(ctx context.Context, req contract
 	}
 	checkpoint := func(phase, state string, done bool) (contracts.WaitResult, error) {
 		next := map[string]any{"member": string(id), "phase": phase, "result": result}
+		if recordRequest {
+			next["request"] = member
+		}
 		binding, err := c.deploymentStackMemberExecutionBinding(req, next)
 		if err != nil {
 			return contracts.WaitResult{}, err
@@ -76,7 +111,16 @@ func (r *Runtime) deploymentStackExecuteMember(ctx context.Context, req contract
 		if err != nil {
 			return contracts.WaitResult{}, err
 		}
-		if err := c.deploymentStackPreparedMember(member.Asset, live.data, nil); err != nil {
+		planned := member.Asset
+		if len(member.PrerequisiteDeletions) != 0 && text(planned.Normalized["_arm_parent_configuration"]) != "" {
+			if !serviceParentConfigurationMatches(planned, live.data) {
+				return contracts.WaitResult{}, serviceDenied("deployment_stack_parent_configuration_changed")
+			}
+			planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+		}
+		// Keep the original generation in the actual product request: its native
+		// Execute must independently verify prerequisite absence/configuration.
+		if err := c.deploymentStackPreparedMember(planned, live.data, object(configurations[strings.ToLower(planned.Identity.NativeID)])); err != nil {
 			return contracts.WaitResult{}, err
 		}
 		result, err = driver.Execute(ctx, member)
@@ -120,21 +164,64 @@ func (r *Runtime) deploymentStackExecuteMember(ctx context.Context, req contract
 }
 
 // Authenticate all checkpoints before resolving or reading any completed member.
-func (c *client) deploymentStackMemberExecutionResult(req contracts.ActionRequest, id asset.AssetID, saved map[string]any) (string, contracts.ActionResult, error) {
+func (c *client) deploymentStackMemberExecutionResult(req contracts.ActionRequest, id asset.AssetID, saved map[string]any) (contracts.ActionRequest, string, contracts.ActionResult, error) {
+	fail := func(err error) (contracts.ActionRequest, string, contracts.ActionResult, error) {
+		return contracts.ActionRequest{}, "", contracts.ActionResult{}, err
+	}
+	member, err := c.deploymentStackMemberRequest(req, id)
+	if err != nil {
+		return fail(err)
+	}
 	binding, err := c.deploymentStackMemberExecutionBinding(req, saved)
 	if err != nil {
-		return "", contracts.ActionResult{}, err
+		return fail(err)
+	}
+	_, recorded := saved["request"]
+	_, hasResult := saved["result"]
+	fields := 4
+	if recorded {
+		fields++
 	}
 	phase, _ := saved["phase"].(string)
-	if len(saved) != 4 || saved["binding"] != binding || saved["member"] != string(id) || phase != "wait" && phase != "readback" && phase != "complete" {
-		return "", contracts.ActionResult{}, serviceDenied("deployment_stack_member_execution_receipt_changed")
+	if len(saved) != fields || !hasResult || saved["binding"] != binding || saved["member"] != string(id) || phase != "wait" && phase != "readback" && phase != "complete" {
+		return fail(serviceDenied("deployment_stack_member_execution_receipt_changed"))
 	}
 	var result contracts.ActionResult
 	wire, err := json.Marshal(saved["result"])
 	if err != nil || json.Unmarshal(wire, &result) != nil {
-		return "", contracts.ActionResult{}, serviceDenied("invalid_deployment_stack_member_execution_receipt")
+		return fail(serviceDenied("invalid_deployment_stack_member_execution_receipt"))
 	}
-	return phase, result, nil
+	if recorded {
+		var stored contracts.ActionRequest
+		wire, err := json.Marshal(saved["request"])
+		if err != nil || json.Unmarshal(wire, &stored) != nil {
+			return fail(serviceDenied("invalid_deployment_stack_member_execution_request"))
+		}
+		existing := map[asset.AssetID]bool{}
+		for _, prerequisite := range member.PrerequisiteDeletions {
+			existing[prerequisite.Asset.ID] = true
+		}
+		completed := map[asset.AssetID]bool{}
+		for _, prerequisite := range stored.PrerequisiteDeletions {
+			if !existing[prerequisite.Asset.ID] {
+				completed[prerequisite.Asset.ID] = true
+			}
+		}
+		expected, err := c.deploymentStackProductRequest(req, id, completed)
+		if err != nil {
+			return fail(err)
+		}
+		actualPayload, err := deploymentStackRequestPayload(stored)
+		if err != nil {
+			return fail(err)
+		}
+		expectedPayload, err := deploymentStackRequestPayload(expected)
+		if err != nil || actualPayload != expectedPayload {
+			return fail(serviceDenied("deployment_stack_member_execution_request_changed"))
+		}
+		member = expected
+	}
+	return member, phase, result, nil
 }
 
 // The caller verifies the Stack around these product/own reads. This check proves
