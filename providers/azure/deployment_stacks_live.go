@@ -41,25 +41,9 @@ func (c *client) deploymentStackObserveMembers(ctx context.Context, parent asset
 			}
 			continue
 		}
-		endpoint, err := c.plannedResourceURL(member)
+		current, err := c.deploymentStackMemberRead(ctx, member)
 		if err != nil {
 			return err
-		}
-		current, err := c.readResource(ctx, endpoint)
-		if err != nil {
-			return err
-		}
-		if !validResourceResponse(current, member.Identity.NativeID, member.Identity.NativeType) || operationLocation(current.header) != "" {
-			return serviceDenied("invalid_deployment_stack_live_member")
-		}
-		if isCosmosType(member.Identity.NativeType) {
-			wire, err := c.plannedResourceID(member)
-			if err != nil {
-				return err
-			}
-			if !cosmosSameWireID(responseID(member.Identity.NativeType, text(current.data["id"])), wire) {
-				return serviceDenied("deployment_stack_live_member_identity_changed")
-			}
 		}
 		if err := c.servicePrivateIncarnation(member, current.data); err != nil {
 			return err
@@ -70,4 +54,32 @@ func (c *client) deploymentStackObserveMembers(ctx context.Context, parent asset
 	}
 	// Detect membership/configuration changes while the member reads ran.
 	return verifyStack(parent)
+}
+
+// Read the member's own native endpoint, including case-sensitive Cosmos selectors.
+func (c *client) deploymentStackMemberRead(ctx context.Context, member asset.Asset) (response, error) {
+	if strings.EqualFold(member.Identity.NativeType, deploymentStackType) {
+		return c.deploymentStackRead(ctx, member.Identity.NativeID)
+	}
+	endpoint, err := c.plannedResourceURL(member)
+	if err != nil {
+		return response{}, err
+	}
+	current, err := c.readResource(ctx, endpoint)
+	if err != nil {
+		return current, err
+	}
+	if !validResourceResponse(current, member.Identity.NativeID, member.Identity.NativeType) || operationLocation(current.header) != "" {
+		return response{}, serviceDenied("invalid_deployment_stack_live_member")
+	}
+	if isCosmosType(member.Identity.NativeType) {
+		wire, err := c.plannedResourceID(member)
+		if err != nil {
+			return response{}, err
+		}
+		if !cosmosSameWireID(responseID(member.Identity.NativeType, text(current.data["id"])), wire) {
+			return response{}, serviceDenied("deployment_stack_live_member_identity_changed")
+		}
+	}
+	return current, nil
 }
