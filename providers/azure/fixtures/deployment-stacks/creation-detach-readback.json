@@ -1,0 +1,594 @@
+{
+  "source": "https://raw.githubusercontent.com/Azure/azure-cli/ea185727729efc032ad9d4eef9ec355ee74ebaae/src/azure-cli/azure/cli/command_modules/resource/tests/latest/recordings/test_create_deployment_stack_resource_group.yaml",
+  "source_sha256": "af2ca10418f3e8f1cb8087dbe83ac0a5bc15cabf9413e41178a4204385826fb6",
+  "interactions": [
+    {
+      "index": 11,
+      "request": {
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "2047"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:34:11 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/b995d403-d0f0-461b-81e6-9f400fd40057"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-reads": [
+            "3749"
+          ],
+          "x-msedge-ref": [
+            "Ref A: 1E7E688E085E4666A9B782DAA9A6B863 Ref B: BL2AA2010205019 Ref C: 2026-02-20T18:34:12Z"
+          ]
+        },
+        "body": "{\r\n  \"tags\": {},\r\n  \"properties\": {\r\n    \"actionOnUnmanage\": {\r\n      \"resources\": \"delete\",\r\n      \"resourceGroups\": \"delete\",\r\n      \"managementGroups\": \"delete\",\r\n      \"resourcesWithoutDeleteSupport\": \"fail\"\r\n    },\r\n    \"deploymentId\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deployments/cli-test-create-deployment-stack-resource-groupxol-260220189urdf\",\r\n    \"description\": \"stack deployment\",\r\n    \"duration\": \"PT12.1232642S\",\r\n    \"denySettings\": {\r\n      \"mode\": \"none\",\r\n      \"applyToChildScopes\": true,\r\n      \"excludedPrincipals\": [\r\n        \"principal1\",\r\n        \"principal2\"\r\n      ],\r\n      \"excludedActions\": [\r\n        \"action1\",\r\n        \"action2\"\r\n      ]\r\n    },\r\n    \"outputs\": {\r\n      \"foo\": {\r\n        \"type\": \"String\",\r\n        \"value\": \"abc\"\r\n      },\r\n      \"bar\": {\r\n        \"type\": \"String\",\r\n        \"value\": \"xyz\"\r\n      }\r\n    },\r\n    \"parameters\": {\r\n      \"foo\": {\r\n        \"value\": \"abc\",\r\n        \"type\": \"string\"\r\n      },\r\n      \"bar\": {\r\n        \"value\": \"xyz\",\r\n        \"type\": \"string\"\r\n      }\r\n    },\r\n    \"resources\": [],\r\n    \"deploymentExtensions\": [],\r\n    \"provisioningState\": \"succeeded\",\r\n    \"detachedResources\": [],\r\n    \"deletedResources\": [],\r\n    \"failedResources\": [],\r\n    \"correlationId\": \"5776bd76-7bb5-4a1e-b651-d6bbb9a94fc2\",\r\n    \"validationLevel\": \"ProviderNoRbac\"\r\n  },\r\n  \"systemData\": {\r\n    \"createdBy\": \"test@example.com\",\r\n    \"createdByType\": \"User\",\r\n    \"createdAt\": \"2026-02-20T18:33:40.0505417Z\",\r\n    \"lastModifiedBy\": \"test@example.com\",\r\n    \"lastModifiedByType\": \"User\",\r\n    \"lastModifiedAt\": \"2026-02-20T18:33:40.0505417Z\"\r\n  },\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002\",\r\n  \"type\": \"Microsoft.Resources/deploymentStacks\",\r\n  \"name\": \"cli-test-create-deployment-stack-resource-group000002\"\r\n}"
+      }
+    },
+    {
+      "index": 13,
+      "request": {
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01&unmanageAction.Resources=detach&unmanageAction.ResourceGroups=detach&unmanageAction.ManagementGroups=detach&bypassStackOutOfSyncError=false"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "0"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:34:13 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/9d754802-277e-4043-b95e-aa1ab8de7798"
+          ],
+          "x-ms-ratelimit-remaining-subscription-deletes": [
+            "199"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-deletes": [
+            "2999"
+          ],
+          "x-msedge-ref": [
+            "Ref A: 4037D7B218BA4A98A3C398D9EC506945 Ref B: MNZ221060609021 Ref C: 2026-02-20T18:34:13Z"
+          ]
+        },
+        "body": ""
+      }
+    },
+    {
+      "index": 14,
+      "request": {
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01"
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "333"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:34:14 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/48b287c9-722d-4f7c-b0ac-abd543156107"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-reads": [
+            "3749"
+          ],
+          "x-msedge-ref": [
+            "Ref A: 1BAF9195A9924F1090740F13C29E68E1 Ref B: BL2AA2030101011 Ref C: 2026-02-20T18:34:14Z"
+          ]
+        },
+        "body": "{\r\n  \"error\": {\r\n    \"code\": \"DeploymentStackResourceNotFound\",\r\n    \"message\": \"The deployment stack '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002' could not be found.\"\r\n  }\r\n}"
+      }
+    },
+    {
+      "index": 21,
+      "request": {
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "2096"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:35:12 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/f16f96e7-7b99-4180-b93d-d2f8c78ef4bf"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-reads": [
+            "3749"
+          ],
+          "x-msedge-ref": [
+            "Ref A: 93A480B26923476D8BED0FB7C92271C7 Ref B: MNZ221060619021 Ref C: 2026-02-20T18:35:13Z"
+          ]
+        },
+        "body": "{\r\n  \"tags\": {},\r\n  \"properties\": {\r\n    \"actionOnUnmanage\": {\r\n      \"resources\": \"detach\",\r\n      \"resourceGroups\": \"detach\",\r\n      \"managementGroups\": \"detach\",\r\n      \"resourcesWithoutDeleteSupport\": \"fail\"\r\n    },\r\n    \"deploymentId\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deployments/cli-test-create-deployment-stack-resource-groupxol-26022018a3w2d\",\r\n    \"duration\": \"PT9.1173864S\",\r\n    \"denySettings\": {\r\n      \"mode\": \"none\",\r\n      \"applyToChildScopes\": false,\r\n      \"excludedPrincipals\": [],\r\n      \"excludedActions\": []\r\n    },\r\n    \"outputs\": {\r\n      \"foo\": {\r\n        \"type\": \"String\",\r\n        \"value\": \"abc\"\r\n      },\r\n      \"bar\": {\r\n        \"type\": \"String\",\r\n        \"value\": \"xyz\"\r\n      }\r\n    },\r\n    \"parameters\": {\r\n      \"foo\": {\r\n        \"value\": \"abc\",\r\n        \"type\": \"String\"\r\n      },\r\n      \"bar\": {\r\n        \"value\": \"xyz\",\r\n        \"type\": \"String\"\r\n      }\r\n    },\r\n    \"templateLink\": {\r\n      \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/templateSpecs/cli-test-template-spec000003/versions/v1\"\r\n    },\r\n    \"resources\": [],\r\n    \"deploymentExtensions\": [],\r\n    \"provisioningState\": \"succeeded\",\r\n    \"detachedResources\": [],\r\n    \"deletedResources\": [],\r\n    \"failedResources\": [],\r\n    \"correlationId\": \"31fd8fe5-b8b1-4682-8809-999a4affbce2\"\r\n  },\r\n  \"systemData\": {\r\n    \"createdBy\": \"test@example.com\",\r\n    \"createdByType\": \"User\",\r\n    \"createdAt\": \"2026-02-20T18:34:32.3492029Z\",\r\n    \"lastModifiedBy\": \"test@example.com\",\r\n    \"lastModifiedByType\": \"User\",\r\n    \"lastModifiedAt\": \"2026-02-20T18:34:32.3492029Z\"\r\n  },\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002\",\r\n  \"type\": \"Microsoft.Resources/deploymentStacks\",\r\n  \"name\": \"cli-test-create-deployment-stack-resource-group000002\"\r\n}"
+      }
+    },
+    {
+      "index": 23,
+      "request": {
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01&unmanageAction.Resources=detach&unmanageAction.ResourceGroups=detach&unmanageAction.ManagementGroups=detach&bypassStackOutOfSyncError=false"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "0"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:35:13 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/aa7f2e14-04b7-4efc-a3bb-bb3e30cba720"
+          ],
+          "x-ms-ratelimit-remaining-subscription-deletes": [
+            "199"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-deletes": [
+            "2999"
+          ],
+          "x-msedge-ref": [
+            "Ref A: E88B865A89FE4F6DAAC8C4B33F62F98E Ref B: MNZ221060618035 Ref C: 2026-02-20T18:35:13Z"
+          ]
+        },
+        "body": ""
+      }
+    },
+    {
+      "index": 24,
+      "request": {
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01"
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "333"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:35:13 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/2a535237-87c4-4bb4-8950-4474217fb226"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-reads": [
+            "3749"
+          ],
+          "x-msedge-ref": [
+            "Ref A: C806A4E607874107A686E567A4FEAFB9 Ref B: MNZ221060608021 Ref C: 2026-02-20T18:35:14Z"
+          ]
+        },
+        "body": "{\r\n  \"error\": {\r\n    \"code\": \"DeploymentStackResourceNotFound\",\r\n    \"message\": \"The deployment stack '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002' could not be found.\"\r\n  }\r\n}"
+      }
+    },
+    {
+      "index": 31,
+      "request": {
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "2188"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:36:03 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/80e813ac-3153-4d66-ae15-b42030244c99"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-reads": [
+            "3749"
+          ],
+          "x-msedge-ref": [
+            "Ref A: A3910F0F50484F45AAA8FF746890339B Ref B: BL2AA2010205045 Ref C: 2026-02-20T18:36:03Z"
+          ]
+        },
+        "body": "{\r\n  \"tags\": {},\r\n  \"properties\": {\r\n    \"actionOnUnmanage\": {\r\n      \"resources\": \"delete\",\r\n      \"resourceGroups\": \"delete\",\r\n      \"managementGroups\": \"delete\",\r\n      \"resourcesWithoutDeleteSupport\": \"fail\"\r\n    },\r\n    \"deploymentId\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deployments/cli-test-create-deployment-stack-resource-groupxol-26022018aefbm\",\r\n    \"duration\": \"PT7.685833S\",\r\n    \"denySettings\": {\r\n      \"mode\": \"none\",\r\n      \"applyToChildScopes\": false,\r\n      \"excludedPrincipals\": [],\r\n      \"excludedActions\": []\r\n    },\r\n    \"parameters\": {\r\n      \"name\": {\r\n        \"value\": \"cli-test-resource-one000004\",\r\n        \"type\": \"string\"\r\n      }\r\n    },\r\n    \"resources\": [\r\n      {\r\n        \"status\": \"managed\",\r\n        \"denyStatus\": \"none\",\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/templateSpecs/cli-test-resource-one000004\"\r\n      },\r\n      {\r\n        \"status\": \"managed\",\r\n        \"denyStatus\": \"none\",\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/templateSpecs/cli-test-resource-one000004/versions/v1\"\r\n      }\r\n    ],\r\n    \"deploymentExtensions\": [],\r\n    \"provisioningState\": \"succeeded\",\r\n    \"detachedResources\": [],\r\n    \"deletedResources\": [],\r\n    \"failedResources\": [],\r\n    \"correlationId\": \"14c70315-9867-43f1-b647-b1e1f61a2ec0\"\r\n  },\r\n  \"systemData\": {\r\n    \"createdBy\": \"test@example.com\",\r\n    \"createdByType\": \"User\",\r\n    \"createdAt\": \"2026-02-20T18:35:32.0640516Z\",\r\n    \"lastModifiedBy\": \"test@example.com\",\r\n    \"lastModifiedByType\": \"User\",\r\n    \"lastModifiedAt\": \"2026-02-20T18:35:32.0640516Z\"\r\n  },\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002\",\r\n  \"type\": \"Microsoft.Resources/deploymentStacks\",\r\n  \"name\": \"cli-test-create-deployment-stack-resource-group000002\"\r\n}"
+      }
+    },
+    {
+      "index": 39,
+      "request": {
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "2623"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:36:54 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/453c5678-3927-4af6-b1f8-ce53e1ed63ef"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-reads": [
+            "3749"
+          ],
+          "x-msedge-ref": [
+            "Ref A: 1FBEB284B81343AC8E54261B5E0F5108 Ref B: MNZ221060608031 Ref C: 2026-02-20T18:36:54Z"
+          ]
+        },
+        "body": "{\r\n  \"tags\": {},\r\n  \"properties\": {\r\n    \"actionOnUnmanage\": {\r\n      \"resources\": \"detach\",\r\n      \"resourceGroups\": \"detach\",\r\n      \"managementGroups\": \"detach\",\r\n      \"resourcesWithoutDeleteSupport\": \"fail\"\r\n    },\r\n    \"deploymentId\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deployments/cli-test-create-deployment-stack-resource-groupxol-26022018an7di\",\r\n    \"duration\": \"PT10.5124117S\",\r\n    \"denySettings\": {\r\n      \"mode\": \"none\",\r\n      \"applyToChildScopes\": false,\r\n      \"excludedPrincipals\": [],\r\n      \"excludedActions\": []\r\n    },\r\n    \"parameters\": {\r\n      \"name\": {\r\n        \"value\": \"cli-test-resource-two000005\",\r\n        \"type\": \"string\"\r\n      }\r\n    },\r\n    \"resources\": [\r\n      {\r\n        \"status\": \"managed\",\r\n        \"denyStatus\": \"none\",\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/templateSpecs/cli-test-resource-two000005\"\r\n      },\r\n      {\r\n        \"status\": \"managed\",\r\n        \"denyStatus\": \"none\",\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/templateSpecs/cli-test-resource-two000005/versions/v1\"\r\n      }\r\n    ],\r\n    \"deploymentExtensions\": [],\r\n    \"provisioningState\": \"succeeded\",\r\n    \"detachedResources\": [\r\n      {\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/templateSpecs/cli-test-resource-one000004\"\r\n      },\r\n      {\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/templateSpecs/cli-test-resource-one000004/versions/v1\"\r\n      }\r\n    ],\r\n    \"deletedResources\": [],\r\n    \"failedResources\": [],\r\n    \"correlationId\": \"7290fae1-53ab-433a-8d1d-c2726310692b\"\r\n  },\r\n  \"systemData\": {\r\n    \"createdBy\": \"test@example.com\",\r\n    \"createdByType\": \"User\",\r\n    \"createdAt\": \"2026-02-20T18:35:32.0640516Z\",\r\n    \"lastModifiedBy\": \"test@example.com\",\r\n    \"lastModifiedByType\": \"User\",\r\n    \"lastModifiedAt\": \"2026-02-20T18:36:21.8313844Z\"\r\n  },\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002\",\r\n  \"type\": \"Microsoft.Resources/deploymentStacks\",\r\n  \"name\": \"cli-test-create-deployment-stack-resource-group000002\"\r\n}"
+      }
+    },
+    {
+      "index": 57,
+      "request": {
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "2629"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:40:49 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/336f6d72-e7ff-459c-aef2-a15f3ea68eba"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-reads": [
+            "3749"
+          ],
+          "x-msedge-ref": [
+            "Ref A: 4903291C78644D62BDE7455AA7591456 Ref B: MNZ221060610009 Ref C: 2026-02-20T18:40:48Z"
+          ]
+        },
+        "body": "{\r\n  \"tags\": {},\r\n  \"properties\": {\r\n    \"actionOnUnmanage\": {\r\n      \"resources\": \"delete\",\r\n      \"resourceGroups\": \"detach\",\r\n      \"managementGroups\": \"detach\",\r\n      \"resourcesWithoutDeleteSupport\": \"fail\"\r\n    },\r\n    \"deploymentId\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deployments/cli-test-create-deployment-stack-resource-groupxol-26022018aw5qv\",\r\n    \"duration\": \"PT3M6.0676477S\",\r\n    \"denySettings\": {\r\n      \"mode\": \"none\",\r\n      \"applyToChildScopes\": false,\r\n      \"excludedPrincipals\": [],\r\n      \"excludedActions\": []\r\n    },\r\n    \"parameters\": {\r\n      \"name\": {\r\n        \"value\": \"cli-test-resource-three000006\",\r\n        \"type\": \"string\"\r\n      }\r\n    },\r\n    \"resources\": [\r\n      {\r\n        \"status\": \"managed\",\r\n        \"denyStatus\": \"none\",\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/templateSpecs/cli-test-resource-three000006\"\r\n      },\r\n      {\r\n        \"status\": \"managed\",\r\n        \"denyStatus\": \"none\",\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/templateSpecs/cli-test-resource-three000006/versions/v1\"\r\n      }\r\n    ],\r\n    \"deploymentExtensions\": [],\r\n    \"provisioningState\": \"succeeded\",\r\n    \"detachedResources\": [],\r\n    \"deletedResources\": [\r\n      {\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/templateSpecs/cli-test-resource-two000005\"\r\n      },\r\n      {\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/templateSpecs/cli-test-resource-two000005/versions/v1\"\r\n      }\r\n    ],\r\n    \"failedResources\": [],\r\n    \"correlationId\": \"73c42d75-650c-4056-805f-b944f7c88ff2\"\r\n  },\r\n  \"systemData\": {\r\n    \"createdBy\": \"test@example.com\",\r\n    \"createdByType\": \"User\",\r\n    \"createdAt\": \"2026-02-20T18:35:32.0640516Z\",\r\n    \"lastModifiedBy\": \"test@example.com\",\r\n    \"lastModifiedByType\": \"User\",\r\n    \"lastModifiedAt\": \"2026-02-20T18:37:13.166796Z\"\r\n  },\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_deployment_stacks000001/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002\",\r\n  \"type\": \"Microsoft.Resources/deploymentStacks\",\r\n  \"name\": \"cli-test-create-deployment-stack-resource-group000002\"\r\n}"
+      }
+    },
+    {
+      "index": 73,
+      "request": {
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-test-cli_test_deployment_stacks-two000007/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "2355"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:41:42 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/802729af-8b14-414d-8185-c24e66d5f4a4"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-reads": [
+            "3749"
+          ],
+          "x-msedge-ref": [
+            "Ref A: BBD25CABA4E24F1A84BA0724029B9680 Ref B: MNZ221060618051 Ref C: 2026-02-20T18:41:43Z"
+          ]
+        },
+        "body": "{\r\n  \"tags\": {},\r\n  \"properties\": {\r\n    \"actionOnUnmanage\": {\r\n      \"resources\": \"detach\",\r\n      \"resourceGroups\": \"detach\",\r\n      \"managementGroups\": \"detach\",\r\n      \"resourcesWithoutDeleteSupport\": \"fail\"\r\n    },\r\n    \"deploymentId\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-test-cli_test_deployment_stacks-two000007/providers/Microsoft.Resources/deployments/cli-test-create-deployment-stack-resource-groupxol-26022018c1rqk\",\r\n    \"duration\": \"PT9.9861028S\",\r\n    \"denySettings\": {\r\n      \"mode\": \"none\",\r\n      \"applyToChildScopes\": false,\r\n      \"excludedPrincipals\": [],\r\n      \"excludedActions\": []\r\n    },\r\n    \"parameters\": {\r\n      \"rgname\": {\r\n        \"value\": \"cli-test-resource-one000004\",\r\n        \"type\": \"string\"\r\n      },\r\n      \"tsname\": {\r\n        \"value\": \"cli-test-template-spec000003\",\r\n        \"type\": \"string\"\r\n      },\r\n      \"rgDeploymentName\": {\r\n        \"value\": \"deploy-rg-westcentralus\",\r\n        \"type\": \"string\"\r\n      }\r\n    },\r\n    \"resources\": [\r\n      {\r\n        \"status\": \"managed\",\r\n        \"denyStatus\": \"none\",\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-test-cli_test_deployment_stacks-two000007/providers/Microsoft.Resources/templateSpecs/cli-test-template-spec000003\"\r\n      },\r\n      {\r\n        \"status\": \"managed\",\r\n        \"denyStatus\": \"none\",\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-test-resource-one000004\"\r\n      }\r\n    ],\r\n    \"deploymentExtensions\": [],\r\n    \"provisioningState\": \"succeeded\",\r\n    \"detachedResources\": [],\r\n    \"deletedResources\": [],\r\n    \"failedResources\": [],\r\n    \"correlationId\": \"f0ab34c7-00c8-4ad1-8900-faecfcde2f8b\"\r\n  },\r\n  \"systemData\": {\r\n    \"createdBy\": \"test@example.com\",\r\n    \"createdByType\": \"User\",\r\n    \"createdAt\": \"2026-02-20T18:41:10.020323Z\",\r\n    \"lastModifiedBy\": \"test@example.com\",\r\n    \"lastModifiedByType\": \"User\",\r\n    \"lastModifiedAt\": \"2026-02-20T18:41:10.020323Z\"\r\n  },\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-test-cli_test_deployment_stacks-two000007/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002\",\r\n  \"type\": \"Microsoft.Resources/deploymentStacks\",\r\n  \"name\": \"cli-test-create-deployment-stack-resource-group000002\"\r\n}"
+      }
+    },
+    {
+      "index": 74,
+      "request": {
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-test-cli_test_deployment_stacks-two000007/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01&unmanageAction.Resources=detach&unmanageAction.ResourceGroups=detach&unmanageAction.ManagementGroups=detach&bypassStackOutOfSyncError=false"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "0"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:41:44 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/c0a022f2-e5cf-4386-b0e2-9895c702c9be"
+          ],
+          "x-ms-ratelimit-remaining-subscription-deletes": [
+            "199"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-deletes": [
+            "2999"
+          ],
+          "x-msedge-ref": [
+            "Ref A: 235A6F6E725B40EDACDDE2279203C15F Ref B: BL2AA2010204005 Ref C: 2026-02-20T18:41:43Z"
+          ]
+        },
+        "body": ""
+      }
+    },
+    {
+      "index": 75,
+      "request": {
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-test-cli_test_deployment_stacks-two000007/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002?api-version=2025-07-01"
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "cache-control": [
+            "no-cache"
+          ],
+          "content-length": [
+            "346"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ],
+          "date": [
+            "Fri, 20 Feb 2026 18:41:44 GMT"
+          ],
+          "expires": [
+            "-1"
+          ],
+          "pragma": [
+            "no-cache"
+          ],
+          "strict-transport-security": [
+            "max-age=31536000; includeSubDomains"
+          ],
+          "x-cache": [
+            "CONFIG_NOCACHE"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-ms-operation-identifier": [
+            "tenantId=e27a600b-df0a-485d-a3e2-0572b73b57cb,objectId=121b9669-dc18-4ee2-8aca-7f478924448b/westcentralus/f073ca33-5707-4908-81bf-940ed37e7494"
+          ],
+          "x-ms-ratelimit-remaining-subscription-global-reads": [
+            "3749"
+          ],
+          "x-msedge-ref": [
+            "Ref A: 0F4D383733044441B9A1CDC128AB66C0 Ref B: BL2AA2010205003 Ref C: 2026-02-20T18:41:44Z"
+          ]
+        },
+        "body": "{\r\n  \"error\": {\r\n    \"code\": \"DeploymentStackResourceNotFound\",\r\n    \"message\": \"The deployment stack '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-test-cli_test_deployment_stacks-two000007/providers/Microsoft.Resources/deploymentStacks/cli-test-create-deployment-stack-resource-group000002' could not be found.\"\r\n  }\r\n}"
+      }
+    }
+  ]
+}

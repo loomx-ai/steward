@@ -169,3 +169,20 @@ metadata fails observation. Missing metadata remains visible, but the delete-pla
 compiler requires a nonempty signed incarnation. Legacy eight-field reviews
 require a fresh scan. Live graph reads compare incarnation separately from the
 full configuration, preserving the distinction needed by eventual action readback.
+
+### Native recreation and synchronous detach readback
+
+`creation-detach-readback.json` preserves 12 selected interactions (exact response
+bodies/headers, request methods/URLs and original interaction indices) from
+[the official resource-group creation recording](https://raw.githubusercontent.com/Azure/azure-cli/ea185727729efc032ad9d4eef9ec355ee74ebaae/src/azure-cli/azure/cli/command_modules/resource/tests/latest/recordings/test_create_deployment_stack_resource_group.yaml).
+Source SHA-256: `af2ca10418f3e8f1cb8087dbe83ac0a5bc15cabf9413e41178a4204385826fb6`.
+Extraction SHA-256: `1b3159949919e43745ff25ac095a811392d02db406cff5371e14e240f37d0376`.
+
+Five own GETs demonstrate two same-name recreations changing `createdAt`, followed
+by updates preserving it. Three detach episodes return synchronous HTTP 200 with
+empty bodies and no callback, followed by own GET 404 for the same stack ID. The
+HTTP reader, creation digest, persisted receipt and poll client replay these
+responses. This adds own-stack readback evidence absent from the earlier dedicated
+delete recordings. One episode detaches two managed resources; their post-detach
+state is not read in this recording, so it does not prove retained-member identity
+or full cleanup completion. Region authorization is also outside this fixture.
