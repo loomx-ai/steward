@@ -131,3 +131,21 @@ The complete Stack action driver and end-to-end acceptance remain unfinished;
 all 159 parity rows and eight overall gates remain open.
 
 Source: [Resource Groups - Get (2021-04-01)](https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/get?view=rest-resources-2021-04-01).
+
+### Deployment Stack product preflight integration
+
+The Stack product-preflight stage now resolves each reviewed deleted member
+through the actual Azure runtime and calls its registered driver, including
+monitor/diagnostic dependency wrappers. It preserves native protection and
+prerequisite failures and brackets the checks with fresh Stack/member reads.
+Retained members receive existence/identity checks without deletion preflight.
+Authenticated VM/NIC preparation checkpoints can explain only the corresponding
+ETag change; configuration and creation identity are checked again afterward.
+
+Tests exercise native disk and VM preflights, protected tags, locks, managed
+groups, dependency-read failures, required host deletion before its host group,
+missing members, concurrent changes and persisted preparation checkpoints.
+These checks are a stage in the unfinished Stack action: they do not establish
+that Stack DELETE performs a product's preparation or purge. Direct-child
+execution, complete action/graph integration and end-to-end acceptance remain
+open, together with all 159 parity rows and eight overall gates.
