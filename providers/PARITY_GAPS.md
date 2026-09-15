@@ -1,14 +1,49 @@
 # Provider parity implementation gaps
 
-Audit base: `0c43def71dc2fdef7d6fafe6b59fd8124e9e81d9`. This is a repository scope audit, not cloud feature acceptance.
+Scope snapshot: 2026-09-15, inspected at `05f50cd59cd6d053277c6080a0f7f743e0c59b71`. This is a repository scope audit, not cloud feature acceptance. The earlier mapping repair was audited at `0c43def71dc2fdef7d6fafe6b59fd8124e9e81d9`.
 
-The matrix covers all 159 Alibaba Cloud specifications. The repository now contains 204 GCP and 455 Azure specifications, but those counts do not prove equivalence. All 159 rows remain pending behavioral verification.
+The matrix covers all 159 Alibaba Cloud specifications. The repository now contains 204 GCP and 469 Azure specifications, but those counts do not prove equivalence. All 159 rows remain pending behavioral verification.
 
-The audit found invalid YAML, 28 Azure mapping references to 18 absent specifications, and an incorrect GCP SSH-key mapping to service-account keys. The corrected matrix keeps absent candidates in `unimplemented_resources`; it does not remove them from the requested scope.
+The earlier audit found invalid YAML, 28 Azure mapping references to 18 absent specifications, and an incorrect GCP SSH-key mapping to service-account keys. The corrected matrix keeps absent candidates in `unimplemented_resources`; it does not remove them from the requested scope.
 
 The new `go test ./providers` check runs in the existing `go test ./...` CI job. It detects invalid YAML, omitted or duplicated baseline resources, drift in baseline source/class/scope/actions/hooks/enrichment/parent discovery, unresolved implemented-resource references and stale implementation backlogs. A passing check verifies matrix consistency only.
 
-Synapse now has explicit workspace, Spark-pool and SQL-pool specifications and native inventory, including known-resource reconciliation and default Data Lake references. Its five matrix entries moved to `resources` because a workspace specification exists; all remain pending verification. Spark jobs/sessions and notebook/job-definition artifacts now have native data-plane inventory, known-resource reconciliation and workspace/pool graph references. Spark pools now have a reviewed cancellation/deletion driver with SQLite recovery tests. This is still incomplete Synapse support: further child resources, complete dependencies, artifact actions and workspace/SQL cleanup remain open. See [the native contract evidence](azure/fixtures/synapse/README.md). The remaining table contains 17 absent specification types (23 matrix references).
+Synapse now includes workspace/pool and data-plane inventory, reviewed workspace and Spark/SQL cleanup, artifact handling and retained restore-point/backup observations. NetApp now has native specifications and inventory plus volume, pool, recovery-object, policy and vault cleanup. NetApp group/account cleanup and interface deletion effects remain unfinished. These implementations moved their existing candidates into `resources`; that change does not close behavioral acceptance. The current missing-specification table has 16 types and 21 matrix references affecting 20 Alibaba Cloud rows.
+
+## Current progress measures
+
+| Measure | GCP | Azure |
+| --- | --- | --- |
+| Explicit native specifications | 204 | 469 |
+| Baseline rows with at least one existing mapped specification | 155/159 (97.5%) | 138/159 (86.8%) |
+| Candidate types still without a specification | 0 | 16 |
+| Baseline rows affected by missing candidate specifications | 0 | 20 |
+| Empty mappings requiring research | 4 | 2 |
+
+These are registration/mapping measures, not functional completion percentages.
+A row can have both an implemented mapping and an absent candidate. All 159 rows
+remain `pending_verification`; none has a closed, requirement-by-requirement
+behavioral acceptance record. Existing protocol tests and implementation volume
+must not be presented as a percentage of full delivery.
+
+The eight overall gates remain open. Catalog generation, transport, inventory,
+lifecycle actions and retained tests have substantial implementations, but their
+full service scope has not been accepted. Remaining work includes the explicit
+missing families below, six mapping questions, behavior audits of existing
+families, independent emulator/application evidence where applicable, and final
+release verification. A defensible calendar completion date is not available.
+
+## Delivery order and acceptance records
+
+The NetApp interface-correlation milestone is implemented in `0e8bb9d`; group
+cleanup remains unfinished. Next prioritize the explicit missing Azure families
+and six mapping questions. For every baseline
+row, record the inventory, dependency, lifecycle, cleanup and reconciliation
+requirements with exact source/test/runtime evidence and remaining failures.
+Close a row only when those requirements are proved; keep a distinction between
+implemented-but-unverified behavior and missing implementation. Reassess the
+remaining work after this acceptance inventory instead of projecting total
+completion from successive local changes.
 
 ## Azure candidates without explicit resource specifications
 
@@ -19,7 +54,6 @@ These are candidates already named by the matrix. Missing specification files me
 | `Microsoft.Resources/deploymentStacks` | `ACS::BPStudio::Application`, `ACS::ROS::StackGroup`, `ACS::ROS::Stack` |
 | `Microsoft.DataProtection/backupVaults/backupPolicies` | `ACS::ECS::AutoSnapshotPolicy`, `ACS::DBS::BackupPlan` |
 | `Microsoft.Graph/groups` | `ACS::CloudSSO::Group`, `ACS::RAM::Group` |
-| `Microsoft.NetApp/netAppAccounts/capacityPools/volumes` | `ACS::NAS::FileSystem`, `ACS::NAS::MountTarget` |
 | `Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems` | `ACS::EBS::DiskReplicaGroup`, `ACS::EBS::DiskReplicaPair` |
 | `Microsoft.DataProtection/backupVaults` | `ACS::HBR::Vault` |
 | `Microsoft.Graph/users` | `ACS::RAM::User` |
@@ -52,6 +86,6 @@ The previously identified gaps remain open, including CEN QoS and packet marking
 
 ## Implementation order
 
-Start with the absent Azure families that affect multiple baseline rows: Synapse workspaces (five), deployment stacks (three), and backup/recovery resources spanning policies, vaults, replication and protected items. For each family, verify the official API contract and lifecycle first, implement inventory and cleanup with persistence tests, then move its candidate from `unimplemented_resources` to `resources`. Keep the behavioral status pending until its required evidence is complete.
+Prioritize the absent Azure families affecting multiple baseline rows: deployment stacks (three), and backup/recovery resources spanning policies, vaults, replication and protected items. Synapse and NetApp specification registration no longer belong in the missing-specification queue; their remaining behavior stays in the acceptance backlog. For each family, verify the official API contract and lifecycle first, implement inventory and cleanup with persistence tests, then move its candidate from `unimplemented_resources` to `resources`. Keep the behavioral status pending until its required evidence is complete.
 
 Alongside these implementations, resolve the explicitly empty mappings and audit the existing mapped families. Do not replace missing functionality with unrelated resources or mark a row complete because its type is registered.
