@@ -127,6 +127,9 @@ func (a *netappVolumeAction) current(ctx context.Context, req contracts.ActionRe
 			return false, serviceDenied("netapp_volume_context_changed")
 		}
 	}
+	if err := a.client.netappNetworkMatches(ctx, object(a.boundary["network"]), object(fresh["network"])); err != nil {
+		return false, err
+	}
 	if fresh["protected"] != false || fresh["ready"] != true {
 		return false, serviceDenied("netapp_volume_not_ready")
 	}

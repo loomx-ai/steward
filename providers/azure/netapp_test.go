@@ -86,6 +86,25 @@ func newNetappFixture(t *testing.T) *netappFixture {
 			}
 		}
 		path := strings.ToLower(q.URL.Path)
+		if q.Method == "POST" && strings.HasSuffix(path, "/querynetworksiblingset") && q.URL.Query().Get("api-version") == netappVersion {
+			var body map[string]any
+			if json.NewDecoder(q.Body).Decode(&body) != nil || len(body) != 2 {
+				t.Fatal("invalid network query")
+			}
+			ids := []any{}
+			for _, id := range slices.Sorted(maps.Keys(f.objects)) {
+				raw := f.objects[id]
+				p := object(raw["properties"])
+				if raw["type"] == netappVolumeType && !f.missing[id] && p["networkSiblingSetId"] == body["networkSiblingSetId"] && p["subnetId"] == body["subnetId"] && strings.Contains(path, "/locations/"+resourceRegion(raw)+"/") {
+					ids = append(ids, id)
+				}
+			}
+			nics := []any{}
+			if len(ids) > 0 {
+				nics = append(nics, map[string]any{"ipAddress": "10.0.0.4", "volumeResourceIds": ids})
+			}
+			return jsonResponse(200, map[string]any{"networkSiblingSetId": body["networkSiblingSetId"], "subnetId": body["subnetId"], "networkSiblingSetStateId": "fixture-state", "networkFeatures": "Standard", "provisioningState": "Succeeded", "nicInfoList": nics}, nil), nil
+		}
 		if q.Method == "POST" && strings.HasSuffix(path, "/listreplications") && q.URL.Query().Get("api-version") == netappVersion {
 			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 		}
@@ -251,7 +270,7 @@ func TestNetappOriginalSourceEvidence(t *testing.T) {
 		Version  string                                     `json:"api_version"`
 		Examples []struct{ File, SourceURI, SHA256 string } `json:"examples"`
 	}
-	if json.Unmarshal(wire, &source) != nil || source.Version != netappVersion || len(source.Examples) != 41 {
+	if json.Unmarshal(wire, &source) != nil || source.Version != netappVersion || len(source.Examples) != 42 {
 		t.Fatal("manifest")
 	}
 	for _, example := range source.Examples {

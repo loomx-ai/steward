@@ -13,7 +13,7 @@ const netappVolumeLifecycleSource = "azure:netapp-volume-cascade"
 func (c *client) netappVolumeRecorded(value asset.Asset) (map[string]any, error) {
 	id, kind, err := parseID(value.Identity.NativeID)
 	boundary := object(value.Normalized[netappVolumeReview])
-	if err != nil || id != value.Identity.NativeID || kind != strings.ToLower(netappVolumeType) || value.Identity.NativeType != netappVolumeType || len(strings.Split(id, "/")) != 13 || value.Identity.Provider != asset.ProviderAzure || value.Identity.Partition != "azure" || value.Identity.ConnectionID == "" || !strings.HasPrefix(id, c.root()+"/") || value.ID == "" || value.Location != boundary["region"] || len(boundary) != 11 || object(boundary["members"]) == nil || boundary["volume"] != value.Normalized["_netapp_configuration"] {
+	if err != nil || id != value.Identity.NativeID || kind != strings.ToLower(netappVolumeType) || value.Identity.NativeType != netappVolumeType || len(strings.Split(id, "/")) != 13 || value.Identity.Provider != asset.ProviderAzure || value.Identity.Partition != "azure" || value.Identity.ConnectionID == "" || !strings.HasPrefix(id, c.root()+"/") || value.ID == "" || value.Location != boundary["region"] || len(boundary) != 12 || object(boundary["network"]) == nil || object(boundary["members"]) == nil || boundary["volume"] != value.Normalized["_netapp_configuration"] {
 		return nil, serviceDenied("invalid_netapp_volume_boundary")
 	}
 	if value.Normalized[netappVolumeProof] != c.netappVolumeProofFor(id, value.Identity.ConnectionID, boundary) {

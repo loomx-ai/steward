@@ -2558,6 +2558,7 @@
         "Backups_Get",
         "Backups_GetLatestStatus",
         "Backups_ListByVault",
+        "NetAppResource_QueryNetworkSiblingSet",
         "Pools_Delete",
         "Pools_Get",
         "Pools_List",

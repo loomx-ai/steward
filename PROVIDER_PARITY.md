@@ -7346,3 +7346,23 @@ Group cleanup remains unfinished: native deletion also removes related network
 interfaces, whose ownership/protection/absence effects still need modeling. No
 new cleanup binding is enabled. Counts remain 469 specs, 1,569 operations and 431
 cleanup bindings; all 159 parity rows and all eight completion gates remain open.
+
+### NetApp network sibling-set review prerequisite
+
+Native network sibling-set queries now participate in volume inventory and deletion
+preflight. The selected POST operation retains its required body, pinned example,
+transitive definitions and an unchanged official CLI query replay. Returned set,
+subnet, state, network features, primary mount IPs and peer volume identities are
+verified through repeated queries and own reads. Optional mount metadata is checked
+when available. Missing UUIDs or transitional networking preserve nonactionable
+inventory; incomplete/unavailable evidence cannot authorize cleanup.
+
+Signed volume reviews grow from 11 to 12 fields and require a rescan of old records.
+Current deletion review rejects new/live-omitted peers or unexplained network drift.
+A smaller set after earlier volume prerequisites requires own 404 for each removed
+reviewed peer. Query/fault/preflight tests and a 26-asset SQLite failed-rescan test
+cover offline behavior. NIC ARM identity, ownership/protection and final deletion
+effects remain unfinished; primary IPs do not establish exclusive ownership.
+
+Counts are 469 specs, 1,570 operations and 431 cleanup bindings. All 159 parity rows
+and all eight completion gates remain open; offline evidence is not live acceptance.

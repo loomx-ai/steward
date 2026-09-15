@@ -300,6 +300,15 @@
             "name": "subscriptionId",
             "required": true,
             "type": "string"
+          },
+          "LocationParameter": {
+            "name": "location",
+            "in": "path",
+            "description": "The name of the Azure region.",
+            "required": true,
+            "type": "string",
+            "minLength": 1,
+            "x-ms-parameter-location": "method"
           }
         }
       },
@@ -3842,6 +3851,182 @@
                 }
               ]
             }
+          },
+          "NetworkSiblingSet": {
+            "type": "object",
+            "description": "Describes the contents of a network sibling set.",
+            "properties": {
+              "networkSiblingSetId": {
+                "type": "string",
+                "description": "Network Sibling Set ID for a group of volumes sharing networking resources in a subnet.",
+                "minLength": 36,
+                "maxLength": 36,
+                "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+              },
+              "subnetId": {
+                "type": "string",
+                "format": "arm-id",
+                "description": "The Azure Resource URI for a delegated subnet. Must have the delegation Microsoft.NetApp/volumes. Example /subscriptions/subscriptionId/resourceGroups/resourceGroup/providers/Microsoft.Network/virtualNetworks/testVnet/subnets/{mySubnet}",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ],
+                "x-ms-arm-id-details": {
+                  "allowedResources": [
+                    {
+                      "type": "Microsoft.Network/virtualNetworks/subnets"
+                    }
+                  ]
+                }
+              },
+              "networkSiblingSetStateId": {
+                "type": "string",
+                "description": "Network sibling set state Id identifying the current state of the sibling set."
+              },
+              "networkFeatures": {
+                "type": "string",
+                "description": "Network features available to the volume, or current state of update.",
+                "default": "Basic",
+                "enum": [
+                  "Basic",
+                  "Standard",
+                  "Basic_Standard",
+                  "Standard_Basic"
+                ],
+                "x-ms-enum": {
+                  "name": "NetworkFeatures",
+                  "modelAsString": true,
+                  "values": [
+                    {
+                      "name": "Basic",
+                      "value": "Basic",
+                      "description": "Basic network features."
+                    },
+                    {
+                      "name": "Standard",
+                      "value": "Standard",
+                      "description": "Standard network features."
+                    },
+                    {
+                      "name": "Basic_Standard",
+                      "value": "Basic_Standard",
+                      "description": "Updating from Basic to Standard network features."
+                    },
+                    {
+                      "name": "Standard_Basic",
+                      "value": "Standard_Basic",
+                      "description": "Updating from Standard to Basic network features."
+                    }
+                  ]
+                }
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/NetworkSiblingSetProvisioningState",
+                "description": "Gets the status of the NetworkSiblingSet at the time the operation was called.",
+                "readOnly": true
+              },
+              "nicInfoList": {
+                "type": "array",
+                "description": "List of NIC information",
+                "items": {
+                  "$ref": "#/definitions/NicInfo"
+                },
+                "x-ms-identifiers": []
+              }
+            }
+          },
+          "NetworkSiblingSetProvisioningState": {
+            "type": "string",
+            "description": "Gets the status of the NetworkSiblingSet at the time the operation was called.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Canceled",
+              "Updating"
+            ],
+            "x-ms-enum": {
+              "name": "NetworkSiblingSetProvisioningState",
+              "modelAsString": true,
+              "values": [
+                {
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "name": "Canceled",
+                  "value": "Canceled"
+                },
+                {
+                  "name": "Updating",
+                  "value": "Updating"
+                }
+              ]
+            },
+            "readOnly": true
+          },
+          "QueryNetworkSiblingSetRequest": {
+            "type": "object",
+            "description": "Network sibling set query.",
+            "properties": {
+              "networkSiblingSetId": {
+                "type": "string",
+                "description": "Network Sibling Set ID for a group of volumes sharing networking resources in a subnet.",
+                "minLength": 36,
+                "maxLength": 36,
+                "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+              },
+              "subnetId": {
+                "type": "string",
+                "format": "arm-id",
+                "description": "The Azure Resource URI for a delegated subnet. Must have the delegation Microsoft.NetApp/volumes. Example /subscriptions/subscriptionId/resourceGroups/resourceGroup/providers/Microsoft.Network/virtualNetworks/testVnet/subnets/{mySubnet}",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ],
+                "x-ms-arm-id-details": {
+                  "allowedResources": [
+                    {
+                      "type": "Microsoft.Network/virtualNetworks/subnets"
+                    }
+                  ]
+                }
+              }
+            },
+            "required": [
+              "networkSiblingSetId",
+              "subnetId"
+            ]
+          },
+          "NicInfo": {
+            "type": "object",
+            "description": "NIC information and list of volumes for which the NIC has the primary mount IP Address.",
+            "properties": {
+              "ipAddress": {
+                "type": "string",
+                "description": "IP Address",
+                "readOnly": true
+              },
+              "volumeResourceIds": {
+                "type": "array",
+                "description": "Volume resource Ids",
+                "items": {
+                  "type": "string",
+                  "format": "arm-id",
+                  "description": "A type definition that refers the id to an Azure Resource Manager resource.",
+                  "x-ms-arm-id-details": {
+                    "allowedResources": [
+                      {
+                        "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           }
         },
         "host": "management.azure.com",
@@ -6374,6 +6559,52 @@
               "x-ms-examples": {
                 "Volumes_BackupStatus": {
                   "$ref": "./examples/Volumes_LatestBackupStatus.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/providers/Microsoft.NetApp/locations/{location}/queryNetworkSiblingSet": {
+            "post": {
+              "operationId": "NetAppResource_QueryNetworkSiblingSet",
+              "summary": "Describe a network sibling set",
+              "description": "Get details of the specified network sibling set.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/LocationParameter"
+                },
+                {
+                  "name": "body",
+                  "in": "body",
+                  "description": "The request body",
+                  "required": true,
+                  "schema": {
+                    "$ref": "#/definitions/QueryNetworkSiblingSetRequest"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The request has succeeded.",
+                  "schema": {
+                    "$ref": "#/definitions/NetworkSiblingSet"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "NetworkSiblingSet_Query": {
+                  "$ref": "./examples/NetworkSiblingSet_Query.json"
                 }
               }
             }

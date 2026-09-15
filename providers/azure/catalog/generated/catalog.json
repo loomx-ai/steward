@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "d4a1810a1d37bd9eec63a4b16da82fa4fe0e6094591e6c41f8d228d29666b94d",
+    "checksum": "2af4011b230be994d34282ff9116046994807ab411b495cbe946a6012bdf68cd",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "2187aeb96dd4627036b552bc00baf157486487a999e38eee3b877800f36753c8",
+  "content_checksum": "6139deaf2ca854bbcaa8bfaea3946fe6243d1cfacb64e3fea4f685e4948cbe71",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -105292,6 +105292,147 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}/backups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.NetAppResource_QueryNetworkSiblingSet",
+      "name": "NetAppResource_QueryNetworkSiblingSet",
+      "service": "Microsoft.NetApp",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.NetApp/locations/{location}/queryNetworkSiblingSet",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "body": {
+            "description": "The request body",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/QueryNetworkSiblingSetRequest"
+            }
+          },
+          "location": {
+            "description": "The name of the Azure region.",
+            "in": "path",
+            "minLength": 1,
+            "name": "location",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Describes the contents of a network sibling set.",
+        "properties": {
+          "networkFeatures": {
+            "default": "Basic",
+            "description": "Network features available to the volume, or current state of update.",
+            "enum": [
+              "Basic",
+              "Standard",
+              "Basic_Standard",
+              "Standard_Basic"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "NetworkFeatures",
+              "values": [
+                {
+                  "description": "Basic network features.",
+                  "name": "Basic",
+                  "value": "Basic"
+                },
+                {
+                  "description": "Standard network features.",
+                  "name": "Standard",
+                  "value": "Standard"
+                },
+                {
+                  "description": "Updating from Basic to Standard network features.",
+                  "name": "Basic_Standard",
+                  "value": "Basic_Standard"
+                },
+                {
+                  "description": "Updating from Standard to Basic network features.",
+                  "name": "Standard_Basic",
+                  "value": "Standard_Basic"
+                }
+              ]
+            }
+          },
+          "networkSiblingSetId": {
+            "description": "Network Sibling Set ID for a group of volumes sharing networking resources in a subnet.",
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
+            "type": "string"
+          },
+          "networkSiblingSetStateId": {
+            "description": "Network sibling set state Id identifying the current state of the sibling set.",
+            "type": "string"
+          },
+          "nicInfoList": {
+            "description": "List of NIC information",
+            "items": {
+              "$ref": "#/definitions/NicInfo"
+            },
+            "type": "array",
+            "x-ms-identifiers": []
+          },
+          "provisioningState": {
+            "$ref": "#/definitions/NetworkSiblingSetProvisioningState",
+            "description": "Gets the status of the NetworkSiblingSet at the time the operation was called.",
+            "readOnly": true
+          },
+          "subnetId": {
+            "description": "The Azure Resource URI for a delegated subnet. Must have the delegation Microsoft.NetApp/volumes. Example /subscriptions/subscriptionId/resourceGroups/resourceGroup/providers/Microsoft.Network/virtualNetworks/testVnet/subnets/{mySubnet}",
+            "format": "arm-id",
+            "type": "string",
+            "x-ms-arm-id-details": {
+              "allowedResources": [
+                {
+                  "type": "Microsoft.Network/virtualNetworks/subnets"
+                }
+              ]
+            },
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.NetApp/locations/{location}/queryNetworkSiblingSet",
         "endpoint": "https://management.azure.com",
         "body_type": "json",
         "parameter_position": "query"

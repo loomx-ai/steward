@@ -477,3 +477,19 @@ Volume-group cleanup remains unimplemented. Azure requires all member volumes to
 be removed first and automatically removes related network interfaces when deleting
 the group. Those interface effects still need review before cleanup can be enabled.
 See [application volume-group deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/application-volume-group-delete).
+
+Volumes exposing a network sibling-set ID also require the native network
+sibling-set query permission (`Microsoft.NetApp/locations/queryNetworkSiblingSet/action`)
+and reads for every returned volume. The read-only POST query identifies volumes
+sharing primary mount IPs. Inventory verifies the returned subnet/set identity,
+current volume IDs, UUIDs and configuration through repeated own reads. When a
+volume supplies mount targets, the reported IP must agree. Optional absent mount
+targets do not replace the native query's membership evidence.
+
+A network migration or missing native UUID keeps the volume visible but prevents
+cleanup. Unavailable reads, new peers, changed state or live omitted peers require
+a fresh review. During cleanup, a smaller set is accepted only after each removed
+reviewed peer independently returns 404; this allows earlier volume prerequisites
+to complete without silently dropping live peers. Existing volume observations
+must be refreshed to acquire the network review. Network IPs are not NIC resource
+IDs: NIC ownership, protection and deletion-effect verification remain unfinished.

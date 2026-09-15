@@ -225,6 +225,12 @@ func (c *client) netappVolumeBoundary(ctx context.Context, id string, known map[
 	if review["replications"] != c.privateConfiguration(map[string]any{"peers": after}) {
 		return nil, serviceDenied("netapp_volume_replications_changed")
 	}
+	network, networkReady, err := c.netappNetworkBoundary(ctx, id, raws[id])
+	if err != nil {
+		return nil, err
+	}
+	review["network"] = network
+	ready = ready && networkReady
 	review["members"], review["protected"], review["ready"] = members, protected, ready
 	return review, nil
 }

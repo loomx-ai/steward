@@ -1,0 +1,15 @@
+{
+  "ref": "ea185727729efc032ad9d4eef9ec355ee74ebaae",
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/ea185727729efc032ad9d4eef9ec355ee74ebaae/src/azure-cli/azure/cli/command_modules/netappfiles/tests/latest/recordings/test_network_sibling_sets.yaml",
+  "source_sha256": "f4e2c3e9f3e8f1f86affd1c556ec49c474df592ecff0f91a180d29ffeca73f00",
+  "interactions": [
+    {
+      "index": 62,
+      "method": "POST",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.NetApp/locations/eastus/queryNetworkSiblingSet?api-version=2025-12-01",
+      "request_body": "{\"networkSiblingSetId\": \"2878d4cd-2109-f132-cd22-67af2ccd221f\", \"subnetId\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_000001/providers/Microsoft.Network/virtualNetworks/cli-vnet-000005/subnets/cli-subnet-000006\"}",
+      "status": 200,
+      "body": "{\"networkSiblingSetId\":\"2878d4cd-2109-f132-cd22-67af2ccd221f\",\"subnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_000001/providers/Microsoft.Network/virtualNetworks/cli-vnet-000005/subnets/cli-subnet-000006\",\"networkSiblingSetStateId\":\"-2124302775_46084.7739580787\",\"networkFeatures\":\"Basic\",\"provisioningState\":\"Succeeded\",\"nicInfoList\":[{\"ipAddress\":\"10.0.0.4\",\"volumeResourceIds\":[\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_volume_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004\"]}]}"
+    }
+  ]
+}

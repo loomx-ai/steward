@@ -16,6 +16,7 @@
     "Backups_Get",
     "Backups_GetLatestStatus",
     "Backups_ListByVault",
+    "NetAppResource_QueryNetworkSiblingSet",
     "Pools_Delete",
     "Pools_Get",
     "Pools_List",
@@ -102,6 +103,11 @@
       "file": "Backups_List.json",
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/BackupsUnderBackupVault_List.json",
       "sha256": "47e58d452ece2fd8554a4b34bc80555b68de91e02703426a303410a821803614"
+    },
+    {
+      "file": "NetworkSiblingSet_Query.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/NetworkSiblingSet_Query.json",
+      "sha256": "79356a1d0c87489cb972f021f4773ba81b0f9c7a0c1e73bd321ca3799426a741"
     },
     {
       "file": "Pools_Delete.json",

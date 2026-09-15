@@ -2,8 +2,8 @@
 
 The 2025-12-01 Swagger source is pinned to azure-rest-api-specs commit
 `07a27fbba41f8597cdfe0f866fcbf9f7c37390f4`. `sources.json` records the complete
-source SHA-256, the 37 selected operations and the original URLs and SHA-256
-values of 40 unmodified Microsoft examples. The catalog retains the selected
+source SHA-256, the 39 selected operations and the original URLs and SHA-256
+values of 42 unmodified Microsoft examples. The catalog retains the selected
 source and its two transitive common-type documents. Existing provider sources
 and operations are unchanged. `scripts/sync-azure-catalog.py` snapshots the
 selection; `go generate ./providers/azure` reproduces the catalog offline.
@@ -404,3 +404,37 @@ requires all member volumes absent before group deletion and identifies an
 automatic related-network-interface cascade. Interface ownership and absence
 verification remain unimplemented; the group remains protected. These offline
 observations are a prerequisite, not live-cloud acceptance or completed group cleanup.
+
+## Network sibling sets
+
+The selected NetAppResource_QueryNetworkSiblingSet operation is POST with required
+networkSiblingSetId/subnetId body and a nonpageable 200 response. The pinned native
+NetworkSiblingSet_Query example remains unchanged. `network-sibling-recordings.json`
+retains interaction 62 from the Azure CLI ea185727729efc032ad9d4eef9ec355ee74ebaae
+`test_network_sibling_sets.yaml`, whole-source SHA-256
+`f4e2c3e9f3e8f1f86affd1c556ec49c474df592ecff0f91a180d29ffeca73f00`.
+Its request/response bodies are unchanged; the replay canonicalizes ARM identifier
+casing. Unlike the prose REST snippet in the network-features guide, both the
+Swagger and recording require POST, not GET. The newly required LocationParameter
+and four local response/request definitions are copied from the same pinned source.
+
+The signed volume review now has 12 fields, including network evidence. When the
+native sibling-set ID is present, repeated queries and own volume reads bind set,
+subnet, state, network features, mount IPs, peer UUIDs and configuration hashes.
+Optional mountTargets are absent in the pinned Volumes_Get example; when present,
+they must agree with the query. Transitional network state or missing UUIDs retain
+discovery but prevent cleanup. Invalid/incomplete query responses and failed reads
+fail the observation. Unknown private fields never enter the persisted review.
+Old 11-field reviews require rescan. Deletion preflight verifies this evidence;
+known peers may disappear only through independent own 404s, supporting sequential
+pool volume prerequisites. Live omissions, new peers and unexplained state changes
+remain blocked. This review does not assign ownership of any NIC.
+
+Tests cover exact required query fields, scope/response faults, unchanged recorded
+replay, shared-volume own reads, migration, missing UUID, mount/peer/set changes,
+concurrent reads and cleanup preflight. A full 26-asset SQLite scan retains every
+asset after a shared-peer read failure. The common offline fixture supplies a
+nonpageable sibling-set POST response scoped by region/subnet/set, derived from
+its live test volumes. It is a test double, not an independent cloud emulator.
+Actual NIC correlation, shared ownership and deletion absence still require
+implementation and live Azure acceptance remains open.
