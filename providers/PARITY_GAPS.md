@@ -290,3 +290,23 @@ release acceptance remain open alongside full action orchestration, all 159
 parity rows and eight overall gates. Protocol tests cover both subscription and
 resource-group Stacks, JSON recovery, missing-list/own-present disagreement,
 forbidden reads, changing snapshots, tampered evidence and Stack recreation.
+
+### Ordering independent Stack prerequisites (2026-09-16)
+
+Native service closure now retains each parent's independently executed child
+relationships, including one child required by multiple parents. This evidence
+is separate from the original single execution-controller graph. A runtime
+ordering stage obtains fresh closure with authenticated completed-member
+progress, validates all dependency endpoints, and topologically orders the
+remaining independent children. Shared prerequisites occur once, ties have
+stable asset-ID order, and cycles or unverified edges yield no partial schedule.
+The original impacts and controller IDs remain unchanged.
+
+Tests exercise shared dependencies, input reordering, cycles, missing and
+duplicate endpoints, retained candidates, and the actual dedicated-host native
+enumeration before child execution for both flat Stack and product controllers.
+This orders only independently executed service prerequisites. An empty schedule
+does not waive retained-attachment preparation, other product lifecycles, group
+closure, the native Stack operation, or final outcome/deny evidence. Complete
+orchestration and action/graph registration remain unfinished; all 159 parity
+rows and eight overall gates remain open.

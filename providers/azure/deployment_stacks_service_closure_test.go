@@ -117,6 +117,9 @@ func TestDeploymentStackServiceClosure(t *testing.T) {
 				t.Fatal(out, rootReads, lists, childReads)
 			}
 			if mode == "direct" {
+				if !slices.Equal(out.Prerequisites[parent.ID], []asset.AssetID{child.ID}) {
+					t.Fatal("native prerequisite parent edge missing", out)
+				}
 				if len(out.DirectChildren) != 1 || out.DirectChildren[0].Asset.ID != child.ID {
 					t.Fatal("native Stack membership hid independent lifecycle", out)
 				}

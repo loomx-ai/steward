@@ -147,6 +147,12 @@ func testDeploymentStackCompletedPrerequisitePreflight(t *testing.T, flat bool) 
 			}
 			req.Asset.Normalized[deploymentStackReviewKey] = review
 			req.Asset.Normalized[deploymentStackProofKey] = c.deploymentStackProof(req.Asset.Identity.NativeID, "connection", review)
+			if mode == "execute_parent" {
+				order, err := r.deploymentStackOrderPrerequisites(t.Context(), req, deploymentStackProgress{})
+				if err != nil || len(order) != 1 || order[0].Asset.ID != child.ID || order[0].ControllerID != childController {
+					t.Fatal("native prerequisites not selected before member execution", order, err)
+				}
+			}
 			var saved, waiting map[string]any
 			for step := 0; step < 4; step++ {
 				out, err := r.deploymentStackExecuteMember(t.Context(), req, child.ID, saved)

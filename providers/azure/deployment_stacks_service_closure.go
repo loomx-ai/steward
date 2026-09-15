@@ -11,6 +11,9 @@ import (
 
 type deploymentStackServiceClosure struct {
 	Parents []asset.AssetID
+	// Native prerequisite relationships can have multiple parents. They are not
+	// replacements for the frozen plan's execution-controller graph.
+	Prerequisites map[asset.AssetID][]asset.AssetID
 	// These children require their own product lifecycle, which may include an
 	// abort, unlink or other preparation not performed by a native Stack DELETE.
 	DirectChildren []contracts.ActionImpact
@@ -139,6 +142,12 @@ func (c *client) deploymentStackCheckServiceClosure(ctx context.Context, req con
 			if reason := protectionReason(kind, live.data); reason != "" && !serviceIntrinsicChild(parent.Identity.NativeType, child.kind, reason) {
 				return out, serviceDenied(reason)
 			}
+			if child.direct {
+				if out.Prerequisites == nil {
+					out.Prerequisites = map[asset.AssetID][]asset.AssetID{}
+				}
+				out.Prerequisites[parent.ID] = append(out.Prerequisites[parent.ID], reviewed.Asset.ID)
+			}
 			if child.direct && !direct[reviewed.Asset.ID] {
 				direct[reviewed.Asset.ID] = true
 				out.DirectChildren = append(out.DirectChildren, reviewed)
@@ -156,6 +165,9 @@ func (c *client) deploymentStackCheckServiceClosure(ctx context.Context, req con
 
 	if _, err = observe(); err != nil {
 		return out, err
+	}
+	for id := range out.Prerequisites {
+		slices.Sort(out.Prerequisites[id])
 	}
 	slices.Sort(out.Parents)
 	slices.SortFunc(out.DirectChildren, func(a, b contracts.ActionImpact) int { return strings.Compare(string(a.Asset.ID), string(b.Asset.ID)) })
