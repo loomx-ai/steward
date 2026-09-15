@@ -80,13 +80,18 @@ func (c *client) deploymentStackPrepareMember(ctx context.Context, req contracts
 		return contracts.WaitResult{}, err
 	}
 	var result contracts.ActionResult
+	configurations := map[string]any{}
 	if saved != nil {
 		binding, err := c.deploymentStackPreparationBinding(req, saved)
 		if err != nil {
 			return contracts.WaitResult{}, err
 		}
-		if len(saved) != 4 || saved["binding"] != binding || saved["member"] != string(id) || saved["phase"] != "prepare_attachments" && saved["phase"] != "attachments_prepared" {
+		if len(saved) != 5 || saved["binding"] != binding || saved["member"] != string(id) || saved["phase"] != "prepare_attachments" && saved["phase"] != "attachments_prepared" {
 			return contracts.WaitResult{}, serviceDenied("deployment_stack_preparation_receipt_changed")
+		}
+		configurations = maps.Clone(object(saved["configurations"]))
+		if configurations == nil {
+			return contracts.WaitResult{}, serviceDenied("invalid_deployment_stack_preparation_configurations")
 		}
 		wire, err := json.Marshal(saved["result"])
 		if err != nil || json.Unmarshal(wire, &result) != nil {
@@ -132,6 +137,17 @@ func (c *client) deploymentStackPrepareMember(ctx context.Context, req contracts
 			return ready, nil
 		}
 	}
+	for _, target := range targets {
+		if configuration := object(configurations[strings.ToLower(target.Identity.NativeID)]); configuration != nil {
+			live, err := c.deploymentStackMemberRead(ctx, target)
+			if err != nil {
+				return contracts.WaitResult{}, err
+			}
+			if err := c.deploymentStackPreparedMember(target, live.data, configuration); err != nil {
+				return contracts.WaitResult{}, err
+			}
+		}
+	}
 	// Re-evaluate even a completed preparation checkpoint; it is not permission
 	// to skip the live attachment settings before the subsequent native delete.
 	result, err = a.prepareAttachmentMutation(ctx, member)
@@ -142,7 +158,10 @@ func (c *client) deploymentStackPrepareMember(ctx context.Context, req contracts
 	if phase != "attachments_prepared" && phase != "prepare_attachments" {
 		return contracts.WaitResult{}, serviceDenied("deployment_stack_preparation_member_missing")
 	}
-	next := map[string]any{"member": string(id), "phase": phase, "result": result}
+	if phase == "prepare_attachments" {
+		configurations[text(result.Data["target"])] = map[string]any{"configuration": result.Data["expected_configuration"], "creation": result.Data["creation_generation"]}
+	}
+	next := map[string]any{"member": string(id), "phase": phase, "result": result, "configurations": configurations}
 	next["binding"], err = c.deploymentStackPreparationBinding(req, next)
 	if err != nil {
 		return contracts.WaitResult{}, err

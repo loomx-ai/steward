@@ -40,6 +40,9 @@ func TestDeploymentStackMemberPreparationResume(t *testing.T) {
 			live := attachmentResources()
 			object(live["nic"]["properties"])["resourceGuid"] = "original-nic"
 			for i := range req.LifecycleImpacts {
+				if raw := live[string(req.LifecycleImpacts[i].Asset.ID)]; raw != nil {
+					req.LifecycleImpacts[i].Asset.Normalized["_arm_generation"] = productGeneration(raw)
+				}
 				if req.LifecycleImpacts[i].Asset.ID == "nic" {
 					req.LifecycleImpacts[i].Asset.Normalized["_arm_creation_generation"] = creationGeneration(live["nic"])
 				}
@@ -103,14 +106,19 @@ func TestDeploymentStackMemberPreparationResume(t *testing.T) {
 						t.Fatal(err)
 					}
 					if r.Method == "PUT" {
-						guid := object(raw["properties"])["resourceGuid"]
+						previous := object(raw["properties"])
 						raw["properties"] = body["properties"]
-						object(raw["properties"])["resourceGuid"] = guid
+						for _, key := range []string{"resourceGuid", "virtualMachine", "privateEndpoint", "hostedWorkloads"} {
+							if value, found := previous[key]; found {
+								object(raw["properties"])[key] = value
+							}
+						}
 					} else {
 						for key, value := range object(body["properties"]) {
 							object(raw["properties"])[key] = value
 						}
 					}
+					raw["etag"] = "after-" + name
 					writes = append(writes, r.Method+" "+name)
 					if r.Header.Get("x-ms-client-request-id") != azureRequestID(req.IdempotencyKey+":member:vm:retain:"+strings.ToLower(text(raw["id"]))) {
 						t.Fatal("unstable member mutation idempotency key")
@@ -176,6 +184,50 @@ func TestDeploymentStackMemberPreparationResume(t *testing.T) {
 				}
 				saved = out.Data
 			}
+
+			if fault == "none" {
+				if _, err := c.deploymentStackObserveServiceClosure(t.Context(), req, saved); err != nil {
+					t.Fatal("authorized preparation failed service closure", err)
+				}
+				if _, err := c.deploymentStackObserveServiceClosure(t.Context(), req); err == nil {
+					t.Fatal("generation changed without an authenticated checkpoint")
+				}
+				baseline, err := json.Marshal(live)
+				if err != nil {
+					t.Fatal(err)
+				}
+				for _, drift := range []string{"vm_size", "nic_dns", "nic_owner", "tags", "birth", "delete_option", "provisioning"} {
+					if err := json.Unmarshal(baseline, &live); err != nil {
+						t.Fatal(err)
+					}
+					switch drift {
+					case "vm_size":
+						object(object(live["vm"]["properties"])["hardwareProfile"])["vmSize"] = "Standard_D8s_v3"
+					case "nic_dns":
+						object(object(live["nic"]["properties"])["dnsSettings"])["internalDnsNameLabel"] = "other"
+					case "nic_owner":
+						object(object(live["nic"]["properties"])["virtualMachine"])["id"] = resourceID(vmType, "other")
+					case "tags":
+						live["vm"]["tags"] = map[string]any{"owner": "other"}
+					case "birth":
+						object(live["nic"]["properties"])["resourceGuid"] = "replacement"
+					case "delete_option":
+						object(object(object(live["vm"]["properties"])["storageProfile"])["osDisk"])["deleteOption"] = "Delete"
+					case "provisioning":
+						object(live["nic"]["properties"])["provisioningState"] = "Updating"
+					}
+					if err := c.deploymentStackObservePreparedMembers(t.Context(), req, saved); err == nil {
+						t.Fatal("unreviewed drift accepted", drift)
+					}
+					if _, err := c.deploymentStackPrepareMember(t.Context(), req, "vm", saved); err == nil {
+						t.Fatal("completed preparation silently reapproved drift", drift)
+					}
+					if len(writes) != 2 {
+						t.Fatal("drift caused another mutation", drift, writes)
+					}
+				}
+			}
+
 		})
 	}
 }

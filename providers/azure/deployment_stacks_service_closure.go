@@ -20,7 +20,7 @@ type deploymentStackServiceClosure struct {
 // Stack plan. Native membership does not establish ownership of implicit children.
 // Parents lists exactly which service closures were checked; other resource
 // families, attachments and managed groups still need their own checks.
-func (c *client) deploymentStackObserveServiceClosure(ctx context.Context, req contracts.ActionRequest) (out deploymentStackServiceClosure, err error) {
+func (c *client) deploymentStackObserveServiceClosure(ctx context.Context, req contracts.ActionRequest, preparations ...map[string]any) (out deploymentStackServiceClosure, err error) {
 	defer func() {
 		if err != nil {
 			out = deploymentStackServiceClosure{}
@@ -30,13 +30,17 @@ func (c *client) deploymentStackObserveServiceClosure(ctx context.Context, req c
 	if _, _, err = c.deploymentStackDeletePlan(req); err != nil {
 		return out, err
 	}
+	configurations, err := c.deploymentStackPreparedConfigurations(req, preparations)
+	if err != nil {
+		return out, err
+	}
 	members := make([]asset.Asset, 0, len(req.LifecycleImpacts))
 	byID := map[string]contracts.ActionImpact{}
 	for _, impact := range req.LifecycleImpacts {
 		members = append(members, impact.Asset)
 		byID[strings.ToLower(impact.Asset.Identity.NativeID)] = impact
 	}
-	if err = c.deploymentStackObserveMembers(ctx, req.Asset, members); err != nil {
+	if err = c.deploymentStackObserveMemberConfigurations(ctx, req.Asset, members, configurations); err != nil {
 		return out, err
 	}
 	native := object(object(req.Asset.Normalized[deploymentStackReviewKey])["members"])
@@ -74,10 +78,7 @@ func (c *client) deploymentStackObserveServiceClosure(ctx context.Context, req c
 			if failure != nil {
 				return out, failure
 			}
-			if failure = c.servicePrivateIncarnation(reviewed.Asset, live.data); failure != nil {
-				return out, failure
-			}
-			if failure = serviceIncarnation(reviewed.Asset, live.data); failure != nil {
+			if failure = c.deploymentStackPreparedMember(reviewed.Asset, live.data, object(configurations[id])); failure != nil {
 				return out, failure
 			}
 			kind, known := findType(reviewed.Asset.Identity.NativeType)
@@ -102,7 +103,7 @@ func (c *client) deploymentStackObserveServiceClosure(ctx context.Context, req c
 		}
 	}
 
-	if err = c.deploymentStackObserveMembers(ctx, req.Asset, members); err != nil {
+	if err = c.deploymentStackObserveMemberConfigurations(ctx, req.Asset, members, configurations); err != nil {
 		return out, err
 	}
 	slices.Sort(out.Parents)

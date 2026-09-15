@@ -11,7 +11,11 @@ import (
 // Own native reads keep observed membership from being promoted after a stale
 // scan. They do not establish deletion permission or complete native child
 // closure; the graph remains observed membership without cleanup delegation.
-func (c *client) deploymentStackObserveMembers(ctx context.Context, parent asset.Asset, members []asset.Asset) (err error) {
+func (c *client) deploymentStackObserveMembers(ctx context.Context, parent asset.Asset, members []asset.Asset) error {
+	return c.deploymentStackObserveMemberConfigurations(ctx, parent, members, nil)
+}
+
+func (c *client) deploymentStackObserveMemberConfigurations(ctx context.Context, parent asset.Asset, members []asset.Asset, configurations map[string]any) (err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	verifyStack := func(value asset.Asset) error {
 		current, err := c.deploymentStackRead(ctx, value.Identity.NativeID)
@@ -45,10 +49,7 @@ func (c *client) deploymentStackObserveMembers(ctx context.Context, parent asset
 		if err != nil {
 			return err
 		}
-		if err := c.servicePrivateIncarnation(member, current.data); err != nil {
-			return err
-		}
-		if err := serviceIncarnation(member, current.data); err != nil {
+		if err := c.deploymentStackPreparedMember(member, current.data, object(configurations[strings.ToLower(member.Identity.NativeID)])); err != nil {
 			return err
 		}
 	}

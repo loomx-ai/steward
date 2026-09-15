@@ -71,6 +71,10 @@ func (a *action) prepareAttachmentMutation(ctx context.Context, request contract
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
+	expected, err := attachmentPreparedConfiguration(target.kind.NativeType, update.live, update.retain)
+	if err != nil {
+		return contracts.ActionResult{}, err
+	}
 	operationID := "Azure.Microsoft.Compute.VirtualMachines_Update"
 	if target.kind.NativeType == nicType {
 		operationID = "Azure.Microsoft.Network.NetworkInterfaces_CreateOrUpdate"
@@ -120,6 +124,8 @@ func (a *action) prepareAttachmentMutation(ctx context.Context, request contract
 		retained = append(retained, resource.id)
 	}
 	result.Data["retain_resources"] = retained
+	result.Data["expected_configuration"] = a.client.privateConfiguration(expected)
+	result.Data["creation_generation"] = creationGeneration(update.live)
 	return result, nil
 }
 
