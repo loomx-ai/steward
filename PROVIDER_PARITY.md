@@ -7278,3 +7278,25 @@ supports separate PATCH requests; it is not a live Azure unassignment recording.
 Azure has 469 specs, 1,569 operations and 430 cleanup bindings. Backup-vault/account
 cleanup, replication and remaining NAS workflows and live acceptance remain
 unfinished. All 159 parity rows and eight acceptance gates remain open.
+
+### NetApp backup-vault membership review prerequisite
+
+Vault observations now independently review their native backups through complete
+pages and repeated own GETs, tying membership to the existing signed volume
+assignment review. Known omitted backups remain read hints across both passes,
+including an own-404 then same-name recreation between passes. Backup UUID,
+creation time, source identity, readiness/protection and private configuration
+fingerprints are recorded without exposing raw backup fields. Missing parents,
+foreign IDs, malformed pages, failed reads or concurrent membership changes
+reject the observation; a vault scan never closes backup resource records.
+
+Signed reviews contribute explicit backup-to-vault membership relationships.
+Missing/stale/extra graph members and old or forged reviews remain unresolved.
+A complete SQLite graph test preserves 22 assets after a failed vault rescan;
+current volume assignments and historical backups remain separate observations.
+This is a prerequisite for reviewed vault cleanup, not permission to delete
+newly discovered backups. The native service can surface a backup after its source
+volume was removed, so checking only an empty list is insufficient. Vault deletion,
+policy/vault unassignment sequencing and live Azure acceptance remain unfinished.
+Counts remain 469 specs, 1,569 operations and 430 cleanup bindings; all 159 parity
+rows and eight acceptance gates remain open.

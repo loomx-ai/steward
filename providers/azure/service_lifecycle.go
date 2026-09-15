@@ -522,6 +522,14 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Relationships = append(result.Relationships, contribution.Relationships...)
 			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 			result.Bindings = append(result.Bindings, contribution.Bindings...)
+			if parent.Identity.NativeType == netappVaultType {
+				vault, err := s.client.netappVaultContribution(parent, assets)
+				if err != nil {
+					return result, err
+				}
+				result.Relationships = append(result.Relationships, vault.Relationships...)
+				result.Unresolved = append(result.Unresolved, vault.Unresolved...)
+			}
 			continue
 		}
 		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == netappPoolType {

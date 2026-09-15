@@ -406,6 +406,11 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 			if err := r.netappAssignmentInventory(ctx, c, req, &item, raw); err != nil {
 				return nil, nil, nil, "", err
 			}
+			if kind == netappVaultType {
+				if err := r.netappVaultInventory(ctx, c, req, &item); err != nil {
+					return nil, nil, nil, "", err
+				}
+			}
 		} else if kind == netappPoolType {
 			if err := r.netappPoolInventory(ctx, c, req, &item); err != nil {
 				return nil, nil, nil, "", err

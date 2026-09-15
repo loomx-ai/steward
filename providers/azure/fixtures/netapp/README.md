@@ -342,3 +342,17 @@ suspension and ID clearing. Its subsequent volume DELETE/forceDelete is not part
 of policy cleanup; all volumes, children, vaults and historical backups remain.
 Synchronous/asynchronous fixtures and SQLite restart tests are offline validation;
 real Azure PATCH/unassignment acceptance remains open.
+
+Vault membership reviews reuse pinned Backups_ListByVault and backup own GET
+examples. Complete pages plus independent own reads are required; known omitted
+IDs remain hints across both passes, even after an initial own 404. Vault own reads
+surround each pass, and final parent/current-consumer checks bind the membership
+to its assignment review. Membership contributes graph observations only; it does
+not enable vault deletion or delete newly appearing backups.
+
+The pinned [AzureRM vault deletion implementation](https://github.com/hashicorp/terraform-provider-azurerm/blob/2c9b06e2976765e90af69918b6793fb5b0ca8378/internal/services/netapp/netapp_backup_vault_resource.go#L200)
+describes backups becoming visible after source-volume deletion. Its automatic
+retry/delete behavior is not authorization to delete unreviewed resources here.
+[Native vault management](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-vault-manage)
+requires removing backups before vault unassignment. These sources establish
+sequencing constraints; they do not prove a volume PATCH clearing backupVaultId.

@@ -434,3 +434,11 @@ reads, resumed enforcement, new consumers or changed resource identities/setting
 prevent further mutation. Each accepted update is saved separately for restart
 recovery, and completed callbacks still require independent own-resource reads.
 See [backup policy management](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-manage-policies).
+
+Backup-vault discovery also requires backup list/read access within each vault.
+It records the complete native backup membership independently of current volume
+assignments, including backups whose source volumes no longer exist. A previously
+observed backup omitted from a list is still read by ID; only its own absence can
+retire the association. Unavailable reads or membership changes fail the scan and
+preserve prior observations. Missing or stale backup graph records require a
+refresh. This additional review does not yet enable backup-vault deletion.
