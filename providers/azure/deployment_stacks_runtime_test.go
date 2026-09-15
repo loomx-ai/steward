@@ -16,6 +16,7 @@ type stackRuntimeFixture struct {
 	fault   string
 	reads   int
 	hidden  bool
+	members map[string][]any
 }
 
 func newStackRuntimeFixture(t *testing.T) *stackRuntimeFixture {
@@ -60,7 +61,11 @@ func newStackRuntimeFixture(t *testing.T) *stackRuntimeFixture {
 			if f.fault == "drift" && f.reads > 2 {
 				secret = "changed-private-canary"
 			}
-			return jsonResponse(200, map[string]any{"id": path, "type": deploymentStackType, "name": "stack", "properties": map[string]any{"provisioningState": state, "resources": []any{}, "parameters": map[string]any{"value": secret}}}, nil), nil
+			members := f.members[path]
+			if members == nil {
+				members = []any{}
+			}
+			return jsonResponse(200, map[string]any{"id": path, "type": deploymentStackType, "name": "stack", "properties": map[string]any{"provisioningState": state, "resources": members, "parameters": map[string]any{"value": secret}}}, nil), nil
 		}
 		t.Fatalf("unexpected path %s", path)
 		return nil, nil

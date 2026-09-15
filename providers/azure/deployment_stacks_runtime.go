@@ -86,8 +86,9 @@ func (r *Runtime) deploymentStackSnapshot(ctx context.Context, c *client, req co
 			state := text(object(raw["properties"])["provisioningState"])
 			safe := object(deploymentStackSafeValue(raw))
 			normalized := map[string]any{"name": last(id), "state": state, "subscriptionId": c.subscription, "scope_id": scope, "_inventory_source": deploymentStackSource, "_deployment_stack_review": raw["_deployment_stack_review"], "cleanup_protected": true, "cleanup_protection_reason": "deployment_stack_cleanup_not_implemented"}
+			normalized[deploymentStackProofKey] = c.deploymentStackProof(id, req.ConnectionID, object(raw[deploymentStackReviewKey]))
 			actionable := false
-			items = append(items, contracts.InventoryItem{NativeID: id, NativeType: deploymentStackType, ResourceKind: r.resourceKind(deploymentStackType), Name: last(id), State: state, Location: text(raw["location"]), Scope: contracts.InventoryScope{Kind: asset.ScopeGlobal, NativeID: "global", Name: "Global"}, Normalized: normalized, Raw: safe, NativeAliases: []string{id}, Actionable: &actionable})
+			items = append(items, contracts.InventoryItem{NativeID: id, NativeType: deploymentStackType, ResourceKind: r.resourceKind(deploymentStackType), Name: last(id), State: state, Location: text(raw["location"]), Scope: contracts.InventoryScope{Kind: asset.ScopeGlobal, NativeID: c.subscription + "/global", Name: "Global"}, Normalized: normalized, Raw: safe, NativeAliases: []string{id}, Actionable: &actionable})
 		}
 	}
 	sort.Slice(items, func(i, j int) bool { return items[i].NativeID < items[j].NativeID })
@@ -97,7 +98,7 @@ func (r *Runtime) deploymentStackSnapshot(ctx context.Context, c *client, req co
 
 func (r *Runtime) listDeploymentStacks(ctx context.Context, c *client, req contracts.InventoryRequest) (batch contracts.InventoryBatch, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
-	if req.ResourceKind == nil || !strings.EqualFold(req.ResourceKind.NativeType, deploymentStackType) || req.Source != deploymentStackSource || len(req.Options) != 0 || req.NetworkTarget != nil || !(req.Scope.Kind == asset.ScopeSubscription && strings.EqualFold(req.Scope.NativeID, c.subscription) || req.Scope.Kind == asset.ScopeGlobal && req.Scope.NativeID == "global") {
+	if req.ResourceKind == nil || !strings.EqualFold(req.ResourceKind.NativeType, deploymentStackType) || req.Source != deploymentStackSource || len(req.Options) != 0 || req.NetworkTarget != nil || !(req.Scope.Kind == asset.ScopeSubscription && strings.EqualFold(req.Scope.NativeID, c.subscription) || req.Scope.Kind == asset.ScopeGlobal && (req.Scope.NativeID == "global" || strings.EqualFold(req.Scope.NativeID, c.subscription+"/global"))) {
 		return batch, serviceDenied("invalid_deployment_stack_inventory_request")
 	}
 	cursor := productCursor{}

@@ -84,7 +84,16 @@ unchanged native resource-group GET example exercises a foreign-subscription
 member, a subscription-scoped resource and an ID-less extensible member. All
 three remain accounted for; extension identifiers stay private and their changes
 invalidate the fingerprint. ARM-addressable membership completeness is not
-cleanup readiness, ownership or authorization. Graph integration,
+cleanup readiness, ownership or authorization. Exclusive cleanup ownership,
 management-group scope and cleanup remain outstanding.
 
 Runtime registration now connects this reader to subscription/global scans and discovers resource-group stacks through the resource-group index, including known omitted groups. Two complete observations must agree before returning a batch. Continuation cursors bind the request, bundle revision, private configuration fingerprints and absence evidence. Returned inventory strips template inputs and extension identifiers. All stack observations remain protected while cleanup and graph ownership are unfinished. Management-group support is still outstanding.
+
+Member reviews are now authenticated to their stack and connection before graph
+reconciliation. The graph records observed `member_of` edges, with blocking
+unresolved references for missing, foreign or unsupported members and unknown
+states. These edges grant no cleanup delegation. The SQLite worker test covers
+actual global shard creation, canonical subscription/global scope persistence,
+member graph reconciliation, omitted-parent recovery and failed-rescan preservation.
+It also verifies that the runtime's global scope matches the scan creator's scope.
+Management-group inventory and native cleanup remain unimplemented.
