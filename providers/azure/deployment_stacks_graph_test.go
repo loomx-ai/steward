@@ -18,7 +18,7 @@ func stackGraphAssets(t *testing.T) (*client, asset.Asset, asset.Asset) {
 	c := directClient(nil)
 	id := strings.ToLower(c.root() + "/providers/Microsoft.Resources/deploymentStacks/stack")
 	member := asset.Asset{ID: "member", Identity: asset.Identity{Provider: asset.ProviderAzure, Partition: "azure", ConnectionID: "connection", NativeID: strings.ToLower(resourceID(vmType, "member")), NativeType: vmType}}
-	raw := map[string]any{"id": id, "type": deploymentStackType, "properties": map[string]any{"resources": []any{map[string]any{"id": member.Identity.NativeID, "status": "managed", "denyStatus": "denyDelete"}}}}
+	raw := map[string]any{"id": id, "type": deploymentStackType, "systemData": map[string]any{"createdAt": "2020-02-01T01:01:01.1075056Z"}, "properties": map[string]any{"resources": []any{map[string]any{"id": member.Identity.NativeID, "status": "managed", "denyStatus": "denyDelete"}}}}
 	c.http.Transport = roundTripFunc(func(q *http.Request) (*http.Response, error) {
 		if q.Method != "GET" {
 			t.Fatal("unexpected mutation", q.Method)

@@ -159,3 +159,13 @@ abort contribution instead of promoting stale observations. The SQLite graph
 worker test confirms that a failed live reread preserves previously persisted
 relationships. These reads establish observed membership only: parent/child
 closure, protection checks and destructive-action authorization remain separate.
+
+The authenticated member review now includes a separate stack incarnation
+digest derived only from native `systemData.createdAt`. The pinned GET examples
+provide this metadata. Deployment IDs, correlation IDs and modification times
+are mutable deployment/operation information and are excluded. Equivalent
+RFC3339 timestamps normalize to the same UTC instant; invalid or zero creation
+metadata fails observation. Missing metadata remains visible, but the delete-plan
+compiler requires a nonempty signed incarnation. Legacy eight-field reviews
+require a fresh scan. Live graph reads compare incarnation separately from the
+full configuration, preserving the distinction needed by eventual action readback.

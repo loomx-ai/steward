@@ -137,3 +137,45 @@ func TestDeploymentStackMemberIdentityScopes(t *testing.T) {
 		}
 	}
 }
+
+func TestDeploymentStackCreationEvidence(t *testing.T) {
+	c := directClient(nil)
+	raw := map[string]any{"properties": map[string]any{"resources": []any{}, "deploymentId": "first", "correlationId": "first"}, "systemData": map[string]any{"createdAt": "2020-02-01T01:01:01.1075056Z", "lastModifiedAt": "2020-02-02T00:00:00Z"}}
+	original, err := c.deploymentStackMemberReview(raw)
+	if err != nil || text(original["incarnation"]) == "" {
+		t.Fatal(original, err)
+	}
+	object(raw["properties"])["deploymentId"] = "second"
+	object(raw["properties"])["correlationId"] = "second"
+	object(raw["systemData"])["lastModifiedAt"] = "2020-03-01T00:00:00Z"
+	updated, err := c.deploymentStackMemberReview(raw)
+	if err != nil || updated["incarnation"] != original["incarnation"] || updated["configuration"] == original["configuration"] {
+		t.Fatal("deployment edits confused with recreation", updated, err)
+	}
+	object(raw["systemData"])["createdAt"] = "2020-02-01T02:01:01.107505600+01:00"
+	equivalent, err := c.deploymentStackMemberReview(raw)
+	if err != nil || equivalent["incarnation"] != original["incarnation"] {
+		t.Fatal("equivalent native timestamps differ", equivalent, err)
+	}
+	object(raw["systemData"])["createdAt"] = "2021-02-01T01:01:01Z"
+	recreated, err := c.deploymentStackMemberReview(raw)
+	if err != nil || recreated["incarnation"] == original["incarnation"] {
+		t.Fatal("recreation lost", recreated, err)
+	}
+	delete(raw, "systemData")
+	object(raw["properties"])["createdAt"] = "2020-02-01T01:01:01Z"
+	missing, err := c.deploymentStackMemberReview(raw)
+	if err != nil || missing["incarnation"] != "" || missing["arm_members_complete"] != true {
+		t.Fatal("missing native identity fabricated", missing, err)
+	}
+	for _, bad := range []any{"", false, 42, "yesterday", "0001-01-01T00:00:00Z"} {
+		raw["systemData"] = map[string]any{"createdAt": bad}
+		if _, err := c.deploymentStackMemberReview(raw); err == nil {
+			t.Fatal("malformed creation metadata accepted", bad)
+		}
+	}
+	raw["systemData"] = "malformed"
+	if _, err := c.deploymentStackMemberReview(raw); err == nil {
+		t.Fatal("malformed systemData accepted")
+	}
+}

@@ -18,7 +18,14 @@ func (c *client) deploymentStackObserveMembers(ctx context.Context, parent asset
 		if err != nil {
 			return err
 		}
+		birth, err := c.deploymentStackBirth(current.data)
+		if err != nil {
+			return err
+		}
 		review := object(value.Normalized[deploymentStackReviewKey])
+		if review["incarnation"] != birth {
+			return serviceDenied("deployment_stack_live_incarnation_changed")
+		}
 		if text(review["configuration"]) == "" || value.Normalized[deploymentStackProofKey] != c.deploymentStackProof(value.Identity.NativeID, value.Identity.ConnectionID, review) || review["configuration"] != c.privateConfiguration(current.data) {
 			return serviceDenied("deployment_stack_live_configuration_changed")
 		}

@@ -28,7 +28,7 @@ func (c *client) deploymentStackContribution(ctx context.Context, parent asset.A
 	}
 	review := object(parent.Normalized[deploymentStackReviewKey])
 	scope, params, err := deploymentStackParameters(parent.Identity.NativeID)
-	if parent.ID == "" || parent.Identity.Provider != asset.ProviderAzure || parent.Identity.Partition != "azure" || !strings.EqualFold(parent.Identity.NativeType, deploymentStackType) || err != nil || scope == "ManagementGroup" || !strings.EqualFold(text(params["subscriptionId"]), c.subscription) || len(review) != 8 || object(review["members"]) == nil || text(review["configuration"]) == "" || parent.Normalized[deploymentStackProofKey] != c.deploymentStackProof(parent.Identity.NativeID, parent.Identity.ConnectionID, review) {
+	if parent.ID == "" || parent.Identity.Provider != asset.ProviderAzure || parent.Identity.Partition != "azure" || !strings.EqualFold(parent.Identity.NativeType, deploymentStackType) || err != nil || scope == "ManagementGroup" || !strings.EqualFold(text(params["subscriptionId"]), c.subscription) || len(review) != 9 || object(review["members"]) == nil || text(review["configuration"]) == "" || parent.Normalized[deploymentStackProofKey] != c.deploymentStackProof(parent.Identity.NativeID, parent.Identity.ConnectionID, review) {
 		unresolved(parent.Identity.NativeID, deploymentStackType, "deployment_stack_requires_refresh")
 		return out, nil
 	}

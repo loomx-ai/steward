@@ -18,7 +18,7 @@ func (c *client) deploymentStackDeletePlan(req contracts.ActionRequest) (catalog
 	root := req.Asset
 	scope, parameters, err := deploymentStackParameters(root.Identity.NativeID)
 	review := object(root.Normalized[deploymentStackReviewKey])
-	if err != nil || scope == "ManagementGroup" || !strings.EqualFold(text(parameters["subscriptionId"]), c.subscription) || req.Action != "delete" || root.ID == "" || root.Identity.Provider != asset.ProviderAzure || root.Identity.Partition != "azure" || root.Identity.ConnectionID == "" || !strings.EqualFold(root.Identity.NativeType, deploymentStackType) || len(review) != 8 || review["arm_members_complete"] != true || text(review["configuration"]) == "" || object(review["members"]) == nil || root.Normalized[deploymentStackProofKey] != c.deploymentStackProof(root.Identity.NativeID, root.Identity.ConnectionID, review) {
+	if err != nil || scope == "ManagementGroup" || !strings.EqualFold(text(parameters["subscriptionId"]), c.subscription) || req.Action != "delete" || root.ID == "" || root.Identity.Provider != asset.ProviderAzure || root.Identity.Partition != "azure" || root.Identity.ConnectionID == "" || !strings.EqualFold(root.Identity.NativeType, deploymentStackType) || len(review) != 9 || text(review["incarnation"]) == "" || review["arm_members_complete"] != true || text(review["configuration"]) == "" || object(review["members"]) == nil || root.Normalized[deploymentStackProofKey] != c.deploymentStackProof(root.Identity.NativeID, root.Identity.ConnectionID, review) {
 		return fail("deployment_stack_delete_plan_requires_refresh")
 	}
 	members := object(review["members"])

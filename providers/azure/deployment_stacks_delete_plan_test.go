@@ -25,7 +25,7 @@ func stackDeletePlanFixture(t *testing.T, groupScoped bool, choices ...contracts
 			rows = append(rows, map[string]any{"id": impact.Asset.Identity.NativeID, "status": "managed", "denyStatus": "denyDelete"})
 		}
 	}
-	review, err := c.deploymentStackMemberReview(map[string]any{"id": parent.Identity.NativeID, "properties": map[string]any{"resources": rows}})
+	review, err := c.deploymentStackMemberReview(map[string]any{"id": parent.Identity.NativeID, "systemData": map[string]any{"createdAt": "2020-02-01T01:01:01.1075056Z"}, "properties": map[string]any{"resources": rows}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -242,5 +242,26 @@ func TestDeploymentStackDeletePlanNestedConsequences(t *testing.T) {
 	req.Parameters = map[string]any{"retain_all_resources": true}
 	if _, _, err := c.deploymentStackDeletePlan(req); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestDeploymentStackDeletePlanRequiresCreationEvidence(t *testing.T) {
+	for _, mode := range []string{"missing", "legacy", "tampered"} {
+		c, req := stackDeletePlanFixture(t, false)
+		review := object(req.Asset.Normalized[deploymentStackReviewKey])
+		switch mode {
+		case "missing":
+			review["incarnation"] = ""
+		case "legacy":
+			delete(review, "incarnation")
+		case "tampered":
+			review["incarnation"] = "forged"
+		}
+		if mode != "tampered" {
+			req.Asset.Normalized[deploymentStackProofKey] = c.deploymentStackProof(req.Asset.Identity.NativeID, req.Asset.Identity.ConnectionID, review)
+		}
+		if bound, _, err := c.deploymentStackDeletePlan(req); err == nil || bound.URL != "" {
+			t.Fatal("delete authorized without authentic creation evidence", mode, bound, err)
+		}
 	}
 }

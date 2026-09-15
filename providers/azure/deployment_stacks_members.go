@@ -3,6 +3,7 @@ package azure
 import (
 	"slices"
 	"strings"
+	"time"
 )
 
 // Member IDs can be subscription-scoped resources or resource groups, unlike
@@ -59,7 +60,11 @@ func (c *client) deploymentStackMemberReview(raw map[string]any) (map[string]any
 	if props == nil {
 		return nil, serviceDenied("invalid_deployment_stack_members")
 	}
-	review := map[string]any{"configuration": c.privateConfiguration(raw)}
+	birth, err := c.deploymentStackBirth(raw)
+	if err != nil {
+		return nil, err
+	}
+	review := map[string]any{"configuration": c.privateConfiguration(raw), "incarnation": birth}
 	members := map[string]any{}
 	unresolved := 0
 	rows, present := props["resources"].([]any)
@@ -136,4 +141,26 @@ func (c *client) deploymentStackMemberReview(raw map[string]any) (map[string]any
 		review[key+"_count"] = count
 	}
 	return review, nil
+}
+
+// Stack deploymentId and correlationId describe deployments/operations, not
+// the stack's creation. Only native creation metadata identifies this lifetime.
+// Missing metadata remains observable inventory but cannot authorize deletion.
+func (c *client) deploymentStackBirth(raw map[string]any) (string, error) {
+	metadata := object(raw["systemData"])
+	if raw["systemData"] != nil && metadata == nil {
+		return "", serviceDenied("invalid_deployment_stack_creation_metadata")
+	}
+	if metadata["createdAt"] == nil {
+		return "", nil
+	}
+	wire, ok := metadata["createdAt"].(string)
+	if !ok {
+		return "", serviceDenied("invalid_deployment_stack_creation_time")
+	}
+	created, err := time.Parse(time.RFC3339Nano, wire)
+	if err != nil || created.IsZero() {
+		return "", serviceDenied("invalid_deployment_stack_creation_time")
+	}
+	return c.privateConfiguration(map[string]any{"protocol": "deployment-stack-birth-1", "created_at": created.UTC().Format(time.RFC3339Nano)}), nil
 }
