@@ -462,3 +462,18 @@ This workflow has offline contract, fault-injection and restart coverage. Live
 Azure acceptance of volume PATCH unassignment remains unverified. Backup vaults
 expose no native UUID; identical same-name recreation without creation metadata
 cannot be distinguished.
+
+Volume-group discovery reviews the group's own embedded volume IDs and count,
+then independently reads those volumes and the account's complete pool/volume
+indexes. A volume's current group name is checked against the group membership;
+when the embedded response supplies a file-system UUID, it must match the own
+volume read. Previously observed omitted members remain read hints; only a
+verified change of association or own absence can retire their membership. A group
+scan never deletes or reconciles the volume record itself. Missing graph records
+require a refresh; unavailable or changing reads preserve prior observations.
+Grant account pool/volume list and read permissions in addition to group reads.
+
+Volume-group cleanup remains unimplemented. Azure requires all member volumes to
+be removed first and automatically removes related network interfaces when deleting
+the group. Those interface effects still need review before cleanup can be enabled.
+See [application volume-group deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/application-volume-group-delete).

@@ -69,6 +69,16 @@ func newNetappFixture(t *testing.T) *netappFixture {
 			f.objects[id] = raw
 		}
 	}
+	// Adapt embedded group IDs to the same test account/pool as own volume GETs.
+	// Native example files remain unchanged.
+	for id, raw := range f.objects {
+		if raw["type"] != netappGroupType {
+			continue
+		}
+		volume := redisParentID(id) + "/capacitypools/item/volumes/item"
+		object(raw["properties"])["volumes"] = []any{batchClone(f.objects[volume])}
+		object(object(raw["properties"])["groupMetaData"])["volumesCount"] = 1
+	}
 	f.runtime = protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
 		if f.override != nil {
 			if res, ok := f.override(q); ok {

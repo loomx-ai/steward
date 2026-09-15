@@ -74,15 +74,39 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 	pools := map[string]bool{}
 	volumes := map[string]bool{}
 	required := map[string]bool{}
+	groupUUIDs := map[string]string{}
 	// Previous observations are read hints only; every live assignment is read anew.
 	for volume := range known {
-		if c.netappIdentity(volume, netappVolumeType) != nil {
+		if c.netappIdentity(volume, netappVolumeType) != nil || kind == netappGroupType && redisParentID(redisParentID(volume)) != account {
 			return nil, false, serviceDenied("invalid_netapp_assignment_hint")
 		}
 		pools[redisParentID(volume)] = false
 		volumes[volume] = false
 	}
 	nativeComplete := true
+	if kind == netappGroupType {
+		rows, ok := object(raw["properties"])["volumes"].([]any)
+		count, err := batchInteger(object(object(raw["properties"])["groupMetaData"])["volumesCount"], 32)
+		if !ok || err != nil || count != int64(len(rows)) {
+			return nil, false, serviceDenied("incomplete_netapp_group_members")
+		}
+		for _, value := range rows {
+			v := object(value)
+			target := strings.ToLower(text(v["id"]))
+			if c.netappIdentity(target, netappVolumeType) != nil || redisParentID(redisParentID(target)) != account || !netappMetadata(v, target, netappVolumeType) || required[target] {
+				return nil, false, serviceDenied("invalid_netapp_group_member")
+			}
+			if value := object(v["properties"])["fileSystemId"]; value != nil {
+				uid, ok := value.(string)
+				if !ok || !uuidPattern.MatchString(uid) {
+					return nil, false, serviceDenied("invalid_netapp_group_volume_uuid")
+				}
+				groupUUIDs[target] = uid
+			}
+			required[target], volumes[target] = true, true
+			pools[redisParentID(target)] = false
+		}
+	}
 	if kind == netappAccountType+"/snapshotPolicies" {
 		rows, err := c.netappIndexPath(ctx, id+"/volumes")
 		if err != nil {
@@ -195,6 +219,22 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 		}
 		if resourceRegion(own.data) != region || !uuidPattern.MatchString(text(object(own.data["properties"])["fileSystemId"])) {
 			return nil, false, serviceDenied("invalid_netapp_assignment_volume_identity")
+		}
+		if kind == netappGroupType {
+			if uid := groupUUIDs[volume]; uid != "" && uid != object(own.data["properties"])["fileSystemId"] {
+				return nil, false, serviceDenied("netapp_group_volume_recreated")
+			}
+			name, err := netappVolumeGroupName(own.data)
+			if err != nil {
+				return nil, false, err
+			}
+			if required[volume] && name != "" && name != last(id) || !required[volume] && (name == last(id) || name == "" && known[volume] != nil) {
+				return nil, false, serviceDenied("netapp_group_membership_changed")
+			}
+			if required[volume] {
+				consumers[volume] = map[string]any{"configuration": c.privateConfiguration(own.data), "uid": object(own.data["properties"])["fileSystemId"], "pool": stablePools[redisParentID(volume)]}
+			}
+			continue
 		}
 		assignments, err := netappAssignments(own.data)
 		if err != nil {

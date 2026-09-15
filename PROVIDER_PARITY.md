@@ -7325,3 +7325,24 @@ Counts are 469 specs, 1,569 operations and 431 cleanup bindings. Live Azure PATC
 unassignment acceptance, account/group cleanup and broader provider parity remain
 unfinished. Offline fixtures do not establish live-cloud acceptance. All 159 parity
 rows and all eight completion gates remain open.
+
+### NetApp volume-group membership review prerequisite
+
+Group discovery now checks native own-GET embedded volume IDs/count against own
+volume UUIDs and complete account pool/volume indexes. Current volumeGroupName
+references cannot silently add unlisted members; missing optional names cannot
+silently retire known members. Complete repeated reads bind parent/group/pool
+configuration and independent volume identities. Own-absent members retire only
+the association, never the volume asset through a group scan.
+
+Signed reviews contribute explicit membership relationships. Missing/stale/extra
+volume nodes and old/forged reviews remain unresolved. Native pagination, foreign
+hints, permission failures, UUID mismatch and concurrent changes have offline
+coverage; a 22-asset SQLite worker scan verifies edges and failed-rescan retention.
+The common fixture adapts embedded group IDs/count to its test accounts without
+modifying upstream examples.
+
+Group cleanup remains unfinished: native deletion also removes related network
+interfaces, whose ownership/protection/absence effects still need modeling. No
+new cleanup binding is enabled. Counts remain 469 specs, 1,569 operations and 431
+cleanup bindings; all 159 parity rows and all eight completion gates remain open.

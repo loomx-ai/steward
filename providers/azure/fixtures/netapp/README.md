@@ -378,3 +378,29 @@ protected resources and tampered reviews/receipts. The complete two-volume,
 two-backup worker scenario removes three of 27 assets, retains eight reviewed volume
 impacts and never deletes the global policy. Independent latest-backup deletion
 remains denied while its current policy assignment exists.
+
+## Volume-group membership review
+
+The pinned VolumeGroups_Get_Oracle example provides embedded ARM volume IDs,
+VolumeGroupMetaData.volumesCount and VolumeProperties. These are checked against
+independent own volume reads and complete native account pool/volume enumeration.
+An embedded fileSystemId, when present, must agree with the own UUID. A current
+volumeGroupName pointing at an unlisted member rejects the observation; a missing
+optional group name does not disprove a previously observed membership. Known
+members keep their own-read hints across both passes, including an initial 404.
+Parent, group and pool configuration changes fail the scan. Group/volume private
+properties are bound by hashes, not exposed in normalized output.
+
+The common offline fixture now adapts group embedded IDs and count to its one
+actual volume in each test account, leaving the upstream JSON examples unchanged.
+Group-specific tests add current group names, native pagination, stale/missing
+members, UUID mismatches, forbidden reads, cross-account hints and concurrent
+changes. A full 22-asset SQLite scan verifies membership edges and preserves every
+asset after a failed group rescan. Legacy or forged reviews and missing/stale graph
+members yield unresolved references. Membership contributes no cleanup binding.
+
+[Microsoft's deletion guidance](https://learn.microsoft.com/en-us/azure/azure-netapp-files/application-volume-group-delete)
+requires all member volumes absent before group deletion and identifies an
+automatic related-network-interface cascade. Interface ownership and absence
+verification remain unimplemented; the group remains protected. These offline
+observations are a prerequisite, not live-cloud acceptance or completed group cleanup.

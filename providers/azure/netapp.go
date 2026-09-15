@@ -125,7 +125,7 @@ func netappPublicScalar(value any) bool {
 // Persist selected service metadata, never AD credentials or future raw fields.
 func netappSafeProperties(props map[string]any) map[string]any {
 	result := map[string]any{}
-	for _, k := range strings.Fields("provisioningState poolId size serviceLevel qosType totalThroughputMibps utilizedThroughputMibps customThroughputMibps coolAccess encryptionType usageThreshold fileSystemId creationToken protocolTypes subnetId networkFeatures effectiveNetworkFeatures networkSiblingSetId storageToNetworkProximity throughputMibps volumeType isRestoring snapshotDirectoryVisible securityStyle kerberosEnabled created snapshotId backupId creationDate completionDate snapshotCreationDate backupType label enabled dailyBackupsToKeep weeklyBackupsToKeep monthlyBackupsToKeep volumesAssigned path quotaSizeInKiBs quotaTarget quotaType disableShowmount") {
+	for _, k := range strings.Fields("provisioningState volumeGroupName poolId size serviceLevel qosType totalThroughputMibps utilizedThroughputMibps customThroughputMibps coolAccess encryptionType usageThreshold fileSystemId creationToken protocolTypes subnetId networkFeatures effectiveNetworkFeatures networkSiblingSetId storageToNetworkProximity throughputMibps volumeType isRestoring snapshotDirectoryVisible securityStyle kerberosEnabled created snapshotId backupId creationDate completionDate snapshotCreationDate backupType label enabled dailyBackupsToKeep weeklyBackupsToKeep monthlyBackupsToKeep volumesAssigned path quotaSizeInKiBs quotaTarget quotaType disableShowmount") {
 		if v, ok := props[k]; ok && netappPublicScalar(v) {
 			result[k] = v
 		}
@@ -410,6 +410,10 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 				if err := r.netappVaultInventory(ctx, c, req, &item); err != nil {
 					return nil, nil, nil, "", err
 				}
+			}
+		} else if kind == netappGroupType {
+			if err := r.netappGroupInventory(ctx, c, req, &item, raw); err != nil {
+				return nil, nil, nil, "", err
 			}
 		} else if kind == netappPoolType {
 			if err := r.netappPoolInventory(ctx, c, req, &item); err != nil {
