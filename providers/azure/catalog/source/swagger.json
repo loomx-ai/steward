@@ -3756,6 +3756,92 @@
               }
             },
             "type": "object"
+          },
+          "BackupStatus": {
+            "type": "object",
+            "description": "Backup status",
+            "properties": {
+              "healthy": {
+                "type": "boolean",
+                "description": "Backup health status",
+                "readOnly": true
+              },
+              "relationshipStatus": {
+                "$ref": "#/definitions/VolumeBackupRelationshipStatus",
+                "description": "Status of the backup mirror relationship",
+                "readOnly": true
+              },
+              "mirrorState": {
+                "$ref": "#/definitions/MirrorState",
+                "description": "The status of the backup",
+                "readOnly": true
+              },
+              "unhealthyReason": {
+                "type": "string",
+                "description": "Reason for the unhealthy backup relationship",
+                "readOnly": true
+              },
+              "errorMessage": {
+                "type": "string",
+                "description": "Displays error message if the backup is in an error state",
+                "readOnly": true
+              },
+              "lastTransferSize": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Displays the last transfer size",
+                "readOnly": true
+              },
+              "lastTransferType": {
+                "type": "string",
+                "description": "Displays the last transfer type",
+                "readOnly": true
+              },
+              "totalTransferBytes": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Displays the total bytes transferred",
+                "readOnly": true
+              },
+              "transferProgressBytes": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Displays the total number of bytes transferred for the ongoing operation",
+                "readOnly": true
+              }
+            }
+          },
+          "VolumeBackupRelationshipStatus": {
+            "type": "string",
+            "description": "Status of the volume backup relationship",
+            "enum": [
+              "Idle",
+              "Transferring",
+              "Failed",
+              "Unknown"
+            ],
+            "x-ms-enum": {
+              "name": "VolumeBackupRelationshipStatus",
+              "modelAsString": true,
+              "values": [
+                {
+                  "name": "Idle",
+                  "value": "Idle"
+                },
+                {
+                  "name": "Transferring",
+                  "value": "Transferring"
+                },
+                {
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "name": "Unknown",
+                  "value": "Unknown"
+                }
+              ]
+            }
           }
         },
         "host": "management.azure.com",
@@ -6221,6 +6307,73 @@
                 },
                 "VolumeGroups_Get_SapHana": {
                   "$ref": "./examples/VolumeGroups_Get_SapHana.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/latestBackupStatus/current": {
+            "get": {
+              "operationId": "Backups_GetLatestStatus",
+              "tags": [
+                "Volumes"
+              ],
+              "description": "Get the latest status of the backup for a volume",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "accountName",
+                  "in": "path",
+                  "description": "The name of the NetApp account",
+                  "required": true,
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$"
+                },
+                {
+                  "name": "poolName",
+                  "in": "path",
+                  "description": "The name of the capacity pool",
+                  "required": true,
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$"
+                },
+                {
+                  "name": "volumeName",
+                  "in": "path",
+                  "description": "The name of the volume",
+                  "required": true,
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/BackupStatus"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Volumes_BackupStatus": {
+                  "$ref": "./examples/Volumes_LatestBackupStatus.json"
                 }
               }
             }

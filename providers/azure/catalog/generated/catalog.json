@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "919f33050f76a118a72d8263f221da4b11ec57fab462c0eed8d85e25b092b69c",
+    "checksum": "3217a66ed332dc9cf2b1d448b8709c63dd7528b9400fd66ce6c039bfacdaf287",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "fb02fc05d6e9a989733b43277d8a67f41d1e0d9c59dec4c1085110829c8f6c0a",
+  "content_checksum": "13eadf3527343653868e68d36ffc3e017788642bc02d0b15f885449c60fe68c4",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -105062,6 +105062,138 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/backupVaults/{backupVaultName}/backups/{backupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/netapp.json"
+    },
+    {
+      "id": "Azure.Microsoft.NetApp.Backups_GetLatestStatus",
+      "name": "Backups_GetLatestStatus",
+      "service": "Microsoft.NetApp",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/latestBackupStatus/current",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the NetApp account",
+            "in": "path",
+            "name": "accountName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "poolName": {
+            "description": "The name of the capacity pool",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "poolName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the volume",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 1,
+            "name": "volumeName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Backup status",
+        "properties": {
+          "errorMessage": {
+            "description": "Displays error message if the backup is in an error state",
+            "readOnly": true,
+            "type": "string"
+          },
+          "healthy": {
+            "description": "Backup health status",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "lastTransferSize": {
+            "description": "Displays the last transfer size",
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer"
+          },
+          "lastTransferType": {
+            "description": "Displays the last transfer type",
+            "readOnly": true,
+            "type": "string"
+          },
+          "mirrorState": {
+            "$ref": "#/definitions/MirrorState",
+            "description": "The status of the backup",
+            "readOnly": true
+          },
+          "relationshipStatus": {
+            "$ref": "#/definitions/VolumeBackupRelationshipStatus",
+            "description": "Status of the backup mirror relationship",
+            "readOnly": true
+          },
+          "totalTransferBytes": {
+            "description": "Displays the total bytes transferred",
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer"
+          },
+          "transferProgressBytes": {
+            "description": "Displays the total number of bytes transferred for the ongoing operation",
+            "format": "int64",
+            "readOnly": true,
+            "type": "integer"
+          },
+          "unhealthyReason": {
+            "description": "Reason for the unhealthy backup relationship",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.NetApp",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/capacityPools/{poolName}/volumes/{volumeName}/latestBackupStatus/current",
         "endpoint": "https://management.azure.com",
         "body_type": "json",
         "parameter_position": "query"

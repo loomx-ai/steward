@@ -14,6 +14,7 @@
     "BackupVaults_ListByNetAppAccount",
     "Backups_Delete",
     "Backups_Get",
+    "Backups_GetLatestStatus",
     "Backups_ListByVault",
     "Pools_Delete",
     "Pools_Get",
@@ -221,6 +222,11 @@
       "file": "Volumes_Get.json",
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Volumes_Get.json",
       "sha256": "0734a13e4b32ace984baa3496b120f7861c83392ff7614c35a49e2534036ba5c"
+    },
+    {
+      "file": "Volumes_LatestBackupStatus.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/netapp/resource-manager/Microsoft.NetApp/NetApp/stable/2025-12-01/examples/Volumes_LatestBackupStatus.json",
+      "sha256": "38aa59758b44ddcebd0c391a0b0716e584b16c7bad6907b883be5c5d4b08ffe2"
     },
     {
       "file": "Volumes_List.json",

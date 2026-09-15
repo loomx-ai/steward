@@ -241,7 +241,7 @@ func TestNetappOriginalSourceEvidence(t *testing.T) {
 		Version  string                                     `json:"api_version"`
 		Examples []struct{ File, SourceURI, SHA256 string } `json:"examples"`
 	}
-	if json.Unmarshal(wire, &source) != nil || source.Version != netappVersion || len(source.Examples) != 40 {
+	if json.Unmarshal(wire, &source) != nil || source.Version != netappVersion || len(source.Examples) != 41 {
 		t.Fatal("manifest")
 	}
 	for _, example := range source.Examples {

@@ -7243,3 +7243,16 @@ Backup-policy/vault unassignment, backup state sequencing, account/group cleanup
 replication and remaining NAS workflows still need implementation and acceptance.
 All 159 parity rows and eight acceptance gates remain open; these are offline
 protocol and application tests, not live Azure completion evidence.
+
+### NetApp native backup-transfer status prerequisite
+
+The pinned 2025-12-01 catalog now includes Backups_GetLatestStatus and its
+unchanged official example. The scoped, bodyless volume GET accepts only native
+HTTP 200 and root-level relationshipStatus. Explicit Idle permits a subsequent
+step; Transferring waits. Failed, Unknown, future/omitted states, malformed bodies,
+asynchronous headers and failed reads cannot authorize a policy mutation.
+Terraform's internal waiter state 204 is not a successful native HTTP response.
+The status helper and 22 response/scope cases are a prerequisite; backup-policy
+unassignment is not yet enabled. Counts are 469 specifications, 1,569 operations
+and 429 cleanup bindings. All 159 parity rows and eight acceptance gates remain
+open, including live Azure acceptance and the remaining NAS workflows.

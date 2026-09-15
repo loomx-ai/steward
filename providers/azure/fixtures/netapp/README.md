@@ -305,3 +305,21 @@ across database/runtime restarts, retaining 25 assets. Its reviewed plan include
 the two volumes and their six retained children. Independent volume selection
 still retains its own deletion step and does not select the policy. Both sync and
 async update protocols are tested offline; live Azure acceptance remains open.
+
+The pinned `Backups_GetLatestStatus` operation and its unchanged
+`Volumes_LatestBackupStatus.json` example establish a synchronous, bodyless GET
+to a volume's `latestBackupStatus/current`. Its only declared successful response
+is HTTP 200 with root-level `BackupStatus` fields (not an ARM `properties` wrapper).
+The status reader permits the next policy step only for explicit `Idle`;
+`Transferring` waits, while Failed, Unknown, omitted and future states fail closed.
+HTTP 204 is not native evidence of an idle backup: Terraform's similarly named
+204 state is an internal waiter sentinel. Tests cover the pinned example, native
+transfer states, malformed/absent responses, asynchronous headers, HTTP failures
+and foreign resource scope. This is a prerequisite for backup-policy unassignment;
+it does not yet enable that cleanup action or establish live Azure acceptance.
+
+`backup-status-recordings.json` extracts all three latest-backup-status GETs
+from the pinned Azure CLI `test_get_backup_status.yaml` recording. Request URLs
+and response bodies are unchanged; unrelated requests and HTTP diagnostic headers
+are omitted. Each recorded response is HTTP 200 with root-level Idle status.
+Replay substitutes only the test subscription and canonicalizes ARM path casing.

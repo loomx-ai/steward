@@ -1,0 +1,27 @@
+{
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/ea185727729efc032ad9d4eef9ec355ee74ebaae/src/azure-cli/azure/cli/command_modules/netappfiles/tests/latest/recordings/test_get_backup_status.yaml",
+  "source_sha256": "5641d7bd5c76d9338d2e896df28d58adfe17f9826f518db75428c4e22e3cbfa8",
+  "interactions": [
+    {
+      "index": 52,
+      "method": "GET",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_backup_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/latestBackupStatus/current?api-version=2025-12-01",
+      "status": 200,
+      "body": "{\"healthy\":true,\"relationshipStatus\":\"Idle\",\"mirrorState\":\"Mirrored\",\"totalTransferBytes\":272043,\"lastTransferSize\":272043,\"lastTransferType\":\"initialize\"}"
+    },
+    {
+      "index": 55,
+      "method": "GET",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_backup_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/latestBackupStatus/current?api-version=2025-12-01",
+      "status": 200,
+      "body": "{\"healthy\":true,\"relationshipStatus\":\"Idle\",\"mirrorState\":\"Mirrored\",\"totalTransferBytes\":272043,\"lastTransferSize\":272043,\"lastTransferType\":\"initialize\"}"
+    },
+    {
+      "index": 56,
+      "method": "GET",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_netappfiles_test_backup_000001/providers/Microsoft.NetApp/netAppAccounts/cli-acc-000002/capacityPools/cli-pool-000003/volumes/cli-vol-000004/latestBackupStatus/current?api-version=2025-12-01",
+      "status": 200,
+      "body": "{\"healthy\":true,\"relationshipStatus\":\"Idle\",\"mirrorState\":\"Mirrored\",\"totalTransferBytes\":272043,\"lastTransferSize\":272043,\"lastTransferType\":\"initialize\"}"
+    }
+  ]
+}

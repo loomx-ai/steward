@@ -2556,6 +2556,7 @@
         "BackupVaults_ListByNetAppAccount",
         "Backups_Delete",
         "Backups_Get",
+        "Backups_GetLatestStatus",
         "Backups_ListByVault",
         "Pools_Delete",
         "Pools_Get",
