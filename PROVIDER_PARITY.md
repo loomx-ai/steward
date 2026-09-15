@@ -6896,3 +6896,37 @@ complete active-run/diagnostic-history coverage and external orchestration still
 need implementation and validation. No artifact delete binding was added. Counts
 remain 456 specifications, 1,531 operations and 419 cleanup bindings. All 159
 parity rows and all eight acceptance criteria remain open.
+
+### Synapse reviewed workspace cascade
+
+Workspace deletion is now enabled as a reviewed native containing-scope action.
+A signed boundary includes SQL/Spark pools, notebooks, job definitions, pipelines
+and observed Spark batch/session metadata. Full native indexes, known-member own
+reads, private configuration snapshots, creation identities, group context and
+locks are checked again before deletion. Missing scanned members block planning;
+retained members block the cascade. Selecting a child does not implicitly select
+the workspace. Linked lake storage is not owned or deleted by this action.
+
+Microsoft's [workspace deletion documentation](https://learn.microsoft.com/en-us/azure/synapse-analytics/quickstart-create-workspace-cli)
+establishes that native workspace deletion removes compute engines, SQL pool data,
+code artifacts and metadata while preserving linked Data Lake storage. The plan
+shows this destructive scope in English and Chinese. This whole-workspace action
+does not depend on proving that every historic Pipeline run is idle: the reviewed
+operation interrupts workspace workloads. Individual code-artifact deletion still
+remains unavailable pending its own dependency/active-work handling.
+
+The driver checkpoints a signed native DELETE receipt before further reads,
+resumes polling across runtime/database restarts and checkpoints terminal operation
+success before readback. Workspace own absence and independent SQL/Spark pool own
+absence are required. Integrated metadata uses the completed native workspace
+operation plus those own reads; an expired callback or externally removed parent
+requires independent metadata reads instead. Errors or callback absence alone
+cannot reconcile the scope. Tests cover retention, new/changed/protected members,
+locks, forged receipts, recreated workspaces, transient failures and actual SQLite
+worker recovery with exactly one root DELETE. No child or linked-storage DELETE
+is issued. Native APIs do not atomically lock out concurrent external writers.
+
+Azure now has 456 specifications, 1,531 operations and 420 cleanup bindings. This
+is offline protocol/worker validation, not fresh live-cloud or independent-emulator
+acceptance. Standalone SQL/artifact cleanup and wider provider gaps remain open;
+all 159 parity rows and all eight acceptance criteria remain open.

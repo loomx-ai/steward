@@ -145,7 +145,7 @@ func TestSynapseNativeInventoryAndReferences(t *testing.T) {
 				if kind == synapseSQLType && (item.State != "Online" || item.Normalized["state"] != "Online") {
 					t.Fatal("SQL activity state lost", item.State)
 				}
-				if item.NativeType != kind || item.Actionable == nil || *item.Actionable != (kind == synapseSparkType) || kind != synapseSparkType && item.Normalized["cleanup_protection_reason"] != "synapse_cleanup_not_implemented" || text(item.Normalized["_synapse_private_configuration"]) == "" {
+				if item.NativeType != kind || item.Actionable == nil || *item.Actionable != (kind == synapseSparkType || kind == synapseType) || kind == synapseSQLType && item.Normalized["cleanup_protection_reason"] != "synapse_cleanup_not_implemented" || text(item.Normalized["_synapse_private_configuration"]) == "" {
 					t.Fatal("incorrect inventory readiness", item)
 				}
 				if kind == synapseType {
@@ -404,7 +404,9 @@ func TestSynapseInventoryStorageBoundary(t *testing.T) {
 				}
 				return nil, false
 			}
-			batch, err := f.runtime.List(t.Context(), productRequest(f.runtime, synapseType))
+			request := productRequest(f.runtime, synapseType)
+			request.Limit = 1
+			batch, err := f.runtime.List(t.Context(), request)
 			if mode == "unresolved" || mode == "missing-metadata" || mode == "identity" {
 				if err != nil || len(batch.Items) != 1 {
 					t.Fatal(batch, err)
@@ -460,7 +462,7 @@ func TestSynapseRegisteredInventoryAndKnownAbsence(t *testing.T) {
 		t.Fatal("registered inventory incomplete", len(values))
 	}
 	for _, value := range values {
-		if string(value.ID) == value.Identity.NativeID || value.Normalized["_inventory_source"] != synapseSource || value.Capabilities.Has(asset.CapabilityActionable) != (value.Identity.NativeType == synapseSparkType) {
+		if string(value.ID) == value.Identity.NativeID || value.Normalized["_inventory_source"] != synapseSource || value.Capabilities.Has(asset.CapabilityActionable) != (value.Identity.NativeType == synapseSparkType || value.Identity.NativeType == synapseType) {
 			t.Fatal("registered resource identity/readiness changed", value)
 		}
 	}
@@ -532,7 +534,9 @@ func TestSynapseInventoryPreservesManagementLock(t *testing.T) {
 		}
 		return nil, false
 	}
-	batch, err := f.runtime.List(t.Context(), productRequest(f.runtime, synapseType))
+	request := productRequest(f.runtime, synapseType)
+	request.Limit = 1
+	batch, err := f.runtime.List(t.Context(), request)
 	if err != nil || len(batch.Items) != 1 || batch.Items[0].Normalized["cleanup_protection_reason"] != "azure_management_lock" {
 		t.Fatal("management lock hidden by incomplete cleanup", batch, err)
 	}

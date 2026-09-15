@@ -514,6 +514,16 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	})
 	dnsOwners := map[string]asset.AssetID{}
 	for _, parent := range parents {
+		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == synapseType {
+			contribution, err := s.client.synapseWorkspaceContribution(parent, assets)
+			if err != nil {
+				return result, err
+			}
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Bindings = append(result.Bindings, contribution.Bindings...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+			continue
+		}
 		if parent.Identity.Provider == asset.ProviderAzure && elasticSanKind(parent.Identity.NativeType) != "" {
 			refs, err := s.client.elasticSanRecordedReferences(parent)
 			if err != nil {

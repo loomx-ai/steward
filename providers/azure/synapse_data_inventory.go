@@ -444,7 +444,8 @@ func (r *Runtime) synapseDataInventoryItem(ctx context.Context, c *synapseDataCl
 	if locked(workspace.id, locks) || poolID != "" && locked(poolID, locks) || !d.spark && locked(id, locks) {
 		reason = "azure_management_lock"
 	}
-	normalized["cleanup_protected"] = true
+	normalized["cleanup_protected"] = reason != "synapse_cleanup_not_implemented"
+	normalized["cleanup_controller_only"] = reason == "synapse_cleanup_not_implemented"
 	normalized["cleanup_protection_reason"] = reason
 	network := []string{}
 	for typ, ids := range refs {

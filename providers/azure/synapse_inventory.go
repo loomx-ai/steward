@@ -20,7 +20,7 @@ func (r *Runtime) listSynapse(ctx context.Context, c *client, request contracts.
 		if len(request.KnownNativeMetadata) != 0 {
 			return batch, serviceDenied("unrelated_synapse_known_metadata")
 		}
-		if request.ResourceKind.NativeType != synapseSparkType {
+		if request.ResourceKind.NativeType != synapseSparkType && request.ResourceKind.NativeType != synapseType {
 			return r.listProduct(ctx, c, request, nil)
 		}
 	}
@@ -146,6 +146,13 @@ func (r *Runtime) listSynapse(ctx context.Context, c *client, request contracts.
 			}
 		}
 		items = append(items, item)
+	}
+	if kind == synapseType {
+		for i := range items {
+			if err := r.synapseWorkspaceInventory(ctx, c, request, &items[i]); err != nil {
+				return batch, err
+			}
+		}
 	}
 	if kind == synapseSparkType {
 		for i := range items {

@@ -158,6 +158,10 @@ func (c *client) synapseReferences(ctx context.Context, kind string, raw, normal
 		normalized["cleanup_protection_reason"] = "synapse_cleanup_not_implemented"
 	}
 	if kind != synapseType {
+		if kind == synapseSQLType && normalized["cleanup_protection_reason"] == "synapse_cleanup_not_implemented" {
+			normalized["cleanup_protected"] = false
+			normalized["cleanup_controller_only"] = true
+		}
 		id := strings.ToLower(text(raw["id"]))
 		addReference(refs, synapseType, strings.Join(strings.Split(id, "/")[:9], "/"))
 		return nil

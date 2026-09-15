@@ -50,6 +50,7 @@ func (r *Runtime) synapseSparkInventory(ctx context.Context, c *client, request 
 			item.Normalized["cleanup_protected"], item.Normalized["cleanup_protection_reason"] = true, "synapse_spark_context_not_ready"
 		}
 	}
+	hardProtection := item.Normalized["cleanup_protected"] == true
 	for _, v := range work.manifest {
 		entry := object(v)
 		if entry["references"] == true || entry["unresolved"] == true {
@@ -63,6 +64,10 @@ func (r *Runtime) synapseSparkInventory(ctx context.Context, c *client, request 
 		}
 	}
 	actionable := item.Normalized["cleanup_protected"] == false
+	if !hardProtection && item.Normalized["cleanup_protection_reason"] == "synapse_spark_consumer_exists" {
+		item.Normalized["cleanup_protected"] = false
+		item.Normalized["cleanup_controller_only"] = true
+	}
 	item.Actionable = &actionable
 	return nil
 }

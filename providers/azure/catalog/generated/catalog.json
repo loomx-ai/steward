@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "249070444d20aa8eee318107a0b075e906d8cb00570eb7fee4c45a2ff5e1d8e7",
+    "checksum": "b6b522a6c42d9e5cad37450ecbff269fc8489dff93c4145faee990df24f38d92",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "f580848c8b51d5732f3a732732c8042decf6dd7ed6bcd7b61f8c977964f3b572",
+  "content_checksum": "59ca22bf96b7797ef4c962f0ca0d76d7d3ed8e295926c29e25d448cb078e88f1",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -142003,6 +142003,9 @@
         "collection": "workspaces",
         "read_operations": [
           "Azure.Microsoft.Synapse.Workspaces_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Synapse.Workspaces_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.Synapse.Workspaces_List"

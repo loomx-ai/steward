@@ -78,6 +78,13 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if dataFactoryKind(kind.NativeType) != "" {
 		return newDataFactoryAction(c, id, value, kind)
 	}
+	if kind.NativeType == synapseType {
+		data, err := r.synapseResolvedClient(id, c)
+		if err != nil {
+			return nil, err
+		}
+		return newSynapseWorkspaceAction(data, id, value)
+	}
 	if kind.NativeType == synapseSparkType {
 		data, err := r.synapseResolvedClient(id, c)
 		if err != nil {

@@ -305,3 +305,7 @@ Elastic SAN 卷清理会将关联快照列为独立、已审核的前置删除�
 已支持 Synapse Pipeline 资产盘点。Pipeline 对 Notebook、Spark 作业定义、其他 Pipeline 和 Spark 池的静态引用会显示为依赖，包括嵌套控制活动中的引用。盘点需要工作区及被引用资源的读取权限。动态表达式保持未解析；权限不足或配置在扫描期间变化时，扫描不会成功。Pipeline 及其他代码资产的清理仍未开放。
 
 Notebook 与 Spark 作业定义的盘点还会核验工作区内的 Spark 任务和 Pipeline 引用，需要 Spark 池、任务、会话及 Pipeline 的列表与读取权限。这些记录用于后续清理审查；活动 Pipeline 的覆盖尚未完成，代码资产删除仍未开放。
+
+完整扫描 SQL／Spark 池、代码资产和 Spark 任务记录后，可清理 Synapse 工作区。请核对完整影响列表：删除将永久移除 SQL 池数据、计算引擎、Notebook、作业定义、Pipeline 和工作区元数据，并中断工作区内的任务；关联的 Data Lake 存储将保留。保留任一工作区成员会阻止此操作；仅选择子资源不会自动选择工作区删除。
+
+需要工作区删除权限、工作区和资源组读取、管理锁列表、SQL／Spark 池列表和读取，以及 Notebook、作业定义、Pipeline、批任务和会话的 Synapse 数据面列表和读取权限。新增成员、配置变化、保护设置或读取不完整时，需要重新审查。清理回执可跨重启恢复，并独立确认工作区和池已不存在；仅操作回调缺失或过期不能完成任务。单独删除 SQL 池和代码资产仍未开放。参见[微软工作区删除范围说明](https://learn.microsoft.com/en-us/azure/synapse-analytics/quickstart-create-workspace-cli)。

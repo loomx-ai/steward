@@ -128,6 +128,7 @@ type Blocker struct {
 type WarningCode string
 
 const (
+	WarningSynapseWorkspaceDelete        WarningCode = "synapse_workspace_delete"
 	WarningManagedResourceDirectCleanup  WarningCode = "managed_resource_direct_cleanup"
 	WarningManagedByControllerSkipped    WarningCode = "managed_by_controller"
 	WarningNotActionableSkipped          WarningCode = "not_actionable"

@@ -157,7 +157,11 @@ describe("LocaleProvider error formatting", () => {
     ["elastic_san_volume_force_delete", "可能中断工作负载"],
   ])("localizes Elastic SAN deletion consequence %s", (code, expected) => {
     localStorage.setItem(localePreferenceKey, "zh-CN");
-    render(<LocaleProvider><CodeProbe code={code} fallback="untranslated" /></LocaleProvider>);
+    render(
+      <LocaleProvider>
+        <CodeProbe code={code} fallback="untranslated" />
+      </LocaleProvider>,
+    );
     expect(screen.getByTestId("code-message")).toHaveTextContent(expected);
   });
 
@@ -232,3 +236,27 @@ describe("LocaleProvider domain labels", () => {
     },
   );
 });
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  it(`explains the Synapse workspace cascade and retained lake in ${locale}`, () => {
+    localStorage.setItem(localePreferenceKey, locale);
+    render(
+      <LocaleProvider>
+        <ErrorProbe
+          error={{ code: "synapse_workspace_delete", message: "fallback" }}
+        />
+      </LocaleProvider>,
+    );
+    const text = screen.getByTestId("error").textContent;
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "永久移除 SQL 池数据"
+        : "permanently removes SQL pool data",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "Data Lake 存储将保留"
+        : "Data Lake storage is retained",
+    );
+  });
+}
