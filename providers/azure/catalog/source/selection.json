@@ -2523,6 +2523,13 @@
         "Operations_GetLocationHeaderResult",
         "Operations_GetAzureAsyncHeaderResult"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/pipelines.json",
+      "operations": [
+        "Pipeline_GetPipeline",
+        "Pipeline_GetPipelinesByWorkspace"
+      ]
     }
   ],
   "resource_types": [

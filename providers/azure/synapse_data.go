@@ -59,10 +59,13 @@ func synapseDataResponse(workspace synapseWorkspace, op catalog.Operation, param
 			return strconv.FormatInt(from+count, 10), nil
 		}
 		return "", nil
-	case "Notebook_GetNotebook", "Notebook_GetNotebooksByWorkspace", "SparkJobDefinition_GetSparkJobDefinition", "SparkJobDefinition_GetSparkJobDefinitionsByWorkspace":
+	case "Notebook_GetNotebook", "Notebook_GetNotebooksByWorkspace", "SparkJobDefinition_GetSparkJobDefinition", "SparkJobDefinition_GetSparkJobDefinitionsByWorkspace", "Pipeline_GetPipeline", "Pipeline_GetPipelinesByWorkspace":
 		collection, key := "notebooks", "notebookName"
 		if strings.HasPrefix(name, "SparkJobDefinition_") {
 			collection, key = "sparkjobdefinitions", "sparkJobDefinitionName"
+		}
+		if strings.HasPrefix(name, "Pipeline_") {
+			collection, key = "pipelines", "pipelineName"
 		}
 		if strings.HasSuffix(name, "ByWorkspace") {
 			rows, ok := res.data["value"].([]any)

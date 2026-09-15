@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "05ad99cb5df7187bad7884cfc078a68a1d3a4a5c06ff66c48f609e5d06204c99",
+    "checksum": "d215d54f68f49ccfa286d51ce73cc3948a4410b6a621641beffa40969a5291ce",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "4fa3559668f3d0628ce66bb694e4ac522bae82ce211b349717ef37c81cc1851e",
+  "content_checksum": "4baacc42b2da742133cdc248428dce6d9cefed8838aa386ff7fc63f4b5242b1e",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -124989,6 +124989,160 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/notebooks.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.Pipeline_GetPipeline",
+      "name": "Pipeline_GetPipeline",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/pipelines/{pipelineName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "If-None-Match": {
+            "description": "ETag of the pipeline entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "pipelineName": {
+            "description": "The pipeline name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "pipelineName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": {
+          "type": "object"
+        },
+        "allOf": [
+          {
+            "$ref": "artifacts.json#/definitions/SubResource"
+          }
+        ],
+        "description": "Pipeline resource type.",
+        "properties": {
+          "properties": {
+            "$ref": "./entityTypes/Pipeline.json#/definitions/Pipeline",
+            "description": "Properties of the pipeline.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/pipelines/{pipelineName}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/pipelines.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.DataPlane.Pipeline_GetPipelinesByWorkspace",
+      "name": "Pipeline_GetPipelinesByWorkspace",
+      "service": "Microsoft.Synapse.DataPlane",
+      "method": "GET",
+      "path": "/pipelines",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`.",
+            "format": "uri",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of pipeline resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of results, if any remaining results exist.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of pipelines.",
+            "items": {
+              "$ref": "#/definitions/PipelineResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Synapse.DataPlane",
+        "version": "2020-12-01",
+        "style": "azure-synapse-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/pipelines",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/pipelines.json"
     },
     {
       "id": "Azure.Microsoft.Synapse.DataPlane.SparkBatch_CancelSparkBatchJob",

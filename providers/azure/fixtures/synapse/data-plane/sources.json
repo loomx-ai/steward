@@ -88,5 +88,23 @@
     "path": "/sparkJobDefinitions/{sparkJobDefinitionName}",
     "method": "GET",
     "document": "sparkJobDefinitions.json"
+  },
+  {
+    "file": "Pipelines_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/Pipelines_Get.json",
+    "source_sha256": "c78e8f3e69fb08a090cdc97312f15ca125ab2e59b5367dd27a85b8574a6b70ee",
+    "operation": "Pipeline_GetPipeline",
+    "path": "/pipelines/{pipelineName}",
+    "method": "GET",
+    "document": "pipelines.json"
+  },
+  {
+    "file": "Pipelines_ListByWorkspace.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/examples/Pipelines_ListByWorkspace.json",
+    "source_sha256": "0ba7be9a9fc57ebd2bb54eccbf4488e8fde28f200c2963674d6081b1f189f42b",
+    "operation": "Pipeline_GetPipelinesByWorkspace",
+    "path": "/pipelines",
+    "method": "GET",
+    "document": "pipelines.json"
   }
 ]

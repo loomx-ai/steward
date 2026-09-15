@@ -32,6 +32,8 @@ func TestSynapseDataNativeContracts(t *testing.T) {
 		t.Fatal("invalid native catalog")
 	}
 	fingerprints := map[string]string{
+		"pipelines.json":                      "3194d25d995fe5ab4758d0b5f6232fb8e6c08229ebf6b039db698a47c30c3383",
+		"entityTypes/Pipeline.json":           "d8441092487af547c940b94f258a09db0b19c1d1788619e25c27c7131d5ba203",
 		"artifacts.json":                      "2275c21e0d42c917744079880d69ef85608471ae4b8eda759de2a3fc15f0f5dc",
 		"entityTypes/Notebook.json":           "908d3925c1f68874b1792f83b5e361c8bd02e0d3fb2c2f472e08b5856446d006",
 		"entityTypes/SparkJobDefinition.json": "c29274688550bb0e5e00919c50473af666bb5c5612e4ec8ab8d416248fca6e96",
@@ -60,15 +62,17 @@ func TestSynapseDataNativeContracts(t *testing.T) {
 			documents[doc.SourceURI] = object(v)
 		}
 	}
-	if len(fingerprints) != 0 || len(documents) != 6 {
+	if len(fingerprints) != 0 || len(documents) != 8 {
 		t.Fatal("missing sources", fingerprints)
 	}
 	payload, err = os.ReadFile("fixtures/synapse/data-plane/sources.json")
 	var manifest []map[string]string
-	if err != nil || json.Unmarshal(payload, &manifest) != nil || len(manifest) != 10 {
+	if err != nil || json.Unmarshal(payload, &manifest) != nil || len(manifest) != 12 {
 		t.Fatal("invalid data-plane manifest")
 	}
 	expectedFailures := map[string][]string{}
+	expectedFailures["Pipelines_Get.json"] = []string{"/etag: got string, want object", "/id: got string, want object", "/name: got string, want object", "/type: got string, want object"}
+	expectedFailures["Pipelines_ListByWorkspace.json"] = []string{"/value/0/etag: got string, want object", "/value/0/id: got string, want object", "/value/0/name: got string, want object", "/value/0/type: got string, want object"}
 	sparkFailures := []string{
 		"/appInfo: got null, want object", "/livyInfo: got null, want object", "/pluginInfo: got null, want object", "/schedulerInfo: got null, want object",
 		"/state: value must be one of 'not_started', 'starting', 'idle', 'busy', 'shutting_down', 'error', 'dead', 'killed', 'success', 'running', 'recovering'", "/tags: got null, want object",
@@ -245,7 +249,7 @@ func TestSynapseDataNativeContracts(t *testing.T) {
 
 		})
 	}
-	if len(seen) != 10 || schemas != 8 {
+	if len(seen) != 12 || schemas != 10 {
 		t.Fatal("incomplete native coverage", len(seen), schemas)
 	}
 }

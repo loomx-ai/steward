@@ -118,6 +118,8 @@ func synapseReadInvocation(name string) contracts.Invocation {
 		params["notebookName"] = "item"
 	} else if name == "SparkJobDefinition_GetSparkJobDefinition" {
 		params["sparkJobDefinitionName"] = "item"
+	} else if name == "Pipeline_GetPipeline" {
+		params["pipelineName"] = "item"
 	}
 	return contracts.Invocation{ConnectionID: "connection", Operation: synapseDataOperationPrefix + name, Parameters: params, IdempotencyKey: "synapse-read"}
 }
@@ -133,6 +135,9 @@ func (f *synapseTransportFixture) item(name string) map[string]any {
 	if strings.HasPrefix(name, "SparkJobDefinition_") {
 		collection = "sparkjobdefinitions"
 	}
+	if strings.HasPrefix(name, "Pipeline_") {
+		collection = "pipelines"
+	}
 	return map[string]any{"id": text(f.workspace["id"]) + "/" + collection + "/item", "name": "item", "type": synapseType + "/" + collection, "etag": "etag", "properties": map[string]any{"bigDataPool": map[string]any{"referenceName": "pool", "type": "BigDataPoolReference"}, "cells": []any{map[string]any{"source": []any{"data-secret-canary"}}}, "jobProperties": map[string]any{"args": []any{"data-secret-canary"}}, "futurePrivate": "data-secret-canary"}}
 }
 func (f *synapseTransportFixture) body(name string) map[string]any {
@@ -146,7 +151,7 @@ func (f *synapseTransportFixture) body(name string) map[string]any {
 	return item
 }
 
-var synapseDataReads = []string{"SparkBatch_GetSparkBatchJobs", "SparkBatch_GetSparkBatchJob", "SparkSession_GetSparkSessions", "SparkSession_GetSparkSession", "Notebook_GetNotebooksByWorkspace", "Notebook_GetNotebook", "SparkJobDefinition_GetSparkJobDefinitionsByWorkspace", "SparkJobDefinition_GetSparkJobDefinition"}
+var synapseDataReads = []string{"SparkBatch_GetSparkBatchJobs", "SparkBatch_GetSparkBatchJob", "SparkSession_GetSparkSessions", "SparkSession_GetSparkSession", "Notebook_GetNotebooksByWorkspace", "Notebook_GetNotebook", "SparkJobDefinition_GetSparkJobDefinitionsByWorkspace", "SparkJobDefinition_GetSparkJobDefinition", "Pipeline_GetPipeline", "Pipeline_GetPipelinesByWorkspace"}
 
 func TestSynapseDataReadAuthorizationAndPrivacy(t *testing.T) {
 	for _, name := range synapseDataReads {

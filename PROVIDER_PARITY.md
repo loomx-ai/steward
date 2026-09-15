@@ -6754,3 +6754,29 @@ phase of a reviewed parent action. This milestone supplies its native asynchrono
 receipt foundation; composing durable cancellation, parent deletion, dependencies
 and final absence remains unfinished. Cleanup coverage remains 418. All 159
 parity rows and all eight acceptance criteria remain open.
+
+
+### Synapse Spark work and Pipeline dependency snapshots
+
+Added native Pipeline list/get operations and their original examples, bringing
+Azure to 1,525 operations; all existing 1,523 operations, 455 resource bindings
+and 418 cleanup bindings remain unchanged. Transitive schemas retain the exact
+upstream models, including the Pipeline identity-field schema/example mismatch.
+The additional reads use the existing workspace-authorized OAuth transport and
+strict native artifact validation, request correlation and private-data redaction.
+
+The Spark preparation collector reads job/session and independent artifact
+indexes, own details, a second full index and final detail/parent configuration.
+A reviewed record omitted from a list is reconciled through its own GET, not
+assumed absent. Spark incarnation and authored fields are privately fingerprinted;
+terminal observations remain separate from existence. Nested Pipeline pool
+references are recorded and dynamic or malformed selectors remain unresolved.
+Only hashes and native selectors enter the proposed work manifest.
+
+Local tests cover manifest JSON recovery, retained stopped records, own-resource
+absence versus forbidden reads, selector/endpoint/incarnation drift, changing
+indexes and parents, nested references and secret redaction. The collector still
+needs integration into the durable Spark pool action and cleanup persistence
+workflow; it grants no new cleanup capability. All 159 parity rows and all eight
+acceptance criteria remain open. No live Azure or independent emulator run is
+claimed.

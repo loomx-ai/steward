@@ -1,19 +1,19 @@
 # Synapse Spark and artifact data-plane contracts
 
-The ten JSON examples are byte-for-byte copies from Azure's
+The twelve JSON examples are byte-for-byte copies from Azure's
 [2020-12-01 data-plane specifications](https://github.com/Azure/azure-rest-api-specs/tree/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01).
 `sources.json` records each URL, SHA-256, operation and request path. The catalog
-snapshots six new documents (three roots and three model dependencies), alongside
+snapshots eight documents (four roots and four model dependencies), alongside
 two already-pinned shared dependencies. Tests use only these local sources.
 
 The selected operations are Spark batch/session list, get and cancel, plus
-notebook and Spark-job-definition list and get. They establish the contracts
-needed to inspect work affected by pool/workspace cleanup. The eight read
+notebook, Spark-job-definition and Pipeline list and get. They establish the contracts
+needed to inspect work affected by pool/workspace cleanup. The ten read
 operations now execute through workspace-bound OAuth and validate their native
 responses. Native cancellation is available through Runtime.Invoke with ownership,
 protection and readback checks; reviewed cleanup orchestration remains unfinished.
-Data-plane asset inventory and resource cleanup remain unfinished. Existing ARM
-inventory and resource actions are unchanged.
+Four data-plane asset kinds have inventory support. Reviewed Spark pool cleanup
+remains unfinished; Pipeline reads do not register an additional asset kind.
 
 ## Wire protocol
 
@@ -116,7 +116,7 @@ sessions, notebooks and Spark job definitions. Spark identities are actual Livy
 URLs; their resource kinds group them beneath the ARM pool without inventing ARM
 job resources. Artifacts retain their documented ARM identities and native name
 selectors. These four additions bring the specification count to 455; the native
-operation count is now 1,523 after the separate ARM polling additions; cleanup
+operation count is now 1,525 after the ARM polling and Pipeline read additions; cleanup
 coverage remains 418.
 
 The source reads complete native indexes, validates each member with its own GET,
@@ -205,3 +205,36 @@ only; they are not replayed as stable-version wire fixtures. Reproduce with
 Local runtime tests separately exercise stable paths, explicit OAuth, private
 canaries, protection, status/receipt faults, before/after drift, final readback and
 context interruption. No fresh live-cloud or independent emulator run is claimed.
+
+
+### Spark work and incoming dependency snapshot
+
+The work collector reads both Spark job/session indexes and all workspace
+notebooks, Spark job definitions and pipelines. Every listed record gets a detail
+read, followed by a second complete index and a final detail/configuration check.
+Previously reviewed records omitted from lists receive their own GET; only their
+own 404 removes them from this snapshot. Quiesced historical records remain.
+Spark entries require a valid scheduler submittedAt incarnation. Private hashes
+bind authored configuration and selectors without persisting code or arguments.
+
+Nested Pipeline activities may supply a `sparkPool` BigDataPoolReference,
+including an expression-valued referenceName. Matching references are recorded;
+dynamic, null, malformed and unknown selectors remain unresolved. These artifacts
+are independent consumers, not children authorized for cascading deletion.
+The collector checks parent configuration again before returning. It detects
+observed drift; the APIs offer no atomic snapshot against concurrent writers.
+
+The two new original Pipeline examples are included in sources.json. Their
+PipelineResource schema declares id, name, type and etag as objects while the
+native examples contain strings. Tests preserve and assert these exact schema
+differences; runtime requires canonical string identity and string etag. The
+examples also omit HTTPS in endpoint and use the existing SDK header alias.
+Native source bytes are never rewritten to make validation pass.
+
+This collector is preparation for the durable pool action. It does not yet make
+Spark pools actionable or connect cancellation, persisted phase recovery, pool
+DELETE and final own-resource absence into the cleanup worker. That integration
+and its real persistence tests remain required. Protocol tests cover restored
+manifests, omitted records, forbidden reads, configuration/index/parent drift,
+incarnations, nested Pipeline references and private payloads. No live service or
+independent emulator validation is claimed.
