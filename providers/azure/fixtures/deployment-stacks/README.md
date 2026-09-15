@@ -66,3 +66,13 @@ management-group operations use a provider-root URL. Native 200 detach responses
 also occur. These observations require both recorded and declared callback
 protocols in the later action driver. They have not yet been incorporated into
 runtime replay tests, and are not live execution by Steward.
+
+The subscription-bound inventory reader now consumes all native list pages,
+validates collection identity, and performs an individual GET for each listed
+stack and each known stack omitted by the index. Only a known, unlisted stack's
+own 404 establishes absence. A listed stack returning 404 makes the observation
+incomplete. Unknown provisioning states remain observations, not cleanup approval.
+Fault tests cover scope escapes, pagination changes, duplicate identities and
+failed or mismatched own reads. Native own-read objects remain private inputs to
+future member review; this reader is not yet connected to runtime inventory,
+and does not establish management-group support or cleanup acceptance.
