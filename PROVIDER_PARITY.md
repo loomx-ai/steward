@@ -7062,3 +7062,35 @@ Replication/clone/group boundaries, policy consumers, encryption identities,
 retained backups, export updates and durable deletion remain implementation work.
 Azure now has 469 specs, 1,568 operations and 422 cleanup bindings; the missing-spec
 backlog is 16 Azure types / 21 references. All 159 rows and eight gates remain open.
+
+
+### Azure NetApp volume cleanup and durable native polling
+
+Ordinary, unprotected NetApp volumes now have a reviewed cleanup action. A signed
+boundary checks the volume, pool, account, group, native active-replication pages
+and all volume-local snapshots/subvolumes/quota rules. Full native configuration
+changes, new members, inherited locks/tags, restores, active clones and replication
+prevent stale or unsupported deletion. The action does not set forceDelete.
+Three child kinds delegate cleanup to the volume only after explicit lifecycle
+review; missing members or requested retention block it. Backup-vault backups are
+not owned by the volume and remain after its deletion.
+
+Native deletion polling is verified against 13 extracted Azure CLI interactions
+at an immutable 2025-12-01 recording revision, with source hashes and signature-only
+URL redaction. The recorded volume request was forced; it proves polling behavior,
+not ordinary cascade semantics. The subvolume recording lacks its final result;
+tests retain that incompleteness. Saved receipts bind owner, region, operation and
+credential context, and separate status/result completion from own-resource absence.
+
+The SQLite worker test scans 22 assets in two regions, produces one volume step
+and three reviewed impacts, saves the accepted response before a simulated 503,
+and reopens the database/provider across all phases without repeating DELETE.
+Independent volume/child absence closes exactly four assets; both backups remain.
+User-facing warnings describe unmounting and data loss in both languages. These
+are local protocol/worker tests, not live Azure or independent emulator evidence.
+
+Azure has 469 specifications, 1,568 operations and 423 cleanup bindings. Independent
+NetApp children/backup cleanup, replication/clone/group workflows, complete policy
+consumers and export-policy editing remain open. The NAS mount parity row remains
+pending: a read-only volume mount target has no independent ARM delete. All 159
+parity rows and all eight acceptance gates remain open.

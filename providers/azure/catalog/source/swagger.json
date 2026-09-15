@@ -273502,7 +273502,9 @@
       "nativeType": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
       "rest": {
         "collection": "volumes",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.Volumes_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.NetApp.Volumes_List"
         ],

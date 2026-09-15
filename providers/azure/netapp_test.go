@@ -59,21 +59,31 @@ func newNetappFixture(t *testing.T) *netappFixture {
 			}
 			object(raw["properties"])["futurePrivateField"] = "netapp-private-canary"
 			if kind.family == "Volumes" {
+				object(raw["properties"])["enableSubvolumes"] = "Enabled"
 				object(raw["properties"])["subnetId"] = strings.ToLower(resourceID(vnetType, "network")) + "/subnets/subnet"
 			}
 			f.objects[id] = raw
 		}
 	}
 	f.runtime = protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
-		if q.Method != "GET" || q.URL.Host != "management.azure.com" || q.URL.Query().Get("api-version") != netappVersion {
-			t.Fatal("unexpected request", q.Method, q.URL)
-		}
 		if f.override != nil {
 			if res, ok := f.override(q); ok {
 				return res, nil
 			}
 		}
 		path := strings.ToLower(q.URL.Path)
+		if q.Method == "POST" && strings.HasSuffix(path, "/listreplications") && q.URL.Query().Get("api-version") == netappVersion {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
+		if q.Method == "GET" && q.URL.Query().Get("api-version") == resourcesVersion && strings.EqualFold(path, "/subscriptions/"+testSubscription+"/resourceGroups/test") {
+			return jsonResponse(200, map[string]any{"id": path, "name": "test", "type": groupType, "location": "eastus", "properties": map[string]any{"provisioningState": "Succeeded"}}, nil), nil
+		}
+		if q.Method == "GET" && strings.HasSuffix(path, "/providers/microsoft.authorization/locks") {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
+		if q.Method != "GET" || q.URL.Host != "management.azure.com" || q.URL.Query().Get("api-version") != netappVersion {
+			t.Fatal("unexpected request", q.Method, q.URL)
+		}
 		if f.missing[path] {
 			return jsonResponse(404, nil, nil), nil
 		}
@@ -113,7 +123,7 @@ func TestNetappNativeInventory(t *testing.T) {
 			}
 			first := page.Items[0]
 			wire, _ := json.Marshal(first)
-			if strings.Contains(string(wire), "netapp-private-canary") || first.Actionable == nil || *first.Actionable {
+			if strings.Contains(string(wire), "netapp-private-canary") || first.Actionable == nil || *first.Actionable != (kind.kind == netappVolumeType) {
 				t.Fatal("unsafe inventory", string(wire))
 			}
 			if kind.kind == netappVolumeType {

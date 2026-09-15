@@ -1815,6 +1815,10 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if value.Identity.Provider == asset.ProviderAzure {
 				result = append(result, plan.Warning{Code: plan.WarningSynapseRestorePointDelete, AssetID: value.ID, Message: "Deleting this user-defined restore point removes that recovery option. The SQL pool, workspace and other backups are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
+		case "Microsoft.NetApp/netAppAccounts/capacityPools/volumes":
+			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningNetappVolumeDelete, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningNetappVolumeDelete, AssetID: value.ID, Message: "Deleting this volume removes its data, snapshots, subvolumes and quota rules. Stop applications and unmount the volume from all hosts before proceeding. Backups in backup vaults, the capacity pool and the NetApp account are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
 		case "Microsoft.Synapse/workspaces/sqlPools":
 			if value.Identity.Provider == asset.ProviderAzure {
 				result = append(result, plan.Warning{Code: plan.WarningSynapseSQLDelete, AssetID: value.ID, Message: "Deleting this SQL pool removes its database and interrupts queries and consumers. The workspace and other pools are retained. SQL backups may remain recoverable under Azure retention; this operation does not purge them.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})

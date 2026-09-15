@@ -312,3 +312,30 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     );
   });
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  it(`explains NetApp volume deletion and retained backups in ${locale}`, () => {
+    localStorage.setItem(localePreferenceKey, locale);
+    render(
+      <LocaleProvider>
+        <ErrorProbe
+          error={{ code: "netapp_volume_delete", message: "fallback" }}
+        />
+      </LocaleProvider>,
+    );
+    const text = screen.getByTestId("error").textContent;
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "从所有主机卸载此卷"
+        : "unmount the volume from all hosts",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "快照、子卷和配额规则"
+        : "snapshots, subvolumes and quota rules",
+    );
+    expect(text).toContain(
+      locale === "zh-CN" ? "备份保管库内的备份" : "Backups in backup vaults",
+    );
+  });
+}

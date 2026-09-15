@@ -11232,7 +11232,9 @@
       "read_operations": [
         "Azure.Microsoft.NetApp.Volumes_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.NetApp.Volumes_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.NetApp.Volumes_List"
       ]

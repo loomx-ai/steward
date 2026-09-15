@@ -333,8 +333,15 @@ Backup and subvolume locations come from their verified parents. Volume subnet
 and VNet links support network selection; backup-to-source links do not authorize
 cascading removal. AD credentials and private unknown fields are not displayed.
 
-Cleanup and export-policy editing are still under implementation. Mount targets
-are read-only volume properties; deleting a volume is not a substitute for removing
-a mount. Volume deletion, replication, clones, snapshots and retained backups
-need separate lifecycle checks. See [NetApp permissions](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions)
+Eligible volumes support reviewed deletion, including their snapshots, subvolumes
+and quota rules. Stop applications and unmount the volume from all hosts first.
+Backup-vault backups, capacity pools and accounts are retained. Active replication,
+restores, clones, protection tags and locks prevent this cleanup. Changing the
+reviewed volume or its children requires a new plan. Execution resumes from saved
+acknowledgements and independently checks the volume and children for absence.
+
+Independent child/backup deletion, replication termination, clone management and
+export-policy editing remain under implementation. Mount targets are read-only
+volume properties; deleting a volume is not a substitute for removing a mount.
+See [NetApp permissions](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions)
 and [deleting volumes](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete).

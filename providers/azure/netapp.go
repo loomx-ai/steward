@@ -276,6 +276,15 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		}
 		ids := map[string]bool{}
 		for _, parent := range parents {
+			if definition.family == "Subvolumes" {
+				flag := object(raws[parent]["properties"])["enableSubvolumes"]
+				if flag == nil || flag == "Disabled" {
+					continue
+				}
+				if flag != "Enabled" {
+					return nil, serviceDenied("unknown_netapp_subvolume_support")
+				}
+			}
 			rows, err := c.netappIndex(ctx, typ, parent)
 			if err != nil {
 				return nil, contracts.DependencyReadError(err)
@@ -377,7 +386,17 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		actionable := false
 		region := regions[id]
 		safe := map[string]any{"id": id, "type": kind, "name": raw["name"], "location": region, "tags": tags, "properties": props}
-		items = append(items, contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: text(raw["name"]), State: text(props["provisioningState"]), Location: region, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}, Tags: tags, Normalized: normalized, Raw: safe, NativeAliases: []string{id}, NetworkReferences: slices.Compact(network), Actionable: &actionable})
+		item := contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: text(raw["name"]), State: text(props["provisioningState"]), Location: region, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}, Tags: tags, Normalized: normalized, Raw: safe, NativeAliases: []string{id}, NetworkReferences: slices.Compact(network), Actionable: &actionable}
+		if kind == netappVolumeType {
+			if err := r.netappVolumeInventory(ctx, c, req, &item); err != nil {
+				return nil, nil, nil, "", err
+			}
+		} else if netappVolumeChild(kind) {
+			item.Normalized["controller_only"] = true
+			item.Normalized["cleanup_protected"] = protectedAzureTags(object(raw["tags"]))
+			delete(item.Normalized, "cleanup_protection_reason")
+		}
+		items = append(items, item)
 	}
 	return items, absent, contextHashes, requestID, nil
 }

@@ -31,10 +31,10 @@ independently observing one snapshot's absence closes only that snapshot.
 These are local protocol/application tests, not recordings, independent NetApp
 emulator evidence or live Azure acceptance.
 
-This milestone enables inventory, not lifecycle cleanup. Native mutations remain
-catalog contracts; resource action bindings are not yet enabled. Full replication,
+The original foundation enabled inventory only; reviewed ordinary volume deletion
+is now implemented as described below. Full replication,
 clones, volume-group membership, identity/encryption references, policy consumers,
-retained-backup lifecycle, export-policy changes and reviewed deletion still need
+retained-backup lifecycle and export-policy changes still need
 implementation and verification. The selected ListReplications operation is POST
 with an optional body and has its own pageable contract; it is not a GET child
 collection. No mock GET is substituted for it.
@@ -98,3 +98,43 @@ runtime instances. An operation's terminal receipt prevents repeated polling but
 never proves resource absence. Expired callbacks, permissions errors, unknown
 states, changed URLs and modified receipts cannot report successful deletion.
 No resource cleanup action is enabled by this polling milestone.
+
+
+## Reviewed volume cleanup
+
+Only the volume receives a direct cleanup binding. Its signed review includes
+full private hashes of the volume, capacity pool, account and resource group;
+fileSystemId and poolId distinguish recreated resources. It enumerates active
+replications with native POST `listReplications` and `{"exclude":"Deleted"}`;
+continuations use GET with no body. This follows the pageable SDK contract in
+[Azure SDK for Go](https://github.com/Azure/azure-sdk-for-go/blob/c949172cf1b28d69f911a4f78e0e88bcd98f5049/sdk/resourcemanager/netapp/armnetapp/volumes_client.go)
+(the cited SDK uses 2025-12-15-preview; the selected REST operation and all local
+requests use 2025-12-01). It is corroborating paging implementation evidence,
+not a recorded stable-API multipage replication transaction.
+
+Volume-local snapshots, subvolumes and quota rules form an exclusive lifecycle
+ledger. Listed and previously reviewed members get own GETs; missing live assets
+block planning. Native `enableSubvolumes` defaults to Disabled, so disabled
+collections are skipped while known child IDs still require independent reads.
+Parents, members and replications are checked again before any DELETE. Protected,
+restoring, actively cloning, DataProtection/ShortTermClone and unknown-type volumes
+cannot use this ordinary deletion action. It never sends forceDelete.
+
+Native semantics: [volume deletion removes snapshots](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete),
+[volume deletion removes its quota rules](https://learn.microsoft.com/en-us/azure/azure-netapp-files/manage-default-individual-user-group-quotas),
+and [backups survive volume deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-configure-policy-based).
+The plan explains application shutdown/unmounting, volume-local data loss and
+retained vault backups/parents in English and Chinese. Retaining a volume-local
+member while deleting its volume is rejected. Independently selecting a snapshot
+does not select or delete the volume.
+
+Execution saves its signed acknowledgement before follow-up HTTP. It checkpoints
+terminal native polling before own-resource readback. A readable pool with the
+reviewed poolId, the volume's own 404 and every managed child's own 404 are required
+for completion. Neither callback expiry nor the volume's disappearance alone
+closes children. The actual SQLite scan/plan/execution test reopens the database
+and creates a new provider runtime across accepted-response/503 failure and each
+poll phase; one DELETE closes exactly four of 22 assets, retaining both backups.
+These remain local protocol/application tests, not live Azure acceptance or an
+independent NetApp emulator. Other native resource mutations and full parity remain
+unfinished.
