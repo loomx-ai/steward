@@ -264,13 +264,63 @@ func TestDeploymentStackMemberRequestProjection(t *testing.T) {
 	if err != nil || len(nic.LifecycleImpacts) != 1 || nic.LifecycleImpacts[0].Asset.ID != "ip" || nic.LifecycleImpacts[0].Delete {
 		t.Fatal(nic, err)
 	}
-	for _, id := range []asset.AssetID{"boot", "stack", "missing", "unrelated"} {
+	for _, id := range []asset.AssetID{"boot", "stack", "missing"} {
 		if _, err := c.deploymentStackMemberRequest(req, id); err == nil {
 			t.Fatal("invalid preparation target accepted", id)
 		}
 	}
+	disk, err := c.deploymentStackMemberRequest(req, other.ID)
+	if err != nil || disk.Asset.ID != other.ID || len(disk.LifecycleImpacts) != 0 || len(disk.Parameters) != 0 {
+		t.Fatal("independent product request was not projected", disk, err)
+	}
+	c.http.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
+		t.Fatal("unsupported preparation performed HTTP", r.Method, r.URL)
+		return nil, nil
+	})
+	if _, err := c.deploymentStackPrepareMember(t.Context(), req, other.ID, nil); err == nil || !strings.Contains(err.Error(), "invalid_deployment_stack_preparation_member") {
+		t.Fatal("non-attachment product entered attachment preparation", err)
+	}
+	if _, err := c.deploymentStackPreparedConfigurations(req, []map[string]any{{"member": string(other.ID)}}); err == nil || !strings.Contains(err.Error(), "invalid_deployment_stack_preparation_member") {
+		t.Fatal("non-attachment product checkpoint accepted", err)
+	}
 	after, err := json.Marshal(req)
 	if err != nil || string(before) != string(after) {
 		t.Fatal("projection mutated the frozen Stack request")
+	}
+}
+
+func TestDeploymentStackProductRequestProjection(t *testing.T) {
+	parent := actionAsset(hostGroupType, "hosts")
+	parent.Identity.Partition = "azure"
+	child := parent
+	child.ID, child.Identity.NativeType, child.Identity.NativeID = "host", hostType, parent.Identity.NativeID+"/hosts/host"
+	other := actionAsset(diskType, "outside")
+	other.Identity.Partition = "azure"
+	c, req := stackDeletePlanFixture(t, false,
+		contracts.ActionImpact{Asset: parent, ControllerID: "stack", Delete: true},
+		contracts.ActionImpact{Asset: child, ControllerID: parent.ID, Delete: true},
+		contracts.ActionImpact{Asset: other, ControllerID: "stack", Delete: true},
+	)
+	req.IdempotencyKey = "reviewed-job"
+	req.PrerequisiteDeletions = []contracts.ActionImpact{
+		{Asset: actionAsset(diskType, "parent-prerequisite"), ControllerID: parent.ID, Delete: true},
+		{Asset: actionAsset(diskType, "child-prerequisite"), ControllerID: child.ID, Delete: true},
+		{Asset: actionAsset(diskType, "outside-prerequisite"), ControllerID: other.ID, Delete: true},
+	}
+	for _, target := range []asset.Asset{parent, child} {
+		projected, err := c.deploymentStackMemberRequest(req, target.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if projected.Asset.ID != target.ID || projected.IdempotencyKey != "reviewed-job:member:"+string(target.ID) || projected.Action != "delete" || len(projected.Parameters) != 0 || len(projected.PrerequisiteDeletions) != 1 || projected.PrerequisiteDeletions[0].ControllerID != target.ID {
+			t.Fatal("product request crossed its reviewed scope", projected)
+		}
+		if target.ID == parent.ID {
+			if len(projected.LifecycleImpacts) != 1 || projected.LifecycleImpacts[0].Asset.ID != child.ID || !projected.LifecycleImpacts[0].Delete {
+				t.Fatal("product child consequence lost", projected)
+			}
+		} else if len(projected.LifecycleImpacts) != 0 {
+			t.Fatal("child acquired another product's consequences", projected)
+		}
 	}
 }

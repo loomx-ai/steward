@@ -25,8 +25,8 @@ func (c *client) deploymentStackMemberRequest(req contracts.ActionRequest, id as
 		byID[impact.Asset.ID] = impact
 	}
 	member, found := byID[id]
-	if !found || !member.Delete || (member.Asset.Identity.NativeType != vmType && member.Asset.Identity.NativeType != nicType) {
-		return contracts.ActionRequest{}, serviceDenied("invalid_deployment_stack_preparation_member")
+	if !found || !member.Delete {
+		return contracts.ActionRequest{}, serviceDenied("invalid_deployment_stack_execution_member")
 	}
 	out := contracts.ActionRequest{Asset: member.Asset, Action: "delete", IdempotencyKey: req.IdempotencyKey + ":member:" + string(id)}
 	for _, impact := range req.LifecycleImpacts {
@@ -75,6 +75,9 @@ func (c *client) deploymentStackPrepareMember(ctx context.Context, req contracts
 	member, err := c.deploymentStackMemberRequest(req, id)
 	if err != nil {
 		return contracts.WaitResult{}, err
+	}
+	if member.Asset.Identity.NativeType != vmType && member.Asset.Identity.NativeType != nicType {
+		return contracts.WaitResult{}, serviceDenied("invalid_deployment_stack_preparation_member")
 	}
 	if _, err := deploymentStackRequestPayload(req); err != nil {
 		return contracts.WaitResult{}, err

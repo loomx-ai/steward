@@ -51,6 +51,9 @@ func (c *client) deploymentStackPreparedConfigurations(req contracts.ActionReque
 		if err != nil {
 			return nil, err
 		}
+		if member.Asset.Identity.NativeType != vmType && member.Asset.Identity.NativeType != nicType {
+			return nil, serviceDenied("invalid_deployment_stack_preparation_member")
+		}
 		binding, err := c.deploymentStackPreparationBinding(req, saved)
 		if err != nil {
 			return nil, err
