@@ -7122,3 +7122,22 @@ Azure now has 469 specifications, 1,568 operations and 425 cleanup bindings.
 Independent subvolume/quota cleanup, combined protected-latest backup/volume
 ordering, replication/clone/group workflows, policy consumers and export updates
 remain unfinished. All 159 parity rows and all eight acceptance gates remain open.
+
+
+### Synapse independent pool selection after complete graph discovery
+
+Registered SQLite tests reproduced ready, zero-step SQL and Spark plans after a
+complete workspace graph scan. The workspace cascade's unselected-controller skip
+had overridden direct cleanup permission. Skip now applies only to unsupported
+metadata kinds, and direct permission for pool kinds still excludes protected or
+controller-only observations. Spark code consumers and SQL replication continue
+to block independent cleanup; selecting the workspace still reviews its full
+cascade and rejects unsupported retention.
+
+SQL and Spark restart tests now cover both partial discovery and a complete native
+workspace graph. SQL selection produces one step with no impacts and retains seven
+of eight assets; Spark cancels each reviewed run once, deletes only its pool and
+retains the workspace and both history records. This fixes existing capability
+integration rather than adding a cleanup binding. Counts remain 469 Azure specs,
+1,568 operations and 425 cleanup bindings; all 159 parity rows and eight acceptance
+gates remain open. These tests are offline application evidence, not live Azure.

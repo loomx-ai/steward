@@ -312,7 +312,7 @@ Notebook 与 Spark 作业定义的盘点还会核验工作区内的 Spark 任务
 
 工作区清理核验的是活动工作区和池已移除，不会清除 SQL 备份，也不代表所有 SQL 数据副本均已消失。工作区删除后，Azure 仍可能保留可恢复的 SQL 备份。恢复取决于可用还原点及保留期，Steward 不保证恢复成功。参见[从已删除工作区恢复](https://learn.microsoft.com/en-us/azure/synapse-analytics/backuprestore/restore-sql-pool-from-deleted-workspace)。
 
-Online 或 Paused 状态的 Synapse 专用 SQL 池已支持独立清理。计划会提示数据库将被移除，查询和使用方访问会中断；此操作不会删除工作区、其他池或保留的 SQL 备份。原生池删除不代表所有使用方已停止，也不代表备份已清除。
+Online 或 Paused 状态的 Synapse 专用 SQL 池已支持独立清理。完整扫描工作区依赖图后，单独选择符合条件的 SQL 或 Spark 池仍会生成该池的清理步骤，不会自动选择工作区删除。计划会提示数据库将被移除，查询和使用方访问会中断；此操作不会删除工作区、其他池或保留的 SQL 备份。原生池删除不代表所有使用方已停止，也不代表备份已清除。
 
 需要 `Microsoft.Synapse/workspaces/sqlPools/delete`、池／工作区／资源组读取、复制链接列表和读取，以及管理锁列表权限。删除前会重新核验创建身份、配置、父级上下文和保护设置。存在复制链接时，池级和工作区级删除均会阻止；已知链接即使漏列，也需要单独读取。请独立处理复制关系后重新扫描。签名回执支持跨重启恢复，操作回调成功或过期均不能替代 SQL 池自身不存在的确认。
 

@@ -403,3 +403,36 @@ func TestSynapseWorkspaceCleanupWorkerAndRetention(t *testing.T) {
 		t.Fatal("verified scope not reconciled", len(active), err)
 	}
 }
+
+func TestSynapseIndependentPoolsKeepNativeBlockersWithWorkspaceGraph(t *testing.T) {
+	for _, kind := range []string{synapseSQLType, synapseSparkType} {
+		t.Run(kind, func(t *testing.T) {
+			f := newSQLActionFixture(t)
+			if kind == synapseSQLType {
+				f.replication(t)
+			}
+			// Spark's notebook/job-definition consumers remain present. SQL instead
+			// has a replication peer; neither restriction is waived by direct cleanup.
+			repo, registry, _ := azureNativeWorkerRepository(t, f.runtime)
+			azureNativeWorkerScan(t, f.runtime, synapseSource, repo, registry, []string{synapseType, synapseSparkType, synapseSQLType}, false, false)
+			values := azureNativeWorkerScan(t, f.runtime, synapseDataInventorySource, repo, registry, []string{synapseBatchType, synapseSessionType, synapseNotebookType, synapseJobDefinitionType, synapsePipelineType}, false, true)
+			var selected asset.Asset
+			for _, value := range values {
+				if value.Identity.NativeType == kind {
+					selected = value
+				}
+			}
+			if selected.ID == "" {
+				t.Fatal("missing selected pool")
+			}
+			planner := cleanup.NewService(repo, registry)
+			task, err := planner.CreateTask(t.Context(), cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: selected.ID}}, CreatedBy: "operator"})
+			if err != nil || len(task.Task.Blockers) == 0 {
+				t.Fatal("native restriction lost in complete graph", task, err)
+			}
+			if f.deletes != 0 {
+				t.Fatal("planning mutated resources")
+			}
+		})
+	}
+}

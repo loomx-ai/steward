@@ -201,6 +201,15 @@ func TestSynapseSparkActionRejectsChangedReview(t *testing.T) {
 }
 
 func TestSynapseSparkCleanupWorkerRestart(t *testing.T) {
+	for _, completeGraph := range []bool{false, true} {
+		name := "partial-inventory"
+		if completeGraph {
+			name = "complete-workspace-graph"
+		}
+		t.Run(name, func(t *testing.T) { synapseSparkCleanupWorkerRestart(t, completeGraph) })
+	}
+}
+func synapseSparkCleanupWorkerRestart(t *testing.T, completeGraph bool) {
 	f := newSparkActionFixture(t)
 	repository, registry, path := azureNativeWorkerRepository(t, f.runtime)
 	values := azureNativeWorkerScan(t, f.runtime, synapseSource, repository, registry, []string{synapseType, synapseSparkType}, false, false)
@@ -213,10 +222,14 @@ func TestSynapseSparkCleanupWorkerRestart(t *testing.T) {
 	if pool.ID == "" {
 		t.Fatal("missing persisted pool")
 	}
-	values = azureNativeWorkerScan(t, f.runtime, synapseDataInventorySource, repository, registry, []string{synapseBatchType, synapseSessionType}, false, false)
+	kinds := []string{synapseBatchType, synapseSessionType}
+	if completeGraph {
+		kinds = append(kinds, synapseNotebookType, synapseJobDefinitionType, synapsePipelineType)
+	}
+	values = azureNativeWorkerScan(t, f.runtime, synapseDataInventorySource, repository, registry, kinds, false, completeGraph)
 	planner := cleanup.NewService(repository, registry)
 	task, err := planner.CreateTask(t.Context(), cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: pool.ID}}, CreatedBy: "operator"})
-	if err != nil || task.Task.Status != plan.StatusReady || len(task.Steps) != 1 {
+	if err != nil || task.Task.Status != plan.StatusReady || len(task.Steps) != 1 || task.Steps[0].AssetID != pool.ID || len(task.ImpactItems) != 0 {
 		t.Fatal("pool plan", err, task.Task.Status, task.Task.Blockers, len(task.Steps))
 	}
 	attempt, err := planner.CreateExecution(t.Context(), cleanup.CreateExecutionRequest{ConnectionID: "connection", CleanupTaskID: task.Task.ID, RequestedBy: "operator", IdempotencyKey: "spark-worker", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}})
@@ -301,6 +314,16 @@ func TestSynapseSparkCleanupWorkerRestart(t *testing.T) {
 	active, err := repository.ListActiveAssetsByConnection(t.Context(), "connection", "")
 	if err != nil {
 		t.Fatal(err)
+	}
+	if len(active) != 3 {
+		t.Fatal("independent pool cleanup must retain workspace and both histories", len(active))
+	}
+	workspaceRetained := false
+	for _, row := range active {
+		workspaceRetained = workspaceRetained || row.Identity.NativeType == synapseType
+	}
+	if !workspaceRetained {
+		t.Fatal("independent pool cleanup removed workspace")
 	}
 	for _, value := range values {
 		if value.Identity.NativeType == synapseBatchType || value.Identity.NativeType == synapseSessionType {

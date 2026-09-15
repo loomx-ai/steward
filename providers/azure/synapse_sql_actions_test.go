@@ -249,13 +249,27 @@ func TestSynapseSQLInventoryProtection(t *testing.T) {
 }
 
 func TestSynapseSQLCleanupWorkerKeepsWorkspace(t *testing.T) {
+	for _, completeGraph := range []bool{false, true} {
+		name := "partial-inventory"
+		if completeGraph {
+			name = "complete-workspace-graph"
+		}
+		t.Run(name, func(t *testing.T) { synapseSQLCleanupWorkerKeepsWorkspace(t, completeGraph) })
+	}
+}
+func synapseSQLCleanupWorkerKeepsWorkspace(t *testing.T, completeGraph bool) {
 	f := newSQLActionFixture(t)
 	repo, registry, path := azureNativeWorkerRepository(t, f.runtime)
 	azureNativeWorkerScan(t, f.runtime, synapseSource, repo, registry, []string{synapseType, synapseSparkType, synapseSQLType}, false, false)
-	// Workspace membership is deliberately unscanned. A direct SQL selection
-	// must not silently authorize its controller or require sibling deletion.
+	expected := 3
+	if completeGraph {
+		azureNativeWorkerScan(t, f.runtime, synapseDataInventorySource, repo, registry, []string{synapseBatchType, synapseSessionType, synapseNotebookType, synapseJobDefinitionType, synapsePipelineType}, false, true)
+		expected = 8
+	}
+	// A direct SQL selection must retain its workspace and siblings, whether
+	// workspace lifecycle membership has been contributed or is still unscanned.
 	values, err := repo.ListActiveAssetsByConnection(t.Context(), "connection", "")
-	if err != nil || len(values) != 3 {
+	if err != nil || len(values) != expected {
 		t.Fatal(err, len(values))
 	}
 	var sql asset.Asset
@@ -347,7 +361,7 @@ func TestSynapseSQLCleanupWorkerKeepsWorkspace(t *testing.T) {
 	resume(true)
 	resume(false)
 	active, err := repo.ListActiveAssetsByConnection(t.Context(), "connection", "")
-	if err != nil || len(active) != 2 || f.deletes != 1 {
+	if err != nil || len(active) != expected-1 || f.deletes != 1 {
 		t.Fatal("scope", active, err, f.deletes)
 	}
 	for _, v := range active {

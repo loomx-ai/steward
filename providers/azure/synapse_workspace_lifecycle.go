@@ -42,7 +42,11 @@ func (c *client) synapseWorkspaceContribution(parent asset.Asset, assets []asset
 			}
 			target = candidate
 		}
-		evidence := map[string]any{"resource_type": kind, "instance_id": id, "delete_by_default": true, "retention_supported": false, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceUnselectedControllerAction: graph.LifecycleUnselectedControllerSkip}
+		direct := kind == synapseSparkType || kind == synapseSQLType
+		evidence := map[string]any{"resource_type": kind, "instance_id": id, "delete_by_default": true, "retention_supported": false, graph.LifecycleEvidenceControllerDeleteGuaranteed: true}
+		if !direct {
+			evidence[graph.LifecycleEvidenceUnselectedControllerAction] = graph.LifecycleUnselectedControllerSkip
+		}
 		metadata := synapseDataKind(kind).kind != ""
 		if metadata {
 			// These native data-plane objects are metadata within the workspace,
@@ -67,7 +71,7 @@ func (c *client) synapseWorkspaceContribution(parent asset.Asset, assets []asset
 		if metadata && target.Normalized["_synapse_workspace"] != parent.Identity.NativeID {
 			return result, serviceDenied("synapse_workspace_member_owner_changed")
 		}
-		result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, DirectCleanupAllowed: kind == synapseSparkType || kind == synapseSQLType, EvidenceSource: synapseWorkspaceLifecycleSource, Evidence: evidence, Confidence: 1})
+		result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, DirectCleanupAllowed: direct && target.Normalized["cleanup_protected"] != true && target.Normalized["cleanup_controller_only"] != true, EvidenceSource: synapseWorkspaceLifecycleSource, Evidence: evidence, Confidence: 1})
 		result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: synapseWorkspaceLifecycleSource, Evidence: evidence, Confidence: 1})
 	}
 	return result, nil

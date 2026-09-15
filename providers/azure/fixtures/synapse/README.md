@@ -244,3 +244,23 @@ parents. Synthetic fault/restart tests complement the official response evidence
 they do not claim live acceptance. Parent-specific 404 codes cannot erase backup
 observations. A dedicated SQLite worker test retains both parent pools/workspaces
 and every other backup while completing one selected point deletion.
+
+
+## Independent pools with a complete workspace graph
+
+The registered SQLite worker tests now exercise both partial inventory and a
+complete native workspace lifecycle graph. Previously the workspace's blanket
+unselected-controller skip produced a ready plan with zero steps for an explicitly
+selected SQL or Spark pool. Pool kinds now retain their independent action;
+unsupported metadata kinds retain the existing skip behavior. Protected and
+controller-only pools do not receive direct cleanup permission, so Spark code
+consumers and SQL replication still block standalone removal. Workspace cascade
+and its retention checks remain unchanged.
+
+With all eight fixture assets scanned, a standalone SQL plan has one step and no
+cascade impacts; restart execution sends one DELETE and retains the other seven
+assets. The Spark variant scans complete workspace membership without code
+consumers, cancels the two reviewed active runs, resumes saved phases and deletes
+only the pool; workspace and run-history records remain. Tests also verify the
+consumer/replication blockers under the complete graph. These are local registered
+provider/SQLite application tests, not recorded cloud execution or live acceptance.
