@@ -11,6 +11,9 @@ import (
 const insightsAnnotationSource = "application-insights-annotations"
 
 func insightsInventorySource(kind string) string {
+	if synapseBackupKind(kind) != "" {
+		return synapseBackupSource
+	}
 	if synapseDataKind(kind).kind != "" {
 		return synapseDataInventorySource
 	}

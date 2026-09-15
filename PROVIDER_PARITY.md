@@ -6974,3 +6974,33 @@ Native operations and prior bindings remain unchanged. Independent code-artifact
 cleanup, registered backup/restore-point resources, full consumer coverage and
 live acceptance remain unfinished. All 159 parity rows and all eight acceptance
 criteria remain open.
+
+### Synapse retained backup inventory and lookup scope
+
+Two registered `synapse-backups` kinds now discover restorable dropped SQL pools
+and SQL pool restore points through existing stable native APIs. Their public
+metadata includes native names, region, backup dates, restore-point type/label
+and service level; private unknown fields affect fingerprints without being
+persisted. Parent and child indexes are drained, every backup is read, known
+list omissions are recovered, two complete snapshots are compared, and parent
+configuration is checked again before accepting the shard. Client cursors bind
+all observations, parents, known IDs, request scope and catalog revision.
+
+Backup records may outlive their lookup parents. Missing workspace/pool or
+unavailable collection fails the shard, preserving existing SQLite observations;
+it never provides absence evidence. Only a backup's own 404 with a readable
+parent can reconcile that record. Graph connections encode lookup scope without
+delete ownership, so selecting a live SQL pool does not select retained backups.
+The native parent relationship does not imply a live dependency or backup purge.
+
+Tests exercise original adapted example shapes, both pagination layers, known
+omissions and own absence, parent/permission failures, changed cursors, foreign
+selectors, continuous restore points, secret canaries and actual SQLite scan/graph
+workers. A failed parent read retains records; a later own absence reconciles
+only the missing backup. SQL-only plan scope remains one independent step.
+
+Azure has 458 specifications, 1,531 unchanged operations and 421 cleanup bindings.
+No backup DELETE binding is enabled. Automatic restore points cannot be deleted
+by users; the `DISCRETE` enum alone is insufficient user-defined evidence. Backup
+restore, user-defined restore-point deletion and full retained lifecycle remain
+unfinished. All 159 parity rows and all eight acceptance criteria remain open.

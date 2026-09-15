@@ -1,0 +1,73 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Synapse/workspaces/restorableDroppedSqlPools
+  class: storage.snapshot
+presentation:
+  displayNames:
+    en-US: Restorable dropped SQL pool
+    zh-CN: 可恢复的已删除 SQL 池
+scope:
+  kind: region
+discovery:
+  source: synapse-backups
+  list:
+    operation: Azure.Microsoft.Synapse.RestorableDroppedSqlPools_ListByWorkspace
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      workspaceName: parent.normalized.arm_parameters.workspaceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Synapse.RestorableDroppedSqlPools_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: synapse
+    nativeType: Microsoft.Synapse/workspaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  databaseName:
+    path: databaseName
+    type: string
+  creationDate:
+    path: creationDate
+    type: string
+  deletionDate:
+    path: deletionDate
+    type: string
+  earliestRestoreDate:
+    path: earliestRestoreDate
+    type: string
+  restorePointType:
+    path: restorePointType
+    type: string
+  restorePointCreationDate:
+    path: restorePointCreationDate
+    type: string
+  restorePointLabel:
+    path: restorePointLabel
+    type: string
+  edition:
+    path: edition
+    type: string
+  serviceLevelObjective:
+    path: serviceLevelObjective
+    type: string
+  maxSizeBytes:
+    path: maxSizeBytes
+    type: string
+extensions:
+  hook: azure.resource
+# Lookup scope is not deletion ownership: backups can survive their parents.
+relationships:
+- type: connected_to
+  targetType: Microsoft.Synapse/workspaces
+  targetIdPath: refs_microsoft_synapse_workspaces

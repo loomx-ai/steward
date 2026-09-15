@@ -1,0 +1,77 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Synapse/workspaces/sqlPools/restorePoints
+  class: storage.snapshot
+presentation:
+  displayNames:
+    en-US: SQL pool restore point
+    zh-CN: SQL 池还原点
+scope:
+  kind: region
+discovery:
+  source: synapse-backups
+  list:
+    operation: Azure.Microsoft.Synapse.SqlPoolRestorePoints_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      workspaceName: parent.normalized.arm_parameters.workspaceName
+      sqlPoolName: parent.normalized.arm_parameters.sqlPoolName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Synapse.SqlPoolRestorePoints_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: synapse
+    nativeType: Microsoft.Synapse/workspaces/sqlPools
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  databaseName:
+    path: databaseName
+    type: string
+  creationDate:
+    path: creationDate
+    type: string
+  deletionDate:
+    path: deletionDate
+    type: string
+  earliestRestoreDate:
+    path: earliestRestoreDate
+    type: string
+  restorePointType:
+    path: restorePointType
+    type: string
+  restorePointCreationDate:
+    path: restorePointCreationDate
+    type: string
+  restorePointLabel:
+    path: restorePointLabel
+    type: string
+  edition:
+    path: edition
+    type: string
+  serviceLevelObjective:
+    path: serviceLevelObjective
+    type: string
+  maxSizeBytes:
+    path: maxSizeBytes
+    type: string
+extensions:
+  hook: azure.resource
+# Lookup scope is not deletion ownership: backups can survive their parents.
+relationships:
+- type: connected_to
+  targetType: Microsoft.Synapse/workspaces
+  targetIdPath: refs_microsoft_synapse_workspaces
+- type: connected_to
+  targetType: Microsoft.Synapse/workspaces/sqlPools
+  targetIdPath: refs_microsoft_synapse_workspaces_sqlpools

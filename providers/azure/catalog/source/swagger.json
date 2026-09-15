@@ -267187,6 +267187,42 @@
           "Azure.Microsoft.Synapse.DataPlane.Pipeline_GetPipelinesByWorkspace"
         ]
       }
+    },
+    {
+      "nativeType": "Microsoft.Synapse/workspaces/restorableDroppedSqlPools",
+      "class": "storage.snapshot",
+      "displayName": "Restorable dropped SQL pool",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "restorableDroppedSqlPools",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.RestorableDroppedSqlPools_Get"
+        ],
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.RestorableDroppedSqlPools_ListByWorkspace"
+        ]
+      }
+    },
+    {
+      "nativeType": "Microsoft.Synapse/workspaces/sqlPools/restorePoints",
+      "class": "storage.snapshot",
+      "displayName": "SQL pool restore point",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "restorePoints",
+        "read_operations": [
+          "Azure.Microsoft.Synapse.SqlPoolRestorePoints_Get"
+        ],
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Synapse.SqlPoolRestorePoints_List"
+        ]
+      }
     }
   ]
 }

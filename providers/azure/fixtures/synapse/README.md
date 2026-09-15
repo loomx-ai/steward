@@ -192,3 +192,33 @@ terminal operation state, and requires own pool absence. SQLite worker tests
 reopen persistence and resolve a new runtime between retries, verifying one SQL
 DELETE and continued workspace/Spark pool records. These are offline protocol
 tests, not independent-emulator or live Azure acceptance.
+
+### Retained SQL backup inventory
+
+`RestorableDroppedSqlPools_ListByWorkspace/Get` and `SqlPoolRestorePoints_List/Get`
+now back two registered inventory kinds. No operation source is changed. Tests
+adapt the original example identities and regions to one subscription, including
+the restore-point example's omitted resource-group path; the original fixtures
+and documented schema discrepancies remain unchanged. Private unknown properties
+are fingerprinted but excluded from persisted public observations.
+Optional native backup dates and metadata may be absent; this does not grant
+restore or deletion eligibility. Present malformed values remain rejected.
+
+The dedicated non-authoritative source drains all parent and backup pages,
+recovers known omitted workspace/pool/backup identities through scoped own reads,
+compares two complete snapshots and rechecks parent configuration. Own backup
+404 is accepted only while its lookup parent is readable. Missing parent or
+collection does not establish backup expiry; the failed shard keeps stored
+records. Tests cover native/client paging, region scope, cursor invalidation,
+foreign hints, permission failures, continuous/discrete shapes, redaction, and
+SQLite scan/graph persistence with safe failure and subsequent own-absence
+reconciliation. Lookup-scope edges are `connected_to`, not ownership/deletion
+dependencies; SQL-only plans retain backup records.
+
+Restore-point cleanup is not enabled by inventory. The native type enum does not
+by itself establish user ownership; Microsoft documents a system-backup deletion
+error and prohibits user deletion of automatic restore points. Restorable
+dropped pool metadata is not a live database and has no selected DELETE API.
+Native restore and complete backup lifecycle handling still need implementation.
+These tests are local protocol/worker evidence, not live Azure or independent
+emulator acceptance.
