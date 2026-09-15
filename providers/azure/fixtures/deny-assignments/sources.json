@@ -1,0 +1,16 @@
+{
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-DenyAssignmentCalls.json",
+  "source_sha256": "def1fbbbba2df435548d3ecbec5d4171872abcd75cfe34f3b2413f8a9a322a49",
+  "files": {
+    "GetDenyAssignmentByNameId.json": {
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/examples/GetDenyAssignmentByNameId.json",
+      "sha256": "848332d94f395bbf3b445653cb837ae3d185209e349de0b75a6a6a0fe0752717",
+      "operation": "DenyAssignments_Get"
+    },
+    "GetDenyAssignmentByScope.json": {
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/examples/GetDenyAssignmentByScope.json",
+      "sha256": "7c8e85e56fc3af35fa9826f9616d8b52f4e15ffb97758eaf0b404b7147efeffb",
+      "operation": "DenyAssignments_ListForScope"
+    }
+  }
+}

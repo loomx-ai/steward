@@ -414,7 +414,7 @@ func (c *client) rbacIndex(ctx context.Context, kind, scope string) (map[string]
 func rbacPath(path string) bool {
 	parts := strings.Split(strings.ToLower(path), "/")
 	for i := 0; i+2 < len(parts); i++ {
-		if parts[i] == "providers" && parts[i+1] == "microsoft.authorization" && rbacKind("Microsoft.Authorization/"+parts[i+2]) != "" {
+		if parts[i] == "providers" && parts[i+1] == "microsoft.authorization" && (rbacKind("Microsoft.Authorization/"+parts[i+2]) != "" || parts[i+2] == "denyassignments") {
 			return true
 		}
 	}

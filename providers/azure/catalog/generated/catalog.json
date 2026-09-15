@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "4cf4f77a0d1a22999f8a1af1c2b4bca986c9b4934a9ea0928ecb5b9d966eac17",
+    "checksum": "46e08add49d4fedba913ffb45f68ce56e43954c6197e2b383dc844014a69e32d",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "a2b3b9383d0df171f7a9b182b86f55fb792b80c2d35368a35b7c61d76590ed1c",
+  "content_checksum": "0c882964823f8ca08d4af09718a5e1fcd546f8144a743111fcd4d758537f4a53",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -33773,6 +33773,154 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/app/resource-manager/Microsoft.App/ContainerApps/stable/2024-03-01/ManagedEnvironments.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.DenyAssignments_Get",
+      "name": "DenyAssignments_Get",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Authorization/denyAssignments/{denyAssignmentId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2022-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "denyAssignmentId": {
+            "description": "The ID of the deny assignment to get.",
+            "in": "path",
+            "name": "denyAssignmentId",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the deny assignment.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Deny Assignment",
+        "properties": {
+          "id": {
+            "description": "The deny assignment ID.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The deny assignment name.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/DenyAssignmentProperties",
+            "description": "Deny assignment properties.",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "The deny assignment type.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2022-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Authorization/denyAssignments/{denyAssignmentId}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-DenyAssignmentCalls.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.DenyAssignments_ListForScope",
+      "name": "DenyAssignments_ListForScope",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Authorization/denyAssignments",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "The filter to apply on the operation. Use $filter=atScope() to return all deny assignments at or above the scope. Use $filter=denyAssignmentName eq '{name}' to search deny assignments by name at specified scope. Use $filter=principalId eq '{id}' to return all deny assignments at, above and below the scope for the specified principal. Use $filter=gdprExportPrincipalId eq '{id}' to return all deny assignments at, above and below the scope for the specified principal. This filter is different from the principalId filter as it returns not only those deny assignments that contain the specified principal is the Principals list but also those deny assignments that contain the specified principal is the ExcludePrincipals list. Additionally, when gdprExportPrincipalId filter is used, only the deny assignment name and description properties are returned.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2022-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the deny assignments.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Deny assignment list operation result.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to use for getting the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "Deny assignment list.",
+            "items": {
+              "$ref": "#/definitions/DenyAssignment"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2022-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Authorization/denyAssignments",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-DenyAssignmentCalls.json"
     },
     {
       "id": "Azure.Microsoft.Authorization.RoleAssignmentSchedules_Get",

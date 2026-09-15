@@ -2599,6 +2599,13 @@
         "DeploymentStacks_ListAtResourceGroup",
         "DeploymentStacks_ListAtSubscription"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-DenyAssignmentCalls.json",
+      "operations": [
+        "DenyAssignments_Get",
+        "DenyAssignments_ListForScope"
+      ]
     }
   ],
   "resource_types": [
