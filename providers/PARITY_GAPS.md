@@ -384,3 +384,32 @@ reappearing completed prerequisites. Setup Done does not authorize native Stack
 DELETE by itself: full scope/product/group acceptance, native execution, final
 product/deny evidence and action/graph/executor registration remain open, along
 with all 159 parity rows and eight overall gates.
+
+### Native Stack DELETE submission after setup (2026-09-16)
+
+A native submission helper now authenticates the completed setup checkpoint,
+rejects an active prerequisite, and reruns service prerequisite enumeration,
+resource-group closure and every remaining product preflight. It also checks
+Stack-level management locks and protected tags, rereads the signed Stack
+configuration, and resolves the operation region from the live Stack or a fresh
+containing-group GET when a resource-group Stack omits location. The region must
+match the reviewed asset. It sends the catalog-bound DELETE with exactly the
+reviewed category consequences, unsupported-resource failure and out-of-sync
+bypass disabled, using a stable client request ID. Accepted responses become the
+existing full-request-bound native execution receipt; subsequent processing uses
+polling/product readback, not submission.
+
+Both subscription and resource-group protocol fixtures now exercise setup,
+independent host deletion, native Stack DELETE, persisted receipt recovery,
+Running-to-Succeeded polling and final product observations without repeating
+either DELETE. Guards cover Stack/parent locks, protected Stack tags, missing or
+changed region, missing/tampered/incomplete/active setup, changed job, returned
+prerequisites, native 403 and incomplete 202 responses. A second submission after
+Stack disappearance rejects before DELETE.
+
+This helper preserves existing product guards and is not a registered complete
+Stack action. Intrinsic/native-cascade product preflight distinctions, flat VM
+attachment handling, full group behavior, deny-release attribution and final
+catalog/graph/executor acceptance remain unfinished. All 159 parity rows and
+eight overall gates remain open. Transport failure before a usable receipt does
+not prove completion; this helper does not invent a receipt from later absence.

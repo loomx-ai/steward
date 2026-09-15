@@ -75,27 +75,9 @@ func (r *Runtime) deploymentStackAdvanceSetup(ctx context.Context, req contracts
 	if err != nil {
 		return out, err
 	}
-	state := deploymentStackSetupState{Phase: "prepare"}
-	if saved != nil {
-		if len(saved) != 2 || saved["state"] == nil {
-			return out, serviceDenied("invalid_deployment_stack_setup_state")
-		}
-		wire, err := json.Marshal(saved["state"])
-		if err != nil {
-			return out, err
-		}
-		decoder := json.NewDecoder(bytes.NewReader(wire))
-		decoder.DisallowUnknownFields()
-		if err = decoder.Decode(&state); err != nil {
-			return out, serviceDenied("invalid_deployment_stack_setup_state")
-		}
-	}
-	binding, err := c.deploymentStackSetupBinding(req, state)
+	state, err := c.deploymentStackReadSetupState(req, saved)
 	if err != nil {
 		return out, err
-	}
-	if saved != nil && saved["binding"] != binding {
-		return out, serviceDenied("deployment_stack_setup_state_changed")
 	}
 	var result contracts.WaitResult
 	if state.Phase == "prepare" {
@@ -127,10 +109,36 @@ func (r *Runtime) deploymentStackAdvanceSetup(ctx context.Context, req contracts
 			result.State = "setup_ready"
 		}
 	}
-	binding, err = c.deploymentStackSetupBinding(req, state)
+	binding, err := c.deploymentStackSetupBinding(req, state)
 	if err != nil {
 		return out, err
 	}
 	result.Data = map[string]any{"state": state, "binding": binding}
 	return result, nil
+}
+
+func (c *client) deploymentStackReadSetupState(req contracts.ActionRequest, saved map[string]any) (deploymentStackSetupState, error) {
+	state := deploymentStackSetupState{Phase: "prepare"}
+	if saved != nil {
+		if len(saved) != 2 || saved["state"] == nil {
+			return deploymentStackSetupState{}, serviceDenied("invalid_deployment_stack_setup_state")
+		}
+		wire, err := json.Marshal(saved["state"])
+		if err != nil {
+			return deploymentStackSetupState{}, err
+		}
+		decoder := json.NewDecoder(bytes.NewReader(wire))
+		decoder.DisallowUnknownFields()
+		if err = decoder.Decode(&state); err != nil {
+			return deploymentStackSetupState{}, serviceDenied("invalid_deployment_stack_setup_state")
+		}
+	}
+	binding, err := c.deploymentStackSetupBinding(req, state)
+	if err != nil {
+		return deploymentStackSetupState{}, err
+	}
+	if saved != nil && saved["binding"] != binding {
+		return deploymentStackSetupState{}, serviceDenied("deployment_stack_setup_state_changed")
+	}
+	return state, nil
 }
