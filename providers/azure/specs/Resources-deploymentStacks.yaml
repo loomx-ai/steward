@@ -1,0 +1,30 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Resources/deploymentStacks
+  class: application.stack
+presentation:
+  displayNames:
+    en-US: Deployment stack
+    zh-CN: 部署栈
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: deployment-stacks
+  list:
+    operation: Azure.Microsoft.Resources.DeploymentStacks_ListAtSubscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Resources.DeploymentStacks_GetAtSubscription
+    itemsPath: $
+    identityPath: id
+fields:
+  name: name
+  state: state
+  subscriptionId: subscriptionId
+  scopeId: scope_id
+extensions:
+  hook: azure.resource

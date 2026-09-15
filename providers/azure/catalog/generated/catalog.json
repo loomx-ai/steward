@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "94fcfadac7e8fb0902d130eaa13373ef00d3a0654dcb556f2b13b66d22c6437e",
+    "checksum": "4cf4f77a0d1a22999f8a1af1c2b4bca986c9b4934a9ea0928ecb5b9d966eac17",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "d1a47c84bc77a9d0ea4ac3f885a2f2d166ae2b68e37a5ebafde8fdfcac73b794",
+  "content_checksum": "a2b3b9383d0df171f7a9b182b86f55fb792b80c2d35368a35b7c61d76590ed1c",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -146066,6 +146066,25 @@
         ],
         "list_operations": [
           "Azure.Microsoft.OperationalInsights.Workspaces_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Resources/deploymentStacks",
+      "class": "application.stack",
+      "display_name": "Deployment stack",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "deploymentStacks",
+        "read_operations": [
+          "Azure.Microsoft.Resources.DeploymentStacks_GetAtSubscription",
+          "Azure.Microsoft.Resources.DeploymentStacks_GetAtResourceGroup"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Resources.DeploymentStacks_ListAtSubscription",
+          "Azure.Microsoft.Resources.DeploymentStacks_ListAtResourceGroup"
         ]
       }
     },

@@ -299,8 +299,7 @@ resources:
     resources:
     - config.googleapis.com/Deployment
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.Resources/deploymentStacks
   status: pending_verification
 - alicloud: ACS::ECS::CapacityReservation
@@ -2222,8 +2221,7 @@ resources:
     - config.googleapis.com/DeploymentGroupRevision
     - config.googleapis.com/Deployment
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.Resources/deploymentStacks
   status: pending_verification
   notes: GCP deployment groups review current and last-successful-revision deployments before native
@@ -2245,8 +2243,7 @@ resources:
     - config.googleapis.com/Revision
     - config.googleapis.com/Resource
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.Resources/deploymentStacks
   status: pending_verification
   notes: Use Infrastructure Manager and Azure deployment stacks for owned-resource cleanup. Azure deployment

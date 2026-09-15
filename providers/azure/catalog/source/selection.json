@@ -11398,6 +11398,24 @@
       "list_operations": [
         "Azure.Microsoft.NetApp.VolumeQuotaRules_ListByVolume"
       ]
+    },
+    {
+      "native_type": "Microsoft.Resources/deploymentStacks",
+      "class": "application.stack",
+      "display_name": "Deployment stack",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "deploymentStacks",
+      "read_operations": [
+        "Azure.Microsoft.Resources.DeploymentStacks_GetAtSubscription",
+        "Azure.Microsoft.Resources.DeploymentStacks_GetAtResourceGroup"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Resources.DeploymentStacks_ListAtSubscription",
+        "Azure.Microsoft.Resources.DeploymentStacks_ListAtResourceGroup"
+      ]
     }
   ]
 }

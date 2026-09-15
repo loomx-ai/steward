@@ -219,6 +219,22 @@ func azureRequestID(key string) string {
 }
 
 func (c *client) resourceOperation(kind resourceType, nativeID, method string) (catalog.Operation, map[string]any, error) {
+	if strings.EqualFold(kind.NativeType, deploymentStackType) {
+		scope, params, err := deploymentStackParameters(nativeID)
+		if err != nil || scope == "ManagementGroup" || !strings.EqualFold(text(params["subscriptionId"]), c.subscription) || method != "GET" {
+			return catalog.Operation{}, nil, serviceDenied("invalid_deployment_stack_resource_operation")
+		}
+		metadata, err := providerData()
+		if err != nil {
+			return catalog.Operation{}, nil, err
+		}
+		op, ok := metadata.catalog.Operation(deploymentStackOperation + "GetAt" + scope)
+		if !ok {
+			return catalog.Operation{}, nil, serviceDenied("missing_deployment_stack_resource_operation")
+		}
+		return op, params, nil
+	}
+
 	if kind.NativeType == defenderPricingType {
 		_, scope, err := c.defenderIdentity(nativeID)
 		if err != nil {

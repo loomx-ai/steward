@@ -46,7 +46,7 @@ This milestone adds contracts and privacy/identity checks, not a registered
 resource specification or a reviewed cleanup driver. Required follow-up includes
 complete member observations (including failures and extensible resources), deny
 assignment effects, deletion versus detachment review, persisted polling and own
-resource readback. The three parity mappings remain unimplemented candidates.
+resource readback. The three parity mappings are registered, with behavioral acceptance still open.
 These are offline schema/protocol tests, not an independent emulator or live Azure
 acceptance result.
 
@@ -74,8 +74,8 @@ own 404 establishes absence. A listed stack returning 404 makes the observation
 incomplete. Unknown provisioning states remain observations, not cleanup approval.
 Fault tests cover scope escapes, pagination changes, duplicate identities and
 failed or mismatched own reads. Native own-read objects remain private inputs to
-future member review; this reader is not yet connected to runtime inventory,
-and does not establish management-group support or cleanup acceptance.
+member review; the runtime integration described below does not establish
+management-group support or cleanup acceptance.
 
 The reader now attaches a private-fingerprint-backed member review. It keeps
 current members separate from deleted, detached and failed historical results;
@@ -84,5 +84,7 @@ unchanged native resource-group GET example exercises a foreign-subscription
 member, a subscription-scoped resource and an ID-less extensible member. All
 three remain accounted for; extension identifiers stay private and their changes
 invalidate the fingerprint. ARM-addressable membership completeness is not
-cleanup readiness, ownership or authorization. Runtime registration, graph
-integration, management-group scope and cleanup remain outstanding.
+cleanup readiness, ownership or authorization. Graph integration,
+management-group scope and cleanup remain outstanding.
+
+Runtime registration now connects this reader to subscription/global scans and discovers resource-group stacks through the resource-group index, including known omitted groups. Two complete observations must agree before returning a batch. Continuation cursors bind the request, bundle revision, private configuration fingerprints and absence evidence. Returned inventory strips template inputs and extension identifiers. All stack observations remain protected while cleanup and graph ownership are unfinished. Management-group support is still outstanding.

@@ -50,6 +50,7 @@ func (r *Runtime) CredentialSchemas() []contracts.CredentialSchema {
 }
 func (r *Runtime) InventorySources() []contracts.InventorySource {
 	return []contracts.InventorySource{
+		{Name: deploymentStackSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeGlobal}, KindSpecific: true, ReconcileKnownIDs: true},
 		{Name: synapseDataInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: elasticSanSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: azureLocalSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},

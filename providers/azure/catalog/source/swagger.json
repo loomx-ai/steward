@@ -275613,6 +275613,26 @@
       "scopeKinds": [
         "region"
       ]
+    },
+    {
+      "class": "application.stack",
+      "displayName": "Deployment stack",
+      "nativeType": "Microsoft.Resources/deploymentStacks",
+      "rest": {
+        "collection": "deploymentStacks",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Resources.DeploymentStacks_ListAtSubscription",
+          "Azure.Microsoft.Resources.DeploymentStacks_ListAtResourceGroup"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Resources.DeploymentStacks_GetAtSubscription",
+          "Azure.Microsoft.Resources.DeploymentStacks_GetAtResourceGroup"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
     }
   ]
 }
