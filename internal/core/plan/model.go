@@ -140,6 +140,7 @@ const (
 	WarningNetappPoolDelete              WarningCode = "netapp_pool_delete"
 	WarningNetappVolumeDelete            WarningCode = "netapp_volume_delete"
 	WarningSynapseRestorePointDelete     WarningCode = "synapse_restore_point_delete"
+	WarningNativeDeleteAffectsController WarningCode = "native_delete_affects_other_controller"
 	WarningManagedResourceDirectCleanup  WarningCode = "managed_resource_direct_cleanup"
 	WarningManagedByControllerSkipped    WarningCode = "managed_by_controller"
 	WarningNotActionableSkipped          WarningCode = "not_actionable"

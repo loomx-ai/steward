@@ -48,6 +48,7 @@ func solveOnce(input Input) (Result, error) {
 		return Result{}, err
 	}
 	bindings := activeBindings(input.LifecycleBindings)
+	snapshotBindings := bindings
 	relationships := activeRelationships(input.Relationships)
 	protections := indexProtections(input.Protections)
 	result := Result{}
@@ -58,6 +59,8 @@ func solveOnce(input Input) (Result, error) {
 		selectedSet[id] = struct{}{}
 	}
 
+	// Native effects are scoped to selected operations, not global ownership.
+	bindings = nativeExecutionBindings(bindings, selectedSet, assets, input.RequestOptions)
 	candidates := make(map[asset.AssetID]struct{}, len(selected))
 	directFallbacks := make(map[asset.AssetID]bool)
 	for _, id := range selected {
@@ -70,7 +73,7 @@ func solveOnce(input Input) (Result, error) {
 			blockers.add(Blocker{Code: BlockAssetClosed, AssetID: id, Message: "selected asset is already closed"})
 			continue
 		}
-		resolution, resolveErr := graph.ResolveAuthority(id, bindings)
+		resolution, resolveErr := graph.ResolveExecutionController(id, bindings)
 		if resolveErr != nil {
 			blockers.add(lifecycleBlocker(id, resolveErr))
 			continue
@@ -163,8 +166,12 @@ func solveOnce(input Input) (Result, error) {
 					blockers.add(Blocker{Code: BlockControllerUnavailable, AssetID: managedID, ControllerID: controllerID, Message: "lifecycle-managed asset is unavailable in the planning snapshot"})
 					continue
 				}
-				if binding.Ownership == graph.OwnershipExclusive && binding.CleanupPolicy == graph.CleanupDelegate {
-					resolution, resolveErr := graph.ResolveAuthority(managedID, executionBindings)
+				if binding.Evidence[graph.LifecycleEvidenceNativeDeleteEffect] == true && !graph.NativeDeleteEffect(binding) {
+					blockers.add(Blocker{Code: BlockLifecycleAuthority, AssetID: managedID, ControllerID: controllerID, Message: "native deletion impact lacks authoritative deletion and verification evidence"})
+					continue
+				}
+				if (binding.Ownership == graph.OwnershipExclusive || graph.NativeDeleteEffect(binding)) && binding.CleanupPolicy == graph.CleanupDelegate {
+					resolution, resolveErr := graph.ResolveExecutionController(managedID, executionBindings)
 					if resolveErr != nil {
 						blockers.add(lifecycleBlocker(managedID, resolveErr))
 						continue
@@ -350,6 +357,25 @@ func solveOnce(input Input) (Result, error) {
 		}
 	}
 
+	// Keep other native controllers visible even though their operation edges
+	// were not activated for execution. Sharing is not an ownership conflict.
+	for _, impact := range impactItems {
+		if impact.Expected != ExpectedDelegatedDelete {
+			continue
+		}
+		seenControllers := map[asset.AssetID]bool{}
+		for _, binding := range input.LifecycleBindings {
+			if binding.ManagedAssetID != impact.AssetID || !graph.NativeDeleteEffect(binding) || seenControllers[binding.ControllerAssetID] {
+				continue
+			}
+			if _, deleting := deletionOwner[binding.ControllerAssetID]; deleting {
+				continue
+			}
+			seenControllers[binding.ControllerAssetID] = true
+			result.Warnings = append(result.Warnings, Warning{Code: WarningNativeDeleteAffectsController, AssetID: impact.AssetID, ControllerID: binding.ControllerAssetID, Message: "Deleting this resource also affects another controller that manages it.", Evidence: map[string]any{"binding": binding, "deleting_controller_id": impact.ControllerID}})
+		}
+	}
+
 	for _, reference := range input.Unresolved {
 		owner, deleting := deletionOwner[reference.ControllerID]
 		controller := assets[reference.ControllerID]
@@ -425,7 +451,7 @@ func solveOnce(input Input) (Result, error) {
 		right := strings.Join([]string{string(result.Warnings[j].Code), string(result.Warnings[j].AssetID), string(result.Warnings[j].ControllerID)}, "\x00")
 		return left < right
 	})
-	result.SnapshotHash, err = snapshotHash(input, selected, assets, relationships, bindings)
+	result.SnapshotHash, err = snapshotHash(input, selected, assets, relationships, snapshotBindings)
 	if err != nil {
 		return Result{}, err
 	}
@@ -549,7 +575,7 @@ func lifecycleBlocker(id asset.AssetID, err error) Blocker {
 }
 
 func impactExpectation(binding graph.LifecycleBinding, managed asset.Asset, options map[string]any) ExpectedOutcome {
-	if binding.Ownership == graph.OwnershipShared || binding.Ownership == graph.OwnershipReferenced {
+	if (binding.Ownership == graph.OwnershipShared || binding.Ownership == graph.OwnershipReferenced) && !graph.NativeDeleteEffect(binding) {
 		return ExpectedRetainShared
 	}
 	if binding.Ownership == graph.OwnershipUnknown || binding.CleanupPolicy == graph.CleanupUnknown {

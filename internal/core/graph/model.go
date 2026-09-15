@@ -60,6 +60,10 @@ const (
 )
 
 const (
+	// A selected native operation affects this resource without asserting
+	// exclusive ownership. It requires authoritative deletion and own-read
+	// verification guarantees; ordinary shared bindings retain their policy.
+	LifecycleEvidenceNativeDeleteEffect              = "native_delete_effect"
 	LifecycleEvidenceWaitUntilAbsentBeforeDependents = "wait_until_absent_before_dependents"
 	LifecycleEvidenceWaitTimeoutSeconds              = "wait_timeout_seconds"
 	LifecycleEvidenceWaitPollSeconds                 = "wait_poll_seconds"

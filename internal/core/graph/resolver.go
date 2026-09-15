@@ -3,6 +3,7 @@ package graph
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 )
@@ -17,6 +18,27 @@ var (
 const ExecutableConfidence = 0.9
 
 func ResolveAuthority(assetID asset.AssetID, bindings []LifecycleBinding) (AuthorityResolution, error) {
+	return resolveController(assetID, bindings, false)
+}
+
+// ResolveExecutionController accepts only the operation edges activated by the
+// planner's selected controllers. It preserves ownership in the returned chain.
+func ResolveExecutionController(assetID asset.AssetID, bindings []LifecycleBinding) (AuthorityResolution, error) {
+	return resolveController(assetID, bindings, true)
+}
+
+func NativeDeleteEffect(binding LifecycleBinding) bool {
+	return binding.ControllerAssetID != "" && binding.ManagedAssetID != "" && binding.ControllerAssetID != binding.ManagedAssetID && strings.TrimSpace(binding.EvidenceSource) != "" &&
+		binding.Evidence[LifecycleEvidenceNativeDeleteEffect] == true &&
+		binding.ClosedAt == nil && binding.Authority == AuthorityAuthoritative &&
+		binding.Confidence >= ExecutableConfidence && binding.Confidence <= 1 &&
+		binding.CleanupPolicy == CleanupDelegate &&
+		(binding.Ownership == OwnershipShared || binding.Ownership == OwnershipReferenced) &&
+		binding.Evidence[LifecycleEvidenceControllerDeleteGuaranteed] == true &&
+		binding.Evidence[LifecycleEvidenceControllerVerifiesManagedAbsence] == true
+}
+
+func resolveController(assetID asset.AssetID, bindings []LifecycleBinding, effects bool) (AuthorityResolution, error) {
 	result := AuthorityResolution{
 		RequestedAssetID:  assetID,
 		ControllerAssetID: assetID,
@@ -25,13 +47,16 @@ func ResolveAuthority(assetID asset.AssetID, bindings []LifecycleBinding) (Autho
 	current := assetID
 
 	for {
-		candidates := activeDelegatingParents(current, bindings)
+		candidates := activeDelegatingParents(current, bindings, effects)
 		if len(candidates) == 0 {
 			return result, nil
 		}
 
 		byController := make(map[asset.AssetID]LifecycleBinding, len(candidates))
 		for _, binding := range candidates {
+			if effects && binding.Evidence[LifecycleEvidenceNativeDeleteEffect] == true && !NativeDeleteEffect(binding) {
+				return AuthorityResolution{}, fmt.Errorf("%w: native deletion effect for %s", ErrLifecycleAuthority, current)
+			}
 			if binding.Authority != AuthorityAuthoritative {
 				return AuthorityResolution{}, fmt.Errorf("%w: managed asset %s", ErrLifecycleAuthority, current)
 			}
@@ -61,13 +86,13 @@ func ResolveAuthority(assetID asset.AssetID, bindings []LifecycleBinding) (Autho
 	}
 }
 
-func activeDelegatingParents(managedAssetID asset.AssetID, bindings []LifecycleBinding) []LifecycleBinding {
+func activeDelegatingParents(managedAssetID asset.AssetID, bindings []LifecycleBinding, effects bool) []LifecycleBinding {
 	parents := make([]LifecycleBinding, 0, 1)
 	for _, binding := range bindings {
 		if binding.ClosedAt != nil || binding.ManagedAssetID != managedAssetID {
 			continue
 		}
-		if binding.Ownership != OwnershipExclusive || binding.CleanupPolicy != CleanupDelegate {
+		if !(effects && binding.Evidence[LifecycleEvidenceNativeDeleteEffect] == true) && (binding.Ownership != OwnershipExclusive || binding.CleanupPolicy != CleanupDelegate) {
 			continue
 		}
 		parents = append(parents, binding)
