@@ -1,0 +1,216 @@
+package azure
+
+import (
+	"encoding/json"
+	"net/http"
+	"slices"
+	"strings"
+	"testing"
+
+	"github.com/loomx-ai/steward/internal/provider/contracts"
+)
+
+func TestDeploymentStackSetupHandoff(t *testing.T) {
+	for _, mode := range []string{"complete", "job", "unknown", "skip_preparation", "nested_preparation", "handoff_drift", "lost_preparation_context", "returned_prerequisite"} {
+		t.Run(mode, func(t *testing.T) {
+			req, root := stackAttachmentRequest(t, directClient(nil))
+			live := attachmentResources()
+			parent, child := actionAsset(hostGroupType, "host-parent"), actionAsset(hostType, "host-child")
+			parent.Identity.Partition = req.Asset.Identity.Partition
+			child.Identity.Partition = req.Asset.Identity.Partition
+			child.Identity.NativeID = parent.Identity.NativeID + "/hosts/host-child"
+			req.LifecycleImpacts = append(req.LifecycleImpacts, contracts.ActionImpact{Asset: parent, ControllerID: req.Asset.ID, Delete: true}, contracts.ActionImpact{Asset: child, ControllerID: parent.ID, Delete: true})
+			properties := object(root["properties"])
+			properties["resources"] = append(properties["resources"].([]any), map[string]any{"id": parent.Identity.NativeID, "status": "managed", "denyStatus": "none"})
+			parentRaw := map[string]any{"id": parent.Identity.NativeID, "type": hostGroupType, "location": "eastus", "properties": map[string]any{"provisioningState": "Succeeded"}}
+			childRaw := map[string]any{"id": child.Identity.NativeID, "type": hostType, "location": "eastus", "properties": map[string]any{"provisioningState": "Succeeded"}}
+			for i := range req.LifecycleImpacts {
+				if raw := live[string(req.LifecycleImpacts[i].Asset.ID)]; raw != nil {
+					req.LifecycleImpacts[i].Asset.Normalized["_arm_generation"] = productGeneration(raw)
+				}
+			}
+			writes := []string{}
+			calls := 0
+			gone := false
+			r := protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
+				calls++
+				if reply, handled := emptyMonitorIndexResponse(t, q); handled {
+					return reply, nil
+				}
+				if reply, handled := emptyDiagnosticSourceIndexResponse(t, q); handled {
+					return reply, nil
+				}
+				path := strings.ToLower(q.URL.Path)
+				switch path {
+				case req.Asset.Identity.NativeID:
+					if q.Method != "GET" {
+						t.Fatal("setup deleted Stack")
+					}
+					return jsonResponse(200, root, nil), nil
+				case parent.Identity.NativeID:
+					if q.Method != "GET" {
+						t.Fatal("setup deleted non-prerequisite parent")
+					}
+					return jsonResponse(200, parentRaw, nil), nil
+				case child.Identity.NativeID:
+					if q.Method == "DELETE" {
+						if !slices.Equal(writes, []string{"PUT nic", "PATCH vm"}) {
+							t.Fatal("deletion preceded retention preparation", writes)
+						}
+						writes = append(writes, "DELETE host-child")
+						gone = true
+						return jsonResponse(200, map[string]any{}, nil), nil
+					}
+					if gone {
+						return jsonResponse(404, map[string]any{}, nil), nil
+					}
+					return jsonResponse(200, childRaw, nil), nil
+				case parent.Identity.NativeID + "/hosts":
+					rows := []any{}
+					if !gone {
+						rows = append(rows, childRaw)
+					}
+					return jsonResponse(200, map[string]any{"value": rows}, nil), nil
+				}
+				if strings.HasSuffix(path, "/locks") || strings.EqualFold(q.URL.Path, text(live["vm"]["id"])+"/extensions") {
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+				}
+				if strings.HasSuffix(path, "/resourcegroups/test") {
+					return jsonResponse(200, map[string]any{"id": q.URL.Path}, nil), nil
+				}
+				for name, raw := range live {
+					if !strings.EqualFold(q.URL.Path, text(raw["id"])) {
+						continue
+					}
+					if q.Method == "GET" {
+						return jsonResponse(200, raw, nil), nil
+					}
+					if name != "vm" && name != "nic" || q.Method != "PUT" && q.Method != "PATCH" {
+						t.Fatal("unexpected setup mutation", name, q.Method)
+					}
+					var body map[string]any
+					if err := json.NewDecoder(q.Body).Decode(&body); err != nil {
+						t.Fatal(err)
+					}
+					if q.Method == "PUT" {
+						previous := object(raw["properties"])
+						raw["properties"] = body["properties"]
+						for _, key := range []string{"resourceGuid", "virtualMachine", "privateEndpoint", "hostedWorkloads"} {
+							if value, found := previous[key]; found {
+								object(raw["properties"])[key] = value
+							}
+						}
+					} else {
+						for key, value := range object(body["properties"]) {
+							object(raw["properties"])[key] = value
+						}
+					}
+					raw["etag"] = "after-" + name
+					writes = append(writes, q.Method+" "+name)
+					return jsonResponse(200, raw, nil), nil
+				}
+				t.Fatalf("unexpected setup request %s %s", q.Method, q.URL)
+				return nil, nil
+			})
+			c, err := r.resolve(t.Context(), "connection")
+			if err != nil {
+				t.Fatal(err)
+			}
+			review, err := c.deploymentStackMemberReview(root)
+			if err != nil {
+				t.Fatal(err)
+			}
+			req.Asset.Normalized[deploymentStackReviewKey] = review
+			req.Asset.Normalized[deploymentStackProofKey] = c.deploymentStackProof(req.Asset.Identity.NativeID, "connection", review)
+			before, _ := json.Marshal(req)
+			var saved map[string]any
+			var out contracts.WaitResult
+			tampered := false
+			for step := 0; step < 14; step++ {
+				if step > 0 {
+					state := object(saved["state"])
+					switch {
+					case step == 1 && mode == "job":
+						req.IdempotencyKey = "other-job"
+						tampered = true
+					case step == 1 && mode == "unknown":
+						state["ignore_review"] = true
+						tampered = true
+					case step == 1 && mode == "skip_preparation":
+						state["phase"] = "prerequisites"
+						tampered = true
+					case step == 1 && mode == "nested_preparation":
+						object(state["preparation"])["binding"] = "changed"
+						tampered = true
+					case state["phase"] == "prerequisites" && state["prerequisites"] == nil && mode == "handoff_drift":
+						object(object(live["nic"]["properties"])["dnsSettings"])["dnsServers"] = []any{"10.0.0.9"}
+						tampered = true
+					case state["prerequisites"] != nil && mode == "lost_preparation_context":
+						nested := object(state["prerequisites"])
+						wire, _ := json.Marshal(nested["state"])
+						var ps deploymentStackPrerequisiteState
+						if err := json.Unmarshal(wire, &ps); err != nil {
+							t.Fatal(err)
+						}
+						ps.Progress.Preparations = nil
+						binding, err := c.deploymentStackPrerequisiteBinding(req, ps)
+						if err != nil {
+							t.Fatal(err)
+						}
+						nested["state"], nested["binding"] = ps, binding
+						tampered = true
+					}
+				}
+				priorCalls, priorWrites := calls, len(writes)
+				out, err = r.deploymentStackAdvanceSetup(t.Context(), req, saved)
+				if tampered {
+					if err == nil || out.Done || out.Data != nil {
+						t.Fatal("invalid phase handoff accepted", out, err)
+					}
+					if mode != "handoff_drift" && calls != priorCalls {
+						t.Fatal("invalid setup context reached HTTP", calls, priorCalls)
+					}
+					if len(writes) != priorWrites {
+						t.Fatal("invalid setup context mutated cloud")
+					}
+					if mode == "lost_preparation_context" && !strings.Contains(err.Error(), "deployment_stack_setup_preparation_changed") {
+						t.Fatal("wrong handoff rejection", err)
+					}
+					return
+				}
+				if err != nil || len(writes) > priorWrites+1 {
+					t.Fatal("setup failed or chained mutations", step, out, err, writes)
+				}
+				wire, err := json.Marshal(out.Data)
+				if err != nil || json.Unmarshal(wire, &saved) != nil {
+					t.Fatal("persist setup", err)
+				}
+				if out.Done {
+					break
+				}
+			}
+			if !out.Done || !slices.Equal(writes, []string{"PUT nic", "PATCH vm", "DELETE host-child"}) {
+				t.Fatal("setup not completed in order", out, writes)
+			}
+			if mode == "returned_prerequisite" {
+				gone = false
+			}
+			priorWrites, priorCalls := len(writes), calls
+			out, err = r.deploymentStackAdvanceSetup(t.Context(), req, saved)
+			if mode == "returned_prerequisite" {
+				if err == nil || out.Done || out.Data != nil {
+					t.Fatal("finished setup hid returned child", out, err)
+				}
+			} else if err != nil || !out.Done || calls <= priorCalls {
+				t.Fatal("setup resumed preparation after deletion or reused stale observations", out, err)
+			}
+			if len(writes) != priorWrites {
+				t.Fatal("completed setup repeated mutation")
+			}
+			after, _ := json.Marshal(req)
+			if string(before) != string(after) {
+				t.Fatal("setup mutated frozen request")
+			}
+		})
+	}
+}

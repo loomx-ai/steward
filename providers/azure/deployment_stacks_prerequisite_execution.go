@@ -72,56 +72,10 @@ func (r *Runtime) deploymentStackAdvancePrerequisites(ctx context.Context, req c
 	if err != nil {
 		return out, err
 	}
-	if saved != nil && len(initial.Preparations)+len(initial.Executions) != 0 {
-		return out, serviceDenied("deployment_stack_prerequisite_progress_changed_during_resume")
-	}
-	state := deploymentStackPrerequisiteState{Progress: initial}
-	if saved != nil {
-		if len(saved) != 2 || saved["state"] == nil {
-			return out, serviceDenied("invalid_deployment_stack_prerequisite_state")
-		}
-		wire, err := json.Marshal(saved["state"])
-		if err != nil {
-			return out, serviceDenied("invalid_deployment_stack_prerequisite_state")
-		}
-		if err = json.Unmarshal(wire, &state); err != nil {
-			return out, serviceDenied("invalid_deployment_stack_prerequisite_state")
-		}
-		// Canonical round-trip comparison rejects ignored or unknown state fields.
-		var decoded map[string]any
-		canonical, err := json.Marshal(state)
-		if err != nil {
-			return out, err
-		}
-		if err = json.Unmarshal(canonical, &decoded); err != nil {
-			return out, err
-		}
-		var original map[string]any
-		if err = json.Unmarshal(wire, &original); err != nil {
-			return out, err
-		}
-		if c.privateConfiguration(original) != c.privateConfiguration(decoded) {
-			return out, serviceDenied("invalid_deployment_stack_prerequisite_state")
-		}
-	}
-	binding, err := c.deploymentStackPrerequisiteBinding(req, state)
+	state, err := c.deploymentStackReadPrerequisiteState(req, initial, saved)
 	if err != nil {
 		return out, err
 	}
-	if saved != nil && saved["binding"] != binding {
-		return out, serviceDenied("deployment_stack_prerequisite_state_changed")
-	}
-	// Decode into a fresh object; unmarshalling into the populated state would
-	// reuse its maps and slice capacity, including caller-owned receipt maps.
-	wire, err := json.Marshal(state)
-	if err != nil {
-		return out, err
-	}
-	var owned deploymentStackPrerequisiteState
-	if err = json.Unmarshal(wire, &owned); err != nil {
-		return out, err
-	}
-	state = owned
 	checkpoint := func(done bool, status string, retry time.Duration) (contracts.WaitResult, error) {
 		binding, err := c.deploymentStackPrerequisiteBinding(req, state)
 		if err != nil {
@@ -158,4 +112,58 @@ func (r *Runtime) deploymentStackAdvancePrerequisites(ctx context.Context, req c
 	}
 	state.Active = result.Data
 	return checkpoint(false, result.State, result.RetryAfter)
+}
+
+func (c *client) deploymentStackReadPrerequisiteState(req contracts.ActionRequest, initial deploymentStackProgress, saved map[string]any) (deploymentStackPrerequisiteState, error) {
+	if saved != nil && len(initial.Preparations)+len(initial.Executions) != 0 {
+		return deploymentStackPrerequisiteState{}, serviceDenied("deployment_stack_prerequisite_progress_changed_during_resume")
+	}
+	state := deploymentStackPrerequisiteState{Progress: initial}
+	if saved != nil {
+		if len(saved) != 2 || saved["state"] == nil {
+			return deploymentStackPrerequisiteState{}, serviceDenied("invalid_deployment_stack_prerequisite_state")
+		}
+		wire, err := json.Marshal(saved["state"])
+		if err != nil {
+			return deploymentStackPrerequisiteState{}, serviceDenied("invalid_deployment_stack_prerequisite_state")
+		}
+		if err = json.Unmarshal(wire, &state); err != nil {
+			return deploymentStackPrerequisiteState{}, serviceDenied("invalid_deployment_stack_prerequisite_state")
+		}
+		// Canonical round-trip comparison rejects ignored or unknown state fields.
+		var decoded map[string]any
+		canonical, err := json.Marshal(state)
+		if err != nil {
+			return deploymentStackPrerequisiteState{}, err
+		}
+		if err = json.Unmarshal(canonical, &decoded); err != nil {
+			return deploymentStackPrerequisiteState{}, err
+		}
+		var original map[string]any
+		if err = json.Unmarshal(wire, &original); err != nil {
+			return deploymentStackPrerequisiteState{}, err
+		}
+		if c.privateConfiguration(original) != c.privateConfiguration(decoded) {
+			return deploymentStackPrerequisiteState{}, serviceDenied("invalid_deployment_stack_prerequisite_state")
+		}
+	}
+	binding, err := c.deploymentStackPrerequisiteBinding(req, state)
+	if err != nil {
+		return deploymentStackPrerequisiteState{}, err
+	}
+	if saved != nil && saved["binding"] != binding {
+		return deploymentStackPrerequisiteState{}, serviceDenied("deployment_stack_prerequisite_state_changed")
+	}
+	// Decode into a fresh object; unmarshalling into the populated state would
+	// reuse its maps and slice capacity, including caller-owned receipt maps.
+	wire, err := json.Marshal(state)
+	if err != nil {
+		return deploymentStackPrerequisiteState{}, err
+	}
+	var owned deploymentStackPrerequisiteState
+	if err = json.Unmarshal(wire, &owned); err != nil {
+		return deploymentStackPrerequisiteState{}, err
+	}
+	state = owned
+	return state, nil
 }

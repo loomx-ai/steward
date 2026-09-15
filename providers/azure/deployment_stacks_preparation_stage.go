@@ -103,27 +103,9 @@ func (c *client) deploymentStackAdvancePreparations(ctx context.Context, req con
 			err = contracts.DependencyReadError(err)
 		}
 	}()
-	var state deploymentStackPreparationState
-	if saved != nil {
-		if len(saved) != 2 || saved["state"] == nil {
-			return out, serviceDenied("invalid_deployment_stack_preparation_state")
-		}
-		wire, err := json.Marshal(saved["state"])
-		if err != nil {
-			return out, err
-		}
-		decoder := json.NewDecoder(bytes.NewReader(wire))
-		decoder.DisallowUnknownFields()
-		if err = decoder.Decode(&state); err != nil {
-			return out, serviceDenied("invalid_deployment_stack_preparation_state")
-		}
-	}
-	binding, err := c.deploymentStackPreparationStateBinding(req, state)
+	state, err := c.deploymentStackReadPreparationState(req, saved)
 	if err != nil {
 		return out, err
-	}
-	if saved != nil && saved["binding"] != binding {
-		return out, serviceDenied("deployment_stack_preparation_state_changed")
 	}
 	checkpoint := func(done bool, status string, retry time.Duration) (contracts.WaitResult, error) {
 		binding, err := c.deploymentStackPreparationStateBinding(req, state)
@@ -169,4 +151,30 @@ func (c *client) deploymentStackAdvancePreparations(ctx context.Context, req con
 	}
 	state.Active = result.Data
 	return checkpoint(false, result.State, result.RetryAfter)
+}
+
+func (c *client) deploymentStackReadPreparationState(req contracts.ActionRequest, saved map[string]any) (deploymentStackPreparationState, error) {
+	var state deploymentStackPreparationState
+	if saved != nil {
+		if len(saved) != 2 || saved["state"] == nil {
+			return deploymentStackPreparationState{}, serviceDenied("invalid_deployment_stack_preparation_state")
+		}
+		wire, err := json.Marshal(saved["state"])
+		if err != nil {
+			return deploymentStackPreparationState{}, err
+		}
+		decoder := json.NewDecoder(bytes.NewReader(wire))
+		decoder.DisallowUnknownFields()
+		if err = decoder.Decode(&state); err != nil {
+			return deploymentStackPreparationState{}, serviceDenied("invalid_deployment_stack_preparation_state")
+		}
+	}
+	binding, err := c.deploymentStackPreparationStateBinding(req, state)
+	if err != nil {
+		return deploymentStackPreparationState{}, err
+	}
+	if saved != nil && saved["binding"] != binding {
+		return deploymentStackPreparationState{}, serviceDenied("deployment_stack_preparation_state_changed")
+	}
+	return state, nil
 }

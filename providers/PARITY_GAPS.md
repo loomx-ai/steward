@@ -358,3 +358,29 @@ reordered or flat native membership. Completed resumes issue no further writes.
 Stage completion is only retention preparation. Full preflight, remaining native
 product lifecycles, the Stack operation, final evidence, and action/graph/executor
 integration remain open with all 159 parity rows and eight overall gates.
+
+### Preparation-to-prerequisite handoff (2026-09-16)
+
+A signed setup checkpoint now composes retained-attachment preparation with
+independent prerequisite execution. It advances one nested stage phase per call
+and persists the preparation-to-prerequisite transition before starting deletion.
+The prerequisite stage must carry the exact completed preparation receipts from
+the preparation stage; incomplete coverage, altered nested evidence and dropped
+preparation context are rejected before native HTTP. Shared read-only checkpoint
+decoders retain the validation behavior of the standalone stages.
+
+After handoff, preparation evidence is authenticated without rerunning the
+all-members-present preparation observer. The prerequisite stage instead checks
+completed member receipts and remaining resources. This permits the expected
+absence of independently deleted members without relaxing configuration checks.
+A completed setup still repeats current prerequisite/member observations.
+
+A combined VM/NIC/dedicated-host protocol fixture persists every phase and proves
+PUT NIC -> PATCH VM -> DELETE independent host ordering, no chained/repeated
+mutations, no preparation restart after deletion, rejection of phase skipping,
+unknown state, changed job/nested evidence, configuration drift at handoff,
+validly signed prerequisite state missing its original preparation context, and
+reappearing completed prerequisites. Setup Done does not authorize native Stack
+DELETE by itself: full scope/product/group acceptance, native execution, final
+product/deny evidence and action/graph/executor registration remain open, along
+with all 159 parity rows and eight overall gates.
