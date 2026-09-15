@@ -35,6 +35,9 @@ func TestDeploymentStackInventoryReconcilesOwnReads(t *testing.T) {
 			if err != nil || len(rows) != 3 || len(absent) != 1 || absent[0] != strings.ToLower(path+"/gone") || len(calls) != 6 {
 				t.Fatalf("rows=%d absent=%v calls=%v err=%v", len(rows), absent, calls, err)
 			}
+			if object(rows[0]["_deployment_stack_review"])["arm_members_complete"] != false {
+				t.Fatal("missing member list became complete")
+			}
 			if text(object(rows[0]["properties"])["provisioningState"]) != "futureState" {
 				t.Fatal("inventory must preserve unknown states for subsequent review")
 			}
@@ -43,7 +46,7 @@ func TestDeploymentStackInventoryReconcilesOwnReads(t *testing.T) {
 }
 
 func TestDeploymentStackInventoryRejectsIncompleteEvidence(t *testing.T) {
-	for _, fault := range []string{"duplicate", "foreign", "wrong_type", "malformed_row", "list_202", "list_async", "bad_value", "bad_cursor", "cycle", "filter", "version", "duplicate_query", "foreign_cursor", "wrong_collection", "own_404", "own_403", "own_mismatch", "own_type", "own_async", "own_error", "own_properties"} {
+	for _, fault := range []string{"duplicate", "foreign", "wrong_type", "malformed_row", "list_202", "list_async", "bad_value", "bad_cursor", "cycle", "filter", "version", "duplicate_query", "foreign_cursor", "wrong_collection", "own_404", "own_403", "own_mismatch", "own_type", "own_async", "own_error", "own_properties", "own_members"} {
 		t.Run(fault, func(t *testing.T) {
 			scope := "/subscriptions/" + testSubscription
 			path := scope + "/providers/Microsoft.Resources/deploymentStacks"
@@ -104,6 +107,8 @@ func TestDeploymentStackInventoryRejectsIncompleteEvidence(t *testing.T) {
 					headers.Set("Location", "https://management.azure.com/operation")
 				case "own_error":
 					raw["error"] = map[string]any{"code": "failure"}
+				case "own_members":
+					raw["properties"] = map[string]any{"resources": []any{map[string]any{}}}
 				case "own_properties":
 					raw["properties"] = nil
 				}

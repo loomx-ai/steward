@@ -76,3 +76,13 @@ Fault tests cover scope escapes, pagination changes, duplicate identities and
 failed or mismatched own reads. Native own-read objects remain private inputs to
 future member review; this reader is not yet connected to runtime inventory,
 and does not establish management-group support or cleanup acceptance.
+
+The reader now attaches a private-fingerprint-backed member review. It keeps
+current members separate from deleted, detached and failed historical results;
+missing current-member arrays do not become complete empty inventories. The
+unchanged native resource-group GET example exercises a foreign-subscription
+member, a subscription-scoped resource and an ID-less extensible member. All
+three remain accounted for; extension identifiers stay private and their changes
+invalidate the fingerprint. ARM-addressable membership completeness is not
+cleanup readiness, ownership or authorization. Runtime registration, graph
+integration, management-group scope and cleanup remain outstanding.

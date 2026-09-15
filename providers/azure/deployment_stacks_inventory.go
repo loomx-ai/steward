@@ -2,6 +2,7 @@ package azure
 
 import (
 	"context"
+	"maps"
 	"net/url"
 	"sort"
 	"strings"
@@ -111,7 +112,13 @@ func (c *client) deploymentStackInventory(ctx context.Context, scope string, kno
 			}
 			return nil, nil, err
 		}
-		rows = append(rows, res.data)
+		review, err := c.deploymentStackMemberReview(res.data)
+		if err != nil {
+			return nil, nil, err
+		}
+		observed := maps.Clone(res.data)
+		observed["_deployment_stack_review"] = review
+		rows = append(rows, observed)
 	}
 	return rows, absent, nil
 }
