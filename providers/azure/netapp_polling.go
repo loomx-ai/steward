@@ -94,7 +94,7 @@ func (c *client) netappDeleteReceipt(id, region string, res response) (map[strin
 	if err != nil || c.netappIdentity(id, kind) != nil || region == "" || region != strings.ToLower(strings.TrimSpace(region)) {
 		return nil, serviceDenied("invalid_netapp_delete_owner")
 	}
-	allowed := res.status == 202 || res.status == 204 || res.status == 200 && slices.Contains([]string{"Snapshots", "Subvolumes", "VolumeQuotaRules", "VolumeGroups"}, netappKind(kind).family)
+	allowed := res.status == 202 || res.status == 204 || res.status == 200 && slices.Contains([]string{"Snapshots", "Subvolumes", "VolumeQuotaRules", "VolumeGroups", "BackupPolicies", "SnapshotPolicies"}, netappKind(kind).family)
 	if !allowed || len(res.data) != 0 {
 		return nil, serviceDenied("invalid_netapp_delete_response")
 	}

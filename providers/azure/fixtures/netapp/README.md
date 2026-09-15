@@ -98,6 +98,9 @@ runtime instances. An operation's terminal receipt prevents repeated polling but
 never proves resource absence. Expired callbacks, permissions errors, unknown
 states, changed URLs and modified receipts cannot report successful deletion.
 No resource cleanup action is enabled by this polling milestone.
+All eleven unchanged native DELETE examples also drive acknowledgement tests.
+In particular backup-policy and snapshot-policy deletion may return an empty 200
+as well as 202/204; this does not enable their independent cleanup actions.
 
 
 ## Reviewed volume cleanup

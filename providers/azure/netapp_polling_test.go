@@ -151,7 +151,7 @@ func TestNetappDeleteReceiptScopeAndStatus(t *testing.T) {
 				h.Set("Location", netappTestPollURL("result_url"))
 			}
 			receipt, err := c.netappDeleteReceipt(id, "eastus", response{status: status, header: h})
-			want := status == 202 || status == 204 || status == 200 && (kind.family == "Snapshots" || kind.family == "Subvolumes" || kind.family == "VolumeQuotaRules" || kind.family == "VolumeGroups")
+			want := status == 202 || status == 204 || status == 200 && (kind.family == "Snapshots" || kind.family == "Subvolumes" || kind.family == "VolumeQuotaRules" || kind.family == "VolumeGroups" || kind.family == "BackupPolicies" || kind.family == "SnapshotPolicies")
 			if (err == nil) != want {
 				t.Fatal(kind.family, status, err)
 			}
@@ -335,5 +335,69 @@ func TestNetappPollingResultWireAndPrivateLogs(t *testing.T) {
 		if strings.Contains(string(encoded), "private-") {
 			t.Fatal("operation signature in diagnostics")
 		}
+	}
+}
+
+func TestNetappNativeDeleteAcknowledgementExamples(t *testing.T) {
+	entries, err := os.ReadDir("fixtures/netapp")
+	if err != nil {
+		t.Fatal(err)
+	}
+	metadata, err := providerData()
+	if err != nil {
+		t.Fatal(err)
+	}
+	checked := 0
+	for _, entry := range entries {
+		if !strings.HasSuffix(entry.Name(), "_Delete.json") {
+			continue
+		}
+		checked++
+		t.Run(entry.Name(), func(t *testing.T) {
+			wire, err := os.ReadFile("fixtures/netapp/" + entry.Name())
+			if err != nil {
+				t.Fatal(err)
+			}
+			var example struct {
+				Operation  string         `json:"operationId"`
+				Parameters map[string]any `json:"parameters"`
+				Responses  map[string]struct {
+					Headers map[string]string
+					Body    map[string]any
+				}
+			}
+			if json.Unmarshal(wire, &example) != nil {
+				t.Fatal("original native delete example")
+			}
+			op, ok := metadata.catalog.Operation("Azure.Microsoft.NetApp." + example.Operation)
+			if !ok {
+				t.Fatal("native delete operation missing")
+			}
+			delete(example.Parameters, "api-version")
+			bound, err := bindAzureREST(op, example.Parameters)
+			if err != nil {
+				t.Fatal(err)
+			}
+			u, _ := url.Parse(bound.URL)
+			id := strings.ToLower(u.Path)
+			c := &client{subscription: text(example.Parameters["subscriptionId"])}
+			for code, res := range example.Responses {
+				status := map[string]int{"200": 200, "202": 202, "204": 204}[code]
+				if status == 0 {
+					t.Fatal("unmodeled native response", code)
+				}
+				h := http.Header{}
+				for k, v := range res.Headers {
+					h.Set(k, v)
+				}
+				receipt, err := c.netappDeleteReceipt(id, "eastus", response{status: status, header: h, data: res.Body})
+				if err != nil || c.netappVerifyReceipt(id, "eastus", receipt) != nil {
+					t.Fatal("documented acknowledgement rejected", example.Operation, code, err)
+				}
+			}
+		})
+	}
+	if checked != 11 {
+		t.Fatal("missing native resource family", checked)
 	}
 }
