@@ -11,9 +11,10 @@ notebook, Spark-job-definition and Pipeline list and get. They establish the con
 needed to inspect work affected by pool/workspace cleanup. The ten read
 operations now execute through workspace-bound OAuth and validate their native
 responses. Native cancellation is available through Runtime.Invoke with ownership,
-protection and readback checks; reviewed cleanup orchestration remains unfinished.
-Four data-plane asset kinds have inventory support. Reviewed Spark pool cleanup
-remains unfinished; Pipeline reads do not register an additional asset kind.
+protection and readback checks. Four data-plane asset kinds have inventory support.
+Spark pool cleanup now orchestrates reviewed cancellation and ARM deletion;
+workspace/SQL cleanup remains unfinished. Pipeline reads do not register an
+additional asset kind.
 
 ## Wire protocol
 
@@ -117,7 +118,7 @@ URLs; their resource kinds group them beneath the ARM pool without inventing ARM
 job resources. Artifacts retain their documented ARM identities and native name
 selectors. These four additions bring the specification count to 455; the native
 operation count is now 1,525 after the ARM polling and Pipeline read additions; cleanup
-coverage remains 418.
+coverage is now 419 with the reviewed Spark pool action.
 
 The source reads complete native indexes, validates each member with its own GET,
 resolves workspace/pool references, re-reads each member and parent, and compares
@@ -137,8 +138,8 @@ source is non-authoritative and emits explicit absence only on its final page.
 Tests cover native and client paging, changing indexes/parents, private canaries,
 known-object reconciliation, protection and actual SQLite worker/graph persistence.
 
-All seven Synapse resource kinds remain non-actionable. Durable cancellation
-orchestration, complete dependency coverage and pool/workspace cleanup remain
+Spark pools now have a reviewed action; the other six kinds remain non-actionable.
+Complete dependency coverage, artifact actions and workspace/SQL cleanup remain
 required next steps. No live cloud or independent emulator validation is claimed.
 
 ### Stable-version CLI artifact recordings
@@ -231,10 +232,10 @@ differences; runtime requires canonical string identity and string etag. The
 examples also omit HTTPS in endpoint and use the existing SDK header alias.
 Native source bytes are never rewritten to make validation pass.
 
-This collector is preparation for the durable pool action. It does not yet make
-Spark pools actionable or connect cancellation, persisted phase recovery, pool
-DELETE and final own-resource absence into the cleanup worker. That integration
-and its real persistence tests remain required. Protocol tests cover restored
+The collector now feeds the durable pool action and its inventory review. The
+cleanup worker persists cancellation and ARM deletion phases and verifies the
+pool's own absence. See [the pool cleanup evidence](../README.md#reviewed-spark-pool-cleanup).
+Protocol tests cover restored
 manifests, omitted records, forbidden reads, configuration/index/parent drift,
 incarnations, nested Pipeline references and private payloads. No live service or
 independent emulator validation is claimed.

@@ -31,6 +31,9 @@ func newSynapseDataInventoryFixture(t *testing.T) *synapseDataInventoryFixture {
 	for _, kind := range synapseDataKinds {
 		d := synapseDataKind(kind)
 		f.items[kind] = f.item(d.read)
+		if d.spark {
+			f.items[kind]["schedulerInfo"] = map[string]any{"submittedAt": "2025-02-24T09:47:41Z", "currentState": "Scheduled"}
+		}
 		if kind == synapseJobDefinitionType {
 			props := object(f.items[kind]["properties"])
 			props["targetBigDataPool"] = props["bigDataPool"]
@@ -45,6 +48,9 @@ func newSynapseDataInventoryFixture(t *testing.T) *synapseDataInventoryFixture {
 		}
 		path := strings.ToLower(q.URL.Path)
 		if q.URL.Host == "management.azure.com" {
+			if path == "/subscriptions/"+testSubscription+"/resourcegroups/test" {
+				return jsonResponse(200, map[string]any{"id": path, "name": "test", "type": groupType, "location": "eastus", "properties": map[string]any{}}, nil), true
+			}
 			if path == "/subscriptions/"+testSubscription+"/resourcegroups" || path == "/subscriptions/"+testSubscription+"/providers/microsoft.authorization/locks" {
 				return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
 			}
@@ -62,6 +68,9 @@ func newSynapseDataInventoryFixture(t *testing.T) *synapseDataInventoryFixture {
 		return nil, false
 	}
 	f.data = func(q *http.Request) *http.Response {
+		if q.URL.Path == "/pipelines" {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil)
+		}
 		for _, kind := range synapseDataKinds {
 			d := synapseDataKind(kind)
 			collection := "/" + d.collection

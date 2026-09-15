@@ -6780,3 +6780,35 @@ needs integration into the durable Spark pool action and cleanup persistence
 workflow; it grants no new cleanup capability. All 159 parity rows and all eight
 acceptance criteria remain open. No live Azure or independent emulator run is
 claimed.
+
+
+### Reviewed Synapse Spark pool cleanup with durable recovery
+
+Connected the native Spark work collector and ARM deletion protocol to the Spark
+pool inventory and action driver. The inventory review privately binds connection,
+pool/workspace/group configuration, Spark incarnations and independent artifact
+references before client pagination. Known omitted work receives fresh scoped GETs,
+including after credential rotation. Protected/unready contexts and matching or
+unresolved artifact consumers cannot become actionable.
+
+The action rechecks current configuration, complete work indexes, protected tags
+and management locks. It returns each cancellation acknowledgement before another
+network read, stores signed accepted-target/phase state, and resumes observation
+without repeating accepted mutations. Once reviewed work is quiesced it performs
+native pool DELETE and follows its signed ARM operation receipt. Operation success
+alone remains insufficient: the pool's own GET must establish absence. No cascade
+closes retained historical job/session assets or deletes independent consumers.
+
+Tests use actual registered inventory, cleanup planning, SQLite execution records
+and fresh runtime/database instances across phases. They exercise transient reads
+after acceptance, exactly one mutation per target, final own absence and history
+retention, alongside protocol tests for changed work/incarnations/configuration,
+new references/locks, altered proofs, credential rotation and cursor drift.
+
+Azure has 455 specifications, 1,525 operations and 419 cleanup bindings. Only the
+Spark pool binding changed. Workspace/SQL and artifact actions, additional Synapse
+child families, full dependency coverage and application acceptance remain open.
+The native APIs provide no atomic conditional cancellation or cross-resource lock;
+local tests establish observed-drift checks, not an atomic guarantee against later
+external writers. No fresh live-cloud or independent emulator run is claimed. All
+159 parity rows and all eight acceptance criteria remain pending.

@@ -20,7 +20,9 @@ func (r *Runtime) listSynapse(ctx context.Context, c *client, request contracts.
 		if len(request.KnownNativeMetadata) != 0 {
 			return batch, serviceDenied("unrelated_synapse_known_metadata")
 		}
-		return r.listProduct(ctx, c, request, nil)
+		if request.ResourceKind.NativeType != synapseSparkType {
+			return r.listProduct(ctx, c, request, nil)
+		}
 	}
 	// Lists discover new resources. A known resource's own GET establishes
 	// continued existence or absence, even when its parent is omitted from LIST.
@@ -144,6 +146,13 @@ func (r *Runtime) listSynapse(ctx context.Context, c *client, request contracts.
 			}
 		}
 		items = append(items, item)
+	}
+	if kind == synapseSparkType {
+		for i := range items {
+			if err := r.synapseSparkInventory(ctx, c, request, &items[i]); err != nil {
+				return batch, err
+			}
+		}
 	}
 	slices.SortFunc(items, func(a, b contracts.InventoryItem) int { return strings.Compare(a.NativeID, b.NativeID) })
 	slices.Sort(absent)

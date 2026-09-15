@@ -65,3 +65,14 @@ relationships:
 - type: uses
   targetType: Microsoft.Synapse/workspaces
   targetIdPath: refs_microsoft_synapse_workspaces
+
+actions:
+  delete:
+    operation: Azure.Microsoft.Synapse.BigDataPools_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Synapse.BigDataPools_Get
+      itemsPath: $
+      identityPath: id

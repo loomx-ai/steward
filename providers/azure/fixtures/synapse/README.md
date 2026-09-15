@@ -30,8 +30,8 @@ Data Lake references resolve through the current subscription's Storage list and
 matching detail reads, without following storage URLs or claiming ownership.
 Unresolved storage remains visible. Workspaces are reread after dependency reads.
 
-The three resource kinds are currently non-actionable because reviewed cleanup
-is unfinished, despite the native DELETE operations being present in the catalog.
+Spark pools now have a reviewed cleanup driver. Workspaces and SQL pools remain
+non-actionable while their reviewed cleanup is unfinished.
 This is an intermediate implementation stage, not the final read-only scope or a
 claim of functional parity. Integration runtimes, private connectivity, code
 artifacts, running jobs, recovery/retention and complete cleanup are still required.
@@ -91,10 +91,11 @@ Official contract entry points:
 [Spark pools](https://learn.microsoft.com/en-us/rest/api/synapse/resourcemanager/big-data-pools?view=rest-synapse-resourcemanager-2021-06-01),
 [SQL pools](https://learn.microsoft.com/en-us/rest/api/synapse/resourcemanager/sql-pools?view=rest-synapse-resourcemanager-2021-06-01).
 
-The [Spark and artifact data-plane evidence](data-plane/README.md) covers ten
+The [Spark and artifact data-plane evidence](data-plane/README.md) covers twelve
 additional native operations. It has a separate transport contract and original
 example manifest; scoped native reads/cancellation and asset inventory are
-implemented, while durable controller cleanup remains open.
+implemented. Spark pool cleanup composes these protocols; workspace/SQL cleanup
+and additional child resources remain open.
 
 
 ## Scoped asynchronous operation receipts
@@ -139,3 +140,34 @@ protocol evidence, not live-cloud or independent-emulator validation. The cleanu
 controller must still compose reviewed work cancellation, dependencies, deletion
 and every resource's own absence readback; no Synapse cleanup binding is enabled
 by this transport milestone.
+
+
+### Reviewed Spark pool cleanup
+
+The Spark pool specification now binds its native DELETE to a specialized action.
+Inventory drains the native pool pages and adds a privately signed review before
+computing its client cursor. The review includes pool/workspace/resource-group
+configuration and all observed job/session and independent artifact dependencies.
+Known work survives list omission until its own GET proves absence. Credential
+rotation allows a new inventory review after fresh scoped reads; old action proofs
+and receipts cannot be reused with a changed credential incarnation.
+
+Only ready, unprotected contexts without matching or unresolved artifact consumers
+are actionable. The driver repeats live configuration, work, protection and lock
+checks. New work, changed incarnations/configuration and new consumers require a
+fresh review. It cancels one job/session at a time, returns the acknowledgement
+before further reads, and persists a signed phase with its accepted targets. On
+restart it waits for the accepted target to stop or disappear, never resending
+that cancellation. It deletes the pool after reviewed work has stopped, persists
+the native ARM receipt, and queries its scoped operation. Final completion still
+requires the pool's own GET 404; historical job records are not closed implicitly.
+
+Real SQLite scan/plan/execution tests reopen the database and instantiate a fresh
+runtime at each phase. They cover transient read failure after acceptance, one
+native mutation per target, polling success while the pool still exists, final
+own absence and retention of historical job/session assets. Protocol tests also
+cover changed reviews, new locks/consumers, altered receipts, credential rotation
+and cursor drift. These are local tests; no fresh live-cloud or independent emulator
+validation is claimed. Native APIs do not provide an atomic cross-resource lock
+or conditional cancellation incarnation, so concurrent changes after the last
+validated read cannot be excluded atomically. Complete Synapse parity remains open.

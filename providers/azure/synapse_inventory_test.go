@@ -52,6 +52,7 @@ func newSynapseInventoryFixture(t *testing.T) *synapseInventoryFixture {
 				raw["location"] = "westus"
 			}
 			if kind == synapseType {
+				object(raw["properties"])["connectivityEndpoints"] = map[string]any{"dev": "https://" + parent + ".dev.azuresynapse.net"}
 				// Child/network artifacts have separate unfinished coverage; do
 				// not reuse the source example's unrelated subscription IDs.
 				delete(object(raw["properties"]), "privateEndpointConnections")
@@ -67,6 +68,12 @@ func newSynapseInventoryFixture(t *testing.T) *synapseInventoryFixture {
 	f.objects[storageID] = storage
 	f.collections[root+"/providers/microsoft.storage/storageaccounts"] = []string{storageID}
 	f.runtime = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == "GET" && strings.HasSuffix(req.URL.Host, ".dev.azuresynapse.net") {
+			if strings.Contains(req.URL.Path, "/livyApi/") {
+				return jsonResponse(200, map[string]any{"from": 0, "total": 0, "sessions": []any{}}, nil), nil
+			}
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
 		if req.Method != "GET" || req.URL.Host != "management.azure.com" {
 			t.Fatal("unexpected request", req.Method, req.URL)
 		}
@@ -81,6 +88,9 @@ func newSynapseInventoryFixture(t *testing.T) *synapseInventoryFixture {
 			t.Fatal("wrong Synapse version", req.URL)
 		}
 		header := http.Header{"X-Ms-Request-Id": {"synapse-inventory-request"}}
+		if path == root+"/resourcegroups/test" {
+			return jsonResponse(200, map[string]any{"id": path, "name": "test", "type": groupType, "location": "eastus", "properties": map[string]any{}}, header), nil
+		}
 		if path == root+"/resourcegroups" || path == root+"/providers/microsoft.authorization/locks" {
 			return jsonResponse(200, map[string]any{"value": []any{}}, header), nil
 		}
@@ -135,7 +145,7 @@ func TestSynapseNativeInventoryAndReferences(t *testing.T) {
 				if kind == synapseSQLType && (item.State != "Online" || item.Normalized["state"] != "Online") {
 					t.Fatal("SQL activity state lost", item.State)
 				}
-				if item.NativeType != kind || item.Actionable == nil || *item.Actionable || item.Normalized["cleanup_protection_reason"] != "synapse_cleanup_not_implemented" || text(item.Normalized["_synapse_private_configuration"]) == "" {
+				if item.NativeType != kind || item.Actionable == nil || *item.Actionable != (kind == synapseSparkType) || kind != synapseSparkType && item.Normalized["cleanup_protection_reason"] != "synapse_cleanup_not_implemented" || text(item.Normalized["_synapse_private_configuration"]) == "" {
 					t.Fatal("incorrect inventory readiness", item)
 				}
 				if kind == synapseType {
@@ -301,7 +311,14 @@ func TestSynapseInventoryParentAndCursorConsistency(t *testing.T) {
 					return nil, false
 				}
 				request := productRequest(f.runtime, kind)
+				request.Limit = 1
 				batch, err := f.runtime.List(t.Context(), request)
+				if kind == synapseSparkType && mode == "duplicate-page" {
+					if err == nil || len(batch.Items) != 0 || batch.Complete {
+						t.Fatal("duplicate index accepted", batch, err)
+					}
+					return
+				}
 				if strings.HasPrefix(mode, "parent-") {
 					if err == nil || len(batch.Items) != 0 || batch.Complete {
 						t.Fatal("parent drift accepted", batch, err)
@@ -443,7 +460,7 @@ func TestSynapseRegisteredInventoryAndKnownAbsence(t *testing.T) {
 		t.Fatal("registered inventory incomplete", len(values))
 	}
 	for _, value := range values {
-		if string(value.ID) == value.Identity.NativeID || value.Normalized["_inventory_source"] != synapseSource || value.Capabilities.Has(asset.CapabilityActionable) {
+		if string(value.ID) == value.Identity.NativeID || value.Normalized["_inventory_source"] != synapseSource || value.Capabilities.Has(asset.CapabilityActionable) != (value.Identity.NativeType == synapseSparkType) {
 			t.Fatal("registered resource identity/readiness changed", value)
 		}
 	}

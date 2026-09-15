@@ -71,7 +71,7 @@ func newSynapseTransportFixture(t *testing.T) *synapseTransportFixture {
 				return jsonResponse(200, map[string]any{"subscriptionId": testSubscription, "tenantId": testTenant, "state": "Enabled"}, nil), nil
 			}
 			if req.URL.Query().Get("api-version") != synapseVersion {
-				t.Fatal("changed ARM version")
+				t.Fatal("changed ARM version", req.Method, req.URL)
 			}
 			if path == "/subscriptions/"+testSubscription+"/providers/microsoft.synapse/workspaces" {
 				return jsonResponse(200, map[string]any{"value": []any{f.workspace}}, nil), nil
