@@ -167,3 +167,21 @@ This is evidence for treating native operation status separately from resource
 absence, not a current ordering guarantee or a reason to reproduce that historical
 bug in the implementation. Member-execution tests are synthetic protocol tests;
 they do not establish live-cloud acceptance or close any parity gate.
+
+Completed member checkpoints are now integrated into product preflight. Every
+checkpoint is authenticated before product reads, must be unique and complete,
+and is followed by native product readback and member-own absence checks around
+the remaining-member observations. Only the named member is covered; a completed
+VM does not certify an absent NIC without its own evidence. Known native service
+prerequisites are passed to the remaining parent's actual driver, whose recorded
+parent configuration must still match before an ETag change can be accepted.
+A changed configuration is rejected even if the original ETag is reused.
+
+A native host/host-group test exercises child execution, JSON checkpoint resume,
+parent ETag change, and successful parent product preflight. It also covers
+missing/incomplete/duplicate/tampered receipts, child reappearance, read failures,
+and parent/root changes. Member requests now use deterministic impact and
+prerequisite ordering, preserving native receipt bindings when the semantically
+identical Stack request is reordered between VM execution phases. Full service
+and group closure, parent execution with completed prerequisites, Stack action
+registration, graph integration and all overall acceptance gates remain open.

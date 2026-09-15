@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"maps"
+	"slices"
 	"strings"
 	"time"
 
@@ -45,6 +46,11 @@ func (c *client) deploymentStackMemberRequest(req contracts.ActionRequest, id as
 			out.PrerequisiteDeletions = append(out.PrerequisiteDeletions, prerequisite)
 		}
 	}
+	// Native product receipts must remain stable under the same impact-order
+	// canonicalization used by the outer Stack request binding.
+	compare := func(a, b contracts.ActionImpact) int { return strings.Compare(string(a.Asset.ID), string(b.Asset.ID)) }
+	slices.SortFunc(out.LifecycleImpacts, compare)
+	slices.SortFunc(out.PrerequisiteDeletions, compare)
 	return out, nil
 }
 

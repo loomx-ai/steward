@@ -49,17 +49,9 @@ func (r *Runtime) deploymentStackExecuteMember(ctx context.Context, req contract
 	phase := "execute"
 	var result contracts.ActionResult
 	if saved != nil {
-		binding, err := c.deploymentStackMemberExecutionBinding(req, saved)
+		phase, result, err = c.deploymentStackMemberExecutionResult(req, id, saved)
 		if err != nil {
 			return contracts.WaitResult{}, err
-		}
-		phase, _ = saved["phase"].(string)
-		if len(saved) != 4 || saved["binding"] != binding || saved["member"] != string(id) || phase != "wait" && phase != "readback" && phase != "complete" {
-			return contracts.WaitResult{}, serviceDenied("deployment_stack_member_execution_receipt_changed")
-		}
-		wire, err := json.Marshal(saved["result"])
-		if err != nil || json.Unmarshal(wire, &result) != nil {
-			return contracts.WaitResult{}, serviceDenied("invalid_deployment_stack_member_execution_receipt")
 		}
 	}
 	if err := c.deploymentStackObserveMembers(ctx, req.Asset, nil); err != nil {
@@ -110,25 +102,14 @@ func (r *Runtime) deploymentStackExecuteMember(ctx context.Context, req contract
 	default:
 		// Completion is not a cached absence certificate. Re-run the native
 		// product readback, including its residual/purge checks, on every resume.
-		member.ExecutionResult = &result
-		read, err := driver.Readback(ctx, member)
+		read, err := c.deploymentStackMemberReadback(ctx, member, driver, result)
 		if err != nil {
 			return contracts.WaitResult{}, err
-		}
-		live, err := c.deploymentStackMemberRead(ctx, member.Asset)
-		if err != nil && !isNotFound(err) {
-			return contracts.WaitResult{}, err
-		}
-		absent := isNotFound(err)
-		if !absent {
-			if err := serviceCreationIdentity(member.Asset, live.data); err != nil {
-				return contracts.WaitResult{}, err
-			}
 		}
 		if err := c.deploymentStackObserveMembers(ctx, req.Asset, nil); err != nil {
 			return contracts.WaitResult{}, err
 		}
-		if read.Exists || !absent {
+		if read.Exists {
 			if result.RetryAfter <= 0 {
 				result.RetryAfter = 2 * time.Second
 			}
@@ -136,4 +117,44 @@ func (r *Runtime) deploymentStackExecuteMember(ctx context.Context, req contract
 		}
 		return checkpoint("complete", "member_absent", true)
 	}
+}
+
+// Authenticate all checkpoints before resolving or reading any completed member.
+func (c *client) deploymentStackMemberExecutionResult(req contracts.ActionRequest, id asset.AssetID, saved map[string]any) (string, contracts.ActionResult, error) {
+	binding, err := c.deploymentStackMemberExecutionBinding(req, saved)
+	if err != nil {
+		return "", contracts.ActionResult{}, err
+	}
+	phase, _ := saved["phase"].(string)
+	if len(saved) != 4 || saved["binding"] != binding || saved["member"] != string(id) || phase != "wait" && phase != "readback" && phase != "complete" {
+		return "", contracts.ActionResult{}, serviceDenied("deployment_stack_member_execution_receipt_changed")
+	}
+	var result contracts.ActionResult
+	wire, err := json.Marshal(saved["result"])
+	if err != nil || json.Unmarshal(wire, &result) != nil {
+		return "", contracts.ActionResult{}, serviceDenied("invalid_deployment_stack_member_execution_receipt")
+	}
+	return phase, result, nil
+}
+
+// The caller verifies the Stack around these product/own reads. This check proves
+// only the requested member's result, never absence of its whole controller tree.
+func (c *client) deploymentStackMemberReadback(ctx context.Context, member contracts.ActionRequest, driver contracts.ActionDriver, result contracts.ActionResult) (contracts.ReadbackResult, error) {
+	member.ExecutionResult = &result
+	read, err := driver.Readback(ctx, member)
+	if err != nil {
+		return contracts.ReadbackResult{}, err
+	}
+	live, err := c.deploymentStackMemberRead(ctx, member.Asset)
+	if err != nil && !isNotFound(err) {
+		return contracts.ReadbackResult{}, err
+	}
+	absent := isNotFound(err)
+	if !absent {
+		if err := serviceCreationIdentity(member.Asset, live.data); err != nil {
+			return contracts.ReadbackResult{}, err
+		}
+	}
+	read.Exists = read.Exists || !absent
+	return read, nil
 }

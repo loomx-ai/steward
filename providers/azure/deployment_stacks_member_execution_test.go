@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"slices"
 	"strings"
 	"testing"
 
@@ -255,6 +256,9 @@ func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
 	var saved map[string]any
 	completed := false
 	for step := 0; step < 8; step++ {
+		// The full request binding treats impact order as immaterial; the native
+		// product receipt must use the same deterministic member projection.
+		slices.Reverse(req.LifecycleImpacts)
 		out, err := r.deploymentStackExecuteMember(t.Context(), req, "vm", saved)
 		if err != nil {
 			t.Fatal("product phase failed", step, writes, err)
@@ -274,5 +278,9 @@ func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
 	out, err := r.deploymentStackExecuteMember(t.Context(), req, "vm", saved)
 	if err != nil || !out.Done || len(writes) != 3 {
 		t.Fatal("completed product execution repeated a mutation", out, err, writes)
+	}
+	observed, err := r.deploymentStackObserveProgress(t.Context(), req, deploymentStackProgress{Executions: []map[string]any{out.Data}})
+	if err == nil || observed.Completed != nil || observed.Members != nil || len(writes) != 3 {
+		t.Fatal("VM completion silently certified its deleted NIC", observed, err, writes)
 	}
 }
