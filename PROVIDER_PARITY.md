@@ -6866,3 +6866,33 @@ not enable artifact cleanup. Triggers, active Pipeline runs, other activity
 dependencies and full artifact/workspace/SQL lifecycle remain open. No new
 live-cloud or independent emulator validation is claimed. All 159 parity rows
 and all eight acceptance criteria remain open.
+
+### Synapse code-artifact workspace work review
+
+Notebook and Spark job-definition inventory now collects signed, private review
+evidence from all workspace Spark pools, batch jobs, sessions and Pipeline
+definitions. Known pools omitted from the index are independently read; known
+work and Pipeline omissions use their own GETs. Native index/detail checks,
+workspace/group context checks and creation timestamps reject incomplete or
+changing observations. Foreign saved pool selectors are rejected before use.
+Static incoming activity references, unresolved expressions, protection and
+non-quiesced Spark work are retained as blocking observations. The Spark
+`artifactId` description does not establish a trustworthy identity join, so the
+review checks workspace Spark work without guessing names or cancelling jobs.
+
+The review is persisted by the registered inventory worker and included in
+private cursor fingerprints; original code and arguments remain redacted. Tests
+cover restored metadata, omitted indexes, credential rotation, quiescence,
+Pipeline consumers, forbidden reads, missing job creation identity, foreign
+hints and changing parents/indexes, alongside the existing SQLite scan tests.
+
+Artifact deletion remains unavailable. An internal durable-action prototype was
+exercised but not enabled: current definitions and Spark jobs alone do not prove
+there are no pending Pipeline runs. Microsoft documents [45-day run-history
+retention](https://learn.microsoft.com/en-us/azure/data-factory/monitor-programmatically)
+and [Until activity timeouts up to 90 days](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-until-activity).
+An empty retained-history query is therefore insufficient absence evidence;
+complete active-run/diagnostic-history coverage and external orchestration still
+need implementation and validation. No artifact delete binding was added. Counts
+remain 456 specifications, 1,531 operations and 419 cleanup bindings. All 159
+parity rows and all eight acceptance criteria remain open.

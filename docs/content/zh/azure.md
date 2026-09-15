@@ -303,3 +303,5 @@ Elastic SAN 卷清理会将关联快照列为独立、已审核的前置删除�
 存在保留子资源或启用了保留策略的卷组时，SAN 仍受保护，此流程尚不能保证永久移除这些资源。子步骤意外产生保留结果时，也会停止 SAN DELETE。父级不接受强制或永久删除选项。保留卷组永久清除及跨保留范围的 SAN 清理仍未完成。原始 REST 示例、预览版软删除 CLI 录制、稳定版 `2025-09-01` 快照录制，以及 SQLite 盘点和清理恢复流程已进行离线测试。尚未验证真实 Elastic SAN 或独立 ARM 模拟器。参见[微软删除顺序说明](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-delete)。
 
 已支持 Synapse Pipeline 资产盘点。Pipeline 对 Notebook、Spark 作业定义、其他 Pipeline 和 Spark 池的静态引用会显示为依赖，包括嵌套控制活动中的引用。盘点需要工作区及被引用资源的读取权限。动态表达式保持未解析；权限不足或配置在扫描期间变化时，扫描不会成功。Pipeline 及其他代码资产的清理仍未开放。
+
+Notebook 与 Spark 作业定义的盘点还会核验工作区内的 Spark 任务和 Pipeline 引用，需要 Spark 池、任务、会话及 Pipeline 的列表与读取权限。这些记录用于后续清理审查；活动 Pipeline 的覆盖尚未完成，代码资产删除仍未开放。

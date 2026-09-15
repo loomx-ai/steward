@@ -64,11 +64,15 @@ func synapsePoolReference(value any, pool string) (bool, bool) {
 // record omitted from LIST gets its own read. Two complete indexes and fresh
 // detail reads reject changes while the snapshot is assembled. Only private
 // hashes and native selectors leave this collector, never code or arguments.
-func (c *synapseDataClient) synapseSparkWork(ctx context.Context, target synapseDataTarget, known map[string]any) (out synapseSparkWork, err error) {
+func (c *synapseDataClient) synapseSparkWork(ctx context.Context, target synapseDataTarget, known map[string]any) (synapseSparkWork, error) {
+	return c.synapseWork(ctx, target, known, synapseSparkWorkDefinitions())
+}
+
+func (c *synapseDataClient) synapseWork(ctx context.Context, target synapseDataTarget, known map[string]any, definitions []synapseDataDefinition) (out synapseSparkWork, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	out = synapseSparkWork{manifest: map[string]any{}, raw: map[string]map[string]any{}}
 	remaining := maps.Clone(known)
-	for _, d := range synapseSparkWorkDefinitions() {
+	for _, d := range definitions {
 		rows, _, index, readErr := c.synapseListData(ctx, target, d, true)
 		if readErr != nil {
 			return out, readErr

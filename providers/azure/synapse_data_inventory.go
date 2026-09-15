@@ -549,6 +549,11 @@ func (r *Runtime) listSynapseData(ctx context.Context, c *synapseDataClient, req
 				if c.arm.privateConfiguration(synapseDataSnapshot(d, raw)) != c.arm.privateConfiguration(synapseDataSnapshot(d, after.data)) {
 					return batch, serviceDenied("synapse_data_configuration_changed")
 				}
+				if synapseReviewArtifact(d.kind) {
+					if err := r.synapseArtifactInventory(ctx, c, target, d, raw, request, &item); err != nil {
+						return batch, err
+					}
+				}
 				items = append(items, item)
 			}
 			// Offset pagination has no server snapshot. Confirm the full observed
