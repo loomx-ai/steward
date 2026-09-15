@@ -10,7 +10,7 @@ import (
 )
 
 func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
-	for _, mode := range []string{"complete", "no_receipt", "waiting_receipt", "duplicate", "changed_job", "changed_receipt", "second_receipt_invalid", "recreated", "forbidden", "parent_config_changed", "parent_protected", "missing_parent_fingerprint", "second_parent_change", "child_returns_during_parent_read", "root_change", "parent_config_changed_same_etag", "execute_parent", "execute_parent_forbidden", "execute_parent_changed_context", "execute_parent_invalid_projection", "execute_parent_child_returns", "execute_parent_resume_progress"} {
+	for _, mode := range []string{"complete", "no_receipt", "waiting_receipt", "duplicate", "changed_job", "changed_receipt", "second_receipt_invalid", "recreated", "forbidden", "parent_config_changed", "parent_protected", "missing_parent_fingerprint", "second_parent_change", "child_returns_during_parent_read", "root_change", "parent_config_changed_same_etag", "execute_parent", "execute_parent_forbidden", "execute_parent_changed_context", "execute_parent_invalid_projection", "execute_parent_child_returns", "execute_parent_resume_progress", "closure_service_complete", "closure_service_stale", "closure_service_duplicate", "closure_service_unreviewed", "closure_service_reappeared", "closure_service_forbidden", "closure_service_no_receipt"} {
 		t.Run(mode, func(t *testing.T) {
 			parent := actionAsset(hostGroupType, "parent")
 			child := actionAsset(hostType, "child")
@@ -90,11 +90,25 @@ func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
 						return jsonResponse(404, map[string]any{}, nil), nil
 					}
 					return jsonResponse(200, childRaw, nil), nil
+				case parent.Identity.NativeID + "/hosts/unreviewed":
+					return jsonResponse(200, map[string]any{"id": parent.Identity.NativeID + "/hosts/unreviewed", "type": hostType, "properties": map[string]any{}}, nil), nil
 				case parent.Identity.NativeID + "/hosts":
 					lists++
+					if mode == "closure_service_forbidden" {
+						return jsonResponse(403, map[string]any{}, nil), nil
+					}
+					if mode == "closure_service_reappeared" {
+						gone = false
+					}
 					rows := []any{}
-					if !gone {
+					if !gone || mode == "closure_service_stale" || mode == "closure_service_duplicate" {
 						rows = append(rows, childRaw)
+					}
+					if mode == "closure_service_duplicate" {
+						rows = append(rows, childRaw)
+					}
+					if mode == "closure_service_unreviewed" {
+						rows = append(rows, map[string]any{"id": parent.Identity.NativeID + "/hosts/unreviewed", "type": hostType, "properties": map[string]any{}})
 					}
 					return jsonResponse(200, map[string]any{"value": rows}, nil), nil
 				case "/subscriptions/" + testSubscription + "/resourcegroups/test":
@@ -140,7 +154,7 @@ func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
 			}
 			progress := deploymentStackProgress{Executions: []map[string]any{saved}}
 			switch mode {
-			case "no_receipt":
+			case "no_receipt", "closure_service_no_receipt":
 				progress.Executions = nil
 			case "waiting_receipt":
 				progress.Executions = []map[string]any{waiting}
@@ -170,6 +184,24 @@ func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
 			}
 			before, _ := json.Marshal(req)
 			active = true
+			if strings.HasPrefix(mode, "closure_service_") {
+				closure, err := r.deploymentStackObserveServiceClosureWithProgress(t.Context(), req, progress)
+				if mode == "closure_service_complete" {
+					if err != nil || len(closure.Parents) != 1 || closure.Parents[0] != parent.ID || len(closure.DirectChildren) != 0 || childReads < 4 {
+						t.Fatal("completed child was not reconciled through service closure", closure, err, childReads)
+					}
+				} else if err == nil || len(closure.Parents)+len(closure.DirectChildren) != 0 {
+					t.Fatal("invalid service closure returned partial success", closure, err)
+				}
+				if mode != "closure_service_no_receipt" && lists == 0 {
+					t.Fatal("service closure did not reach native child enumeration", err)
+				}
+				after, _ := json.Marshal(req)
+				if string(before) != string(after) || deletes != 1 || parentDeletes != 0 {
+					t.Fatal("service closure mutated reviewed state")
+				}
+				return
+			}
 			checks, err := r.deploymentStackPreflightProductsWithProgress(t.Context(), req, progress)
 			after, _ := json.Marshal(req)
 			if string(before) != string(after) || deletes != 1 {
@@ -178,6 +210,10 @@ func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
 			if mode == "complete" || strings.HasPrefix(mode, "execute_parent") {
 				if err != nil || len(checks) != 1 || checks[0].Member != parent.ID || !checks[0].Check.Allowed || lists == 0 || parentReads < 4 || childReads < 4 {
 					t.Fatal("native parent preflight did not accept verified prerequisite", checks, err, lists, parentReads, childReads)
+				}
+				closure, err := r.deploymentStackObserveServiceClosureWithProgress(t.Context(), req, progress)
+				if err != nil || len(closure.Parents) != 1 || closure.Parents[0] != parent.ID || len(closure.DirectChildren) != 0 {
+					t.Fatal("service closure lost completed parent prerequisites", closure, err)
 				}
 				if mode == "complete" {
 					return
@@ -235,6 +271,10 @@ func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
 				observed, err := r.deploymentStackObserveProgress(t.Context(), req, deploymentStackProgress{Executions: []map[string]any{saved, out.Data}})
 				if err != nil || len(observed.Completed) != 2 || len(observed.Members) != 0 || parentDeletes != 1 || deletes != 1 {
 					t.Fatal("completed parent/child receipts did not reconcile", observed, err)
+				}
+				closure, err = r.deploymentStackObserveServiceClosureWithProgress(t.Context(), req, deploymentStackProgress{Executions: []map[string]any{saved, out.Data}})
+				if err != nil || len(closure.Parents)+len(closure.DirectChildren) != 0 {
+					t.Fatal("completed parent was enumerated as an active service", closure, err)
 				}
 				after, _ = json.Marshal(req)
 				if string(before) != string(after) {

@@ -35,13 +35,48 @@ func (c *client) deploymentStackObserveServiceClosure(ctx context.Context, req c
 		return out, err
 	}
 	members := make([]asset.Asset, 0, len(req.LifecycleImpacts))
+	byAsset := map[asset.AssetID]asset.Asset{}
+	for _, impact := range req.LifecycleImpacts {
+		members = append(members, impact.Asset)
+		byAsset[impact.Asset.ID] = impact.Asset
+	}
+	return c.deploymentStackCheckServiceClosure(ctx, req, configurations, func() (deploymentStackObservedProgress, error) {
+		err := c.deploymentStackObserveMemberConfigurations(ctx, req.Asset, members, configurations)
+		return deploymentStackObservedProgress{Members: byAsset}, err
+	})
+}
+
+func (r *Runtime) deploymentStackObserveServiceClosureWithProgress(ctx context.Context, req contracts.ActionRequest, progress deploymentStackProgress) (out deploymentStackServiceClosure, err error) {
+	defer func() { err = contracts.DependencyReadError(err) }()
+	c, err := r.resolve(ctx, req.Asset.Identity.ConnectionID)
+	if err != nil {
+		return out, err
+	}
+	configurations, err := c.deploymentStackPreparedConfigurations(req, progress.Preparations)
+	if err != nil {
+		return out, err
+	}
+	return c.deploymentStackCheckServiceClosure(ctx, req, configurations, func() (deploymentStackObservedProgress, error) {
+		return r.deploymentStackObserveProgress(ctx, req, progress)
+	})
+}
+
+func (c *client) deploymentStackCheckServiceClosure(ctx context.Context, req contracts.ActionRequest, configurations map[string]any, observe func() (deploymentStackObservedProgress, error)) (out deploymentStackServiceClosure, err error) {
+	defer func() {
+		if err != nil {
+			out = deploymentStackServiceClosure{}
+			err = contracts.DependencyReadError(err)
+		}
+	}()
+	state, err := observe()
+	if err != nil {
+		return out, err
+	}
+	members := make([]asset.Asset, 0, len(req.LifecycleImpacts))
 	byID := map[string]contracts.ActionImpact{}
 	for _, impact := range req.LifecycleImpacts {
 		members = append(members, impact.Asset)
 		byID[strings.ToLower(impact.Asset.Identity.NativeID)] = impact
-	}
-	if err = c.deploymentStackObserveMemberConfigurations(ctx, req.Asset, members, configurations); err != nil {
-		return out, err
 	}
 	native := object(object(req.Asset.Normalized[deploymentStackReviewKey])["members"])
 	direct := map[asset.AssetID]bool{}
@@ -49,8 +84,11 @@ func (c *client) deploymentStackObserveServiceClosure(ctx context.Context, req c
 	checked := map[asset.AssetID]asset.Asset{}
 	for _, impact := range req.LifecycleImpacts {
 		parent := impact.Asset
-		if !impact.Delete || !HasServiceCascade(parent.Identity.NativeType) {
+		if !impact.Delete || state.Completed[parent.ID] || !HasServiceCascade(parent.Identity.NativeType) {
 			continue
+		}
+		if current, found := state.Members[parent.ID]; found {
+			parent = current
 		}
 		current, failure := c.deploymentStackMemberRead(ctx, parent)
 		if failure != nil {
@@ -74,11 +112,24 @@ func (c *client) deploymentStackObserveServiceClosure(ctx context.Context, req c
 			if native[id] == nil && reviewed.ControllerID != parent.ID {
 				return out, serviceDenied("deployment_stack_service_child_controller_changed")
 			}
+			if state.Completed[reviewed.Asset.ID] {
+				if _, failure := c.deploymentStackMemberRead(ctx, reviewed.Asset); !isNotFound(failure) {
+					if failure != nil {
+						return out, failure
+					}
+					return out, serviceDenied("deployment_stack_completed_service_child_reappeared")
+				}
+				continue // An independently completed member may linger in a list.
+			}
+			planned := reviewed.Asset
+			if current, found := state.Members[planned.ID]; found {
+				planned = current
+			}
 			live, failure := c.deploymentStackMemberRead(ctx, reviewed.Asset)
 			if failure != nil {
 				return out, failure
 			}
-			if failure = c.deploymentStackPreparedMember(reviewed.Asset, live.data, object(configurations[id])); failure != nil {
+			if failure = c.deploymentStackPreparedMember(planned, live.data, object(configurations[id])); failure != nil {
 				return out, failure
 			}
 			kind, known := findType(reviewed.Asset.Identity.NativeType)
@@ -98,12 +149,12 @@ func (c *client) deploymentStackObserveServiceClosure(ctx context.Context, req c
 	}
 	for id, impact := range byID {
 		parent, covered := checked[impact.ControllerID]
-		if native[id] == nil && covered && slices.ContainsFunc(serviceChildKinds(parent.Identity.NativeType), func(kind string) bool { return strings.EqualFold(kind, impact.Asset.Identity.NativeType) }) && !observed[id] {
+		if !state.Completed[impact.Asset.ID] && native[id] == nil && covered && slices.ContainsFunc(serviceChildKinds(parent.Identity.NativeType), func(kind string) bool { return strings.EqualFold(kind, impact.Asset.Identity.NativeType) }) && !observed[id] {
 			return out, serviceDenied("deployment_stack_service_child_membership_changed")
 		}
 	}
 
-	if err = c.deploymentStackObserveMemberConfigurations(ctx, req.Asset, members, configurations); err != nil {
+	if _, err = observe(); err != nil {
 		return out, err
 	}
 	slices.Sort(out.Parents)

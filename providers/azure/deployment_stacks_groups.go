@@ -13,7 +13,7 @@ import (
 
 // The generic group index is one part of closure, not a replacement for native
 // child/service/attachment discovery or product-specific deletion preflight.
-func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.ActionRequest, group asset.Asset, configurations map[string]any) (map[string]any, error) {
+func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.ActionRequest, group asset.Asset, configurations map[string]any, state deploymentStackObservedProgress) (map[string]any, error) {
 	metadata, err := providerData()
 	if err != nil {
 		return nil, err
@@ -31,6 +31,9 @@ func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.Ac
 	for _, impact := range req.LifecycleImpacts {
 		impacts[strings.ToLower(impact.Asset.Identity.NativeID)] = impact
 	}
+	if current, found := state.Members[group.ID]; found {
+		group = current
+	}
 	current, err := c.deploymentStackMemberRead(ctx, group)
 	if err != nil {
 		return nil, err
@@ -46,6 +49,7 @@ func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.Ac
 	}
 	snapshot := map[string]any{strings.ToLower(group.Identity.NativeID): current.data}
 	seen := map[string]bool{}
+	seenResources := map[string]bool{strings.ToLower(group.Identity.NativeID): true}
 	for next := bound.URL; next != ""; {
 		if err := rbacListQuery(next, bound.URL); err != nil {
 			return nil, err
@@ -67,9 +71,10 @@ func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.Ac
 			raw := object(row)
 			wire, valid := raw["id"].(string)
 			id, kind, err := deploymentStackMemberID(wire)
-			if err != nil || !valid || !inResourceGroup(id, group.Identity.NativeID) || !validResponseType(kind, text(raw["type"])) || snapshot[id] != nil {
+			if err != nil || !valid || !inResourceGroup(id, group.Identity.NativeID) || !validResponseType(kind, text(raw["type"])) || seenResources[id] {
 				return nil, serviceDenied("invalid_deployment_stack_group_resource")
 			}
+			seenResources[id] = true
 			member := req.Asset
 			if !strings.EqualFold(id, req.Asset.Identity.NativeID) {
 				impact, found := impacts[id]
@@ -77,6 +82,18 @@ func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.Ac
 					return nil, serviceDenied("deployment_stack_group_resource_not_reviewed")
 				}
 				member = impact.Asset
+			}
+			if state.Completed[member.ID] {
+				if _, err := c.deploymentStackMemberRead(ctx, member); !isNotFound(err) {
+					if err != nil {
+						return nil, err
+					}
+					return nil, serviceDenied("deployment_stack_completed_group_member_reappeared")
+				}
+				continue
+			}
+			if current, found := state.Members[member.ID]; found {
+				member = current
 			}
 			live, err := c.deploymentStackMemberRead(ctx, member)
 			if err != nil {
@@ -97,8 +114,8 @@ func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.Ac
 	}
 	// Known top-level resources still need to be in the generic index. Subresource
 	// membership is established by the separate native service child enumerations.
-	for id := range impacts {
-		if inResourceGroup(id, group.Identity.NativeID) && len(strings.Split(strings.Trim(id, "/"), "/")) == 8 && snapshot[id] == nil {
+	for id, impact := range impacts {
+		if !state.Completed[impact.Asset.ID] && inResourceGroup(id, group.Identity.NativeID) && len(strings.Split(strings.Trim(id, "/"), "/")) == 8 && snapshot[id] == nil {
 			return nil, serviceDenied("deployment_stack_group_index_omitted_reviewed_resource")
 		}
 	}
@@ -126,25 +143,56 @@ func (c *client) deploymentStackObserveGroupClosure(ctx context.Context, req con
 		return nil, err
 	}
 	members := make([]asset.Asset, 0, len(req.LifecycleImpacts))
+	byAsset := map[asset.AssetID]asset.Asset{}
 	for _, impact := range req.LifecycleImpacts {
 		members = append(members, impact.Asset)
+		byAsset[impact.Asset.ID] = impact.Asset
 	}
-	if err := c.deploymentStackObserveMemberConfigurations(ctx, req.Asset, members, configurations); err != nil {
+	return c.deploymentStackCheckGroupClosure(ctx, req, configurations, func() (deploymentStackObservedProgress, error) {
+		err := c.deploymentStackObserveMemberConfigurations(ctx, req.Asset, members, configurations)
+		return deploymentStackObservedProgress{Members: byAsset}, err
+	})
+}
+
+func (r *Runtime) deploymentStackObserveGroupClosureWithProgress(ctx context.Context, req contracts.ActionRequest, progress deploymentStackProgress) (groups []asset.AssetID, err error) {
+	defer func() { err = contracts.DependencyReadError(err) }()
+	c, err := r.resolve(ctx, req.Asset.Identity.ConnectionID)
+	if err != nil {
+		return nil, err
+	}
+	configurations, err := c.deploymentStackPreparedConfigurations(req, progress.Preparations)
+	if err != nil {
+		return nil, err
+	}
+	return c.deploymentStackCheckGroupClosure(ctx, req, configurations, func() (deploymentStackObservedProgress, error) {
+		return r.deploymentStackObserveProgress(ctx, req, progress)
+	})
+}
+
+func (c *client) deploymentStackCheckGroupClosure(ctx context.Context, req contracts.ActionRequest, configurations map[string]any, observe func() (deploymentStackObservedProgress, error)) (groups []asset.AssetID, err error) {
+	defer func() {
+		if err != nil {
+			groups = nil
+			err = contracts.DependencyReadError(err)
+		}
+	}()
+	state, err := observe()
+	if err != nil {
 		return nil, err
 	}
 	native := object(object(req.Asset.Normalized[deploymentStackReviewKey])["members"])
 	for _, impact := range req.LifecycleImpacts {
-		if !impact.Delete || !strings.EqualFold(impact.Asset.Identity.NativeType, groupType) {
+		if !impact.Delete || state.Completed[impact.Asset.ID] || !strings.EqualFold(impact.Asset.Identity.NativeType, groupType) {
 			continue
 		}
 		if native[strings.ToLower(impact.Asset.Identity.NativeID)] == nil {
 			return nil, serviceDenied("deployment_stack_group_not_native_member")
 		}
-		first, err := c.deploymentStackGroupIndex(ctx, req, impact.Asset, configurations)
+		first, err := c.deploymentStackGroupIndex(ctx, req, impact.Asset, configurations, state)
 		if err != nil {
 			return nil, err
 		}
-		second, err := c.deploymentStackGroupIndex(ctx, req, impact.Asset, configurations)
+		second, err := c.deploymentStackGroupIndex(ctx, req, impact.Asset, configurations, state)
 		if err != nil {
 			return nil, err
 		}
@@ -153,7 +201,7 @@ func (c *client) deploymentStackObserveGroupClosure(ctx context.Context, req con
 		}
 		groups = append(groups, impact.Asset.ID)
 	}
-	if err := c.deploymentStackObserveMemberConfigurations(ctx, req.Asset, members, configurations); err != nil {
+	if _, err := observe(); err != nil {
 		return nil, err
 	}
 	slices.Sort(groups)

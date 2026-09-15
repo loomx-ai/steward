@@ -202,3 +202,25 @@ Stack retention preparation with a frozen pre-update generation, followed by
 native execution without repeating the retention writes. This advances member
 orchestration; full Stack service/group closure and controller/graph registration
 remain unfinished, and no overall parity gate is closed.
+
+### Deployment Stack closure after member completion (2026-09-16)
+
+Service and resource-group closure can now consume authenticated, persisted
+member execution progress. They re-read completed members through their actual
+product readback and own resource endpoints before and after closure checks,
+while preserving the complete original reviewed request. Only named completed
+members are exempt from active membership requirements; a completed parent does
+not certify its unrecorded children. Existing strict entry points remain intact.
+
+The unfiltered, twice-read resource-group index tolerates a reviewed completed
+member lingering in the index only after a fresh own GET returns 404. Duplicate
+rows, unknown resources (including RBAC and diagnostics), reappearance, access
+failures, changed groups and changed Stack reviews reject the whole result.
+Service collectors keep their existing stricter native consistency checks: for
+example, dedicated-host enumeration rejects a listed host whose own GET is 404.
+That service list must converge before its closure succeeds.
+
+Protocol regressions execute a real member driver, persist its checkpoint through
+JSON, and exercise subsequent service/group closure without repeating DELETE.
+These checks do not enable the complete Stack action, its graph bindings or final
+end-to-end acceptance. All 159 parity rows and eight overall gates remain open.
