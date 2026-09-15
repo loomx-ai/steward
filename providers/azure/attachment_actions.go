@@ -15,6 +15,15 @@ import (
 )
 
 func (a *action) prepareAttachments(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
+	result, err := a.prepareAttachmentMutation(ctx, request)
+	if err != nil || text(result.Data["phase"]) != "attachments_prepared" {
+		return result, err
+	}
+	return a.delete(ctx, request)
+}
+
+// prepareAttachmentMutation updates retention settings without deleting a member.
+func (a *action) prepareAttachmentMutation(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	live, err := a.client.request(ctx, "GET", a.endpoint)
 	if isNotFound(err) {
 		return contracts.ActionResult{}, nil
@@ -51,7 +60,7 @@ func (a *action) prepareAttachments(ctx context.Context, request contracts.Actio
 		return contracts.ActionResult{}, &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProtected, Code: reason, Message: contracts.SafeProviderValidationMessage}}
 	}
 	if len(updates) == 0 {
-		return a.delete(ctx, request)
+		return contracts.ActionResult{Data: map[string]any{"phase": "attachments_prepared"}}, nil
 	}
 	update := updates[0]
 	target, err := a.attachmentTarget(request, update.asset.Identity.NativeID)
@@ -143,6 +152,27 @@ func (a *action) attachmentTarget(request contracts.ActionRequest, id string) (*
 }
 
 func (a *action) waitAttachmentPreparation(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	ready, err := a.attachmentPreparationReady(ctx, request, result)
+	if err != nil || !ready.Done {
+		return ready, err
+	}
+	next, err := a.Execute(ctx, request)
+	if err != nil {
+		return contracts.WaitResult{}, err
+	}
+	data := next.Data
+	if data == nil {
+		data = map[string]any{}
+	}
+	if text(data["phase"]) == "" {
+		data["phase"] = "delete"
+	}
+	data["operation"] = next.ProviderOperationID
+	return contracts.WaitResult{Data: data, State: text(data["phase"]), RetryAfter: 2 * time.Second}, nil
+}
+
+// attachmentPreparationReady observes retention writes without executing deletion.
+func (a *action) attachmentPreparationReady(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
 	if a.kind.NativeType != vmType && a.kind.NativeType != nicType {
 		return contracts.WaitResult{}, fmt.Errorf("invalid Azure attachment preparation phase")
 	}
@@ -195,19 +225,7 @@ func (a *action) waitAttachmentPreparation(ctx context.Context, request contract
 			}
 		}
 	}
-	next, err := a.Execute(ctx, request)
-	if err != nil {
-		return contracts.WaitResult{}, err
-	}
-	data := next.Data
-	if data == nil {
-		data = map[string]any{}
-	}
-	if text(data["phase"]) == "" {
-		data["phase"] = "delete"
-	}
-	data["operation"] = next.ProviderOperationID
-	return contracts.WaitResult{Data: data, State: text(data["phase"]), RetryAfter: 2 * time.Second}, nil
+	return contracts.WaitResult{Done: true, State: "attachments_prepared"}, nil
 }
 
 func (u attachmentUpdate) body() (map[string]any, error) {

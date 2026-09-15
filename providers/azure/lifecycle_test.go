@@ -538,6 +538,18 @@ func TestAzureRetainedNICWaitsForReadbackAndKeepsPublicIPWithoutMutation(t *test
 				t.Fatalf("mutation repeated before readback: wait=%+v err=%v updates=%d deletes=%d", wait, err, updates, deletes)
 			}
 			object(object(array(object(object(live["vm"]["properties"])["networkProfile"])["networkInterfaces"])[0])["properties"])["deleteOption"] = "Detach"
+			// A Stack prepares its members, then issues one native Stack delete.
+			// Neither preparation readback nor an already-prepared pass may
+			// independently delete the VM or repeat the retention mutation.
+			member := driver.(*monitorTargetAction).inner.(*action)
+			ready, err := member.attachmentPreparationReady(context.Background(), request, result)
+			if err != nil || !ready.Done || ready.State != "attachments_prepared" || updates != 1 || deletes != 0 {
+				t.Fatalf("preparation readback mutated a member: ready=%+v err=%v updates=%d deletes=%d", ready, err, updates, deletes)
+			}
+			prepared, err := member.prepareAttachmentMutation(context.Background(), request)
+			if err != nil || text(prepared.Data["phase"]) != "attachments_prepared" || updates != 1 || deletes != 0 {
+				t.Fatalf("prepared member mutated: result=%+v err=%v updates=%d deletes=%d", prepared, err, updates, deletes)
+			}
 			wait, err = driver.Wait(context.Background(), request, result)
 			if err != nil || wait.Done || text(wait.Data["phase"]) != "delete" || updates != 1 || deletes != 1 {
 				t.Fatalf("retention did not advance: wait=%+v err=%v updates=%d deletes=%d", wait, err, updates, deletes)
