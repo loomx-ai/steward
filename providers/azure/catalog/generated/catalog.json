@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "c1cbf75d89446646b9d9e198c194f707d9c6aab7511c196e21587c053121761e",
+    "checksum": "05ad99cb5df7187bad7884cfc078a68a1d3a4a5c06ff66c48f609e5d06204c99",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "e6b39f3b139170273a825893f0ddf4bcdd23520dce4b5cbd6faa235c2583baa2",
+  "content_checksum": "4fa3559668f3d0628ce66bb694e4ac522bae82ce211b349717ef37c81cc1851e",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -125872,6 +125872,187 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/data-plane/Microsoft.Synapse/stable/2020-12-01/sparkJob.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.Operations_GetAzureAsyncHeaderResult",
+      "name": "Operations_GetAzureAsyncHeaderResult",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/operationStatuses/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "operationId": {
+            "description": "Operation ID",
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "An operation",
+        "properties": {
+          "endTime": {
+            "description": "Operation start time",
+            "format": "date-time",
+            "type": "string"
+          },
+          "error": {
+            "$ref": "../../../common-types/resource-management/v2/types.json#/definitions/ErrorDetail",
+            "description": "Errors from the operation"
+          },
+          "id": {
+            "description": "Operation ID",
+            "type": "string"
+          },
+          "name": {
+            "description": "Operation name",
+            "type": "string"
+          },
+          "percentComplete": {
+            "description": "Completion percentage of the operation",
+            "type": "number"
+          },
+          "properties": {
+            "description": "Operation properties",
+            "type": "object",
+            "x-ms-client-flatten": true
+          },
+          "startTime": {
+            "description": "Operation start time",
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "description": "Operation status",
+            "enum": [
+              "InProgress",
+              "Succeeded",
+              "Failed",
+              "Canceled"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "OperationStatus"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/operationStatuses/{operationId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/operations.json"
+    },
+    {
+      "id": "Azure.Microsoft.Synapse.Operations_GetLocationHeaderResult",
+      "name": "Operations_GetLocationHeaderResult",
+      "service": "Microsoft.Synapse",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/operationResults/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "operationId": {
+            "description": "Operation ID",
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Synapse",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/operationResults/{operationId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/operations.json"
     },
     {
       "id": "Azure.Microsoft.Synapse.RestorableDroppedSqlPools_Get",

@@ -32,6 +32,7 @@ func TestSynapseNativeContracts(t *testing.T) {
 		t.Fatal("invalid native catalog")
 	}
 	fingerprints := map[string]string{
+		"synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/operations.json":  "8efcb948c2e6f7cec77ad6b5d8347d335e979328238d76b0af2fd7cc24c5292d",
 		"common-types/resource-management/v1/types.json":                                "5727903ec2102686dfbda7228fd22ccad2e1f944d27d5877f6885b83d0d453de",
 		"common-types/resource-management/v2/types.json":                                "ccb3b6327aad7d108bdaffca3eefcd15737032ec655ca3f933300e828047d723",
 		"synapse/common/v1/privateEndpointConnection.json":                              "a08467b10b1807c2341b80284f8e70b0c8c4813deb3daeda773088ed51fa0eff",
@@ -63,7 +64,7 @@ func TestSynapseNativeContracts(t *testing.T) {
 			documents[doc.SourceURI] = object(value)
 		}
 	}
-	if len(fingerprints) != 0 || len(documents) != 3 {
+	if len(fingerprints) != 0 || len(documents) != 4 {
 		t.Fatal("missing pinned Synapse sources", fingerprints)
 	}
 	payload, err = os.ReadFile("fixtures/synapse/sources.json")

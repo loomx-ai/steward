@@ -2516,6 +2516,13 @@
         "SparkJobDefinition_GetSparkJobDefinition",
         "SparkJobDefinition_GetSparkJobDefinitionsByWorkspace"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/operations.json",
+      "operations": [
+        "Operations_GetLocationHeaderResult",
+        "Operations_GetAzureAsyncHeaderResult"
+      ]
     }
   ],
   "resource_types": [

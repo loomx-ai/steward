@@ -116,7 +116,8 @@ sessions, notebooks and Spark job definitions. Spark identities are actual Livy
 URLs; their resource kinds group them beneath the ARM pool without inventing ARM
 job resources. Artifacts retain their documented ARM identities and native name
 selectors. These four additions bring the specification count to 455; the native
-operation count remains 1,521 and cleanup coverage remains 418.
+operation count is now 1,523 after the separate ARM polling additions; cleanup
+coverage remains 418.
 
 The source reads complete native indexes, validates each member with its own GET,
 resolves workspace/pool references, re-reads each member and parent, and compares

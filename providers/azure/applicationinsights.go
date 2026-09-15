@@ -107,6 +107,9 @@ func applicationInsightsSafeValue(value any) any {
 
 func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 	u, err := url.Parse(endpoint)
+	if err == nil && u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.synapse" && (strings.Contains(strings.ToLower(u.Path), "/operationstatuses/") || strings.Contains(strings.ToLower(u.Path), "/operationresults/")) {
+		return safePayload(object(synapseOperationSafeValue(value)))
+	}
 	if err == nil && strings.HasSuffix(u.Host, ".dev.azuresynapse.net") {
 		return safePayload(object(synapseDataSafeValue(value)))
 	}

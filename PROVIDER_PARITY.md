@@ -6728,3 +6728,29 @@ Catalog counts remain 455 specifications, 1,521 operations and 418 cleanup
 bindings. Durable reviewed cancellation phases, controller cleanup, complete
 dependencies and full application acceptance remain unfinished. All 159 parity
 rows and all eight acceptance criteria remain open.
+
+
+### Synapse ARM asynchronous receipt validation
+
+Added the two stable workspace operation status/result APIs from the pinned
+operations.json and retained both original examples. Existing 1,521 operations
+and 455 resource bindings remain unchanged; total operations are now 1,523.
+Only OperationResource was added to an existing shared source snapshot. Its
+native status enum and the empty 200/201/202/204 result examples are tested.
+
+Native workspace/Spark/SQL DELETE invocations validate their optional resource
+body and callback scope, returning a connection-bound serializable receipt.
+Polling validates resource/workspace/operation identity, rejects changed headers
+or receipts, follows status then result, and preserves retry timing across a fresh
+runtime. Operation completion and callback 404 never establish resource absence.
+Native operation invocation retains request IDs and redacts opaque properties from
+results and API logs. Empty 201 result handling is scoped to the documented
+Location protocol. Local tests cover actual wire bodies, native source examples,
+restarts, tampering, failures, private canaries and still-present resources after
+operation success. No live service or independent emulator validation is claimed.
+
+The executor's deletion semantics require Spark cancellation to be a preparation
+phase of a reviewed parent action. This milestone supplies its native asynchronous
+receipt foundation; composing durable cancellation, parent deletion, dependencies
+and final absence remains unfinished. Cleanup coverage remains 418. All 159
+parity rows and all eight acceptance criteria remain open.

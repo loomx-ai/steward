@@ -120,9 +120,26 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		}
 		request.Headers["x-ms-client-request-id"] = azureRequestID(invocation.IdempotencyKey)
 	}
+	if synapseARMOperationRole(operation.ID) != "" {
+		return c.invokeSynapseOperation(ctx, operation.ID, request)
+	}
 	result, err := c.requestBody(ctx, request.Method, request.URL, request.Body, request.Headers)
 	if err != nil {
 		return contracts.InvocationResult{}, err
+	}
+	if synapseARMDelete(operation.ID) {
+		u, _ := url.Parse(request.URL)
+		receipt, err := c.synapseDeleteReceipt(strings.ToLower(u.Path), result)
+		if err != nil {
+			return contracts.InvocationResult{}, err
+		}
+		data := safePayload(result.data)
+		data["_synapse_operation"] = receipt
+		operationID := text(receipt["status_url"])
+		if operationID == "" {
+			operationID = text(receipt["result_url"])
+		}
+		return contracts.InvocationResult{Data: data, RequestID: result.requestID, OperationID: operationID}, nil
 	}
 	if err := c.elasticSanInvocationResponse(operation.ID, request.URL, result); err != nil {
 		return contracts.InvocationResult{}, err

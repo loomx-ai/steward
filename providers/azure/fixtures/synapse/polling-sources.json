@@ -1,0 +1,16 @@
+[
+  {
+    "file": "GetLocationHeader.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/GetLocationHeader.json",
+    "source_sha256": "0e6132b2803e94240f1e1772c8692e5667e372d53fa1c6e3392c19fe06bc96d0",
+    "operation": "Operations_GetLocationHeaderResult",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/operationResults/{operationId}"
+  },
+  {
+    "file": "GetAzureAsyncOperationHeader.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/examples/GetAzureAsyncOperationHeader.json",
+    "source_sha256": "315e685004fd12692154969523dea166137420110c83415b3ccd8c66d8220f7e",
+    "operation": "Operations_GetAzureAsyncHeaderResult",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/operationStatuses/{operationId}"
+  }
+]
