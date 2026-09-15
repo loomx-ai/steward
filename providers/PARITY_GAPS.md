@@ -334,3 +334,27 @@ Stage Done is not Stack cleanup Done. Complete scope review and retention
 preparation precede it; remaining product lifecycles, group closure, native Stack
 execution and final product/deny evidence still need orchestration and action/
 graph registration. All 159 parity rows and eight overall gates remain open.
+
+### Resumable retained-attachment preparation stage (2026-09-16)
+
+A preparation-stage checkpoint now binds completed member preparation receipts
+and the active native update to the complete reviewed request. Active updates
+resume through their native polling/configuration checks before whole-member
+reconciliation; partially applied updates are not treated as complete evidence.
+Each call advances one member preparation phase, with at most one PUT/PATCH and
+no DELETE. VM preparation covers the deleted NICs in its reviewed product
+projection; NICs outside that projection remain separate candidates. Original
+controller relationships and retention decisions remain unchanged.
+
+Completed member preparation now records configuration/creation fingerprints
+for every covered VM/NIC target, including targets that needed no write. This
+lets completed aggregate stages detect subsequent drift through read-only
+reconciliation rather than invoking a mutation-capable preparation helper.
+Protocol tests cover NIC PUT followed by VM PATCH, synchronous and pending/failed
+updates, JSON recovery, forbidden writes, altered outer/nested state, changed
+Stack/configuration, no-op preparation drift, and preparation selection under
+reordered or flat native membership. Completed resumes issue no further writes.
+
+Stage completion is only retention preparation. Full preflight, remaining native
+product lifecycles, the Stack operation, final evidence, and action/graph/executor
+integration remain open with all 159 parity rows and eight overall gates.

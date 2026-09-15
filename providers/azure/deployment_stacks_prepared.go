@@ -41,6 +41,10 @@ func (c *client) deploymentStackPreparedMember(member asset.Asset, live, prepare
 // Only complete, request-bound preparation checkpoints can explain a changed
 // member generation. Plain member flags or an unsigned configuration hash cannot.
 func (c *client) deploymentStackPreparedConfigurations(req contracts.ActionRequest, checkpoints []map[string]any) (map[string]any, error) {
+	return c.deploymentStackPreparationConfigurations(req, checkpoints, false)
+}
+
+func (c *client) deploymentStackPreparationConfigurations(req contracts.ActionRequest, checkpoints []map[string]any, pending bool) (map[string]any, error) {
 	if _, _, err := c.deploymentStackDeletePlan(req); err != nil {
 		return nil, err
 	}
@@ -58,7 +62,7 @@ func (c *client) deploymentStackPreparedConfigurations(req contracts.ActionReque
 		if err != nil {
 			return nil, err
 		}
-		if len(saved) != 5 || saved["phase"] != "attachments_prepared" || saved["binding"] != binding || object(saved["configurations"]) == nil {
+		if len(saved) != 5 || (saved["phase"] != "attachments_prepared" && !(pending && saved["phase"] == "prepare_attachments")) || saved["binding"] != binding || object(saved["configurations"]) == nil {
 			return nil, serviceDenied("deployment_stack_preparation_not_complete")
 		}
 		targets := map[string]bool{strings.ToLower(member.Asset.Identity.NativeID): true}

@@ -170,6 +170,27 @@ func (c *client) deploymentStackPrepareMember(ctx context.Context, req contracts
 	if phase == "prepare_attachments" {
 		configurations[text(result.Data["target"])] = map[string]any{"configuration": result.Data["expected_configuration"], "creation": result.Data["creation_generation"]}
 	}
+	if phase == "attachments_prepared" {
+		// Record even targets that needed no write. Aggregate completed stages
+		// must detect later drift without re-running a mutation-capable helper.
+		for _, target := range targets {
+			key := strings.ToLower(target.Identity.NativeID)
+			live, err := c.deploymentStackMemberRead(ctx, target)
+			if err != nil {
+				return contracts.WaitResult{}, err
+			}
+			if prior := object(configurations[key]); prior != nil {
+				if err := c.deploymentStackPreparedMember(target, live.data, prior); err != nil {
+					return contracts.WaitResult{}, err
+				}
+			}
+			snapshot, err := attachmentPreparedConfiguration(target.Identity.NativeType, live.data, nil)
+			if err != nil {
+				return contracts.WaitResult{}, err
+			}
+			configurations[key] = map[string]any{"configuration": c.privateConfiguration(snapshot), "creation": creationGeneration(live.data)}
+		}
+	}
 	next := map[string]any{"member": string(id), "phase": phase, "result": result, "configurations": configurations}
 	next["binding"], err = c.deploymentStackPreparationBinding(req, next)
 	if err != nil {
