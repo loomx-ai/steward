@@ -398,8 +398,7 @@ policies additionally need their associated-volume list permission. A suspended
 policy or disabled enforcement still counts as an assignment. Historical policy
 IDs stored in backups do not establish current assignments. Unavailable reads
 fail the scan and preserve existing observations. Incomplete native policy indexes
-remain unresolved. Automatic backup-vault unassignment and deletion are still
-under implementation; the dependency observations do not authorize volume deletion.
+remain unresolved. Dependency observations do not authorize volume deletion.
 
 
 Snapshot policies support cleanup with their assigned volumes retained. The plan
@@ -441,4 +440,25 @@ assignments, including backups whose source volumes no longer exist. A previousl
 observed backup omitted from a list is still read by ID; only its own absence can
 retire the association. Unavailable reads or membership changes fail the scan and
 preserve prior observations. Missing or stale backup graph records require a
-refresh. This additional review does not yet enable backup-vault deletion.
+refresh.
+
+Backup-vault cleanup stops scheduled backups on reviewed volumes, separately
+removes their backup-policy assignments, and permanently deletes all reviewed
+backups in the vault. Only after those backups are independently confirmed absent
+are vault assignments removed and the empty vault deleted. Volumes, their data,
+snapshots, subvolumes, quota rules and global backup policies remain. Removing the
+final backup also removes the reference point for future incremental backups.
+Retaining any vault backup blocks vault cleanup.
+
+Grant volume update, latest-backup-status read, backup-policy read, backup delete
+and vault delete permissions in addition to the complete discovery and protection
+reads. Each accepted operation is saved for restart recovery; callback completion
+alone never proves unassignment or deletion. New backups or consumers, changed
+identities/settings, protection, unknown transfer states and failed reads prevent
+further mutation. A backup appearing during cleanup requires a new review, even
+if scheduled backups have already stopped. See [vault management](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-vault-manage).
+
+This workflow has offline contract, fault-injection and restart coverage. Live
+Azure acceptance of volume PATCH unassignment remains unverified. Backup vaults
+expose no native UUID; identical same-name recreation without creation metadata
+cannot be distinguished.

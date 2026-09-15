@@ -120,7 +120,19 @@ func (r *Runtime) netappVaultInventory(ctx context.Context, c *client, req contr
 	review := map[string]any{"members": members, "region": region, "configuration": item.Normalized["_netapp_configuration"], "assignments": c.privateConfiguration(assignment)}
 	item.Normalized[netappVaultReview] = review
 	item.Normalized[netappVaultProof] = c.netappVaultProofFor(item.NativeID, req.ConnectionID, review)
-	// Membership evidence is not authorization to delete a vault or its backups.
+	allowed := item.Actionable != nil && *item.Actionable
+	for _, value := range object(assignment["consumers"]) {
+		allowed = allowed && object(value)["policy_ready"] == true
+	}
+	for _, value := range members {
+		entry := object(value)
+		allowed = allowed && entry["ready"] == true && entry["protected"] == false
+	}
+	item.Actionable = &allowed
+	item.Normalized["cleanup_protected"] = !allowed
+	if allowed {
+		delete(item.Normalized, "cleanup_protection_reason")
+	}
 	return nil
 }
 
@@ -165,6 +177,7 @@ func (c *client) netappVaultContribution(parent asset.Asset, assets []asset.Asse
 			unresolved(id, "netapp_vault_backup_requires_refresh")
 			continue
 		}
+		out.Bindings = append(out.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: v.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, DirectCleanupAllowed: true, EvidenceSource: netappVaultSource, Evidence: map[string]any{"resource_type": netappBackupType, "instance_id": id, "delete_by_default": true, "retention_supported": false, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}, Confidence: 1})
 		out.Relationships = append(out.Relationships, graph.Relationship{SourceAssetID: v.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: netappVaultSource, Evidence: map[string]any{"native_membership": true}, Confidence: 1})
 	}
 	return out, nil

@@ -11289,7 +11289,9 @@
       "read_operations": [
         "Azure.Microsoft.NetApp.BackupVaults_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.NetApp.BackupVaults_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.NetApp.BackupVaults_ListByNetAppAccount"
       ]

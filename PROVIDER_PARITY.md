@@ -7300,3 +7300,28 @@ volume was removed, so checking only an empty list is insufficient. Vault deleti
 policy/vault unassignment sequencing and live Azure acceptance remain unfinished.
 Counts remain 469 specs, 1,569 operations and 430 cleanup bindings; all 159 parity
 rows and eight acceptance gates remain open.
+
+
+### NetApp reviewed backup-vault cleanup
+
+Backup vaults now have a dedicated cleanup controller. Signed complete membership
+and assignment reviews authorize only the selected backups and retained volumes.
+Execution pauses scheduled backups, separately clears policy assignments, deletes
+reviewed backups, verifies each own absence, clears vault assignments, then deletes
+the empty vault. Volumes and their snapshots/subvolumes/quota rules, global backup
+policies and unrelated backups remain. Retaining a vault backup blocks its controller.
+A new backup after partial cleanup requires a fresh review; it is never silently
+added to the deletion set. Existing direct latest-backup retention checks remain.
+
+Native update/delete receipts survive runtime and SQLite worker restarts. Tests
+cover synchronous and asynchronous completion, expired callbacks with own-resource
+postconditions, failed reads after acceptance, new consumers/backups, resumed policy
+enforcement, changed identities/protection and forged reviews/receipts. The complete
+27-asset fixture produces one controller step with eight retained and two deleted
+impacts, leaving 24 assets. English and Chinese warnings describe permanent backup
+loss, stopped schedules, retained volume data and the lost incremental reference.
+
+Counts are 469 specs, 1,569 operations and 431 cleanup bindings. Live Azure PATCH
+unassignment acceptance, account/group cleanup and broader provider parity remain
+unfinished. Offline fixtures do not establish live-cloud acceptance. All 159 parity
+rows and all eight completion gates remain open.

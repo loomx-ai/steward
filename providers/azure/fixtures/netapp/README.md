@@ -347,8 +347,8 @@ Vault membership reviews reuse pinned Backups_ListByVault and backup own GET
 examples. Complete pages plus independent own reads are required; known omitted
 IDs remain hints across both passes, even after an initial own 404. Vault own reads
 surround each pass, and final parent/current-consumer checks bind the membership
-to its assignment review. Membership contributes graph observations only; it does
-not enable vault deletion or delete newly appearing backups.
+to its assignment review. Signed membership binds the exact backup deletion impacts
+of vault cleanup; newly appearing backups require a fresh review.
 
 The pinned [AzureRM vault deletion implementation](https://github.com/hashicorp/terraform-provider-azurerm/blob/2c9b06e2976765e90af69918b6793fb5b0ca8378/internal/services/netapp/netapp_backup_vault_resource.go#L200)
 describes backups becoming visible after source-volume deletion. Its automatic
@@ -356,3 +356,25 @@ retry/delete behavior is not authorization to delete unreviewed resources here.
 [Native vault management](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-vault-manage)
 requires removing backups before vault unassignment. These sources establish
 sequencing constraints; they do not prove a volume PATCH clearing backupVaultId.
+
+
+Vault cleanup uses separate volume PATCH operations for enforcement suspension,
+backupPolicyId clearing and, only after every reviewed backup has its own 404,
+backupVaultId clearing. It retains volumes and all their local children as well as
+global policies. Backup/vault DELETE accepts native 202/204, never an invented 200
+contract or forceDelete. Every accepted operation is checkpointed before further
+reads. Expired update callbacks require independently achieved volume postconditions;
+expired backup callbacks require the backup's own 404 under a readable vault.
+Completion requires own absence of the vault and every reviewed backup, plus own
+reads proving retained volume identity/configuration and absent backup assignments.
+
+The selected writable VolumeBackupProperties schema supports these fields, but
+neither the pinned CLI PUT assignment recording nor portal unassignment guidance
+proves live acceptance of PATCH backupVaultId="". Exact minimal-body transport
+fixtures, synchronous/asynchronous replay, injected read failures and SQLite worker
+restarts are offline evidence only. Live PATCH acceptance remains open. Tests cover
+late backups after policy removal, resumed enforcement, source/policy UUID changes,
+protected resources and tampered reviews/receipts. The complete two-volume,
+two-backup worker scenario removes three of 27 assets, retains eight reviewed volume
+impacts and never deletes the global policy. Independent latest-backup deletion
+remains denied while its current policy assignment exists.

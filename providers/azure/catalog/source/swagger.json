@@ -273717,7 +273717,9 @@
       "nativeType": "Microsoft.NetApp/netAppAccounts/backupVaults",
       "rest": {
         "collection": "backupVaults",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.BackupVaults_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.NetApp.BackupVaults_ListByNetAppAccount"
         ],

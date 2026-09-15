@@ -15,7 +15,7 @@ func TestNetappVaultInventoryRetainsKnownBackupHints(t *testing.T) {
 	item := netappAssignmentItem(t, f, netappVaultType, nil)
 	backup := id + "/backups/item"
 	review := object(item.Normalized[netappVaultReview])
-	if len(object(review["members"])) != 1 || object(object(review["members"])[backup])["uid"] != object(f.objects[backup]["properties"])["backupId"] || item.Actionable == nil || *item.Actionable {
+	if len(object(review["members"])) != 1 || object(object(review["members"])[backup])["uid"] != object(f.objects[backup]["properties"])["backupId"] || item.Actionable == nil || !*item.Actionable {
 		t.Fatal("vault membership or action boundary", review)
 	}
 	wire, _ := json.Marshal(item)
@@ -189,7 +189,7 @@ func TestNetappVaultWorkerGraphAndFailedRescan(t *testing.T) {
 				}
 				return
 			}
-			if err != nil || len(out.Unresolved) == 0 || len(out.Bindings) != 0 {
+			if err != nil || len(out.Unresolved) == 0 || fault != "extra" && len(out.Bindings) != 0 {
 				t.Fatal("stale vault graph trusted", out, err)
 			}
 		})

@@ -55,3 +55,10 @@ export const netappBackupPolicyDeletionWarning: Record<Locale, string> = {
   "zh-CN":
     "删除此备份策略前，将先暂停计划备份并解除它与已审查卷的绑定。卷、快照、子卷、配额规则、备份保管库和已有备份将保留。",
 };
+
+export const netappVaultDeletionWarning: Record<Locale, string> = {
+  "en-US":
+    "Deleting this backup vault stops scheduled backups on its reviewed volumes, removes their backup assignments, and permanently deletes all reviewed backups in the vault. Removing the final backup also removes the reference point for future incremental backups. The volumes, snapshots, subvolumes, quota rules and backup policies are retained.",
+  "zh-CN":
+    "删除此备份保管库将停止已审查卷的计划备份、解除备份绑定，并永久删除库内所有已审查备份。删除最后一个备份还会移除后续增量备份的参考点。卷、快照、子卷、配额规则及备份策略将保留。",
+};

@@ -1815,6 +1815,10 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if value.Identity.Provider == asset.ProviderAzure {
 				result = append(result, plan.Warning{Code: plan.WarningSynapseRestorePointDelete, AssetID: value.ID, Message: "Deleting this user-defined restore point removes that recovery option. The SQL pool, workspace and other backups are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
+		case "Microsoft.NetApp/netAppAccounts/backupVaults":
+			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningNetappVaultDelete, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningNetappVaultDelete, AssetID: value.ID, Message: "Deleting this backup vault stops scheduled backups on its reviewed volumes, removes their backup assignments, and permanently deletes all reviewed backups in the vault. Removing the final backup also removes the reference point for future incremental backups. The volumes, snapshots, subvolumes, quota rules and backup policies are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
 		case "Microsoft.NetApp/netAppAccounts/backupPolicies":
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningNetappBackupPolicyDelete, value.ID) {
 				result = append(result, plan.Warning{Code: plan.WarningNetappBackupPolicyDelete, AssetID: value.ID, Message: "Deleting this backup policy first suspends scheduled backups and removes its assignment from the reviewed volumes. The volumes, their snapshots, subvolumes, quota rules, backup vaults and existing backups are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})

@@ -207,6 +207,22 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 			continue
 		}
 		consumers[volume] = map[string]any{"configuration": c.privateConfiguration(own.data), "uid": object(own.data["properties"])["fileSystemId"], "pool": stablePools[redisParentID(volume)], "detached_configuration": c.privateConfiguration(netappDetachedPolicyVolume(own.data, kind))}
+		if kind == netappVaultType {
+			entry := object(consumers[volume])
+			policy := assignments[netappBackupPolicyType]
+			entry["policy"], entry["policy_configuration"], entry["policy_ready"] = policy, "", true
+			if policy != "" {
+				ownPolicy, err := c.netappRead(ctx, policy, netappBackupPolicyType)
+				if err != nil {
+					return nil, false, contracts.DependencyReadError(err)
+				}
+				if resourceRegion(ownPolicy.data) != region {
+					return nil, false, serviceDenied("netapp_vault_policy_identity_unavailable")
+				}
+				entry["policy_configuration"] = c.privateConfiguration(netappPolicySnapshot(ownPolicy.data, netappBackupPolicyType))
+				entry["policy_ready"] = uuidPattern.MatchString(text(object(ownPolicy.data["properties"])["backupPolicyId"])) && object(ownPolicy.data["properties"])["provisioningState"] == "Succeeded"
+			}
+		}
 	}
 	if kind == netappAccountType+"/backupPolicies" {
 		if value := object(raw["properties"])["volumesAssigned"]; value != nil {

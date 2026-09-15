@@ -355,6 +355,12 @@ func (r *Runtime) netappRecoveryInventory(ctx context.Context, c *client, req co
 	allowed := review["ready"] == true && review["protected"] == false
 	item.Actionable = &allowed
 	item.Normalized["cleanup_protected"] = !allowed
+	if item.NativeType == netappBackupType {
+		// Readiness still gates direct backup actions. A reviewed vault action
+		// may remove the current policy before deleting its latest backup.
+		// Explicit native/tag/lock protection remains unconditional.
+		item.Normalized["cleanup_protected"] = review["protected"] != false
+	}
 	delete(item.Normalized, "controller_only")
 	if allowed {
 		delete(item.Normalized, "cleanup_protection_reason")

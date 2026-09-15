@@ -214,8 +214,13 @@ func TestNetappBackupLatestPolicyRules(t *testing.T) {
 			for _, v := range page.Items {
 				if v.NativeID == f.id {
 					found = true
-					if v.Actionable == nil || *v.Actionable != allowed || v.Normalized["cleanup_protected"] == allowed {
+					if v.Actionable == nil || *v.Actionable != allowed || v.Normalized["cleanup_protected"] != false || object(v.Normalized[netappRecoveryReview])["ready"] != allowed {
 						t.Fatal("incorrect latest-backup eligibility", scenario)
+					}
+					value := asset.Asset{ID: "recovery", Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeType: f.kind, NativeID: v.NativeID}, Normalized: v.Normalized, Location: v.Location}
+					_, actionErr := f.runtime.ResolveAction(t.Context(), "connection", value)
+					if (actionErr == nil) != allowed {
+						t.Fatal("direct backup action eligibility", scenario, actionErr)
 					}
 				}
 			}

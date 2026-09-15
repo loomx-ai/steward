@@ -3,7 +3,7 @@ package azure
 const netappBackupPolicyType = netappAccountType + "/backupPolicies"
 
 func netappPolicyKind(kind string) bool {
-	return kind == netappSnapshotPolicyType || kind == netappBackupPolicyType
+	return kind == netappSnapshotPolicyType || kind == netappBackupPolicyType || kind == netappVaultType
 }
 
 func netappPolicySnapshot(raw map[string]any, kind string) map[string]any {
@@ -17,7 +17,7 @@ func netappPolicySnapshot(raw map[string]any, kind string) map[string]any {
 }
 
 func netappDetachedPolicyVolume(raw map[string]any, kind string) map[string]any {
-	if kind != netappBackupPolicyType {
+	if kind != netappBackupPolicyType && kind != netappVaultType {
 		return netappDetachedSnapshotVolume(raw)
 	}
 	out := hybridComputeChildSnapshot(raw)
@@ -26,6 +26,9 @@ func netappDetachedPolicyVolume(raw map[string]any, kind string) map[string]any 
 	backup := object(dp["backup"])
 	delete(backup, "backupPolicyId")
 	delete(backup, "policyEnforced")
+	if kind == netappVaultType {
+		delete(backup, "backupVaultId")
+	}
 	if len(backup) == 0 {
 		delete(dp, "backup")
 	}

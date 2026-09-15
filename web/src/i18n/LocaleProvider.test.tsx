@@ -486,3 +486,35 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     );
   });
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  it(`explains NetApp vault backup loss and retained data in ${locale}`, () => {
+    localStorage.setItem(localePreferenceKey, locale);
+    render(
+      <LocaleProvider>
+        <ErrorProbe
+          error={{ code: "netapp_vault_delete", message: "fallback" }}
+        />
+      </LocaleProvider>,
+    );
+    const text = screen.getByTestId("error").textContent;
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "永久删除库内所有已审查备份"
+        : "permanently deletes all reviewed backups",
+    );
+    expect(text).toContain(
+      locale === "zh-CN" ? "停止已审查卷的计划备份" : "stops scheduled backups",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "后续增量备份的参考点"
+        : "reference point for future incremental backups",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "卷、快照、子卷、配额规则及备份策略将保留"
+        : "volumes, snapshots, subvolumes, quota rules and backup policies are retained",
+    );
+  });
+}

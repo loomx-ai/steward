@@ -144,6 +144,21 @@ func (a *netappPolicyAction) volume(ctx context.Context, id string, detached boo
 	if current != "" && current != a.planned.Identity.NativeID || detached && (current != "" || a.planned.Identity.NativeType == netappBackupPolicyType && netappBackupEnforced(own.data) != false) || a.client.privateConfiguration(netappDetachedPolicyVolume(own.data, a.planned.Identity.NativeType)) != entry["detached_configuration"] {
 		return nil, serviceDenied("netapp_snapshot_policy_assignment_changed")
 	}
+	if a.planned.Identity.NativeType == netappVaultType {
+		policy := assignments[netappBackupPolicyType]
+		if policy != "" && policy != entry["policy"] {
+			return nil, serviceDenied("netapp_vault_policy_changed")
+		}
+		if policy != "" {
+			ownPolicy, err := a.client.netappRead(ctx, policy, netappBackupPolicyType)
+			if err != nil {
+				return nil, err
+			}
+			if a.client.privateConfiguration(netappPolicySnapshot(ownPolicy.data, netappBackupPolicyType)) != entry["policy_configuration"] {
+				return nil, serviceDenied("netapp_vault_policy_recreated")
+			}
+		}
+	}
 	pool, err := a.client.netappRead(ctx, redisParentID(id), netappPoolType)
 	if err != nil {
 		return nil, err

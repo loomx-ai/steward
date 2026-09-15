@@ -527,6 +527,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				if err != nil {
 					return result, err
 				}
+				result.Bindings = append(result.Bindings, vault.Bindings...)
 				result.Relationships = append(result.Relationships, vault.Relationships...)
 				result.Unresolved = append(result.Unresolved, vault.Unresolved...)
 			}
