@@ -391,3 +391,12 @@ reads. Missing permissions, new volumes, changed writable configuration or chang
 native identities require a fresh review. Restarting execution resumes saved native
 operations; completion requires the pool's own absence under readable parents.
 See [Azure storage hierarchy](https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-understand-storage-hierarchy).
+
+Backup-policy, snapshot-policy and backup-vault scans also inspect current volume
+assignments. Grant account capacity-pool and volume list/read access; snapshot
+policies additionally need their associated-volume list permission. A suspended
+policy or disabled enforcement still counts as an assignment. Historical policy
+IDs stored in backups do not establish current assignments. Unavailable reads
+fail the scan and preserve existing observations. Incomplete native policy indexes
+remain unresolved. Automatic policy/vault unassignment and deletion are still
+under implementation; the dependency observations do not authorize volume deletion.

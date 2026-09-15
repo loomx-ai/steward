@@ -79,6 +79,9 @@ func (c *client) netappIndex(ctx context.Context, kind, parent string) ([]any, e
 	} else if err := c.netappIdentity(parent, r.parent); err != nil {
 		return nil, err
 	}
+	return c.netappIndexPath(ctx, path)
+}
+func (c *client) netappIndexPath(ctx context.Context, path string) ([]any, error) {
 	// Native list methods all share the resource collection URL. Keep POST
 	// replication discovery separate: it has a different response contract.
 	rows := []any{}
@@ -201,6 +204,9 @@ func netappReferences(id, kind string, raw map[string]any) (map[string][]string,
 			value any
 			kind  string
 		}{p["backupId"], netappAccountType + "/backupVaults/backups"})
+		if _, err := netappAssignments(raw); err != nil {
+			return nil, err
+		}
 		protection := object(p["dataProtection"])
 		for _, e := range []struct{ section, field, kind string }{{"backup", "backupPolicyId", netappAccountType + "/backupPolicies"}, {"backup", "backupVaultId", netappAccountType + "/backupVaults"}, {"snapshot", "snapshotPolicyId", netappAccountType + "/snapshotPolicies"}, {"replication", "remoteVolumeResourceId", netappVolumeType}} {
 			entries = append(entries, struct {
@@ -396,7 +402,11 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		region := regions[id]
 		safe := map[string]any{"id": id, "type": kind, "name": raw["name"], "location": region, "tags": tags, "properties": props}
 		item := contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: text(raw["name"]), State: text(props["provisioningState"]), Location: region, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}, Tags: tags, Normalized: normalized, Raw: safe, NativeAliases: []string{id}, NetworkReferences: slices.Compact(network), Actionable: &actionable}
-		if kind == netappPoolType {
+		if netappAssignmentKind(kind) {
+			if err := r.netappAssignmentInventory(ctx, c, req, &item, raw); err != nil {
+				return nil, nil, nil, "", err
+			}
+		} else if kind == netappPoolType {
 			if err := r.netappPoolInventory(ctx, c, req, &item); err != nil {
 				return nil, nil, nil, "", err
 			}

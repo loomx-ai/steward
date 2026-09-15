@@ -514,6 +514,15 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	})
 	dnsOwners := map[string]asset.AssetID{}
 	for _, parent := range parents {
+		if parent.Identity.Provider == asset.ProviderAzure && netappAssignmentKind(parent.Identity.NativeType) {
+			contribution, err := s.client.netappAssignmentContribution(parent, assets)
+			if err != nil {
+				return result, err
+			}
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+			continue
+		}
 		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == netappPoolType {
 			contribution, err := s.client.netappPoolContribution(parent, assets)
 			if err != nil {

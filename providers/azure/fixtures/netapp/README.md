@@ -264,3 +264,19 @@ readOnly: these counters, etags and modification metadata may change between
 volume deletions. Writable and unknown properties, creation metadata and poolId
 remain bound. Existing Pools_Delete examples provide native acknowledgement
 coverage; the synthetic multi-volume workflow is not live Azure acceptance.
+
+`SnapshotPolicies_ListVolumes.json` is the unchanged example from the same pinned
+REST commit (`07a27fbba41f8597cdfe0f866fcbf9f7c37390f4`), SHA-256
+`4c73870b60fe614d9fa6db6905be0813975e5d8366e34715206946aea8f9f572`.
+Its parameters include an extraneous body that the GET operation does not declare;
+the catalog binder rejects that parameter, and actual associated-volume requests
+send no body. The native response supplies volume resources with pageable value
+and nextLink fields. BackupPolicies_Get contains a volume name without an ARM ID:
+it is retained as incomplete evidence, never expanded into an invented identity.
+
+Current policy/vault assignment tests enumerate pools and volumes, validate own
+volume reads, recover omitted known consumers and compare repeated observations.
+They distinguish suspended assignments from historical backup policy references.
+A complete 22-asset SQLite graph preserves its earlier observations after failed
+consumer reads. These tests do not implement or demonstrate policy/vault deletion,
+automatic unassignment, or live cloud acceptance.

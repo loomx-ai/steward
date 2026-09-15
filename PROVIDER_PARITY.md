@@ -7194,3 +7194,25 @@ vault, policy and group workflows, replicated-child cleanup, replication
 termination, clone management, export-policy updates and combined protected-latest
 backup/source deletion remain unfinished. All 159 parity rows and eight acceptance
 gates remain open; mount-target equivalence still requires its own native workflow.
+
+### NetApp current policy and vault assignment observations
+
+Backup policies, snapshot policies and backup vaults now collect current volume
+consumers through complete pool/volume enumeration and independent own reads.
+Snapshot-policy associated-volume pages and backup-policy resource-ID indexes
+supply additional read hints; incomplete name-only entries and inconsistent
+assignment counts remain unresolved. Disabled policy enforcement still describes
+a live assignment. Historical backup-policy references are not current consumers.
+Malformed dataProtection objects, unavailable reads, identity/region changes and
+concurrent configuration changes invalidate the scan. Known omitted consumers
+are re-read; a removed pool requires former consumers' own 404s to retire only
+the association, never their resource records or retained backups.
+
+Signed observations contribute volume-to-policy/vault usage relationships without
+inventing ownership or destructive cascades. Missing/stale graph members require
+refresh. A real 22-asset SQLite graph and failed-rescan test cover persistence;
+pinned SnapshotPolicies_ListVolumes evidence verifies the native bodyless GET.
+This completes the association-discovery prerequisite, not policy/vault cleanup:
+reviewed unassignment, durable updates and parent deletion remain under work.
+Counts remain 469 specifications, 1,568 operations and 428 cleanup bindings.
+All 159 parity rows and eight acceptance gates remain open.
