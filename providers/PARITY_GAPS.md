@@ -90,3 +90,24 @@ Prioritize the absent Azure backup/recovery families spanning policies, vaults, 
 Alongside these implementations, resolve the explicitly empty mappings and audit the existing mapped families. Do not replace missing functionality with unrelated resources or mark a row complete because its type is registered.
 
 Deployment Stacks now has a registered subscription/resource-group inventory source with own-read reconciliation, member evidence, configuration-bound cursors and protected observations. Management-group inventory, graph ownership and cleanup remain open; registration does not establish full lifecycle acceptance.
+
+### Deployment Stacks ownership acceptance
+
+Native `resources` membership does not establish exclusive ownership. In the
+[Azure team's discussion of shared membership](https://github.com/Azure/deployment-stacks/issues/15#issuecomment-954081217),
+a maintainer explained that multiple stacks can manage one resource. The team
+[later declined to implement exclusivity](https://github.com/Azure/deployment-stacks/issues/15#issuecomment-1457053572)
+and [confirmed parent and child resources can belong to different stacks](https://github.com/Azure/deployment-stacks/issues/15#issuecomment-1466320658).
+These are historical maintainer statements; no current native contract or live
+acceptance evidence in this repository establishes an exclusive-owner guarantee.
+Deny settings and a single visible stack must not be treated as that guarantee.
+
+Before enabling Stack cleanup, acceptance must cover shared members, members of
+another stack beneath a deleted parent/group, and controllers outside the
+connection's visible scope. Plans must preserve the affected resources and
+controllers for review, reconcile product-level controller edges without
+inventing exclusive ownership, and verify the chosen delete/retain consequences.
+The sharing regression test exercises both valid membership shapes through
+native own-read graph construction; it is a synthetic contract test, not a cloud
+recording or a completed cleanup acceptance record. Full Stack cleanup remains
+open alongside the rest of the 159-row scope.
