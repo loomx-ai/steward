@@ -132,3 +132,19 @@ precedence. Both snapshot comparison and persisted pagination cursors cover the
 resolved location, so parent-location drift invalidates an incomplete scan.
 Missing location remains missing; this inventory fallback is not authorization
 for a deletion callback, which still requires execution-time scope revalidation.
+
+The delete-plan compiler now binds authenticated direct membership and reviewed
+lifecycle consequences to the pinned native DELETE operation at subscription or
+resource-group scope. Resource, resource-group and management-group flags are
+explicit; categories without reviewed members detach. Conflicting choices within
+a category and retaining a descendant of a deleted ARM parent are rejected.
+Reviewed nested controllers must form a chain to the stack; each native child
+controller still needs to verify its own membership and cascade consequences.
+`retain_all_resources`, `retain_resources` and typed `delete_options` must agree
+with the executor-provided impacts. Unsupported-resource fallback remains `fail`
+and out-of-sync bypass remains false; caller flags cannot override these. The
+compiled parameters round-trip through authenticated polling receipts.
+
+This is parameter compilation, not live preflight or a registered cleanup action.
+Live member reads, protection/denial review, native child closure, prerequisite
+validation and final own-resource readback remain required before enabling deletion.
