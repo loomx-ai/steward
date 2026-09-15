@@ -224,3 +224,22 @@ Protocol regressions execute a real member driver, persist its checkpoint throug
 JSON, and exercise subsequent service/group closure without repeating DELETE.
 These checks do not enable the complete Stack action, its graph bindings or final
 end-to-end acceptance. All 159 parity rows and eight overall gates remain open.
+
+### Flat Stack product prerequisites (2026-09-16)
+
+A completed resource directly managed by the Stack can now be projected as an
+execution prerequisite of another directly managed member when both appear in
+the authenticated Stack review and the existing product-specific type/relation
+checks match. The original controller graph, frozen request and completion
+receipt are unchanged. Only the derived product request assigns the prerequisite
+to the product parent; its native driver still verifies absence and permissions.
+The same relation gates the recorded parent-configuration check after child
+removal. Unrelated resources, incomplete members and unreviewed scope do not
+acquire this projection merely by sharing a Stack or an ARM prefix.
+
+The dedicated-host protocol fixture now runs both product-controller and flat
+Stack-controller plans through child deletion, JSON checkpoint recovery, parent
+preflight/closure, parent deletion and final member readback, including access
+failures, changed configuration, changed receipts and reappearing children.
+Complete Stack orchestration, graph registration and acceptance remain open;
+this does not close any of the 159 parity rows or eight overall gates.

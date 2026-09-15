@@ -80,14 +80,11 @@ func (r *Runtime) deploymentStackObserveProgress(ctx context.Context, req contra
 		return out, nil
 	}
 	parentsWithCompletedPrerequisites := map[asset.AssetID]bool{}
-	byID := map[asset.AssetID]asset.Asset{}
-	for _, impact := range req.LifecycleImpacts {
-		byID[impact.Asset.ID] = impact.Asset
-	}
-	for _, impact := range req.LifecycleImpacts {
-		parent := byID[impact.ControllerID]
-		if out.Completed[impact.Asset.ID] && parent.ID != "" && servicePrerequisiteKind(parent.Identity.NativeType, impact.Asset.Identity.NativeType) && serviceChildRelation(parent, impact.Asset) {
-			parentsWithCompletedPrerequisites[parent.ID] = true
+	for _, parent := range req.LifecycleImpacts {
+		for _, child := range req.LifecycleImpacts {
+			if out.Completed[child.Asset.ID] && deploymentStackProductPrerequisite(req, parent, child) {
+				parentsWithCompletedPrerequisites[parent.Asset.ID] = true
+			}
 		}
 	}
 	// All receipt authentication above finishes before any product readback.
@@ -167,14 +164,23 @@ func (c *client) deploymentStackProductRequest(req contracts.ActionRequest, id a
 	}
 	prerequisites := map[asset.AssetID]bool{}
 	parents := map[asset.AssetID]asset.AssetID{}
-	for _, impact := range member.LifecycleImpacts {
+	var parent contracts.ActionImpact
+	for _, impact := range req.LifecycleImpacts {
+		if impact.Asset.ID == id {
+			parent = impact
+		}
 		parents[impact.Asset.ID] = impact.ControllerID
-		if completed[impact.Asset.ID] && impact.ControllerID == id && servicePrerequisiteKind(member.Asset.Identity.NativeType, impact.Asset.Identity.NativeType) && serviceChildRelation(member.Asset, impact.Asset) {
+	}
+	for _, impact := range req.LifecycleImpacts {
+		if completed[impact.Asset.ID] && deploymentStackProductPrerequisite(req, parent, impact) {
 			for _, existing := range member.PrerequisiteDeletions {
 				if existing.Asset.ID == impact.Asset.ID {
 					return contracts.ActionRequest{}, serviceDenied("ambiguous_deployment_stack_completed_prerequisite")
 				}
 			}
+			// This is a product execution prerequisite, not an ownership rewrite.
+			// The original Stack impact and its authenticated receipt stay intact.
+			impact.ControllerID = id
 			member.PrerequisiteDeletions = append(member.PrerequisiteDeletions, impact)
 			prerequisites[impact.Asset.ID] = true
 		}
@@ -193,5 +199,23 @@ func (c *client) deploymentStackProductRequest(req contracts.ActionRequest, id a
 		}
 	}
 	member.LifecycleImpacts = remaining
+	slices.SortFunc(member.PrerequisiteDeletions, func(a, b contracts.ActionImpact) int { return strings.Compare(string(a.Asset.ID), string(b.Asset.ID)) })
 	return member, nil
+}
+
+// A flat Stack member may be a prerequisite of another member without being
+// exclusively owned by it. Require the product's typed native relation and both
+// explicit Stack memberships before projecting that execution-only relationship.
+func deploymentStackProductPrerequisite(req contracts.ActionRequest, parent, child contracts.ActionImpact) bool {
+	if !parent.Delete || !child.Delete || parent.Asset.ID == child.Asset.ID || parent.Asset.ID == "" || child.Asset.ID == "" || parent.Asset.Identity.ConnectionID != child.Asset.Identity.ConnectionID || parent.Asset.Identity.Partition != child.Asset.Identity.Partition || !servicePrerequisiteKind(parent.Asset.Identity.NativeType, child.Asset.Identity.NativeType) || !serviceChildRelation(parent.Asset, child.Asset) {
+		return false
+	}
+	if child.ControllerID == parent.Asset.ID {
+		return true
+	}
+	if parent.ControllerID != req.Asset.ID || child.ControllerID != req.Asset.ID {
+		return false
+	}
+	native := object(object(req.Asset.Normalized[deploymentStackReviewKey])["members"])
+	return native[strings.ToLower(parent.Asset.Identity.NativeID)] != nil && native[strings.ToLower(child.Asset.Identity.NativeID)] != nil
 }

@@ -10,6 +10,11 @@ import (
 )
 
 func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
+	t.Run("product_controller", func(t *testing.T) { testDeploymentStackCompletedPrerequisitePreflight(t, false) })
+	t.Run("stack_controller", func(t *testing.T) { testDeploymentStackCompletedPrerequisitePreflight(t, true) })
+}
+
+func testDeploymentStackCompletedPrerequisitePreflight(t *testing.T, flat bool) {
 	for _, mode := range []string{"complete", "no_receipt", "waiting_receipt", "duplicate", "changed_job", "changed_receipt", "second_receipt_invalid", "recreated", "forbidden", "parent_config_changed", "parent_protected", "missing_parent_fingerprint", "second_parent_change", "child_returns_during_parent_read", "root_change", "parent_config_changed_same_etag", "execute_parent", "execute_parent_forbidden", "execute_parent_changed_context", "execute_parent_invalid_projection", "execute_parent_child_returns", "execute_parent_resume_progress", "closure_service_complete", "closure_service_stale", "closure_service_duplicate", "closure_service_unreviewed", "closure_service_reappeared", "closure_service_forbidden", "closure_service_no_receipt"} {
 		t.Run(mode, func(t *testing.T) {
 			parent := actionAsset(hostGroupType, "parent")
@@ -21,9 +26,17 @@ func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
 			if mode == "missing_parent_fingerprint" {
 				delete(parent.Normalized, "_arm_parent_configuration")
 			}
-			_, req := stackDeletePlanFixture(t, false, contracts.ActionImpact{Asset: parent, ControllerID: "stack", Delete: true}, contracts.ActionImpact{Asset: child, ControllerID: parent.ID, Delete: true})
+			childController := parent.ID
+			if flat {
+				childController = "stack"
+			}
+			_, req := stackDeletePlanFixture(t, false, contracts.ActionImpact{Asset: parent, ControllerID: "stack", Delete: true}, contracts.ActionImpact{Asset: child, ControllerID: childController, Delete: true})
 			req.IdempotencyKey = "completed-child-job"
 			root := map[string]any{"id": req.Asset.Identity.NativeID, "type": deploymentStackType, "systemData": map[string]any{"createdAt": "2020-02-01T01:01:01.1075056Z"}, "properties": map[string]any{"resources": []any{map[string]any{"id": parent.Identity.NativeID, "status": "managed", "denyStatus": "none"}}}}
+			if flat {
+				properties := object(root["properties"])
+				properties["resources"] = append(properties["resources"].([]any), map[string]any{"id": child.Identity.NativeID, "status": "managed", "denyStatus": "none"})
+			}
 			gone, active, parentGone, executingParent := false, false, false, false
 			parentDeletes := 0
 			deletes, calls, parentReads, childReads, lists := 0, 0, 0, 0, 0
@@ -244,7 +257,7 @@ func TestDeploymentStackCompletedPrerequisitePreflight(t *testing.T) {
 						stored["idempotency_key"] = "changed"
 					}
 					if mode == "execute_parent_invalid_projection" {
-						delete(stored, "prerequisite_deletions")
+						object(stored["prerequisite_deletions"].([]any)[0])["controller_id"] = "invalid-controller"
 						parentReceipt["binding"], err = c.deploymentStackMemberExecutionBinding(req, parentReceipt)
 						if err != nil {
 							t.Fatal(err)
