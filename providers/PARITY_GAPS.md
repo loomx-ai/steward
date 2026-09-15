@@ -265,3 +265,28 @@ native receipts still trigger fresh product and retained-resource observations.
 ProductsReconciled is not a final action completion certificate: deny-assignment
 release, complete orchestration and graph/action registration remain open, as do
 all 159 parity rows and eight overall gates.
+
+### Stack deny-assignment observation evidence (2026-09-16)
+
+A pre-operation deny snapshot is now bound to the full reviewed Stack request and
+job identity. It captures two unfiltered subscription observations between fresh
+Stack review reads, persisting assignment IDs and private configuration hashes
+rather than principals, conditions or descriptions. Subscription scope remains
+queryable when a Stack's containing resource group disappears. Final observation
+authenticates this snapshot and the native Stack execution receipt, then compares
+two fresh deny snapshots using every original ID as an own-GET candidate. Missing
+list entries alone cannot establish removal. Removed, unchanged, changed and new
+assignment IDs are reported separately; errors discard all partial evidence.
+
+This scope deliberately includes independent assignments. Their continued
+presence is not a Stack cleanup failure, and a changed description is not proof
+of Stack ownership. The [Authorization Get schema](https://learn.microsoft.com/en-us/rest/api/authorization/deny-assignments/get?view=rest-authorization-2022-04-01)
+defines createdBy as creator identity and isSystemProtected as Azure management;
+it has no typed owning Stack ID. The [Stack documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deployment-stacks)
+places generated deny assignments at the Stack deployment scope, but does not
+supply that missing identity relation. These sources were rechecked on 2026-09-16.
+No deny mutation or inferred ownership is introduced. Assignment attribution and
+release acceptance remain open alongside full action orchestration, all 159
+parity rows and eight overall gates. Protocol tests cover both subscription and
+resource-group Stacks, JSON recovery, missing-list/own-present disagreement,
+forbidden reads, changing snapshots, tampered evidence and Stack recreation.
