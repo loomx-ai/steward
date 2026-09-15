@@ -48,3 +48,10 @@ export const netappSnapshotPolicyDeletionWarning: Record<Locale, string> = {
   "zh-CN":
     "删除此快照策略前，将先解除它与已审查卷的绑定，并停止由此策略安排的后续快照。卷、已有快照、子卷、配额规则和备份保管库内的备份将保留。",
 };
+
+export const netappBackupPolicyDeletionWarning: Record<Locale, string> = {
+  "en-US":
+    "Deleting this backup policy first suspends scheduled backups and removes its assignment from the reviewed volumes. The volumes, their snapshots, subvolumes, quota rules, backup vaults and existing backups are retained.",
+  "zh-CN":
+    "删除此备份策略前，将先暂停计划备份并解除它与已审查卷的绑定。卷、快照、子卷、配额规则、备份保管库和已有备份将保留。",
+};

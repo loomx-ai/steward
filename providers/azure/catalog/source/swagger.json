@@ -273697,7 +273697,9 @@
       "nativeType": "Microsoft.NetApp/netAppAccounts/backupPolicies",
       "rest": {
         "collection": "backupPolicies",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.BackupPolicies_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.NetApp.BackupPolicies_List"
         ],

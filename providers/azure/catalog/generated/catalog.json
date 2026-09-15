@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "3217a66ed332dc9cf2b1d448b8709c63dd7528b9400fd66ce6c039bfacdaf287",
+    "checksum": "3b987346e8812819f34fe40b3db0d84caee171cbae0dd7fa13eb2feb55ba26ae",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "13eadf3527343653868e68d36ffc3e017788642bc02d0b15f885449c60fe68c4",
+  "content_checksum": "9b0373bf0f452f1c9a90820737624668db70de6bdc396e9edf6b7e8389c69de8",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -143471,6 +143471,9 @@
         "collection": "backupPolicies",
         "read_operations": [
           "Azure.Microsoft.NetApp.BackupPolicies_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.NetApp.BackupPolicies_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.NetApp.BackupPolicies_List"

@@ -11271,7 +11271,9 @@
       "read_operations": [
         "Azure.Microsoft.NetApp.BackupPolicies_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.NetApp.BackupPolicies_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.NetApp.BackupPolicies_List"
       ]

@@ -7256,3 +7256,25 @@ The status helper and 22 response/scope cases are a prerequisite; backup-policy
 unassignment is not yet enabled. Counts are 469 specifications, 1,569 operations
 and 429 cleanup bindings. All 159 parity rows and eight acceptance gates remain
 open, including live Azure acceptance and the remaining NAS workflows.
+
+### NetApp backup-policy retained-volume cleanup
+
+Backup policies now support reviewed cleanup with retained volumes and backups.
+Each volume waits for native Idle, separately suspends policyEnforced, verifies
+its own state, waits for Idle again, then separately clears backupPolicyId. Saved
+update receipts survive restarts; successful callbacks do not replace own reads.
+The policy is deleted only after all reviewed assignments are absent and complete
+live consumer enumeration agrees. Native policy/volume/pool UUIDs and unrelated
+writable settings remain bound; only policy membership indexes and the two
+reviewed backup fields can change. Backup vault and snapshot assignments remain.
+
+Plan and real SQLite worker tests cover two volumes and six retained children,
+four accepted PATCHes and one DELETE across restarts, preserving the other 25
+assets. Tests cover synchronous/asynchronous receipts, ongoing/unknown transfers,
+lagging own reads, read failures, resumed enforcement, policy recreation, unrelated
+settings, new consumers and historical backup-policy references. Native pinned
+CLI GETs establish backupPolicyId/provisioningState. Pinned AzureRM clearing logic
+supports separate PATCH requests; it is not a live Azure unassignment recording.
+Azure has 469 specs, 1,569 operations and 430 cleanup bindings. Backup-vault/account
+cleanup, replication and remaining NAS workflows and live acceptance remain
+unfinished. All 159 parity rows and eight acceptance gates remain open.

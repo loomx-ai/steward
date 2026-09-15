@@ -323,3 +323,22 @@ from the pinned Azure CLI `test_get_backup_status.yaml` recording. Request URLs
 and response bodies are unchanged; unrelated requests and HTTP diagnostic headers
 are omitted. Each recorded response is HTTP 200 with root-level Idle status.
 Replay substitutes only the test subscription and canonicalizes ARM path casing.
+
+Backup-policy cleanup uses the same retained-volume engine as snapshot policies,
+with a distinct netapp-backup-policy-delete-1 action signature. The snapshot action
+signature and saved receipt shape remain compatible. Backup policyEnforced=false
+and backupPolicyId="" are separate PATCHes, each saved before another read. Native
+Idle is checked before suspension and again before unassignment. Unknown state
+and failed reads do not authorize either mutation. The unchanged backup-vault and
+snapshot bindings, other writable settings and native policy UUID remain bound.
+
+`backup-policy-recordings.json` extracts the policy own GETs from pinned CLI
+`test_get_backup_policy_by_name.yaml`; URLs/bodies are unchanged, unrelated
+requests and diagnostic headers are omitted. The native completed policy includes
+backupPolicyId UUID and provisioningState Succeeded, while the earlier creation
+response does not. Thus missing UUID or incomplete membership prevents cleanup.
+The pinned AzureRM volume deletion source cited above explicitly separates
+suspension and ID clearing. Its subsequent volume DELETE/forceDelete is not part
+of policy cleanup; all volumes, children, vaults and historical backups remain.
+Synchronous/asynchronous fixtures and SQLite restart tests are offline validation;
+real Azure PATCH/unassignment acceptance remains open.

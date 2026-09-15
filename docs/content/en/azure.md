@@ -398,7 +398,7 @@ policies additionally need their associated-volume list permission. A suspended
 policy or disabled enforcement still counts as an assignment. Historical policy
 IDs stored in backups do not establish current assignments. Unavailable reads
 fail the scan and preserve existing observations. Incomplete native policy indexes
-remain unresolved. Automatic backup-policy/vault unassignment and deletion are still
+remain unresolved. Automatic backup-vault unassignment and deletion are still
 under implementation; the dependency observations do not authorize volume deletion.
 
 
@@ -418,3 +418,19 @@ completed callback is insufficient while the own volume read still shows the old
 assignment or the policy still exists. Snapshot policies expose no native UUID;
 identical same-name recreation without creation metadata cannot be distinguished.
 See [snapshot-policy deletion requirements](https://learn.microsoft.com/en-us/azure/azure-netapp-files/snapshots-manage-policy#delete-a-snapshot-policy).
+
+Backup policies also support cleanup while retaining their volumes and existing
+backups. Execution waits for an idle backup transfer, suspends policy enforcement
+on each reviewed volume, confirms suspension, waits for transfer completion again,
+and separately clears that volume's backup-policy assignment. It deletes the
+policy only after every reviewed assignment is gone. Future policy backups stop;
+backup vaults, existing backups, snapshots, subvolumes, quota rules and volume data
+remain. Independent volume cleanup remains a separate selection.
+
+Grant volume update, latest-backup-status read and backup-policy delete permissions
+in addition to assignment discovery reads. A fresh scan must capture the native
+policy UUID and complete consumer index. Unknown transfer states, unavailable
+reads, resumed enforcement, new consumers or changed resource identities/settings
+prevent further mutation. Each accepted update is saved separately for restart
+recovery, and completed callbacks still require independent own-resource reads.
+See [backup policy management](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-manage-policies).

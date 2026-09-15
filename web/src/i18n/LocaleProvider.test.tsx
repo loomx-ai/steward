@@ -459,3 +459,30 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     );
   });
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  it(`explains NetApp backup policy retention in ${locale}`, () => {
+    localStorage.setItem(localePreferenceKey, locale);
+    render(
+      <LocaleProvider>
+        <ErrorProbe
+          error={{ code: "netapp_backup_policy_delete", message: "fallback" }}
+        />
+      </LocaleProvider>,
+    );
+    const text = screen.getByTestId("error").textContent;
+    expect(text).toContain(
+      locale === "zh-CN" ? "暂停计划备份" : "suspends scheduled backups",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "解除它与已审查卷的绑定"
+        : "removes its assignment from the reviewed volumes",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "备份保管库和已有备份将保留"
+        : "backup vaults and existing backups are retained",
+    );
+  });
+}

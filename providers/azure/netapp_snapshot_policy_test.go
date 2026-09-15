@@ -129,7 +129,9 @@ func (f *netappPolicyFixture) request(t *testing.T) contracts.ActionRequest {
 	return req
 }
 func TestNetappSnapshotPolicyPlanPreservesVolumes(t *testing.T) {
-	f := newNetappPolicyFixture(t)
+	testNetappPolicyPlanPreservesVolumes(t, newNetappPolicyFixture(t), plan.WarningNetappSnapshotPolicyDelete)
+}
+func testNetappPolicyPlanPreservesVolumes(t *testing.T, f *netappPolicyFixture, warningCode plan.WarningCode) {
 	repo, registry, _ := azureNativeWorkerRepository(t, f.runtime)
 	kinds := []string{}
 	for _, k := range netappResources {
@@ -148,7 +150,7 @@ func TestNetappSnapshotPolicyPlanPreservesVolumes(t *testing.T) {
 	}
 	warned := false
 	for _, warning := range task.Task.Warnings {
-		if warning.Code == plan.WarningNetappSnapshotPolicyDelete && warning.AssetID == policy.ID {
+		if warning.Code == warningCode && warning.AssetID == policy.ID {
 			warned = true
 		}
 	}
@@ -248,6 +250,9 @@ func TestNetappSnapshotPolicyDurableUnassignment(t *testing.T) {
 }
 func TestNetappSnapshotPolicyWorkerRestarts(t *testing.T) {
 	f := newNetappPolicyFixture(t)
+	testNetappPolicyWorkerRestarts(t, f, 1, f.finishPatch)
+}
+func testNetappPolicyWorkerRestarts(t *testing.T, f *netappPolicyFixture, stages int, finish func(string)) {
 	repo, registry, path := azureNativeWorkerRepository(t, f.runtime)
 	kinds := []string{}
 	for _, k := range netappResources {
@@ -315,13 +320,15 @@ func TestNetappSnapshotPolicyWorkerRestarts(t *testing.T) {
 	run(true) // saves preparation before any mutation
 	f.failAfterMutation = true
 	for _, id := range f.volumes {
-		run(true)
-		run(true)
-		if f.patches[id] != 1 {
-			t.Fatal("worker repeated update", f.patches)
+		for stage := 0; stage < stages; stage++ {
+			run(true)
+			run(true)
+			if f.patches[id] != stage+1 {
+				t.Fatal("worker repeated update", f.patches)
+			}
+			finish(id)
+			run(true)
 		}
-		f.finishPatch(id)
-		run(true)
 	}
 	run(true)
 	if f.policyDeletes != 1 {

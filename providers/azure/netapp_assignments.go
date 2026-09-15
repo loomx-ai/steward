@@ -206,7 +206,7 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 			}
 			continue
 		}
-		consumers[volume] = map[string]any{"configuration": c.privateConfiguration(own.data), "uid": object(own.data["properties"])["fileSystemId"], "pool": stablePools[redisParentID(volume)], "detached_configuration": c.privateConfiguration(netappDetachedSnapshotVolume(own.data))}
+		consumers[volume] = map[string]any{"configuration": c.privateConfiguration(own.data), "uid": object(own.data["properties"])["fileSystemId"], "pool": stablePools[redisParentID(volume)], "detached_configuration": c.privateConfiguration(netappDetachedPolicyVolume(own.data, kind))}
 	}
 	if kind == netappAccountType+"/backupPolicies" {
 		if value := object(raw["properties"])["volumesAssigned"]; value != nil {
@@ -258,9 +258,9 @@ func (r *Runtime) netappAssignmentInventory(ctx context.Context, c *client, req 
 	if complete != laterComplete || c.privateConfiguration(first) != c.privateConfiguration(second) || c.privateConfiguration(own.data) != item.Normalized["_netapp_configuration"] || c.privateConfiguration(parents) != c.privateConfiguration(after) || location != region {
 		return serviceDenied("netapp_assignments_changed")
 	}
-	review := map[string]any{"consumers": first, "native_index_complete": complete, "parents": parents, "region": region, "configuration": item.Normalized["_netapp_configuration"], "policy_configuration": c.privateConfiguration(hybridComputeChildSnapshot(raw))}
-	if kind == netappSnapshotPolicyType {
-		allowed := ready && !protected && object(raw["properties"])["provisioningState"] == "Succeeded" && !protectedAzureTags(object(raw["tags"])) && text(raw["managedBy"]) == "" && complete
+	review := map[string]any{"consumers": first, "native_index_complete": complete, "parents": parents, "region": region, "configuration": item.Normalized["_netapp_configuration"], "policy_configuration": c.privateConfiguration(netappPolicySnapshot(raw, kind))}
+	if netappPolicyKind(kind) {
+		allowed := ready && !protected && object(raw["properties"])["provisioningState"] == "Succeeded" && !protectedAzureTags(object(raw["tags"])) && text(raw["managedBy"]) == "" && complete && (kind != netappBackupPolicyType || uuidPattern.MatchString(text(object(raw["properties"])["backupPolicyId"])))
 		item.Actionable = &allowed
 		item.Normalized["cleanup_protected"] = !allowed
 		if allowed {
@@ -305,7 +305,7 @@ func (c *client) netappAssignmentContribution(parent asset.Asset, assets []asset
 			unresolved(id, "netapp_assignment_volume_requires_refresh")
 			continue
 		}
-		if parent.Identity.NativeType == netappSnapshotPolicyType {
+		if netappPolicyKind(parent.Identity.NativeType) {
 			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: value.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipReferenced, CleanupPolicy: graph.CleanupRetain, DirectCleanupAllowed: true, EvidenceSource: "azure:netapp-assignments", Evidence: map[string]any{"resource_type": netappVolumeType, "instance_id": id, "delete_by_default": false, "retention_supported": true}, Confidence: 1})
 		}
 		result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: value.ID, TargetAssetID: parent.ID, Type: graph.RelationshipUses, Source: "azure:netapp-assignments", Evidence: map[string]any{"current_assignment": true}, Confidence: 1})

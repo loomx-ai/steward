@@ -28,31 +28,31 @@ func netappDetachedSnapshotVolume(raw map[string]any) map[string]any {
 	return out
 }
 
-type netappSnapshotPolicyAction struct {
+type netappPolicyAction struct {
 	client  *client
 	planned asset.Asset
 	review  map[string]any
 }
 
-func newNetappSnapshotPolicyAction(c *client, connection asset.ConnectionID, value asset.Asset) (*netappSnapshotPolicyAction, error) {
+func newNetappPolicyAction(c *client, connection asset.ConnectionID, value asset.Asset) (*netappPolicyAction, error) {
 	review := object(value.Normalized[netappAssignmentReview])
-	if value.ID == "" || value.Identity.Provider != asset.ProviderAzure || value.Identity.Partition != "azure" || value.Identity.ConnectionID != connection || value.Identity.NativeType != netappSnapshotPolicyType || c.netappIdentity(value.Identity.NativeID, netappSnapshotPolicyType) != nil || len(review) != 6 || review["native_index_complete"] != true || review["region"] != value.Location || review["configuration"] != value.Normalized["_netapp_configuration"] || value.Normalized[netappAssignmentProof] != c.netappAssignmentProofFor(value.Identity.NativeID, connection, review) || value.Normalized["cleanup_protected"] != false {
+	if value.ID == "" || value.Identity.Provider != asset.ProviderAzure || value.Identity.Partition != "azure" || value.Identity.ConnectionID != connection || !netappPolicyKind(value.Identity.NativeType) || c.netappIdentity(value.Identity.NativeID, value.Identity.NativeType) != nil || len(review) != 6 || review["native_index_complete"] != true || review["region"] != value.Location || review["configuration"] != value.Normalized["_netapp_configuration"] || value.Normalized[netappAssignmentProof] != c.netappAssignmentProofFor(value.Identity.NativeID, connection, review) || value.Normalized["cleanup_protected"] != false {
 		return nil, serviceDenied("invalid_netapp_snapshot_policy_review")
 	}
-	return &netappSnapshotPolicyAction{c, value, review}, nil
+	return &netappPolicyAction{c, value, review}, nil
 }
-func (a *netappSnapshotPolicyAction) binding(req contracts.ActionRequest, data map[string]any) string {
+func (a *netappPolicyAction) binding(req contracts.ActionRequest, data map[string]any) string {
 	req.IdempotencyKey = ""
 	req.ExecutionResult = nil
 	data = maps.Clone(data)
 	delete(data, "binding")
-	return a.client.privateConfiguration(map[string]any{"protocol": "netapp-snapshot-policy-delete-1", "request": req, "data": data})
+	return a.client.privateConfiguration(map[string]any{"protocol": a.protocol(), "request": req, "data": data})
 }
-func (a *netappSnapshotPolicyAction) identity(req contracts.ActionRequest) error {
+func (a *netappPolicyAction) identity(req contracts.ActionRequest) error {
 	if req.Action != "delete" || req.Asset.ID != a.planned.ID || req.Asset.Identity != a.planned.Identity || req.Asset.Location != a.planned.Location || req.Asset.Normalized[netappAssignmentProof] != a.planned.Normalized[netappAssignmentProof] || len(req.Parameters)+len(req.PrerequisiteDeletions) != 0 {
 		return serviceDenied("netapp_snapshot_policy_request_changed")
 	}
-	if _, err := newNetappSnapshotPolicyAction(a.client, a.planned.Identity.ConnectionID, req.Asset); err != nil {
+	if _, err := newNetappPolicyAction(a.client, a.planned.Identity.ConnectionID, req.Asset); err != nil {
 		return err
 	}
 	consumers := object(a.review["consumers"])
@@ -103,27 +103,27 @@ func (a *netappSnapshotPolicyAction) identity(req contracts.ActionRequest) error
 	}
 	return nil
 }
-func (a *netappSnapshotPolicyAction) root(ctx context.Context, deleting bool) (map[string]any, bool, error) {
-	parents, _, region, protected, ready, err := a.client.netappRecoveryParents(ctx, a.planned.Identity.NativeID, netappSnapshotPolicyType)
+func (a *netappPolicyAction) root(ctx context.Context, deleting bool) (map[string]any, bool, error) {
+	parents, _, region, protected, ready, err := a.client.netappRecoveryParents(ctx, a.planned.Identity.NativeID, a.planned.Identity.NativeType)
 	if err != nil {
 		return nil, false, err
 	}
 	if region != a.planned.Location || a.client.privateConfiguration(parents) != a.client.privateConfiguration(object(a.review["parents"])) || protected || !ready {
 		return nil, false, serviceDenied("netapp_snapshot_policy_parent_changed")
 	}
-	own, err := a.client.netappRead(ctx, a.planned.Identity.NativeID, netappSnapshotPolicyType)
+	own, err := a.client.netappRead(ctx, a.planned.Identity.NativeID, a.planned.Identity.NativeType)
 	if isNotFound(err) {
 		return nil, true, nil
 	}
 	if err != nil {
 		return nil, false, err
 	}
-	if resourceRegion(own.data) != region || !deleting && object(own.data["properties"])["provisioningState"] != "Succeeded" || protectedAzureTags(object(own.data["tags"])) || text(own.data["managedBy"]) != "" || a.client.privateConfiguration(hybridComputeChildSnapshot(own.data)) != a.review["policy_configuration"] {
+	if resourceRegion(own.data) != region || !deleting && object(own.data["properties"])["provisioningState"] != "Succeeded" || protectedAzureTags(object(own.data["tags"])) || text(own.data["managedBy"]) != "" || a.client.privateConfiguration(netappPolicySnapshot(own.data, a.planned.Identity.NativeType)) != a.review["policy_configuration"] {
 		return nil, false, serviceDenied("netapp_snapshot_policy_changed")
 	}
 	return own.data, false, nil
 }
-func (a *netappSnapshotPolicyAction) volume(ctx context.Context, id string, detached bool) (map[string]any, error) {
+func (a *netappPolicyAction) volume(ctx context.Context, id string, detached bool) (map[string]any, error) {
 	entry := object(object(a.review["consumers"])[id])
 	own, err := a.client.netappRead(ctx, id, netappVolumeType)
 	if err != nil {
@@ -140,8 +140,8 @@ func (a *netappSnapshotPolicyAction) volume(ctx context.Context, id string, deta
 	if err != nil {
 		return nil, err
 	}
-	current := assignments[netappSnapshotPolicyType]
-	if current != "" && current != a.planned.Identity.NativeID || detached && current != "" || a.client.privateConfiguration(netappDetachedSnapshotVolume(own.data)) != entry["detached_configuration"] {
+	current := assignments[a.planned.Identity.NativeType]
+	if current != "" && current != a.planned.Identity.NativeID || detached && (current != "" || a.planned.Identity.NativeType == netappBackupPolicyType && netappBackupEnforced(own.data) != false) || a.client.privateConfiguration(netappDetachedPolicyVolume(own.data, a.planned.Identity.NativeType)) != entry["detached_configuration"] {
 		return nil, serviceDenied("netapp_snapshot_policy_assignment_changed")
 	}
 	pool, err := a.client.netappRead(ctx, redisParentID(id), netappPoolType)
@@ -160,8 +160,8 @@ func (a *netappSnapshotPolicyAction) volume(ctx context.Context, id string, deta
 	}
 	return own.data, nil
 }
-func (a *netappSnapshotPolicyAction) consumers(ctx context.Context, raw map[string]any) error {
-	current, complete, err := a.client.netappAssignmentConsumers(ctx, a.planned.Identity.NativeID, netappSnapshotPolicyType, a.planned.Location, raw, object(a.review["consumers"]))
+func (a *netappPolicyAction) consumers(ctx context.Context, raw map[string]any) error {
+	current, complete, err := a.client.netappAssignmentConsumers(ctx, a.planned.Identity.NativeID, a.planned.Identity.NativeType, a.planned.Location, raw, object(a.review["consumers"]))
 	if err != nil {
 		return err
 	}
@@ -175,7 +175,7 @@ func (a *netappSnapshotPolicyAction) consumers(ctx context.Context, raw map[stri
 	}
 	return nil
 }
-func (a *netappSnapshotPolicyAction) Preflight(ctx context.Context, req contracts.ActionRequest) (contracts.PreflightResult, error) {
+func (a *netappPolicyAction) Preflight(ctx context.Context, req contracts.ActionRequest) (contracts.PreflightResult, error) {
 	if err := a.identity(req); err != nil {
 		return contracts.PreflightResult{}, err
 	}
@@ -199,7 +199,7 @@ func (a *netappSnapshotPolicyAction) Preflight(ctx context.Context, req contract
 	}
 	return contracts.PreflightResult{Allowed: true, Absent: absent}, nil
 }
-func (a *netappSnapshotPolicyAction) Execute(ctx context.Context, req contracts.ActionRequest) (contracts.ActionResult, error) {
+func (a *netappPolicyAction) Execute(ctx context.Context, req contracts.ActionRequest) (contracts.ActionResult, error) {
 	if err := a.identity(req); err != nil {
 		return contracts.ActionResult{}, err
 	}
@@ -213,7 +213,7 @@ func (a *netappSnapshotPolicyAction) Execute(ctx context.Context, req contracts.
 	data["binding"] = a.binding(req, data)
 	return contracts.ActionResult{Data: data}, nil
 }
-func (a *netappSnapshotPolicyAction) Readback(ctx context.Context, req contracts.ActionRequest) (contracts.ReadbackResult, error) {
+func (a *netappPolicyAction) Readback(ctx context.Context, req contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	if err := a.identity(req); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
@@ -234,7 +234,7 @@ func (a *netappSnapshotPolicyAction) Readback(ctx context.Context, req contracts
 	}
 	return contracts.ReadbackResult{Exists: !absent}, nil
 }
-func (a *netappSnapshotPolicyAction) Wait(ctx context.Context, req contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+func (a *netappPolicyAction) Wait(ctx context.Context, req contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
 	req.ExecutionResult = &result
 	if err := a.identity(req); err != nil {
 		return contracts.WaitResult{}, err
@@ -249,6 +249,7 @@ func (a *netappSnapshotPolicyAction) Wait(ctx context.Context, req contracts.Act
 	}
 	if data["phase"] == "detach" && index < int64(len(ids)) {
 		id := ids[index]
+		pause := a.planned.Identity.NativeType == netappBackupPolicyType && data["paused"] != true
 		entry := object(object(a.review["consumers"])[id])
 		if receipt := object(data["operation"]); receipt != nil {
 			poll, err := a.client.netappPollUpdate(ctx, id, a.planned.Location, text(entry["uid"]), receipt)
@@ -256,8 +257,8 @@ func (a *netappSnapshotPolicyAction) Wait(ctx context.Context, req contracts.Act
 				if ctx.Err() != nil {
 					return out, err
 				}
-				own, readErr := a.volume(ctx, id, true)
-				if readErr != nil || object(own["properties"])["provisioningState"] != "Succeeded" {
+				own, readErr := a.volume(ctx, id, !pause)
+				if readErr != nil || !a.updateComplete(own, pause) {
 					return out, err
 				}
 				data["operation_done"] = true
@@ -273,12 +274,16 @@ func (a *netappSnapshotPolicyAction) Wait(ctx context.Context, req contracts.Act
 			if err != nil {
 				return out, err
 			}
-			assignments, _ := netappAssignments(own)
-			if assignments[netappSnapshotPolicyType] != "" || object(own["properties"])["provisioningState"] != "Succeeded" {
+			if !a.updateComplete(own, pause) {
 				save()
 				return out, nil
 			}
-			data["index"] = index + 1
+			if pause {
+				data["paused"] = true
+			} else {
+				data["index"] = index + 1
+				delete(data, "paused")
+			}
 			delete(data, "operation")
 			delete(data, "operation_done")
 			save()
@@ -302,17 +307,42 @@ func (a *netappSnapshotPolicyAction) Wait(ctx context.Context, req contracts.Act
 			return out, serviceDenied("netapp_snapshot_policy_volume_not_ready")
 		}
 		assignments, _ := netappAssignments(own)
-		if assignments[netappSnapshotPolicyType] == "" {
+		if assignments[a.planned.Identity.NativeType] == "" {
+			delete(data, "paused")
 			data["index"] = index + 1
 			save()
 			return out, nil
 		}
-		body := map[string]any{"properties": map[string]any{"dataProtection": map[string]any{"snapshot": map[string]any{"snapshotPolicyId": ""}}}}
+		section, field, value := "snapshot", "snapshotPolicyId", any("")
+		if a.planned.Identity.NativeType == netappBackupPolicyType {
+			// A separate own read must prove suspension before clearing the ID.
+			if !pause && netappBackupEnforced(own) != false {
+				return out, serviceDenied("netapp_backup_policy_resumed")
+			}
+			idle, err := a.client.netappBackupIdle(ctx, id)
+			if err != nil {
+				return out, err
+			}
+			if !idle {
+				save()
+				return out, nil
+			}
+			section, field = "backup", "backupPolicyId"
+			if pause {
+				if netappBackupEnforced(own) == false {
+					data["paused"] = true
+					save()
+					return out, nil
+				}
+				field, value = "policyEnforced", false
+			}
+		}
+		body := map[string]any{"properties": map[string]any{"dataProtection": map[string]any{section: map[string]any{field: value}}}}
 		wire, err := json.Marshal(body)
 		if err != nil {
 			return out, err
 		}
-		res, err := a.client.requestBody(ctx, "PATCH", apiURL(id, netappVersion), wire, map[string]string{"x-ms-client-request-id": azureRequestID(req.IdempotencyKey + ":detach:" + id)})
+		res, err := a.client.requestBody(ctx, "PATCH", apiURL(id, netappVersion), wire, map[string]string{"x-ms-client-request-id": azureRequestID(req.IdempotencyKey + a.updateKey(field) + id)})
 		if err != nil {
 			return out, err
 		}
@@ -339,7 +369,7 @@ func (a *netappSnapshotPolicyAction) Wait(ctx context.Context, req contracts.Act
 			}
 		}
 		if !absent {
-			current, complete, err := a.client.netappAssignmentConsumers(ctx, a.planned.Identity.NativeID, netappSnapshotPolicyType, a.planned.Location, raw, object(a.review["consumers"]))
+			current, complete, err := a.client.netappAssignmentConsumers(ctx, a.planned.Identity.NativeID, a.planned.Identity.NativeType, a.planned.Location, raw, object(a.review["consumers"]))
 			if err != nil {
 				return out, err
 			}
@@ -384,4 +414,4 @@ func (a *netappSnapshotPolicyAction) Wait(ctx context.Context, req contracts.Act
 	out.Done = err == nil && !read.Exists
 	return out, err
 }
-func (*netappSnapshotPolicyAction) DeletionCheckTimeout() time.Duration { return 24 * time.Hour }
+func (*netappPolicyAction) DeletionCheckTimeout() time.Duration { return 24 * time.Hour }
