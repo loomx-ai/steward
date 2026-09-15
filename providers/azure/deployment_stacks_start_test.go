@@ -211,26 +211,73 @@ func TestDeploymentStackStartDelete(t *testing.T) {
 					if err != nil || stackDeletes != 1 || result.ProviderRequestID != "native-stack-request" || result.Data["region"] != "eastus" {
 						t.Fatal("native Stack DELETE failed", result, err, stackDeletes)
 					}
-					state, err := c.deploymentStackReadSetupState(req, setup)
-					if err != nil {
-						t.Fatal(err)
+					for _, mutation := range []string{"binding", "setup", "execution", "region", "missing", "unknown", "job", "lost_prerequisites"} {
+						t.Run("resume_"+mutation, func(t *testing.T) {
+							wire, _ := json.Marshal(result.Data)
+							var saved map[string]any
+							if err := json.Unmarshal(wire, &saved); err != nil {
+								t.Fatal(err)
+							}
+							changedReq := req
+							switch mutation {
+							case "binding":
+								saved["binding"] = "changed"
+							case "setup":
+								object(saved["setup"])["binding"] = "changed"
+							case "execution":
+								object(saved["execution"])["binding"] = "changed"
+							case "region":
+								saved["region"] = "westus"
+							case "missing":
+								delete(saved, "execution")
+							case "unknown":
+								saved["unexpected"] = true
+							case "job":
+								changedReq.IdempotencyKey = "other-job"
+							case "lost_prerequisites":
+								delete(object(object(saved["setup"])["state"]), "prerequisites")
+							}
+							prior := calls
+							out, err := r.deploymentStackResumeDeletion(t.Context(), changedReq, saved)
+							if err == nil || out.Data != nil || out.Products.Products != nil || calls != prior {
+								t.Fatal("invalid resume reached HTTP or returned partial evidence", out, err, calls, prior)
+							}
+						})
 					}
-					progress, err := c.deploymentStackReadPrerequisiteState(req, deploymentStackProgress{}, state.Prerequisites)
-					if err != nil {
-						t.Fatal(err)
-					}
-					execution := object(result.Data["execution"])
+					checkpoint := result.Data
 					for attempt := 0; attempt < 3; attempt++ {
-						wire, _ := json.Marshal(execution)
-						if err = json.Unmarshal(wire, &execution); err != nil {
+						wire, _ := json.Marshal(checkpoint)
+						var saved map[string]any
+						if err = json.Unmarshal(wire, &saved); err != nil {
 							t.Fatal(err)
 						}
-						out, err := r.deploymentStackObserveProductOutcome(t.Context(), req, "eastus", execution, progress.Progress.Executions...)
-						if err != nil || out.ProductsReconciled != (mode != "async" || attempt > 0) || stackDeletes != 1 || childDeletes != 1 {
-							t.Fatal("native receipt did not reconcile without repeated deletion", out, err, attempt)
+						out, err := r.deploymentStackResumeDeletion(t.Context(), req, saved)
+						if err != nil || out.Products.ProductsReconciled != (mode != "async" || attempt > 0) || stackDeletes != 1 || childDeletes != 1 {
+							t.Fatal("persisted deletion did not reconcile without repeated deletion", out, err, attempt)
 						}
-						execution = out.Execution.Operation.Data
+						afterSaved, _ := json.Marshal(saved)
+						if string(wire) != string(afterSaved) {
+							t.Fatal("resume changed input checkpoint")
+						}
+						checkpoint = out.Data
+						// Returned nested maps must not alias the saved checkpoint.
+						object(saved["setup"])["binding"] = "changed after resume"
+						object(saved["execution"])["binding"] = "changed after resume"
 					}
+					// A completed checkpoint still performs fresh product reads.
+					childGone = false
+					out, err := r.deploymentStackResumeDeletion(t.Context(), req, checkpoint)
+					if err != nil {
+						if out.Data != nil || out.Products.Products != nil {
+							t.Fatal("partial failed outcome", out)
+						}
+					} else if out.Products.ProductsReconciled {
+						t.Fatal("returned child hidden by completed checkpoint", out)
+					}
+					if stackDeletes != 1 || childDeletes != 1 {
+						t.Fatal("resume mutated returned child")
+					}
+					childGone = true
 					if mode == "async" && polls != 2 {
 						t.Fatal("native polling phases lost", polls)
 					}

@@ -413,3 +413,20 @@ attachment handling, full group behavior, deny-release attribution and final
 catalog/graph/executor acceptance remain unfinished. All 159 parity rows and
 eight overall gates remain open. Transport failure before a usable receipt does
 not prove completion; this helper does not invent a receipt from later absence.
+
+### Persisted native Stack deletion recovery (2026-09-16)
+
+Native Stack submission now returns one authenticated checkpoint carrying the
+completed setup, operation region and native execution receipt. Read-only recovery
+validates all nested evidence and the full frozen request before HTTP, preserves
+independent product execution receipts after root disappearance, and persists the
+updated native polling phase. Recovery never calls preparation or DELETE. Even a
+completed checkpoint repeats product and retained-resource observations; native
+completion alone does not certify cleanup or deny-assignment release.
+
+Subscription and resource-group protocol fixtures exercise actual prerequisite
+and Stack DELETE, JSON persistence, pending/completed recovery, checkpoint/job
+corruption rejected before HTTP, independent checkpoint ownership and a returning
+child after completion. Full product cascade semantics, final orchestration and
+ActionDriver/graph/planner/executor acceptance remain unfinished. All 159 parity
+rows and eight overall gates remain open.

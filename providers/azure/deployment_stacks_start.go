@@ -130,5 +130,9 @@ func (r *Runtime) deploymentStackStartDelete(ctx context.Context, req contracts.
 	if err != nil {
 		return out, err
 	}
-	return contracts.ActionResult{ProviderRequestID: response.requestID, ProviderOperationID: operationLocation(response.header), RetryAfter: retryAfter(response.header), Data: map[string]any{"region": region, "execution": receipt}}, nil
+	checkpoint, err := c.deploymentStackDeletionCheckpoint(req, setup, region, receipt)
+	if err != nil {
+		return out, err
+	}
+	return contracts.ActionResult{ProviderRequestID: response.requestID, ProviderOperationID: operationLocation(response.header), RetryAfter: retryAfter(response.header), Data: checkpoint}, nil
 }
