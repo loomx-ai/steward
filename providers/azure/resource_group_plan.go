@@ -95,7 +95,41 @@ func (c *client) resourceGroupProductRequests(req contracts.ActionRequest) (map[
 		return nil, err
 	}
 	prerequisites := map[asset.AssetID]bool{}
-	for _, p := range req.PrerequisiteDeletions {
+	for i, p := range req.PrerequisiteDeletions {
+		// The cleanup worker binds prerequisites to the outer group step. Recover
+		// their component owner only from a validated native child identity.
+		if insightsLegacyKind(p.Asset.Identity.NativeType).kind != "" || insightsARMChildKind(p.Asset.Identity.NativeType) != "" {
+			id, owner, kind, _, err := insightsChildIdentity(p.Asset.Identity.NativeID)
+			if err != nil || id != p.Asset.Identity.NativeID || kind != p.Asset.Identity.NativeType {
+				return nil, serviceDenied("invalid_resource_group_insights_prerequisite")
+			}
+			if p.ControllerID == root.ID {
+				for memberID, candidate := range byID {
+					if candidate.Delete && candidate.Asset.Identity.NativeType == applicationInsightsType && candidate.Asset.Identity.NativeID == owner {
+						p.ControllerID = memberID
+						break
+					}
+				}
+			}
+			parent, found := byID[p.ControllerID]
+			if !found || !parent.Delete || parent.Asset.Identity.NativeType != applicationInsightsType || parent.Asset.Identity.NativeID != owner {
+				return nil, serviceDenied("resource_group_insights_parent_changed")
+			}
+			req.PrerequisiteDeletions[i] = p
+		}
+		if p.Asset.Identity.NativeType == monitorScopedResourceType {
+			owner, err := c.resourceGroupInsightsLinkOwner(p.Asset, byID)
+			if err != nil {
+				return nil, err
+			}
+			if owner != "" {
+				if p.ControllerID != root.ID && p.ControllerID != owner {
+					return nil, serviceDenied("resource_group_insights_link_owner_changed")
+				}
+				p.ControllerID = owner
+				req.PrerequisiteDeletions[i] = p
+			}
+		}
 		parent, found := byID[p.ControllerID]
 		if p.ControllerID == root.ID && !inResourceGroup(p.Asset.Identity.NativeID, root.Identity.NativeID) {
 			return nil, serviceDenied("resource_group_external_prerequisite_unverified")
@@ -103,7 +137,25 @@ func (c *client) resourceGroupProductRequests(req contracts.ActionRequest) (map[
 		if strings.EqualFold(p.Asset.Identity.NativeType, groupType) || !p.Delete || prerequisites[p.Asset.ID] || byID[p.Asset.ID].Asset.ID != "" || p.ControllerID != root.ID && (!found || !parent.Delete) {
 			return nil, serviceDenied("invalid_resource_group_prerequisite")
 		}
-		if err := validMember(p.Asset); err != nil {
+		if insightsLegacyKind(p.Asset.Identity.NativeType).kind != "" {
+			// Legacy selectors are case-sensitive opaque URL identities, not ARM IDs.
+			// They are independent prerequisites of their exact reviewed component.
+			kind, known := findType(p.Asset.Identity.NativeType)
+			if !known || !found || parent.Asset.Identity.NativeType != applicationInsightsType || p.Asset.ID == "" || p.Asset.ID == root.ID || p.Asset.Identity.Partition != root.Identity.Partition || native[p.Asset.Identity.NativeID] {
+				return nil, serviceDenied("invalid_resource_group_legacy_prerequisite")
+			}
+			driver, err := newInsightsChildAction(c, root.Identity.ConnectionID, p.Asset, kind)
+			if err != nil {
+				return nil, err
+			}
+			if driver.parent != parent.Asset.Identity.NativeID {
+				return nil, serviceDenied("resource_group_legacy_parent_changed")
+			}
+			if err := driver.identity(contracts.ActionRequest{Asset: p.Asset, Action: "delete"}); err != nil {
+				return nil, err
+			}
+			native[p.Asset.Identity.NativeID] = true
+		} else if err := validMember(p.Asset); err != nil {
 			return nil, err
 		}
 		prerequisites[p.Asset.ID] = true
@@ -186,4 +238,37 @@ func resourceGroupProductRelation(parent, child asset.Asset, deleting bool) (boo
 		}
 	}
 	return deleting && !servicePrerequisiteKind(parent.Identity.NativeType, child.Identity.NativeType) && slices.ContainsFunc(serviceChildKinds(parent.Identity.NativeType), func(k string) bool { return strings.EqualFold(k, child.Identity.NativeType) }) && serviceChildRelation(parent, child), nil
+}
+
+// An external AMPLS association belongs in the component request only when it
+// targets that component or its authenticated managed workspace. The association
+// itself still executes independently through its registered product driver.
+func (c *client) resourceGroupInsightsLinkOwner(link asset.Asset, members map[asset.AssetID]contracts.ActionImpact) (asset.AssetID, error) {
+	target, err := monitorPrivateLinkReference(map[string]any{"properties": link.Normalized})
+	if err != nil {
+		return "", err
+	}
+	var owner asset.AssetID
+	for id, member := range members {
+		if !member.Delete || member.Asset.Identity.NativeType != applicationInsightsType {
+			continue
+		}
+		state, err := c.insightsWorkspacePlan(member.Asset)
+		if err != nil {
+			return "", err
+		}
+		workspace := target == text(state["workspace"]) && text(state["managed_group"]) != ""
+		if target != member.Asset.Identity.NativeID && !workspace {
+			continue
+		}
+		proof := text(link.Normalized["_monitor_private_link_private_configuration"])
+		if proof == "" || workspace && proof != text(object(state["incoming"])[link.Identity.NativeID]) {
+			return "", serviceDenied("resource_group_insights_link_configuration_changed")
+		}
+		if owner != "" {
+			return "", serviceDenied("resource_group_insights_link_ambiguous_owner")
+		}
+		owner = id
+	}
+	return owner, nil
 }

@@ -11,12 +11,20 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
+// Inventory supplies the known type for ResourceGroup responses that omit it.
+// Compare native reads using the same representation after identity validation.
+func (c *client) resourceGroupConfiguration(raw map[string]any) string {
+	canonical := maps.Clone(raw)
+	canonical["type"] = groupType
+	return c.privateConfiguration(canonical)
+}
+
 func (c *client) resourceGroupReviewedRead(ctx context.Context, req contracts.ActionRequest) (response, error) {
 	current, err := c.deploymentStackMemberRead(ctx, req.Asset)
 	if err != nil {
 		return response{}, err
 	}
-	if text(req.Asset.Normalized["_resource_group_configuration"]) == "" || req.Asset.Normalized["_resource_group_configuration"] != c.privateConfiguration(current.data) || text(req.Asset.Normalized["_resource_group_location"]) == "" || req.Asset.Normalized["_resource_group_location"] != current.data["location"] {
+	if text(req.Asset.Normalized["_resource_group_configuration"]) == "" || req.Asset.Normalized["_resource_group_configuration"] != c.resourceGroupConfiguration(current.data) || text(req.Asset.Normalized["_resource_group_location"]) == "" || req.Asset.Normalized["_resource_group_location"] != current.data["location"] {
 		return response{}, serviceDenied("resource_group_review_changed")
 	}
 	if protectedAzureTags(object(current.data["tags"])) {
@@ -41,6 +49,10 @@ func (c *client) resourceGroupReviewedRead(ctx context.Context, req contracts.Ac
 // Require the actual registered product checks. An intrinsic child may use its
 // successfully checked native parent, but no live prerequisite is waived here.
 func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.ActionRequest, products map[asset.AssetID]contracts.ActionRequest, scope *resourceGroupMonitorScope) error {
+	c, err := r.resolve(ctx, req.Asset.Identity.ConnectionID)
+	if err != nil {
+		return err
+	}
 	parents := map[asset.AssetID]asset.AssetID{}
 	for _, impact := range req.LifecycleImpacts {
 		parents[impact.Asset.ID] = impact.ControllerID
@@ -59,8 +71,8 @@ func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.
 				return err
 			}
 			parentKind = parent.Asset.Identity.NativeType
-			if parentKind == aksType || parentKind == monitorWorkspaceType {
-				group, err := controllerResourceGroup(strings.Split(parent.Asset.Identity.NativeID, "/")[2], parentKind, parent.Asset.Normalized)
+			if parentKind == aksType || parentKind == monitorWorkspaceType || parentKind == applicationInsightsType {
+				group, err := c.resourceGroupManagedGroup(parent.Asset)
 				if err != nil {
 					return err
 				}
@@ -110,6 +122,9 @@ func resourceGroupNativeProductReady(ctx context.Context, driver contracts.Actio
 			return err
 		}
 		return resourceGroupNativeProductReady(ctx, a.inner, filtered, managed)
+	case *insightsComponentAction:
+		_, err := a.identity(member)
+		return err
 	case *monitorAction:
 		// Monitor Execute performs its bound DELETE after the same preflight;
 		// it has no hidden cancellation, detach, purge or preparation phase.
@@ -154,7 +169,7 @@ func (c *client) resourceGroupAttachmentsReady(ctx context.Context, member contr
 	return nil
 }
 
-// Prerequisites retain their actual product readback requirements; own ARM 404
+// Prerequisites retain their actual product readback requirements; own native 404
 // alone cannot hide a soft-deleted or otherwise residual product.
 func (r *Runtime) resourceGroupPrerequisitesAbsent(ctx context.Context, c *client, req contracts.ActionRequest) error {
 	for _, impact := range req.PrerequisiteDeletions {
@@ -163,7 +178,20 @@ func (r *Runtime) resourceGroupPrerequisitesAbsent(ctx context.Context, c *clien
 		if err != nil {
 			return err
 		}
-		result, err := c.deploymentStackProductReadback(ctx, member, driver)
+		var result contracts.ReadbackResult
+		if insightsLegacyKind(member.Asset.Identity.NativeType).kind != "" {
+			result, err = driver.Readback(ctx, member)
+			if err == nil {
+				kind, _ := findType(member.Asset.Identity.NativeType)
+				_, readErr := c.insightsChildRead(ctx, kind, member.Asset.Identity.NativeID)
+				if readErr != nil && !isNotFound(readErr) {
+					return readErr
+				}
+				result.Exists = result.Exists || !isNotFound(readErr)
+			}
+		} else {
+			result, err = c.deploymentStackProductReadback(ctx, member, driver)
+		}
 		if err != nil {
 			return err
 		}

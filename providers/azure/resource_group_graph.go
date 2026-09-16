@@ -93,7 +93,7 @@ func (c *client) resourceGroupGraphMembers(ctx context.Context, group asset.Asse
 		if err != nil {
 			return err
 		}
-		if text(group.Normalized["_resource_group_configuration"]) != c.privateConfiguration(live.data) || text(live.data["managedBy"]) != "" {
+		if text(group.Normalized["_resource_group_configuration"]) != c.resourceGroupConfiguration(live.data) || text(live.data["managedBy"]) != "" {
 			return serviceDenied("resource_group_graph_review_changed")
 		}
 		return nil

@@ -874,6 +874,43 @@ cannot certify the managed group's deletion.
 Official behavior reference (reviewed 2026-09-17):
 https://learn.microsoft.com/en-us/azure/azure-monitor/metrics/azure-monitor-workspace-manage
 
-Application Insights, Fleet and other specialized managed product composition and
-preparation remain outstanding. All 159 parity rows and eight acceptance gates
+Fleet and other specialized managed product composition and preparation remain
+outstanding. Application Insights composition is described below. All 159 parity rows and eight acceptance gates
 remain open.
+
+
+### Resource-group composition with Application Insights
+
+Ordinary resource-group cleanup now projects the registered Application Insights
+component driver together with its authenticated managed workspace/group. Shared
+workspaces remain unowned. The cleanup worker's group-level prerequisite bindings
+are projected privately to the exact component using native child identities or
+AMPLS target references; managed-workspace links must match the component's signed
+incoming-association snapshot. The reviewed group request remains unchanged.
+
+Legacy children retain their exact case-sensitive URL selectors and native read
+contracts. All prerequisites execute independently and their registered Readback
+and own native absence checks are required. Application Insights executes through
+the single containing-group DELETE only after its real product preflight succeeds.
+No independent component/workspace receipt or successful residual outcome is
+invented. Managed group and workspace absence are observed separately on recovery.
+
+The native inventory, SQLite graph, planner and registered action fixture covers
+managed and shared workspaces plus AMPLS links in an external resource group. It
+verifies prerequisite ordering, one group DELETE, serialized recovery, delayed
+managed resource absence, shared workspace/scope retention and denial of changed
+settings, owners, link proofs, identities, group tags/types and forbidden reads.
+Generic controller member checks now compare AMPLS targets with their keyed native
+configuration before tolerating unlink-induced ETag changes. Product association
+absence checks still run. ResourceGroup comparison also supplies the same known
+type as inventory when a native GET omits that field, after response identity
+validation; real configuration changes and wrong types remain rejected.
+
+Official behavior/schema references (reviewed 2026-09-17):
+https://learn.microsoft.com/en-us/azure/azure-monitor/app/managed-workspaces
+https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/get?view=rest-resources-2021-04-01
+
+This fixture evidence is not live-cloud acceptance, soft-delete purge support or
+completion of all managed products and preparation protocols. Fleet, public Stack
+integration and broader parity acceptance remain outstanding. All 159 parity rows
+and eight overall acceptance gates remain open.

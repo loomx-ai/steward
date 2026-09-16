@@ -13,6 +13,16 @@ func (c *client) deploymentStackPreparedMember(member asset.Asset, live, prepare
 		return err
 	}
 	if prepared == nil {
+		if monitorPrivateLinkTarget(member.Identity.NativeType) {
+			// Reviewed association unlinking changes the target ETag. Its keyed
+			// native snapshot still binds creation and all non-association settings;
+			// the product preflight separately verifies actual association absence.
+			proof := text(member.Normalized["_monitor_private_link_target_configuration"])
+			if proof == "" || proof != c.privateConfiguration(monitorPrivateLinkTargetSnapshot(live)) {
+				return serviceDenied("monitor_private_link_target_configuration_changed")
+			}
+			member.Normalized = cloneNormalizedWithoutGeneration(member.Normalized)
+		}
 		return serviceIncarnation(member, live)
 	}
 	if member.Identity.NativeType != vmType && member.Identity.NativeType != nicType || len(prepared) != 2 || text(prepared["configuration"]) == "" {

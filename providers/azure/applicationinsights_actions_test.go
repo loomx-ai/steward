@@ -110,6 +110,7 @@ func insightsComponentPlan(t *testing.T, f *insightsComponentFixture, extraKinds
 	// The original linked-storage example references this shared account.
 	// It was discovered separately and must remain outside the component plan.
 	storageRaw := nativeResource(storageType, "storageAccountName", "southcentralus", map[string]any{})
+	storageRaw["kind"] = "StorageV2"
 	storage := dnsAsset(t, r, storageRaw)
 	f.groupMembers[storage.Identity.NativeID] = storageRaw
 	storage.ScopeID = scope.ID
@@ -490,10 +491,19 @@ func TestApplicationInsightsComponentDeleteProtocolAndReceipt(t *testing.T) {
 
 func insightsComponentPrivateLinks(t *testing.T, f *insightsComponentFixture) (string, map[string]map[string]any) {
 	t.Helper()
-	scopeID := strings.ToLower(resourceID(monitorPrivateLinkType, "shared-scope"))
+	return insightsComponentPrivateLinksAt(t, f, strings.ToLower(resourceID(monitorPrivateLinkType, "shared-scope")))
+}
+
+func insightsComponentPrivateLinksAt(t *testing.T, f *insightsComponentFixture, scopeID string) (string, map[string]map[string]any) {
+	t.Helper()
 	scope := monitorPrivateLinkExample(t, "PrivateLinkScopesGet")
 	scope["id"], scope["name"] = scopeID, "shared-scope"
-	f.groupMembers[scopeID] = scope
+	if inResourceGroup(scopeID, f.groupID) {
+		f.groupMembers[scopeID] = scope
+	} else {
+		group := strings.Join(strings.Split(scopeID, "/")[:5], "/")
+		f.groups[group] = map[string]any{"id": group, "name": last(group), "location": "eastus", "properties": map[string]any{"provisioningState": "Succeeded"}}
+	}
 	capability := monitorPrivateLinkExample(t, "PrivateLinkScopePrivateLinkResourceGet")
 	capability["id"] = scopeID + "/privateLinkResources/azuremonitor"
 	links := map[string]map[string]any{}
@@ -514,6 +524,13 @@ func insightsComponentPrivateLinks(t *testing.T, f *insightsComponentFixture) (s
 	previous := f.response
 	f.response = func(req *http.Request) (*http.Response, bool) {
 		path := strings.ToLower(req.URL.Path)
+		group := strings.Join(strings.Split(scopeID, "/")[:5], "/")
+		if group != f.groupID && path == group+"/resources" {
+			if req.Method != "GET" || req.URL.Query().Get("api-version") != resourcesVersion {
+				t.Fatal("unexpected external scope group list", req.Method, req.URL)
+			}
+			return jsonResponse(200, map[string]any{"value": []any{scope}}, nil), true
+		}
 		if path == "/subscriptions/"+testSubscription+"/providers/microsoft.insights/privatelinkscopes" {
 			return jsonResponse(200, map[string]any{"value": []any{scope}}, nil), true
 		}

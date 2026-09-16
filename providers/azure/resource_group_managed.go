@@ -12,12 +12,15 @@ import (
 func (c *client) resourceGroupManagedMembers(byID map[asset.AssetID]contracts.ActionImpact) (map[asset.AssetID]asset.AssetID, error) {
 	owners := map[asset.AssetID]asset.AssetID{}
 	for id, parent := range byID {
-		if (parent.Asset.Identity.NativeType != aksType && parent.Asset.Identity.NativeType != monitorWorkspaceType) || !parent.Delete {
+		if (parent.Asset.Identity.NativeType != aksType && parent.Asset.Identity.NativeType != monitorWorkspaceType && parent.Asset.Identity.NativeType != applicationInsightsType) || !parent.Delete {
 			continue
 		}
-		group, err := controllerResourceGroup(c.subscription, parent.Asset.Identity.NativeType, parent.Asset.Normalized)
+		group, err := c.resourceGroupManagedGroup(parent.Asset)
 		if err != nil {
 			return nil, err
+		}
+		if group == "" {
+			continue
 		}
 		request := contracts.ActionRequest{Asset: parent.Asset, Action: "delete"}
 		foundGroup := false
@@ -93,4 +96,15 @@ func resourceGroupManagedAttachmentParents(byID map[asset.AssetID]contracts.Acti
 		}
 	}
 	return parents, nil
+}
+
+func (c *client) resourceGroupManagedGroup(parent asset.Asset) (string, error) {
+	if parent.Identity.NativeType == applicationInsightsType {
+		state, err := c.insightsWorkspacePlan(parent)
+		if err != nil {
+			return "", err
+		}
+		return text(state["managed_group"]), nil
+	}
+	return controllerResourceGroup(c.subscription, parent.Identity.NativeType, parent.Normalized)
 }
