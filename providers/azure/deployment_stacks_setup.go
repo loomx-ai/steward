@@ -83,22 +83,28 @@ func (r *Runtime) deploymentStackAdvanceSetup(ctx context.Context, req contracts
 		return out, err
 	}
 	if saved == nil {
-		if _, err = r.deploymentStackObserveGroupClosureWithProgress(ctx, req, deploymentStackProgress{}); err != nil {
+		if err = r.deploymentStackPreflightSetup(ctx, req, deploymentStackProgress{}); err != nil {
 			return out, err
-		}
-		checks, failure := r.deploymentStackCheckProducts(ctx, req, deploymentStackProgress{}, true)
-		if failure != nil {
-			return out, failure
-		}
-		for _, check := range checks {
-			if !check.Check.Allowed || check.Check.Absent {
-				return out, serviceDenied("deployment_stack_setup_product_not_ready")
-			}
 		}
 	}
 	var result contracts.WaitResult
 	if state.Phase == "prepare" {
-		result, err = c.deploymentStackAdvancePreparations(ctx, req, state.Preparation)
+		var guard func(context.Context) error
+		if saved != nil {
+			preparation, failure := c.deploymentStackReadPreparationState(req, state.Preparation)
+			if failure != nil {
+				return out, failure
+			}
+			guard = func(ctx context.Context) error {
+				progress := deploymentStackProgress{Preparations: preparation.Completed}
+				if preparation.Active != nil {
+					progress.Preparations = append(progress.Preparations, preparation.Active)
+					progress.preparationReady = true
+				}
+				return r.deploymentStackPreflightSetup(ctx, req, progress)
+			}
+		}
+		result, err = c.deploymentStackAdvancePreparationsWithGuard(ctx, req, state.Preparation, guard)
 		if err != nil {
 			return out, err
 		}
@@ -116,6 +122,15 @@ func (r *Runtime) deploymentStackAdvanceSetup(ctx context.Context, req contracts
 				return out, err
 			}
 			initial.Preparations = preparation.Completed
+		}
+		prerequisites, failure := c.deploymentStackReadPrerequisiteState(req, initial, state.Prerequisites)
+		if failure != nil {
+			return out, failure
+		}
+		if prerequisites.Active == nil {
+			if err = r.deploymentStackPreflightSetup(ctx, req, prerequisites.Progress); err != nil {
+				return out, err
+			}
 		}
 		result, err = r.deploymentStackAdvancePrerequisites(ctx, req, initial, state.Prerequisites)
 		if err != nil {

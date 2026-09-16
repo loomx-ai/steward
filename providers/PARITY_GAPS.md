@@ -578,3 +578,28 @@ existing checkpoint-specific checks. Revalidating unrelated scope protections
 before later mutations, specialized prerequisite semantics and complete
 ActionDriver/graph/planner/executor acceptance remain unfinished. All 159 parity
 rows and eight overall gates remain open.
+
+### Resumed Stack preparation scope checks
+
+Setup now repeats group closure and actual staged product preflight after an
+active retention operation has finished native polling and own readback, before
+another preparation mutation. Its expected configuration remains authenticated
+by the original pending preparation receipt; a private, nonserialized observation
+flag permits checking that configuration without relabeling the receipt complete.
+This observation cannot contain member execution receipts. While the write is
+still in flight, setup returns the unchanged durable checkpoint and performs no
+wider product preflight or new write. The normal prepared-configuration API still
+requires complete receipts.
+
+The same scope preflight also runs between independently executed prerequisites,
+when no member execution is active, using their authenticated completed progress.
+Nested and flat membership fixtures exercise late protection, monitor denial,
+parent locks, child read denial, new unreviewed children, missing retained IPs,
+asynchronous preparation, and protection before prerequisite deletion. Failed
+checks preserve the request/checkpoint, and clearing a recoverable condition
+resumes the saved phase without repeating the NIC write.
+
+Active prerequisite drivers can have their own multi-phase waits and mutations;
+those still need end-to-end scope validation and orchestration acceptance.
+Specialized prerequisite semantics and Stack action/graph/planner/executor
+registration remain unfinished. All 159 parity rows and eight gates remain open.

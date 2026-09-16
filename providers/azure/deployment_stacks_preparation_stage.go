@@ -97,6 +97,10 @@ func (c *client) deploymentStackPreparationStateBinding(req contracts.ActionRequ
 // Called after complete scope review. Preparation never DELETEs a member, and
 // stage Done only permits subsequent preflight; it is not cleanup completion.
 func (c *client) deploymentStackAdvancePreparations(ctx context.Context, req contracts.ActionRequest, saved map[string]any) (out contracts.WaitResult, err error) {
+	return c.deploymentStackAdvancePreparationsWithGuard(ctx, req, saved, nil)
+}
+
+func (c *client) deploymentStackAdvancePreparationsWithGuard(ctx context.Context, req contracts.ActionRequest, saved map[string]any, beforeMutation func(context.Context) error) (out contracts.WaitResult, err error) {
 	defer func() {
 		if err != nil {
 			out = contracts.WaitResult{}
@@ -116,7 +120,7 @@ func (c *client) deploymentStackAdvancePreparations(ctx context.Context, req con
 	}
 	var result contracts.WaitResult
 	if state.Active != nil {
-		result, err = c.deploymentStackPrepareMember(ctx, req, asset.AssetID(text(state.Active["member"])), state.Active)
+		result, err = c.deploymentStackPrepareMemberWithGuard(ctx, req, asset.AssetID(text(state.Active["member"])), state.Active, beforeMutation)
 	} else {
 		if err = c.deploymentStackObservePreparedMembers(ctx, req, state.Completed...); err != nil {
 			return out, err
@@ -139,7 +143,7 @@ func (c *client) deploymentStackAdvancePreparations(ctx context.Context, req con
 		if next == "" {
 			return checkpoint(true, "retention_prepared", 0)
 		}
-		result, err = c.deploymentStackPrepareMember(ctx, req, next, nil)
+		result, err = c.deploymentStackPrepareMemberWithGuard(ctx, req, next, nil, beforeMutation)
 	}
 	if err != nil {
 		return out, err

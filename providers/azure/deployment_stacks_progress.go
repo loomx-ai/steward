@@ -13,6 +13,9 @@ import (
 type deploymentStackProgress struct {
 	Preparations []map[string]any
 	Executions   []map[string]any
+	// Ephemeral pre-mutation observation only, after the active preparation's
+	// native polling and own readback finish. Never serialized into checkpoints.
+	preparationReady bool
 }
 
 type deploymentStackObservedProgress struct {
@@ -38,7 +41,7 @@ func (r *Runtime) deploymentStackObserveProgress(ctx context.Context, req contra
 	if err != nil {
 		return out, err
 	}
-	configurations, err := c.deploymentStackPreparedConfigurations(req, progress.Preparations)
+	configurations, err := c.deploymentStackProgressConfigurations(req, progress)
 	if err != nil {
 		return out, err
 	}

@@ -82,6 +82,10 @@ func (c *client) deploymentStackPreparationBinding(req contracts.ActionRequest, 
 // mutation per call and never invokes a member DELETE. The returned checkpoint
 // must be persisted before calling again; Done means only preparation is ready.
 func (c *client) deploymentStackPrepareMember(ctx context.Context, req contracts.ActionRequest, id asset.AssetID, saved map[string]any) (contracts.WaitResult, error) {
+	return c.deploymentStackPrepareMemberWithGuard(ctx, req, id, saved, nil)
+}
+
+func (c *client) deploymentStackPrepareMemberWithGuard(ctx context.Context, req contracts.ActionRequest, id asset.AssetID, saved map[string]any, beforeMutation func(context.Context) error) (contracts.WaitResult, error) {
 	member, err := c.deploymentStackMemberRequest(req, id)
 	if err != nil {
 		return contracts.WaitResult{}, err
@@ -159,6 +163,13 @@ func (c *client) deploymentStackPrepareMember(ctx context.Context, req contracts
 			if err := c.deploymentStackPreparedMember(target, live.data, configuration); err != nil {
 				return contracts.WaitResult{}, err
 			}
+		}
+	}
+	// Poll/read back an active write before evaluating the wider scope: its
+	// expected configuration is not yet authoritative while it is in flight.
+	if beforeMutation != nil {
+		if err := beforeMutation(ctx); err != nil {
+			return contracts.WaitResult{}, err
 		}
 	}
 	// Re-evaluate even a completed preparation checkpoint; it is not permission

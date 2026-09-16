@@ -22,7 +22,7 @@ func TestDeploymentStackSetupHandoff(t *testing.T) {
 	}
 }
 func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
-	for _, mode := range []string{"complete", "job", "unknown", "skip_preparation", "nested_preparation", "handoff_drift", "lost_preparation_context", "returned_prerequisite", "root_protected", "root_lock", "subscription_lock", "locks_forbidden", "root_forbidden", "late_lock", "late_protected", "attachment_changed", "outcome_missing", "outcome_recreated", "outcome_nic_returned", "scope_parent_protected", "scope_child_forbidden", "scope_monitor_forbidden", "scope_parent_lock", "scope_child_protected", "scope_list_forbidden", "scope_unreviewed_child"} {
+	for _, mode := range []string{"complete", "job", "unknown", "skip_preparation", "nested_preparation", "handoff_drift", "lost_preparation_context", "returned_prerequisite", "root_protected", "root_lock", "subscription_lock", "locks_forbidden", "root_forbidden", "late_lock", "late_protected", "attachment_changed", "outcome_missing", "outcome_recreated", "outcome_nic_returned", "scope_parent_protected", "scope_child_forbidden", "scope_monitor_forbidden", "scope_parent_lock", "scope_child_protected", "scope_list_forbidden", "scope_unreviewed_child", "resume_parent_protected", "resume_monitor_forbidden", "resume_inflight", "resume_prerequisite_protected", "resume_parent_lock", "resume_child_forbidden", "resume_unreviewed_child", "resume_retained_missing"} {
 		t.Run(mode, func(t *testing.T) {
 			req, root := stackAttachmentRequest(t, directClient(nil))
 			root["location"] = "eastus"
@@ -45,6 +45,7 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 			}
 			nativeDelete := mode == "complete" || strings.HasPrefix(mode, "outcome_")
 			outcomeFault := false
+			resumeFault := false
 			parent, child := actionAsset(hostGroupType, "host-parent"), actionAsset(hostType, "host-child")
 			parent.Identity.Partition = req.Asset.Identity.Partition
 			child.Identity.Partition = req.Asset.Identity.Partition
@@ -78,11 +79,14 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 				}
 			}
 			writes := []string{}
-			calls := 0
+			calls, monitorReads := 0, 0
 			gone, stackGone := false, false
 			r := protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
 				calls++
-				if mode == "scope_monitor_forbidden" && strings.HasSuffix(strings.ToLower(q.URL.Path), "/providers/microsoft.insights/metricalerts") {
+				if strings.HasSuffix(strings.ToLower(q.URL.Path), "/providers/microsoft.insights/metricalerts") {
+					monitorReads++
+				}
+				if (mode == "scope_monitor_forbidden" || resumeFault && mode == "resume_monitor_forbidden") && strings.HasSuffix(strings.ToLower(q.URL.Path), "/providers/microsoft.insights/metricalerts") {
 					return jsonResponse(403, map[string]any{}, nil), nil
 				}
 				if reply, handled := emptyMonitorIndexResponse(t, q); handled {
@@ -123,7 +127,7 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 					}
 					return jsonResponse(200, parentRaw, nil), nil
 				case child.Identity.NativeID:
-					if mode == "scope_child_forbidden" {
+					if mode == "scope_child_forbidden" || resumeFault && mode == "resume_child_forbidden" {
 						return jsonResponse(403, map[string]any{}, nil), nil
 					}
 					if q.Method == "DELETE" {
@@ -145,7 +149,7 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 						return jsonResponse(403, map[string]any{}, nil), nil
 					}
 					rows := []any{}
-					if mode == "scope_unreviewed_child" {
+					if mode == "scope_unreviewed_child" || resumeFault && mode == "resume_unreviewed_child" {
 						rows = append(rows, map[string]any{"id": parent.Identity.NativeID + "/hosts/new-host", "type": hostType, "location": "eastus", "properties": map[string]any{"provisioningState": "Succeeded"}})
 					}
 					if !gone {
@@ -157,9 +161,9 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 					if mode == "locks_forbidden" {
 						return jsonResponse(403, map[string]any{}, nil), nil
 					}
-					if mode == "root_lock" || mode == "subscription_lock" || mode == "late_lock" || mode == "scope_parent_lock" {
+					if mode == "root_lock" || mode == "subscription_lock" || mode == "late_lock" || mode == "scope_parent_lock" || resumeFault && mode == "resume_parent_lock" {
 						scope := req.Asset.Identity.NativeID
-						if mode == "scope_parent_lock" {
+						if mode == "scope_parent_lock" || mode == "resume_parent_lock" {
 							scope = parent.Identity.NativeID
 						}
 						if mode == "subscription_lock" {
@@ -179,6 +183,9 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 						continue
 					}
 					if q.Method == "GET" {
+						if resumeFault && mode == "resume_retained_missing" && name == "ip" {
+							return jsonResponse(404, map[string]any{}, nil), nil
+						}
 						if stackGone && outcomeFault && mode == "outcome_missing" && name == "boot" {
 							return jsonResponse(404, map[string]any{}, nil), nil
 						}
@@ -285,8 +292,55 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 						root["tags"] = map[string]any{"steward/protected": "true"}
 					}
 				}
-				priorCalls, priorWrites := calls, len(writes)
+				if step == 1 && strings.HasPrefix(mode, "resume_") && mode != "resume_prerequisite_protected" || mode == "resume_prerequisite_protected" && object(saved["state"])["phase"] == "prerequisites" {
+					resumeFault = true
+					if mode == "resume_parent_protected" || mode == "resume_prerequisite_protected" || mode == "resume_inflight" {
+						parentRaw["tags"] = map[string]any{"steward/protected": "true"}
+					}
+					if mode == "resume_inflight" {
+						object(live["nic"]["properties"])["provisioningState"] = "Updating"
+					}
+				}
+				priorCalls, priorWrites, priorMonitorReads := calls, len(writes), monitorReads
+				checkpointBefore, _ := json.Marshal(saved)
 				out, err = r.deploymentStackAdvanceSetup(t.Context(), req, saved)
+				if resumeFault {
+					if mode == "resume_inflight" {
+						if err != nil || out.Done || out.Data == nil || len(writes) != priorWrites || monitorReads != priorMonitorReads {
+							t.Fatal("pending preparation did not remain read-only", out, err, writes)
+						}
+						wire, _ := json.Marshal(out.Data)
+						var waiting map[string]any
+						if err := json.Unmarshal(wire, &waiting); err != nil {
+							t.Fatal(err)
+						}
+						wire, _ = json.Marshal(waiting)
+						if string(wire) != string(checkpointBefore) {
+							t.Fatal("pending scope check changed the durable checkpoint")
+						}
+						saved = waiting
+						object(live["nic"]["properties"])["provisioningState"] = "Succeeded"
+						out, err = r.deploymentStackAdvanceSetup(t.Context(), req, saved)
+					}
+					if err == nil || out.Data != nil || out.Done || len(writes) != priorWrites {
+						t.Fatal("resumed scope guard allowed another mutation", out.State, err, writes)
+					}
+					checkpointAfter, _ := json.Marshal(saved)
+					afterRequest, _ := json.Marshal(req)
+					if string(checkpointBefore) != string(checkpointAfter) || string(before) != string(afterRequest) {
+						t.Fatal("failed scope check changed the request or checkpoint")
+					}
+					resumeFault = false
+					delete(parentRaw, "tags")
+					resumed, err := r.deploymentStackAdvanceSetup(t.Context(), req, saved)
+					if err != nil || resumed.Data == nil || len(writes) != priorWrites+1 {
+						t.Fatal("scope recovery did not continue the saved phase", resumed, err, writes)
+					}
+					if writes[0] != "PUT nic" || writes[1] != "PATCH vm" {
+						t.Fatal("scope recovery repeated preparation", writes)
+					}
+					return
+				}
 				if strings.HasPrefix(mode, "scope_") {
 					if err == nil || out.Data != nil || out.Done || len(writes) != 0 {
 						t.Fatal("scope preflight did not prevent first preparation write", out, err, writes)

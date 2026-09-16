@@ -160,7 +160,7 @@ func (r *Runtime) deploymentStackObserveGroupClosureWithProgress(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
-	configurations, err := c.deploymentStackPreparedConfigurations(req, progress.Preparations)
+	configurations, err := c.deploymentStackProgressConfigurations(req, progress)
 	if err != nil {
 		return nil, err
 	}

@@ -58,7 +58,7 @@ func (r *Runtime) deploymentStackObserveServiceClosureWithProgress(ctx context.C
 	if err != nil {
 		return out, err
 	}
-	configurations, err := c.deploymentStackPreparedConfigurations(req, progress.Preparations)
+	configurations, err := c.deploymentStackProgressConfigurations(req, progress)
 	if err != nil {
 		return out, err
 	}
