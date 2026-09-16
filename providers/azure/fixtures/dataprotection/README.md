@@ -25,7 +25,21 @@ graph, plan and cleanup worker test recreates the runtime and repository between
 retries, preserves the receipt, and verifies that other backups remain untouched.
 Permission failures are refused; transient service failures exercise retry recovery.
 
-Vault/instance actions, coordinated workload dependencies, retained recovery and
+Vault actions, coordinated workload dependencies, retained recovery and
 independent emulator/live-cloud acceptance remain unfinished. The API has no
 If-Match guard or universally available incarnation ID; repeated configuration
 checks do not provide atomic protection against concurrent same-ID replacement.
+
+
+Backup-instance deletion additionally uses the unmodified DeleteBackupInstance,
+GetOperationStatusVaultContext and GetOperationResult examples. The DELETE Location
+sample refers to a different instance and omits the vault path. The result's 202
+sample mixes a different subscription, token and 2021 API version. They are retained
+as source evidence, not treated as permissible callbacks for the sample request.
+
+Native callback tests cover six scoped routes, opaque case-sensitive operation IDs,
+phase receipts, serialization/restart, permission failures, expired operation URLs,
+failed/unknown states and malformed results. Registered action tests cover sync and
+async deletion, changed reviews and retained-data reconciliation. A real SQLite
+scan/graph/plan/worker test resumes after read failure and keeps other backups active.
+Completion means active-instance absence; it never claims permanent backup purge.

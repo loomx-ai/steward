@@ -1,3 +1,4 @@
+import { dataProtectionInstanceDeletionWarning } from "./dataProtectionWarnings";
 import {
   netappVaultDeletionWarning,
   netappBackupPolicyDeletionWarning,
@@ -39,6 +40,7 @@ import {
 } from "./synapseWarnings";
 
 const lifecycleWarnings: Partial<Record<string, Record<Locale, string>>> = {
+  data_protection_instance_delete: dataProtectionInstanceDeletionWarning,
   netapp_vault_delete: netappVaultDeletionWarning,
   netapp_backup_policy_delete: netappBackupPolicyDeletionWarning,
   netapp_snapshot_policy_delete: netappSnapshotPolicyDeletionWarning,

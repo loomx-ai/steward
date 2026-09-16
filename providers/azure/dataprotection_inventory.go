@@ -350,6 +350,13 @@ func (r *Runtime) dataProtectionSnapshot(ctx context.Context, c *client, req con
 		actionable := false
 		items = append(items, contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: last(id), State: state, Location: location, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: location, Name: location, Location: location}, Normalized: normalized, Raw: object(dataProtectionSafeValue(own.data)), NativeAliases: []string{id}, Actionable: &actionable})
 	}
+	if kind == dataProtectionInstance {
+		for i := range items {
+			if err := r.protectionInstanceInventory(ctx, c, req, &items[i]); err != nil {
+				return nil, nil, err
+			}
+		}
+	}
 	if kind == dataProtectionPolicy {
 		for i := range items {
 			if err := r.protectionPolicyInventory(ctx, c, req, &items[i]); err != nil {

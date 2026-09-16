@@ -1811,6 +1811,10 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			continue
 		}
 		switch value.Identity.NativeType {
+		case "Microsoft.DataProtection/backupVaults/backupInstances":
+			if value.Identity.Provider == asset.ProviderAzure {
+				result = append(result, plan.Warning{Code: plan.WarningDataProtectionInstanceDelete, AssetID: value.ID, Message: "Deleting this backup instance stops its backups and requests deletion of its backup data under Azure retention rules. Soft-deleted data may remain recoverable and incur charges; completion does not mean permanent purge. The source workload, backup policy, vault and other backup instances are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
 		case "Microsoft.Synapse/workspaces/sqlPools/restorePoints":
 			if value.Identity.Provider == asset.ProviderAzure {
 				result = append(result, plan.Warning{Code: plan.WarningSynapseRestorePointDelete, AssetID: value.ID, Message: "Deleting this user-defined restore point removes that recovery option. The SQL pool, workspace and other backups are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})

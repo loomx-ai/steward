@@ -2620,7 +2620,14 @@
         "DeletedBackupInstances_Get",
         "DeletedBackupVaults_ListByLocation",
         "DeletedBackupVaults_Get",
-        "BackupPolicies_Delete"
+        "BackupPolicies_Delete",
+        "BackupInstances_Delete",
+        "OperationResult_Get",
+        "OperationStatus_Get",
+        "BackupInstances_GetBackupInstanceOperationResult",
+        "BackupVaultOperationResults_Get",
+        "OperationStatusBackupVaultContext_Get",
+        "OperationStatusResourceGroupContext_Get"
       ]
     }
   ],
@@ -11487,7 +11494,9 @@
       "read_operations": [
         "Azure.Microsoft.DataProtection.BackupInstances_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.DataProtection.BackupInstances_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.DataProtection.BackupInstances_List"
       ]

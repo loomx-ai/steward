@@ -269276,6 +269276,71 @@
               }
             },
             "type": "object"
+          },
+          "OperationResource": {
+            "type": "object",
+            "description": "Operation Resource",
+            "properties": {
+              "endTime": {
+                "type": "string",
+                "format": "date-time",
+                "description": "End time of the operation"
+              },
+              "error": {
+                "$ref": "#/definitions/Error",
+                "description": "Required if status == failed or status == canceled. This is the OData v4 error format, used by the RPC and will go into the v2.2 Azure REST API guidelines.\nThe full set of optional properties (e.g. inner errors / details) can be found in the \"Error Response\" section."
+              },
+              "id": {
+                "type": "string",
+                "description": "It should match what is used to GET the operation result"
+              },
+              "name": {
+                "type": "string",
+                "description": "It must match the last segment of the \"id\" field, and will typically be a GUID / system generated value"
+              },
+              "properties": {
+                "$ref": "#/definitions/OperationExtendedInfo",
+                "description": "End time of the operation"
+              },
+              "startTime": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Start time of the operation"
+              },
+              "status": {
+                "type": "string"
+              }
+            }
+          },
+          "OperationExtendedInfo": {
+            "type": "object",
+            "description": "Operation Extended Info",
+            "properties": {
+              "objectType": {
+                "type": "string",
+                "description": "This property will be used as the discriminator for deciding the specific types in the polymorphic chain of types."
+              }
+            },
+            "discriminator": "objectType",
+            "required": [
+              "objectType"
+            ]
+          },
+          "OperationJobExtendedInfo": {
+            "type": "object",
+            "description": "Operation Job Extended Info",
+            "properties": {
+              "jobId": {
+                "type": "string",
+                "description": "Name or Arm Id of the job created for this operation."
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "#/definitions/OperationExtendedInfo"
+              }
+            ],
+            "x-ms-discriminator-value": "OperationJobExtendedInfo"
           }
         },
         "host": "management.azure.com",
@@ -269581,6 +269646,84 @@
                   "$ref": "./examples/BackupInstanceOperations/GetBackupInstance_BlobBackupAutoProtection.json"
                 }
               }
+            },
+            "delete": {
+              "operationId": "BackupInstances_Delete",
+              "tags": [
+                "BackupInstanceResources"
+              ],
+              "description": "Delete a backup instance in a backup vault",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "vaultName",
+                  "in": "path",
+                  "description": "The name of the backup vault.",
+                  "required": true,
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 50,
+                  "pattern": "^[A-Za-z][-A-Za-z0-9]*[A-Za-z0-9]$"
+                },
+                {
+                  "name": "backupInstanceName",
+                  "in": "path",
+                  "description": "The name of the BackupInstanceResource",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "x-ms-authorization-auxiliary",
+                  "in": "header",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "202": {
+                  "description": "Resource deletion accepted.",
+                  "headers": {
+                    "Azure-AsyncOperation": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "A link to the status monitor"
+                    },
+                    "Location": {
+                      "type": "string",
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked."
+                    }
+                  }
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Delete BackupInstance": {
+                  "$ref": "./examples/BackupInstanceOperations/DeleteBackupInstance.json"
+                }
+              },
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              },
+              "x-ms-long-running-operation": true
             }
           },
           "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupPolicies": {
@@ -269834,6 +269977,333 @@
               "x-ms-examples": {
                 "Get DeletedBackupInstance": {
                   "$ref": "./examples/DeletedBackupInstanceOperations/GetDeletedBackupInstance.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/providers/Microsoft.DataProtection/locations/{location}/operationResults/{operationId}": {
+            "get": {
+              "operationId": "OperationResult_Get",
+              "summary": "Gets the operation status for a resource.",
+              "description": "Gets the operation result for a resource",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "name": "operationId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/LocationParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The request has succeeded.",
+                  "schema": {
+                    "$ref": "#/definitions/OperationJobExtendedInfo"
+                  }
+                },
+                "202": {
+                  "description": "The request has been accepted for processing, but processing has not yet completed.",
+                  "headers": {
+                    "Azure-AsyncOperation": {
+                      "type": "string"
+                    },
+                    "Location": {
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Get OperationResult": {
+                  "$ref": "./examples/GetOperationResult.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/providers/Microsoft.DataProtection/locations/{location}/operationStatus/{operationId}": {
+            "get": {
+              "operationId": "OperationStatus_Get",
+              "summary": "Gets the operation status for a resource.",
+              "description": "Gets the operation status for a resource.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/LocationParameter"
+                },
+                {
+                  "name": "operationId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/OperationResource"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Get OperationStatus": {
+                  "$ref": "./examples/GetOperationStatus.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupInstances/{backupInstanceName}/operationResults/{operationId}": {
+            "get": {
+              "operationId": "BackupInstances_GetBackupInstanceOperationResult",
+              "tags": [
+                "BackupInstances"
+              ],
+              "description": "Get result of backup instance creation operation",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "vaultName",
+                  "in": "path",
+                  "description": "The name of the BackupVaultResource",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "backupInstanceName",
+                  "in": "path",
+                  "description": "The name of the BackupInstanceResource",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "operationId",
+                  "in": "path",
+                  "description": "The name of the BackupInstanceResource",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/BackupInstanceResource"
+                  }
+                },
+                "202": {
+                  "description": "The request has been accepted for processing, but processing has not yet completed."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Get BackupInstanceOperationResult": {
+                  "$ref": "./examples/BackupInstanceOperations/GetBackupInstanceOperationResult.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/operationResults/{operationId}": {
+            "get": {
+              "operationId": "BackupVaultOperationResults_Get",
+              "tags": [
+                "BackupVaultOperationResults"
+              ],
+              "description": "Get a BackupVaultResource",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "vaultName",
+                  "in": "path",
+                  "description": "The name of the BackupVaultResource",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "operationId",
+                  "in": "path",
+                  "description": "The name of the BackupVaultResource",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/BackupVaultResource"
+                  }
+                },
+                "202": {
+                  "description": "The request has been accepted for processing, but processing has not yet completed.",
+                  "headers": {
+                    "Azure-AsyncOperation": {
+                      "type": "string"
+                    },
+                    "Location": {
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "GetOperationResult Patch": {
+                  "$ref": "./examples/VaultCRUD/GetOperationResultPatch.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/operationStatus/{operationId}": {
+            "get": {
+              "operationId": "OperationStatusBackupVaultContext_Get",
+              "tags": [
+                "BackupVaultResources"
+              ],
+              "description": "Gets the operation status for an operation over a BackupVault's context.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "vaultName",
+                  "in": "path",
+                  "description": "The name of the BackupVaultResource",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "operationId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/OperationResource"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Get OperationStatus": {
+                  "$ref": "./examples/GetOperationStatusVaultContext.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/operationStatus/{operationId}": {
+            "get": {
+              "operationId": "OperationStatusResourceGroupContext_Get",
+              "summary": "Gets the operation status for an operation over a ResourceGroup's context.",
+              "description": "Gets the operation status for an operation over a ResourceGroup's context.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "name": "operationId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/OperationResource"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Get OperationStatus": {
+                  "$ref": "./examples/GetOperationStatusRGContext.json"
                 }
               }
             }
@@ -279650,7 +280120,9 @@
       "nativeType": "Microsoft.DataProtection/backupVaults/backupInstances",
       "rest": {
         "collection": "backupInstances",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.DataProtection.BackupInstances_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.DataProtection.BackupInstances_List"
         ],

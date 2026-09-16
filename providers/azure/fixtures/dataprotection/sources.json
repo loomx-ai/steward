@@ -28,6 +28,21 @@
       "file": "DeleteBackupPolicy.json",
       "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/PolicyCRUD/DeleteBackupPolicy.json",
       "sha256": "68897a4d7a69c65c069e825996d1aafa9fbb4d74bdb2992def9b7f5db42b721d"
+    },
+    {
+      "file": "DeleteBackupInstance.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/BackupInstanceOperations/DeleteBackupInstance.json",
+      "sha256": "24956783904a6f570c977dd64ac4ff5acd0303fb6502be060dd294340e04c331"
+    },
+    {
+      "file": "GetOperationResult.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/GetOperationResult.json",
+      "sha256": "427a2b5326c4f1c13ef2f76777a76669b91d7efbb7c60e35623b8911060f157c"
+    },
+    {
+      "file": "GetOperationStatusVaultContext.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/GetOperationStatusVaultContext.json",
+      "sha256": "28c3f40972672548f4ba7e47724f16188b83d8afb2ce63ae5399b2660e48a36c"
     }
   ]
 }

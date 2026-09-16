@@ -105,7 +105,7 @@ func TestDataProtectionRegisteredInventoryAndRetainedIdentity(t *testing.T) {
 				t.Fatal(batch, err)
 			}
 			item := batch.Items[0]
-			if item.Location != "eastus" || item.Actionable == nil || *item.Actionable || item.Normalized["cleanup_protected"] != true {
+			if item.Location != "eastus" || item.Actionable == nil || *item.Actionable != (kind == dataProtectionInstance) || item.Normalized["cleanup_protected"] != (kind != dataProtectionInstance) {
 				t.Fatal("inventory overstated action support", item)
 			}
 			if (kind == dataProtectionDeletedVault || kind == dataProtectionDeletedInstance) && item.State != "soft_deleted" {
@@ -325,7 +325,7 @@ func TestDataProtectionExampleSourceIntegrity(t *testing.T) {
 	if err = json.Unmarshal(raw, &sources); err != nil {
 		t.Fatal(err)
 	}
-	if len(sources.Examples) != 5 {
+	if len(sources.Examples) != 8 {
 		t.Fatal("missing official examples")
 	}
 	for _, example := range sources.Examples {

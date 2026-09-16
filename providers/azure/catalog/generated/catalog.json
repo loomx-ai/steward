@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "d95d0de5ea54340ccc1cae5f8b0607de50a7d0c51a5a0d795b49ec3903c008a6",
+    "checksum": "7f5d7d20aeb04eb2221d88c16e5d9ee3975b0dbcb526c34f3fc71b6f71fb9f36",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "669c88b5ad20ddd33e3185701bf9053dac9614f42686e9139b51de494c411b27",
+  "content_checksum": "26b9ffc2ab9fd874eec9446b10379d0e25c6de5b42952bc3d0c9240cd655c559",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -74970,6 +74970,79 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json"
     },
     {
+      "id": "Azure.Microsoft.DataProtection.BackupInstances_Delete",
+      "name": "BackupInstances_Delete",
+      "service": "Microsoft.DataProtection",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupInstances/{backupInstanceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "backupInstanceName": {
+            "description": "The name of the BackupInstanceResource",
+            "in": "path",
+            "name": "backupInstanceName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the backup vault.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 2,
+            "name": "vaultName",
+            "pattern": "^[A-Za-z][-A-Za-z0-9]*[A-Za-z0-9]$",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-authorization-auxiliary": {
+            "in": "header",
+            "name": "x-ms-authorization-auxiliary",
+            "required": false,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataProtection",
+        "version": "2026-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupInstances/{backupInstanceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
+    },
+    {
       "id": "Azure.Microsoft.DataProtection.BackupInstances_Get",
       "name": "BackupInstances_Get",
       "service": "Microsoft.DataProtection",
@@ -75052,6 +75125,99 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupInstances/{backupInstanceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataProtection.BackupInstances_GetBackupInstanceOperationResult",
+      "name": "BackupInstances_GetBackupInstanceOperationResult",
+      "service": "Microsoft.DataProtection",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupInstances/{backupInstanceName}/operationResults/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "backupInstanceName": {
+            "description": "The name of the BackupInstanceResource",
+            "in": "path",
+            "name": "backupInstanceName",
+            "required": true,
+            "type": "string"
+          },
+          "operationId": {
+            "description": "The name of the BackupInstanceResource",
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the BackupVaultResource",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "BackupInstance Resource",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/BackupInstance",
+            "description": "BackupInstanceResource properties"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Proxy Resource tags.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataProtection",
+        "version": "2026-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupInstances/{backupInstanceName}/operationResults/{operationId}",
         "endpoint": "https://management.azure.com",
         "body_type": "json",
         "parameter_position": "query"
@@ -75353,6 +75519,96 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupPolicies",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataProtection.BackupVaultOperationResults_Get",
+      "name": "BackupVaultOperationResults_Get",
+      "service": "Microsoft.DataProtection",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/operationResults/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "operationId": {
+            "description": "The name of the BackupVaultResource",
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the BackupVaultResource",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Backup Vault Resource",
+        "properties": {
+          "eTag": {
+            "description": "Optional ETag.",
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "#/definitions/DppIdentityDetails",
+            "description": "Input Managed Identity Details"
+          },
+          "properties": {
+            "$ref": "#/definitions/BackupVault",
+            "description": "BackupVaultResource properties"
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataProtection",
+        "version": "2026-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/operationResults/{operationId}",
         "endpoint": "https://management.azure.com",
         "body_type": "json",
         "parameter_position": "query"
@@ -75801,6 +76057,356 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DataProtection/locations/{location}/deletedVaults",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataProtection.OperationResult_Get",
+      "name": "OperationResult_Get",
+      "service": "Microsoft.DataProtection",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DataProtection/locations/{location}/operationResults/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "location": {
+            "description": "The name of the Azure region.",
+            "in": "path",
+            "minLength": 1,
+            "name": "location",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "operationId": {
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/OperationExtendedInfo"
+          }
+        ],
+        "description": "Operation Job Extended Info",
+        "properties": {
+          "jobId": {
+            "description": "Name or Arm Id of the job created for this operation.",
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "x-ms-discriminator-value": "OperationJobExtendedInfo"
+      },
+      "call": {
+        "product": "Microsoft.DataProtection",
+        "version": "2026-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DataProtection/locations/{location}/operationResults/{operationId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataProtection.OperationStatusBackupVaultContext_Get",
+      "name": "OperationStatusBackupVaultContext_Get",
+      "service": "Microsoft.DataProtection",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/operationStatus/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "operationId": {
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the BackupVaultResource",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Operation Resource",
+        "properties": {
+          "endTime": {
+            "description": "End time of the operation",
+            "format": "date-time",
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/definitions/Error",
+            "description": "Required if status == failed or status == canceled. This is the OData v4 error format, used by the RPC and will go into the v2.2 Azure REST API guidelines.\nThe full set of optional properties (e.g. inner errors / details) can be found in the \"Error Response\" section."
+          },
+          "id": {
+            "description": "It should match what is used to GET the operation result",
+            "type": "string"
+          },
+          "name": {
+            "description": "It must match the last segment of the \"id\" field, and will typically be a GUID / system generated value",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/OperationExtendedInfo",
+            "description": "End time of the operation"
+          },
+          "startTime": {
+            "description": "Start time of the operation",
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataProtection",
+        "version": "2026-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/operationStatus/{operationId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataProtection.OperationStatusResourceGroupContext_Get",
+      "name": "OperationStatusResourceGroupContext_Get",
+      "service": "Microsoft.DataProtection",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/operationStatus/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "operationId": {
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Operation Resource",
+        "properties": {
+          "endTime": {
+            "description": "End time of the operation",
+            "format": "date-time",
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/definitions/Error",
+            "description": "Required if status == failed or status == canceled. This is the OData v4 error format, used by the RPC and will go into the v2.2 Azure REST API guidelines.\nThe full set of optional properties (e.g. inner errors / details) can be found in the \"Error Response\" section."
+          },
+          "id": {
+            "description": "It should match what is used to GET the operation result",
+            "type": "string"
+          },
+          "name": {
+            "description": "It must match the last segment of the \"id\" field, and will typically be a GUID / system generated value",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/OperationExtendedInfo",
+            "description": "End time of the operation"
+          },
+          "startTime": {
+            "description": "Start time of the operation",
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataProtection",
+        "version": "2026-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/operationStatus/{operationId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataProtection.OperationStatus_Get",
+      "name": "OperationStatus_Get",
+      "service": "Microsoft.DataProtection",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DataProtection/locations/{location}/operationStatus/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "location": {
+            "description": "The name of the Azure region.",
+            "in": "path",
+            "minLength": 1,
+            "name": "location",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "operationId": {
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Operation Resource",
+        "properties": {
+          "endTime": {
+            "description": "End time of the operation",
+            "format": "date-time",
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/definitions/Error",
+            "description": "Required if status == failed or status == canceled. This is the OData v4 error format, used by the RPC and will go into the v2.2 Azure REST API guidelines.\nThe full set of optional properties (e.g. inner errors / details) can be found in the \"Error Response\" section."
+          },
+          "id": {
+            "description": "It should match what is used to GET the operation result",
+            "type": "string"
+          },
+          "name": {
+            "description": "It must match the last segment of the \"id\" field, and will typically be a GUID / system generated value",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/OperationExtendedInfo",
+            "description": "End time of the operation"
+          },
+          "startTime": {
+            "description": "Start time of the operation",
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataProtection",
+        "version": "2026-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DataProtection/locations/{location}/operationStatus/{operationId}",
         "endpoint": "https://management.azure.com",
         "body_type": "json",
         "parameter_position": "query"
@@ -143505,6 +144111,9 @@
         "collection": "backupInstances",
         "read_operations": [
           "Azure.Microsoft.DataProtection.BackupInstances_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataProtection.BackupInstances_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.DataProtection.BackupInstances_List"

@@ -63,7 +63,11 @@ func (c *client) protectionPolicyConsumers(ctx context.Context, policy string, k
 }
 
 func (c *client) protectionPolicyParents(ctx context.Context, id string) (map[string]any, error) {
-	canonical, err := c.dataProtectionIdentity(id, dataProtectionPolicy)
+	return c.dataProtectionParents(ctx, id, dataProtectionPolicy)
+}
+
+func (c *client) dataProtectionParents(ctx context.Context, id, kind string) (map[string]any, error) {
+	canonical, err := c.dataProtectionIdentity(id, kind)
 	if err != nil || id != canonical {
 		return nil, serviceDenied("invalid_backup_policy_identity")
 	}

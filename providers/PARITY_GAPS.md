@@ -981,8 +981,8 @@ active same-name replacement. Multiple retained deletion identities stay separat
 The unchanged examples, pinned hashes and discrepancy are documented under
 `azure/fixtures/dataprotection/`.
 
-Unused policies now have native deletion. Vaults and active backup instances remain
-protected while their deletion, workload dependency preparation and
+Unused policies and active backup instances now have native deletion. Vaults remain
+protected while vault deletion, coordinated workload dependency preparation and
 recovery/retention actions are implemented. The two naturally retained kinds have
 no invented delete operation. Moving vault/policy candidates into the matrix's
 registered resources closes their missing-specification entries only; full behavior
@@ -1022,3 +1022,34 @@ cross-subscription identities remain rejected.
 
 Native contract:
 https://learn.microsoft.com/en-us/rest/api/dataprotection/backup-policies/delete?view=rest-dataprotection-2026-03-01
+
+### Data Protection backup-instance deletion
+
+Backup instances use their native 2026-03-01 DELETE and six catalog-registered native
+operation status/result routes. Signed receipts survive runtime and SQLite worker
+restart, persist phase transitions and prevent duplicate mutation after acceptance.
+Callbacks must retain the reviewed subscription, vault/group or region, API version
+and case-sensitive operation token. Operation lookup 404 is not own-resource
+absence. Async operation success still requires a direct active-instance read;
+readable retained-instance collections and parents are required before reconciliation.
+
+The deleted-instance counterpart is read and its datasource/policy identity checked.
+Readback distinguishes active absence from a matching soft-deleted counterpart and
+explicitly records that permanent purge was not verified. The source workload,
+policy, vault, other backup instances and existing vault security settings are not
+mutated. The plan includes English and Chinese warnings about stopped backups,
+retention, recoverability and possible charges. Policy/vault/group configuration
+changes, locks, protected tags and unreadable backup dependencies prevent invocation.
+
+Native service permissions, Resource Guard and immutability enforcement remain in
+force. There is no automatic weakening of those protections. Cross-tenant auxiliary
+authorization, stop-with-retain/suspend/resume/restore flows and coordinated vault
+cleanup remain unfinished; this is not full workload-family or live-cloud acceptance.
+The native DELETE has no conditional If-Match contract or universally available
+incarnation identifier. Repeated signed configuration review is not an atomic
+same-ID replacement guarantee.
+
+Official examples are preserved unchanged. DeleteBackupInstance's Location names a
+different instance and omits its vault. GetOperationResult's 202 sample mixes another
+subscription, operation token and 2021 API version. These inconsistent callbacks are
+rejected; the source examples do not justify relaxing scope/version checks.

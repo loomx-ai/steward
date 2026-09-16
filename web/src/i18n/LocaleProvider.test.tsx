@@ -518,3 +518,30 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     );
   });
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  it(`explains backup instance retention in ${locale}`, () => {
+    localStorage.setItem(localePreferenceKey, locale);
+    render(
+      <LocaleProvider>
+        <ErrorProbe
+          error={{
+            code: "data_protection_instance_delete",
+            message: "fallback",
+          }}
+        />
+      </LocaleProvider>,
+    );
+    const text = screen.getByTestId("error").textContent;
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "任务完成不代表数据已永久清除"
+        : "completion does not mean permanent purge",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "源工作负载、备份策略、保险库和其他备份实例将保留"
+        : "source workload, backup policy, vault and other backup instances are retained",
+    );
+  });
+}
