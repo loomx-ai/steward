@@ -144,7 +144,22 @@ terminal operation receipts cause no further HTTP requests. Foreign callbacks,
 changed requests, operation substitution, ambiguous headers, error statuses and
 unexpected result bodies do not produce successful completion.
 
-This is operation transport support, not a registered resource-group action.
+Resource-group product request projection now validates the explicit controller
+tree before delegating any product scope: unique asset/native identities, matching
+connection and partition, no cycles or orphan controllers, and no retained resource
+inside a deleted group. External descendants require a typed native service or
+VM/NIC attachment relation; external attachment deletion additionally requires
+the explicit native Delete option. Retained external attachments remain in the
+parent request without becoming independent delete requests. Product prerequisites
+remain attached to their own controller, and group prerequisites cannot silently
+authorize external deletion. Each projection has detached configuration maps and
+preserves large JSON integers, so one product cannot mutate another's frozen plan.
+
+Projection is still only a plan-shape check. Native membership/closure reads and
+actual product preflight must confirm those relationships. No Stack membership or
+execution receipt is fabricated for the resource group.
+
+This is operation transport and request projection support, not a registered resource-group action.
 Group scope review, native child/product closure, actual DELETE submission and
 independent final group/member readbacks still need integration before catalog
 activation. Native operation completion alone never proves cleanup completion.
