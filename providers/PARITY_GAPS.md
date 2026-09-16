@@ -809,3 +809,24 @@ This enables the verified native-cascade path; it is not full resource-group or
 Deployment Stack completion. Specialized product preparation contracts, persisted
 multi-stage setup and full application/real-cloud acceptance remain outstanding.
 All 159 parity rows and eight overall acceptance gates remain open.
+
+### Resource-group persisted cleanup recovery
+
+A SQLite-backed cleanup test creates the real task and execution from native
+inventory-normalized assets and lifecycle graph, then reopens the repository and
+reconstructs the registered runtime between worker deliveries. Native operation
+completion deliberately precedes the last member's disappearance. The test requires
+one DELETE, a pending action while that member survives, and successful persisted
+root/member closure only after final product readbacks.
+
+This exposed a terminal dependency error during intermediate native cascade
+readback. Resource-group outcome verification now checks every reviewed member's
+own ARM presence before running final product dependency/readback checks. Existing
+members keep the operation pending; read errors and changed creation identities
+remain errors. Both verification passes still check retained assets, prerequisites
+and the root, and all actual product readbacks remain required before completion.
+No independent product execution receipt or dependency waiver is introduced.
+
+This does not complete specialized product preparation, managed resource-group
+composition, Deployment Stacks or real-cloud acceptance. All 159 parity rows and
+eight overall acceptance gates remain open.

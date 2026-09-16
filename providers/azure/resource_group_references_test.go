@@ -78,18 +78,18 @@ func testResourceGroupMonitorReferences(t *testing.T, kind, mode string) {
 			gone = true
 			clear(f.objects)
 			clear(f.otherObjects)
-			if mode == "source-remains" {
+			if mode == "source-remains" || mode == "public-worker" {
 				f.otherObjects[sourceID] = sourceRaw
 			}
 			delete(f.groups, groupID)
 			status, header := 204, http.Header{}
-			if mode == "public-async" {
+			if mode == "public-async" || mode == "public-worker" {
 				status = 202
 				header.Set("Location", groupOperationEndpoint())
 			}
 			return &http.Response{StatusCode: status, Header: header, Body: io.NopCloser(strings.NewReader(""))}, true
 		}
-		if mode == "public-async" && strings.Contains(path, "/operationresults/") {
+		if (mode == "public-async" || mode == "public-worker") && strings.Contains(path, "/operationresults/") {
 			polls++
 			status := 202
 			if polls > 1 {
@@ -187,6 +187,10 @@ func testResourceGroupMonitorReferences(t *testing.T, kind, mode string) {
 		if err != nil || len(independent.Blockers) != 0 || len(independent.Steps) != 1 || independent.Steps[0].AssetID != source.ID {
 			t.Fatal("independent selection expanded to group", independent, err)
 		}
+		if mode == "public-worker" {
+			testResourceGroupWorkerRecovery(t, f.runtime, values, contributed, func() (int, int) { return deletes, polls }, func() { clear(f.otherObjects) })
+			return
+		}
 		req := servicePlanRequest(planned, values, group)
 		req.IdempotencyKey = "public-group-job"
 		currentGroup := group
@@ -233,7 +237,7 @@ func testResourceGroupMonitorReferences(t *testing.T, kind, mode string) {
 			t.Fatal("forged public checkpoint performed reads", out, err)
 		}
 		wait, err := driver.Wait(t.Context(), req, result)
-		if mode == "public-async" {
+		if mode == "public-async" || mode == "public-worker" {
 			if err != nil || wait.Done || polls != 1 {
 				t.Fatal("pending native operation finished early", wait, err, polls)
 			}
@@ -312,7 +316,7 @@ func testResourceGroupMonitorReferences(t *testing.T, kind, mode string) {
 	saved := groupOperationJSON(t, result.Data)
 	if mode == "source-remains" {
 		out, err := f.runtime.resourceGroupResumeDeletion(t.Context(), req, saved)
-		if out.Done {
+		if err != nil || out.Done {
 			t.Fatal("native group absence hid surviving reference", out, err)
 		}
 		clear(f.otherObjects)

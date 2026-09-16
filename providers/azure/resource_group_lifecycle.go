@@ -359,17 +359,36 @@ func (r *Runtime) resourceGroupProductsAbsent(ctx context.Context, c *client, re
 			}
 			allAbsent = false
 		}
+		// Native cascade deletion can temporarily leave dependencies between
+		// reviewed members. Wait for their own ARM reads to report absence
+		// before requiring the products' final dependency/readback checks.
+		membersAbsent := true
 		for _, id := range slices.Sorted(maps.Keys(products)) {
-			member := products[id]
-			driver, resolveErr := r.ResolveAction(ctx, req.Asset.Identity.ConnectionID, member.Asset)
-			if resolveErr != nil {
-				return false, resolveErr
-			}
-			read, readErr := c.deploymentStackProductReadback(ctx, member, driver)
-			if readErr != nil {
+			live, readErr := c.deploymentStackMemberRead(ctx, products[id].Asset)
+			if readErr != nil && !isNotFound(readErr) {
 				return false, readErr
 			}
-			allAbsent = allAbsent && !read.Exists
+			if readErr == nil {
+				if err := serviceCreationIdentity(products[id].Asset, live.data); err != nil {
+					return false, err
+				}
+				membersAbsent = false
+			}
+		}
+		allAbsent = allAbsent && membersAbsent
+		if membersAbsent {
+			for _, id := range slices.Sorted(maps.Keys(products)) {
+				member := products[id]
+				driver, resolveErr := r.ResolveAction(ctx, req.Asset.Identity.ConnectionID, member.Asset)
+				if resolveErr != nil {
+					return false, resolveErr
+				}
+				read, readErr := c.deploymentStackProductReadback(ctx, member, driver)
+				if readErr != nil {
+					return false, readErr
+				}
+				allAbsent = allAbsent && !read.Exists
+			}
 		}
 		for _, impact := range req.LifecycleImpacts {
 			if impact.Delete {
