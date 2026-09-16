@@ -271,8 +271,8 @@ resources:
     resources:
     - Microsoft.DataProtection/backupVaults/backupPolicies
   status: pending_verification
-  notes: Native Data Protection policy inventory is registered; deletion, workload dependencies and
-    behavioral equivalence remain unverified.
+  notes: Native Data Protection policy inventory and unused-policy deletion are registered;
+    active/retained consumers block deletion. Coordinated workload cleanup and behavioral equivalence remain unverified.
 - alicloud: ACS::Bastionhost::Instance
   spec: providers/alicloud/specs/bastionhost-instance.yaml
   class: security.bastion_host
@@ -801,8 +801,8 @@ resources:
     resources:
     - Microsoft.DataProtection/backupVaults/backupPolicies
   status: pending_verification
-  notes: Native Data Protection policy inventory is registered; deletion, workload dependencies and
-    behavioral equivalence remain unverified.
+  notes: Native Data Protection policy inventory and unused-policy deletion are registered;
+    active/retained consumers block deletion. Coordinated workload cleanup and behavioral equivalence remain unverified.
 - alicloud: ACS::DCDN::Domain
   spec: providers/alicloud/specs/dcdn-domain.yaml
   class: network.cdn_domain

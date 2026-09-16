@@ -23,6 +23,11 @@
       "file": "GetBackupPolicy.json",
       "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/PolicyCRUD/GetBackupPolicy.json",
       "sha256": "b8ede98492c9cec17130b860a79c2567e97deb3960f7c60f7e40f388fa143210"
+    },
+    {
+      "file": "DeleteBackupPolicy.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/PolicyCRUD/DeleteBackupPolicy.json",
+      "sha256": "68897a4d7a69c65c069e825996d1aafa9fbb4d74bdb2992def9b7f5db42b721d"
     }
   ]
 }

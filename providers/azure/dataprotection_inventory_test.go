@@ -42,7 +42,7 @@ func newProtectionFixture(t *testing.T) *protectionFixture {
 	add(f.policy, dataProtectionPolicy, map[string]any{"objectType": "BackupPolicy", "policyRules": []any{}, "privateFutureSetting": "secret-config"})
 	props := map[string]any{"objectType": "BackupInstance", "policyInfo": map[string]any{"policyId": f.policy}, "dataSourceInfo": map[string]any{"resourceID": strings.ToLower(resourceID(diskType, "source")), "resourceName": "private-source"}, "currentProtectionState": "ProtectionConfigured", "datasourceAuthCredentials": map[string]any{"secret": "secret-config"}}
 	add(f.instance, dataProtectionInstance, props)
-	add(f.deletedInstance, dataProtectionDeletedInstance, maps.Clone(props))
+	add(f.deletedInstance, dataProtectionDeletedInstance, batchClone(props))
 	f.objects[f.deletedInstance]["properties"].(map[string]any)["deletionInfo"] = map[string]any{"deletionTime": "2026-09-01T00:00:00Z"}
 	add(f.deletedVault, "Microsoft.DataProtection/deletedBackupVaults", map[string]any{"originalBackupVaultId": f.vault, "originalBackupVaultName": "vault", "originalBackupVaultResourcePath": f.vault, "resourceDeletionInfo": map[string]any{"deletionTime": "2026-09-01T00:00:00Z", "scheduledPurgeTime": "2026-10-01T00:00:00Z"}})
 	f.objects[f.deletedVault]["id"] = strings.Replace(f.deletedVault, "/deletedvaults/", "/deletedBackupVaults/", 1)
@@ -59,6 +59,12 @@ func newProtectionFixture(t *testing.T) *protectionFixture {
 		path := strings.ToLower(q.URL.Path)
 		if path == "/subscriptions/"+testSubscription+"/locations" {
 			return jsonResponse(200, map[string]any{"value": []any{map[string]any{"name": "eastus"}}}, nil), nil
+		}
+		if path == "/subscriptions/"+testSubscription+"/providers/microsoft.authorization/locks" {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
+		if path == "/subscriptions/"+testSubscription+"/resourcegroups/test" {
+			return jsonResponse(200, map[string]any{"id": path, "name": "test", "type": groupType, "location": "eastus", "properties": map[string]any{}}, nil), nil
 		}
 		if q.URL.Query().Get("api-version") != dataProtectionVersion {
 			t.Fatal("wrong native version", q.URL)
@@ -319,7 +325,7 @@ func TestDataProtectionExampleSourceIntegrity(t *testing.T) {
 	if err = json.Unmarshal(raw, &sources); err != nil {
 		t.Fatal(err)
 	}
-	if len(sources.Examples) != 4 {
+	if len(sources.Examples) != 5 {
 		t.Fatal("missing official examples")
 	}
 	for _, example := range sources.Examples {

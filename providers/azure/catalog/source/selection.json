@@ -2619,7 +2619,8 @@
         "DeletedBackupInstances_List",
         "DeletedBackupInstances_Get",
         "DeletedBackupVaults_ListByLocation",
-        "DeletedBackupVaults_Get"
+        "DeletedBackupVaults_Get",
+        "BackupPolicies_Delete"
       ]
     }
   ],
@@ -11468,7 +11469,9 @@
       "read_operations": [
         "Azure.Microsoft.DataProtection.BackupPolicies_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.DataProtection.BackupPolicies_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.DataProtection.BackupPolicies_List"
       ]

@@ -960,7 +960,7 @@ All 159 parity rows and eight overall acceptance gates remain open.
 
 Five 2026-03-01 native inventory rules now cover backup vaults, policies, active
 backup instances, deleted backup instances and region-scoped deleted vaults.
-Ten official list/get operations and their schema closure are pinned in the
+Ten official list/get operations plus native policy DELETE and their schema closure are pinned in the
 catalog. Discovery uses native collections and own reads, not the general ARM
 resource index. Child observations bind the live parent configuration and region.
 Known omitted resources remain visible until their own read returns absence;
@@ -981,8 +981,8 @@ active same-name replacement. Multiple retained deletion identities stay separat
 The unchanged examples, pinned hashes and discrepancy are documented under
 `azure/fixtures/dataprotection/`.
 
-Only inventory is registered in this milestone. The three active kinds are
-explicitly protected while native deletion, workload dependency preparation and
+Unused policies now have native deletion. Vaults and active backup instances remain
+protected while their deletion, workload dependency preparation and
 recovery/retention actions are implemented. The two naturally retained kinds have
 no invented delete operation. Moving vault/policy candidates into the matrix's
 registered resources closes their missing-specification entries only; full behavior
@@ -999,3 +999,26 @@ protocol fixtures do not establish independent-emulator or live-cloud acceptance
 Validation for the Data Protection inventory milestone: full Azure tests, focused
 race tests, Azure vet, provider parity/catalog checks and shared inventory tests
 passed. No cloud mutation or live-cloud acceptance is claimed.
+
+### Data Protection unused-policy cleanup
+
+Native 2026-03-01 policy DELETE accepts only synchronous, empty 200/204
+acknowledgements. A signed receipt is persisted before post-delete reads and is
+reused after restart without issuing a second mutation. Completion requires the
+policy's own absence with readable, unchanged parent configuration. Active and
+soft-deleted backup instances are independently listed and read; any consumer
+blocks standalone policy deletion. Known consumers omitted from lists require
+own-read absence. Vault/group protection, locks and configuration drift are checked
+again before invocation. No backup instance, retention setting or vault is mutated.
+
+The native API supplies no If-Match precondition, and its examples supply no
+universal incarnation identifier. Review checks cannot guarantee atomic protection
+against a concurrent same-ID replacement. Coordinated instance/vault cleanup,
+retained recovery and independent emulator/live acceptance remain unfinished.
+A real SQLite scan/graph/plan/worker test exercises restart after a transient read
+failure and verifies that other policies and active/retained backups survive.
+Cross-region deleted-vault known IDs are filtered by the requested regional shard;
+cross-subscription identities remain rejected.
+
+Native contract:
+https://learn.microsoft.com/en-us/rest/api/dataprotection/backup-policies/delete?view=rest-dataprotection-2026-03-01

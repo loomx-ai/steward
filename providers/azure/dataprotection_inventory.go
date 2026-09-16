@@ -207,6 +207,11 @@ func (r *Runtime) dataProtectionSnapshot(ctx context.Context, c *client, req con
 		if err != nil {
 			return nil, nil, err
 		}
+		// The scan worker supplies known IDs across all regions. A regional
+		// deleted-vault shard must not reconcile another region's tombstones.
+		if kind == dataProtectionDeletedVault && req.Scope.Kind == asset.ScopeRegion && strings.Split(id, "/")[6] != strings.ToLower(req.Scope.NativeID) {
+			continue
+		}
 		known[id] = true
 	}
 	targets := map[string]string{}
@@ -344,6 +349,13 @@ func (r *Runtime) dataProtectionSnapshot(ctx context.Context, c *client, req con
 		}
 		actionable := false
 		items = append(items, contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: last(id), State: state, Location: location, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: location, Name: location, Location: location}, Normalized: normalized, Raw: object(dataProtectionSafeValue(own.data)), NativeAliases: []string{id}, Actionable: &actionable})
+	}
+	if kind == dataProtectionPolicy {
+		for i := range items {
+			if err := r.protectionPolicyInventory(ctx, c, req, &items[i]); err != nil {
+				return nil, nil, err
+			}
+		}
 	}
 	for id, raw := range parents {
 		own, err := c.dataProtectionRead(ctx, id, dataProtectionVault)

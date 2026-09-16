@@ -81,6 +81,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if dataFactoryKind(kind.NativeType) != "" {
 		return newDataFactoryAction(c, id, value, kind)
 	}
+	if kind.NativeType == dataProtectionPolicy {
+		return newProtectionPolicyAction(c, id, value)
+	}
 	if kind.NativeType == netappVaultType {
 		return newNetappVaultAction(c, id, value)
 	}

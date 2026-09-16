@@ -269683,6 +269683,57 @@
                   "$ref": "./examples/PolicyCRUD/GetBackupPolicy.json"
                 }
               }
+            },
+            "delete": {
+              "operationId": "BackupPolicies_Delete",
+              "tags": [
+                "BaseBackupPolicyResources"
+              ],
+              "description": "Deletes a backup policy belonging to a backup vault",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "vaultName",
+                  "in": "path",
+                  "description": "The name of the backup vault.",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "backupPolicyName",
+                  "in": "path",
+                  "description": "",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Delete BackupPolicy": {
+                  "$ref": "./examples/PolicyCRUD/DeleteBackupPolicy.json"
+                }
+              }
             }
           },
           "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/deletedBackupInstances": {
@@ -279579,7 +279630,9 @@
       "nativeType": "Microsoft.DataProtection/backupVaults/backupPolicies",
       "rest": {
         "collection": "backupPolicies",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.DataProtection.BackupPolicies_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.DataProtection.BackupPolicies_List"
         ],
