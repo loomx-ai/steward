@@ -11,6 +11,9 @@ import (
 const insightsAnnotationSource = "application-insights-annotations"
 
 func insightsInventorySource(kind string) string {
+	if dataProtectionKind(kind) != "" {
+		return dataProtectionSource
+	}
 	if strings.EqualFold(kind, deploymentStackType) {
 		return deploymentStackSource
 	}

@@ -1,0 +1,36 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.DataProtection/backupVaults
+  class: storage.backup_vault
+presentation:
+  displayNames:
+    en-US: Backup vault
+    zh-CN: 备份库
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: data-protection
+  list:
+    operation: Azure.Microsoft.DataProtection.BackupVaults_GetInSubscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.DataProtection.BackupVaults_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name: name
+  state: state
+  subscriptionId: subscriptionId
+  resourceGroup: resourceGroup
+  tags: tags
+  vaultId: vaultId
+  policyId: policyId
+  originalVaultId: originalVaultId
+  deletionTime: deletionTime
+  scheduledPurgeTime: scheduledPurgeTime
+extensions:
+  hook: azure.resource

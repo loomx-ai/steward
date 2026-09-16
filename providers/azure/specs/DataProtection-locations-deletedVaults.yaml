@@ -1,0 +1,36 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.DataProtection/locations/deletedVaults
+  class: storage.backup_vault
+presentation:
+  displayNames:
+    en-US: Deleted backup vault
+    zh-CN: 已删除备份库
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: data-protection
+  list:
+    operation: Azure.Microsoft.DataProtection.DeletedBackupVaults_ListByLocation
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.DataProtection.DeletedBackupVaults_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name: name
+  state: state
+  subscriptionId: subscriptionId
+  resourceGroup: resourceGroup
+  tags: tags
+  vaultId: vaultId
+  policyId: policyId
+  originalVaultId: originalVaultId
+  deletionTime: deletionTime
+  scheduledPurgeTime: scheduledPurgeTime
+extensions:
+  hook: azure.resource

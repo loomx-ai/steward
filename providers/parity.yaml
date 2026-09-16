@@ -268,10 +268,11 @@ resources:
     resources:
     - compute.googleapis.com/ResourcePolicy
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.DataProtection/backupVaults/backupPolicies
   status: pending_verification
+  notes: Native Data Protection policy inventory is registered; deletion, workload dependencies and
+    behavioral equivalence remain unverified.
 - alicloud: ACS::Bastionhost::Instance
   spec: providers/alicloud/specs/bastionhost-instance.yaml
   class: security.bastion_host
@@ -797,10 +798,11 @@ resources:
     - backupdr.googleapis.com/BackupPlan
     - backupdr.googleapis.com/BackupPlanAssociation
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.DataProtection/backupVaults/backupPolicies
   status: pending_verification
+  notes: Native Data Protection policy inventory is registered; deletion, workload dependencies and
+    behavioral equivalence remain unverified.
 - alicloud: ACS::DCDN::Domain
   spec: providers/alicloud/specs/dcdn-domain.yaml
   class: network.cdn_domain
@@ -1469,11 +1471,13 @@ resources:
     resources:
     - backupdr.googleapis.com/BackupVault
   azure:
-    resources: []
+    resources:
+    - Microsoft.DataProtection/backupVaults
     unimplemented_resources:
     - Microsoft.RecoveryServices/vaults
-    - Microsoft.DataProtection/backupVaults
   status: pending_verification
+  notes: Data Protection active and deleted vault inventory are registered. Cleanup, restore and
+    retained lifecycle acceptance remain unfinished; Recovery Services is a separate implementation gap.
 - alicloud: ACS::Hologram::Instance
   spec: providers/alicloud/specs/hologres-instance.yaml
   class: database.analytics

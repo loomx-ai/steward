@@ -1,0 +1,40 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.DataProtection/backupVaults/backupPolicies
+  class: storage.backup_policy
+presentation:
+  displayNames:
+    en-US: Backup policy
+    zh-CN: 备份策略
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: data-protection
+  list:
+    operation: Azure.Microsoft.DataProtection.BackupPolicies_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.DataProtection.BackupPolicies_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name: name
+  state: state
+  subscriptionId: subscriptionId
+  resourceGroup: resourceGroup
+  tags: tags
+  vaultId: vaultId
+  policyId: policyId
+  originalVaultId: originalVaultId
+  deletionTime: deletionTime
+  scheduledPurgeTime: scheduledPurgeTime
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.DataProtection/backupVaults
+  targetIdPath: refs_microsoft_dataprotection_backupvaults

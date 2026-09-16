@@ -107,6 +107,9 @@ func applicationInsightsSafeValue(value any) any {
 
 func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 	u, err := url.Parse(endpoint)
+	if err == nil && u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.dataprotection" {
+		return safePayload(object(dataProtectionSafeValue(value)))
+	}
 	if err == nil && u.Host == "management.azure.com" && denyAssignmentPath(u.Path) {
 		cleaned := object(denyAssignmentSafeValue(value))
 		if value["path"] == u.Path && value["method"] == "GET" {

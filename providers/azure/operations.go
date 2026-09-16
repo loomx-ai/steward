@@ -219,6 +219,21 @@ func azureRequestID(key string) string {
 }
 
 func (c *client) resourceOperation(kind resourceType, nativeID, method string) (catalog.Operation, map[string]any, error) {
+	if kind.NativeType == dataProtectionDeletedVault {
+		id, err := c.dataProtectionIdentity(nativeID, kind.NativeType)
+		if err != nil || method != "GET" {
+			return catalog.Operation{}, nil, serviceDenied("invalid_deleted_vault_operation")
+		}
+		metadata, err := providerData()
+		if err != nil {
+			return catalog.Operation{}, nil, err
+		}
+		op, ok := metadata.catalog.Operation("Azure.Microsoft.DataProtection.DeletedBackupVaults_Get")
+		if !ok {
+			return catalog.Operation{}, nil, serviceDenied("missing_deleted_vault_operation")
+		}
+		return op, map[string]any{"subscriptionId": c.subscription, "location": strings.Split(id, "/")[6], "deletedVaultName": last(id)}, nil
+	}
 	if strings.EqualFold(kind.NativeType, deploymentStackType) {
 		scope, params, err := deploymentStackParameters(nativeID)
 		if err != nil || scope == "ManagementGroup" || !strings.EqualFold(text(params["subscriptionId"]), c.subscription) || method != "GET" {

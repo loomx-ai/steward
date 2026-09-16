@@ -1,0 +1,28 @@
+{
+  "schema_source": {
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json",
+    "sha256": "92252d08361ec3fdb60f8702e2665075d982e96ab302a8b5aa39b11da04804a0"
+  },
+  "examples": [
+    {
+      "file": "DeletedBackupVaults_Get.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/DeletedBackupVaults_Get.json",
+      "sha256": "e41857734e8c92f774f0bafc010e225ffd54062faae1d7e674629f304231de8f"
+    },
+    {
+      "file": "DeletedBackupVaults_ListByLocation.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/DeletedBackupVaults_ListByLocation.json",
+      "sha256": "8a28f32b6350b894f3d26c2efab28c7c485b583d6c9b26afc7b289429674b0ae"
+    },
+    {
+      "file": "GetBackupVault.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/VaultCRUD/GetBackupVault.json",
+      "sha256": "a20569f38aa801bbb58e1b134087bde525c077ecf5c50a96cb5f900ecfc82f59"
+    },
+    {
+      "file": "GetBackupPolicy.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/PolicyCRUD/GetBackupPolicy.json",
+      "sha256": "b8ede98492c9cec17130b860a79c2567e97deb3960f7c60f7e40f388fa143210"
+    }
+  ]
+}

@@ -2606,6 +2606,21 @@
         "DenyAssignments_Get",
         "DenyAssignments_ListForScope"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json",
+      "operations": [
+        "BackupVaults_GetInSubscription",
+        "BackupVaults_Get",
+        "BackupPolicies_List",
+        "BackupPolicies_Get",
+        "BackupInstances_List",
+        "BackupInstances_Get",
+        "DeletedBackupInstances_List",
+        "DeletedBackupInstances_Get",
+        "DeletedBackupVaults_ListByLocation",
+        "DeletedBackupVaults_Get"
+      ]
     }
   ],
   "resource_types": [
@@ -11424,6 +11439,86 @@
       "list_operations": [
         "Azure.Microsoft.Resources.DeploymentStacks_ListAtSubscription",
         "Azure.Microsoft.Resources.DeploymentStacks_ListAtResourceGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataProtection/backupVaults",
+      "class": "storage.backup_vault",
+      "display_name": "Backup vault",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "backupVaults",
+      "read_operations": [
+        "Azure.Microsoft.DataProtection.BackupVaults_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.DataProtection.BackupVaults_GetInSubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataProtection/backupVaults/backupPolicies",
+      "class": "storage.backup_policy",
+      "display_name": "Backup policy",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "backupPolicies",
+      "read_operations": [
+        "Azure.Microsoft.DataProtection.BackupPolicies_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.DataProtection.BackupPolicies_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataProtection/backupVaults/backupInstances",
+      "class": "storage.backup",
+      "display_name": "Backup instance",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "backupInstances",
+      "read_operations": [
+        "Azure.Microsoft.DataProtection.BackupInstances_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.DataProtection.BackupInstances_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataProtection/backupVaults/deletedBackupInstances",
+      "class": "storage.backup",
+      "display_name": "Deleted backup instance",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "deletedBackupInstances",
+      "read_operations": [
+        "Azure.Microsoft.DataProtection.DeletedBackupInstances_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.DataProtection.DeletedBackupInstances_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataProtection/locations/deletedVaults",
+      "class": "storage.backup_vault",
+      "display_name": "Deleted backup vault",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "deletedVaults",
+      "read_operations": [
+        "Azure.Microsoft.DataProtection.DeletedBackupVaults_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.DataProtection.DeletedBackupVaults_ListByLocation"
       ]
     }
   ]

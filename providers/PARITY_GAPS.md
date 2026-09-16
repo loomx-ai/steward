@@ -1,23 +1,23 @@
 # Provider parity implementation gaps
 
-Scope snapshot: 2026-09-15, updated for the Deployment Stacks inventory registration. This is a repository scope audit, not cloud feature acceptance. The earlier mapping repair was audited at `0c43def71dc2fdef7d6fafe6b59fd8124e9e81d9`.
+Scope snapshot: 2026-09-15, updated for the Deployment Stacks and Data Protection inventory registrations. This is a repository scope audit, not cloud feature acceptance. The earlier mapping repair was audited at `0c43def71dc2fdef7d6fafe6b59fd8124e9e81d9`.
 
-The matrix covers all 159 Alibaba Cloud specifications. The repository now contains 204 GCP and 470 Azure specifications, but those counts do not prove equivalence. All 159 rows remain pending behavioral verification.
+The matrix covers all 159 Alibaba Cloud specifications. The repository now contains 204 GCP and 475 Azure specifications, but those counts do not prove equivalence. All 159 rows remain pending behavioral verification.
 
 The earlier audit found invalid YAML, 28 Azure mapping references to 18 absent specifications, and an incorrect GCP SSH-key mapping to service-account keys. The corrected matrix keeps absent candidates in `unimplemented_resources`; it does not remove them from the requested scope.
 
 The new `go test ./providers` check runs in the existing `go test ./...` CI job. It detects invalid YAML, omitted or duplicated baseline resources, drift in baseline source/class/scope/actions/hooks/enrichment/parent discovery, unresolved implemented-resource references and stale implementation backlogs. A passing check verifies matrix consistency only.
 
-Synapse now includes workspace/pool and data-plane inventory, reviewed workspace and Spark/SQL cleanup, artifact handling and retained restore-point/backup observations. NetApp now has native specifications and inventory plus volume, pool, recovery-object, policy and vault cleanup. NetApp group/account cleanup and interface deletion effects remain unfinished. These implementations moved their existing candidates into `resources`; that change does not close behavioral acceptance. The current missing-specification table has 15 types and 18 matrix references affecting 17 Alibaba Cloud rows.
+Synapse now includes workspace/pool and data-plane inventory, reviewed workspace and Spark/SQL cleanup, artifact handling and retained restore-point/backup observations. NetApp now has native specifications and inventory plus volume, pool, recovery-object, policy and vault cleanup. NetApp group/account cleanup and interface deletion effects remain unfinished. These implementations moved their existing candidates into `resources`; that change does not close behavioral acceptance. The current missing-specification table has 13 types and 15 matrix references affecting 15 Alibaba Cloud rows.
 
 ## Current progress measures
 
 | Measure | GCP | Azure |
 | --- | --- | --- |
-| Explicit native specifications | 204 | 470 |
-| Baseline rows with at least one existing mapped specification | 155/159 (97.5%) | 141/159 (88.7%) |
-| Candidate types still without a specification | 0 | 15 |
-| Baseline rows affected by missing candidate specifications | 0 | 17 |
+| Explicit native specifications | 204 | 475 |
+| Baseline rows with at least one existing mapped specification | 155/159 (97.5%) | 144/159 (90.6%) |
+| Candidate types still without a specification | 0 | 13 |
+| Baseline rows affected by missing candidate specifications | 0 | 15 |
 | Empty mappings requiring research | 4 | 2 |
 
 These are registration/mapping measures, not functional completion percentages.
@@ -51,10 +51,8 @@ These are candidates already named by the matrix. Missing specification files me
 
 | Candidate | Alibaba Cloud rows affected |
 | --- | --- |
-| `Microsoft.DataProtection/backupVaults/backupPolicies` | `ACS::ECS::AutoSnapshotPolicy`, `ACS::DBS::BackupPlan` |
 | `Microsoft.Graph/groups` | `ACS::CloudSSO::Group`, `ACS::RAM::Group` |
 | `Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems` | `ACS::EBS::DiskReplicaGroup`, `ACS::EBS::DiskReplicaPair` |
-| `Microsoft.DataProtection/backupVaults` | `ACS::HBR::Vault` |
 | `Microsoft.Graph/users` | `ACS::RAM::User` |
 | `Microsoft.KeyVault/vaults/certificates` | `ACS::SSLCertificatesService::Certificate` |
 | `Microsoft.KeyVault/vaults/keys` | `ACS::KMS::Key` |
@@ -956,3 +954,48 @@ https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links
 Public Stack integration, missing backup/recovery and other resource families,
 full application acceptance and the remaining parity audit are still required.
 All 159 parity rows and eight overall acceptance gates remain open.
+
+
+### Data Protection active and retained inventory
+
+Five 2026-03-01 native inventory rules now cover backup vaults, policies, active
+backup instances, deleted backup instances and region-scoped deleted vaults.
+Ten official list/get operations and their schema closure are pinned in the
+catalog. Discovery uses native collections and own reads, not the general ARM
+resource index. Child observations bind the live parent configuration and region.
+Known omitted resources remain visible until their own read returns absence;
+missing or forbidden parent/collection reads cannot erase children.
+
+The registered source checks native pagination scope/version, duplicates, partial
+responses, parent changes and private configuration drift across serialized client
+continuations. Its source advertises known-ID reconciliation. Two observed passes
+must agree, though this is not an atomic Azure snapshot. Native source credentials
+and arbitrary workload settings are excluded from persisted payloads and API logs.
+
+Deleted vault request paths use `locations/{location}/deletedVaults/{name}`.
+Microsoft's unmodified examples instead return `deletedBackupVaults` in their IDs
+and a shortened resource type. An exact response alias preserves the subscription,
+region and deletion identity while requests retain the declared operation path.
+The original vault ID is descriptive retention metadata, not ownership of an
+active same-name replacement. Multiple retained deletion identities stay separate.
+The unchanged examples, pinned hashes and discrepancy are documented under
+`azure/fixtures/dataprotection/`.
+
+Only inventory is registered in this milestone. The three active kinds are
+explicitly protected while native deletion, workload dependency preparation and
+recovery/retention actions are implemented. The two naturally retained kinds have
+no invented delete operation. Moving vault/policy candidates into the matrix's
+registered resources closes their missing-specification entries only; full behavior
+remains pending. Recovery Services vaults are still a separate missing family.
+
+Official references (reviewed 2026-09-17):
+https://learn.microsoft.com/en-us/rest/api/dataprotection/backup-vaults/get?view=rest-dataprotection-2026-03-01
+https://learn.microsoft.com/en-us/rest/api/dataprotection/deleted-backup-vaults?view=rest-dataprotection-2026-03-01
+https://learn.microsoft.com/en-us/azure/backup/secure-by-default
+
+All 159 behavior rows and eight overall gates remain open. Offline examples and
+protocol fixtures do not establish independent-emulator or live-cloud acceptance.
+
+Validation for the Data Protection inventory milestone: full Azure tests, focused
+race tests, Azure vet, provider parity/catalog checks and shared inventory tests
+passed. No cloud mutation or live-cloud acceptance is claimed.

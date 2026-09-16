@@ -1,0 +1,43 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.DataProtection/backupVaults/deletedBackupInstances
+  class: storage.backup
+presentation:
+  displayNames:
+    en-US: Deleted backup instance
+    zh-CN: 已删除备份实例
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: data-protection
+  list:
+    operation: Azure.Microsoft.DataProtection.DeletedBackupInstances_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.DataProtection.DeletedBackupInstances_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name: name
+  state: state
+  subscriptionId: subscriptionId
+  resourceGroup: resourceGroup
+  tags: tags
+  vaultId: vaultId
+  policyId: policyId
+  originalVaultId: originalVaultId
+  deletionTime: deletionTime
+  scheduledPurgeTime: scheduledPurgeTime
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.DataProtection/backupVaults
+  targetIdPath: refs_microsoft_dataprotection_backupvaults
+- type: uses
+  targetType: Microsoft.DataProtection/backupVaults/backupPolicies
+  targetIdPath: refs_microsoft_dataprotection_backupvaults_backuppolicies

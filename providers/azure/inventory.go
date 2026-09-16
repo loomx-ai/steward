@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource && request.Source != synapseSource && request.Source != synapseDataInventorySource && request.Source != synapseBackupSource && request.Source != netappSource && request.Source != deploymentStackSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource && request.Source != synapseSource && request.Source != synapseDataInventorySource && request.Source != synapseBackupSource && request.Source != netappSource && request.Source != deploymentStackSource && request.Source != dataProtectionSource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	protection := request.ResourceKind != nil && dataProtectionKind(request.ResourceKind.NativeType) != ""
+	if request.Source == dataProtectionSource && !protection || protection && request.Source != "" && request.Source != inventorySource && request.Source != dataProtectionSource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_data_protection_source")
 	}
 	stack := request.ResourceKind != nil && strings.EqualFold(request.ResourceKind.NativeType, deploymentStackType)
 	if request.Source == deploymentStackSource && !stack || stack && request.Source != "" && request.Source != inventorySource && request.Source != deploymentStackSource {
@@ -86,6 +90,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if protection {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = dataProtectionSource
+		return r.listDataProtection(ctx, c, request)
 	}
 	if stack {
 		if request.Source == inventorySource {
