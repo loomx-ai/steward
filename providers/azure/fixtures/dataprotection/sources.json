@@ -48,6 +48,26 @@
       "file": "GetResourceGuardProxy.json",
       "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-06-01/examples/ResourceGuardProxyCRUD/GetResourceGuardProxy.json",
       "sha256": "136f9982197a273db0899cb60f16f9c3f35d227ecf93e76314df67748e6630de"
+    },
+    {
+      "file": "GetBackupInstance.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/BackupInstanceOperations/GetBackupInstance.json",
+      "sha256": "af3b632b385ff6204b50b080e1b3ebde72335647072ffb0461e14fbda59e6e48"
+    },
+    {
+      "file": "GetBackupInstance_ADLSBlobBackupDatasourceParameters.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/BackupInstanceOperations/GetBackupInstance_ADLSBlobBackupDatasourceParameters.json",
+      "sha256": "ce0b5574b8d70a40093a70204b7a3a311547e9a1878b1fabadb4fa3c5e13162e"
+    },
+    {
+      "file": "GetBackupInstance_ADLSBlobBackupAutoProtection.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/BackupInstanceOperations/GetBackupInstance_ADLSBlobBackupAutoProtection.json",
+      "sha256": "da80f8a216f9f8abc121d55da7fd0a7bb229224ae4bde01cb6eeb6bc213e726f"
+    },
+    {
+      "file": "GetBackupInstance_BlobBackupAutoProtection.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/BackupInstanceOperations/GetBackupInstance_BlobBackupAutoProtection.json",
+      "sha256": "f79780dec077384a3690ef81d246dd3d0d15b9511dff2d65cb24290310b4db02"
     }
   ],
   "vault_schema_source": {

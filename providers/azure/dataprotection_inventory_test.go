@@ -330,7 +330,7 @@ func TestDataProtectionExampleSourceIntegrity(t *testing.T) {
 	if err = json.Unmarshal(raw, &sources); err != nil {
 		t.Fatal(err)
 	}
-	if len(sources.Examples) != 9 {
+	if len(sources.Examples) != 13 {
 		t.Fatal("missing official examples")
 	}
 	for _, example := range sources.Examples {

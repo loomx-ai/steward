@@ -169,7 +169,7 @@ func TestDataProtectionInstanceNativeDeleteRestartAndRetention(t *testing.T) {
 func TestDataProtectionInstanceCleanupWorkerKeepsOtherBackups(t *testing.T) {
 	f := newProtectionInstanceFixture(t)
 	repo, registry, path := azureNativeWorkerRepository(t, f.runtime)
-	values := azureNativeWorkerScan(t, f.runtime, dataProtectionSource, repo, registry, []string{dataProtectionVault, dataProtectionPolicy, dataProtectionInstance, dataProtectionDeletedInstance, dataProtectionDeletedVault}, false, false)
+	values := azureNativeWorkerScan(t, f.runtime, dataProtectionSource, repo, registry, []string{dataProtectionVault, dataProtectionPolicy, dataProtectionInstance, dataProtectionDeletedInstance, dataProtectionDeletedVault}, false, true)
 	var instance asset.Asset
 	for _, v := range values {
 		if v.Identity.NativeID == f.instance {

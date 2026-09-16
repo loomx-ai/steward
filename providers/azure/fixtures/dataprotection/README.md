@@ -59,3 +59,22 @@ callback scope/version restrictions and signing-material redaction. The all-zero
 subscription is the upstream recording's sanitization, not an application account.
 The recording stops at the operation result; own absence and retention behavior
 are covered by separate protocol/SQLite tests rather than claimed as recorded facts.
+
+Four unchanged BackupInstances_Get examples cover PostgreSQL, Blob and ADLS
+source descriptors. The PostgreSQL example uses `OssDB` as resourceType while
+resourceID identifies a database and a separate server; Blob/ADLS examples use
+the same storage account in dataSourceInfo and dataSourceSetInfo. Source graph
+references therefore derive the native type only from each valid ARM resourceID
+and deduplicate identical IDs. Workload labels and resourceUri are not request
+addresses. Opaque non-Azure source IDs are not fabricated into Azure assets.
+
+The native graph contributor rereads the active backup instance and requires its
+full private configuration to match the inventory snapshot. Same-connection
+sources become independent `uses` relationships; foreign subscriptions, other
+connections and unscanned sources remain unresolved references. No source GET or
+mutation is issued by this contributor. Retained backup instances do not create
+live source dependencies. Tests cover native scan/SQLite graph persistence,
+explicitly selected cleanup ordering, source-only/backup-only selection, malformed
+source descriptors, duplicate identities, changed configurations and read failures.
+The instance cleanup worker test now uses the native graph contributor as well.
+This is not a subscription-wide reverse backup index or live-cloud acceptance.

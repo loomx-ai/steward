@@ -1083,3 +1083,26 @@ source workloads/security settings.
 Coordinated vault/instance/policy cleanup, retained restore/purge workflows,
 cross-tenant auxiliary authorization and independent-emulator/live acceptance remain
 unfinished. The 159 behavior rows and eight overall gates remain open.
+
+### Data Protection source workload references
+
+Active backup instances now contribute native `dataSourceInfo.resourceID` and
+`dataSourceSetInfo.resourceID` references after an own GET matches the private
+inventory configuration. Exact ARM IDs determine native types: the unchanged
+PostgreSQL example uses `OssDB` as its workload label, while Blob and ADLS source
+and source-set descriptors can name the same storage account. Duplicate IDs are
+collapsed; opaque non-Azure identifiers and resourceUri are never treated as ARM
+endpoints. Invalid ARM descriptors fail inventory/graph validation.
+
+Source workloads remain independently selected assets with no cascade ownership.
+When both backup and source are selected, the source step follows the backup step;
+selecting either alone never automatically selects the other. Retained backup
+history does not create a live source dependency. Cross-subscription, mismatched
+connection/partition and unscanned targets remain unresolved references without
+following their endpoints. Registered scans, persisted SQLite graph/plan ordering
+and the existing resumable instance cleanup worker cover this integration.
+
+A complete reverse index for sources outside the scanned backup inventory,
+coordinated vault/policy preparation, retained recovery workflows and independent
+emulator/live acceptance remain open. All 159 parity rows and eight overall
+acceptance gates remain pending.

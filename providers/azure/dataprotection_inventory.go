@@ -100,6 +100,9 @@ func (c *client) dataProtectionMetadata(raw map[string]any, id, kind string) err
 		if err != nil || redisParentID(policy) != redisParentID(id) {
 			return serviceDenied("invalid_backup_instance_policy")
 		}
+		if _, err := dataProtectionSourceReferences(raw); err != nil {
+			return err
+		}
 	case dataProtectionGuardProxy:
 		guard := text(props["resourceGuardResourceId"])
 		_, guardKind, err := parseID(guard)
