@@ -11,7 +11,7 @@ import (
 )
 
 func TestDeploymentStackPrerequisiteExecution(t *testing.T) {
-	for _, mode := range []string{"complete", "pending", "operation_failed", "delete_forbidden", "readback_forbidden", "changed_job", "changed_state", "unknown_state_field", "changed_active_receipt", "resume_progress", "missing_job", "root_changed", "completed_child_returns"} {
+	for _, mode := range []string{"complete", "pending", "operation_failed", "delete_forbidden", "readback_forbidden", "changed_job", "changed_state", "unknown_state_field", "changed_active_receipt", "resume_progress", "missing_job", "root_changed", "completed_child_returns", "completed_returns_while_active", "active_absent_lock"} {
 		t.Run(mode, func(t *testing.T) {
 			parent := actionAsset(hostGroupType, "parent")
 			a, z := actionAsset(hostType, "a"), actionAsset(hostType, "z")
@@ -99,6 +99,9 @@ func TestDeploymentStackPrerequisiteExecution(t *testing.T) {
 				case "/subscriptions/" + testSubscription + "/resourcegroups/test":
 					return jsonResponse(200, map[string]any{"id": path, "type": groupType}, nil), nil
 				case "/subscriptions/" + testSubscription + "/providers/microsoft.authorization/locks":
+					if mode == "active_absent_lock" && fault {
+						return jsonResponse(200, map[string]any{"value": []any{map[string]any{"id": a.Identity.NativeID + "/providers/Microsoft.Authorization/locks/hold", "properties": map[string]any{"level": "CanNotDelete"}}}}, nil), nil
+					}
 					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 				default:
 					t.Fatalf("unexpected prerequisite stage request %s", q.URL)
@@ -157,17 +160,34 @@ func TestDeploymentStackPrerequisiteExecution(t *testing.T) {
 						root["tags"] = map[string]any{"changed": "yes"}
 					}
 				}
+				returnedWhileActive := false
+				if mode == "completed_returns_while_active" {
+					state, err := c.deploymentStackReadPrerequisiteState(req, deploymentStackProgress{}, saved)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if len(state.Progress.Executions) > 0 && state.Active != nil {
+						gone[a.Identity.NativeID] = false
+						returnedWhileActive = true
+					}
+				}
 				priorCalls, priorDeletes, priorLists := calls, len(deletes), lists
 				if mode == "resume_progress" {
 					out, err = r.deploymentStackAdvancePrerequisites(t.Context(), req, deploymentStackProgress{Executions: []map[string]any{{}}}, saved)
 				} else {
 					out, err = r.deploymentStackAdvancePrerequisites(t.Context(), req, deploymentStackProgress{}, saved)
 				}
-				if mode != "complete" && mode != "pending" && mode != "completed_child_returns" {
+				if returnedWhileActive {
+					if err == nil || out.Done || out.Data != nil || len(deletes) != priorDeletes || !strings.Contains(err.Error(), "deployment_stack_completed_member_reappeared") {
+						t.Fatal("completed resource reappearance hidden during another active operation", out, err, deletes)
+					}
+					return
+				}
+				if mode != "complete" && mode != "pending" && mode != "completed_child_returns" && mode != "completed_returns_while_active" {
 					if err == nil || out.Done || out.Data != nil || len(deletes) != 1 {
 						t.Fatal("invalid stage resumed", out, err, deletes)
 					}
-					if mode != "root_changed" && mode != "readback_forbidden" && mode != "operation_failed" && calls != priorCalls {
+					if mode != "root_changed" && mode != "readback_forbidden" && mode != "operation_failed" && mode != "active_absent_lock" && calls != priorCalls {
 						t.Fatal("invalid checkpoint reached HTTP", calls, priorCalls)
 					}
 					return
@@ -186,6 +206,9 @@ func TestDeploymentStackPrerequisiteExecution(t *testing.T) {
 				if out.Done {
 					break
 				}
+			}
+			if mode == "completed_returns_while_active" {
+				t.Fatal("did not exercise a prior completion during active execution")
 			}
 			if !out.Done || !slices.Equal(deletes, []string{a.Identity.NativeID, z.Identity.NativeID}) {
 				t.Fatal("stage did not complete once per prerequisite", out, deletes)

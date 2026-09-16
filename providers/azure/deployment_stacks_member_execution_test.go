@@ -3,6 +3,7 @@ package azure
 import (
 	"encoding/json"
 	"errors"
+	"maps"
 	"net/http"
 	"slices"
 	"strings"
@@ -184,9 +185,15 @@ func TestDeploymentStackMemberExecution(t *testing.T) {
 }
 
 func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
-	for _, mode := range []string{"native_phases", "prepared", "flat_prepared", "delete_all"} {
+	for _, mode := range []string{"native_phases", "prepared", "flat_prepared", "delete_all", "guarded", "guarded_flat"} {
 		t.Run(mode, func(t *testing.T) {
 			live := attachmentResources()
+			guarded := strings.HasPrefix(mode, "guarded")
+			other := actionAsset(diskType, "other")
+			if guarded {
+				live["other"] = nativeResource(diskType, "other", "eastus", map[string]any{"uniqueId": "original-other", "provisioningState": "Succeeded"})
+				other.Normalized = map[string]any{"_arm_creation_generation": creationGeneration(live["other"])}
+			}
 			var req contracts.ActionRequest
 			var root map[string]any
 			writes := []string{}
@@ -211,6 +218,9 @@ func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
 				if strings.EqualFold(q.URL.Path, req.Asset.Identity.NativeID) && q.Method == "GET" {
 					return jsonResponse(200, root, nil), nil
 				}
+				if q.Method == "GET" && strings.HasSuffix(strings.ToLower(q.URL.Path), "/locks") && fault == "guard_lock" {
+					return jsonResponse(200, map[string]any{"value": []any{map[string]any{"id": other.Identity.NativeID + "/providers/Microsoft.Authorization/locks/hold", "properties": map[string]any{"level": "CanNotDelete"}}}}, nil), nil
+				}
 				if q.Method == "GET" && (strings.HasSuffix(strings.ToLower(q.URL.Path), "/locks") || strings.EqualFold(q.URL.Path, text(live["vm"]["id"])+"/extensions")) {
 					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 				}
@@ -222,6 +232,27 @@ func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
 						continue
 					}
 					if q.Method == "GET" {
+						if name == "other" {
+							switch fault {
+							case "guard_protected":
+								changed := maps.Clone(raw)
+								changed["tags"] = map[string]any{"steward/protected": "true"}
+								return jsonResponse(200, changed, nil), nil
+							case "guard_forbidden":
+								return jsonResponse(403, map[string]any{}, nil), nil
+							case "guard_missing":
+								return jsonResponse(404, map[string]any{}, nil), nil
+							case "guard_recreated":
+								changed := maps.Clone(raw)
+								props := maps.Clone(object(raw["properties"]))
+								props["uniqueId"] = "replacement"
+								changed["properties"] = props
+								return jsonResponse(200, changed, nil), nil
+							}
+						}
+						if name == "ip" && fault == "guard_retained_missing" {
+							return jsonResponse(404, map[string]any{}, nil), nil
+						}
 						if observing {
 							if name == "vm" {
 								sawVM = true
@@ -287,9 +318,14 @@ func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
 					req.LifecycleImpacts[i].Delete = true
 				}
 			}
-			if mode == "flat_prepared" {
+			if guarded {
+				req.LifecycleImpacts = append(req.LifecycleImpacts, contracts.ActionImpact{Asset: other, ControllerID: req.Asset.ID, Delete: true})
+				properties := object(root["properties"])
+				properties["resources"] = append(properties["resources"].([]any), map[string]any{"id": other.Identity.NativeID, "status": "managed", "denyStatus": "none"})
+			}
+			if mode == "flat_prepared" || guarded {
 				for i := range req.LifecycleImpacts {
-					if req.LifecycleImpacts[i].Asset.ID == "nic" {
+					if req.LifecycleImpacts[i].Asset.ID == "nic" && mode != "guarded" {
 						req.LifecycleImpacts[i].ControllerID = req.Asset.ID
 						properties := object(root["properties"])
 						properties["resources"] = append(properties["resources"].([]any), map[string]any{"id": req.LifecycleImpacts[i].Asset.Identity.NativeID, "status": "managed", "denyStatus": "none"})
@@ -330,6 +366,35 @@ func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
 				}
 				progress.Preparations = []map[string]any{preparation}
 			}
+			advanceGuarded := func(receipt map[string]any) (contracts.WaitResult, error) {
+				state := deploymentStackPrerequisiteState{Active: receipt}
+				binding, err := c.deploymentStackPrerequisiteBinding(req, state)
+				if err != nil {
+					return contracts.WaitResult{}, err
+				}
+				wire, _ := json.Marshal(map[string]any{"state": state, "binding": binding})
+				var checkpoint map[string]any
+				if err := json.Unmarshal(wire, &checkpoint); err != nil {
+					return contracts.WaitResult{}, err
+				}
+				if fault == "guard_bad_receipt" {
+					object(object(checkpoint["state"])["active"])["binding"] = "changed"
+				}
+				next, err := r.deploymentStackAdvancePrerequisites(t.Context(), req, deploymentStackProgress{}, checkpoint)
+				if err != nil {
+					return next, err
+				}
+				updated, err := c.deploymentStackReadPrerequisiteState(req, deploymentStackProgress{}, next.Data)
+				if err != nil {
+					return contracts.WaitResult{}, err
+				}
+				next.Data = updated.Active
+				if updated.Active == nil {
+					next.Done = true
+					next.Data = updated.Progress.Executions[len(updated.Progress.Executions)-1]
+				}
+				return next, nil
+			}
 			var saved map[string]any
 			completed := false
 			for step := 0; step < 8; step++ {
@@ -340,6 +405,26 @@ func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
 				var err error
 				if step == 0 {
 					out, err = r.deploymentStackExecuteMemberWithProgress(t.Context(), req, "vm", nil, progress)
+				} else if guarded {
+					if step == 1 {
+						for _, testFault := range []string{"guard_protected", "guard_lock", "guard_forbidden", "guard_missing", "guard_recreated", "guard_retained_missing", "guard_bad_receipt"} {
+							t.Run(testFault, func(t *testing.T) {
+								fault = testFault
+								before, _ := json.Marshal(saved)
+								priorCalls, priorWrites := calls, len(writes)
+								blocked, err := advanceGuarded(saved)
+								after, _ := json.Marshal(saved)
+								if err == nil || blocked.Data != nil || blocked.Done || len(writes) != priorWrites || string(before) != string(after) {
+									t.Fatal("active scope did not stop product Wait mutation", blocked.State, err, writes)
+								}
+								if testFault == "guard_bad_receipt" && calls != priorCalls {
+									t.Fatal("tampered active scope reached HTTP")
+								}
+							})
+						}
+						fault = ""
+					}
+					out, err = advanceGuarded(saved)
 				} else {
 					out, err = r.deploymentStackExecuteMember(t.Context(), req, "vm", saved)
 				}

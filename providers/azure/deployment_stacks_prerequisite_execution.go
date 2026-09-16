@@ -85,6 +85,9 @@ func (r *Runtime) deploymentStackAdvancePrerequisites(ctx context.Context, req c
 	}
 	var result contracts.WaitResult
 	if state.Active != nil {
+		if err = r.deploymentStackGuardActiveScope(ctx, req, state); err != nil {
+			return out, err
+		}
 		// The active target may already return 404 after an accepted DELETE. Resume
 		// its exact persisted native phase before enumerating remaining membership.
 		id := asset.AssetID(text(state.Active["member"]))

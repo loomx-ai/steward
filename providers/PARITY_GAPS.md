@@ -603,3 +603,35 @@ Active prerequisite drivers can have their own multi-phase waits and mutations;
 those still need end-to-end scope validation and orchestration acceptance.
 Specialized prerequisite semantics and Stack action/graph/planner/executor
 registration remain unfinished. All 159 parity rows and eight gates remain open.
+
+### Active Stack prerequisite protection snapshots
+
+Before an authenticated active member enters its actual product Wait, the
+prerequisite stage now rereads Stack protection, ARM locks and every reviewed
+member's own endpoint. Explicit protection tags (including DNS metadata tags),
+locks on reviewed deletions, changed recorded creation identities, unexpected
+missing resources and missing retained resources stop phase advancement. A
+recorded completed member or its deleted descendants returning live also stops
+advancement. All nested receipts are authenticated before member HTTP reads.
+
+Only the active product request's deleted subtree and authenticated prior
+completed requests may be absent during this protection snapshot. Such absence
+is not promoted to Completed and does not create an execution receipt. The actual
+product Wait and readback still establish progress. Locks are checked even when
+an active target already returns 404. Active child collections are not blindly
+re-enumerated during their asynchronous deletion.
+
+The real VM driver fixture now resumes through the prerequisite stage in nested
+and flat layouts. It checks protection/lock/403/unexpected-404/recreation/retained
+IP failures before Wait can issue its next PATCH, then completes the original
+PUT/PATCH/DELETE sequence once after the condition clears. Removing the guard
+reproduces the protected-sibling regression. Separate staged host fixtures check
+an absent active target's lock and a prior completion returning while the second
+operation is active. Serialized native checkpoints and malformed-receipt rejection
+remain exercised.
+
+This snapshot is explicit protection and presence validation, not full service
+membership or specialized product preflight during an active mutation. Product
+phase-specific checks remain in the actual driver; native group/service closure,
+specialized semantics and full Stack action/graph/planner/executor acceptance
+still need work. All 159 parity rows and eight overall gates remain open.
