@@ -492,6 +492,10 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	normalized["resource_group"] = parts[4]
 	normalized["_inventory_source"] = inventorySource
 	normalized["_arm_generation"] = productGeneration(raw)
+	if nativeType == groupType {
+		normalized["_resource_group_configuration"] = c.privateConfiguration(raw)
+		normalized["_resource_group_location"] = text(raw["location"])
+	}
 	if creation := creationGeneration(raw); creation != "" {
 		normalized["_arm_creation_generation"] = creation
 	}

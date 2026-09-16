@@ -14,6 +14,12 @@ import (
 // The generic group index is one part of closure, not a replacement for native
 // child/service/attachment discovery or product-specific deletion preflight.
 func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.ActionRequest, group asset.Asset, configurations map[string]any, state deploymentStackObservedProgress) (map[string]any, error) {
+	return c.reviewedResourceGroupIndex(ctx, req, group, configurations, state.Members, state.Completed)
+}
+
+// Shared native group index; callers supply their own authenticated plan and progress.
+// It does not require or fabricate Stack membership or execution receipts.
+func (c *client) reviewedResourceGroupIndex(ctx context.Context, req contracts.ActionRequest, group asset.Asset, configurations map[string]any, members map[asset.AssetID]asset.Asset, completed map[asset.AssetID]bool) (map[string]any, error) {
 	metadata, err := providerData()
 	if err != nil {
 		return nil, err
@@ -31,7 +37,7 @@ func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.Ac
 	for _, impact := range req.LifecycleImpacts {
 		impacts[strings.ToLower(impact.Asset.Identity.NativeID)] = impact
 	}
-	if current, found := state.Members[group.ID]; found {
+	if current, found := members[group.ID]; found {
 		group = current
 	}
 	current, err := c.deploymentStackMemberRead(ctx, group)
@@ -83,7 +89,7 @@ func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.Ac
 				}
 				member = impact.Asset
 			}
-			if state.Completed[member.ID] {
+			if completed[member.ID] {
 				if _, err := c.deploymentStackMemberRead(ctx, member); !isNotFound(err) {
 					if err != nil {
 						return nil, err
@@ -92,7 +98,7 @@ func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.Ac
 				}
 				continue
 			}
-			if current, found := state.Members[member.ID]; found {
+			if current, found := members[member.ID]; found {
 				member = current
 			}
 			live, err := c.deploymentStackMemberRead(ctx, member)
@@ -115,7 +121,7 @@ func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.Ac
 	// Known top-level resources still need to be in the generic index. Subresource
 	// membership is established by the separate native service child enumerations.
 	for id, impact := range impacts {
-		if !state.Completed[impact.Asset.ID] && inResourceGroup(id, group.Identity.NativeID) && len(strings.Split(strings.Trim(id, "/"), "/")) == 8 && snapshot[id] == nil {
+		if !completed[impact.Asset.ID] && inResourceGroup(id, group.Identity.NativeID) && len(strings.Split(strings.Trim(id, "/"), "/")) == 8 && snapshot[id] == nil {
 			return nil, serviceDenied("deployment_stack_group_index_omitted_reviewed_resource")
 		}
 	}

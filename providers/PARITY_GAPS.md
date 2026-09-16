@@ -159,10 +159,40 @@ Projection is still only a plan-shape check. Native membership/closure reads and
 actual product preflight must confirm those relationships. No Stack membership or
 execution receipt is fabricated for the resource group.
 
-This is operation transport and request projection support, not a registered resource-group action.
-Group scope review, native child/product closure, actual DELETE submission and
-independent final group/member readbacks still need integration before catalog
-activation. Native operation completion alone never proves cleanup completion.
+An internal resource-group lifecycle now connects these pieces to actual native
+DELETE submission and read-only recovery. Inventory preserves a private full group
+configuration fingerprint and its native location. Two live group indexes bracket
+registered product preflights; native Monitor indexes additionally discover omitted
+extension resources such as scoped budgets. Existing dependency wrappers retain
+RBAC, diagnostic and incoming-reference checks. Locks, protected tags, managed
+ownership, unreviewed resources and failed or incomplete reads prevent submission.
+Intrinsic service children use only an already-checked native parent's context.
+Native group deletion additionally checks VM/NIC attachment preparation readiness:
+ordinary product Preflight can allow a later Execute to apply Delete-to-Detach,
+but group DELETE skips that Execute. Live attachment evaluation must report no
+remaining updates. VM/disk and NIC/public-IP tests prove unprepared retention stops
+before DELETE, while prepared retention survives native deletion; missing or
+recreated retained resources invalidate recovery. Removing the guard reproduced
+an unsafe DELETE in both fixtures. Migration/recovery and specialized drivers still
+require their explicit native-cascade preparation contract; they are not implicitly
+opted in merely because their ordinary product preflight succeeds.
+
+Recovery authenticates the original request/job receipt before polling, then checks
+the group, every deleted member's actual product Readback plus own ARM read, retained
+member creation identities and prerequisite product readbacks. Repeated observations
+and a final group read prevent group 404 from hiding surviving or returning members.
+Protocol tests exercise disk and SQL server/master cascades, synchronous/async
+acceptance, JSON recovery, hidden budgets and failed/reappearing resources. SQL
+live-resource absence still does not establish permanent purge of a soft-deleted
+server. The group API's lack of a universal creation token still limits detecting
+same-ID, same-configuration group recreation.
+
+This remains an internal lifecycle, not a registered resource-group action. Full
+prepared/prerequisite checkpoint recovery, all-family acceptance, native extension
+inventory integration and graph/planner/executor wiring remain required before
+catalog activation. In particular, the shared generic index still conservatively
+rejects a reviewed top-level resource omitted by ARM even if its product index can
+find it. Native operation completion alone never proves cleanup completion.
 See `azure/fixtures/resource-groups/README.md` for pinned evidence and the explicit
 boundary between recording replay and synthetic signing-rotation tests. All 159
 parity rows and eight overall gates remain open.
