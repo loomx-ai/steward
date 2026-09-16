@@ -1,6 +1,6 @@
 # Data Protection native inventory and policy deletion evidence
 
-The unmodified Microsoft 2026-03-01 examples and their pinned URLs/SHA-256 values
+The unmodified Microsoft API examples and their pinned URLs/SHA-256 values
 are listed in sources.json. They are API examples, not cloud recordings.
 
 DeletedBackupVaults has a native request path ending in locations/{location}/
@@ -25,7 +25,7 @@ graph, plan and cleanup worker test recreates the runtime and repository between
 retries, preserves the receipt, and verifies that other backups remain untouched.
 Permission failures are refused; transient service failures exercise retry recovery.
 
-Vault actions, coordinated workload dependencies, retained recovery and
+Coordinated workload dependencies, retained recovery and
 independent emulator/live-cloud acceptance remain unfinished. The API has no
 If-Match guard or universally available incarnation ID; repeated configuration
 checks do not provide atomic protection against concurrent same-ID replacement.
@@ -43,3 +43,19 @@ failed/unknown states and malformed results. Registered action tests cover sync 
 async deletion, changed reviews and retained-data reconciliation. A real SQLite
 scan/graph/plan/worker test resumes after read failure and keeps other backups active.
 Completion means active-instance absence; it never claims permanent backup purge.
+
+
+Vault operations use 2026-06-01. GetResourceGuardProxy.json retains Microsoft's
+`Microsoft.DataProtection/vaults/backupResourceGuardProxies` response type alias;
+its resource ID still uses `backupVaults`. Only the exact type alias is accepted.
+The ID, subscription, vault and native child name must match. External Resource
+Guard IDs are descriptive dependencies and do not authorize following/deleting them.
+
+vault-delete-recording.json extracts interactions 5-8 without rewriting any URL,
+response body or selected callback header from the pinned Azure CLI recording.
+Its source URL, original YAML SHA-256 and interaction indices are embedded.
+The replay verifies exact signed requests, phase persistence across runtime restart,
+callback scope/version restrictions and signing-material redaction. The all-zero
+subscription is the upstream recording's sanitization, not an application account.
+The recording stops at the operation result; own absence and retention behavior
+are covered by separate protocol/SQLite tests rather than claimed as recorded facts.

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "7f5d7d20aeb04eb2221d88c16e5d9ee3975b0dbcb526c34f3fc71b6f71fb9f36",
+    "checksum": "dc5086fb4c26d533476b996a63ab3d747493abc6a13b1e53b7cd164c68738010",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "26b9ffc2ab9fd874eec9446b10379d0e25c6de5b42952bc3d0c9240cd655c559",
+  "content_checksum": "35acb51f320eaa433fde37d9fce66a4376689ec9b294bea2ec24113494b5fb19",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -75616,6 +75616,63 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
     },
     {
+      "id": "Azure.Microsoft.DataProtection.BackupVaults_Delete",
+      "name": "BackupVaults_Delete",
+      "service": "Microsoft.DataProtection",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the BackupVaultResource",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataProtection",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-06-01/dataprotection.json"
+    },
+    {
       "id": "Azure.Microsoft.DataProtection.BackupVaults_Get",
       "name": "BackupVaults_Get",
       "service": "Microsoft.DataProtection",
@@ -75626,7 +75683,7 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2026-03-01"
+              "2026-06-01"
             ],
             "in": "query",
             "type": "string"
@@ -75687,7 +75744,7 @@
       },
       "call": {
         "product": "Microsoft.DataProtection",
-        "version": "2026-03-01",
+        "version": "2026-06-01",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
@@ -75696,7 +75753,7 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-06-01/dataprotection.json"
     },
     {
       "id": "Azure.Microsoft.DataProtection.BackupVaults_GetInSubscription",
@@ -75709,7 +75766,7 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2026-03-01"
+              "2026-06-01"
             ],
             "in": "query",
             "type": "string"
@@ -75749,7 +75806,7 @@
       },
       "call": {
         "product": "Microsoft.DataProtection",
-        "version": "2026-03-01",
+        "version": "2026-06-01",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
@@ -75758,7 +75815,7 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-06-01/dataprotection.json"
     },
     {
       "id": "Azure.Microsoft.DataProtection.DeletedBackupInstances_Get",
@@ -76062,6 +76119,165 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataProtection.DppResourceGuardProxy_Get",
+      "name": "DppResourceGuardProxy_Get",
+      "service": "Microsoft.DataProtection",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupResourceGuardProxies/{resourceGuardProxyName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGuardProxyName": {
+            "description": "name of the resource guard proxy",
+            "in": "path",
+            "name": "resourceGuardProxyName",
+            "pattern": "^[A-Za-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the backup vault.",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "ResourceGuardProxyBaseResource object, used for response and request bodies for ResourceGuardProxy APIs",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/ResourceGuardProxyBase",
+            "description": "ResourceGuardProxyBaseResource properties"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataProtection",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupResourceGuardProxies/{resourceGuardProxyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-06-01/dataprotection.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataProtection.DppResourceGuardProxy_List",
+      "name": "DppResourceGuardProxy_List",
+      "service": "Microsoft.DataProtection",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupResourceGuardProxies",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the backup vault.",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/DppResourceList"
+          }
+        ],
+        "description": "List of ResourceGuardProxyBase resources",
+        "properties": {
+          "value": {
+            "description": "List of resources.",
+            "items": {
+              "$ref": "#/definitions/ResourceGuardProxyBaseResource"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataProtection",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}/backupResourceGuardProxies",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-06-01/dataprotection.json"
     },
     {
       "id": "Azure.Microsoft.DataProtection.OperationResult_Get",
@@ -144094,6 +144310,9 @@
         "collection": "backupVaults",
         "read_operations": [
           "Azure.Microsoft.DataProtection.BackupVaults_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataProtection.BackupVaults_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.DataProtection.BackupVaults_GetInSubscription"

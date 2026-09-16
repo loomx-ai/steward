@@ -139,6 +139,7 @@ const (
 	WarningNetappSnapshotPolicyDelete    WarningCode = "netapp_snapshot_policy_delete"
 	WarningNetappPoolDelete              WarningCode = "netapp_pool_delete"
 	WarningNetappVolumeDelete            WarningCode = "netapp_volume_delete"
+	WarningDataProtectionVaultDelete     WarningCode = "data_protection_vault_delete"
 	WarningDataProtectionInstanceDelete  WarningCode = "data_protection_instance_delete"
 	WarningSynapseRestorePointDelete     WarningCode = "synapse_restore_point_delete"
 	WarningNativeDeleteAffectsController WarningCode = "native_delete_affects_other_controller"

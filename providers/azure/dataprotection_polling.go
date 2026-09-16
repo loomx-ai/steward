@@ -26,8 +26,24 @@ func (c *client) dataProtectionPollURL(id, region, endpoint, role string) (strin
 		return "", serviceDenied("invalid_data_protection_operation_path")
 	}
 	q, err := url.ParseQuery(u.RawQuery)
-	if err != nil || len(q) != 1 || len(q["api-version"]) != 1 || q.Get("api-version") != dataProtectionVersion {
+	if err != nil || len(q["api-version"]) != 1 || q.Get("api-version") != dataProtectionReadVersion(kind) {
 		return "", serviceDenied("invalid_data_protection_operation_version")
+	}
+	signed := 0
+	for key, values := range q {
+		if len(values) != 1 || values[0] == "" || strings.ContainsAny(values[0], "\x00\r\n\t ") {
+			return "", serviceDenied("invalid_data_protection_operation_query")
+		}
+		if key == "api-version" {
+			continue
+		}
+		if kind != dataProtectionVault || !slices.Contains([]string{"t", "c", "s", "h"}, key) {
+			return "", serviceDenied("unknown_data_protection_operation_query")
+		}
+		signed++
+	}
+	if signed != 0 && signed != 4 {
+		return "", serviceDenied("incomplete_data_protection_operation_signature")
 	}
 	split := strings.LastIndex(u.Path, "/")
 	if split < 0 {
@@ -47,6 +63,9 @@ func (c *client) dataProtectionPollURL(id, region, endpoint, role string) (strin
 	switch role {
 	case "status_url":
 		allowed = []string{regional + "/operationstatus", vault + "/operationstatus", group + "/providers/microsoft.dataprotection/operationstatus"}
+		if kind == dataProtectionVault && signed == 4 {
+			allowed = append(allowed, group+"/providers/microsoft.dataprotection/locations/"+region+"/operationstatus")
+		}
 	case "result_url":
 		allowed = []string{regional + "/operationresults", vault + "/operationresults"}
 		if kind == dataProtectionInstance {

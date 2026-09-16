@@ -958,7 +958,7 @@ All 159 parity rows and eight overall acceptance gates remain open.
 
 ### Data Protection active and retained inventory
 
-Five 2026-03-01 native inventory rules now cover backup vaults, policies, active
+Five native inventory rules now cover backup vaults, policies, active
 backup instances, deleted backup instances and region-scoped deleted vaults.
 Ten official list/get operations plus native policy DELETE and their schema closure are pinned in the
 catalog. Discovery uses native collections and own reads, not the general ARM
@@ -981,9 +981,9 @@ active same-name replacement. Multiple retained deletion identities stay separat
 The unchanged examples, pinned hashes and discrepancy are documented under
 `azure/fixtures/dataprotection/`.
 
-Unused policies and active backup instances now have native deletion. Vaults remain
-protected while vault deletion, coordinated workload dependency preparation and
-recovery/retention actions are implemented. The two naturally retained kinds have
+Unused policies, active backup instances and vaults now have native deletion.
+Vault deletion requires active instances and policies to have been removed.
+Coordinated workload preparation and recovery/retention actions remain incomplete. The two naturally retained kinds have
 no invented delete operation. Moving vault/policy candidates into the matrix's
 registered resources closes their missing-specification entries only; full behavior
 remains pending. Recovery Services vaults are still a separate missing family.
@@ -1053,3 +1053,33 @@ Official examples are preserved unchanged. DeleteBackupInstance's Location names
 different instance and omits its vault. GetOperationResult's 202 sample mixes another
 subscription, operation token and 2021 API version. These inconsistent callbacks are
 rejected; the source examples do not justify relaxing scope/version checks.
+
+### Data Protection vault deletion and signed operation recovery
+
+Vault GET/list/DELETE and read-only Resource Guard proxy operations are pinned to
+2026-06-01. Policy, instance and deleted-vault inventory retain their separately
+pinned 2026-03-01 contracts. Vault deletion does not automatically remove active
+instances or policies; their presence prevents invocation. Retained instances remain
+separate from active prerequisites. Proxy configuration, resource group, locks,
+vault configuration and retained children are reviewed before the single mutation.
+No Resource Guard resource or security setting is disabled or deleted by this action.
+
+The unchanged Azure CLI vault recording exercises signed resource-group/regional
+status callbacks, a regional result callback and Inprogress-to-Succeeded polling.
+The callback boundary validates subscription, group, region, API version, operation
+token and complete signing parameter set; serialized receipts preserve phase changes.
+Signing material is excluded from diagnostics. This recording has no final own-vault
+GET or retained-vault evidence and is not live acceptance of this application.
+
+A separate registered-runtime/SQLite test covers scan, graph, plan, warning, worker
+restart and final reconciliation. Async completion alone is insufficient: the active
+vault must be absent with a stable readable resource group and readable regional
+retained vaults. Known retained identities cannot disappear on list omission alone.
+Multiple original-name histories stay distinct and are not cascade-owned by a new
+active vault. The result explicitly says permanent purge was not verified. Both
+English and Chinese warnings describe retention, possible charges and preserved
+source workloads/security settings.
+
+Coordinated vault/instance/policy cleanup, retained restore/purge workflows,
+cross-tenant auxiliary authorization and independent-emulator/live acceptance remain
+unfinished. The 159 behavior rows and eight overall gates remain open.

@@ -1476,7 +1476,7 @@ resources:
     unimplemented_resources:
     - Microsoft.RecoveryServices/vaults
   status: pending_verification
-  notes: Data Protection active and deleted vault inventory are registered. Cleanup, restore and
+  notes: Data Protection active/deleted inventory and standalone vault deletion are registered. Coordinated cleanup, restore and
     retained lifecycle acceptance remain unfinished; Recovery Services is a separate implementation gap.
 - alicloud: ACS::Hologram::Instance
   spec: providers/alicloud/specs/hologres-instance.yaml

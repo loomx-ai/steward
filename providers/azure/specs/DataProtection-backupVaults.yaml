@@ -34,3 +34,14 @@ fields:
   scheduledPurgeTime: scheduledPurgeTime
 extensions:
   hook: azure.resource
+
+actions:
+  delete:
+    operation: Azure.Microsoft.DataProtection.BackupVaults_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.DataProtection.BackupVaults_Get
+      itemsPath: $
+      identityPath: id

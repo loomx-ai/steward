@@ -43,6 +43,15 @@
       "file": "GetOperationStatusVaultContext.json",
       "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/examples/GetOperationStatusVaultContext.json",
       "sha256": "28c3f40972672548f4ba7e47724f16188b83d8afb2ce63ae5399b2660e48a36c"
+    },
+    {
+      "file": "GetResourceGuardProxy.json",
+      "source": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-06-01/examples/ResourceGuardProxyCRUD/GetResourceGuardProxy.json",
+      "sha256": "136f9982197a273db0899cb60f16f9c3f35d227ecf93e76314df67748e6630de"
     }
-  ]
+  ],
+  "vault_schema_source": {
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-06-01/dataprotection.json",
+    "sha256": "fb65775114d9e7c56e6883a2619798827407953c391410500b65311bba70ab29"
+  }
 }

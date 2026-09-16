@@ -75,25 +75,12 @@ func (c *client) dataProtectionParents(ctx context.Context, id, kind string) (ma
 	if err != nil {
 		return nil, contracts.DependencyReadError(err)
 	}
-	groupID := strings.Join(strings.Split(id, "/")[:5], "/")
-	group, err := c.request(ctx, "GET", apiURL(groupID, resourcesVersion))
+	group, err := c.dataProtectionGroup(ctx, id)
 	if err != nil {
-		return nil, contracts.DependencyReadError(err)
+		return nil, err
 	}
-	if !validResourceResponse(group, groupID, groupType) || operationLocation(group.header) != "" {
-		return nil, serviceDenied("invalid_backup_policy_group")
-	}
-	locks, err := c.managementLocks(ctx)
-	if err != nil {
-		return nil, contracts.DependencyReadError(err)
-	}
-	protected := locked(id, locks)
-	for _, raw := range []map[string]any{vault.data, group.data} {
-		protected = protected || protectedAzureTags(object(raw["tags"])) || text(raw["managedBy"]) != ""
-	}
-	groupSnapshot := hybridComputeChildSnapshot(group.data)
-	groupSnapshot["type"] = strings.ToLower(groupType)
-	return map[string]any{"vault": c.privateConfiguration(hybridComputeChildSnapshot(vault.data)), "parent_observed": c.privateConfiguration(vault.data), "group": c.privateConfiguration(groupSnapshot), "region": resourceRegion(vault.data), "protected": protected, "ready": object(vault.data["properties"])["provisioningState"] == "Succeeded"}, nil
+	protected := group["protected"] == true || protectedAzureTags(object(vault.data["tags"])) || text(vault.data["managedBy"]) != ""
+	return map[string]any{"vault": c.privateConfiguration(hybridComputeChildSnapshot(vault.data)), "parent_observed": c.privateConfiguration(vault.data), "group": group["configuration"], "region": resourceRegion(vault.data), "protected": protected, "ready": object(vault.data["properties"])["provisioningState"] == "Succeeded"}, nil
 }
 func (c *client) protectionPolicyReview(ctx context.Context, id string, known map[string]any) (map[string]any, bool, error) {
 	parents, err := c.protectionPolicyParents(ctx, id)

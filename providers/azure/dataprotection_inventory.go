@@ -16,6 +16,15 @@ import (
 )
 
 const dataProtectionVersion = "2026-03-01"
+const dataProtectionVaultVersion = "2026-06-01"
+
+func dataProtectionReadVersion(kind string) string {
+	if kind == dataProtectionVault || kind == dataProtectionGuardProxy {
+		return dataProtectionVaultVersion
+	}
+	return dataProtectionVersion
+}
+
 const dataProtectionSource = "data-protection"
 const dataProtectionVault = "Microsoft.DataProtection/backupVaults"
 const dataProtectionPolicy = dataProtectionVault + "/backupPolicies"
@@ -37,7 +46,7 @@ func dataProtectionKind(kind string) string {
 // normalized; the subscription, location and deletion identity stay unchanged.
 func (c *client) dataProtectionIdentity(value, kind string) (string, error) {
 	id := strings.ToLower(value)
-	if value != strings.TrimSpace(value) || dataProtectionKind(kind) == "" {
+	if value != strings.TrimSpace(value) || dataProtectionKind(kind) == "" && kind != dataProtectionGuardProxy {
 		return "", serviceDenied("invalid_data_protection_identity")
 	}
 	if kind == dataProtectionDeletedVault {
@@ -63,6 +72,10 @@ func (c *client) dataProtectionMetadata(raw map[string]any, id, kind string) err
 	actual, err := c.dataProtectionIdentity(text(raw["id"]), kind)
 	typ := text(raw["type"])
 	validType := strings.EqualFold(typ, kind)
+	if kind == dataProtectionGuardProxy {
+		// The native example uses vaults in type, while its ID uses backupVaults.
+		validType = validType || strings.EqualFold(typ, "Microsoft.DataProtection/vaults/backupResourceGuardProxies")
+	}
 	if kind == dataProtectionDeletedVault {
 		validType = validType || strings.EqualFold(typ, "Microsoft.DataProtection/deletedBackupVaults")
 	}
@@ -87,6 +100,12 @@ func (c *client) dataProtectionMetadata(raw map[string]any, id, kind string) err
 		if err != nil || redisParentID(policy) != redisParentID(id) {
 			return serviceDenied("invalid_backup_instance_policy")
 		}
+	case dataProtectionGuardProxy:
+		guard := text(props["resourceGuardResourceId"])
+		_, guardKind, err := parseID(guard)
+		if err != nil || guard != strings.TrimSpace(guard) || guardKind != "microsoft.dataprotection/resourceguards" || len(strings.Split(guard, "/")) != 9 {
+			return serviceDenied("invalid_backup_resource_guard_reference")
+		}
 	case dataProtectionDeletedVault:
 		original, err := c.dataProtectionIdentity(text(props["originalBackupVaultId"]), dataProtectionVault)
 		if err != nil || !strings.EqualFold(text(props["originalBackupVaultResourcePath"]), original) || !strings.EqualFold(text(props["originalBackupVaultName"]), last(original)) {
@@ -108,7 +127,7 @@ func (c *client) dataProtectionRead(ctx context.Context, id, kind string) (respo
 	if err != nil {
 		return response{}, err
 	}
-	res, err := c.request(ctx, "GET", apiURL(canonical, dataProtectionVersion))
+	res, err := c.request(ctx, "GET", apiURL(canonical, dataProtectionReadVersion(kind)))
 	if err != nil {
 		var call *contracts.ProviderCallError
 		if isNotFound(err) && errors.As(err, &call) && slices.Contains([]string{"ParentResourceNotFound", "ResourceGroupNotFound", "SubscriptionNotFound"}, call.Provider.Code) {
@@ -125,14 +144,15 @@ func (c *client) dataProtectionRead(ctx context.Context, id, kind string) (respo
 func (c *client) dataProtectionCollection(ctx context.Context, path, kind string) (map[string]map[string]any, error) {
 	rows := map[string]map[string]any{}
 	seen := map[string]bool{}
-	next := apiURL(path, dataProtectionVersion)
+	version := dataProtectionReadVersion(kind)
+	next := apiURL(path, version)
 	for next != "" {
 		u, err := url.Parse(next)
 		if err != nil || seen[next] {
 			return nil, serviceDenied("invalid_data_protection_page")
 		}
 		query, err := url.ParseQuery(u.RawQuery)
-		if err != nil || query.Get("api-version") != dataProtectionVersion {
+		if err != nil || query.Get("api-version") != version {
 			return nil, serviceDenied("invalid_data_protection_page_version")
 		}
 		for key, values := range query {
@@ -349,6 +369,13 @@ func (r *Runtime) dataProtectionSnapshot(ctx context.Context, c *client, req con
 		}
 		actionable := false
 		items = append(items, contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: last(id), State: state, Location: location, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: location, Name: location, Location: location}, Normalized: normalized, Raw: object(dataProtectionSafeValue(own.data)), NativeAliases: []string{id}, Actionable: &actionable})
+	}
+	if kind == dataProtectionVault {
+		for i := range items {
+			if err := r.dataProtectionVaultInventory(ctx, c, req, &items[i]); err != nil {
+				return nil, nil, err
+			}
+		}
 	}
 	if kind == dataProtectionInstance {
 		for i := range items {

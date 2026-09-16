@@ -66,14 +66,19 @@ func newProtectionFixture(t *testing.T) *protectionFixture {
 		if path == "/subscriptions/"+testSubscription+"/resourcegroups/test" {
 			return jsonResponse(200, map[string]any{"id": path, "name": "test", "type": groupType, "location": "eastus", "properties": map[string]any{}}, nil), nil
 		}
-		if q.URL.Query().Get("api-version") != dataProtectionVersion {
+		version := dataProtectionVersion
+		_, nativeKind, _ := parseID(path)
+		if strings.HasSuffix(path, "/backupvaults") || strings.HasSuffix(path, "/backupresourceguardproxies") || strings.EqualFold(nativeKind, dataProtectionVault) || strings.EqualFold(nativeKind, dataProtectionGuardProxy) {
+			version = dataProtectionVaultVersion
+		}
+		if q.URL.Query().Get("api-version") != version {
 			t.Fatal("wrong native version", q.URL)
 		}
 		if raw := f.objects[path]; raw != nil {
 			return jsonResponse(200, raw, nil), nil
 		}
 		collection := last(path)
-		if slices.Contains([]string{"backupvaults", "backuppolicies", "backupinstances", "deletedbackupinstances", "deletedvaults"}, collection) {
+		if slices.Contains([]string{"backupvaults", "backuppolicies", "backupinstances", "deletedbackupinstances", "deletedvaults", "backupresourceguardproxies"}, collection) {
 			rows := []any{}
 			for _, id := range slices.Sorted(maps.Keys(f.objects)) {
 				if f.omitted[id] {
@@ -325,7 +330,7 @@ func TestDataProtectionExampleSourceIntegrity(t *testing.T) {
 	if err = json.Unmarshal(raw, &sources); err != nil {
 		t.Fatal(err)
 	}
-	if len(sources.Examples) != 8 {
+	if len(sources.Examples) != 9 {
 		t.Fatal("missing official examples")
 	}
 	for _, example := range sources.Examples {

@@ -1811,6 +1811,10 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			continue
 		}
 		switch value.Identity.NativeType {
+		case "Microsoft.DataProtection/backupVaults":
+			if value.Identity.Provider == asset.ProviderAzure {
+				result = append(result, plan.Warning{Code: plan.WarningDataProtectionVaultDelete, AssetID: value.ID, Message: "Deleting this backup vault removes the active vault after its active backup instances and policies have been removed. Azure may retain the vault and backup data under soft-delete rules, with recovery options and possible charges. Completion does not mean permanent purge. Source workloads and external Resource Guard resources are retained; security settings are not disabled.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
 		case "Microsoft.DataProtection/backupVaults/backupInstances":
 			if value.Identity.Provider == asset.ProviderAzure {
 				result = append(result, plan.Warning{Code: plan.WarningDataProtectionInstanceDelete, AssetID: value.ID, Message: "Deleting this backup instance stops its backups and requests deletion of its backup data under Azure retention rules. Soft-deleted data may remain recoverable and incur charges; completion does not mean permanent purge. The source workload, backup policy, vault and other backup instances are retained.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})

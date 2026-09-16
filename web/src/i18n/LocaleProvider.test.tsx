@@ -545,3 +545,27 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     );
   });
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  it(`explains backup vault retention in ${locale}`, () => {
+    localStorage.setItem(localePreferenceKey, locale);
+    render(
+      <LocaleProvider>
+        <ErrorProbe
+          error={{ code: "data_protection_vault_delete", message: "fallback" }}
+        />
+      </LocaleProvider>,
+    );
+    const text = screen.getByTestId("error").textContent;
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "任务完成不代表数据已永久清除"
+        : "Completion does not mean permanent purge",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "不会禁用安全设置"
+        : "security settings are not disabled",
+    );
+  });
+}
