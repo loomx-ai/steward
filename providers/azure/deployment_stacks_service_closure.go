@@ -11,6 +11,9 @@ import (
 
 type deploymentStackServiceClosure struct {
 	Parents []asset.AssetID
+	// Native cascades whose parent also matches the original execution controller.
+	// Direct prerequisites and flat Stack siblings are not covered by this map.
+	CascadeParents map[asset.AssetID]asset.AssetID
 	// Native prerequisite relationships can have multiple parents. They are not
 	// replacements for the frozen plan's execution-controller graph.
 	Prerequisites map[asset.AssetID][]asset.AssetID
@@ -141,6 +144,12 @@ func (c *client) deploymentStackCheckServiceClosure(ctx context.Context, req con
 			}
 			if reason := protectionReason(kind, live.data); reason != "" && !serviceIntrinsicChild(parent.Identity.NativeType, child.kind, reason) {
 				return out, serviceDenied(reason)
+			}
+			if !child.direct && reviewed.ControllerID == parent.ID {
+				if out.CascadeParents == nil {
+					out.CascadeParents = map[asset.AssetID]asset.AssetID{}
+				}
+				out.CascadeParents[reviewed.Asset.ID] = parent.ID
 			}
 			if child.direct {
 				if out.Prerequisites == nil {

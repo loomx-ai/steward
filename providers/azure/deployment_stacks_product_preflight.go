@@ -37,15 +37,50 @@ func (r *Runtime) deploymentStackPreflightProductsWithProgress(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	closure := deploymentStackServiceClosure{}
+	for _, impact := range req.LifecycleImpacts {
+		if impact.Delete && !observed.Completed[impact.Asset.ID] && HasServiceCascade(impact.Asset.Identity.NativeType) {
+			closure, err = r.deploymentStackObserveServiceClosureWithProgress(ctx, req, progress)
+			if err != nil {
+				return nil, err
+			}
+			break
+		}
+	}
 	ordered := slices.Clone(req.LifecycleImpacts)
 	slices.SortFunc(ordered, func(a, b contracts.ActionImpact) int { return strings.Compare(string(a.Asset.ID), string(b.Asset.ID)) })
+	byID := map[asset.AssetID]contracts.ActionImpact{}
 	for _, impact := range ordered {
-		if !impact.Delete || observed.Completed[impact.Asset.ID] {
-			continue // Retention is verified by own reads, not deletion preflight.
+		byID[impact.Asset.ID] = impact
+	}
+	verified := map[asset.AssetID]contracts.PreflightResult{}
+	visiting := map[asset.AssetID]bool{}
+	var checkMember func(asset.AssetID) (contracts.PreflightResult, error)
+	checkMember = func(id asset.AssetID) (contracts.PreflightResult, error) {
+		if check, found := verified[id]; found {
+			return check, nil
 		}
-		member, err := c.deploymentStackProductRequest(req, impact.Asset.ID, observed.Completed)
+		if visiting[id] {
+			return contracts.PreflightResult{}, serviceDenied("deployment_stack_preflight_controller_cycle")
+		}
+		visiting[id] = true
+		parentKind := ""
+		if parentID, covered := closure.CascadeParents[id]; covered {
+			parent, found := byID[parentID]
+			if !found || !parent.Delete || observed.Completed[parentID] {
+				return contracts.PreflightResult{}, serviceDenied("deployment_stack_preflight_parent_unavailable")
+			}
+			check, err := checkMember(parentID)
+			if err != nil {
+				return contracts.PreflightResult{}, err
+			}
+			if check.Allowed && !check.Absent {
+				parentKind = parent.Asset.Identity.NativeType
+			}
+		}
+		member, err := c.deploymentStackProductRequest(req, id, observed.Completed)
 		if err != nil {
-			return nil, err
+			return contracts.PreflightResult{}, err
 		}
 		member.Asset = observed.Members[member.Asset.ID]
 		for i := range member.LifecycleImpacts {
@@ -55,19 +90,56 @@ func (r *Runtime) deploymentStackPreflightProductsWithProgress(ctx context.Conte
 		}
 		driver, err := r.ResolveAction(ctx, req.Asset.Identity.ConnectionID, member.Asset)
 		if err != nil {
-			return nil, err
+			return contracts.PreflightResult{}, err
 		}
-		check, err := driver.Preflight(ctx, member)
+		check, err := deploymentStackPreflightInParent(ctx, driver, member, parentKind)
+		if err != nil {
+			return contracts.PreflightResult{}, err
+		}
+		if check.Absent {
+			return contracts.PreflightResult{}, serviceDenied("deployment_stack_member_disappeared_during_preflight")
+		}
+		verified[id] = check
+		delete(visiting, id)
+		return check, nil
+	}
+	for _, impact := range ordered {
+		if !impact.Delete || observed.Completed[impact.Asset.ID] {
+			continue
+		}
+		check, err := checkMember(impact.Asset.ID)
 		if err != nil {
 			return nil, err
 		}
-		if check.Absent {
-			return nil, serviceDenied("deployment_stack_member_disappeared_during_preflight")
-		}
-		checks = append(checks, deploymentStackProductCheck{Member: member.Asset.ID, Check: check})
+		checks = append(checks, deploymentStackProductCheck{Member: impact.Asset.ID, Check: check})
 	}
 	if _, err := r.deploymentStackObserveProgress(ctx, req, progress); err != nil {
 		return nil, err
 	}
 	return checks, nil
+}
+
+// Preserve every product and monitoring check. Only the documented intrinsic
+// protection reason can be interpreted in the already-verified parent context;
+// this never modifies a driver or makes standalone child Execute permissible.
+func deploymentStackPreflightInParent(ctx context.Context, driver contracts.ActionDriver, req contracts.ActionRequest, parentKind string) (contracts.PreflightResult, error) {
+	if parentKind == "" {
+		return driver.Preflight(ctx, req)
+	}
+	switch action := driver.(type) {
+	case *monitorTargetAction:
+		filtered, targets, err := action.request(ctx, req)
+		if err != nil {
+			return contracts.PreflightResult{}, err
+		}
+		check, err := deploymentStackPreflightInParent(ctx, action.inner, filtered, parentKind)
+		if err == nil && check.Allowed {
+			err = action.dependencies(ctx, req, targets)
+		}
+		return check, err
+	case *action:
+		return action.preflight(ctx, req, parentKind)
+	default:
+		return driver.Preflight(ctx, req)
+	}
 }

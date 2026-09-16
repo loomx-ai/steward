@@ -193,7 +193,13 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	return driver, nil
 }
 func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
-func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
+func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (contracts.PreflightResult, error) {
+	return a.preflight(ctx, request, "")
+}
+
+// parentKind is supplied only by the Stack's verified parent-cascade preflight.
+// Standalone Execute always uses Preflight with no parent context.
+func (a *action) preflight(ctx context.Context, request contracts.ActionRequest, parentKind string) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if err := a.monitorPrivateLinkRequestIdentity(request.Asset); err != nil {
 		return contracts.PreflightResult{}, err
@@ -313,7 +319,7 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 			return contracts.PreflightResult{Reason: "eventhub_cluster_membership_changed"}, nil
 		}
 	}
-	if reason := protectionReason(a.kind, res.data); reason != "" {
+	if reason := protectionReason(a.kind, res.data); reason != "" && (parentKind == "" || !serviceIntrinsicChild(parentKind, a.kind.NativeType, reason)) {
 		return contracts.PreflightResult{Reason: reason}, nil
 	}
 	if reason, creation, err := a.client.messagingReplicationContext(ctx, a.kind.NativeType, a.id); reason != "" || err != nil {

@@ -444,3 +444,34 @@ checkpoint to resume without repeating the NIC update.
 This is the root protection gate, not complete scope permission/product preflight.
 All-family cascade semantics and final ActionDriver/graph/planner/executor
 acceptance remain required; all 159 rows and eight overall gates remain open.
+
+### Intrinsic children in verified Stack cascades (2026-09-16)
+
+Stack service closure now records non-prerequisite native children whose reviewed
+execution controller is their product parent. Product preflight checks that parent
+first. Only after its real product/dependency preflight succeeds may the child's
+preflight interpret an existing `serviceIntrinsicChild` protection reason in that
+parent context. All remaining child product, group, lock and monitoring checks
+still execute. Standalone child Preflight/Execute never receive this context.
+Flat Stack siblings and independently executed prerequisites do not inherit it.
+
+The SQL protocol fixture covers a server with its `master` database: parent-first
+preflight despite child-first ordering, completed setup, one native Stack DELETE,
+JSON recovery and actual product readback. It also covers parent/child protection,
+parent/child locks (including one introduced between preflights), failed child/list
+reads, missing/new children and parent/child monitoring read denial. Independent
+`master` deletion remains blocked before any mutation.
+
+Official sources checked on 2026-09-16:
+- [SQL logical-server lifetime semantics](https://learn.microsoft.com/en-us/azure/azure-sql/database/logical-servers?view=azuresql-db)
+  establish server deletion cascades to databases and elastic pools.
+- [SQL logical-server soft-delete preview](https://learn.microsoft.com/en-us/azure/azure-sql/database/deleted-logical-server-restore?view=azuresql)
+  documents retained, restorable server state. Live-resource absence is not proof
+  of permanent erasure; this change neither disables retention nor restores/deletes
+  a soft-deleted server. Native deleted-server inventory and retention/purge
+  acceptance remain separate unfinished SQL lifecycle work.
+
+This removes an intrinsic-child preflight mismatch without accepting the overall
+Stack feature. Flat member projection, VM/NIC cascading, specialized/read-only
+child drivers, complete pre-setup scope checks and full execution acceptance still
+need work. All 159 parity rows and eight overall gates remain open.
