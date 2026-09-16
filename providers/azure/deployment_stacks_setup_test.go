@@ -22,7 +22,7 @@ func TestDeploymentStackSetupHandoff(t *testing.T) {
 	}
 }
 func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
-	for _, mode := range []string{"complete", "job", "unknown", "skip_preparation", "nested_preparation", "handoff_drift", "lost_preparation_context", "returned_prerequisite", "root_protected", "root_lock", "subscription_lock", "locks_forbidden", "root_forbidden", "late_lock", "late_protected", "attachment_changed", "outcome_missing", "outcome_recreated", "outcome_nic_returned"} {
+	for _, mode := range []string{"complete", "job", "unknown", "skip_preparation", "nested_preparation", "handoff_drift", "lost_preparation_context", "returned_prerequisite", "root_protected", "root_lock", "subscription_lock", "locks_forbidden", "root_forbidden", "late_lock", "late_protected", "attachment_changed", "outcome_missing", "outcome_recreated", "outcome_nic_returned", "scope_parent_protected", "scope_child_forbidden", "scope_monitor_forbidden", "scope_parent_lock", "scope_child_protected", "scope_list_forbidden", "scope_unreviewed_child"} {
 		t.Run(mode, func(t *testing.T) {
 			req, root := stackAttachmentRequest(t, directClient(nil))
 			root["location"] = "eastus"
@@ -50,10 +50,25 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 			child.Identity.Partition = req.Asset.Identity.Partition
 			child.Identity.NativeID = parent.Identity.NativeID + "/hosts/host-child"
 			req.LifecycleImpacts = append(req.LifecycleImpacts, contracts.ActionImpact{Asset: parent, ControllerID: req.Asset.ID, Delete: true}, contracts.ActionImpact{Asset: child, ControllerID: parent.ID, Delete: true})
+			if flat {
+				for i := range req.LifecycleImpacts {
+					if req.LifecycleImpacts[i].Asset.ID == child.ID {
+						req.LifecycleImpacts[i].ControllerID = req.Asset.ID
+					}
+				}
+				properties := object(root["properties"])
+				properties["resources"] = append(properties["resources"].([]any), map[string]any{"id": child.Identity.NativeID, "status": "managed", "denyStatus": "none"})
+			}
 			properties := object(root["properties"])
 			properties["resources"] = append(properties["resources"].([]any), map[string]any{"id": parent.Identity.NativeID, "status": "managed", "denyStatus": "none"})
 			parentRaw := map[string]any{"id": parent.Identity.NativeID, "type": hostGroupType, "location": "eastus", "properties": map[string]any{"provisioningState": "Succeeded"}}
 			childRaw := map[string]any{"id": child.Identity.NativeID, "type": hostType, "location": "eastus", "properties": map[string]any{"provisioningState": "Succeeded"}}
+			if mode == "scope_child_protected" {
+				childRaw["tags"] = map[string]any{"steward/protected": "true"}
+			}
+			if mode == "scope_parent_protected" {
+				parentRaw["tags"] = map[string]any{"steward/protected": "true"}
+			}
 			for i := range req.LifecycleImpacts {
 				if raw := live[string(req.LifecycleImpacts[i].Asset.ID)]; raw != nil {
 					field := map[string]string{"vm": "vmId", "nic": "resourceGuid", "boot": "uniqueId", "data": "uniqueId", "ip": "resourceGuid"}[string(req.LifecycleImpacts[i].Asset.ID)]
@@ -67,6 +82,9 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 			gone, stackGone := false, false
 			r := protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
 				calls++
+				if mode == "scope_monitor_forbidden" && strings.HasSuffix(strings.ToLower(q.URL.Path), "/providers/microsoft.insights/metricalerts") {
+					return jsonResponse(403, map[string]any{}, nil), nil
+				}
 				if reply, handled := emptyMonitorIndexResponse(t, q); handled {
 					return reply, nil
 				}
@@ -105,6 +123,9 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 					}
 					return jsonResponse(200, parentRaw, nil), nil
 				case child.Identity.NativeID:
+					if mode == "scope_child_forbidden" {
+						return jsonResponse(403, map[string]any{}, nil), nil
+					}
 					if q.Method == "DELETE" {
 						if !slices.Equal(writes, []string{"PUT nic", "PATCH vm"}) {
 							t.Fatal("deletion preceded retention preparation", writes)
@@ -117,8 +138,16 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 						return jsonResponse(404, map[string]any{}, nil), nil
 					}
 					return jsonResponse(200, childRaw, nil), nil
+				case parent.Identity.NativeID + "/hosts/new-host":
+					return jsonResponse(200, map[string]any{"id": q.URL.Path, "type": hostType, "location": "eastus", "properties": map[string]any{"provisioningState": "Succeeded"}}, nil), nil
 				case parent.Identity.NativeID + "/hosts":
+					if mode == "scope_list_forbidden" {
+						return jsonResponse(403, map[string]any{}, nil), nil
+					}
 					rows := []any{}
+					if mode == "scope_unreviewed_child" {
+						rows = append(rows, map[string]any{"id": parent.Identity.NativeID + "/hosts/new-host", "type": hostType, "location": "eastus", "properties": map[string]any{"provisioningState": "Succeeded"}})
+					}
 					if !gone {
 						rows = append(rows, childRaw)
 					}
@@ -128,8 +157,11 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 					if mode == "locks_forbidden" {
 						return jsonResponse(403, map[string]any{}, nil), nil
 					}
-					if mode == "root_lock" || mode == "subscription_lock" || mode == "late_lock" {
+					if mode == "root_lock" || mode == "subscription_lock" || mode == "late_lock" || mode == "scope_parent_lock" {
 						scope := req.Asset.Identity.NativeID
+						if mode == "scope_parent_lock" {
+							scope = parent.Identity.NativeID
+						}
 						if mode == "subscription_lock" {
 							scope = "/subscriptions/" + testSubscription
 						}
@@ -192,6 +224,22 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 			}
 			req.Asset.Normalized[deploymentStackReviewKey] = review
 			req.Asset.Normalized[deploymentStackProofKey] = c.deploymentStackProof(req.Asset.Identity.NativeID, "connection", review)
+			if mode == "complete" {
+				member, err := c.deploymentStackMemberRequest(req, parent.ID)
+				if err != nil {
+					t.Fatal(err)
+				}
+				driver, err := r.ResolveAction(t.Context(), "connection", member.Asset)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if check, err := driver.Preflight(t.Context(), member); err == nil && check.Allowed {
+					t.Fatal("ordinary preflight accepted live prerequisite", check)
+				}
+				if _, err := driver.Execute(t.Context(), member); err == nil || len(writes) != 0 {
+					t.Fatal("ordinary execution bypassed live prerequisite", err, writes)
+				}
+			}
 			before, _ := json.Marshal(req)
 			var saved map[string]any
 			var out contracts.WaitResult
@@ -239,6 +287,12 @@ func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
 				}
 				priorCalls, priorWrites := calls, len(writes)
 				out, err = r.deploymentStackAdvanceSetup(t.Context(), req, saved)
+				if strings.HasPrefix(mode, "scope_") {
+					if err == nil || out.Data != nil || out.Done || len(writes) != 0 {
+						t.Fatal("scope preflight did not prevent first preparation write", out, err, writes)
+					}
+					return
+				}
 				if guardActive && (strings.HasPrefix(mode, "root_") || mode == "subscription_lock" || mode == "locks_forbidden" || strings.HasPrefix(mode, "late_")) {
 					if err == nil || out.Data != nil || out.Done || len(writes) != priorWrites {
 						t.Fatal("root guard allowed setup mutation", out, err, writes)

@@ -930,6 +930,10 @@ func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]con
 }
 
 func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.ActionRequest, live map[string]any, locks []any) error {
+	return a.serviceCascadePreflightWithPending(ctx, request, live, locks, nil)
+}
+
+func (a *action) serviceCascadePreflightWithPending(ctx context.Context, request contracts.ActionRequest, live map[string]any, locks []any, pending map[asset.AssetID][]asset.AssetID) error {
 	if a.kind.NativeType == monitorWorkspaceType {
 		return a.monitorWorkspacePreflight(ctx, request, live, locks)
 	}
@@ -992,10 +996,10 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 			return err
 		}
 		for _, child := range children {
-			if child.direct {
+			impact, ok := impacts[child.id]
+			if child.direct && !slices.Contains(pending[parent.ID], impact.Asset.ID) {
 				return serviceDenied("service_child_requires_prior_deletion")
 			}
-			impact, ok := impacts[child.id]
 			if !ok || impact.ControllerID != parent.ID || !strings.EqualFold(impact.Asset.Identity.NativeType, child.kind) {
 				return serviceDenied("service_child_missing_from_plan")
 			}

@@ -23,6 +23,10 @@ func (r *Runtime) deploymentStackPreflightProducts(ctx context.Context, req cont
 }
 
 func (r *Runtime) deploymentStackPreflightProductsWithProgress(ctx context.Context, req contracts.ActionRequest, progress deploymentStackProgress) (checks []deploymentStackProductCheck, err error) {
+	return r.deploymentStackCheckProducts(ctx, req, progress, false)
+}
+
+func (r *Runtime) deploymentStackCheckProducts(ctx context.Context, req contracts.ActionRequest, progress deploymentStackProgress, staging bool) (checks []deploymentStackProductCheck, err error) {
 	defer func() {
 		if err != nil {
 			checks = nil
@@ -82,6 +86,14 @@ func (r *Runtime) deploymentStackPreflightProductsWithProgress(ctx context.Conte
 		if err != nil {
 			return contracts.PreflightResult{}, err
 		}
+		var pending map[asset.AssetID][]asset.AssetID
+		if staging {
+			member, err = c.deploymentStackStagedProductRequest(req, member, closure)
+			if err != nil {
+				return contracts.PreflightResult{}, err
+			}
+			pending = closure.Prerequisites
+		}
 		member.Asset = observed.Members[member.Asset.ID]
 		for i := range member.LifecycleImpacts {
 			if current, exists := observed.Members[member.LifecycleImpacts[i].Asset.ID]; exists {
@@ -92,7 +104,7 @@ func (r *Runtime) deploymentStackPreflightProductsWithProgress(ctx context.Conte
 		if err != nil {
 			return contracts.PreflightResult{}, err
 		}
-		check, err := deploymentStackPreflightInParent(ctx, driver, member, parentKind)
+		check, err := deploymentStackPreflightWithPending(ctx, driver, member, parentKind, pending)
 		if err != nil {
 			return contracts.PreflightResult{}, err
 		}
@@ -123,7 +135,11 @@ func (r *Runtime) deploymentStackPreflightProductsWithProgress(ctx context.Conte
 // protection reason can be interpreted in the already-verified parent context;
 // this never modifies a driver or makes standalone child Execute permissible.
 func deploymentStackPreflightInParent(ctx context.Context, driver contracts.ActionDriver, req contracts.ActionRequest, parentKind string) (contracts.PreflightResult, error) {
-	if parentKind == "" {
+	return deploymentStackPreflightWithPending(ctx, driver, req, parentKind, nil)
+}
+
+func deploymentStackPreflightWithPending(ctx context.Context, driver contracts.ActionDriver, req contracts.ActionRequest, parentKind string, pending map[asset.AssetID][]asset.AssetID) (contracts.PreflightResult, error) {
+	if parentKind == "" && len(pending) == 0 {
 		return driver.Preflight(ctx, req)
 	}
 	switch action := driver.(type) {
@@ -132,13 +148,13 @@ func deploymentStackPreflightInParent(ctx context.Context, driver contracts.Acti
 		if err != nil {
 			return contracts.PreflightResult{}, err
 		}
-		check, err := deploymentStackPreflightInParent(ctx, action.inner, filtered, parentKind)
+		check, err := deploymentStackPreflightWithPending(ctx, action.inner, filtered, parentKind, pending)
 		if err == nil && check.Allowed {
 			err = action.dependencies(ctx, req, targets)
 		}
 		return check, err
 	case *action:
-		return action.preflight(ctx, req, parentKind)
+		return action.preflightWithPending(ctx, req, parentKind, pending)
 	default:
 		return driver.Preflight(ctx, req)
 	}

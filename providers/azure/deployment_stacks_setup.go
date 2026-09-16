@@ -82,6 +82,20 @@ func (r *Runtime) deploymentStackAdvanceSetup(ctx context.Context, req contracts
 	if _, err = c.deploymentStackProtectedRead(ctx, req); err != nil {
 		return out, err
 	}
+	if saved == nil {
+		if _, err = r.deploymentStackObserveGroupClosureWithProgress(ctx, req, deploymentStackProgress{}); err != nil {
+			return out, err
+		}
+		checks, failure := r.deploymentStackCheckProducts(ctx, req, deploymentStackProgress{}, true)
+		if failure != nil {
+			return out, failure
+		}
+		for _, check := range checks {
+			if !check.Check.Allowed || check.Check.Absent {
+				return out, serviceDenied("deployment_stack_setup_product_not_ready")
+			}
+		}
+	}
 	var result contracts.WaitResult
 	if state.Phase == "prepare" {
 		result, err = c.deploymentStackAdvancePreparations(ctx, req, state.Preparation)

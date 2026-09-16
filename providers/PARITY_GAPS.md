@@ -555,3 +555,26 @@ failures, returned resources, later NIC reappearance and missing retained IPs.
 This is VM/NIC attachment progress support, not generic service cascade execution
 or end-to-end Stack registration. All 159 parity rows and eight overall gates
 remain open.
+
+### Initial Stack setup scope preflight
+
+Before the first preparation write, setup now checks group closure and every
+remaining deleted member's actual registered product preflight, including monitor
+wrappers. The service closure supplies an in-memory staging context for reviewed
+live direct prerequisites. Generic service preflight still checks their native
+membership, controller relationship, incarnation, protection, locks and nested
+children; it only defers the requirement that those independently scheduled
+children already be absent. Each child also receives its own product preflight.
+Flat native Stack prerequisites are projected into temporary product requests;
+the original plan is unchanged and this context never enters Execute or receipts.
+Ordinary Preflight and Execute still reject a live direct prerequisite.
+
+Setup fixtures cover nested and flat membership, protected/locked parents,
+protected or unreadable children, denied service lists, unreviewed new children
+and denied monitoring reads before any NIC PUT. Successful fixtures still execute
+retention preparation, independent host deletion and native Stack deletion.
+This check is at initial setup entry: resumed in-flight preparations retain their
+existing checkpoint-specific checks. Revalidating unrelated scope protections
+before later mutations, specialized prerequisite semantics and complete
+ActionDriver/graph/planner/executor acceptance remain unfinished. All 159 parity
+rows and eight overall gates remain open.

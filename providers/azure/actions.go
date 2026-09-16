@@ -200,6 +200,11 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 // parentKind is supplied only by the Stack's verified parent-cascade preflight.
 // Standalone Execute always uses Preflight with no parent context.
 func (a *action) preflight(ctx context.Context, request contracts.ActionRequest, parentKind string) (check contracts.PreflightResult, err error) {
+	return a.preflightWithPending(ctx, request, parentKind, nil)
+}
+
+// pending is private Stack staging context, never supplied by Execute.
+func (a *action) preflightWithPending(ctx context.Context, request contracts.ActionRequest, parentKind string, pending map[asset.AssetID][]asset.AssetID) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if err := a.monitorPrivateLinkRequestIdentity(request.Asset); err != nil {
 		return contracts.PreflightResult{}, err
@@ -365,7 +370,7 @@ func (a *action) preflight(ctx context.Context, request contracts.ActionRequest,
 		return contracts.PreflightResult{Reason: reason}, nil
 	}
 	if HasServiceCascade(a.kind.NativeType) {
-		if err := a.serviceCascadePreflight(ctx, request, res.data, locks); err != nil {
+		if err := a.serviceCascadePreflightWithPending(ctx, request, res.data, locks, pending); err != nil {
 			return contracts.PreflightResult{}, err
 		}
 	}
