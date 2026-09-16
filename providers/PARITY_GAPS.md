@@ -856,3 +856,24 @@ https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/delete
 This is not full managed-product composition: other controller families, deeper
 native child projections and specialized preparation still require integration.
 All 159 parity rows and eight overall acceptance gates remain open.
+
+### Resource-group composition with Azure Monitor Workspace
+
+The managed product projection also handles Microsoft.Monitor/accounts. Its group
+is derived from both native default-ingestion DCR/DCE IDs and must agree; no MA_
+name convention grants ownership. The existing workspace native preflight and
+managed-member checks remain mandatory. External association unlinks remain
+independent required deletions and are included in the workspace product request.
+
+A composed native graph/planner/registered-action test verifies the unlink followed
+by one ordinary resource-group DELETE, then separately delayed managed-group and
+member absence. Boundary cases cover changed owners/default ingestion, forbidden
+rule/group reads and a new association after the reviewed unlink. Parent absence
+cannot certify the managed group's deletion.
+
+Official behavior reference (reviewed 2026-09-17):
+https://learn.microsoft.com/en-us/azure/azure-monitor/metrics/azure-monitor-workspace-manage
+
+Application Insights, Fleet and other specialized managed product composition and
+preparation remain outstanding. All 159 parity rows and eight acceptance gates
+remain open.

@@ -12,10 +12,10 @@ import (
 func (c *client) resourceGroupManagedMembers(byID map[asset.AssetID]contracts.ActionImpact) (map[asset.AssetID]asset.AssetID, error) {
 	owners := map[asset.AssetID]asset.AssetID{}
 	for id, parent := range byID {
-		if parent.Asset.Identity.NativeType != aksType || !parent.Delete {
+		if (parent.Asset.Identity.NativeType != aksType && parent.Asset.Identity.NativeType != monitorWorkspaceType) || !parent.Delete {
 			continue
 		}
-		group, err := aksNodeGroup(c.subscription, parent.Asset.Normalized)
+		group, err := controllerResourceGroup(c.subscription, parent.Asset.Identity.NativeType, parent.Asset.Normalized)
 		if err != nil {
 			return nil, err
 		}
@@ -33,7 +33,7 @@ func (c *client) resourceGroupManagedMembers(byID map[asset.AssetID]contracts.Ac
 		if !foundGroup {
 			return nil, serviceDenied("resource_group_managed_group_missing")
 		}
-		kind, _ := findType(aksType)
+		kind, _ := findType(parent.Asset.Identity.NativeType)
 		driver := action{client: c, kind: kind, id: strings.ToLower(parent.Asset.Identity.NativeID)}
 		if _, err := driver.managedGroupImpacts(request, group); err != nil {
 			return nil, err

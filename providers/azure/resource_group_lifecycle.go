@@ -59,8 +59,8 @@ func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.
 				return err
 			}
 			parentKind = parent.Asset.Identity.NativeType
-			if parentKind == aksType {
-				group, err := aksNodeGroup(strings.Split(parent.Asset.Identity.NativeID, "/")[2], parent.Asset.Normalized)
+			if parentKind == aksType || parentKind == monitorWorkspaceType {
+				group, err := controllerResourceGroup(strings.Split(parent.Asset.Identity.NativeID, "/")[2], parentKind, parent.Asset.Normalized)
 				if err != nil {
 					return err
 				}
