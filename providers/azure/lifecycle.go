@@ -175,6 +175,10 @@ type attachmentUpdate struct {
 // Only reviewed outcomes can authorize deletion or the changes needed to retain
 // a child. Native resource IDs and lifecycle controller IDs must both match.
 func (a *action) evaluateAttachments(ctx context.Context, request contracts.ActionRequest, raw map[string]any, locks []any) ([]attachmentUpdate, string, error) {
+	return a.evaluateAttachmentsInManagedGroup(ctx, request, raw, locks, nil)
+}
+
+func (a *action) evaluateAttachmentsInManagedGroup(ctx context.Context, request contracts.ActionRequest, raw map[string]any, locks []any, managed *resourceGroupManagedPreflight) ([]attachmentUpdate, string, error) {
 	var updates []attachmentUpdate
 	groups := map[string]bool{}
 	var walk func(asset.Asset, map[string]any) (string, error)
@@ -254,7 +258,7 @@ func (a *action) evaluateAttachments(ctx context.Context, request contracts.Acti
 				if err != nil {
 					return "", err
 				}
-				if text(group.data["managedBy"]) != "" {
+				if text(group.data["managedBy"]) != "" && !managed.permits(impact.Asset, group.data) {
 					return "azure_managed_resource_group", nil
 				}
 				groups[groupID] = true

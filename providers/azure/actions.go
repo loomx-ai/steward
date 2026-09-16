@@ -208,6 +208,10 @@ func (a *action) preflight(ctx context.Context, request contracts.ActionRequest,
 
 // pending is private Stack staging context, never supplied by Execute.
 func (a *action) preflightWithPending(ctx context.Context, request contracts.ActionRequest, parentKind string, pending map[asset.AssetID][]asset.AssetID) (check contracts.PreflightResult, err error) {
+	return a.preflightWithManagedGroup(ctx, request, parentKind, pending, nil)
+}
+
+func (a *action) preflightWithManagedGroup(ctx context.Context, request contracts.ActionRequest, parentKind string, pending map[asset.AssetID][]asset.AssetID, managed *resourceGroupManagedPreflight) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if err := a.monitorPrivateLinkRequestIdentity(request.Asset); err != nil {
 		return contracts.PreflightResult{}, err
@@ -343,7 +347,7 @@ func (a *action) preflightWithPending(ctx context.Context, request contracts.Act
 	if !validResourceResponse(group, strings.Join(parts[:5], "/"), groupType) {
 		return contracts.PreflightResult{}, fmt.Errorf("Azure resource group identity mismatch")
 	}
-	if text(group.data["managedBy"]) != "" {
+	if text(group.data["managedBy"]) != "" && !managed.permits(request.Asset, group.data) {
 		return contracts.PreflightResult{Reason: "azure_managed_resource_group"}, nil
 	}
 	if isDomainType(a.kind.NativeType) && (!insightsARMReadValid(group, strings.Join(parts[:5], "/"), groupType) || protectedAzureTags(object(group.data["tags"]))) {
@@ -378,7 +382,7 @@ func (a *action) preflightWithPending(ctx context.Context, request contracts.Act
 		}
 	}
 	if a.kind.NativeType == vmType || a.kind.NativeType == nicType {
-		if _, reason, err := a.evaluateAttachments(ctx, request, res.data, locks); reason != "" || err != nil {
+		if _, reason, err := a.evaluateAttachmentsInManagedGroup(ctx, request, res.data, locks, managed); reason != "" || err != nil {
 			return contracts.PreflightResult{Reason: reason}, err
 		}
 	}

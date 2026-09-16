@@ -53,17 +53,28 @@ func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.
 		}
 		member := products[id]
 		parentKind := ""
+		var managed *resourceGroupManagedPreflight
 		if parent, found := products[parents[id]]; found {
 			if err := check(parent.Asset.ID); err != nil {
 				return err
 			}
 			parentKind = parent.Asset.Identity.NativeType
+			if parentKind == aksType {
+				group, err := aksNodeGroup(strings.Split(parent.Asset.Identity.NativeID, "/")[2], parent.Asset.Normalized)
+				if err != nil {
+					return err
+				}
+				managed = &resourceGroupManagedPreflight{owner: parent.Asset.Identity.NativeID, group: group, members: map[asset.AssetID]string{}}
+				for _, impact := range parent.LifecycleImpacts {
+					managed.members[impact.Asset.ID] = impact.Asset.Identity.NativeID
+				}
+			}
 		}
 		driver, err := r.ResolveAction(ctx, req.Asset.Identity.ConnectionID, member.Asset)
 		if err != nil {
 			return err
 		}
-		result, err := resourceGroupPreflightProduct(ctx, driver, member, parentKind, scope)
+		result, err := resourceGroupPreflightProduct(ctx, driver, member, parentKind, scope, managed)
 		if err != nil {
 			return err
 		}
@@ -74,7 +85,7 @@ func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.
 			}
 			return serviceDenied(reason)
 		}
-		if err = resourceGroupNativeProductReady(ctx, driver, member); err != nil {
+		if err = resourceGroupNativeProductReady(ctx, driver, member, managed); err != nil {
 			return err
 		}
 		checked[id] = true
@@ -91,14 +102,14 @@ func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.
 // Native group deletion does not execute a product driver's preparation state
 // machine. Each driver family needs an explicit native-cascade readiness contract;
 // registration must not silently opt a new multi-phase driver into group deletion.
-func resourceGroupNativeProductReady(ctx context.Context, driver contracts.ActionDriver, member contracts.ActionRequest) error {
+func resourceGroupNativeProductReady(ctx context.Context, driver contracts.ActionDriver, member contracts.ActionRequest, managed *resourceGroupManagedPreflight) error {
 	switch a := driver.(type) {
 	case *monitorTargetAction:
 		filtered, _, err := a.request(ctx, member)
 		if err != nil {
 			return err
 		}
-		return resourceGroupNativeProductReady(ctx, a.inner, filtered)
+		return resourceGroupNativeProductReady(ctx, a.inner, filtered, managed)
 	case *monitorAction:
 		// Monitor Execute performs its bound DELETE after the same preflight;
 		// it has no hidden cancellation, detach, purge or preparation phase.
@@ -107,7 +118,7 @@ func resourceGroupNativeProductReady(ctx context.Context, driver contracts.Actio
 		if a.kind.NativeType == serviceBusMigrationType || recoveryType(a.kind.NativeType) {
 			return serviceDenied("resource_group_independent_preparation_required")
 		}
-		return a.client.resourceGroupAttachmentsReady(ctx, member)
+		return a.client.resourceGroupAttachmentsReady(ctx, member, managed)
 	default:
 		return serviceDenied("resource_group_native_preparation_contract_required")
 	}
@@ -116,7 +127,7 @@ func resourceGroupNativeProductReady(ctx context.Context, driver contracts.Actio
 // Product Preflight may permit Execute to prepare retention. A native group
 // DELETE skips product Execute, so every required attachment update must already
 // be visible in the live configuration before submitting the group cascade.
-func (c *client) resourceGroupAttachmentsReady(ctx context.Context, member contracts.ActionRequest) error {
+func (c *client) resourceGroupAttachmentsReady(ctx context.Context, member contracts.ActionRequest, managed *resourceGroupManagedPreflight) error {
 	if member.Asset.Identity.NativeType != vmType && member.Asset.Identity.NativeType != nicType {
 		return nil
 	}
@@ -130,7 +141,7 @@ func (c *client) resourceGroupAttachmentsReady(ctx context.Context, member contr
 	}
 	kind, _ := findType(member.Asset.Identity.NativeType)
 	a := &action{client: c, kind: kind, id: strings.ToLower(member.Asset.Identity.NativeID)}
-	updates, reason, err := a.evaluateAttachments(ctx, member, live.data, locks)
+	updates, reason, err := a.evaluateAttachmentsInManagedGroup(ctx, member, live.data, locks, managed)
 	if err != nil {
 		return err
 	}

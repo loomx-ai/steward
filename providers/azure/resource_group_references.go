@@ -43,20 +43,22 @@ func (s *resourceGroupMonitorScope) owns(target asset.Asset, source monitorIncom
 
 // Preserve the real product checks while allowing verified group-local Monitor
 // references. Native preparation and every member's outcome remain separate.
-func resourceGroupPreflightProduct(ctx context.Context, driver contracts.ActionDriver, req contracts.ActionRequest, parentKind string, scope *resourceGroupMonitorScope) (contracts.PreflightResult, error) {
+func resourceGroupPreflightProduct(ctx context.Context, driver contracts.ActionDriver, req contracts.ActionRequest, parentKind string, scope *resourceGroupMonitorScope, managed *resourceGroupManagedPreflight) (contracts.PreflightResult, error) {
 	switch a := driver.(type) {
 	case *monitorTargetAction:
 		filtered, targets, err := a.request(ctx, req)
 		if err != nil {
 			return contracts.PreflightResult{}, err
 		}
-		check, err := resourceGroupPreflightProduct(ctx, a.inner, filtered, parentKind, scope)
+		check, err := resourceGroupPreflightProduct(ctx, a.inner, filtered, parentKind, scope, managed)
 		if err == nil && check.Allowed {
 			err = a.dependenciesInGroup(ctx, req, targets, scope)
 		}
 		return check, err
 	case *monitorAction:
 		return a.preflightInGroup(ctx, req, scope)
+	case *action:
+		return a.preflightWithManagedGroup(ctx, req, parentKind, nil, managed)
 	default:
 		return deploymentStackPreflightInParent(ctx, driver, req, parentKind)
 	}

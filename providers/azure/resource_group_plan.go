@@ -39,7 +39,7 @@ func (c *client) resourceGroupProductRequests(req contracts.ActionRequest) (map[
 	native := map[string]bool{strings.ToLower(root.Identity.NativeID): true}
 	validMember := func(v asset.Asset) error {
 		id, kind, err := deploymentStackMemberID(v.Identity.NativeID)
-		if err != nil || v.ID == "" || v.ID == root.ID || v.Identity.Provider != root.Identity.Provider || v.Identity.Partition != root.Identity.Partition || v.Identity.ConnectionID != root.Identity.ConnectionID || !strings.HasPrefix(id, strings.ToLower(c.root())+"/") || !strings.EqualFold(kind, v.Identity.NativeType) || strings.EqualFold(kind, groupType) || native[id] {
+		if err != nil || v.ID == "" || v.ID == root.ID || v.Identity.Provider != root.Identity.Provider || v.Identity.Partition != root.Identity.Partition || v.Identity.ConnectionID != root.Identity.ConnectionID || !strings.HasPrefix(id, strings.ToLower(c.root())+"/") || !strings.EqualFold(kind, v.Identity.NativeType) || native[id] {
 			return serviceDenied("invalid_resource_group_plan_member")
 		}
 		native[id] = true
@@ -56,6 +56,15 @@ func (c *client) resourceGroupProductRequests(req contracts.ActionRequest) (map[
 			return nil, serviceDenied("resource_group_cannot_retain_contained_member")
 		}
 		byID[impact.Asset.ID] = impact
+	}
+	managed, err := c.resourceGroupManagedMembers(byID)
+	if err != nil {
+		return nil, err
+	}
+	for _, impact := range req.LifecycleImpacts {
+		if impact.Asset.Identity.NativeType == groupType && managed[impact.Asset.ID] == "" {
+			return nil, serviceDenied("invalid_resource_group_plan_member")
+		}
 	}
 	for _, impact := range req.LifecycleImpacts {
 		seen := map[asset.AssetID]bool{impact.Asset.ID: true}
@@ -75,11 +84,15 @@ func (c *client) resourceGroupProductRequests(req contracts.ActionRequest) (map[
 			if err != nil {
 				return nil, err
 			}
-			if !relation {
+			if !relation && managed[current.Asset.ID] != parent.Asset.ID {
 				return nil, serviceDenied("resource_group_product_relation_unverified")
 			}
 			current = parent
 		}
+	}
+	attachmentParents, err := resourceGroupManagedAttachmentParents(byID, managed)
+	if err != nil {
+		return nil, err
 	}
 	prerequisites := map[asset.AssetID]bool{}
 	for _, p := range req.PrerequisiteDeletions {
@@ -87,7 +100,7 @@ func (c *client) resourceGroupProductRequests(req contracts.ActionRequest) (map[
 		if p.ControllerID == root.ID && !inResourceGroup(p.Asset.Identity.NativeID, root.Identity.NativeID) {
 			return nil, serviceDenied("resource_group_external_prerequisite_unverified")
 		}
-		if !p.Delete || prerequisites[p.Asset.ID] || byID[p.Asset.ID].Asset.ID != "" || p.ControllerID != root.ID && (!found || !parent.Delete) {
+		if strings.EqualFold(p.Asset.Identity.NativeType, groupType) || !p.Delete || prerequisites[p.Asset.ID] || byID[p.Asset.ID].Asset.ID != "" || p.ControllerID != root.ID && (!found || !parent.Delete) {
 			return nil, serviceDenied("invalid_resource_group_prerequisite")
 		}
 		if err := validMember(p.Asset); err != nil {
@@ -101,6 +114,12 @@ func (c *client) resourceGroupProductRequests(req contracts.ActionRequest) (map[
 		if !impact.Delete {
 			continue
 		}
+		if managed[id] != "" {
+			_, known := findType(impact.Asset.Identity.NativeType)
+			if !known || impact.Asset.Identity.NativeType == groupType {
+				continue
+			}
+		}
 		member := contracts.ActionRequest{Asset: impact.Asset, Action: "delete", IdempotencyKey: req.IdempotencyKey + ":member:" + string(id)}
 		for _, child := range req.LifecycleImpacts {
 			if child.Asset.ID == id {
@@ -110,6 +129,20 @@ func (c *client) resourceGroupProductRequests(req contracts.ActionRequest) (map[
 				if parent == id {
 					member.LifecycleImpacts = append(member.LifecycleImpacts, child)
 					break
+				}
+			}
+		}
+		if owner := managed[id]; owner != "" {
+			for _, child := range req.LifecycleImpacts {
+				if child.Asset.ID == id || managed[child.Asset.ID] != owner {
+					continue
+				}
+				for parent := attachmentParents[child.Asset.ID]; parent != owner; parent = attachmentParents[parent] {
+					if parent == id {
+						child.ControllerID = attachmentParents[child.Asset.ID]
+						member.LifecycleImpacts = append(member.LifecycleImpacts, child)
+						break
+					}
 				}
 			}
 		}

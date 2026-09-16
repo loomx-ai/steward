@@ -830,3 +830,29 @@ No independent product execution receipt or dependency waiver is introduced.
 This does not complete specialized product preparation, managed resource-group
 composition, Deployment Stacks or real-cloud acceptance. All 159 parity rows and
 eight overall acceptance gates remain open.
+
+### Ordinary resource groups containing AKS managed subtrees
+
+The resource-group request projection now recognizes the existing AKS flat
+controller tree using the native nodeResourceGroup field and the same saved-member
+scope checks as the AKS driver. It keeps the node group and unknown contained
+members in the AKS request, without resolving independent group/unknown actions.
+Known VM/NIC attachment chains receive their native Delete relationships in product-local
+requests while the reviewed graph remains unchanged.
+
+After the real AKS preflight succeeds, a private per-call context lets known
+members and their reviewed attachments pass the managed-group-only protection
+when current managedBy still identifies that AKS controller. Standalone preflight
+and Execute do not receive this context; all other product, lock, readiness and
+final outcome checks remain in place. The combined native graph/planner/action
+fixture checks one containing-group DELETE, delayed node-group/member absence,
+changed owners, omitted/extra members, forbidden reads and independent VM denial.
+
+This follows Microsoft's AKS cluster deletion and Resource Manager deletion-order
+documentation, reviewed 2026-09-17:
+https://learn.microsoft.com/en-us/azure/aks/delete-cluster
+https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/delete-resource-group
+
+This is not full managed-product composition: other controller families, deeper
+native child projections and specialized preparation still require integration.
+All 159 parity rows and eight overall acceptance gates remain open.
