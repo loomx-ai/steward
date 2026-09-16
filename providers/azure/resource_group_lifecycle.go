@@ -99,6 +99,10 @@ func resourceGroupNativeProductReady(ctx context.Context, driver contracts.Actio
 			return err
 		}
 		return resourceGroupNativeProductReady(ctx, a.inner, filtered)
+	case *monitorAction:
+		// Monitor Execute performs its bound DELETE after the same preflight;
+		// it has no hidden cancellation, detach, purge or preparation phase.
+		return a.identity(member)
 	case *action:
 		if a.kind.NativeType == serviceBusMigrationType || recoveryType(a.kind.NativeType) {
 			return serviceDenied("resource_group_independent_preparation_required")
@@ -180,9 +184,17 @@ func (c *client) resourceGroupMonitorMembers(ctx context.Context, req contracts.
 		if !found || !impact.Delete || !strings.EqualFold(impact.Asset.Identity.NativeType, text(raw["type"])) {
 			return serviceDenied("resource_group_monitor_member_not_reviewed")
 		}
-		if err = c.deploymentStackPreparedMember(impact.Asset, raw, nil); err != nil {
+		live, err := c.deploymentStackMemberRead(ctx, impact.Asset)
+		if err != nil {
 			return err
 		}
+		if c.privateConfiguration(monitorResourceSnapshot(impact.Asset.Identity.NativeType, raw)) != c.privateConfiguration(monitorResourceSnapshot(impact.Asset.Identity.NativeType, live.data)) {
+			return serviceDenied("resource_group_monitor_member_changed")
+		}
+		if err = c.deploymentStackPreparedMember(impact.Asset, live.data, nil); err != nil {
+			return err
+		}
+		indexed[id] = live.data
 	}
 	return nil
 }
@@ -207,11 +219,10 @@ func (r *Runtime) resourceGroupPreflight(ctx context.Context, req contracts.Acti
 		if _, err = c.resourceGroupReviewedRead(ctx, req); err != nil {
 			return err
 		}
-		current, err := c.reviewedResourceGroupIndex(ctx, req, req.Asset, nil, nil, nil)
+		current, err := c.reviewedResourceGroupIndex(ctx, req, req.Asset, nil, nil, nil, func(indexed map[string]any) error {
+			return c.resourceGroupMonitorMembers(ctx, req, indexed)
+		})
 		if err != nil {
-			return err
-		}
-		if err = c.resourceGroupMonitorMembers(ctx, req, current); err != nil {
 			return err
 		}
 		if pass == 0 {

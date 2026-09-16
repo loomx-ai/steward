@@ -727,3 +727,26 @@ that a resource-group Stack can manage/delete its own containing group. Do not
 infer group deletion authority from a Stack's location. Native group lifecycle
 and full Stack action/graph/planner/executor acceptance remain unfinished; all
 159 parity rows and eight overall gates remain open.
+
+
+### Native resource-group cascades include reviewed Monitor indexes
+
+The internal resource-group lifecycle now merges native Monitor indexes before
+checking top-level reviewed-member completeness. A member absent from the generic
+ARM group list requires a matching reviewed deletion, stable native index snapshots,
+an independent own GET matching the native snapshot, and the actual registered
+product preflight. Monitor drivers are eligible for native cascading because their
+Execute path has no additional preparation phase. Other specialized preparation
+requirements remain explicit; this does not bypass them.
+
+Protocol fixtures exercise all ten Monitor kinds with an empty generic group
+index, mixed generic/native membership with native pagination, late or unreviewed
+members, omissions, duplicates, wrong types, changed configuration, permission
+failures, serialized recovery, returning members and forged receipts. They perform
+one native group DELETE and actual product readbacks, without independent member
+DELETE requests or fabricated member execution receipts.
+
+These are retained protocol tests, not real-cloud acceptance. Public resource-group
+and Stack action/graph/planner integration, multi-stage product preparation, and
+full end-to-end validation remain unfinished. All 159 parity rows and eight overall
+acceptance gates remain open.

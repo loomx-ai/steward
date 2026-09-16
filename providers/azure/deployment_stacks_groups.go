@@ -14,12 +14,12 @@ import (
 // The generic group index is one part of closure, not a replacement for native
 // child/service/attachment discovery or product-specific deletion preflight.
 func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.ActionRequest, group asset.Asset, configurations map[string]any, state deploymentStackObservedProgress) (map[string]any, error) {
-	return c.reviewedResourceGroupIndex(ctx, req, group, configurations, state.Members, state.Completed)
+	return c.reviewedResourceGroupIndex(ctx, req, group, configurations, state.Members, state.Completed, nil)
 }
 
 // Shared native group index; callers supply their own authenticated plan and progress.
 // It does not require or fabricate Stack membership or execution receipts.
-func (c *client) reviewedResourceGroupIndex(ctx context.Context, req contracts.ActionRequest, group asset.Asset, configurations map[string]any, members map[asset.AssetID]asset.Asset, completed map[asset.AssetID]bool) (map[string]any, error) {
+func (c *client) reviewedResourceGroupIndex(ctx context.Context, req contracts.ActionRequest, group asset.Asset, configurations map[string]any, members map[asset.AssetID]asset.Asset, completed map[asset.AssetID]bool, supplement func(map[string]any) error) (map[string]any, error) {
 	metadata, err := providerData()
 	if err != nil {
 		return nil, err
@@ -118,8 +118,13 @@ func (c *client) reviewedResourceGroupIndex(ctx context.Context, req contracts.A
 		}
 		next = following
 	}
-	// Known top-level resources still need to be in the generic index. Subresource
-	// membership is established by the separate native service child enumerations.
+	if supplement != nil {
+		if err := supplement(snapshot); err != nil {
+			return nil, err
+		}
+	}
+	// Known top-level resources must be in this index or a caller-verified native
+	// supplement. Subresources additionally require native service child enumeration.
 	for id, impact := range impacts {
 		if !completed[impact.Asset.ID] && inResourceGroup(id, group.Identity.NativeID) && len(strings.Split(strings.Trim(id, "/"), "/")) == 8 && snapshot[id] == nil {
 			return nil, serviceDenied("deployment_stack_group_index_omitted_reviewed_resource")
