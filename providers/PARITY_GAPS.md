@@ -475,3 +475,33 @@ This removes an intrinsic-child preflight mismatch without accepting the overall
 Stack feature. Flat member projection, VM/NIC cascading, specialized/read-only
 child drivers, complete pre-setup scope checks and full execution acceptance still
 need work. All 159 parity rows and eight overall gates remain open.
+
+### Flat Stack members in product cascade requests (2026-09-16)
+
+Product requests now project flat, explicitly listed Stack members through the
+product's declared child types and native relationship rules. The projection is
+execution-only: original controller IDs, native membership and full-request
+receipt bindings remain unchanged. It supports multiple levels, preserves
+explicit controllers and rejects ambiguous or cyclic relations. Static independent
+prerequisite rules are excluded; their completed receipts still enter the separate
+prerequisite context. Dynamic exceptions require further live product evidence.
+
+Live service closure records a projected relationship only after the native
+collection and each member are verified and the child is not a direct prerequisite.
+This permits the existing parent-context preflight for flat intrinsic children.
+Preparation, member execution and final product readback derive the same stable
+product request; final readback does not reconstruct relationships from absent
+resources or fabricate independent child execution receipts.
+
+The SQL server/master protocol suite now runs with both original product-controller
+and flat Stack-controller plans, including setup, native Stack DELETE, persisted
+recovery, product readback and all protection/dependency failures. Additional tests
+cover nested App Service projections, input reordering, unchanged signed requests,
+unrelated types/parents, missing signed membership, independent host prerequisites
+and ambiguous private-DNS cascade causes. These are request projection tests, not
+full App Service or private-DNS lifecycle acceptance.
+
+VM/NIC attachment relationships, dynamically intrinsic prerequisites, ambiguous
+shared native cascade causes, specialized/read-only child drivers and complete
+pre-setup scope/orchestration acceptance remain unfinished. All 159 parity rows
+and eight overall gates remain open.

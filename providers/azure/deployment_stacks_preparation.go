@@ -21,8 +21,12 @@ func (c *client) deploymentStackMemberRequest(req contracts.ActionRequest, id as
 	if req.IdempotencyKey == "" {
 		return contracts.ActionRequest{}, serviceDenied("deployment_stack_execution_identity_missing")
 	}
+	impacts, err := deploymentStackProductImpacts(req)
+	if err != nil {
+		return contracts.ActionRequest{}, err
+	}
 	byID := map[asset.AssetID]contracts.ActionImpact{}
-	for _, impact := range req.LifecycleImpacts {
+	for _, impact := range impacts {
 		byID[impact.Asset.ID] = impact
 	}
 	member, found := byID[id]
@@ -30,7 +34,7 @@ func (c *client) deploymentStackMemberRequest(req contracts.ActionRequest, id as
 		return contracts.ActionRequest{}, serviceDenied("invalid_deployment_stack_execution_member")
 	}
 	out := contracts.ActionRequest{Asset: member.Asset, Action: "delete", IdempotencyKey: req.IdempotencyKey + ":member:" + string(id)}
-	for _, impact := range req.LifecycleImpacts {
+	for _, impact := range impacts {
 		if impact.Asset.ID == id {
 			continue
 		}

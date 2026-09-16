@@ -11,14 +11,31 @@ import (
 )
 
 func TestDeploymentStackIntrinsicProductPreflight(t *testing.T) {
+	for _, flat := range []bool{false, true} {
+		name := "product_controller"
+		if flat {
+			name = "stack_controller"
+		}
+		t.Run(name, func(t *testing.T) { testDeploymentStackIntrinsicProductPreflight(t, flat) })
+	}
+}
+
+func testDeploymentStackIntrinsicProductPreflight(t *testing.T, flat bool) {
 	for _, mode := range []string{"complete", "parent_protected", "child_protected", "child_lock", "parent_lock", "late_child_lock", "list_forbidden", "child_forbidden", "missing_child", "new_child", "monitor_forbidden", "child_monitor_forbidden"} {
 		t.Run(mode, func(t *testing.T) {
 			parent, child := actionAsset(sqlServerType, "z-parent"), actionAsset(sqlDatabaseType, "a-master")
 			child.Identity.NativeID = parent.Identity.NativeID + "/databases/master"
-			_, req := stackDeletePlanFixture(t, false, contracts.ActionImpact{Asset: child, ControllerID: parent.ID, Delete: true}, contracts.ActionImpact{Asset: parent, ControllerID: "stack", Delete: true})
+			controller := parent.ID
+			if flat {
+				controller = "stack"
+			}
+			_, req := stackDeletePlanFixture(t, false, contracts.ActionImpact{Asset: child, ControllerID: controller, Delete: true}, contracts.ActionImpact{Asset: parent, ControllerID: "stack", Delete: true})
 			req.IdempotencyKey = "sql-cascade-job"
 			req.Asset.Location = "eastus"
 			root := map[string]any{"id": req.Asset.Identity.NativeID, "type": deploymentStackType, "location": "eastus", "systemData": map[string]any{"createdAt": "2020-02-01T01:01:01.1075056Z"}, "properties": map[string]any{"resources": []any{map[string]any{"id": parent.Identity.NativeID, "status": "managed", "denyStatus": "none"}}}}
+			if flat {
+				object(root["properties"])["resources"] = append(object(root["properties"])["resources"].([]any), map[string]any{"id": child.Identity.NativeID, "status": "managed", "denyStatus": "none"})
+			}
 			parentRaw := map[string]any{"id": parent.Identity.NativeID, "type": sqlServerType, "location": "eastus", "properties": map[string]any{"state": "Ready"}}
 			childRaw := map[string]any{"id": child.Identity.NativeID, "type": sqlDatabaseType, "location": "eastus", "properties": map[string]any{"status": "Online"}}
 			if mode == "parent_protected" {

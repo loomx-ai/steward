@@ -165,11 +165,17 @@ func (c *client) deploymentStackProductRequest(req contracts.ActionRequest, id a
 	prerequisites := map[asset.AssetID]bool{}
 	parents := map[asset.AssetID]asset.AssetID{}
 	var parent contracts.ActionImpact
+	projected, err := deploymentStackProductImpacts(req)
+	if err != nil {
+		return contracts.ActionRequest{}, err
+	}
+	for _, impact := range projected {
+		parents[impact.Asset.ID] = impact.ControllerID
+	}
 	for _, impact := range req.LifecycleImpacts {
 		if impact.Asset.ID == id {
 			parent = impact
 		}
-		parents[impact.Asset.ID] = impact.ControllerID
 	}
 	for _, impact := range req.LifecycleImpacts {
 		if completed[impact.Asset.ID] && deploymentStackProductPrerequisite(req, parent, impact) {
