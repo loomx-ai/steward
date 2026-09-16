@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "46e08add49d4fedba913ffb45f68ce56e43954c6197e2b383dc844014a69e32d",
+    "checksum": "6a4d715eef52ae9969807281e62a688f0989584a5cf86388f7fa2ed40cc7998f",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "0c882964823f8ca08d4af09718a5e1fcd546f8144a743111fcd4d758537f4a53",
+  "content_checksum": "3d53268086259fd854c91d3481faf4836b8831d8a4318fc9cfc5721805d1e409",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -146247,6 +146247,9 @@
         "collection": "resourceGroups",
         "read_operations": [
           "Azure.ResourceManagementClient.ResourceGroups_Get"
+        ],
+        "delete_operations": [
+          "Azure.ResourceManagementClient.ResourceGroups_Delete"
         ],
         "list_operations": [
           "Azure.ResourceManagementClient.ResourceGroups_List"

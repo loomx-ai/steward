@@ -93,9 +93,11 @@ func newFleetHubFixture(t *testing.T, private bool) *fleetHubFixture {
 			}
 		} else if strings.HasSuffix(path, "/resources") && h.groups[strings.TrimSuffix(path, "/resources")] != nil {
 			group := strings.TrimSuffix(path, "/resources")
-			for _, id := range slices.Sorted(maps.Keys(h.resources)) {
+			resources := maps.Clone(f.resources)
+			maps.Copy(resources, h.resources)
+			for _, id := range slices.Sorted(maps.Keys(resources)) {
 				if inResourceGroup(id, group) && !h.omit[id] {
-					values = append(values, h.resources[id])
+					values = append(values, resources[id])
 				}
 			}
 		} else {

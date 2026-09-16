@@ -38,8 +38,12 @@ func newFleetHubMembersFixture(t *testing.T) *fleetHubFixture {
 			value["type"] = kind
 			h.resources[id] = value
 			h.versions[id] = source.version[path]
-			// Generic ARM intentionally omits all nested resources and disks.
+			// Managed-group discovery must recover omitted nested resources and disks.
+			// The ordinary shared group still lists its known top-level resources.
 			h.omit[id] = !strings.EqualFold(kind, scaleSetType) && !strings.EqualFold(kind, vnetType)
+			if inResourceGroup(id, external) && len(strings.Split(strings.Trim(id, "/"), "/")) == 8 {
+				h.omit[id] = false
+			}
 		}
 		for path, values := range source.lists {
 			version := source.version[path]

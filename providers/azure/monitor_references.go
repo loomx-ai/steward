@@ -210,6 +210,9 @@ func (c *client) contributeMonitorReferences(ctx context.Context, parent asset.A
 				if controller.Identity.Provider != parent.Identity.Provider || controller.Identity.ConnectionID != parent.Identity.ConnectionID || controller.Identity.Partition != parent.Identity.Partition {
 					continue
 				}
+				if controller.Identity.NativeType == groupType && text(controller.Normalized["_resource_group_configuration"]) != "" && text(controller.Normalized["_managed_group_owner"]) == "" && inResourceGroup(parent.Identity.NativeID, controller.Identity.NativeID) && (target.ID == controller.ID || inResourceGroup(target.Identity.NativeID, controller.Identity.NativeID)) {
+					controllers[string(controller.ID)] = true
+				}
 				if group, ok := c.monitorControllerGroup(controller); ok && inResourceGroup(parent.Identity.NativeID, group) && (target.ID == controller.ID || inResourceGroup(target.Identity.NativeID, group)) {
 					controllers[string(controller.ID)] = true
 				}

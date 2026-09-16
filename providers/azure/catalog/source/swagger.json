@@ -266984,7 +266984,9 @@
       "nativeType": "Microsoft.Resources/resourceGroups",
       "rest": {
         "collection": "resourceGroups",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.ResourceManagementClient.ResourceGroups_Delete"
+        ],
         "list_operations": [
           "Azure.ResourceManagementClient.ResourceGroups_List"
         ],

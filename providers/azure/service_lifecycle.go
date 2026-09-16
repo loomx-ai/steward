@@ -860,6 +860,13 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 		}
 	}
+	groups, err := s.client.contributeResourceGroups(ctx, s.connectionID, assets)
+	if err != nil {
+		return governance.Contribution{}, err
+	}
+	result.Bindings = append(result.Bindings, groups.Bindings...)
+	result.Relationships = append(result.Relationships, groups.Relationships...)
+	result.Unresolved = append(result.Unresolved, groups.Unresolved...)
 	return result, nil
 }
 

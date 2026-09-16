@@ -269,9 +269,8 @@ func (r *Runtime) resourceGroupPreflight(ctx context.Context, req contracts.Acti
 	return err
 }
 
-// Submit the reviewed native cascade once. This is not yet registered in the
-// catalog: graph construction and prepared/prerequisite recovery remain separate
-// integration work. Never resubmit an accepted operation to recover its result.
+// Submit the reviewed native cascade once. Never resubmit an accepted operation
+// to recover its result. Product preparation requirements remain explicit.
 func (r *Runtime) resourceGroupStartDelete(ctx context.Context, req contracts.ActionRequest) (out contracts.ActionResult, err error) {
 	defer func() {
 		if err != nil {
@@ -311,7 +310,7 @@ func (r *Runtime) resourceGroupStartDelete(ctx context.Context, req contracts.Ac
 	if err != nil {
 		return out, err
 	}
-	return contracts.ActionResult{ProviderOperationID: res.requestID, Data: receipt}, nil
+	return contracts.ActionResult{ProviderRequestID: res.requestID, RetryAfter: retryAfter(res.header), Data: receipt}, nil
 }
 
 // A completed native operation still needs group and actual product readbacks.
@@ -335,19 +334,28 @@ func (r *Runtime) resourceGroupResumeDeletion(ctx context.Context, req contracts
 	if err != nil {
 		return contracts.WaitResult{}, err
 	}
-	operationDone := out.Done
+	allAbsent, err := r.resourceGroupProductsAbsent(ctx, c, req, products)
+	if err != nil {
+		return contracts.WaitResult{}, err
+	}
+	out.Done = out.Done && allAbsent
+	return out, nil
+}
+
+func (r *Runtime) resourceGroupProductsAbsent(ctx context.Context, c *client, req contracts.ActionRequest, products map[asset.AssetID]contracts.ActionRequest) (bool, error) {
+	var err error
 	allAbsent := true
 	for pass := 0; pass < 2; pass++ {
 		group, readErr := c.deploymentStackMemberRead(ctx, req.Asset)
 		if readErr != nil && !isNotFound(readErr) {
-			return contracts.WaitResult{}, readErr
+			return false, readErr
 		}
 		if readErr == nil {
 			if group.data["location"] != req.Asset.Normalized["_resource_group_location"] {
-				return contracts.WaitResult{}, serviceDenied("resource_group_location_changed")
+				return false, serviceDenied("resource_group_location_changed")
 			}
 			if err = serviceCreationIdentity(req.Asset, group.data); err != nil {
-				return contracts.WaitResult{}, err
+				return false, err
 			}
 			allAbsent = false
 		}
@@ -355,11 +363,11 @@ func (r *Runtime) resourceGroupResumeDeletion(ctx context.Context, req contracts
 			member := products[id]
 			driver, resolveErr := r.ResolveAction(ctx, req.Asset.Identity.ConnectionID, member.Asset)
 			if resolveErr != nil {
-				return contracts.WaitResult{}, resolveErr
+				return false, resolveErr
 			}
 			read, readErr := c.deploymentStackProductReadback(ctx, member, driver)
 			if readErr != nil {
-				return contracts.WaitResult{}, readErr
+				return false, readErr
 			}
 			allAbsent = allAbsent && !read.Exists
 		}
@@ -369,22 +377,21 @@ func (r *Runtime) resourceGroupResumeDeletion(ctx context.Context, req contracts
 			}
 			live, readErr := c.deploymentStackMemberRead(ctx, impact.Asset)
 			if readErr != nil {
-				return contracts.WaitResult{}, readErr
+				return false, readErr
 			}
 			if err = serviceCreationIdentity(impact.Asset, live.data); err != nil {
-				return contracts.WaitResult{}, err
+				return false, err
 			}
 		}
 		if err = r.resourceGroupPrerequisitesAbsent(ctx, c, req); err != nil {
-			return contracts.WaitResult{}, err
+			return false, err
 		}
 		// A group recreated during member reads must not be hidden by the earlier 404.
 		_, readErr = c.deploymentStackMemberRead(ctx, req.Asset)
 		if readErr != nil && !isNotFound(readErr) {
-			return contracts.WaitResult{}, readErr
+			return false, readErr
 		}
 		allAbsent = allAbsent && isNotFound(readErr)
 	}
-	out.Done = operationDone && allAbsent
-	return out, nil
+	return allAbsent, nil
 }

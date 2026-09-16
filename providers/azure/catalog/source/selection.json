@@ -3243,7 +3243,9 @@
       "read_operations": [
         "Azure.ResourceManagementClient.ResourceGroups_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.ResourceManagementClient.ResourceGroups_Delete"
+      ],
       "list_operations": [
         "Azure.ResourceManagementClient.ResourceGroups_List"
       ]

@@ -109,7 +109,9 @@ func insightsComponentPlan(t *testing.T, f *insightsComponentFixture, extraKinds
 	}
 	// The original linked-storage example references this shared account.
 	// It was discovered separately and must remain outside the component plan.
-	storage := dnsAsset(t, r, nativeResource(storageType, "storageAccountName", "southcentralus", map[string]any{}))
+	storageRaw := nativeResource(storageType, "storageAccountName", "southcentralus", map[string]any{})
+	storage := dnsAsset(t, r, storageRaw)
+	f.groupMembers[storage.Identity.NativeID] = storageRaw
 	storage.ScopeID = scope.ID
 	if err := repository.PutAsset(ctx, storage); err != nil {
 		t.Fatal(err)
@@ -491,6 +493,7 @@ func insightsComponentPrivateLinks(t *testing.T, f *insightsComponentFixture) (s
 	scopeID := strings.ToLower(resourceID(monitorPrivateLinkType, "shared-scope"))
 	scope := monitorPrivateLinkExample(t, "PrivateLinkScopesGet")
 	scope["id"], scope["name"] = scopeID, "shared-scope"
+	f.groupMembers[scopeID] = scope
 	capability := monitorPrivateLinkExample(t, "PrivateLinkScopePrivateLinkResourceGet")
 	capability["id"] = scopeID + "/privateLinkResources/azuremonitor"
 	links := map[string]map[string]any{}

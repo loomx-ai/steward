@@ -12,6 +12,7 @@ import (
 	"github.com/loomx-ai/steward/internal/app/inventory"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/core/graph"
 	"github.com/loomx-ai/steward/internal/persistence/sqlite"
 	providerruntime "github.com/loomx-ai/steward/internal/provider/runtime"
 )
@@ -127,10 +128,12 @@ func TestFleetHubGraphWorkerPersistsExclusiveOwnership(t *testing.T) {
 		}
 		seen, count := map[asset.AssetID]bool{}, 0
 		for _, binding := range bindings {
-			if seen[binding.ManagedAssetID] {
-				t.Fatal("persisted Hub graph has multiple exclusive controllers", binding)
+			if binding.Ownership == graph.OwnershipExclusive {
+				if seen[binding.ManagedAssetID] {
+					t.Fatal("persisted Hub graph has multiple exclusive controllers", binding)
+				}
+				seen[binding.ManagedAssetID] = true
 			}
-			seen[binding.ManagedAssetID] = true
 			if binding.EvidenceSource == fleetHubSource {
 				count++
 				if binding.ControllerAssetID != root.ID || binding.DirectCleanupAllowed {

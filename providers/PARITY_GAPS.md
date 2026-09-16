@@ -774,3 +774,38 @@ source after group absence. They use real registered product drivers.
 This does not complete public group/Stack action registration, graph/planner
 integration, multi-phase product preparation or real-cloud end-to-end acceptance.
 All 159 parity rows and eight overall acceptance gates remain open.
+
+
+### Resource-group native graph and public action integration
+
+Resource groups now declare their existing official Delete binding in the native
+selection, generated catalog and resource specification, and resolve a dedicated
+registered action driver. Native group graph discovery reconciles two unfiltered
+ARM indexes with own resource reads and native Monitor indexes. Unknown members
+remain cleanup-blocking unresolved references. Pagination, duplicate/type/scope
+errors, changing snapshots and omitted known top-level members cannot become an
+empty group. Managed groups and old group records without a private review do not
+acquire these effects.
+
+The graph uses selection-activated native deletion effects rather than exclusive
+ownership: selecting a member remains independent, and an existing VM or service
+controller remains its child's immediate controller. Group-local Monitor dependency
+declarations compose with these verified effects. Indexed RBAC/diagnostic extension
+resources remain independently executed prerequisites rather than delegated deletes.
+
+The public driver caches an immutable native identity/configuration digest while
+allowing inventory observation timestamps to advance. It preserves full
+request/job-bound recovery, native operation
+completion plus actual product readback, and applied-retention checks. An already
+absent group requires its reviewed product outcomes too; no accepted-operation
+receipt is fabricated. Request IDs and retry timing remain diagnostics, not native
+operation identities. Retained protocol tests run actionable native group inventory,
+ServiceLifecycle graph contribution, the real planner, ResolveAction, Preflight,
+Execute, serialized Wait and Readback, including asynchronous callbacks and forged
+receipt rejection. Separate graph cases retain unknown members, own-read failures,
+paging and immediate VM/disk ownership.
+
+This enables the verified native-cascade path; it is not full resource-group or
+Deployment Stack completion. Specialized product preparation contracts, persisted
+multi-stage setup and full application/real-cloud acceptance remain outstanding.
+All 159 parity rows and eight overall acceptance gates remain open.

@@ -43,7 +43,7 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 		return nil, err
 	}
 	defer func() {
-		if err == nil && monitorARMTarget(value) && monitorResourceKind(value.Identity.NativeType) == "" {
+		if err == nil && kind.NativeType != groupType && monitorARMTarget(value) && monitorResourceKind(value.Identity.NativeType) == "" {
 			if value.Identity.ConnectionID != id {
 				resolved, err = nil, serviceDenied("monitor_target_action_connection_changed")
 				return
@@ -51,6 +51,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 			resolved = &monitorTargetAction{client: c, inner: resolved, planned: value}
 		}
 	}()
+	if kind.NativeType == groupType {
+		return newResourceGroupAction(r, c, id, value)
+	}
 	if rbacResourceKind(kind.NativeType) != "" {
 		return newRBACAction(c, id, value)
 	}

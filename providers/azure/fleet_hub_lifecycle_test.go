@@ -79,10 +79,12 @@ func TestFleetHubNativeLifecycleDelegation(t *testing.T) {
 	}
 	seen := map[asset.AssetID]bool{}
 	for _, binding := range built.Bindings {
-		if seen[binding.ManagedAssetID] {
-			t.Fatal("native Hub member acquired multiple lifecycle owners", binding)
+		if binding.Ownership == graph.OwnershipExclusive {
+			if seen[binding.ManagedAssetID] {
+				t.Fatal("native Hub member acquired multiple lifecycle owners", binding)
+			}
+			seen[binding.ManagedAssetID] = true
 		}
-		seen[binding.ManagedAssetID] = true
 		if binding.EvidenceSource == fleetHubSource {
 			if members[string(binding.ManagedAssetID)] == nil || binding.ControllerAssetID != root.ID || binding.Authority != graph.AuthorityAuthoritative || binding.Ownership != graph.OwnershipExclusive || binding.CleanupPolicy != graph.CleanupDelegate || binding.DirectCleanupAllowed || binding.Evidence[graph.LifecycleEvidenceControllerDeleteGuaranteed] != true || binding.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] != true {
 				t.Fatal("Hub escaped its verified Fleet owner or lost native residual verification", binding)

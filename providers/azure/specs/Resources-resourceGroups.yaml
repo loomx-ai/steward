@@ -44,3 +44,13 @@ fields:
     type: object
 extensions:
   hook: azure.resource
+actions:
+  delete:
+    operation: Azure.ResourceManagementClient.ResourceGroups_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.ResourceManagementClient.ResourceGroups_Get
+      itemsPath: $
+      identityPath: id

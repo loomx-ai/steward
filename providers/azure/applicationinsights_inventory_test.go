@@ -29,6 +29,7 @@ type insightsInventoryFixture struct {
 	configurations    map[string]map[string]any
 	detections        map[string]map[string]any
 	children          map[string]map[string]any
+	groupMembers      map[string]map[string]any
 	locks             []any
 	annotationWindows []insightsAnnotationWindow
 	annotationVisible map[string]bool
@@ -41,7 +42,7 @@ type insightsInventoryFixture struct {
 
 func newInsightsInventoryFixture(t *testing.T) *insightsInventoryFixture {
 	t.Helper()
-	f := &insightsInventoryFixture{parent: nativeResource(applicationInsightsType, "App", "eastus", map[string]any{"AppId": "app-generation", "CreationDate": "2026-09-01T00:00:00Z", "InstrumentationKey": "PRIVATE_KEY"}), children: map[string]map[string]any{}, locks: []any{}}
+	f := &insightsInventoryFixture{parent: nativeResource(applicationInsightsType, "App", "eastus", map[string]any{"AppId": "app-generation", "CreationDate": "2026-09-01T00:00:00Z", "InstrumentationKey": "PRIVATE_KEY"}), children: map[string]map[string]any{}, groupMembers: map[string]map[string]any{}, locks: []any{}}
 	f.parentID, _, _ = parseID(text(f.parent["id"]))
 	f.groupID = strings.Join(strings.Split(f.parentID, "/")[:5], "/")
 	f.group = map[string]any{"id": f.groupID, "name": "test", "type": groupType, "location": "eastus"}
@@ -136,6 +137,23 @@ func newInsightsInventoryFixture(t *testing.T) *insightsInventoryFixture {
 		}
 		if path == root+"/resourcegroups" {
 			return jsonResponse(200, map[string]any{"value": []any{f.group}}, nil), nil
+		}
+		if path == f.groupID+"/resources" {
+			if req.Method != "GET" || len(req.URL.Query()) != 1 || req.URL.Query().Get("api-version") != resourcesVersion {
+				t.Fatal("unexpected ordinary group list", req.Method, req.URL)
+			}
+			rows := []any{f.parent}
+			for _, id := range slices.Sorted(maps.Keys(f.groupMembers)) {
+				rows = append(rows, f.groupMembers[id])
+			}
+			return jsonResponse(200, map[string]any{"value": rows}, nil), nil
+		}
+		if raw := f.groupMembers[path]; raw != nil {
+			mapping, _ := findType(text(raw["type"]))
+			if req.Method != "GET" || req.URL.Query().Get("api-version") != mapping.Version {
+				t.Fatal("unexpected ordinary group own read", req.Method, req.URL)
+			}
+			return jsonResponse(200, raw, nil), nil
 		}
 		if path == f.groupID {
 			return jsonResponse(200, f.group, nil), nil

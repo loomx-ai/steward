@@ -226,10 +226,10 @@ func TestResourceGroupNativeLifecycle(t *testing.T) {
 	}
 }
 
-func TestResourceGroupNativeLifecycleRegistrationRemainsClosed(t *testing.T) {
+func TestResourceGroupNativeLifecycleRegistration(t *testing.T) {
 	kind, _ := findType(groupType)
-	if !kind.ReadOnly || len(kind.DeleteOperations) != 0 {
-		t.Fatal("group exposed before complete graph/setup integration")
+	if kind.ReadOnly || len(kind.DeleteOperations) != 1 || kind.DeleteOperations[0] != "Azure.ResourceManagementClient.ResourceGroups_Delete" {
+		t.Fatal("group native delete binding unavailable")
 	}
 }
 
