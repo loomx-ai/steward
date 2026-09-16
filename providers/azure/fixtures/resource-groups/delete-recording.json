@@ -1,0 +1,68 @@
+{
+  "source": "https://github.com/Azure/azure-cli/blob/023a11c0c775ebba02b559ab8e5d9d489bf82133/src/azure-cli/azure/cli/command_modules/resource/tests/latest/recordings/test_resource_group.yaml",
+  "source_sha256": "2f5b36d7efe2a82947c73b3f8e6cdbf56954ee11d1c2810673e496e69f50d068",
+  "interactions": [
+    {
+      "method": "DELETE",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli_test_rg_scenario000001?api-version=2021-04-01",
+      "status": 202,
+      "body": "",
+      "headers": {
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/operationresults/eyJqb2JJZCI6IlJFU09VUkNFR1JPVVBERUxFVElPTkpPQi1DTEk6NUZURVNUOjVGUkc6NUZTQ0VOQVJJT1ZQUkJUWkVBMlM2NERTTFJGRzdFRnwxRkYwRkU4QjFDMEE5RTc5LVdFU1RVUyIsImpvYkxvY2F0aW9uIjoid2VzdHVzIn0?api-version=2021-04-01"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/operationresults/eyJqb2JJZCI6IlJFU09VUkNFR1JPVVBERUxFVElPTkpPQi1DTEk6NUZURVNUOjVGUkc6NUZTQ0VOQVJJT1ZQUkJUWkVBMlM2NERTTFJGRzdFRnwxRkYwRkU4QjFDMEE5RTc5LVdFU1RVUyIsImpvYkxvY2F0aW9uIjoid2VzdHVzIn0?api-version=2021-04-01",
+      "status": 202,
+      "body": "",
+      "headers": {
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/operationresults/eyJqb2JJZCI6IlJFU09VUkNFR1JPVVBERUxFVElPTkpPQi1DTEk6NUZURVNUOjVGUkc6NUZTQ0VOQVJJT1ZQUkJUWkVBMlM2NERTTFJGRzdFRnwxRkYwRkU4QjFDMEE5RTc5LVdFU1RVUyIsImpvYkxvY2F0aW9uIjoid2VzdHVzIn0?api-version=2021-04-01"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/operationresults/eyJqb2JJZCI6IlJFU09VUkNFR1JPVVBERUxFVElPTkpPQi1DTEk6NUZURVNUOjVGUkc6NUZTQ0VOQVJJT1ZQUkJUWkVBMlM2NERTTFJGRzdFRnwxRkYwRkU4QjFDMEE5RTc5LVdFU1RVUyIsImpvYkxvY2F0aW9uIjoid2VzdHVzIn0?api-version=2021-04-01",
+      "status": 202,
+      "body": "",
+      "headers": {
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/operationresults/eyJqb2JJZCI6IlJFU09VUkNFR1JPVVBERUxFVElPTkpPQi1DTEk6NUZURVNUOjVGUkc6NUZTQ0VOQVJJT1ZQUkJUWkVBMlM2NERTTFJGRzdFRnwxRkYwRkU4QjFDMEE5RTc5LVdFU1RVUyIsImpvYkxvY2F0aW9uIjoid2VzdHVzIn0?api-version=2021-04-01"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/operationresults/eyJqb2JJZCI6IlJFU09VUkNFR1JPVVBERUxFVElPTkpPQi1DTEk6NUZURVNUOjVGUkc6NUZTQ0VOQVJJT1ZQUkJUWkVBMlM2NERTTFJGRzdFRnwxRkYwRkU4QjFDMEE5RTc5LVdFU1RVUyIsImpvYkxvY2F0aW9uIjoid2VzdHVzIn0?api-version=2021-04-01",
+      "status": 202,
+      "body": "",
+      "headers": {
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/operationresults/eyJqb2JJZCI6IlJFU09VUkNFR1JPVVBERUxFVElPTkpPQi1DTEk6NUZURVNUOjVGUkc6NUZTQ0VOQVJJT1ZQUkJUWkVBMlM2NERTTFJGRzdFRnwxRkYwRkU4QjFDMEE5RTc5LVdFU1RVUyIsImpvYkxvY2F0aW9uIjoid2VzdHVzIn0?api-version=2021-04-01"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/operationresults/eyJqb2JJZCI6IlJFU09VUkNFR1JPVVBERUxFVElPTkpPQi1DTEk6NUZURVNUOjVGUkc6NUZTQ0VOQVJJT1ZQUkJUWkVBMlM2NERTTFJGRzdFRnwxRkYwRkU4QjFDMEE5RTc5LVdFU1RVUyIsImpvYkxvY2F0aW9uIjoid2VzdHVzIn0?api-version=2021-04-01",
+      "status": 202,
+      "body": "",
+      "headers": {
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/operationresults/eyJqb2JJZCI6IlJFU09VUkNFR1JPVVBERUxFVElPTkpPQi1DTEk6NUZURVNUOjVGUkc6NUZTQ0VOQVJJT1ZQUkJUWkVBMlM2NERTTFJGRzdFRnwxRkYwRkU4QjFDMEE5RTc5LVdFU1RVUyIsImpvYkxvY2F0aW9uIjoid2VzdHVzIn0?api-version=2021-04-01"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/operationresults/eyJqb2JJZCI6IlJFU09VUkNFR1JPVVBERUxFVElPTkpPQi1DTEk6NUZURVNUOjVGUkc6NUZTQ0VOQVJJT1ZQUkJUWkVBMlM2NERTTFJGRzdFRnwxRkYwRkU4QjFDMEE5RTc5LVdFU1RVUyIsImpvYkxvY2F0aW9uIjoid2VzdHVzIn0?api-version=2021-04-01",
+      "status": 200,
+      "body": "",
+      "headers": {}
+    }
+  ]
+}

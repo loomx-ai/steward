@@ -132,6 +132,26 @@ all 159 parity rows and eight overall gates remain open.
 
 Source: [Resource Groups - Get (2021-04-01)](https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/get?view=rest-resources-2021-04-01).
 
+### Resource-group native operation recovery (2026-09-16)
+
+Resource-group deletion now has a dedicated internal native receipt/polling
+contract, replayed against the official Azure CLI 2021-04-01 recording. Its
+subscription-level `operationresults` callback contains an opaque token, unlike
+the Stack UUID callback. JSON-restored receipts bind the full request and job;
+signed Location rotation may update the query but cannot change the subscription,
+API version or operation token. Pending responses preserve retry timing, and
+terminal operation receipts cause no further HTTP requests. Foreign callbacks,
+changed requests, operation substitution, ambiguous headers, error statuses and
+unexpected result bodies do not produce successful completion.
+
+This is operation transport support, not a registered resource-group action.
+Group scope review, native child/product closure, actual DELETE submission and
+independent final group/member readbacks still need integration before catalog
+activation. Native operation completion alone never proves cleanup completion.
+See `azure/fixtures/resource-groups/README.md` for pinned evidence and the explicit
+boundary between recording replay and synthetic signing-rotation tests. All 159
+parity rows and eight overall gates remain open.
+
 ### Deployment Stack product preflight integration
 
 The Stack product-preflight stage now resolves each reviewed deleted member
