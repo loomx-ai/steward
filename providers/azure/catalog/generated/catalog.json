@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "ec8d2cab658d588517d76d0aa7effc4b3e899427aef8abfeea08caf6447fa358",
+    "checksum": "a4af3da139bd8277d37fc0749892c158bf1590bd0220820b49dc7c16a0b7c27b",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "ddac3da8f498cfd102a2b1c3a8346c95806a4840dd97e27279dbd6d38936a64b",
+  "content_checksum": "5eb3e7683d48386797053b6699fb96e37b470320b454285cf2a5307fedd429a5",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -121434,6 +121434,118 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/bms.json"
     },
     {
+      "id": "Azure.Microsoft.RecoveryServices.ProtectionContainerOperationResults_Get",
+      "name": "ProtectionContainerOperationResults_Get",
+      "service": "Microsoft.RecoveryServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}/operationResults/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "containerName": {
+            "description": "The name of the ProtectionContainerResource",
+            "in": "path",
+            "name": "containerName",
+            "required": true,
+            "type": "string"
+          },
+          "fabricName": {
+            "description": "backupFabrics",
+            "in": "path",
+            "name": "fabricName",
+            "required": true,
+            "type": "string"
+          },
+          "operationId": {
+            "description": "The name of the ProtectionContainerResource",
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "vaults",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Base class for container with backup items. Containers with specific workloads are derived from this class.",
+        "properties": {
+          "eTag": {
+            "description": "Optional ETag.",
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/definitions/Azure.Core.azureLocation",
+            "description": "The geo-location where the resource lives",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/ProtectionContainer",
+            "description": "ProtectionContainerResource properties"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Resource tags.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}/operationResults/{operationId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/bms.json"
+    },
+    {
       "id": "Azure.Microsoft.RecoveryServices.ProtectionContainers_Get",
       "name": "ProtectionContainers_Get",
       "service": "Microsoft.RecoveryServices",
@@ -121531,6 +121643,77 @@
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/bms.json"
+    },
+    {
+      "id": "Azure.Microsoft.RecoveryServices.ProtectionContainers_Unregister",
+      "name": "ProtectionContainers_Unregister",
+      "service": "Microsoft.RecoveryServices",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "containerName": {
+            "description": "Name of the container whose details need to be fetched.",
+            "in": "path",
+            "name": "containerName",
+            "required": true,
+            "type": "string"
+          },
+          "fabricName": {
+            "description": "The name of the BackupFabricResource",
+            "in": "path",
+            "name": "fabricName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the VaultResource",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
         "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}",
         "endpoint": "https://management.azure.com",
         "body_type": "json",
@@ -148714,6 +148897,9 @@
         "collection": "backupProtectionContainers",
         "read_operations": [
           "Azure.Microsoft.RecoveryServices.ProtectionContainers_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.RecoveryServices.ProtectionContainers_Unregister"
         ],
         "list_operations": [
           "Azure.Microsoft.RecoveryServices.BackupProtectionContainers_List"

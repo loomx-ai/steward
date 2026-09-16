@@ -37,7 +37,7 @@ func TestRecoveryServicesSourceEvidence(t *testing.T) {
 	if err = json.Unmarshal(wire, &sources); err != nil {
 		t.Fatal(err)
 	}
-	if len(sources) != 6 {
+	if len(sources) != 9 {
 		t.Fatal("missing native evidence")
 	}
 	for _, source := range sources {
@@ -244,6 +244,13 @@ func newRecoveryServicesFixture(t *testing.T) *recoveryServicesFixture {
 			}
 		}
 		path := strings.ToLower(q.URL.Path)
+		group := strings.Join(strings.Split(f.vault, "/")[:5], "/")
+		if path == group {
+			return jsonResponse(200, map[string]any{"id": group, "name": last(group), "type": groupType, "location": "eastus", "properties": map[string]any{}}, nil), nil
+		}
+		if path == "/subscriptions/"+testSubscription+"/providers/microsoft.authorization/locks" {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
 		if path == "/subscriptions/"+testSubscription+"/locations" {
 			return jsonResponse(200, map[string]any{"value": []any{map[string]any{"name": "eastus"}, map[string]any{"name": "westus"}}}, nil), nil
 		}

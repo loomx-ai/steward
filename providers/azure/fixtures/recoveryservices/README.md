@@ -32,8 +32,9 @@ foreign origins, duplicate members, cycles and asynchronous partial responses.
 Registered inventory additionally tests region scoping, persisted SQLite scan and
 graph processing, known-ID omission/readback, failed-shard preservation and private
 configuration-bound continuations. Containers and items reference their native
-parents without authorizing parent deletion. All four resource types currently
-remain non-actionable; cleanup and end-to-end acceptance are unfinished.
+parents without authorizing parent deletion. Empty, registered, unprotected containers now support reviewed unregistration.
+The other three resource types remain non-actionable; their cleanup and overall
+end-to-end acceptance are unfinished.
 
 Recorded item vaultId may be an absolute HTTPS ARM URL. Its host, subscription
 and vault path are checked without following it; userinfo, ports, query strings,
@@ -45,3 +46,34 @@ Some returned purgeAt timestamps precede vaultDeletionTime by fractions of a
 second. Both values must be valid, nonzero RFC 3339 timestamps, but their order
 is not an API invariant. A past purgeAt is not proof of resource absence; returned
 retention objects remain visible until their own GET confirms absence.
+
+`container-unregister-recording.json` preserves CLI interactions 133–150 from
+`test_backup_wl_hana_container.yaml` at the same pinned commit. Original methods,
+URLs, response strings and headers are unchanged and were compared with the YAML.
+The sequence is DELETE 202, sixteen GET 202 responses with `{}`, then GET 204.
+Its Location includes the historical `fabricName=Azure?api-version=2023-04-01`
+form, and status headers advertise 2019-05-13-preview. The official CLI's
+`track_register_operation` extracts the operation ID and calls the container's
+operation-results client. Our adapter first validates origin, subscription,
+vault/container/fabric scope and matching case-sensitive operation IDs, then binds
+an unsigned legacy result to the selected current API. Only the explicitly
+recorded/schema versions (2017-07-01, 2019-05-13-preview, 2023-04-01) are accepted
+as legacy metadata. Signed callbacks require the selected version and retain all
+signature fields unchanged. Historical signatures are not rewritten.
+
+The protocol test consumes all seventeen unchanged poll responses through that
+adapter. Its outgoing URL uses the selected catalog version, so this is historical
+protocol adaptation coverage, not independent current-version wire replay or
+live-cloud validation. The recorded operation's final 204 alone is not evidence
+of own-resource absence. Separate synthetic registered-runtime and SQLite worker
+tests require own GET 404, preserve receipts across restart and transient 503
+reads, and prevent late active or retained consumers from being hidden.
+
+The two additional unchanged REST examples pin unregister and container result
+contracts. The unregister example's request uses resource group `testRg` while
+its callback uses `test-rg`; tests reject that scope mismatch. They do not repair
+the example. Native DELETE acknowledgements must be bodyless 200, 202 or 204.
+A pending result may have an empty decoded payload, including `{}` or null, but
+never establishes completion. A native result resource is likewise not an own
+read and cannot prove disappearance. No test here authorizes purging backup data,
+disabling protection, unregistering an occupied source, or deleting a vault.

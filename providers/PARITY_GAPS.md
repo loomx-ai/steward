@@ -1129,7 +1129,11 @@ The unchanged official examples and CLI read responses are documented in
 responses establish complete semicolon-bearing IDs and an absolute ARM vaultId
 variant. Their older API version is not rewritten into a current-version replay.
 
-These resources remain non-actionable until reviewed cleanup is implemented.
-Container unregistration, protected-item and vault deletion, retention recovery,
+Empty registered containers now support reviewed native unregistration, with
+active and retained item checks, parent protection checks, strict scoped polling,
+and durable SQLite worker recovery. Operation completion still requires own
+resource absence; no backup data purge or source-workload mutation is performed.
+Historical official CLI responses exercise the protocol adapter without claiming
+current-version wire replay. Protected-item and vault deletion, retention recovery,
 policy/source dependencies, Site Recovery replication items and independent/live
 acceptance remain open. No baseline row or overall acceptance gate is closed.

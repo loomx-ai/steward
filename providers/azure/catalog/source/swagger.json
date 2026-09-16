@@ -275708,6 +275708,67 @@
                   "$ref": "./examples/AzureWorkload/ProtectionContainers_Get.json"
                 }
               }
+            },
+            "delete": {
+              "operationId": "ProtectionContainers_Unregister",
+              "tags": [
+                "ProtectionContainers"
+              ],
+              "description": "Unregisters the given container from your Recovery Services Vault. This is an asynchronous operation. To determine\nwhether the backend service has finished processing the request, call Get Container Operation Result API.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "vaultName",
+                  "in": "path",
+                  "description": "The name of the VaultResource",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "fabricName",
+                  "in": "path",
+                  "description": "The name of the BackupFabricResource",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "containerName",
+                  "in": "path",
+                  "description": "Name of the container whose details need to be fetched.",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "202": {
+                  "description": "The request has been accepted for processing, but processing has not yet completed."
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Unregister Protection Container": {
+                  "$ref": "./examples/AzureWorkload/ProtectionContainers_Unregister.json"
+                }
+              }
             }
           },
           "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}/protectedItems/{protectedItemName}": {
@@ -275906,6 +275967,79 @@
               },
               "x-ms-pageable": {
                 "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}/operationResults/{operationId}": {
+            "get": {
+              "operationId": "ProtectionContainerOperationResults_Get",
+              "tags": [
+                "ProtectionContainerOperationResults"
+              ],
+              "description": "Fetches the result of any operation on the container.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "vaultName",
+                  "in": "path",
+                  "description": "vaults",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "fabricName",
+                  "in": "path",
+                  "description": "backupFabrics",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "containerName",
+                  "in": "path",
+                  "description": "The name of the ProtectionContainerResource",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "operationId",
+                  "in": "path",
+                  "description": "The name of the ProtectionContainerResource",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/ProtectionContainerResource"
+                  }
+                },
+                "202": {
+                  "description": "The request has been accepted for processing, but processing has not yet completed."
+                },
+                "204": {
+                  "description": "Operation completed successfully."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Get Azure Storage Protection Container Operation Result": {
+                  "$ref": "./examples/AzureStorage/ProtectionContainers_Inquire_Result.json"
+                }
               }
             }
           }
@@ -285797,7 +285931,9 @@
       "nativeType": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers",
       "rest": {
         "collection": "backupProtectionContainers",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.RecoveryServices.ProtectionContainers_Unregister"
+        ],
         "list_operations": [
           "Azure.Microsoft.RecoveryServices.BackupProtectionContainers_List"
         ],

@@ -38,3 +38,14 @@ relationships:
 - type: uses
   targetType: Microsoft.RecoveryServices/vaults
   targetIdPath: refs_microsoft_recoveryservices_vaults
+
+actions:
+  delete:
+    operation: Azure.Microsoft.RecoveryServices.ProtectionContainers_Unregister
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.RecoveryServices.ProtectionContainers_Get
+      itemsPath: $
+      identityPath: id

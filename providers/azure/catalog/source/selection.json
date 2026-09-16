@@ -2653,7 +2653,9 @@
         "ProtectionContainers_Get",
         "BackupProtectionContainers_List",
         "ProtectedItems_Get",
-        "BackupProtectedItems_List"
+        "BackupProtectedItems_List",
+        "ProtectionContainers_Unregister",
+        "ProtectionContainerOperationResults_Get"
       ]
     }
   ],
@@ -11588,7 +11590,9 @@
       "read_operations": [
         "Azure.Microsoft.RecoveryServices.ProtectionContainers_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.RecoveryServices.ProtectionContainers_Unregister"
+      ],
       "list_operations": [
         "Azure.Microsoft.RecoveryServices.BackupProtectionContainers_List"
       ]

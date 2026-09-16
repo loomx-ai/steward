@@ -28,5 +28,20 @@
     "file": "deleted-vault-read-recording.json",
     "sha256": "b412c0e0a4a09b5d47ba26117bd0c9e56c9ec0e847b10a07a9cbe6936bce310c",
     "note": "Unchanged regional deleted-vault list and own-GET responses; provenance embedded per interaction."
+  },
+  {
+    "file": "container-unregister-recording.json",
+    "sha256": "16ee28a00f842b3964bf05b5cdfa79fa22a2084284ca5f86e323676afc621679",
+    "note": "Exact request URL, method, response body and headers from CLI interactions 133\u2013150; source provenance embedded. Historical 2023-04-01, not current-version wire replay."
+  },
+  {
+    "file": "ProtectionContainers_Unregister.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/examples/AzureWorkload/ProtectionContainers_Unregister.json",
+    "sha256": "4a4ceb7e14473c2d8b8904b894871b35c1d80859057b2d25e413fa724af1daee"
+  },
+  {
+    "file": "ProtectionContainerOperationResults_Get.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/examples/AzureStorage/ProtectionContainers_Inquire_Result.json",
+    "sha256": "b3f35ff505f763264719105294644bc7cdc37850d4f9519ffb25d70b644500f4"
   }
 ]

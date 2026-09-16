@@ -1,0 +1,1004 @@
+[
+  {
+    "index": 133,
+    "method": "DELETE",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": ""
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "0"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:42:28 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupOperationResults/6261842d-e101-4866-8492-6f9271d58171?fabricName=Azure?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-deletes": [
+          "14999"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 134,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:42:29 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "299"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 135,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:42:35 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "298"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 136,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:42:41 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "297"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 137,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:42:46 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "296"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 138,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:42:51 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "295"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 139,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:42:56 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "294"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 140,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:43:02 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "293"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 141,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:43:08 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "292"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 142,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:43:14 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "291"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 143,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:43:19 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "290"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 144,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:43:25 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "289"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 145,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:43:30 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "288"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 146,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:43:36 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "287"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 147,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:43:40 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "286"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 148,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:43:46 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "285"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 149,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": "{}"
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationsStatus/6261842d-e101-4866-8492-6f9271d58171?api-version=2019-05-13-preview"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "2"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:43:51 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "284"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  },
+  {
+    "index": 150,
+    "method": "GET",
+    "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/operationResults/6261842d-e101-4866-8492-6f9271d58171?api-version=2023-04-01",
+    "response": {
+      "body": {
+        "string": ""
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:43:57 GMT"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "283"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 204,
+        "message": "No Content"
+      }
+    },
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1"
+  }
+]

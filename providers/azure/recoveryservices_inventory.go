@@ -387,6 +387,14 @@ func (r *Runtime) recoveryServicesSnapshot(ctx context.Context, c *client, req c
 		actionable := false
 		items = append(items, contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: last(id), State: state, Location: location, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: location, Name: location, Location: location}, Normalized: normalized, Raw: object(recoveryServicesSafeValue(own.data)), NativeAliases: []string{id}, Actionable: &actionable})
 	}
+	if kind == recoveryServicesContainer {
+		for i := range items {
+			if err := r.recoveryContainerInventory(ctx, c, req, &items[i]); err != nil {
+				return nil, nil, err
+			}
+		}
+	}
+
 	for id, raw := range containers {
 		own, err := c.recoveryServicesRead(ctx, id, recoveryServicesContainer)
 		if err != nil {
