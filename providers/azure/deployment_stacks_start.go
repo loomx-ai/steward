@@ -11,16 +11,9 @@ import (
 // Resolve the operation region from fresh native state, matching the inventory
 // contract for resource-group Stacks whose GET omits location.
 func (c *client) deploymentStackDeleteRegion(ctx context.Context, req contracts.ActionRequest) (string, error) {
-	current, err := c.deploymentStackRead(ctx, req.Asset.Identity.NativeID)
+	current, err := c.deploymentStackProtectedRead(ctx, req)
 	if err != nil {
 		return "", err
-	}
-	review := object(req.Asset.Normalized[deploymentStackReviewKey])
-	if review["configuration"] != c.privateConfiguration(current.data) {
-		return "", serviceDenied("deployment_stack_live_configuration_changed")
-	}
-	if protectedAzureTags(object(current.data["tags"])) {
-		return "", serviceDenied("azure_protected_tag")
 	}
 	region := strings.ToLower(text(current.data["location"]))
 	scope, _, err := deploymentStackParameters(req.Asset.Identity.NativeID)
@@ -103,13 +96,6 @@ func (r *Runtime) deploymentStackStartDelete(ctx context.Context, req contracts.
 			return out, serviceDenied(reason)
 		}
 	}
-	locks, err := c.managementLocks(ctx)
-	if err != nil {
-		return out, err
-	}
-	if locked(strings.ToLower(req.Asset.Identity.NativeID), locks) {
-		return out, serviceDenied("azure_management_lock")
-	}
 	region, err := c.deploymentStackDeleteRegion(ctx, req)
 	if err != nil {
 		return out, err
@@ -135,4 +121,28 @@ func (r *Runtime) deploymentStackStartDelete(ctx context.Context, req contracts.
 		return out, err
 	}
 	return contracts.ActionResult{ProviderRequestID: response.requestID, ProviderOperationID: operationLocation(response.header), RetryAfter: retryAfter(response.header), Data: checkpoint}, nil
+}
+
+// Recheck root protection before setup work as well as native submission. A
+// reviewed member operation must not modify a protected or locked Stack plan.
+func (c *client) deploymentStackProtectedRead(ctx context.Context, req contracts.ActionRequest) (response, error) {
+	current, err := c.deploymentStackRead(ctx, req.Asset.Identity.NativeID)
+	if err != nil {
+		return response{}, err
+	}
+	review := object(req.Asset.Normalized[deploymentStackReviewKey])
+	if review["configuration"] != c.privateConfiguration(current.data) {
+		return response{}, serviceDenied("deployment_stack_live_configuration_changed")
+	}
+	if protectedAzureTags(object(current.data["tags"])) {
+		return response{}, serviceDenied("azure_protected_tag")
+	}
+	locks, err := c.managementLocks(ctx)
+	if err != nil {
+		return response{}, err
+	}
+	if locked(strings.ToLower(req.Asset.Identity.NativeID), locks) {
+		return response{}, serviceDenied("azure_management_lock")
+	}
+	return current, nil
 }

@@ -430,3 +430,17 @@ corruption rejected before HTTP, independent checkpoint ownership and a returnin
 child after completion. Full product cascade semantics, final orchestration and
 ActionDriver/graph/planner/executor acceptance remain unfinished. All 159 parity
 rows and eight overall gates remain open.
+
+### Stack root protection before setup (2026-09-16)
+
+Each authenticated setup advance now checks the live Stack configuration,
+protected tags and applicable management locks before invoking preparation or
+prerequisite work. Native submission uses the same root protection check. Tests
+cover initial root/subscription locks, protected tags, root/lock read denial and
+protection introduced after the first attachment update. A blocked advance emits
+no additional mutation; clearing temporary protection permits the same saved
+checkpoint to resume without repeating the NIC update.
+
+This is the root protection gate, not complete scope permission/product preflight.
+All-family cascade semantics and final ActionDriver/graph/planner/executor
+acceptance remain required; all 159 rows and eight overall gates remain open.

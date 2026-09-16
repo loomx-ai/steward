@@ -79,6 +79,9 @@ func (r *Runtime) deploymentStackAdvanceSetup(ctx context.Context, req contracts
 	if err != nil {
 		return out, err
 	}
+	if _, err = c.deploymentStackProtectedRead(ctx, req); err != nil {
+		return out, err
+	}
 	var result contracts.WaitResult
 	if state.Phase == "prepare" {
 		result, err = c.deploymentStackAdvancePreparations(ctx, req, state.Preparation)

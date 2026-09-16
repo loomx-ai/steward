@@ -11,9 +11,13 @@ import (
 )
 
 func TestDeploymentStackSetupHandoff(t *testing.T) {
-	for _, mode := range []string{"complete", "job", "unknown", "skip_preparation", "nested_preparation", "handoff_drift", "lost_preparation_context", "returned_prerequisite"} {
+	for _, mode := range []string{"complete", "job", "unknown", "skip_preparation", "nested_preparation", "handoff_drift", "lost_preparation_context", "returned_prerequisite", "root_protected", "root_lock", "subscription_lock", "locks_forbidden", "root_forbidden", "late_lock", "late_protected"} {
 		t.Run(mode, func(t *testing.T) {
 			req, root := stackAttachmentRequest(t, directClient(nil))
+			if mode == "root_protected" {
+				root["tags"] = map[string]any{"steward/protected": "true"}
+			}
+			guardActive := mode != "late_lock" && mode != "late_protected"
 			live := attachmentResources()
 			parent, child := actionAsset(hostGroupType, "host-parent"), actionAsset(hostType, "host-child")
 			parent.Identity.Partition = req.Asset.Identity.Partition
@@ -46,6 +50,9 @@ func TestDeploymentStackSetupHandoff(t *testing.T) {
 					if q.Method != "GET" {
 						t.Fatal("setup deleted Stack")
 					}
+					if mode == "root_forbidden" {
+						return jsonResponse(403, map[string]any{}, nil), nil
+					}
 					return jsonResponse(200, root, nil), nil
 				case parent.Identity.NativeID:
 					if q.Method != "GET" {
@@ -71,6 +78,18 @@ func TestDeploymentStackSetupHandoff(t *testing.T) {
 						rows = append(rows, childRaw)
 					}
 					return jsonResponse(200, map[string]any{"value": rows}, nil), nil
+				}
+				if strings.HasSuffix(path, "/locks") && guardActive {
+					if mode == "locks_forbidden" {
+						return jsonResponse(403, map[string]any{}, nil), nil
+					}
+					if mode == "root_lock" || mode == "subscription_lock" || mode == "late_lock" {
+						scope := req.Asset.Identity.NativeID
+						if mode == "subscription_lock" {
+							scope = "/subscriptions/" + testSubscription
+						}
+						return jsonResponse(200, map[string]any{"value": []any{map[string]any{"id": scope + "/providers/Microsoft.Authorization/locks/hold", "properties": map[string]any{"level": "CanNotDelete"}}}}, nil), nil
+					}
 				}
 				if strings.HasSuffix(path, "/locks") || strings.EqualFold(q.URL.Path, text(live["vm"]["id"])+"/extensions") {
 					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
@@ -161,8 +180,44 @@ func TestDeploymentStackSetupHandoff(t *testing.T) {
 						tampered = true
 					}
 				}
+				if len(writes) == 1 && (mode == "late_lock" || mode == "late_protected") {
+					guardActive = true
+					if mode == "late_protected" {
+						root["tags"] = map[string]any{"steward/protected": "true"}
+					}
+				}
 				priorCalls, priorWrites := calls, len(writes)
 				out, err = r.deploymentStackAdvanceSetup(t.Context(), req, saved)
+				if guardActive && (strings.HasPrefix(mode, "root_") || mode == "subscription_lock" || mode == "locks_forbidden" || strings.HasPrefix(mode, "late_")) {
+					if err == nil || out.Data != nil || out.Done || len(writes) != priorWrites {
+						t.Fatal("root guard allowed setup mutation", out, err, writes)
+					}
+					expected := 0
+					if strings.HasPrefix(mode, "late_") {
+						expected = 1
+					}
+					if len(writes) != expected {
+						t.Fatal("root guard checked too late", writes)
+					}
+					if strings.HasPrefix(mode, "late_") {
+						guardActive = false
+						delete(root, "tags")
+						resumed, err := r.deploymentStackAdvanceSetup(t.Context(), req, saved)
+						if err != nil || resumed.Data == nil || len(writes) > priorWrites+1 {
+							t.Fatal("unchanged checkpoint could not resume after protection cleared", resumed, err, writes)
+						}
+						puts := 0
+						for _, write := range writes {
+							if write == "PUT nic" {
+								puts++
+							}
+						}
+						if puts != 1 {
+							t.Fatal("resumption repeated prepared NIC write", writes)
+						}
+					}
+					return
+				}
 				if tampered {
 					if err == nil || out.Done || out.Data != nil {
 						t.Fatal("invalid phase handoff accepted", out, err)

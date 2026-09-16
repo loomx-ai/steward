@@ -163,6 +163,12 @@ func TestDeploymentStackStartDelete(t *testing.T) {
 					var setup map[string]any
 					for step := 0; step < 10; step++ {
 						out, err := r.deploymentStackAdvanceSetup(t.Context(), req, setup)
+						if mode == "protected" {
+							if err == nil || out.Data != nil || childDeletes != 0 || stackDeletes != 0 {
+								t.Fatal("protected Stack allowed setup mutation", out, err)
+							}
+							return
+						}
 						if err != nil {
 							t.Fatal("setup", step, err)
 						}
