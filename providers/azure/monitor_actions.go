@@ -167,7 +167,11 @@ func (a *monitorAction) Preflight(ctx context.Context, request contracts.ActionR
 	return a.preflightInGroup(ctx, request, nil)
 }
 
-func (a *monitorAction) preflightInGroup(ctx context.Context, request contracts.ActionRequest, scope *resourceGroupMonitorScope) (check contracts.PreflightResult, err error) {
+func (a *monitorAction) preflightInGroup(ctx context.Context, request contracts.ActionRequest, scope *resourceGroupMonitorScope) (contracts.PreflightResult, error) {
+	return a.preflightWithManagedGroup(ctx, request, scope, nil)
+}
+
+func (a *monitorAction) preflightWithManagedGroup(ctx context.Context, request contracts.ActionRequest, scope *resourceGroupMonitorScope, managed *resourceGroupManagedPreflight) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if err := a.identity(request); err != nil {
 		return check, err
@@ -193,7 +197,7 @@ func (a *monitorAction) preflightInGroup(ctx context.Context, request contracts.
 			if err != nil {
 				return check, err
 			}
-			if text(group["managedBy"]) != "" {
+			if text(group["managedBy"]) != "" && !managed.permits(request.Asset, group) {
 				return contracts.PreflightResult{Reason: "azure_managed_resource_group"}, nil
 			}
 			if protectedAzureTags(object(group["tags"])) {

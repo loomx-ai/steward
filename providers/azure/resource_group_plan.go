@@ -167,8 +167,10 @@ func (c *client) resourceGroupProductRequests(req contracts.ActionRequest) (map[
 			continue
 		}
 		if managed[id] != "" {
-			_, known := findType(impact.Asset.Identity.NativeType)
-			if !known || impact.Asset.Identity.NativeType == groupType {
+			kind, known := findType(impact.Asset.Identity.NativeType)
+			if !known || kind.ReadOnly || impact.Asset.Identity.NativeType == groupType {
+				// Managed controllers verify known read-only members through native
+				// own reads. They have no independent mutation driver to fabricate.
 				continue
 			}
 		}
@@ -185,6 +187,22 @@ func (c *client) resourceGroupProductRequests(req contracts.ActionRequest) (map[
 			}
 		}
 		if owner := managed[id]; owner != "" {
+			if impact.Asset.Identity.NativeType == aksType && byID[owner].Asset.Identity.NativeType == fleetType {
+				state, err := c.fleetRecordedHub(byID[owner].Asset.Identity.NativeID, byID[owner].Asset.Normalized)
+				if err != nil {
+					return nil, err
+				}
+				group, err := aksNodeGroup(c.subscription, impact.Asset.Normalized)
+				if err != nil || impact.Asset.Identity.NativeID != text(state["cluster"]) || group != text(state["node_group"]) {
+					return nil, serviceDenied("resource_group_fleet_hub_changed")
+				}
+				for _, child := range req.LifecycleImpacts {
+					if managed[child.Asset.ID] == owner && text(object(object(state["members"])[child.Asset.Identity.NativeID])["group"]) == group {
+						child.ControllerID = id
+						member.LifecycleImpacts = append(member.LifecycleImpacts, child)
+					}
+				}
+			}
 			for _, child := range req.LifecycleImpacts {
 				if child.Asset.ID == id || managed[child.Asset.ID] != owner {
 					continue

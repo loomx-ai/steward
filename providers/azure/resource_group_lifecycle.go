@@ -57,6 +57,28 @@ func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.
 	for _, impact := range req.LifecycleImpacts {
 		parents[impact.Asset.ID] = impact.ControllerID
 	}
+	// Product-local projections restore intrinsic children that the native
+	// managed-group graph intentionally keeps flat under its outer controller.
+	productParents := map[asset.AssetID]asset.AssetID{}
+	for id, product := range products {
+		for _, child := range product.LifecycleImpacts {
+			if child.ControllerID != id || products[child.Asset.ID].Asset.ID == "" {
+				continue
+			}
+			related, err := resourceGroupProductRelation(product.Asset, child.Asset, child.Delete)
+			if err != nil {
+				return err
+			}
+			if related {
+				if previous := productParents[child.Asset.ID]; previous != "" && previous != id {
+					return serviceDenied("resource_group_ambiguous_product_parent")
+				}
+				productParents[child.Asset.ID] = id
+				parents[child.Asset.ID] = id
+			}
+		}
+	}
+	managedScopes := map[asset.AssetID]*resourceGroupManagedPreflight{}
 	checked := map[asset.AssetID]bool{}
 	var check func(asset.AssetID) error
 	check = func(id asset.AssetID) error {
@@ -71,6 +93,38 @@ func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.
 				return err
 			}
 			parentKind = parent.Asset.Identity.NativeType
+			managed = managedScopes[parent.Asset.ID]
+			if parentKind == fleetType {
+				state, err := c.fleetRecordedHub(parent.Asset.Identity.NativeID, parent.Asset.Normalized)
+				if err != nil {
+					return err
+				}
+				group := text(object(object(state["members"])[member.Asset.Identity.NativeID])["group"])
+				owner := parent.Asset.Identity.NativeID
+				if group == text(state["node_group"]) {
+					owner = text(state["cluster"])
+					var cluster asset.AssetID
+					for id, candidate := range products {
+						if candidate.Asset.Identity.NativeID == owner && candidate.Asset.Identity.NativeType == aksType {
+							cluster = id
+						}
+					}
+					if cluster == "" || cluster == id {
+						return serviceDenied("resource_group_fleet_hub_missing")
+					}
+					if err := check(cluster); err != nil {
+						return err
+					}
+				} else if group == "" || group != text(state["group"]) {
+					return serviceDenied("resource_group_fleet_member_group_changed")
+				}
+				managed = &resourceGroupManagedPreflight{owner: owner, group: group, members: map[asset.AssetID]string{}, fleetMembers: object(state["members"])}
+				for _, impact := range parent.LifecycleImpacts {
+					if text(object(object(state["members"])[impact.Asset.Identity.NativeID])["group"]) == group {
+						managed.members[impact.Asset.ID] = impact.Asset.Identity.NativeID
+					}
+				}
+			}
 			if parentKind == aksType || parentKind == monitorWorkspaceType || parentKind == applicationInsightsType {
 				group, err := c.resourceGroupManagedGroup(parent.Asset)
 				if err != nil {
@@ -100,6 +154,7 @@ func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.
 		if err = resourceGroupNativeProductReady(ctx, driver, member, managed); err != nil {
 			return err
 		}
+		managedScopes[id] = managed
 		checked[id] = true
 		return nil
 	}
@@ -122,6 +177,13 @@ func resourceGroupNativeProductReady(ctx context.Context, driver contracts.Actio
 			return err
 		}
 		return resourceGroupNativeProductReady(ctx, a.inner, filtered, managed)
+	case *fleetAction:
+		if a.kind.NativeType != fleetType {
+			return serviceDenied("resource_group_independent_fleet_preparation_required")
+		}
+		// Root deletion has no stop/disconnect preparation. Its real preflight
+		// already required every independently executed Fleet child to be absent.
+		return a.identity(member)
 	case *insightsComponentAction:
 		_, err := a.identity(member)
 		return err
@@ -249,6 +311,12 @@ func (r *Runtime) resourceGroupPreflight(ctx context.Context, req contracts.Acti
 	products, err := c.resourceGroupProductRequests(req)
 	if err != nil {
 		return err
+	}
+	for _, product := range products {
+		if product.Asset.Identity.NativeType == fleetType {
+			ctx = context.WithValue(ctx, fleetHubReadContextKey{}, true)
+			break
+		}
 	}
 	if req.ExecutionResult != nil {
 		return serviceDenied("resource_group_requires_operation_resume")
@@ -382,6 +450,12 @@ func (r *Runtime) resourceGroupResumeDeletion(ctx context.Context, req contracts
 }
 
 func (r *Runtime) resourceGroupProductsAbsent(ctx context.Context, c *client, req contracts.ActionRequest, products map[asset.AssetID]contracts.ActionRequest) (bool, error) {
+	for _, product := range products {
+		if product.Asset.Identity.NativeType == fleetType {
+			ctx = context.WithValue(ctx, fleetHubReadContextKey{}, true)
+			break
+		}
+	}
 	var err error
 	allAbsent := true
 	for pass := 0; pass < 2; pass++ {

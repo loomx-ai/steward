@@ -377,7 +377,7 @@ func (a *action) preflightWithManagedGroup(ctx context.Context, request contract
 		return contracts.PreflightResult{Reason: reason}, nil
 	}
 	if HasServiceCascade(a.kind.NativeType) {
-		if err := a.serviceCascadePreflightWithPending(ctx, request, res.data, locks, pending); err != nil {
+		if err := a.serviceCascadePreflightWithManagedGroup(ctx, request, res.data, locks, pending, managed); err != nil {
 			return contracts.PreflightResult{}, err
 		}
 	}
@@ -403,11 +403,15 @@ func (a *action) preflightWithManagedGroup(ctx context.Context, request contract
 		if len(children) > 0 {
 			return contracts.PreflightResult{Reason: "virtual_network_has_subnets"}, nil
 		}
-		linked, err := a.client.virtualNetworkHasDNSLinks(ctx, a.id)
+		links, err := a.client.virtualNetworkDNSLinks(ctx, a.id)
 		if err != nil {
 			return contracts.PreflightResult{}, err
 		}
-		if linked {
+		allowed, err := a.client.resourceGroupFleetDNSLinks(request.Asset, links, managed)
+		if err != nil {
+			return contracts.PreflightResult{}, err
+		}
+		if !allowed {
 			return contracts.PreflightResult{Reason: "virtual_network_has_private_dns_links"}, nil
 		}
 	case privateDNSZoneType:

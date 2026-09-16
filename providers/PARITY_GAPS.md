@@ -874,8 +874,8 @@ cannot certify the managed group's deletion.
 Official behavior reference (reviewed 2026-09-17):
 https://learn.microsoft.com/en-us/azure/azure-monitor/metrics/azure-monitor-workspace-manage
 
-Fleet and other specialized managed product composition and preparation remain
-outstanding. Application Insights composition is described below. All 159 parity rows and eight acceptance gates
+Other specialized managed product composition and preparation remain
+outstanding; Fleet composition is described below. Application Insights composition is described below. All 159 parity rows and eight acceptance gates
 remain open.
 
 
@@ -911,6 +911,48 @@ https://learn.microsoft.com/en-us/azure/azure-monitor/app/managed-workspaces
 https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/get?view=rest-resources-2021-04-01
 
 This fixture evidence is not live-cloud acceptance, soft-delete purge support or
-completion of all managed products and preparation protocols. Fleet, public Stack
-integration and broader parity acceptance remain outstanding. All 159 parity rows
+completion of all managed products and preparation protocols. Public Stack
+integration and broader parity acceptance remain outstanding; Fleet composition
+is described below. All 159 parity rows
 and eight overall acceptance gates remain open.
+
+
+### Resource-group composition with Fleet
+
+Ordinary resource-group cleanup now composes Fleet's signed Hub manifest with its
+separate Hub and AKS node resource groups. Native product preflights still verify
+configuration, ownership, locks and dependencies. The private managed-group scope
+is limited to authenticated members and does not enable their standalone deletion.
+Product-local VMSS descendants and Monitor resources retain their native checks;
+known read-only members remain subject to native absence reads without acquiring
+an independent mutation driver. Private DNS links are accepted as VNet deletion
+effects only when the signed manifest, exact reciprocal VNet reference and current
+keyed configuration agree.
+
+The shared planner preserves authoritative, explicitly permitted direct product
+cleanup under an outer native deletion effect. Fleet update runs, profiles,
+strategies and members retain their independent prerequisite ordering. Running
+update runs use their real stop-and-resume driver before the containing resource
+group deletion; the group cannot bypass that preparation. The public graph and
+reviewed request remain unchanged by private product projections.
+
+Native inventory, graph, planner and registered action fixtures cover minimal and
+full Hub descendants, running update preparation, serialized recovery, separate
+managed-group/member absence and surviving read-only descendants. Negative cases
+reject changed owners/configuration, new members and forbidden reads before group
+mutation. Group execution diagnostics are checked for private configuration leaks;
+this does not claim a separate audit of standalone AKS diagnostics.
+
+Validation on the unchanged implementation sources: `go test ./...` passed
+(Azure 420.294s, GCP 343.572s), `go vet ./...` passed, and focused planner plus
+resource-group/Fleet race tests passed (Azure 241.488s). These are offline protocol
+fixtures, not independent emulator or live-cloud acceptance.
+
+Official contract references (reviewed 2026-09-17):
+https://learn.microsoft.com/en-us/rest/api/fleet/fleets/delete?view=rest-fleet-2025-03-01
+https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-lifecycle
+https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links
+
+Public Stack integration, missing backup/recovery and other resource families,
+full application acceptance and the remaining parity audit are still required.
+All 159 parity rows and eight overall acceptance gates remain open.

@@ -56,7 +56,7 @@ func resourceGroupPreflightProduct(ctx context.Context, driver contracts.ActionD
 		}
 		return check, err
 	case *monitorAction:
-		return a.preflightInGroup(ctx, req, scope)
+		return a.preflightWithManagedGroup(ctx, req, scope, managed)
 	case *action:
 		return a.preflightWithManagedGroup(ctx, req, parentKind, nil, managed)
 	default:

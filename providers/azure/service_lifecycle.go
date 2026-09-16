@@ -941,6 +941,10 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 }
 
 func (a *action) serviceCascadePreflightWithPending(ctx context.Context, request contracts.ActionRequest, live map[string]any, locks []any, pending map[asset.AssetID][]asset.AssetID) error {
+	return a.serviceCascadePreflightWithManagedGroup(ctx, request, live, locks, pending, nil)
+}
+
+func (a *action) serviceCascadePreflightWithManagedGroup(ctx context.Context, request contracts.ActionRequest, live map[string]any, locks []any, pending map[asset.AssetID][]asset.AssetID, managed *resourceGroupManagedPreflight) error {
 	if a.kind.NativeType == monitorWorkspaceType {
 		return a.monitorWorkspacePreflight(ctx, request, live, locks)
 	}
@@ -989,7 +993,7 @@ func (a *action) serviceCascadePreflightWithPending(ctx context.Context, request
 		return err
 	}
 	visited := map[string]bool{}
-	verifiedGroups := map[string]bool{}
+	verifiedGroups := map[string]map[string]any{}
 	var verify func(asset.Asset, map[string]any) error
 	verify = func(parent asset.Asset, raw map[string]any) error {
 		var known []asset.Asset
@@ -1033,18 +1037,20 @@ func (a *action) serviceCascadePreflightWithPending(ctx context.Context, request
 				}
 			}
 			groupID := strings.Join(strings.Split(child.id, "/")[:5], "/")
-			if !verifiedGroups[groupID] {
-				group, err := a.client.request(ctx, "GET", apiURL(groupID, resourcesVersion))
+			group := verifiedGroups[groupID]
+			if group == nil {
+				current, err := a.client.request(ctx, "GET", apiURL(groupID, resourcesVersion))
 				if err != nil {
 					return err
 				}
-				if !validResourceResponse(group, groupID, groupType) {
+				if !validResourceResponse(current, groupID, groupType) {
 					return fmt.Errorf("Azure cascade child group identity mismatch")
 				}
-				if text(group.data["managedBy"]) != "" {
-					return serviceDenied("azure_managed_resource_group")
-				}
-				verifiedGroups[groupID] = true
+				group = current.data
+				verifiedGroups[groupID] = group
+			}
+			if text(group["managedBy"]) != "" && !managed.permits(impact.Asset, group) {
+				return serviceDenied("azure_managed_resource_group")
 			}
 			if locked(child.id, locks) {
 				return serviceDenied("azure_management_lock")

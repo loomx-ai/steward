@@ -74,7 +74,10 @@ func nativeExecutionBindings(bindings []graph.LifecycleBinding, selected map[ass
 			continue
 		}
 		candidates = append(candidates, b)
-		if graph.NativeDeleteEffect(b) || b.Ownership == graph.OwnershipExclusive && b.CleanupPolicy == graph.CleanupDelegate && b.Authority == graph.AuthorityAuthoritative && b.Confidence >= graph.ExecutableConfidence && b.Confidence <= 1 {
+		// Product-local direct cleanup also takes precedence over a containing
+		// native effect. Retain its independent step and prerequisite ordering;
+		// this ancestry index does not turn direct cleanup into delegation.
+		if graph.NativeDeleteEffect(b) || b.Ownership == graph.OwnershipExclusive && (b.CleanupPolicy == graph.CleanupDelegate || b.CleanupPolicy == graph.CleanupDirect && b.DirectCleanupAllowed) && b.Authority == graph.AuthorityAuthoritative && b.Confidence >= graph.ExecutableConfidence && b.Confidence <= 1 {
 			parents[b.ManagedAssetID] = append(parents[b.ManagedAssetID], b)
 		}
 	}

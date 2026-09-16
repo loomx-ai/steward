@@ -204,3 +204,31 @@ func TestNativeDeleteEffectsBindUnselectedControllerEvidence(t *testing.T) {
 		t.Fatal("unselected native controller dropped from approval snapshot", err)
 	}
 }
+
+func TestNativeDeleteEffectsPreserveIndependentProductPrerequisites(t *testing.T) {
+	bindings := []graph.LifecycleBinding{nativeEffect("group", "controller"), nativeEffect("group", "source"), nativeEffect("group", "target"), nativeEffect("group", "gate")}
+	for _, id := range []asset.AssetID{"source", "target"} {
+		child := binding("controller", id, graph.OwnershipExclusive, graph.CleanupDirect, 1)
+		child.DirectCleanupAllowed = true
+		bindings = append(bindings, child)
+	}
+	gate := binding("source", "gate", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	gate.Evidence = map[string]any{graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
+	bindings = append(bindings, gate)
+	required := requiredDeletion("source", "target")
+	required.Evidence[graph.RelationshipEvidenceAutomaticSelection] = false
+	input := plan.Input{Assets: []asset.Asset{prerequisiteAsset("group"), prerequisiteAsset("controller"), prerequisiteAsset("source"), prerequisiteAsset("target"), prerequisiteAsset("gate")}, ResolvedAssetIDs: []asset.AssetID{"group"}, LifecycleBindings: bindings, Relationships: []graph.Relationship{required}}
+	result, err := plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 || len(result.Steps) != 3 || len(result.ImpactItems) != 2 {
+		t.Fatal("native group replaced independent product execution", len(result.Steps), len(result.ImpactItems), result.Blockers, err)
+	}
+	source, target := stepForAsset(result.Steps, "source"), stepForAsset(result.Steps, "target")
+	prerequisites, err := plan.RequiredDeletions(source)
+	if err != nil || len(prerequisites) != 1 || prerequisites[0].AssetID != "target" || prerequisites[0].StepID != target.ID || prerequisites[0].ControllerAssetID != "" {
+		t.Fatal("independent ordering lost", prerequisites, err)
+	}
+	effects := impactByAsset(result.ImpactItems)
+	if effects["gate"].DelegatedTo != source.ID || effects["controller"].DelegatedTo != stepForAsset(result.Steps, "group").ID {
+		t.Fatal("native child controller changed", effects)
+	}
+}
