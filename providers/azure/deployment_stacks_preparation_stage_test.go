@@ -215,8 +215,8 @@ func TestDeploymentStackPreparationSelection(t *testing.T) {
 	if err != nil || !slices.Equal(order, []asset.AssetID{"vm"}) {
 		t.Fatal("reordering lost VM coverage", order, err)
 	}
-	// A flat native NIC is outside the VM request projection. It cannot silently
-	// disappear from preparation selection merely because the live VM references it.
+	// A flat native NIC with a reviewed VM Delete option shares the VM's
+	// preparation context, including its retained public IP.
 	var nic string
 	for i := range req.LifecycleImpacts {
 		if req.LifecycleImpacts[i].Asset.ID == "nic" {
@@ -233,7 +233,7 @@ func TestDeploymentStackPreparationSelection(t *testing.T) {
 	req.Asset.Normalized[deploymentStackReviewKey] = review
 	req.Asset.Normalized[deploymentStackProofKey] = c.deploymentStackProof(req.Asset.Identity.NativeID, req.Asset.Identity.ConnectionID, review)
 	order, err = c.deploymentStackPreparationOrder(req)
-	if err != nil || !slices.Equal(order, []asset.AssetID{"nic", "vm"}) {
-		t.Fatal("uncovered native NIC omitted", order, err)
+	if err != nil || !slices.Equal(order, []asset.AssetID{"vm"}) {
+		t.Fatal("flat native NIC prepared separately from its VM cascade", order, err)
 	}
 }

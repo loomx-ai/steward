@@ -505,3 +505,33 @@ VM/NIC attachment relationships, dynamically intrinsic prerequisites, ambiguous
 shared native cascade causes, specialized/read-only child drivers and complete
 pre-setup scope/orchestration acceptance remain unfinished. All 159 parity rows
 and eight overall gates remain open.
+
+### Flat Stack attachment deletion options (2026-09-16)
+
+Product projection now reuses `resourceAttachments` for reviewed VM/NIC native
+members. Only explicit `Delete` options on a typed resource ID can create VM-to-
+disk/NIC or NIC-to-public-IP cascade context; `Detach`, missing options and unrelated
+IDs cannot. Malformed, duplicate, foreign-subscription or ambiguous references are
+rejected. The existing preparation and product preflight still validate live
+attachment identities, options and retained-resource settings before mutation.
+
+Flat native NICs covered by their VM's verified Delete option are prepared through
+that VM request, including retained public IPs, instead of receiving duplicate
+independent preparation. The setup protocol suite now covers both original and
+flat controllers through NIC PUT, VM PATCH, independent host prerequisite DELETE,
+one native Stack DELETE, JSON recovery and actual product readback. Retained disks
+and IPs are verified by native creation identity. A lost/recreated retained disk or
+returning NIC invalidates reconciliation even after an earlier completed readback.
+No independent NIC/VM DELETE receipt is fabricated for native Stack cascades.
+
+[Azure VM attachment deletion documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/delete),
+checked on 2026-09-16, defines Delete versus Detach for VM disks/NICs and the NIC's
+public-IP delete option. The implementation does not infer Delete from defaults or
+change Detach to Delete. Projection tests cover all three attachment relationships;
+protocol tests exercise retaining disks/IPs while deleting VM/NIC. They do not
+constitute all-attachment-option or all-provider acceptance.
+
+Independent VM prerequisite deletion that automatically removes NICs still needs
+its own complete consequence-evidence integration. Full pre-setup scope review,
+remaining product families and complete executor acceptance remain unfinished;
+all 159 parity rows and eight overall gates remain open.

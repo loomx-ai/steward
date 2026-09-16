@@ -2,23 +2,49 @@ package azure
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"slices"
 	"strings"
 	"testing"
 
+	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 func TestDeploymentStackSetupHandoff(t *testing.T) {
-	for _, mode := range []string{"complete", "job", "unknown", "skip_preparation", "nested_preparation", "handoff_drift", "lost_preparation_context", "returned_prerequisite", "root_protected", "root_lock", "subscription_lock", "locks_forbidden", "root_forbidden", "late_lock", "late_protected"} {
+	for _, flat := range []bool{false, true} {
+		name := "product_controller"
+		if flat {
+			name = "stack_controller"
+		}
+		t.Run(name, func(t *testing.T) { testDeploymentStackSetupHandoff(t, flat) })
+	}
+}
+func testDeploymentStackSetupHandoff(t *testing.T, flat bool) {
+	for _, mode := range []string{"complete", "job", "unknown", "skip_preparation", "nested_preparation", "handoff_drift", "lost_preparation_context", "returned_prerequisite", "root_protected", "root_lock", "subscription_lock", "locks_forbidden", "root_forbidden", "late_lock", "late_protected", "attachment_changed", "outcome_missing", "outcome_recreated", "outcome_nic_returned"} {
 		t.Run(mode, func(t *testing.T) {
 			req, root := stackAttachmentRequest(t, directClient(nil))
+			root["location"] = "eastus"
+			if flat {
+				for i := range req.LifecycleImpacts {
+					if req.LifecycleImpacts[i].Asset.ID == "nic" {
+						req.LifecycleImpacts[i].ControllerID = req.Asset.ID
+						properties := object(root["properties"])
+						properties["resources"] = append(properties["resources"].([]any), map[string]any{"id": req.LifecycleImpacts[i].Asset.Identity.NativeID, "status": "managed", "denyStatus": "none"})
+					}
+				}
+			}
 			if mode == "root_protected" {
 				root["tags"] = map[string]any{"steward/protected": "true"}
 			}
 			guardActive := mode != "late_lock" && mode != "late_protected"
 			live := attachmentResources()
+			if mode == "attachment_changed" {
+				object(object(object(live["vm"]["properties"])["networkProfile"])["networkInterfaces"].([]any)[0])["properties"] = map[string]any{"primary": true, "deleteOption": "Detach"}
+			}
+			nativeDelete := mode == "complete" || strings.HasPrefix(mode, "outcome_")
+			outcomeFault := false
 			parent, child := actionAsset(hostGroupType, "host-parent"), actionAsset(hostType, "host-child")
 			parent.Identity.Partition = req.Asset.Identity.Partition
 			child.Identity.Partition = req.Asset.Identity.Partition
@@ -30,12 +56,15 @@ func TestDeploymentStackSetupHandoff(t *testing.T) {
 			childRaw := map[string]any{"id": child.Identity.NativeID, "type": hostType, "location": "eastus", "properties": map[string]any{"provisioningState": "Succeeded"}}
 			for i := range req.LifecycleImpacts {
 				if raw := live[string(req.LifecycleImpacts[i].Asset.ID)]; raw != nil {
+					field := map[string]string{"vm": "vmId", "nic": "resourceGuid", "boot": "uniqueId", "data": "uniqueId", "ip": "resourceGuid"}[string(req.LifecycleImpacts[i].Asset.ID)]
+					object(raw["properties"])[field] = "11111111-1111-1111-1111-111111111111"
+					req.LifecycleImpacts[i].Asset.Normalized["_arm_creation_generation"] = creationGeneration(raw)
 					req.LifecycleImpacts[i].Asset.Normalized["_arm_generation"] = productGeneration(raw)
 				}
 			}
 			writes := []string{}
 			calls := 0
-			gone := false
+			gone, stackGone := false, false
 			r := protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
 				calls++
 				if reply, handled := emptyMonitorIndexResponse(t, q); handled {
@@ -47,6 +76,19 @@ func TestDeploymentStackSetupHandoff(t *testing.T) {
 				path := strings.ToLower(q.URL.Path)
 				switch path {
 				case req.Asset.Identity.NativeID:
+					if q.Method == "DELETE" && nativeDelete {
+						if !slices.Equal(writes, []string{"PUT nic", "PATCH vm", "DELETE host-child"}) {
+							t.Fatal("Stack delete preceded setup", writes)
+						}
+						writes = append(writes, "DELETE stack")
+						stackGone = true
+						delete(live["boot"], "managedBy")
+						delete(live["data"], "managedBy")
+						return &http.Response{StatusCode: 204, Header: http.Header{}, Body: io.NopCloser(strings.NewReader(""))}, nil
+					}
+					if stackGone {
+						return jsonResponse(404, map[string]any{}, nil), nil
+					}
 					if q.Method != "GET" {
 						t.Fatal("setup deleted Stack")
 					}
@@ -55,6 +97,9 @@ func TestDeploymentStackSetupHandoff(t *testing.T) {
 					}
 					return jsonResponse(200, root, nil), nil
 				case parent.Identity.NativeID:
+					if stackGone {
+						return jsonResponse(404, map[string]any{}, nil), nil
+					}
 					if q.Method != "GET" {
 						t.Fatal("setup deleted non-prerequisite parent")
 					}
@@ -95,13 +140,19 @@ func TestDeploymentStackSetupHandoff(t *testing.T) {
 					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 				}
 				if strings.HasSuffix(path, "/resourcegroups/test") {
-					return jsonResponse(200, map[string]any{"id": q.URL.Path}, nil), nil
+					return jsonResponse(200, map[string]any{"id": q.URL.Path, "type": groupType, "location": "eastus"}, nil), nil
 				}
 				for name, raw := range live {
 					if !strings.EqualFold(q.URL.Path, text(raw["id"])) {
 						continue
 					}
 					if q.Method == "GET" {
+						if stackGone && outcomeFault && mode == "outcome_missing" && name == "boot" {
+							return jsonResponse(404, map[string]any{}, nil), nil
+						}
+						if stackGone && (name == "vm" || name == "nic" && !(outcomeFault && mode == "outcome_nic_returned")) {
+							return jsonResponse(404, map[string]any{}, nil), nil
+						}
 						return jsonResponse(200, raw, nil), nil
 					}
 					if name != "vm" && name != "nic" || q.Method != "PUT" && q.Method != "PATCH" {
@@ -218,6 +269,12 @@ func TestDeploymentStackSetupHandoff(t *testing.T) {
 					}
 					return
 				}
+				if mode == "attachment_changed" {
+					if err == nil || out.Data != nil || len(writes) != 0 {
+						t.Fatal("changed native delete option allowed preparation", out, err, writes)
+					}
+					return
+				}
 				if tampered {
 					if err == nil || out.Done || out.Data != nil {
 						t.Fatal("invalid phase handoff accepted", out, err)
@@ -261,6 +318,45 @@ func TestDeploymentStackSetupHandoff(t *testing.T) {
 			}
 			if len(writes) != priorWrites {
 				t.Fatal("completed setup repeated mutation")
+			}
+			if nativeDelete {
+				result, err := r.deploymentStackStartDelete(t.Context(), req, out.Data)
+				if err != nil {
+					t.Fatal("native attachment cascade submission", err)
+				}
+				wire, _ := json.Marshal(result.Data)
+				var checkpoint map[string]any
+				if err = json.Unmarshal(wire, &checkpoint); err != nil {
+					t.Fatal(err)
+				}
+				for step := 0; step < 2; step++ {
+					outcomeFault = step == 1 && strings.HasPrefix(mode, "outcome_")
+					if outcomeFault && mode == "outcome_recreated" {
+						object(live["boot"]["properties"])["uniqueId"] = "22222222-2222-2222-2222-222222222222"
+					}
+					final, err := r.deploymentStackResumeDeletion(t.Context(), req, checkpoint)
+					if outcomeFault {
+						if err == nil && final.Products.ProductsReconciled || len(writes) != 4 {
+							t.Fatal("completed checkpoint hid changed attachment outcome", final, err, writes)
+						}
+						if err != nil && final.Data != nil {
+							t.Fatal("partial failed outcome", final, err)
+						}
+						break
+					}
+					if err != nil || !final.Products.ProductsReconciled {
+						t.Fatal("native attachment cascade outcome", final, err)
+					}
+					if !slices.Equal(writes, []string{"PUT nic", "PATCH vm", "DELETE host-child", "DELETE stack"}) {
+						t.Fatal("repeated or independent attachment DELETE", writes)
+					}
+					for _, id := range []string{"boot", "data", "ip"} {
+						if final.Products.Execution.Outcome.RetentionEvidence[asset.AssetID(id)] != "creation_identity" {
+							t.Fatal("retained attachment not verified", id, final)
+						}
+					}
+					checkpoint = final.Data
+				}
 			}
 			after, _ := json.Marshal(req)
 			if string(before) != string(after) {

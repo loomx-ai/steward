@@ -25,9 +25,14 @@ func deploymentStackProductImpacts(req contracts.ActionRequest) ([]contracts.Act
 			if !parent.Delete || parent.Asset.ID == child.Asset.ID || native[strings.ToLower(parent.Asset.Identity.NativeID)] == nil || parent.Asset.Identity.ConnectionID != child.Asset.Identity.ConnectionID || parent.Asset.Identity.Partition != child.Asset.Identity.Partition {
 				continue
 			}
+			attachment, err := deploymentStackAttachmentRelation(parent.Asset, child.Asset)
+			if err != nil {
+				return nil, err
+			}
 			// Independent prerequisites retain their separate product lifecycle. Dynamic
 			// exceptions to these product rules require additional live evidence.
-			if servicePrerequisiteKind(parent.Asset.Identity.NativeType, child.Asset.Identity.NativeType) || !slices.ContainsFunc(serviceChildKinds(parent.Asset.Identity.NativeType), func(kind string) bool { return strings.EqualFold(kind, child.Asset.Identity.NativeType) }) || !serviceChildRelation(parent.Asset, child.Asset) {
+			service := !servicePrerequisiteKind(parent.Asset.Identity.NativeType, child.Asset.Identity.NativeType) && slices.ContainsFunc(serviceChildKinds(parent.Asset.Identity.NativeType), func(kind string) bool { return strings.EqualFold(kind, child.Asset.Identity.NativeType) }) && serviceChildRelation(parent.Asset, child.Asset)
+			if !attachment && !service {
 				continue
 			}
 			if controller != "" && controller != parent.Asset.ID {
@@ -53,4 +58,27 @@ func deploymentStackProductImpacts(req contracts.ActionRequest) ([]contracts.Act
 		}
 	}
 	return impacts, nil
+}
+
+// Use the same native Delete/Detach parser as normal VM/NIC lifecycle planning.
+// No resource-ID prefix establishes an attachment, and missing Delete options
+// never acquire cascading deletion authority.
+func deploymentStackAttachmentRelation(parent, child asset.Asset) (bool, error) {
+	if parent.Identity.NativeType != vmType && parent.Identity.NativeType != nicType {
+		return false, nil
+	}
+	id, _, err := parseID(parent.Identity.NativeID)
+	if err != nil {
+		return false, err
+	}
+	attachments, err := resourceAttachments(strings.Split(id, "/")[2], parent.Identity.NativeType, parent.Normalized)
+	if err != nil {
+		return false, err
+	}
+	for _, attachment := range attachments {
+		if attachment.delete && strings.EqualFold(attachment.id, child.Identity.NativeID) && strings.EqualFold(attachment.kind, child.Identity.NativeType) {
+			return true, nil
+		}
+	}
+	return false, nil
 }
