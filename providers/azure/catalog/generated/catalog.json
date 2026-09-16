@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "dc5086fb4c26d533476b996a63ab3d747493abc6a13b1e53b7cd164c68738010",
+    "checksum": "ec8d2cab658d588517d76d0aa7effc4b3e899427aef8abfeea08caf6447fa358",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "35acb51f320eaa433fde37d9fce66a4376689ec9b294bea2ec24113494b5fb19",
+  "content_checksum": "ddac3da8f498cfd102a2b1c3a8346c95806a4840dd97e27279dbd6d38936a64b",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -120990,6 +120990,704 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2022-10-01/Workspaces.json"
     },
     {
+      "id": "Azure.Microsoft.RecoveryServices.BackupProtectedItems_List",
+      "name": "BackupProtectedItems_List",
+      "service": "Microsoft.RecoveryServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupProtectedItems",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "OData filter options.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "$skipToken": {
+            "description": "skipToken Filter.",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the recovery services vault.",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/ResourceList"
+          }
+        ],
+        "description": "List of ProtectedItem resources",
+        "properties": {
+          "value": {
+            "description": "List of resources.",
+            "items": {
+              "$ref": "#/definitions/ProtectedItemResource"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupProtectedItems",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/bms.json"
+    },
+    {
+      "id": "Azure.Microsoft.RecoveryServices.BackupProtectionContainers_List",
+      "name": "BackupProtectionContainers_List",
+      "service": "Microsoft.RecoveryServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupProtectionContainers",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "OData filter options.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the recovery services vault.",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/ResourceList"
+          }
+        ],
+        "description": "List of ProtectionContainer resources",
+        "properties": {
+          "value": {
+            "description": "List of resources.",
+            "items": {
+              "$ref": "#/definitions/ProtectionContainerResource"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupProtectionContainers",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/bms.json"
+    },
+    {
+      "id": "Azure.Microsoft.RecoveryServices.DeletedVaults_Get",
+      "name": "DeletedVaults_Get",
+      "service": "Microsoft.RecoveryServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.RecoveryServices/locations/{location}/deletedVaults/{deletedVaultName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "deletedVaultName": {
+            "description": "The name of the DeletedVault",
+            "in": "path",
+            "name": "deletedVaultName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string"
+          },
+          "location": {
+            "description": "The name of Azure region.",
+            "in": "path",
+            "minLength": 1,
+            "name": "location",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "DeletedVault information as returned by the resource provider.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/DeletedVaultProperties",
+            "description": "The resource-specific properties for this resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.RecoveryServices/locations/{location}/deletedVaults/{deletedVaultName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservices/resource-manager/Microsoft.RecoveryServices/RecoveryServices/stable/2026-07-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.RecoveryServices.DeletedVaults_ListBySubscriptionId",
+      "name": "DeletedVaults_ListBySubscriptionId",
+      "service": "Microsoft.RecoveryServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.RecoveryServices/locations/{location}/deletedVaults",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "location": {
+            "description": "The name of Azure region.",
+            "in": "path",
+            "minLength": 1,
+            "name": "location",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response model for a list of DeletedVaults.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DeletedVault items on this page",
+            "items": {
+              "$ref": "#/definitions/DeletedVault"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.RecoveryServices/locations/{location}/deletedVaults",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservices/resource-manager/Microsoft.RecoveryServices/RecoveryServices/stable/2026-07-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.RecoveryServices.ProtectedItems_Get",
+      "name": "ProtectedItems_Get",
+      "service": "Microsoft.RecoveryServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}/protectedItems/{protectedItemName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "OData filter options.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "containerName": {
+            "description": "Name of the container whose details need to be fetched.",
+            "in": "path",
+            "name": "containerName",
+            "required": true,
+            "type": "string"
+          },
+          "fabricName": {
+            "description": "The name of the BackupFabricResource",
+            "in": "path",
+            "name": "fabricName",
+            "required": true,
+            "type": "string"
+          },
+          "protectedItemName": {
+            "description": "Backed up item name whose details are to be fetched.",
+            "in": "path",
+            "name": "protectedItemName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the VaultResource",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Base class for backup items.",
+        "properties": {
+          "eTag": {
+            "description": "Optional ETag.",
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/definitions/Azure.Core.azureLocation",
+            "description": "The geo-location where the resource lives",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/ProtectedItem",
+            "description": "ProtectedItemResource properties"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Resource tags.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}/protectedItems/{protectedItemName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/bms.json"
+    },
+    {
+      "id": "Azure.Microsoft.RecoveryServices.ProtectionContainers_Get",
+      "name": "ProtectionContainers_Get",
+      "service": "Microsoft.RecoveryServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "containerName": {
+            "description": "Name of the container whose details need to be fetched.",
+            "in": "path",
+            "name": "containerName",
+            "required": true,
+            "type": "string"
+          },
+          "fabricName": {
+            "description": "The name of the BackupFabricResource",
+            "in": "path",
+            "name": "fabricName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the VaultResource",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Base class for container with backup items. Containers with specific workloads are derived from this class.",
+        "properties": {
+          "eTag": {
+            "description": "Optional ETag.",
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/definitions/Azure.Core.azureLocation",
+            "description": "The geo-location where the resource lives",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/ProtectionContainer",
+            "description": "ProtectionContainerResource properties"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Resource tags.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}/backupFabrics/{fabricName}/protectionContainers/{containerName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/bms.json"
+    },
+    {
+      "id": "Azure.Microsoft.RecoveryServices.Vaults_Get",
+      "name": "Vaults_Get",
+      "service": "Microsoft.RecoveryServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the Vault",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Resource information, as returned by the resource provider.",
+        "properties": {
+          "etag": {
+            "description": "etag for the resource.",
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "#/definitions/IdentityData",
+            "description": "Identity for the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/VaultProperties",
+            "description": "Properties of the vault."
+          },
+          "sku": {
+            "$ref": "#/definitions/Sku",
+            "description": "Identifies the unique system identifier for each Azure resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{vaultName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservices/resource-manager/Microsoft.RecoveryServices/RecoveryServices/stable/2026-07-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.RecoveryServices.Vaults_ListBySubscriptionId",
+      "name": "Vaults_ListBySubscriptionId",
+      "service": "Microsoft.RecoveryServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.RecoveryServices/vaults",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response model for a list of Vaults.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Vault items on this page",
+            "items": {
+              "$ref": "#/definitions/Vault"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.RecoveryServices/vaults",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservices/resource-manager/Microsoft.RecoveryServices/RecoveryServices/stable/2026-07-01/openapi.json"
+    },
+    {
       "id": "Azure.Microsoft.ResourceGraph.Resources",
       "name": "Resources",
       "service": "Microsoft.ResourceGraph",
@@ -147968,6 +148666,74 @@
         ],
         "list_operations": [
           "Azure.Microsoft.OperationalInsights.Workspaces_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.RecoveryServices/locations/deletedVaults",
+      "class": "storage.backup_vault",
+      "display_name": "Deleted Recovery Services vault",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "deletedVaults",
+        "read_operations": [
+          "Azure.Microsoft.RecoveryServices.DeletedVaults_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.RecoveryServices.DeletedVaults_ListBySubscriptionId"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.RecoveryServices/vaults",
+      "class": "storage.backup_vault",
+      "display_name": "Recovery Services vault",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "vaults",
+        "read_operations": [
+          "Azure.Microsoft.RecoveryServices.Vaults_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.RecoveryServices.Vaults_ListBySubscriptionId"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers",
+      "class": "storage.backup_source",
+      "display_name": "Backup protection container",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "backupProtectionContainers",
+        "read_operations": [
+          "Azure.Microsoft.RecoveryServices.ProtectionContainers_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.RecoveryServices.BackupProtectionContainers_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+      "class": "storage.backup",
+      "display_name": "Protected backup item",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "backupProtectedItems",
+        "read_operations": [
+          "Azure.Microsoft.RecoveryServices.ProtectedItems_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.RecoveryServices.BackupProtectedItems_List"
         ]
       }
     },

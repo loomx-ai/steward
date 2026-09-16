@@ -1,0 +1,43 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems
+  class: storage.backup
+presentation:
+  displayNames:
+    en-US: Protected backup item
+    zh-CN: 受保护备份项目
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: recovery-services
+  list:
+    operation: Azure.Microsoft.RecoveryServices.BackupProtectedItems_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.RecoveryServices.ProtectedItems_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name: name
+  state: state
+  subscriptionId: subscriptionId
+  resourceGroup: resourceGroup
+  vaultId: vaultId
+  containerId: containerId
+  retained: retained
+  originalVaultId: originalVaultId
+  deletionTime: deletionTime
+  scheduledPurgeTime: scheduledPurgeTime
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.RecoveryServices/vaults
+  targetIdPath: refs_microsoft_recoveryservices_vaults
+- type: uses
+  targetType: Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers
+  targetIdPath: refs_microsoft_recoveryservices_vaults_backupfabrics_protectioncontainers

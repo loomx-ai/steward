@@ -11,6 +11,9 @@ import (
 const insightsAnnotationSource = "application-insights-annotations"
 
 func insightsInventorySource(kind string) string {
+	if recoveryServicesKind(kind) != "" {
+		return recoveryServicesSource
+	}
 	if dataProtectionKind(kind) != "" {
 		return dataProtectionSource
 	}

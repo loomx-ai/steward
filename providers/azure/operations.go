@@ -219,8 +219,13 @@ func azureRequestID(key string) string {
 }
 
 func (c *client) resourceOperation(kind resourceType, nativeID, method string) (catalog.Operation, map[string]any, error) {
-	if kind.NativeType == dataProtectionDeletedVault {
+	if kind.NativeType == dataProtectionDeletedVault || kind.NativeType == recoveryServicesDeletedVault {
 		id, err := c.dataProtectionIdentity(nativeID, kind.NativeType)
+		operation := "Azure.Microsoft.DataProtection.DeletedBackupVaults_Get"
+		if kind.NativeType == recoveryServicesDeletedVault {
+			id, err = c.recoveryServicesIdentity(nativeID, kind.NativeType)
+			operation = "Azure.Microsoft.RecoveryServices.DeletedVaults_Get"
+		}
 		if err != nil || method != "GET" {
 			return catalog.Operation{}, nil, serviceDenied("invalid_deleted_vault_operation")
 		}
@@ -228,7 +233,7 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		if err != nil {
 			return catalog.Operation{}, nil, err
 		}
-		op, ok := metadata.catalog.Operation("Azure.Microsoft.DataProtection.DeletedBackupVaults_Get")
+		op, ok := metadata.catalog.Operation(operation)
 		if !ok {
 			return catalog.Operation{}, nil, serviceDenied("missing_deleted_vault_operation")
 		}

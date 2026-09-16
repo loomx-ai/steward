@@ -1,23 +1,23 @@
 # Provider parity implementation gaps
 
-Scope snapshot: 2026-09-15, updated for the Deployment Stacks and Data Protection inventory registrations. This is a repository scope audit, not cloud feature acceptance. The earlier mapping repair was audited at `0c43def71dc2fdef7d6fafe6b59fd8124e9e81d9`.
+Scope snapshot: 2026-09-15, updated for the Recovery Services inventory registrations. This is a repository scope audit, not cloud feature acceptance. The earlier mapping repair was audited at `0c43def71dc2fdef7d6fafe6b59fd8124e9e81d9`.
 
-The matrix covers all 159 Alibaba Cloud specifications. The repository now contains 204 GCP and 475 Azure specifications, but those counts do not prove equivalence. All 159 rows remain pending behavioral verification.
+The matrix covers all 159 Alibaba Cloud specifications. The repository now contains 204 GCP and 479 Azure specifications, but those counts do not prove equivalence. All 159 rows remain pending behavioral verification.
 
 The earlier audit found invalid YAML, 28 Azure mapping references to 18 absent specifications, and an incorrect GCP SSH-key mapping to service-account keys. The corrected matrix keeps absent candidates in `unimplemented_resources`; it does not remove them from the requested scope.
 
 The new `go test ./providers` check runs in the existing `go test ./...` CI job. It detects invalid YAML, omitted or duplicated baseline resources, drift in baseline source/class/scope/actions/hooks/enrichment/parent discovery, unresolved implemented-resource references and stale implementation backlogs. A passing check verifies matrix consistency only.
 
-Synapse now includes workspace/pool and data-plane inventory, reviewed workspace and Spark/SQL cleanup, artifact handling and retained restore-point/backup observations. NetApp now has native specifications and inventory plus volume, pool, recovery-object, policy and vault cleanup. NetApp group/account cleanup and interface deletion effects remain unfinished. These implementations moved their existing candidates into `resources`; that change does not close behavioral acceptance. The current missing-specification table has 13 types and 15 matrix references affecting 15 Alibaba Cloud rows.
+Synapse now includes workspace/pool and data-plane inventory, reviewed workspace and Spark/SQL cleanup, artifact handling and retained restore-point/backup observations. NetApp now has native specifications and inventory plus volume, pool, recovery-object, policy and vault cleanup. NetApp group/account cleanup and interface deletion effects remain unfinished. These implementations moved their existing candidates into `resources`; that change does not close behavioral acceptance. The current missing-specification table has 11 types and 13 matrix references affecting 13 Alibaba Cloud rows.
 
 ## Current progress measures
 
 | Measure | GCP | Azure |
 | --- | --- | --- |
-| Explicit native specifications | 204 | 475 |
-| Baseline rows with at least one existing mapped specification | 155/159 (97.5%) | 144/159 (90.6%) |
-| Candidate types still without a specification | 0 | 13 |
-| Baseline rows affected by missing candidate specifications | 0 | 15 |
+| Explicit native specifications | 204 | 479 |
+| Baseline rows with at least one existing mapped specification | 155/159 (97.5%) | 145/159 (91.2%) |
+| Candidate types still without a specification | 0 | 11 |
+| Baseline rows affected by missing candidate specifications | 0 | 13 |
 | Empty mappings requiring research | 4 | 2 |
 
 These are registration/mapping measures, not functional completion percentages.
@@ -59,8 +59,6 @@ These are candidates already named by the matrix. Missing specification files me
 | `Microsoft.MachineLearningServices/workspaces/onlineEndpoints` | `ACS::PAI::Service` |
 | `Microsoft.Management/managementGroups` | `ACS::ResourceManager::ResourceDirectory` |
 | `Microsoft.Purview/accounts` | `ACS::SDDP::Instance` |
-| `Microsoft.RecoveryServices/vaults` | `ACS::HBR::Vault` |
-| `Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems` | `ACS::HBR::HanaInstance` |
 | `Microsoft.ServiceFabric/clusters` | `ACS::MSE::Cluster` |
 | `Microsoft.Solutions/applications` | `ACS::OOS::Application` |
 | `Microsoft.StorageSync/storageSyncServices` | `ACS::CloudStorageGateway::Gateway` |
@@ -1106,3 +1104,32 @@ A complete reverse index for sources outside the scanned backup inventory,
 coordinated vault/policy preparation, retained recovery workflows and independent
 emulator/live acceptance remain open. All 159 parity rows and eight overall
 acceptance gates remain pending.
+
+
+### Recovery Services vaults, containers and protected items
+
+Four native inventory rules cover active vaults, regional deleted vaults, backup
+protection containers and protected items. Eight unchanged read/list operations
+are pinned to Recovery Services 2026-07-01 and Recovery Services Backup 2026-08-01.
+Backup-source registration and protected database instances are separate resources;
+the HANA mapping retains both instead of treating an individual database as a
+complete source lifecycle.
+
+Discovery requires native own reads, complete fabric/container identities, stable
+vault/container observations, strict unfiltered pagination and two equal inventory
+observations. Known list omissions are reconciled by own GET; dependency absence
+and permission failures do not retire assets. Deferred-delete flags and regional
+deleted-vault retention timestamps remain visible without claiming permanent
+purge or ownership of a recreated active vault. Unknown workload configuration is
+redacted from raw inventory and diagnostics, but participates in private hashes
+and continuation validation.
+
+The unchanged official examples and CLI read responses are documented in
+[Recovery Services evidence](azure/fixtures/recoveryservices/README.md). The CLI
+responses establish complete semicolon-bearing IDs and an absolute ARM vaultId
+variant. Their older API version is not rewritten into a current-version replay.
+
+These resources remain non-actionable until reviewed cleanup is implemented.
+Container unregistration, protected-item and vault deletion, retention recovery,
+policy/source dependencies, Site Recovery replication items and independent/live
+acceptance remain open. No baseline row or overall acceptance gate is closed.

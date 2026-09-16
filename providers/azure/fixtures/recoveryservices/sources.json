@@ -1,0 +1,32 @@
+[
+  {
+    "file": "DeletedVaults_Get.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservices/resource-manager/Microsoft.RecoveryServices/RecoveryServices/stable/2026-07-01/examples/DeletedVaults_Get.json",
+    "sha256": "229123a72d42865c34f47942e5293ac3b870678f59553ba8212b7658ff72cd4e"
+  },
+  {
+    "file": "Vaults_Get.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservices/resource-manager/Microsoft.RecoveryServices/RecoveryServices/stable/2026-07-01/examples/GETVault.json",
+    "sha256": "f758c4c2f53c1640747bbc2fe71da5e686d0c0ff11b810515bacb5c0e4a2238e"
+  },
+  {
+    "file": "ProtectedItems_Get.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/examples/AzureIaasVm/ClassicCompute_ProtectedItem_Get.json",
+    "sha256": "62631b5f9ed11e0ae51dab0943be6cb13f860b52e5d57142d43f69c688832fee"
+  },
+  {
+    "file": "BackupProtectedItems_List.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/examples/AzureIaasVm/BackupProtectedItems_List.json",
+    "sha256": "5d04d7ebc2f08459b766f6dc0f17afb014361464f37b26d81143206d227fb4c3"
+  },
+  {
+    "file": "hana-read-recording.json",
+    "sha256": "3632ff977ed927b69f7616d5ea1a51f19e2300b0f42e8715bdf5d03547e4e53b",
+    "note": "Exact selected response bodies/headers and request URLs; provenance is embedded per interaction."
+  },
+  {
+    "file": "deleted-vault-read-recording.json",
+    "sha256": "b412c0e0a4a09b5d47ba26117bd0c9e56c9ec0e847b10a07a9cbe6936bce310c",
+    "note": "Unchanged regional deleted-vault list and own-GET responses; provenance embedded per interaction."
+  }
+]

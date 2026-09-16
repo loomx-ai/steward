@@ -2637,6 +2637,24 @@
         "DppResourceGuardProxy_List",
         "DppResourceGuardProxy_Get"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservices/resource-manager/Microsoft.RecoveryServices/RecoveryServices/stable/2026-07-01/openapi.json",
+      "operations": [
+        "Vaults_Get",
+        "Vaults_ListBySubscriptionId",
+        "DeletedVaults_Get",
+        "DeletedVaults_ListBySubscriptionId"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/bms.json",
+      "operations": [
+        "ProtectionContainers_Get",
+        "BackupProtectionContainers_List",
+        "ProtectedItems_Get",
+        "BackupProtectedItems_List"
+      ]
     }
   ],
   "resource_types": [
@@ -11541,6 +11559,70 @@
       "delete_operations": [],
       "list_operations": [
         "Azure.Microsoft.DataProtection.DeletedBackupVaults_ListByLocation"
+      ]
+    },
+    {
+      "native_type": "Microsoft.RecoveryServices/vaults",
+      "class": "storage.backup_vault",
+      "display_name": "Recovery Services vault",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "vaults",
+      "read_operations": [
+        "Azure.Microsoft.RecoveryServices.Vaults_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.RecoveryServices.Vaults_ListBySubscriptionId"
+      ]
+    },
+    {
+      "native_type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers",
+      "class": "storage.backup_source",
+      "display_name": "Backup protection container",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "backupProtectionContainers",
+      "read_operations": [
+        "Azure.Microsoft.RecoveryServices.ProtectionContainers_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.RecoveryServices.BackupProtectionContainers_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+      "class": "storage.backup",
+      "display_name": "Protected backup item",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "backupProtectedItems",
+      "read_operations": [
+        "Azure.Microsoft.RecoveryServices.ProtectedItems_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.RecoveryServices.BackupProtectedItems_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.RecoveryServices/locations/deletedVaults",
+      "class": "storage.backup_vault",
+      "display_name": "Deleted Recovery Services vault",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "deletedVaults",
+      "read_operations": [
+        "Azure.Microsoft.RecoveryServices.DeletedVaults_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.RecoveryServices.DeletedVaults_ListBySubscriptionId"
       ]
     }
   ]

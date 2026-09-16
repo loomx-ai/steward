@@ -1455,10 +1455,12 @@ resources:
     resources:
     - backupdr.googleapis.com/DataSource
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
+    - Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers
     - Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems
   status: pending_verification
+  notes: Native Recovery Services container and protected-item inventory are registered.
+    Container unregistration, item cleanup and backup-source lifecycle equivalence remain unfinished.
 - alicloud: ACS::HBR::Vault
   spec: providers/alicloud/specs/hbr-vault.yaml
   class: storage.backup_vault
@@ -1473,11 +1475,12 @@ resources:
   azure:
     resources:
     - Microsoft.DataProtection/backupVaults
-    unimplemented_resources:
     - Microsoft.RecoveryServices/vaults
+    - Microsoft.RecoveryServices/locations/deletedVaults
   status: pending_verification
   notes: Data Protection active/deleted inventory and standalone vault deletion are registered. Coordinated cleanup, restore and
-    retained lifecycle acceptance remain unfinished; Recovery Services is a separate implementation gap.
+    retained lifecycle acceptance remain unfinished. Recovery Services active/deleted vault inventory
+    is registered; its cleanup lifecycle remains unfinished.
 - alicloud: ACS::Hologram::Instance
   spec: providers/alicloud/specs/hologres-instance.yaml
   class: database.analytics

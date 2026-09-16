@@ -1,0 +1,179 @@
+[
+  {
+    "source": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_item.yaml",
+    "source_sha256": "9b8079ca16e0622f9c7a31cf3dd30310a49ccc716092477996a8ce124eb91f1d",
+    "interaction_index": 48,
+    "request": {
+      "method": "GET",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3BCompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/protectedItems/saphanadatabase%3Bhxe%3Bsystemdb?api-version=2023-04-01"
+    },
+    "response": {
+      "body": {
+        "string": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/protectedItems/SAPHanaDatabase;hxe;systemdb\",\"name\":\"SAPHanaDatabase;hxe;systemdb\",\"type\":\"Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems\",\"properties\":{\"friendlyName\":\"systemdb\",\"serverName\":\"saphana-clitestvm-donotuse2\",\"parentName\":\"HXE\",\"parentType\":\"AzureVmWorkloadSAPHanaSystem\",\"protectionStatus\":\"Healthy\",\"protectionState\":\"IRPending\",\"lastBackupStatus\":\"IRPending\",\"lastBackupErrorDetail\":{\"code\":\"Success\",\"message\":\"\"},\"protectedItemDataSourceId\":\"1406941528\",\"protectedItemHealthStatus\":\"IRPending\",\"extendedInfo\":{\"recoveryPointCount\":0,\"policyState\":\"Consistent\"},\"protectedItemType\":\"AzureVmWorkloadSAPHanaDatabase\",\"backupManagementType\":\"AzureWorkload\",\"workloadType\":\"SAPHanaDatabase\",\"containerName\":\"VMAppContainer;compute;saphana-clitest-rg;saphana-clitestvm-donotuse2\",\"sourceResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.Compute/virtualMachines/saphana-clitestvm-donotuse2\",\"policyId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupPolicies/saphana-clitestpolicy-donotuse\",\"vaultId\":\"https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse\",\"isArchiveEnabled\":false,\"softDeleteRetentionPeriod\":0}}"
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "1761"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Thu, 11 May 2023 12:56:25 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "transfer-encoding": [
+          "chunked"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "299"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    }
+  },
+  {
+    "source": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_item.yaml",
+    "source_sha256": "9b8079ca16e0622f9c7a31cf3dd30310a49ccc716092477996a8ce124eb91f1d",
+    "interaction_index": 52,
+    "request": {
+      "method": "GET",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupProtectedItems?api-version=2023-04-01&%24filter=backupManagementType+eq+%27AzureWorkload%27+and+itemType+eq+%27SAPHanaDatabase%27"
+    },
+    "response": {
+      "body": {
+        "string": "{\"value\":[{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;compute;saphana-clitest-rg;saphana-clitestvm-donotuse2/protectedItems/SAPHanaDatabase;hxe;systemdb\",\"name\":\"SAPHanaDatabase;hxe;systemdb\",\"type\":\"Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems\",\"properties\":{\"friendlyName\":\"systemdb\",\"serverName\":\"saphana-clitestvm-donotuse2\",\"parentName\":\"HXE\",\"parentType\":\"AzureVmWorkloadSAPHanaSystem\",\"protectionStatus\":\"Healthy\",\"protectionState\":\"IRPending\",\"lastBackupStatus\":\"IRPending\",\"lastBackupErrorDetail\":{\"code\":\"Success\",\"message\":\"\"},\"protectedItemDataSourceId\":\"1406941528\",\"protectedItemHealthStatus\":\"IRPending\",\"protectedItemType\":\"AzureVmWorkloadSAPHanaDatabase\",\"backupManagementType\":\"AzureWorkload\",\"workloadType\":\"SAPHanaDatabase\",\"containerName\":\"VMAppContainer;compute;saphana-clitest-rg;saphana-clitestvm-donotuse2\",\"sourceResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.Compute/virtualMachines/saphana-clitestvm-donotuse2\",\"policyId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupPolicies/saphana-clitestpolicy-donotuse\",\"vaultId\":\"https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse\",\"isArchiveEnabled\":false,\"softDeleteRetentionPeriod\":0}}]}"
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "1706"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Thu, 11 May 2023 12:56:32 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "transfer-encoding": [
+          "chunked"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "299"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    }
+  },
+  {
+    "source": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_container.yaml",
+    "source_sha256": "d90fc926708b54eac4f9e5e5c330c206ed7c467dca69d86f9105893a7a25abf1",
+    "interaction_index": 64,
+    "request": {
+      "method": "GET",
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupProtectionContainers?api-version=2023-04-01&%24filter=backupManagementType+eq+%27AzureWorkload%27+and+status+eq+%27Registered%27"
+    },
+    "response": {
+      "body": {
+        "string": "{\"value\":[{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2\",\"name\":\"VMAppContainer;Compute;saphana-clitest-rg;saphana-clitestvm-donotuse2\",\"type\":\"Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers\",\"properties\":{\"sourceResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.Compute/virtualMachines/saphana-clitestvm-donotuse2\",\"lastUpdatedTime\":\"2023-06-09T09:31:12.5813536Z\",\"extendedInfo\":{\"hostServerName\":\"saphana-clitestvm-donotuse2\",\"inquiryInfo\":{\"status\":\"Failed\",\"errorDetail\":{\"code\":\"UserErrorHANASystemDBNotRunning\",\"message\":\"SYSTEMDB for the SAP HANA instance is not in running state.\",\"recommendations\":[\"Please start the SAP HANA system by running the command 'HDB start' as the sidadm user and retry the operation.\"]},\"inquiryDetails\":[{\"type\":\"SAPHana\",\"itemCount\":0,\"inquiryValidation\":{\"status\":\"Failed\",\"errorDetail\":{\"code\":\"UserErrorHANASystemDBNotRunning\",\"message\":\"SYSTEMDB for the SAP HANA instance is not in running state.\",\"recommendations\":[\"Please start the SAP HANA system by running the command 'HDB start' as the sidadm user and retry the operation.\"]},\"additionalDetail\":\"[HANAPlugin]: SystemDB is not in running state.\",\"protectableItemCount\":{\"SAPHanaSystem\":1}}}]}},\"friendlyName\":\"saphana-clitestvm-donotuse2\",\"backupManagementType\":\"AzureWorkload\",\"registrationStatus\":\"Registered\",\"healthStatus\":\"Healthy\",\"containerType\":\"VMAppContainer\",\"protectableObjectType\":\"VMAppContainer\"}}]}"
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "1736"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Fri, 09 Jun 2023 09:36:47 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "transfer-encoding": [
+          "chunked"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "299"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    }
+  }
+]
