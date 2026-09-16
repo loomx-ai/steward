@@ -40,7 +40,7 @@ func (c *client) resourceGroupReviewedRead(ctx context.Context, req contracts.Ac
 
 // Require the actual registered product checks. An intrinsic child may use its
 // successfully checked native parent, but no live prerequisite is waived here.
-func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.ActionRequest, products map[asset.AssetID]contracts.ActionRequest) error {
+func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.ActionRequest, products map[asset.AssetID]contracts.ActionRequest, scope *resourceGroupMonitorScope) error {
 	parents := map[asset.AssetID]asset.AssetID{}
 	for _, impact := range req.LifecycleImpacts {
 		parents[impact.Asset.ID] = impact.ControllerID
@@ -63,7 +63,7 @@ func (r *Runtime) resourceGroupCheckProducts(ctx context.Context, req contracts.
 		if err != nil {
 			return err
 		}
-		result, err := deploymentStackPreflightInParent(ctx, driver, member, parentKind)
+		result, err := resourceGroupPreflightProduct(ctx, driver, member, parentKind, scope)
 		if err != nil {
 			return err
 		}
@@ -230,6 +230,10 @@ func (r *Runtime) resourceGroupPreflight(ctx context.Context, req contracts.Acti
 		} else if c.privateConfiguration(first) != c.privateConfiguration(current) {
 			return serviceDenied("resource_group_members_changed")
 		}
+		scope := &resourceGroupMonitorScope{client: c, group: strings.ToLower(req.Asset.Identity.NativeID), indexed: current, targets: map[string]asset.Asset{strings.ToLower(req.Asset.Identity.NativeID): req.Asset}}
+		for _, member := range products {
+			scope.targets[strings.ToLower(member.Asset.Identity.NativeID)] = member.Asset
+		}
 		// Includes group-scoped diagnostics and RBAC; these are not silently dropped
 		// as they are from managed-group cascade enumeration. Existing wrappers check
 		// both the recorded prerequisite relationship and its current absence.
@@ -238,10 +242,10 @@ func (r *Runtime) resourceGroupPreflight(ctx context.Context, req contracts.Acti
 		if err != nil {
 			return err
 		}
-		if err = wrapper.dependencies(ctx, req, targets); err != nil {
+		if err = wrapper.dependenciesInGroup(ctx, req, targets, scope); err != nil {
 			return err
 		}
-		if err = r.resourceGroupCheckProducts(ctx, req, products); err != nil {
+		if err = r.resourceGroupCheckProducts(ctx, req, products, scope); err != nil {
 			return err
 		}
 		if err = r.resourceGroupPrerequisitesAbsent(ctx, c, req); err != nil {

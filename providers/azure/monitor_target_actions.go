@@ -270,7 +270,11 @@ func (a *monitorTargetAction) ownedSource(request contracts.ActionRequest, sourc
 	return false, nil
 }
 
-func (a *monitorTargetAction) dependencies(ctx context.Context, request contracts.ActionRequest, targets []asset.Asset) (err error) {
+func (a *monitorTargetAction) dependencies(ctx context.Context, request contracts.ActionRequest, targets []asset.Asset) error {
+	return a.dependenciesInGroup(ctx, request, targets, nil)
+}
+
+func (a *monitorTargetAction) dependenciesInGroup(ctx context.Context, request contracts.ActionRequest, targets []asset.Asset, scope *resourceGroupMonitorScope) (err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if request.Asset.Identity.NativeType == fleetType {
 		ctx = context.WithValue(ctx, fleetHubReadContextKey{}, true)
@@ -283,11 +287,17 @@ func (a *monitorTargetAction) dependencies(ctx context.Context, request contract
 	if err != nil {
 		return err
 	}
-	for _, sources := range incoming {
-		for _, source := range sources {
+	for _, target := range targets {
+		for _, source := range incoming[target.Identity.NativeID] {
 			owned, err := a.ownedSource(request, source)
 			if err != nil {
 				return err
+			}
+			if !owned {
+				owned, err = scope.owns(target, source)
+				if err != nil {
+					return err
+				}
 			}
 			if !owned {
 				return serviceDenied("monitor_target_has_incoming_references")

@@ -750,3 +750,27 @@ These are retained protocol tests, not real-cloud acceptance. Public resource-gr
 and Stack action/graph/planner integration, multi-stage product preparation, and
 full end-to-end validation remain unfinished. All 159 parity rows and eight overall
 acceptance gates remain open.
+
+
+### Resource-group preflight recognizes verified internal Monitor references
+
+Group deletion now passes a private, per-pass scope to the actual Monitor and
+wrapped product preflights after native group/Monitor indexes and own reads have
+been reconciled. A live incoming Monitor source can be covered only when both its
+target and source are reviewed deleted members (or the target is the group), the
+source resides in that group, and its configuration, group and reference proofs
+match the current native observation and the reconciled index. External, retained,
+unreviewed or changed sources still prevent deletion. Diagnostic, RBAC, migration
+and other independent prerequisite families do not receive this exception.
+
+The scope is not persisted, exposed in action parameters, or installed on a
+reusable driver. Standalone Execute and final product Readback retain strict
+incoming-reference checks. The retained protocol scenarios reproduce the former
+failure for all eight Action Group source kinds, then exercise native group DELETE
+and serialized outcome recovery, group/disk references, scope boundaries, changes
+after indexing and during product preflight, standalone isolation and a surviving
+source after group absence. They use real registered product drivers.
+
+This does not complete public group/Stack action registration, graph/planner
+integration, multi-phase product preparation or real-cloud end-to-end acceptance.
+All 159 parity rows and eight overall acceptance gates remain open.

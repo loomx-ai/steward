@@ -118,6 +118,10 @@ func (a *monitorAction) prerequisitesAbsent(ctx context.Context, request contrac
 }
 
 func (a *monitorAction) dependenciesAbsent(ctx context.Context, request contracts.ActionRequest) error {
+	return a.dependenciesInGroup(ctx, request, nil)
+}
+
+func (a *monitorAction) dependenciesInGroup(ctx context.Context, request contracts.ActionRequest, scope *resourceGroupMonitorScope) error {
 	if err := a.prerequisitesAbsent(ctx, request); err != nil {
 		return err
 	}
@@ -125,12 +129,18 @@ func (a *monitorAction) dependenciesAbsent(ctx context.Context, request contract
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		known = append(known, prerequisite.Asset)
 	}
-	incoming, err := a.client.monitorIncoming(ctx, request.Asset, known...)
+	incoming, err := a.client.monitorIncomingTargets(ctx, []asset.Asset{request.Asset}, known...)
 	if err != nil {
 		return err
 	}
-	if len(incoming) != 0 {
-		return serviceDenied("monitor_resource_has_incoming_references")
+	for _, source := range incoming[request.Asset.Identity.NativeID] {
+		owned, err := scope.owns(request.Asset, source)
+		if err != nil {
+			return err
+		}
+		if !owned {
+			return serviceDenied("monitor_resource_has_incoming_references")
+		}
 	}
 	return nil
 }
@@ -153,13 +163,17 @@ func (a *monitorAction) current(ctx context.Context) (response, error) {
 	return current, nil
 }
 
-func (a *monitorAction) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
+func (a *monitorAction) Preflight(ctx context.Context, request contracts.ActionRequest) (contracts.PreflightResult, error) {
+	return a.preflightInGroup(ctx, request, nil)
+}
+
+func (a *monitorAction) preflightInGroup(ctx context.Context, request contracts.ActionRequest, scope *resourceGroupMonitorScope) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if err := a.identity(request); err != nil {
 		return check, err
 	}
 	for range 2 {
-		if err := a.dependenciesAbsent(ctx, request); err != nil {
+		if err := a.dependenciesInGroup(ctx, request, scope); err != nil {
 			return check, err
 		}
 		current, err := a.current(ctx)
