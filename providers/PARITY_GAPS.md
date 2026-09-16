@@ -535,3 +535,23 @@ Independent VM prerequisite deletion that automatically removes NICs still needs
 its own complete consequence-evidence integration. Full pre-setup scope review,
 remaining product families and complete executor acceptance remain unfinished;
 all 159 parity rows and eight overall gates remain open.
+
+
+### Independently executed Stack attachment consequences
+
+Progress observation now derives native VM/NIC Delete attachment candidates only
+from an authenticated completed parent's exact product request. It then performs
+each child's registered product readback and own ARM GET in both verification
+passes. Cascaded children have explicit parent provenance and no fabricated
+independent operation receipt; retained attachments remain subject to live checks.
+All independent receipts are authenticated before any cloud reads. Any failed
+readback clears the entire observation.
+
+Protocol fixtures execute the actual retention preparation, VM deletion and JSON
+checkpoint recovery for implicit and flat Stack membership, plus recursive VM,
+disk, NIC and public-IP deletion. They reject pending/tampered/cross-job receipts,
+a malformed second receipt before HTTP, product dependency and ARM permission
+failures, returned resources, later NIC reappearance and missing retained IPs.
+This is VM/NIC attachment progress support, not generic service cascade execution
+or end-to-end Stack registration. All 159 parity rows and eight overall gates
+remain open.

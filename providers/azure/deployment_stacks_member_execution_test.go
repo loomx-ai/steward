@@ -184,14 +184,24 @@ func TestDeploymentStackMemberExecution(t *testing.T) {
 }
 
 func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
-	for _, mode := range []string{"native_phases", "prepared"} {
+	for _, mode := range []string{"native_phases", "prepared", "flat_prepared", "delete_all"} {
 		t.Run(mode, func(t *testing.T) {
 			live := attachmentResources()
 			var req contracts.ActionRequest
 			var root map[string]any
 			writes := []string{}
 			deleted := false
+			observing, sawVM, sawRetained := false, false, false
+			fault := ""
+			calls, childDependencyReads := 0, 0
 			r := protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
+				calls++
+				if observing && !sawVM && strings.HasSuffix(strings.ToLower(q.URL.Path), "/providers/microsoft.insights/metricalerts") {
+					childDependencyReads++
+					if fault == "child_readback_forbidden" {
+						return jsonResponse(403, map[string]any{}, nil), nil
+					}
+				}
 				if reply, handled := emptyMonitorIndexResponse(t, q); handled {
 					return reply, nil
 				}
@@ -212,7 +222,24 @@ func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
 						continue
 					}
 					if q.Method == "GET" {
-						if deleted && (name == "vm" || name == "nic") {
+						if observing {
+							if name == "vm" {
+								sawVM = true
+							}
+							if name == "boot" {
+								sawRetained = true
+							}
+							if fault == "nic_forbidden" && name == "nic" {
+								return jsonResponse(403, map[string]any{}, nil), nil
+							}
+							if fault == "ip_missing" && name == "ip" {
+								return jsonResponse(404, map[string]any{}, nil), nil
+							}
+							if fault == "nic_returned" && name == "nic" || fault == "vm_returned" && name == "vm" || fault == "nic_returns_late" && name == "nic" && sawRetained {
+								return jsonResponse(200, raw, nil), nil
+							}
+						}
+						if deleted && (mode == "delete_all" || name == "vm" || name == "nic") {
 							return jsonResponse(404, map[string]any{}, nil), nil
 						}
 						return jsonResponse(200, raw, nil), nil
@@ -255,8 +282,28 @@ func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
 				t.Fatal(err)
 			}
 			req, root = stackAttachmentRequest(t, c)
+			if mode == "delete_all" {
+				for i := range req.LifecycleImpacts {
+					req.LifecycleImpacts[i].Delete = true
+				}
+			}
+			if mode == "flat_prepared" {
+				for i := range req.LifecycleImpacts {
+					if req.LifecycleImpacts[i].Asset.ID == "nic" {
+						req.LifecycleImpacts[i].ControllerID = req.Asset.ID
+						properties := object(root["properties"])
+						properties["resources"] = append(properties["resources"].([]any), map[string]any{"id": req.LifecycleImpacts[i].Asset.Identity.NativeID, "status": "managed", "denyStatus": "none"})
+					}
+				}
+				review, err := c.deploymentStackMemberReview(root)
+				if err != nil {
+					t.Fatal(err)
+				}
+				req.Asset.Normalized[deploymentStackReviewKey] = review
+				req.Asset.Normalized[deploymentStackProofKey] = c.deploymentStackProof(req.Asset.Identity.NativeID, "connection", review)
+			}
 			progress := deploymentStackProgress{}
-			if mode == "prepared" {
+			if strings.Contains(mode, "prepared") {
 				for i := range req.LifecycleImpacts {
 					if req.LifecycleImpacts[i].Asset.ID == "vm" {
 						req.LifecycleImpacts[i].Asset.Normalized["_arm_generation"] = productGeneration(live["vm"])
@@ -308,17 +355,85 @@ func TestDeploymentStackMemberExecutionPreservesProductPhases(t *testing.T) {
 					break
 				}
 			}
-			if !completed || strings.Join(writes, ",") != "PUT nic,PATCH vm,DELETE vm" {
+			expectedWrites, expectedCompleted := "PUT nic,PATCH vm,DELETE vm", 2
+			if mode == "delete_all" {
+				expectedWrites, expectedCompleted = "DELETE vm", 5
+			}
+			writeCount := len(strings.Split(expectedWrites, ","))
+			if !completed || strings.Join(writes, ",") != expectedWrites {
 				t.Fatal("product phases skipped or repeated", completed, writes)
 			}
 			out, err := r.deploymentStackExecuteMember(t.Context(), req, "vm", saved)
-			if err != nil || !out.Done || len(writes) != 3 {
+			if err != nil || !out.Done || len(writes) != writeCount {
 				t.Fatal("completed product execution repeated a mutation", out, err, writes)
 			}
-			observed, err := r.deploymentStackObserveProgress(t.Context(), req, deploymentStackProgress{Executions: []map[string]any{out.Data}})
-			if err == nil || observed.Completed != nil || observed.Members != nil || len(writes) != 3 {
-				t.Fatal("VM completion silently certified its deleted NIC", observed, err, writes)
+			for _, testFault := range []string{"none", "no_receipt", "waiting", "tampered", "job", "invalid_second_receipt", "nic_forbidden", "nic_returned", "vm_returned", "nic_returns_late", "ip_missing", "child_readback_forbidden"} {
+				if mode == "delete_all" && (testFault == "ip_missing" || testFault == "nic_returns_late") {
+					continue
+				}
+				t.Run("progress_"+testFault, func(t *testing.T) {
+					wire, _ := json.Marshal(out.Data)
+					var receipt map[string]any
+					if err := json.Unmarshal(wire, &receipt); err != nil {
+						t.Fatal(err)
+					}
+					executionProgress := deploymentStackProgress{Executions: []map[string]any{receipt}}
+					current := req
+					switch testFault {
+					case "no_receipt":
+						executionProgress.Executions = nil
+					case "waiting":
+						receipt["phase"] = "wait"
+						binding, err := c.deploymentStackMemberExecutionBinding(req, receipt)
+						if err != nil {
+							t.Fatal(err)
+						}
+						receipt["binding"] = binding
+					case "tampered":
+						receipt["binding"] = "changed"
+					case "job":
+						current.IdempotencyKey = "other-job"
+					case "invalid_second_receipt":
+						executionProgress.Executions = append(executionProgress.Executions, map[string]any{"member": "nic", "phase": "complete", "binding": "invalid"})
+					}
+					before, _ := json.Marshal(executionProgress)
+					priorCalls, priorChildReads := calls, childDependencyReads
+					observing, sawVM, sawRetained = true, false, false
+					fault = testFault
+					observed, err := r.deploymentStackObserveProgress(t.Context(), current, executionProgress)
+					observing = false
+					if testFault == "none" {
+						if err != nil || !observed.Completed["vm"] || !observed.Completed["nic"] || observed.CascadedFrom["nic"] != "vm" || childDependencyReads <= priorChildReads {
+							t.Fatal("native NIC consequence did not receive its own product readback", observed, err)
+						}
+						if mode == "delete_all" {
+							for _, id := range []asset.AssetID{"boot", "data", "nic", "ip"} {
+								if !observed.Completed[id] || observed.CascadedFrom[id] != "vm" {
+									t.Fatal("recursive attachment consequence missing", id, observed)
+								}
+							}
+						}
+						if len(observed.Completed) != expectedCompleted || len(observed.CascadedFrom) != expectedCompleted-1 || len(executionProgress.Executions) != 1 {
+							t.Fatal("retained child completed or child receipt fabricated", observed, executionProgress)
+						}
+					} else {
+						if err == nil || observed.Completed != nil || observed.Members != nil || observed.CascadedFrom != nil {
+							t.Fatal("unverified consequence accepted", observed, err)
+						}
+						if (testFault == "waiting" || testFault == "tampered" || testFault == "job" || testFault == "invalid_second_receipt") && calls != priorCalls {
+							t.Fatal("invalid parent receipt reached native HTTP", calls, priorCalls)
+						}
+						if testFault == "child_readback_forbidden" && childDependencyReads != priorChildReads+1 {
+							t.Fatal("child product dependency check not exercised", childDependencyReads, priorChildReads)
+						}
+					}
+					after, _ := json.Marshal(executionProgress)
+					if string(before) != string(after) || len(writes) != writeCount {
+						t.Fatal("progress mutated checkpoint or cloud", writes)
+					}
+				})
 			}
+
 		})
 	}
 }

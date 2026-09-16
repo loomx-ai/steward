@@ -18,11 +18,15 @@ type deploymentStackProgress struct {
 type deploymentStackObservedProgress struct {
 	Members   map[asset.AssetID]asset.Asset
 	Completed map[asset.AssetID]bool
+	// Attachments independently read back under an authenticated parent execution.
+	// These IDs have no fabricated independent execution receipt.
+	CascadedFrom map[asset.AssetID]asset.AssetID
 }
 
 // Reconcile recorded execution with native state before using an absence as a
-// prerequisite. Neither a raw 404 nor a completed parent's receipt covers an
-// unrecorded child. Keep the frozen Stack request unchanged.
+// prerequisite. A completed attachment controller supplies the reviewed native
+// cause, but every cascaded child still needs its own product and ARM readback.
+// A raw 404 alone never proves completion. Keep the frozen request unchanged.
 func (r *Runtime) deploymentStackObserveProgress(ctx context.Context, req contracts.ActionRequest, progress deploymentStackProgress) (out deploymentStackObservedProgress, err error) {
 	defer func() {
 		if err != nil {
@@ -43,7 +47,6 @@ func (r *Runtime) deploymentStackObserveProgress(ctx context.Context, req contra
 	}
 	type completedMember struct {
 		request contracts.ActionRequest
-		result  contracts.ActionResult
 		driver  contracts.ActionDriver
 	}
 	completed := map[asset.AssetID]completedMember{}
@@ -57,8 +60,28 @@ func (r *Runtime) deploymentStackObserveProgress(ctx context.Context, req contra
 		if phase != "complete" || out.Completed[id] {
 			return out, serviceDenied("deployment_stack_member_completion_not_unique_or_final")
 		}
-		completed[id] = completedMember{request: member, result: result}
+		member.ExecutionResult = &result
+		completed[id] = completedMember{request: member}
 		out.Completed[id] = true
+	}
+	// Authenticate ALL independent receipts first. Derive only native Delete
+	// attachment causes from their exact product requests, never from a 404.
+	for _, id := range slices.Sorted(maps.Keys(completed)) {
+		consequences, err := c.deploymentStackAttachmentConsequences(req, completed[id].request)
+		if err != nil {
+			return out, err
+		}
+		for child, request := range consequences {
+			if out.Completed[child] {
+				continue
+			}
+			completed[child] = completedMember{request: request}
+			out.Completed[child] = true
+			if out.CascadedFrom == nil {
+				out.CascadedFrom = map[asset.AssetID]asset.AssetID{}
+			}
+			out.CascadedFrom[child] = id
+		}
 	}
 	members := []asset.Asset{}
 	for _, impact := range req.LifecycleImpacts {
@@ -103,7 +126,7 @@ func (r *Runtime) deploymentStackObserveProgress(ctx context.Context, req contra
 	verifyCompleted := func() error {
 		for _, id := range ordered {
 			value := completed[id]
-			read, err := c.deploymentStackMemberReadback(ctx, value.request, value.driver, value.result)
+			read, err := c.deploymentStackProductReadback(ctx, value.request, value.driver)
 			if err != nil {
 				return err
 			}
