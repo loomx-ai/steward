@@ -11,18 +11,25 @@ import (
 )
 
 func TestDeploymentStackGroupClosure(t *testing.T) {
-	for _, mode := range []string{"complete", "paginated", "unreviewed", "foreign", "duplicate", "omitted", "forbidden", "member_forbidden", "async", "changed", "group_changed", "managed", "protected", "filter", "foreign_page", "version", "repeated_page", "spaces", "member_missing", "unreviewed_rbac", "unreviewed_diagnostic", "unreviewed_stack", "retained_group"} {
+	for _, mode := range []string{"complete", "paginated", "unreviewed", "foreign", "duplicate", "omitted", "forbidden", "member_forbidden", "async", "changed", "group_changed", "managed", "protected", "filter", "foreign_page", "version", "repeated_page", "spaces", "member_missing", "unreviewed_rbac", "unreviewed_diagnostic", "unreviewed_stack", "retained_group", "containing_root", "root_omitted", "root_omitted_second_pass", "root_duplicate", "root_wrong_type", "root_stale_birth", "root_paginated", "retained_containing_root", "neighbor_root"} {
 		t.Run(mode, func(t *testing.T) {
 			_, root, member := stackGraphAssets(t)
 			group := member
 			group.ID, group.Identity.NativeType = "group", groupType
 			group.Identity.NativeID = "/subscriptions/" + testSubscription + "/resourcegroups/test"
 			parent := group.ID
-			groupDelete := mode != "retained_group"
+			groupDelete := mode != "retained_group" && mode != "retained_containing_root"
 			if !groupDelete {
 				parent = root.ID
 			}
 			c, req := stackDeletePlanFixture(t, false, contracts.ActionImpact{Asset: group, ControllerID: root.ID, Delete: groupDelete}, contracts.ActionImpact{Asset: member, ControllerID: parent, Delete: true})
+			containingRoot := mode == "containing_root" || mode == "retained_containing_root" || strings.HasPrefix(mode, "root_")
+			if containingRoot {
+				req.Asset.Identity.NativeID = group.Identity.NativeID + "/providers/microsoft.resources/deploymentstacks/stack"
+			}
+			if mode == "neighbor_root" {
+				req.Asset.Identity.NativeID = group.Identity.NativeID + "-other/providers/microsoft.resources/deploymentstacks/stack"
+			}
 			rows := []any{map[string]any{"id": group.Identity.NativeID, "status": "managed", "denyStatus": "none"}}
 			if !groupDelete {
 				rows = append(rows, map[string]any{"id": member.Identity.NativeID, "status": "managed", "denyStatus": "none"})
@@ -101,8 +108,21 @@ func TestDeploymentStackGroupClosure(t *testing.T) {
 					case "omitted":
 						listed = []any{}
 					}
+					if containingRoot && mode != "root_omitted" && !(mode == "root_omitted_second_pass" && listCalls == 2) {
+						stackEntry := map[string]any{"id": req.Asset.Identity.NativeID, "type": deploymentStackType, "systemData": raw["systemData"]}
+						if mode == "root_wrong_type" {
+							stackEntry["type"] = diskType
+						}
+						if mode == "root_stale_birth" {
+							stackEntry["systemData"] = map[string]any{"createdAt": "2021-02-01T01:01:01.1075056Z"}
+						}
+						listed = append(listed, stackEntry)
+						if mode == "root_duplicate" {
+							listed = append(listed, stackEntry)
+						}
+					}
 					response := map[string]any{"value": listed}
-					if mode == "paginated" && r.URL.Query().Get("$skiptoken") == "" {
+					if (mode == "paginated" || mode == "root_paginated") && r.URL.Query().Get("$skiptoken") == "" {
 						response["value"] = []any{}
 						response["nextLink"] = apiURL(group.Identity.NativeID+"/resources", resourcesVersion) + "&$skiptoken=next"
 					}
@@ -128,9 +148,9 @@ func TestDeploymentStackGroupClosure(t *testing.T) {
 				}
 			})
 			groups, err := c.deploymentStackObserveGroupClosure(t.Context(), req)
-			success := mode == "complete" || mode == "paginated" || mode == "retained_group"
+			success := mode == "complete" || mode == "paginated" || mode == "retained_group" || mode == "containing_root" || mode == "root_paginated" || mode == "retained_containing_root" || mode == "neighbor_root"
 			if !success {
-				expected := map[string]string{"unreviewed": "deployment_stack_group_resource_not_reviewed", "unreviewed_rbac": "deployment_stack_group_resource_not_reviewed", "unreviewed_diagnostic": "deployment_stack_group_resource_not_reviewed", "unreviewed_stack": "deployment_stack_group_resource_not_reviewed", "foreign": "invalid_deployment_stack_group_resource", "duplicate": "invalid_deployment_stack_group_resource", "spaces": "invalid_deployment_stack_group_resource", "omitted": "deployment_stack_group_index_omitted_reviewed_resource", "managed": "deployment_stack_group_has_native_manager", "protected": "azure_protected_tag", "group_changed": "deployment_stack_group_changed_during_read", "changed": "deployment_stack_group_members_changed"}[mode]
+				expected := map[string]string{"root_omitted": "deployment_stack_group_index_omitted_stack", "root_omitted_second_pass": "deployment_stack_group_index_omitted_stack", "unreviewed": "deployment_stack_group_resource_not_reviewed", "unreviewed_rbac": "deployment_stack_group_resource_not_reviewed", "unreviewed_diagnostic": "deployment_stack_group_resource_not_reviewed", "unreviewed_stack": "deployment_stack_group_resource_not_reviewed", "foreign": "invalid_deployment_stack_group_resource", "duplicate": "invalid_deployment_stack_group_resource", "spaces": "invalid_deployment_stack_group_resource", "omitted": "deployment_stack_group_index_omitted_reviewed_resource", "managed": "deployment_stack_group_has_native_manager", "protected": "azure_protected_tag", "group_changed": "deployment_stack_group_changed_during_read", "changed": "deployment_stack_group_members_changed"}[mode]
 				if expected != "" && (err == nil || !strings.Contains(err.Error(), expected)) {
 					t.Fatal("wrong rejection", mode, err)
 				}
@@ -146,17 +166,21 @@ func TestDeploymentStackGroupClosure(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if mode == "retained_group" {
+			if !groupDelete {
 				if len(groups) != 0 || listCalls != 0 {
 					t.Fatal("retained group acquired a group delete scope", groups, listCalls)
 				}
 				return
 			}
 			expectedLists := 2
-			if mode == "paginated" {
+			if mode == "paginated" || mode == "root_paginated" {
 				expectedLists = 4
 			}
-			if !slices.Equal(groups, []asset.AssetID{group.ID}) || listCalls != expectedLists || groupReads != 6 || roots != 4 || vmReads != 4 {
+			expectedRoots := 4
+			if containingRoot {
+				expectedRoots += 2
+			}
+			if !slices.Equal(groups, []asset.AssetID{group.ID}) || listCalls != expectedLists || groupReads != 6 || roots != expectedRoots || vmReads != 4 {
 				t.Fatal(groups, listCalls, groupReads, roots, vmReads)
 			}
 		})

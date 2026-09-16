@@ -635,3 +635,30 @@ membership or specialized product preflight during an active mutation. Product
 phase-specific checks remain in the actual driver; native group/service closure,
 specialized semantics and full Stack action/graph/planner/executor acceptance
 still need work. All 159 parity rows and eight overall gates remain open.
+
+### Resource-group closure includes the known Stack controller
+
+The unfiltered group index now requires a known Stack controller located inside
+a reviewed deleted group to appear in that index. The controller is intentionally
+not its own lifecycle impact, so the prior known-impact loop could accept an
+index omitting it in both snapshots. The new check retains the existing native
+own-read, listed-incarnation, duplicate, scope, protection and two-snapshot checks.
+Protocol cases cover controller omission, second-snapshot omission, pagination,
+duplicate/wrong-type/stale-creation rows, a neighboring group name, and a retained
+group that must not acquire a delete-scope enumeration.
+
+Official references checked 2026-09-16:
+- https://learn.microsoft.com/en-us/rest/api/resources/resources/list-by-resource-group?view=rest-resources-2021-04-01
+  defines the group resource list and optional filtering/paging.
+- https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deployment-stacks-known-issues
+  states that resource-group-scoped stacks do not manage their parent group by
+  default, while deleting that group deletes the stack and managed resources;
+  resource-group deletion can bypass deny assignments.
+- https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/delete-resource-group
+  describes native child/dependency deletion and final resource reads.
+
+This is a defensive consistency check for supplied reviewed scope, not evidence
+that a resource-group Stack can manage/delete its own containing group. Do not
+infer group deletion authority from a Stack's location. Native group lifecycle
+and full Stack action/graph/planner/executor acceptance remain unfinished; all
+159 parity rows and eight overall gates remain open.

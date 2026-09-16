@@ -119,6 +119,12 @@ func (c *client) deploymentStackGroupIndex(ctx context.Context, req contracts.Ac
 			return nil, serviceDenied("deployment_stack_group_index_omitted_reviewed_resource")
 		}
 	}
+	// The controller is not a lifecycle impact of itself, but is still a known
+	// resource if it lives in this group. Do not accept an index that omits it.
+	rootID := strings.ToLower(req.Asset.Identity.NativeID)
+	if inResourceGroup(rootID, group.Identity.NativeID) && snapshot[rootID] == nil {
+		return nil, serviceDenied("deployment_stack_group_index_omitted_stack")
+	}
 	final, err := c.deploymentStackMemberRead(ctx, group)
 	if err != nil {
 		return nil, err
