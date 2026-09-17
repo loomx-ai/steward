@@ -44,6 +44,9 @@ relationships:
 - type: member_of
   targetType: container.googleapis.com/Cluster
   targetIdPath: refs_container_googleapis_com_Cluster
+- type: depends_on
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
 actions:
   delete:
     operation: container.projects.locations.clusters.nodePools.delete

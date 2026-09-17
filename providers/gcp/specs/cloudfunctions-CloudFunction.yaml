@@ -84,6 +84,9 @@ relationships:
 - type: depends_on
   targetType: pubsub.googleapis.com/Topic
   targetIdPath: refs_pubsub_googleapis_com_Topic
+- type: depends_on
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
 actions:
   delete:
     operation: cloudfunctions.projects.locations.functions.delete

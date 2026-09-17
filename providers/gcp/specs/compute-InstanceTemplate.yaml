@@ -48,6 +48,9 @@ relationships:
 - type: member_of
   targetType: compute.googleapis.com/Subnetwork
   targetIdPath: refs_compute_googleapis_com_Subnetwork
+- type: depends_on
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
 actions:
   delete:
     operation: compute.instanceTemplates.delete

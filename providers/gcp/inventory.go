@@ -645,6 +645,13 @@ func references(c *client, data map[string]any) map[string][]string {
 		switch typed := value.(type) {
 		case map[string]any:
 			for child, v := range typed {
+				// Compute instances and templates list their identities as
+				// serviceAccounts[].email alongside granted scopes.
+				if child == "serviceAccounts" {
+					for _, account := range array(v) {
+						visit(object(account)["email"], "serviceAccountEmail")
+					}
+				}
 				if child == "linkedVpnTunnels" || child == "linkedInterconnectAttachments" {
 					key := "vpnTunnel"
 					if child == "linkedInterconnectAttachments" {
