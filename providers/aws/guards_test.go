@@ -19,7 +19,9 @@ func (f fakeKMS) DescribeKey(context.Context, *awskms.DescribeKeyInput, ...func(
 	return &awskms.DescribeKeyOutput{KeyMetadata: f.metadata}, nil
 }
 
-type fakeBackup struct{ output *awsbackup.DescribeBackupVaultOutput }
+type fakeBackup struct {
+	output *awsbackup.DescribeBackupVaultOutput
+}
 
 func (f fakeBackup) DescribeBackupVault(context.Context, *awsbackup.DescribeBackupVaultInput, ...func(*awsbackup.Options)) (*awsbackup.DescribeBackupVaultOutput, error) {
 	return f.output, nil
