@@ -1,77 +1,58 @@
 # Provider parity implementation gaps
 
-Scope snapshot: 2026-09-15, updated for the Recovery Services inventory registrations. This is a repository scope audit, not cloud feature acceptance. The earlier mapping repair was audited at `0c43def71dc2fdef7d6fafe6b59fd8124e9e81d9`.
+Scope snapshot: 2026-09-17, updated after AWS joined the matrix and the Azure
+candidate and mapping-research backlog was worked through. This is a repository
+scope audit, not cloud feature acceptance.
 
-The matrix covers all 159 Alibaba Cloud specifications. The repository now contains 204 GCP and 479 Azure specifications, but those counts do not prove equivalence. All 159 rows remain pending behavioral verification.
+The matrix covers all 159 Alibaba Cloud specifications for GCP, Azure and AWS.
+The repository contains 205 GCP, 487 Azure and 194 AWS specifications; those
+counts do not prove equivalence. All 159 rows remain pending behavioral
+verification.
 
-The earlier audit found invalid YAML, 28 Azure mapping references to 18 absent specifications, and an incorrect GCP SSH-key mapping to service-account keys. The corrected matrix keeps absent candidates in `unimplemented_resources`; it does not remove them from the requested scope.
-
-The new `go test ./providers` check runs in the existing `go test ./...` CI job. It detects invalid YAML, omitted or duplicated baseline resources, drift in baseline source/class/scope/actions/hooks/enrichment/parent discovery, unresolved implemented-resource references and stale implementation backlogs. A passing check verifies matrix consistency only.
-
-Synapse now includes workspace/pool and data-plane inventory, reviewed workspace and Spark/SQL cleanup, artifact handling and retained restore-point/backup observations. NetApp now has native specifications and inventory plus volume, pool, recovery-object, policy and vault cleanup. NetApp group/account cleanup and interface deletion effects remain unfinished. These implementations moved their existing candidates into `resources`; that change does not close behavioral acceptance. The current missing-specification table has 11 types and 13 matrix references affecting 13 Alibaba Cloud rows.
+`go test ./providers` runs in CI. It detects invalid YAML, omitted or duplicated
+baseline resources, baseline drift, unresolved implemented-resource references,
+stale implementation backlogs, AWS references outside the pinned catalog
+selection and empty mappings without a recorded platform difference. A passing
+check verifies matrix consistency only. AWS progress and evidence are tracked in
+`providers/aws/PARITY.md`.
 
 ## Current progress measures
 
-| Measure | GCP | Azure |
-| --- | --- | --- |
-| Explicit native specifications | 204 | 479 |
-| Baseline rows with at least one existing mapped specification | 155/159 (97.5%) | 145/159 (91.2%) |
-| Candidate types still without a specification | 0 | 11 |
-| Baseline rows affected by missing candidate specifications | 0 | 13 |
-| Empty mappings requiring research | 4 | 2 |
+| Measure | GCP | Azure | AWS |
+| --- | --- | --- | --- |
+| Explicit native specifications | 205 | 487 | 194 |
+| Baseline rows with at least one existing mapped specification | 156/159 | 152/159 | 149/159 |
+| Candidate types still without a specification | 0 | 4 | 0 |
+| Baseline rows affected by missing candidate specifications | 0 | 6 | 0 |
+| Empty mappings with a documented platform difference | 3 | 2 | 10 |
 
 These are registration/mapping measures, not functional completion percentages.
-A row can have both an implemented mapping and an absent candidate. All 159 rows
-remain `pending_verification`; none has a closed, requirement-by-requirement
-behavioral acceptance record. Existing protocol tests and implementation volume
-must not be presented as a percentage of full delivery.
-
-The eight overall gates remain open. Catalog generation, transport, inventory,
-lifecycle actions and retained tests have substantial implementations, but their
-full service scope has not been accepted. Remaining work includes the explicit
-missing families below, six mapping questions, behavior audits of existing
-families, independent emulator/application evidence where applicable, and final
-release verification. A defensible calendar completion date is not available.
-
-## Delivery order and acceptance records
-
-The NetApp interface-correlation milestone is implemented in `0e8bb9d`; group
-cleanup remains unfinished. Next prioritize the explicit missing Azure families
-and six mapping questions. For every baseline
-row, record the inventory, dependency, lifecycle, cleanup and reconciliation
-requirements with exact source/test/runtime evidence and remaining failures.
-Close a row only when those requirements are proved; keep a distinction between
-implemented-but-unverified behavior and missing implementation. Reassess the
-remaining work after this acceptance inventory instead of projecting total
-completion from successive local changes.
+A row can have both an implemented mapping and an absent candidate. None of the
+159 rows has a closed, requirement-by-requirement behavioral acceptance record.
 
 ## Azure candidates without explicit resource specifications
 
-These are candidates already named by the matrix. Missing specification files mean they cannot be counted as implemented independent resource rules. API availability, exact equivalence and lifecycle behavior still require review; related functionality elsewhere in the provider does not establish coverage.
-
-| Candidate | Alibaba Cloud rows affected |
-| --- | --- |
-| `Microsoft.Graph/groups` | `ACS::CloudSSO::Group`, `ACS::RAM::Group` |
-| `Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems` | `ACS::EBS::DiskReplicaGroup`, `ACS::EBS::DiskReplicaPair` |
-| `Microsoft.Graph/users` | `ACS::RAM::User` |
-| `Microsoft.KeyVault/vaults/certificates` | `ACS::SSLCertificatesService::Certificate` |
-| `Microsoft.KeyVault/vaults/keys` | `ACS::KMS::Key` |
-| `Microsoft.MachineLearningServices/workspaces/onlineEndpoints` | `ACS::PAI::Service` |
-| `Microsoft.Management/managementGroups` | `ACS::ResourceManager::ResourceDirectory` |
-| `Microsoft.Purview/accounts` | `ACS::SDDP::Instance` |
-| `Microsoft.ServiceFabric/clusters` | `ACS::MSE::Cluster` |
-| `Microsoft.Solutions/applications` | `ACS::OOS::Application` |
-| `Microsoft.StorageSync/storageSyncServices` | `ACS::CloudStorageGateway::Gateway` |
-
-## Mapping research still required
-
-| Baseline | Provider | Remaining work |
+| Candidate | Alibaba Cloud rows affected | Blocker |
 | --- | --- | --- |
-| `ACS::ECP::Instance` | GCP and Azure | Hosted Android/cloud-phone inventory and lifecycle; a generic VM is not an established equivalent. |
-| `ACS::ECS::KeyPair` | GCP | Project/instance SSH metadata and OS Login keys, including discovery, ownership, expiry and removal. Service-account keys are excluded from this mapping. |
-| `ACS::CEN::TransitRouterMulticastDomain` | Azure | Native multicast product/API availability and member lifecycle. |
-| `ACS::RTC::Application` | GCP | Real-time communications application lifecycle; unrelated media-processing resources do not establish coverage. |
-| `ACS::SMS::Template` | GCP | Template inventory and lifecycle, including provider/region differences. |
+| `Microsoft.Graph/groups` | `ACS::CloudSSO::Group`, `ACS::RAM::Group` | Microsoft Graph object: needs a Graph token audience, Graph API catalog source and directory permissions. |
+| `Microsoft.Graph/users` | `ACS::RAM::User` | Same Graph integration as groups. |
+| `Microsoft.KeyVault/vaults/certificates` | `ACS::SSLCertificatesService::Certificate` | Certificates exist only in the Key Vault data plane. |
+| `Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems` | `ACS::EBS::DiskReplicaGroup`, `ACS::EBS::DiskReplicaPair` | Site Recovery replication inventory and disable-protection lifecycle within the Recovery Services source. |
+
+Purview accounts, managed applications, Machine Learning workspaces, Key Vault
+keys and management groups are registered read-only; their matrix notes record
+why cleanup is not offered. Service Fabric clusters, Storage Sync services and
+Machine Learning online endpoints are registered with cleanup.
+
+## Mapping research outcomes
+
+| Baseline | Provider | Outcome |
+| --- | --- | --- |
+| `ACS::ECP::Instance` | GCP, Azure, AWS | No hosted Android cloud-phone service exists; generic VMs are not substituted. |
+| `ACS::ECS::KeyPair` | GCP | Mapped to OS Login SSH public keys of the connection service account. Project and instance `ssh-keys` metadata entries are strings, not resources. |
+| `ACS::CEN::TransitRouterMulticastDomain` | Azure | Azure virtual networks block multicast and broadcast traffic; Virtual WAN has no multicast domain resource. |
+| `ACS::RTC::Application` | GCP | No managed real-time communication application resource exists. |
+| `ACS::SMS::Template` | GCP | Identity Platform's SMS template is an output-only project configuration field without lifecycle. |
 
 ## Behavioral work remains separate
 
@@ -85,7 +66,7 @@ Prioritize the absent Azure backup/recovery families spanning policies, vaults, 
 
 Alongside these implementations, resolve the explicitly empty mappings and audit the existing mapped families. Do not replace missing functionality with unrelated resources or mark a row complete because its type is registered.
 
-Deployment Stacks now has a registered subscription/resource-group inventory source with own-read reconciliation, member evidence, configuration-bound cursors and protected observations. Management-group inventory, graph ownership and cleanup remain open; registration does not establish full lifecycle acceptance.
+Deployment Stacks now has a registered subscription/resource-group inventory source with own-read reconciliation, member evidence, configuration-bound cursors and protected observations. Management groups now have read-only directory inventory; Stack management-group scope, graph ownership and cleanup remain open; registration does not establish full lifecycle acceptance.
 
 ### Deployment Stacks ownership acceptance
 
