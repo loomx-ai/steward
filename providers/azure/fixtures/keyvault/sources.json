@@ -1,0 +1,12 @@
+[
+  {
+    "file": "GetCertificate-example.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/keyvault/data-plane/Certificates/stable/2025-07-01/examples/GetCertificate-example.json",
+    "sha256": "12839866babd8fed00bb95666b23b329ff702cbfe25035aa678e982a849d399c"
+  },
+  {
+    "file": "GetCertificates-example.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/keyvault/data-plane/Certificates/stable/2025-07-01/examples/GetCertificates-example.json",
+    "sha256": "ad011db7e8117abe4cc75f68c334ae02632f30d1f3dae3691058343ac0e56f26"
+  }
+]

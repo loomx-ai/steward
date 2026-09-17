@@ -82,3 +82,7 @@ poll chains, display-region URLs and an empty Location result complement the
 follower, protection, retention, configuration and resumed-readback tests.
 The evidence distinguishes the older CLI API bridge, composed topology,
 synthetic indexes/final absence and query-engine-only emulator scope.
+
+[Key Vault certificates](keyvault/sources.json) retain the two original data-plane
+examples for certificate list and current-version reads. Tests check their
+object identifiers against the vault origin; the certificate body is never stored.

@@ -13,7 +13,7 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource && request.Source != synapseSource && request.Source != synapseDataInventorySource && request.Source != synapseBackupSource && request.Source != netappSource && request.Source != deploymentStackSource && request.Source != dataProtectionSource && request.Source != recoveryServicesSource && request.Source != managementGroupSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource && request.Source != synapseSource && request.Source != synapseDataInventorySource && request.Source != synapseBackupSource && request.Source != netappSource && request.Source != deploymentStackSource && request.Source != dataProtectionSource && request.Source != recoveryServicesSource && request.Source != managementGroupSource && request.Source != keyVaultCertificateSource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
 	}
 	recoveryServices := request.ResourceKind != nil && recoveryServicesKind(request.ResourceKind.NativeType) != ""
@@ -59,6 +59,10 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	managementGroups := request.ResourceKind != nil && strings.EqualFold(request.ResourceKind.NativeType, managementGroupType)
 	if request.Source == managementGroupSource && !managementGroups || managementGroups && request.Source != managementGroupSource {
 		return contracts.InventoryBatch{}, serviceDenied("invalid_management_group_source")
+	}
+	certificates := request.ResourceKind != nil && strings.EqualFold(request.ResourceKind.NativeType, keyVaultCertificateType)
+	if request.Source == keyVaultCertificateSource && !certificates || certificates && request.Source != keyVaultCertificateSource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_keyvault_certificate_source")
 	}
 	defender := request.ResourceKind != nil && strings.EqualFold(request.ResourceKind.NativeType, defenderPricingType)
 	if request.Source == defenderInventorySource && !defender || defender && request.Source != "" && request.Source != inventorySource && request.Source != defenderInventorySource {
@@ -182,6 +186,9 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if managementGroups {
 		return r.listManagementGroups(ctx, c, request)
+	}
+	if certificates {
+		return r.listKeyVaultCertificates(ctx, c, request)
 	}
 	if defender {
 		if request.Source == inventorySource {

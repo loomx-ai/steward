@@ -32,7 +32,7 @@ Communication Services 的电话号码、预留号码和房间使用独立的 Mi
 
 ## 盘点与清理范围
 
-Steward 识别 488 类资源，其中 440 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 489 类资源，其中 440 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -85,6 +85,7 @@ Steward 识别 488 类资源，其中 440 类具有原生清理操作（包括 B
 | 机器学习 | 工作区与托管联机终结点 | 支持终结点清理；工作区作为只读父资源 |
 | Purview 与托管应用程序 | Microsoft Purview 账户与托管应用程序 | 只读：删除它们会同时删除托管资源组，该级联尚未纳入审查 |
 | Key Vault 密钥 | 通过 ARM 密钥 API 列出的密钥 | 只读：密钥删除是 ARM 未提供的数据面软删除 |
+| Key Vault 证书 | 通过各保管库数据面（独立的 `vault.azure.net` 令牌）读取的证书，含保管库与托管密钥引用 | 只读：删除会同时软删除托管密钥和机密。需要证书 list/get 数据面权限（Key Vault 读者角色，或包含证书“列出”和“获取”的访问策略）以及到保管库的网络访问；无法读取的保管库会使扫描失败，而不会显示为空 |
 | Site Recovery | 恢复服务保管库中的复制保护项目，含复制结构、保护容器与保管库引用 | 只读：禁用复制会删除恢复端副本，尚未纳入审查；需要 `Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems/read` |
 | 尚待实现生命周期的集合资源 | 资源组、Key Vault、Container Apps 环境 | 只读 |
 

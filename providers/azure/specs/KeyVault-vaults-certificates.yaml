@@ -1,0 +1,44 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.KeyVault/vaults/certificates
+  class: security.certificate
+presentation:
+  displayNames:
+    en-US: Key Vault certificate
+    zh-CN: Key Vault 证书
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: keyvault-certificates
+  list:
+    operation: Azure.Microsoft.KeyVault.DataPlane.GetCertificates
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.KeyVault.DataPlane.GetCertificate
+    itemsPath: $
+    identityPath: id
+fields:
+  name: name
+  state: state
+  subscriptionId: subscriptionId
+  resourceGroup: resourceGroup
+  vaultId: vaultId
+  enabled: enabled
+  notBefore: notBefore
+  expires: expires
+  issuer: issuer
+  thumbprint: thumbprint
+  recoveryLevel: recoveryLevel
+extensions:
+  hook: azure.resource
+relationships:
+- type: member_of
+  targetType: Microsoft.KeyVault/vaults
+  targetIdPath: refs_microsoft_keyvault_vaults
+- type: uses
+  targetType: Microsoft.KeyVault/vaults/keys
+  targetIdPath: refs_microsoft_keyvault_vaults_keys

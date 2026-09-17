@@ -70,6 +70,9 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if !ok || operation.Call == nil {
 		return contracts.InvocationResult{}, fmt.Errorf("unknown Azure operation %q", invocation.Operation)
 	}
+	if operation.Call.Style == "azure-keyvault-rest" {
+		return contracts.InvocationResult{}, serviceDenied("keyvault_data_plane_invocation_not_supported")
+	}
 	if operation.Call.Style == "azure-synapse-rest" {
 		if operation.Call.Method != "GET" && !synapseCancelKind(operation.ID).spark {
 			return contracts.InvocationResult{}, serviceDenied("synapse_data_mutation_not_implemented")
@@ -257,6 +260,14 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 
 	if kind.NativeType == managementGroupType {
 		return managementGroupOperation(nativeID, method)
+	}
+	if kind.NativeType == keyVaultCertificateType {
+		_, vault, name, err := c.keyVaultCertificateIdentity(nativeID)
+		if err != nil || method != "GET" {
+			return catalog.Operation{}, nil, serviceDenied("invalid_keyvault_certificate_operation")
+		}
+		operation, err := keyVaultOperation(keyVaultCertificateGet)
+		return operation, map[string]any{"vaultBaseUrl": "https://" + last(vault) + ".vault.azure.net", "certificateName": name}, err
 	}
 	if kind.NativeType == defenderPricingType {
 		_, scope, err := c.defenderIdentity(nativeID)

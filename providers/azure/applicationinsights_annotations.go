@@ -47,6 +47,9 @@ func insightsInventorySource(kind string) string {
 	if strings.EqualFold(kind, managementGroupType) {
 		return managementGroupSource
 	}
+	if strings.EqualFold(kind, keyVaultCertificateType) {
+		return keyVaultCertificateSource
+	}
 	if dataMigrationKind(kind) != "" {
 		return dataMigrationInventorySource
 	}

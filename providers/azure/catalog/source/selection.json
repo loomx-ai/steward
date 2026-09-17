@@ -2727,6 +2727,13 @@
         "ReplicationProtectedItems_Get",
         "ReplicationProtectedItems_List"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/keyvault/data-plane/Certificates/stable/2025-07-01/certificates.json",
+      "operations": [
+        "GetCertificate",
+        "GetCertificates"
+      ]
     }
   ],
   "resource_types": [
@@ -11833,6 +11840,22 @@
       "delete_operations": [],
       "list_operations": [
         "Azure.Microsoft.KeyVault.Keys_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.KeyVault/vaults/certificates",
+      "class": "security.certificate",
+      "display_name": "Key Vault certificate",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "certificates",
+      "read_operations": [
+        "Azure.Microsoft.KeyVault.DataPlane.GetCertificate"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.KeyVault.DataPlane.GetCertificates"
       ]
     },
     {

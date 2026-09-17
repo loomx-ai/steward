@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net/url"
 	"regexp"
 	"sort"
@@ -220,7 +221,20 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 		batch := document.Host == "" && document.Info.Title == "Azure Batch" && document.ParameterizedHost != nil
 		communication := document.Host == "" && (document.Info.Title == "PhoneNumbersClient" || document.Info.Title == "Azure Communication Room Service") && document.ParameterizedHost != nil
 		synapse := document.Host == "" && (document.Info.Title == "SparkClient" || document.Info.Title == "ArtifactsClient") && document.ParameterizedHost != nil && strings.Contains(upstream.SourceURI, "/specification/synapse/data-plane/Microsoft.Synapse/")
+		keyvault := document.Host == "" && document.Info.Title == "KeyVaultClient" && document.ParameterizedHost != nil && strings.Contains(upstream.SourceURI, "/specification/keyvault/data-plane/")
 		var endpointParameter map[string]any
+		if keyvault {
+			host := document.ParameterizedHost
+			if len(host.Parameters) == 1 {
+				endpointParameter, err = resolver.resolve(host.Parameters[0], upstream.SourceURI)
+				if err != nil {
+					return Catalog{}, err
+				}
+			}
+			if host.Template != "{vaultBaseUrl}" || host.UseSchemePrefix || len(host.Parameters) != 1 || endpointParameter["name"] != "vaultBaseUrl" || endpointParameter["in"] != "path" || endpointParameter["type"] != "string" || endpointParameter["required"] != true || endpointParameter["x-ms-skip-url-encoding"] != true || document.BasePath != "" {
+				return Catalog{}, fmt.Errorf("unsupported Azure Key Vault parameterized host")
+			}
+		}
 		if batch || communication || synapse {
 			host := document.ParameterizedHost
 			if len(host.Parameters) == 1 {
@@ -233,7 +247,7 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				return Catalog{}, fmt.Errorf("unsupported Azure data-plane parameterized host")
 			}
 		}
-		if document.Swagger != "2.0" || document.Info.Version == "" || (!batch && !communication && !synapse && (document.Host != "management.azure.com" || document.ParameterizedHost != nil)) {
+		if document.Swagger != "2.0" || document.Info.Version == "" || (!batch && !communication && !synapse && !keyvault && (document.Host != "management.azure.com" || document.ParameterizedHost != nil)) {
 			return Catalog{}, fmt.Errorf("Azure OpenAPI document must describe a supported versioned Azure API")
 		}
 		titles[upstream.SourceURI] = document.Info.Title
@@ -279,6 +293,9 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				if synapse {
 					service = "Microsoft.Synapse.DataPlane"
 				}
+				if keyvault {
+					service = "Microsoft.KeyVault.DataPlane"
+				}
 				properties := map[string]any{}
 				rawParameters := []string{}
 				for _, parameter := range append(common, operation.Parameters...) {
@@ -309,6 +326,15 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				}
 				if batch || communication || synapse {
 					properties["endpoint"] = endpointParameter
+				}
+				if keyvault {
+					properties["vaultBaseUrl"] = endpointParameter
+					// Key Vault names path parameters with hyphens, which are not
+					// template identifiers. Bind them by their camel-case client names.
+					path, properties, err = keyVaultPathParameters(path, properties)
+					if err != nil {
+						return Catalog{}, err
+					}
 				}
 				var output map[string]any
 				for _, status := range []string{"200", "201", "202", "204"} {
@@ -343,6 +369,9 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 					// Native names are individual URL segments, even when Swagger
 					// asks its generated clients to skip encoding.
 					call.RawPathParameters = nil
+				}
+				if keyvault {
+					call.Style, call.Endpoint, call.EndpointParameters, call.RawPathParameters = "azure-keyvault-rest", "{vaultBaseUrl}", []string{"vaultBaseUrl"}, nil
 				}
 				destructive := isDestructiveOperation(operation.ID, method) || (batch && operation.ID == "Pools_RemoveNodes" && method == "post" && path == "/pools/{poolId}/removenodes")
 				c.Operations = append(c.Operations, Operation{ID: "Azure." + service + "." + operation.ID, Name: operation.ID, Service: service, Method: call.Method, Path: fullPath, Destructive: destructive, InputSchema: map[string]any{"type": "object", "properties": properties}, OutputSchema: output, Pagination: pagination, Call: call, SourceURI: upstream.SourceURI})
@@ -425,6 +454,32 @@ func (r azureReferenceResolver) resolve(value map[string]any, baseURI string) (m
 			return nil, fmt.Errorf("unresolved Azure reference %q", ref)
 		}
 	}
+}
+
+var keyVaultPathParameter = regexp.MustCompile(`\{([a-z]+(?:-[a-z]+)+)\}`)
+
+func keyVaultPathParameters(path string, properties map[string]any) (string, map[string]any, error) {
+	for _, match := range keyVaultPathParameter.FindAllStringSubmatch(path, -1) {
+		words := strings.Split(match[1], "-")
+		for i := 1; i < len(words); i++ {
+			words[i] = strings.ToUpper(words[i][:1]) + words[i][1:]
+		}
+		name := strings.Join(words, "")
+		parameter, ok := properties[match[1]].(map[string]any)
+		if _, exists := properties[name]; !ok || exists || parameter["in"] != "path" {
+			return "", nil, fmt.Errorf("unsupported Azure Key Vault path parameter %q", match[1])
+		}
+		parameter = maps.Clone(parameter)
+		parameter["name"] = name
+		// An empty certificate version selects the current version.
+		if name == "certificateVersion" {
+			parameter["required"] = false
+		}
+		delete(properties, match[1])
+		properties[name] = parameter
+		path = strings.ReplaceAll(path, match[0], "{"+name+"}")
+	}
+	return path, properties, nil
 }
 
 var restPathParameter = regexp.MustCompile(`\{(\+?)([A-Za-z0-9_]+)\}`)

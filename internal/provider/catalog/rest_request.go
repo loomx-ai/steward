@@ -20,7 +20,7 @@ type RESTRequest struct {
 
 func BindREST(operation Operation, parameters map[string]any) (RESTRequest, error) {
 	call := operation.Call
-	if call == nil || (call.Style != "google-rest" && call.Style != "azure-rest" && call.Style != "azure-batch-rest" && call.Style != "azure-communication-rest" && call.Style != "azure-synapse-rest") {
+	if call == nil || (call.Style != "google-rest" && call.Style != "azure-rest" && call.Style != "azure-batch-rest" && call.Style != "azure-communication-rest" && call.Style != "azure-synapse-rest" && call.Style != "azure-keyvault-rest") {
 		return RESTRequest{}, fmt.Errorf("operation %q is not a REST operation", operation.ID)
 	}
 	domain := "googleapis.com"
@@ -49,6 +49,13 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 			return RESTRequest{}, fmt.Errorf("invalid Azure Synapse endpoint")
 		}
 	}
+	if call.Style == "azure-keyvault-rest" {
+		endpoint, _ := parameters["vaultBaseUrl"].(string)
+		origin, err = trustedRESTOrigin(endpoint, "vault.azure.net")
+		if call.Endpoint != "{vaultBaseUrl}" || !slices.Equal(call.EndpointParameters, []string{"vaultBaseUrl"}) || !azureKeyVaultOrigin.MatchString(endpoint) {
+			return RESTRequest{}, fmt.Errorf("invalid Azure Key Vault endpoint")
+		}
+	}
 	if err != nil || !strings.HasPrefix(call.Path, "/") || strings.ContainsAny(call.Path, "?#") {
 		return RESTRequest{}, fmt.Errorf("invalid REST operation endpoint or path")
 	}
@@ -60,7 +67,7 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 		}
 		values[key] = value
 	}
-	if call.Style == "azure-rest" || call.Style == "azure-batch-rest" || call.Style == "azure-communication-rest" {
+	if call.Style == "azure-rest" || call.Style == "azure-batch-rest" || call.Style == "azure-communication-rest" || call.Style == "azure-keyvault-rest" {
 		if version, ok := values["api-version"]; ok && version != call.Version {
 			return RESTRequest{}, fmt.Errorf("Azure API version differs from catalog")
 		}
@@ -77,6 +84,11 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 	for _, match := range restPathParameter.FindAllStringSubmatch(path, -1) {
 		name := match[2]
 		value, ok := values[name].(string)
+		if call.Style == "azure-keyvault-rest" && name == "certificateVersion" && strings.HasSuffix(path, "/"+match[0]) && (!ok && values[name] == nil || ok && value == "") {
+			delete(values, name)
+			path = strings.ReplaceAll(path, match[0], "")
+			continue
+		}
 		if !ok || value == "" {
 			return RESTRequest{}, fmt.Errorf("path parameter %q is required", name)
 		}
@@ -245,4 +257,7 @@ var azureBatchOrigin = regexp.MustCompile(`^https://[a-z0-9]{3,24}\.[a-z0-9-]+\.
 
 // Runtime authorization additionally verifies the endpoint returned by the
 // selected subscription's native Communication Services resource GET.
+// Key Vault names are 3-24 characters, start with a letter and do not end
+// with a hyphen. Only the public-cloud vault DNS suffix is accepted.
+var azureKeyVaultOrigin = regexp.MustCompile(`^https://[a-z][a-z0-9-]{1,22}[a-z0-9]\.vault\.azure\.net$`)
 var azureCommunicationOrigin = regexp.MustCompile(`^https://[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\.communication\.azure\.com$`)

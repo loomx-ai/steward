@@ -32,7 +32,7 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 488 resource types; 440 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 489 resource types; 440 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -85,6 +85,7 @@ Steward recognizes 488 resource types; 440 have native cleanup actions, includin
 | Machine Learning | Workspaces and managed online endpoints | Endpoint cleanup; workspaces are read-only parents |
 | Purview and managed applications | Microsoft Purview accounts and managed applications | Read-only: deleting them also deletes their managed resource group, which is not yet reviewed as a cascade |
 | Key Vault keys | Keys listed through the ARM Keys API | Read-only: key deletion is a data-plane soft delete not exposed by ARM |
+| Key Vault certificates | Certificates read from each vault's data plane with a separate `vault.azure.net` token, with vault and managed-key references | Read-only: deletion also soft-deletes the managed key and secret. Requires certificate list/get data-plane permission (the Key Vault Reader role, or an access policy with certificate List and Get) and network access to the vault; an unreadable vault fails the scan instead of appearing empty |
 | Site Recovery | Replication protected items in Recovery Services vaults, with fabric, protection container and vault references | Read-only: disabling replication removes recovery-side replicas and is not yet reviewed; requires `Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems/read` |
 | Aggregate resources still awaiting lifecycle support | Resource groups, Key Vaults and Container Apps environments | Read-only |
 

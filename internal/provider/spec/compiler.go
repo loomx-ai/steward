@@ -645,7 +645,7 @@ func validateOperationCall(operation catalog.Operation, usage string) error {
 		strings.TrimSpace(call.Endpoint) == "" {
 		return fmt.Errorf("%s operation %q has incomplete direct product API call metadata", usage, operation.Name)
 	}
-	if call.Style != "RPC" && call.Style != "ROA" && call.Style != "google-rest" && call.Style != "azure-rest" && call.Style != "azure-batch-rest" && call.Style != "azure-communication-rest" && call.Style != "azure-synapse-rest" && call.Style != "aws-smithy" {
+	if call.Style != "RPC" && call.Style != "ROA" && call.Style != "google-rest" && call.Style != "azure-rest" && call.Style != "azure-batch-rest" && call.Style != "azure-communication-rest" && call.Style != "azure-synapse-rest" && call.Style != "azure-keyvault-rest" && call.Style != "aws-smithy" {
 		return fmt.Errorf("%s operation %q has unsupported API style %q", usage, operation.Name, call.Style)
 	}
 	if call.ParameterPosition != "" &&

@@ -142,6 +142,9 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 					nativeID = resourceID(synapseType, "stewardtest") + "/" + d.collection + "/stewardtest"
 				}
 			}
+			if kind.NativeType == keyVaultCertificateType {
+				nativeID, wantPath = resourceID(keyVaultType, "stewardtest")+"/certificates/stewardtest", "/certificates/stewardtest/"
+			}
 			if isBatchDataType(kind.NativeType) {
 				nativeID = "https://account.eastus2.batch.azure.com" + nativeID
 			}

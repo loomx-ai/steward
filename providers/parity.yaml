@@ -2945,9 +2945,10 @@ resources:
   azure:
     resources:
     - Microsoft.Web/certificates
-    unimplemented_resources:
     - Microsoft.KeyVault/vaults/certificates
-    notes: Key Vault certificates exist only in the Key Vault data plane; ARM exposes no certificate resource, so support needs a data-plane integration.
+    notes: Key Vault certificates exist only in the Key Vault data plane and are inventoried read-only
+      through a separate vault.azure.net token; certificate deletion also soft-deletes its managed key
+      and secret and is not offered.
   aws:
     resources:
     - AWS::CertificateManager::Certificate

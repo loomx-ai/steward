@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "fdb1c643ad124f565d56d0155d1dde4719f8e74a86257be13001632883c248b3",
+    "checksum": "93454ede26287662803164e5ddb925d28c408bd51568e2ae987afa26b63dc384",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "dd691bd01761d6151039029d4a0011a6cc03d587781d81e4c24a1eb6c4a90f3b",
+  "content_checksum": "17f5ee4cd2efb85724118b261e20eaae46a970aae609984b03212fd50ab4f4d5",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -102071,6 +102071,204 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
     },
     {
+      "id": "Azure.Microsoft.KeyVault.DataPlane.GetCertificate",
+      "name": "GetCertificate",
+      "service": "Microsoft.KeyVault.DataPlane",
+      "method": "GET",
+      "path": "/certificates/{certificateName}/{certificateVersion}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "certificateName": {
+            "description": "The name of the certificate in the given vault.",
+            "in": "path",
+            "name": "certificateName",
+            "required": true,
+            "type": "string",
+            "x-ms-client-name": "certificateName"
+          },
+          "certificateVersion": {
+            "description": "The version of the certificate. This URI fragment is optional. If not specified, the latest version of the certificate is returned.",
+            "in": "path",
+            "name": "certificateVersion",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "certificateVersion"
+          },
+          "vaultBaseUrl": {
+            "format": "uri",
+            "in": "path",
+            "name": "vaultBaseUrl",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A certificate bundle consists of a certificate (X509) plus its attributes.",
+        "properties": {
+          "attributes": {
+            "$ref": "#/definitions/CertificateAttributes",
+            "description": "The certificate attributes."
+          },
+          "cer": {
+            "description": "CER contents of x509 certificate.",
+            "format": "byte",
+            "type": "string"
+          },
+          "contentType": {
+            "description": "The content type of the secret. eg. 'application/x-pem-file' or 'application/x-pkcs12'.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The certificate id.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "kid": {
+            "description": "The key id.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "policy": {
+            "$ref": "#/definitions/CertificatePolicy",
+            "description": "The management policy.",
+            "readOnly": true
+          },
+          "preserveCertOrder": {
+            "description": "Specifies whether the certificate chain preserves its original order. The default value is false, which sets the leaf certificate at index 0.",
+            "type": "boolean"
+          },
+          "sid": {
+            "description": "The secret id.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Application specific metadata in the form of key-value pairs.",
+            "type": "object"
+          },
+          "x5t": {
+            "description": "Thumbprint of the certificate.",
+            "format": "base64url",
+            "readOnly": true,
+            "type": "string",
+            "x-ms-client-name": "X509Thumbprint"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.KeyVault.DataPlane",
+        "version": "2025-07-01",
+        "style": "azure-keyvault-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/certificates/{certificateName}/{certificateVersion}",
+        "endpoint": "{vaultBaseUrl}",
+        "endpoint_parameters": [
+          "vaultBaseUrl"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/keyvault/data-plane/Certificates/stable/2025-07-01/certificates.json"
+    },
+    {
+      "id": "Azure.Microsoft.KeyVault.DataPlane.GetCertificates",
+      "name": "GetCertificates",
+      "service": "Microsoft.KeyVault.DataPlane",
+      "method": "GET",
+      "path": "/certificates",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "includePending": {
+            "description": "Specifies whether to include certificates which are not completely provisioned.",
+            "in": "query",
+            "name": "includePending",
+            "required": false,
+            "type": "boolean"
+          },
+          "maxresults": {
+            "description": "Maximum number of results to return in a page. If not specified the service will return up to 25 results.",
+            "format": "int32",
+            "in": "query",
+            "maximum": 25,
+            "minimum": 1,
+            "name": "maxresults",
+            "required": false,
+            "type": "integer"
+          },
+          "vaultBaseUrl": {
+            "format": "uri",
+            "in": "path",
+            "name": "vaultBaseUrl",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The certificate list result.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of certificates.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A response message containing a list of certificates in the key vault along with a link to the next page of certificates.",
+            "items": {
+              "$ref": "#/definitions/CertificateItem"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.KeyVault.DataPlane",
+        "version": "2025-07-01",
+        "style": "azure-keyvault-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/certificates",
+        "endpoint": "{vaultBaseUrl}",
+        "endpoint_parameters": [
+          "vaultBaseUrl"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/keyvault/data-plane/Certificates/stable/2025-07-01/certificates.json"
+    },
+    {
       "id": "Azure.Microsoft.KeyVault.Keys_Get",
       "name": "Keys_Get",
       "service": "Microsoft.KeyVault",
@@ -149718,6 +149916,23 @@
         ],
         "list_operations": [
           "Azure.Microsoft.KeyVault.Vaults_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.KeyVault/vaults/certificates",
+      "class": "security.certificate",
+      "display_name": "Key Vault certificate",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "certificates",
+        "read_operations": [
+          "Azure.Microsoft.KeyVault.DataPlane.GetCertificate"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.KeyVault.DataPlane.GetCertificates"
         ]
       }
     },

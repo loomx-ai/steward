@@ -5,7 +5,7 @@ candidate and mapping-research backlog was worked through. This is a repository
 scope audit, not cloud feature acceptance.
 
 The matrix covers all 159 Alibaba Cloud specifications for GCP, Azure and AWS.
-The repository contains 205 GCP, 488 Azure and 194 AWS specifications; those
+The repository contains 205 GCP, 489 Azure and 194 AWS specifications; those
 counts do not prove equivalence. All 159 rows remain pending behavioral
 verification.
 
@@ -20,10 +20,10 @@ check verifies matrix consistency only. AWS progress and evidence are tracked in
 
 | Measure | GCP | Azure | AWS |
 | --- | --- | --- | --- |
-| Explicit native specifications | 205 | 488 | 194 |
+| Explicit native specifications | 205 | 489 | 194 |
 | Baseline rows with at least one existing mapped specification | 156/159 | 154/159 | 149/159 |
-| Candidate types still without a specification | 0 | 3 | 0 |
-| Baseline rows affected by missing candidate specifications | 0 | 4 | 0 |
+| Candidate types still without a specification | 0 | 2 | 0 |
+| Baseline rows affected by missing candidate specifications | 0 | 3 | 0 |
 | Empty mappings with a documented platform difference | 3 | 2 | 10 |
 
 These are registration/mapping measures, not functional completion percentages.
@@ -36,10 +36,9 @@ A row can have both an implemented mapping and an absent candidate. None of the
 | --- | --- | --- |
 | `Microsoft.Graph/groups` | `ACS::CloudSSO::Group`, `ACS::RAM::Group` | Microsoft Graph object: needs a Graph token audience, Graph API catalog source and directory permissions. |
 | `Microsoft.Graph/users` | `ACS::RAM::User` | Same Graph integration as groups. |
-| `Microsoft.KeyVault/vaults/certificates` | `ACS::SSLCertificatesService::Certificate` | Certificates exist only in the Key Vault data plane. |
 
 Purview accounts, managed applications, Machine Learning workspaces, Key Vault
-keys, management groups and Site Recovery replication protected items are registered read-only; their matrix notes record
+keys and certificates, management groups and Site Recovery replication protected items are registered read-only; their matrix notes record
 why cleanup is not offered. Service Fabric clusters, Storage Sync services and
 Machine Learning online endpoints are registered with cleanup.
 
