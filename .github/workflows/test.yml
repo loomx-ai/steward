@@ -93,3 +93,30 @@ jobs:
       - run: go test -count=1 -run Emulator ./providers/gcp
         env:
           STEWARD_GCS_EMULATOR_URL: http://127.0.0.1:4443
+
+  azure-emulator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --prefix "$RUNNER_TEMP/azurite" azurite@3.35.0
+      - name: Start Azurite with OAuth
+        run: |
+          cd "$RUNNER_TEMP/azurite"
+          openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 1 -subj "/CN=127.0.0.1" -addext "subjectAltName=IP:127.0.0.1"
+          node_modules/.bin/azurite-blob --blobHost 127.0.0.1 --blobPort 10000 --oauth basic --cert cert.pem --key key.pem --inMemoryPersistence --skipApiVersionCheck > azurite.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            curl -sk -o /dev/null https://127.0.0.1:10000/ && exit 0
+            sleep 1
+          done
+          cat azurite.log
+          exit 1
+      - run: go test -count=1 -run Azurite ./providers/azure
+        env:
+          STEWARD_AZURITE_BLOB_URL: https://127.0.0.1:10000

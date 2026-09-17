@@ -7451,5 +7451,7 @@ errors are classified.
 Evidence: Moto 5.2.3 for S3 and KMS guards; fake-gcs-server v1.52.2 (CI job
 `gcp-emulator`) shows a bucket with a noncurrent version is refused by Steward
 even though the emulator would delete it, and an empty bucket is deleted and
-confirmed absent. Key Vault and Graph remain protocol evidence from official
+confirmed absent. Azurite 3.35.0 with OAuth (CI job `azure-emulator`)
+verifies that the Blob container check sees committed blobs and uncommitted
+blocks and reports an emptied container as empty. Key Vault and Graph remain protocol evidence from official
 examples and documented response shapes. The 159 behavioral rows remain open.
