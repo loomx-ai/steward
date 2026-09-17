@@ -20,6 +20,13 @@ resources:
   azure:
     resources:
     - Microsoft.ContainerService/managedClusters
+  aws:
+    resources:
+    - AWS::EKS::Cluster
+    unimplemented_resources:
+    - AWS::EKS::Nodegroup
+    - AWS::EKS::FargateProfile
+    - AWS::EKS::Addon
   status: pending_verification
 - alicloud: ACS::AckOne::Cluster
   spec: providers/alicloud/specs/ack-one-cluster.yaml
@@ -36,6 +43,8 @@ resources:
   azure:
     resources:
     - Microsoft.ContainerService/fleets
+  aws:
+    notes: AWS has no managed multi-cluster control-plane resource. EKS Connector registrations only attach external clusters to the EKS console and are not a fleet controller.
   status: pending_verification
 - alicloud: ACS::ActionTrail::Trail
   spec: providers/alicloud/specs/actiontrail-trail.yaml
@@ -51,6 +60,10 @@ resources:
   azure:
     resources:
     - Microsoft.Insights/diagnosticSettings
+  aws:
+    unimplemented_resources:
+    - AWS::CloudTrail::Trail
+    - AWS::CloudTrail::EventDataStore
   status: pending_verification
 - alicloud: ACS::ADB::DBCluster
   spec: providers/alicloud/specs/adb-db-cluster.yaml
@@ -66,6 +79,11 @@ resources:
   azure:
     resources: &id002
     - Microsoft.Kusto/clusters
+  aws:
+    unimplemented_resources:
+    - AWS::Redshift::Cluster
+    - AWS::RedshiftServerless::Workgroup
+    - AWS::RedshiftServerless::Namespace
   status: pending_verification
 - alicloud: ACS::ADB::DBClusterLakeVersion
   spec: providers/alicloud/specs/adb-lake-cluster.yaml
@@ -79,6 +97,10 @@ resources:
     resources: *id001
   azure:
     resources: *id002
+  aws:
+    unimplemented_resources:
+    - AWS::RedshiftServerless::Workgroup
+    - AWS::RedshiftServerless::Namespace
   status: pending_verification
 - alicloud: ACS::ALB::LoadBalancer
   spec: providers/alicloud/specs/alb-load-balancer.yaml
@@ -97,6 +119,12 @@ resources:
     resources: &id024
     - Microsoft.Network/loadBalancers
     - Microsoft.Network/applicationGateways
+  aws:
+    resources:
+    - AWS::ElasticLoadBalancingV2::LoadBalancer
+    - AWS::ElasticLoadBalancingV2::TargetGroup
+    unimplemented_resources:
+    - AWS::ElasticLoadBalancingV2::Listener
   status: pending_verification
 - alicloud: ACS::Alidns::DnsGtmInstance
   spec: providers/alicloud/specs/alidns-dns-gtm-instance.yaml
@@ -111,6 +139,9 @@ resources:
   azure:
     resources: &id004
     - Microsoft.Network/trafficManagerProfiles
+  aws:
+    unimplemented_resources:
+    - AWS::Route53::HealthCheck
   status: pending_verification
 - alicloud: ACS::Alidns::Domain
   spec: providers/alicloud/specs/alidns-domain.yaml
@@ -126,6 +157,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/dnsZones
+  aws:
+    unimplemented_resources:
+    - AWS::Route53::HostedZone
   status: pending_verification
 - alicloud: ACS::Alidns::GtmInstance
   spec: providers/alicloud/specs/alidns-gtm-instance.yaml
@@ -138,6 +172,9 @@ resources:
     resources: *id003
   azure:
     resources: *id004
+  aws:
+    unimplemented_resources:
+    - AWS::Route53::HealthCheck
   status: pending_verification
 - alicloud: ACS::AliKafka::Instance
   spec: providers/alicloud/specs/alikafka-instance.yaml
@@ -155,6 +192,10 @@ resources:
     resources: &id026
     - Microsoft.ServiceBus/namespaces
     - Microsoft.EventHub/namespaces
+  aws:
+    unimplemented_resources:
+    - AWS::MSK::Cluster
+    - AWS::MSK::ServerlessCluster
   status: pending_verification
 - alicloud: ACS::ApiGateway::Instance
   spec: providers/alicloud/specs/api-gateway-instance.yaml
@@ -172,6 +213,12 @@ resources:
   azure:
     resources: &id006
     - Microsoft.ApiManagement/service
+  aws:
+    resources:
+    - AWS::ApiGateway::RestApi
+    - AWS::ApiGatewayV2::Api
+    unimplemented_resources:
+    - AWS::ApiGateway::DomainName
   status: pending_verification
 - alicloud: ACS::APIG::Gateway
   spec: providers/alicloud/specs/apig-gateway.yaml
@@ -185,6 +232,12 @@ resources:
     resources: *id005
   azure:
     resources: *id006
+  aws:
+    resources:
+    - AWS::ApiGatewayV2::Api
+    - AWS::ApiGateway::RestApi
+    unimplemented_resources:
+    - AWS::ApiGatewayV2::DomainName
   status: pending_verification
 - alicloud: ACS::ARMS::Environment
   spec: providers/alicloud/specs/arms-environment.yaml
@@ -205,6 +258,10 @@ resources:
     - Microsoft.Insights/dataCollectionEndpoints
     - Microsoft.Insights/dataCollectionRuleAssociations
     - Microsoft.Monitor/accounts
+  aws:
+    unimplemented_resources:
+    - AWS::Oam::Sink
+    - AWS::Oam::Link
   status: pending_verification
   notes: Native scope/member inventory and reviewed project-link removal are implemented.
     The scope and its self link remain project-owned; native APIs expose no independent scope delete.
@@ -231,6 +288,11 @@ resources:
     - Microsoft.Dashboard/grafana/managedPrivateEndpoints
     - Microsoft.Dashboard/grafana/privateEndpointConnections
     - Microsoft.Dashboard/grafana/integrationFabrics
+  aws:
+    resources:
+    - AWS::CloudWatch::Dashboard
+    unimplemented_resources:
+    - AWS::Grafana::Workspace
   status: pending_verification
   notes: Azure Grafana uses native product inventory and reviewed independent deletion of all three
     ARM child collections before workspace deletion. Native configuration, parent identity, management
@@ -253,6 +315,10 @@ resources:
   azure:
     resources:
     - Microsoft.Insights/components
+  aws:
+    unimplemented_resources:
+    - AWS::XRay::Group
+    - AWS::Synthetics::Canary
   status: pending_verification
   notes: Uptime checks are only one monitoring component. Trace application discovery is still a separate
     gap to assess.
@@ -270,6 +336,9 @@ resources:
   azure:
     resources:
     - Microsoft.DataProtection/backupVaults/backupPolicies
+  aws:
+    unimplemented_resources:
+    - AWS::DLM::LifecyclePolicy
   status: pending_verification
   notes: Native Data Protection policy inventory and unused-policy deletion are registered;
     active/retained consumers block deletion. Coordinated workload cleanup and behavioral equivalence remain unverified.
@@ -286,6 +355,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/bastionHosts
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::InstanceConnectEndpoint
   status: pending_verification
 - alicloud: ACS::BPStudio::Application
   spec: providers/alicloud/specs/bpstudio-application.yaml
@@ -302,6 +374,9 @@ resources:
   azure:
     resources:
     - Microsoft.Resources/deploymentStacks
+  aws:
+    unimplemented_resources:
+    - AWS::ServiceCatalogAppRegistry::Application
   status: pending_verification
 - alicloud: ACS::ECS::CapacityReservation
   spec: providers/alicloud/specs/capacity-reservation.yaml
@@ -317,6 +392,9 @@ resources:
   azure:
     resources:
     - Microsoft.Compute/capacityReservationGroups/capacityReservations
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::CapacityReservation
   status: pending_verification
 - alicloud: ACS::CDN::Domain
   spec: providers/alicloud/specs/cdn-domain.yaml
@@ -335,6 +413,9 @@ resources:
     - Microsoft.Cdn/profiles/endpoints
     - Microsoft.Cdn/profiles/customDomains
   notes: Native CDN/Front Door profile and child discovery, reviewed cascades, shared route/certificate/security prerequisites and recorded CLI polling are implemented. Independent emulator and complete application acceptance remain pending.
+  aws:
+    unimplemented_resources:
+    - AWS::CloudFront::Distribution
   status: pending_verification
 - alicloud: ACS::CEN::CenBandwidthPackage
   spec: providers/alicloud/specs/cen-bandwidth-package.yaml
@@ -350,6 +431,8 @@ resources:
   azure:
     resources: &id010
     - Microsoft.Network/expressRouteCircuits
+  aws:
+    notes: AWS charges inter-region Transit Gateway and peering traffic per GB; the EC2 and Network Manager APIs expose no purchasable bandwidth package resource.
   status: pending_verification
   notes: Capacity/pricing models differ; verify attachment/circuit bandwidth settings and do not claim
     a standalone purchased bandwidth-package API.
@@ -368,6 +451,9 @@ resources:
     resources: &id008
     - Microsoft.Network/virtualHubs/hubVirtualNetworkConnections
     - Microsoft.Network/vpnGateways/vpnConnections
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::TransitGatewayVpcAttachment
   status: pending_verification
 - alicloud: ACS::CEN::Flowlog
   spec: providers/alicloud/specs/cen-flowlog.yaml
@@ -382,6 +468,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/networkWatchers/flowLogs
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::FlowLog
   status: pending_verification
 - alicloud: ACS::CEN::CenInstance
   spec: providers/alicloud/specs/cen-instance.yaml
@@ -397,6 +486,10 @@ resources:
   azure:
     resources:
     - Microsoft.Network/virtualWans
+  aws:
+    unimplemented_resources:
+    - AWS::NetworkManager::GlobalNetwork
+    - AWS::NetworkManager::CoreNetwork
   status: pending_verification
 - alicloud: ACS::CEN::InterRegionTrafficQosPolicy
   spec: providers/alicloud/specs/cen-inter-region-traffic-qos-policy.yaml
@@ -411,6 +504,8 @@ resources:
   azure:
     resources:
     - Microsoft.Network/expressRouteCircuits
+  aws:
+    notes: Transit Gateway and Cloud WAN APIs expose no QoS queue policy resource.
   status: pending_verification
   notes: Verify the actual provider QoS resource or integrated bandwidth policy. A circuit alone is not
     proof that all policy behavior is implemented.
@@ -430,6 +525,8 @@ resources:
   azure:
     resources:
     - Microsoft.Network/virtualHubs/routeMaps
+  aws:
+    notes: 'Transit Gateway has no route-map object: propagations and prefix-list references are association records, and Cloud WAN routing policy is part of the core network policy document.'
   status: pending_verification
   notes: GCP route policies are independently inventoried per router through native
     paginated list and wrapped detail GET, including type, CEL terms and fingerprint.
@@ -462,6 +559,8 @@ resources:
   azure:
     resources:
     - Microsoft.Network/expressRouteCircuits
+  aws:
+    notes: Transit Gateway and Cloud WAN APIs expose no DSCP traffic marking policy resource.
   status: pending_verification
   notes: Verify provider-specific packet marking controls; pending API evidence must not be counted as
     complete.
@@ -479,6 +578,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/virtualHubs
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::TransitGateway
   status: pending_verification
 - alicloud: ACS::CEN::TransitRouterEcrAttachment
   spec: providers/alicloud/specs/cen-transit-router-ecr-attachment.yaml
@@ -491,6 +593,9 @@ resources:
     resources: *id007
   azure:
     resources: *id008
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::TransitGatewayConnect
   status: pending_verification
 - alicloud: ACS::CEN::TransitRouterMulticastDomain
   spec: providers/alicloud/specs/cen-transit-router-multicast-domain.yaml
@@ -504,6 +609,12 @@ resources:
     - networkservices.googleapis.com/MulticastDomain
   azure:
     resources: []
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::TransitGatewayMulticastDomain
+    - AWS::EC2::TransitGatewayMulticastDomainAssociation
+    - AWS::EC2::TransitGatewayMulticastGroupMember
+    - AWS::EC2::TransitGatewayMulticastGroupSource
   status: pending_verification
   notes: Azure multicast mapping requires API and lifecycle research; an empty mapping is unfinished.
 - alicloud: ACS::CEN::TransitRouterPeerAttachment
@@ -518,6 +629,9 @@ resources:
     resources: *id007
   azure:
     resources: *id008
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::TransitGatewayPeeringAttachment
   status: pending_verification
 - alicloud: ACS::CEN::TransitRouterRouteTable
   spec: providers/alicloud/specs/cen-transit-router-route-table.yaml
@@ -535,6 +649,9 @@ resources:
     resources: &id034
     - Microsoft.Network/routeTables
     - Microsoft.Network/virtualHubs/hubRouteTables
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::TransitGatewayRouteTable
   status: pending_verification
 - alicloud: ACS::CEN::TransitRouterVbrAttachment
   spec: providers/alicloud/specs/cen-transit-router-vbr-attachment.yaml
@@ -547,6 +664,9 @@ resources:
     resources: *id007
   azure:
     resources: *id008
+  aws:
+    unimplemented_resources:
+    - AWS::DirectConnect::DirectConnectGatewayAssociation
   status: pending_verification
 - alicloud: ACS::CEN::TransitRouterVpcAttachment
   spec: providers/alicloud/specs/cen-transit-router-vpc-attachment.yaml
@@ -562,6 +682,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/virtualHubs/hubVirtualNetworkConnections
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::TransitGatewayVpcAttachment
   status: pending_verification
 - alicloud: ACS::CEN::TransitRouterVpnAttachment
   spec: providers/alicloud/specs/cen-transit-router-vpn-attachment.yaml
@@ -574,6 +697,9 @@ resources:
     resources: *id007
   azure:
     resources: *id008
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::VPNConnection
   status: pending_verification
 - alicloud: ACS::CEN::TransitRouter
   spec: providers/alicloud/specs/cen-transit-router.yaml
@@ -590,6 +716,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/virtualHubs
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::TransitGateway
   status: pending_verification
 - alicloud: ACS::ClickHouse::DBCluster
   spec: providers/alicloud/specs/clickhouse-db-cluster.yaml
@@ -603,6 +732,9 @@ resources:
     resources: *id001
   azure:
     resources: *id002
+  aws:
+    unimplemented_resources:
+    - AWS::Redshift::Cluster
   status: pending_verification
 - alicloud: ACS::ClickHouse::EnterpriseDBCluster
   spec: providers/alicloud/specs/clickhouse-enterprise-cluster.yaml
@@ -616,6 +748,9 @@ resources:
     resources: *id001
   azure:
     resources: *id002
+  aws:
+    unimplemented_resources:
+    - AWS::RedshiftServerless::Workgroup
   status: pending_verification
 - alicloud: ACS::CloudFirewall::Instance
   spec: providers/alicloud/specs/cloud-firewall-instance.yaml
@@ -634,6 +769,11 @@ resources:
     resources:
     - Microsoft.Network/azureFirewalls
     - Microsoft.Network/firewallPolicies
+  aws:
+    unimplemented_resources:
+    - AWS::NetworkFirewall::Firewall
+    - AWS::NetworkFirewall::FirewallPolicy
+    - AWS::NetworkFirewall::RuleGroup
   status: pending_verification
 - alicloud: ACS::CloudStorageGateway::Gateway
   spec: providers/alicloud/specs/cloud-storage-gateway.yaml
@@ -650,6 +790,9 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.StorageSync/storageSyncServices
+  aws:
+    unimplemented_resources:
+    - AWS::StorageGateway::Gateway
   status: pending_verification
 - alicloud: ACS::CloudSSO::Group
   spec: providers/alicloud/specs/cloudsso-group.yaml
@@ -667,6 +810,9 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.Graph/groups
+  aws:
+    unimplemented_resources:
+    - AWS::IdentityStore::Group
   status: pending_verification
   notes: GCP Group and Membership use an explicit customer/identity-source directory and native FULL
     snapshots. Reviewed group cleanup verifies its member-link cascade; ordinary links support independent
@@ -687,6 +833,8 @@ resources:
     resources: *id009
   azure:
     resources: *id010
+  aws:
+    notes: AWS charges internet data transfer per GB; the EC2 API exposes no shared bandwidth package resource.
   status: pending_verification
   notes: Capacity/pricing models differ; verify attachment/circuit bandwidth settings and do not claim
     a standalone purchased bandwidth-package API.
@@ -703,6 +851,9 @@ resources:
   azure:
     resources:
     - Microsoft.ContainerRegistry/registries
+  aws:
+    resources:
+    - AWS::ECR::Repository
   status: pending_verification
 - alicloud: ACS::VPN::CustomerGateway
   spec: providers/alicloud/specs/customer-gateway.yaml
@@ -718,6 +869,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/localNetworkGateways
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::CustomerGateway
   status: pending_verification
 - alicloud: ACS::DataHub::Project
   spec: providers/alicloud/specs/datahub-project.yaml
@@ -734,6 +888,9 @@ resources:
     resources:
     - Microsoft.Synapse/workspaces
   notes: Native workspace and compute inventory is implemented; reviewed cleanup and full Synapse child scope remain pending.
+  aws:
+    resources:
+    - AWS::Kinesis::Stream
   status: pending_verification
 - alicloud: ACS::DataV::Workspace
   spec: providers/alicloud/specs/datav-workspace.yaml
@@ -750,6 +907,10 @@ resources:
     resources:
     - Microsoft.Synapse/workspaces
   notes: Native workspace and compute inventory is implemented; reviewed cleanup and full Synapse child scope remain pending.
+  aws:
+    unimplemented_resources:
+    - AWS::QuickSight::Dashboard
+    - AWS::QuickSight::DataSet
   status: pending_verification
 - alicloud: ACS::DataWorks::Project
   spec: providers/alicloud/specs/dataworks-project.yaml
@@ -765,6 +926,10 @@ resources:
     resources:
     - Microsoft.Synapse/workspaces
   notes: Native workspace and compute inventory is implemented; reviewed cleanup and full Synapse child scope remain pending.
+  aws:
+    unimplemented_resources:
+    - AWS::DataZone::Domain
+    - AWS::DataZone::Project
   status: pending_verification
 - alicloud: ACS::DataWorks::DwResourceGroup
   spec: providers/alicloud/specs/dataworks-resource-group.yaml
@@ -780,6 +945,9 @@ resources:
   azure:
     resources:
     - Microsoft.DataFactory/factories/integrationRuntimes
+  aws:
+    unimplemented_resources:
+    - AWS::DataZone::Environment
   status: pending_verification
   notes: Azure native runtime and node inventory, SSIS stop/delete, linked-runtime prerequisites,
     explicit shared-consumer cleanup and resumed own-resource absence are implemented and
@@ -800,6 +968,10 @@ resources:
   azure:
     resources:
     - Microsoft.DataProtection/backupVaults/backupPolicies
+  aws:
+    unimplemented_resources:
+    - AWS::Backup::BackupPlan
+    - AWS::Backup::BackupSelection
   status: pending_verification
   notes: Native Data Protection policy inventory and unused-policy deletion are registered;
     active/retained consumers block deletion. Coordinated workload cleanup and behavioral equivalence remain unverified.
@@ -815,6 +987,9 @@ resources:
     resources: *id013
   azure:
     resources: *id014
+  aws:
+    unimplemented_resources:
+    - AWS::CloudFront::Distribution
   status: pending_verification
 - alicloud: ACS::DCDN::IpaDomain
   spec: providers/alicloud/specs/dcdn-ipa-domain.yaml
@@ -828,6 +1003,9 @@ resources:
     resources: *id013
   azure:
     resources: *id014
+  aws:
+    unimplemented_resources:
+    - AWS::GlobalAccelerator::Accelerator
   status: pending_verification
 - alicloud: ACS::DdosBgp::Instance
   spec: providers/alicloud/specs/ddos-bgp-instance.yaml
@@ -844,6 +1022,10 @@ resources:
   azure:
     resources: &id016
     - Microsoft.Network/ddosProtectionPlans
+  aws:
+    unimplemented_resources:
+    - AWS::Shield::Protection
+    - AWS::Shield::ProtectionGroup
   status: pending_verification
 - alicloud: ACS::DdosCoo::Instance
   spec: providers/alicloud/specs/ddos-coo-instance.yaml
@@ -857,6 +1039,10 @@ resources:
     resources: *id015
   azure:
     resources: *id016
+  aws:
+    unimplemented_resources:
+    - AWS::Shield::Protection
+    - AWS::Shield::ProtectionGroup
   status: pending_verification
 - alicloud: ACS::ECS::DedicatedHost
   spec: providers/alicloud/specs/dedicated-host.yaml
@@ -873,6 +1059,9 @@ resources:
   azure:
     resources:
     - Microsoft.Compute/hostGroups/hosts
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::Host
   status: pending_verification
 - alicloud: ACS::VPC::DhcpOptionsSet
   spec: providers/alicloud/specs/dhcp-options-set.yaml
@@ -889,6 +1078,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/virtualNetworks
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::DHCPOptions
   status: pending_verification
   notes: GCP/Azure expose network DNS/DHCP configuration within network or DNS-policy resources rather
     than Alibaba DHCP option-set ownership.
@@ -908,6 +1100,9 @@ resources:
   azure:
     resources:
     - Microsoft.Compute/disks
+  aws:
+    resources:
+    - AWS::EC2::Volume
   status: pending_verification
 - alicloud: ACS::Domain::Domain
   spec: providers/alicloud/specs/domain-domain.yaml
@@ -923,6 +1118,9 @@ resources:
   azure:
     resources:
     - Microsoft.DomainRegistration/domains
+  aws:
+    unimplemented_resources:
+    - AWS::Route53Domains::Domain
   status: pending_verification
 - alicloud: ACS::DRDS::DBInstance
   spec: providers/alicloud/specs/drds-instance.yaml
@@ -939,6 +1137,9 @@ resources:
   azure:
     resources: &id030
     - Microsoft.DocumentDB/databaseAccounts
+  aws:
+    unimplemented_resources:
+    - AWS::DSQL::Cluster
   status: pending_verification
 - alicloud: ACS::DTS::Instance
   spec: providers/alicloud/specs/dts-instance.yaml
@@ -959,6 +1160,12 @@ resources:
     - Microsoft.DataMigration/sqlMigrationServices
     - Microsoft.DataMigration/migrationServices
     - Microsoft.DataMigration/databaseMigrations
+  aws:
+    unimplemented_resources:
+    - AWS::DMS::ReplicationInstance
+    - AWS::DMS::ReplicationTask
+    - AWS::DMS::ReplicationConfig
+    - AWS::DMS::Endpoint
   status: pending_verification
 - alicloud: ACS::EAIS::Instance
   spec: providers/alicloud/specs/eais-instance.yaml
@@ -974,6 +1181,8 @@ resources:
   azure:
     resources:
     - Microsoft.Compute/virtualMachines
+  aws:
+    notes: Amazon Elastic Inference was discontinued on April 15, 2024; no current accelerator attachment API exists.
   status: pending_verification
 - alicloud: ACS::EBS::DedicatedBlockStorageCluster
   spec: providers/alicloud/specs/ebs-dedicated-cluster.yaml
@@ -988,6 +1197,8 @@ resources:
   azure:
     resources:
     - Microsoft.ElasticSan/elasticSans
+  aws:
+    notes: EBS exposes no dedicated block storage cluster; dedicated capacity exists only as AWS Outposts hardware, which is not an account-deletable resource.
   status: pending_verification
   notes: GCP now inventories native Hyperdisk Storage Pools with capacity/performance usage and
     native paginated disk members and reviewed Balanced/Throughput pool cleanup after
@@ -1012,6 +1223,9 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems
+  aws:
+    unimplemented_resources:
+    - AWS::DRS::SourceServer
   status: pending_verification
   notes: Replication grouping is provider-specific; verify source/target retention and controller membership.
 - alicloud: ACS::EBS::DiskReplicaPair
@@ -1029,6 +1243,9 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems
+  aws:
+    unimplemented_resources:
+    - AWS::DRS::SourceServer
   status: pending_verification
   notes: Regional disk replication and Azure Site Recovery differ from explicit Alibaba disk-replica pairs;
     retention and source/target ownership need platform-aware implementation.
@@ -1046,6 +1263,10 @@ resources:
   azure:
     resources:
     - Microsoft.ContainerInstance/containerGroups
+  aws:
+    unimplemented_resources:
+    - AWS::ECS::Service
+    - AWS::ECS::TaskDefinition
   status: pending_verification
   notes: Azure Container Instances uses native group inventory and deletion; embedded containers share its lifetime,
     external volumes remain independent, and configuration/private-value drift blocks cleanup. Native examples
@@ -1064,6 +1285,9 @@ resources:
   azure:
     resources:
     - Microsoft.ContainerRegistry/registries
+  aws:
+    unimplemented_resources:
+    - AWS::ECR::PullThroughCacheRule
   status: pending_verification
   notes: Registry repositories provide persistent image storage; platform-local image caches and ownership
     must be assessed separately.
@@ -1079,6 +1303,8 @@ resources:
     resources: []
   azure:
     resources: []
+  aws:
+    notes: AWS offers no cloud phone instance service.
   status: pending_verification
   notes: 'Research pending: hosted Android/cloud-phone lifecycle is not represented by a generic VM mapping.'
 - alicloud: ACS::ECS::Instance
@@ -1096,6 +1322,9 @@ resources:
   azure:
     resources:
     - Microsoft.Compute/virtualMachines
+  aws:
+    resources:
+    - AWS::EC2::Instance
   status: pending_verification
 - alicloud: ACS::Eflo::Cluster
   spec: providers/alicloud/specs/eflo-cluster.yaml
@@ -1112,6 +1341,9 @@ resources:
   azure:
     resources:
     - Microsoft.Batch/batchAccounts/pools
+  aws:
+    unimplemented_resources:
+    - AWS::SageMaker::Cluster
   status: pending_verification
 - alicloud: ACS::Ehpc::Cluster
   spec: providers/alicloud/specs/ehpc-cluster.yaml
@@ -1128,6 +1360,10 @@ resources:
   azure:
     resources:
     - Microsoft.Batch/batchAccounts/pools
+  aws:
+    unimplemented_resources:
+    - AWS::PCS::Cluster
+    - AWS::Batch::ComputeEnvironment
   status: pending_verification
 - alicloud: ACS::EIP::EipAddress
   spec: providers/alicloud/specs/eip-address.yaml
@@ -1144,6 +1380,9 @@ resources:
   azure:
     resources: &id018
     - Microsoft.Network/publicIPAddresses
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::EIP
   status: pending_verification
 - alicloud: ACS::Eipanycast::AnycastEipAddress
   spec: providers/alicloud/specs/eipanycast-address.yaml
@@ -1157,6 +1396,9 @@ resources:
     resources: *id017
   azure:
     resources: *id018
+  aws:
+    unimplemented_resources:
+    - AWS::GlobalAccelerator::Accelerator
   status: pending_verification
 - alicloud: ACS::ECS::ElasticityAssurance
   spec: providers/alicloud/specs/elasticity-assurance.yaml
@@ -1172,6 +1414,9 @@ resources:
   azure:
     resources:
     - Microsoft.Compute/capacityReservationGroups
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::CapacityReservationFleet
   status: pending_verification
 - alicloud: ACS::Elasticsearch::Instance
   spec: providers/alicloud/specs/elasticsearch-instance.yaml
@@ -1188,6 +1433,9 @@ resources:
   azure:
     resources:
     - Microsoft.Search/searchServices
+  aws:
+    resources:
+    - AWS::OpenSearchService::Domain
   status: pending_verification
 - alicloud: ACS::Elasticsearch::Logstash
   spec: providers/alicloud/specs/elasticsearch-logstash.yaml
@@ -1203,6 +1451,9 @@ resources:
   azure:
     resources:
     - Microsoft.DataFactory/factories
+  aws:
+    unimplemented_resources:
+    - AWS::OSIS::Pipeline
   status: pending_verification
   notes: Azure Data Factory covers fourteen native kinds and thirteen cleanup actions,
     including reviewed artifact cascades, trigger/CDC preparation, work cancellation,
@@ -1223,6 +1474,9 @@ resources:
     resources:
     - Microsoft.Synapse/workspaces
   notes: Native workspace and compute inventory is implemented; reviewed cleanup and full Synapse child scope remain pending.
+  aws:
+    unimplemented_resources:
+    - AWS::EMRServerless::Application
   status: pending_verification
 - alicloud: ACS::ENS::Instance
   spec: providers/alicloud/specs/ens-instance.yaml
@@ -1248,6 +1502,9 @@ resources:
     - Microsoft.AzureStackHCI/storageContainers
     - Microsoft.AzureStackHCI/galleryImages
     - Microsoft.AzureStackHCI/marketplaceGalleryImages
+  aws:
+    resources:
+    - AWS::EC2::Instance
   status: pending_verification
   notes: ENS releases prepaid or postpaid edge virtual machines. Ordinary Arc machine
     deletion only unregisters an external host, so it is not VM-release parity.
@@ -1272,6 +1529,10 @@ resources:
   azure:
     resources:
     - Microsoft.Cdn/profiles/afdEndpoints
+  aws:
+    unimplemented_resources:
+    - AWS::CloudFront::Distribution
+    - AWS::WAFv2::WebACL
   status: pending_verification
 - alicloud: ACS::ESS::ScalingGroup
   spec: providers/alicloud/specs/ess-scaling-group.yaml
@@ -1287,6 +1548,12 @@ resources:
   azure:
     resources:
     - Microsoft.Compute/virtualMachineScaleSets
+  aws:
+    resources:
+    - AWS::AutoScaling::AutoScalingGroup
+    unimplemented_resources:
+    - AWS::EC2::LaunchTemplate
+    - AWS::AutoScaling::LaunchConfiguration
   status: pending_verification
   notes: Zonal and regional managed instance groups share the canonical InstanceGroupManager type.
     Both native operation families remain required and are bound by one resource rule; regional
@@ -1308,6 +1575,10 @@ resources:
   azure:
     resources:
     - Microsoft.Network/expressRouteCircuits
+  aws:
+    unimplemented_resources:
+    - AWS::DirectConnect::Connection
+    - AWS::DirectConnect::Lag
   status: pending_verification
 - alicloud: ACS::ExpressConnectRouter::ExpressConnectRouter
   spec: providers/alicloud/specs/express-connect-router.yaml
@@ -1323,6 +1594,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/expressRouteGateways
+  aws:
+    unimplemented_resources:
+    - AWS::DirectConnect::DirectConnectGateway
   status: pending_verification
 - alicloud: ACS::ExpressConnect::VirtualBorderRouter
   spec: providers/alicloud/specs/express-connect-vbr.yaml
@@ -1338,6 +1612,11 @@ resources:
   azure:
     resources:
     - Microsoft.Network/expressRouteCircuits/peerings
+  aws:
+    unimplemented_resources:
+    - AWS::DirectConnect::PrivateVirtualInterface
+    - AWS::DirectConnect::TransitVirtualInterface
+    - AWS::DirectConnect::PublicVirtualInterface
   status: pending_verification
 - alicloud: ACS::FC::Function
   spec: providers/alicloud/specs/fc-function.yaml
@@ -1353,6 +1632,9 @@ resources:
   azure:
     resources:
     - Microsoft.Web/sites/functions
+  aws:
+    resources:
+    - AWS::Lambda::Function
   status: pending_verification
 - alicloud: ACS::FC::Service
   spec: providers/alicloud/specs/fc-service.yaml
@@ -1368,6 +1650,9 @@ resources:
   azure:
     resources:
     - Microsoft.Web/sites
+  aws:
+    unimplemented_resources:
+    - AWS::AppRunner::Service
   status: pending_verification
 - alicloud: ACS::Ga::Accelerator
   spec: providers/alicloud/specs/ga-accelerator.yaml
@@ -1383,6 +1668,11 @@ resources:
   azure:
     resources:
     - Microsoft.Cdn/profiles/afdEndpoints
+  aws:
+    unimplemented_resources:
+    - AWS::GlobalAccelerator::Accelerator
+    - AWS::GlobalAccelerator::Listener
+    - AWS::GlobalAccelerator::EndpointGroup
   status: pending_verification
 - alicloud: ACS::Ga::BandwidthPackage
   spec: providers/alicloud/specs/ga-bandwidth-package.yaml
@@ -1396,6 +1686,8 @@ resources:
     resources: *id009
   azure:
     resources: *id010
+  aws:
+    notes: Global Accelerator charges a data transfer premium per GB; its API exposes no bandwidth package resource.
   status: pending_verification
   notes: Capacity/pricing models differ; verify attachment/circuit bandwidth settings and do not claim
     a standalone purchased bandwidth-package API.
@@ -1411,6 +1703,9 @@ resources:
     resources: *id001
   azure:
     resources: *id002
+  aws:
+    unimplemented_resources:
+    - AWS::Redshift::Cluster
   status: pending_verification
 - alicloud: ACS::GraphDatabase::DbInstance
   spec: providers/alicloud/specs/graph-database-instance.yaml
@@ -1426,6 +1721,11 @@ resources:
   azure:
     resources:
     - Microsoft.DocumentDB/databaseAccounts
+  aws:
+    unimplemented_resources:
+    - AWS::Neptune::DBCluster
+    - AWS::Neptune::DBInstance
+    - AWS::NeptuneGraph::Graph
   status: pending_verification
 - alicloud: ACS::HBase::Cluster
   spec: providers/alicloud/specs/hbase-cluster.yaml
@@ -1442,6 +1742,10 @@ resources:
   azure:
     resources: &id020
     - Microsoft.DocumentDB/cassandraClusters
+  aws:
+    unimplemented_resources:
+    - AWS::Cassandra::Keyspace
+    - AWS::Cassandra::Table
   status: pending_verification
 - alicloud: ACS::HBR::HanaInstance
   spec: providers/alicloud/specs/hbr-hana-instance.yaml
@@ -1458,6 +1762,9 @@ resources:
     resources:
     - Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers
     - Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems
+  aws:
+    unimplemented_resources:
+    - AWS::Backup::BackupSelection
   status: pending_verification
   notes: Native Recovery Services container and protected-item inventory are registered.
     Container unregistration, item cleanup and backup-source lifecycle equivalence remain unfinished.
@@ -1477,6 +1784,10 @@ resources:
     - Microsoft.DataProtection/backupVaults
     - Microsoft.RecoveryServices/vaults
     - Microsoft.RecoveryServices/locations/deletedVaults
+  aws:
+    unimplemented_resources:
+    - AWS::Backup::BackupVault
+    - AWS::Backup::LogicallyAirGappedBackupVault
   status: pending_verification
   notes: Data Protection active/deleted inventory and standalone vault deletion are registered. Coordinated cleanup, restore and
     retained lifecycle acceptance remain unfinished. Recovery Services active/deleted vault inventory
@@ -1493,6 +1804,9 @@ resources:
     resources: *id001
   azure:
     resources: *id002
+  aws:
+    unimplemented_resources:
+    - AWS::RedshiftServerless::Workgroup
   status: pending_verification
 - alicloud: ACS::ECS::Image
   spec: providers/alicloud/specs/image.yaml
@@ -1508,6 +1822,9 @@ resources:
   azure:
     resources:
     - Microsoft.Compute/images
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::Image
   status: pending_verification
 - alicloud: ACS::VPC::Ipv4Gateway
   spec: providers/alicloud/specs/ipv4-gateway.yaml
@@ -1523,6 +1840,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/natGateways
+  aws:
+    resources:
+    - AWS::EC2::InternetGateway
   status: pending_verification
 - alicloud: ACS::VPC::Ipv6Address
   spec: providers/alicloud/specs/ipv6-address.yaml
@@ -1539,6 +1859,10 @@ resources:
   azure:
     resources:
     - Microsoft.Network/publicIPAddresses
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::VPCCidrBlock
+    - AWS::EC2::SubnetCidrBlock
   status: pending_verification
 - alicloud: ACS::VPC::Ipv6Gateway
   spec: providers/alicloud/specs/ipv6-gateway.yaml
@@ -1554,6 +1878,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/virtualNetworkGateways
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::EgressOnlyInternetGateway
   status: pending_verification
 - alicloud: ACS::ECS::KeyPair
   spec: providers/alicloud/specs/key-pair.yaml
@@ -1568,6 +1895,9 @@ resources:
   azure:
     resources:
     - Microsoft.Compute/sshPublicKeys
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::KeyPair
   status: pending_verification
   notes: GCP service-account keys are workload credentials and are not SSH key-pair equivalents.
     Project and instance SSH metadata plus OS Login key discovery, ownership, expiry and removal
@@ -1589,6 +1919,10 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.KeyVault/vaults/keys
+  aws:
+    unimplemented_resources:
+    - AWS::KMS::Key
+    - AWS::KMS::Alias
   status: pending_verification
 - alicloud: ACS::Lindorm::Instance
   spec: providers/alicloud/specs/lindorm-instance.yaml
@@ -1602,6 +1936,10 @@ resources:
     resources: *id019
   azure:
     resources: *id020
+  aws:
+    unimplemented_resources:
+    - AWS::Cassandra::Keyspace
+    - AWS::Cassandra::Table
   status: pending_verification
 - alicloud: ACS::Live::Domain
   spec: providers/alicloud/specs/live-domain.yaml
@@ -1617,6 +1955,9 @@ resources:
   azure:
     resources:
     - Microsoft.Cdn/profiles/afdEndpoints
+  aws:
+    unimplemented_resources:
+    - AWS::IVS::Channel
   status: pending_verification
   notes: Delivery-domain lifecycle maps to CDN endpoints. Azure Media Services is retired; do not add
     obsolete streaming-resource APIs.
@@ -1634,6 +1975,11 @@ resources:
     resources:
     - Microsoft.Synapse/workspaces
   notes: Native workspace and compute inventory is implemented; reviewed cleanup and full Synapse child scope remain pending.
+  aws:
+    resources:
+    - AWS::Athena::WorkGroup
+    unimplemented_resources:
+    - AWS::Glue::Database
   status: pending_verification
 - alicloud: ACS::MessageService::Queue
   spec: providers/alicloud/specs/mns-queue.yaml
@@ -1649,6 +1995,9 @@ resources:
   azure:
     resources:
     - Microsoft.ServiceBus/namespaces/queues
+  aws:
+    resources:
+    - AWS::SQS::Queue
   status: pending_verification
 - alicloud: ACS::MessageService::Topic
   spec: providers/alicloud/specs/mns-topic.yaml
@@ -1664,6 +2013,9 @@ resources:
   azure:
     resources:
     - Microsoft.ServiceBus/namespaces/topics
+  aws:
+    resources:
+    - AWS::SNS::Topic
   status: pending_verification
 - alicloud: ACS::MongoDB::DBInstance
   spec: providers/alicloud/specs/mongodb-db-instance.yaml
@@ -1680,6 +2032,11 @@ resources:
     resources:
     - Microsoft.DocumentDB/databaseAccounts
     - Microsoft.DocumentDB/mongoClusters
+  aws:
+    unimplemented_resources:
+    - AWS::DocDB::DBCluster
+    - AWS::DocDB::DBInstance
+    - AWS::DocDBElastic::Cluster
   status: pending_verification
 - alicloud: ACS::MSE::Cluster
   spec: providers/alicloud/specs/mse-cluster.yaml
@@ -1697,6 +2054,11 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.ServiceFabric/clusters
+  aws:
+    unimplemented_resources:
+    - AWS::ServiceDiscovery::PrivateDnsNamespace
+    - AWS::ServiceDiscovery::HttpNamespace
+    - AWS::ServiceDiscovery::Service
   status: pending_verification
 - alicloud: ACS::MSE::Gateway
   spec: providers/alicloud/specs/mse-gateway.yaml
@@ -1712,6 +2074,10 @@ resources:
   azure:
     resources:
     - Microsoft.ApiManagement/service
+  aws:
+    unimplemented_resources:
+    - AWS::VpcLattice::Service
+    - AWS::VpcLattice::ServiceNetwork
   status: pending_verification
 - alicloud: ACS::NAS::FileSystem
   spec: providers/alicloud/specs/nas-file-system.yaml
@@ -1728,6 +2094,11 @@ resources:
     resources:
     - Microsoft.Storage/storageAccounts/fileServices/shares
     - Microsoft.NetApp/netAppAccounts/capacityPools/volumes
+  aws:
+    resources:
+    - AWS::EFS::FileSystem
+    unimplemented_resources:
+    - AWS::FSx::FileSystem
   status: pending_verification
 - alicloud: ACS::NAS::MountTarget
   spec: providers/alicloud/specs/nas-mount-target.yaml
@@ -1744,6 +2115,10 @@ resources:
   azure:
     resources:
     - Microsoft.NetApp/netAppAccounts/capacityPools/volumes
+  aws:
+    unimplemented_resources:
+    - AWS::EFS::MountTarget
+    - AWS::EFS::AccessPoint
   status: pending_verification
   notes: Filestore mounts are network/file-share properties. NetApp mountTargets are read-only volume
     properties; NFS access rules use the volume export policy. Neither is an independent mount-target
@@ -1766,6 +2141,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/natGateways
+  aws:
+    resources:
+    - AWS::EC2::NatGateway
   status: pending_verification
   notes: GCP Cloud NAT configurations are independently inventoried from native Router.nats,
     including public/private settings and explicit subnet/IP dependencies. Native PATCH
@@ -1790,6 +2168,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/publicIPAddresses
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::EIP
   status: pending_verification
 - alicloud: ACS::VPC::NetworkAcl
   spec: providers/alicloud/specs/network-acl.yaml
@@ -1806,6 +2187,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/networkSecurityGroups
+  aws:
+    resources:
+    - AWS::EC2::NetworkAcl
   status: pending_verification
   notes: Hierarchical FirewallPolicy requires an explicitly configured organization/folder scope.
     It and global/regional NetworkFirewallPolicy use reviewed native association-removal prerequisites,
@@ -1832,6 +2216,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/networkInterfaces
+  aws:
+    resources:
+    - AWS::EC2::NetworkInterface
   status: pending_verification
   notes: GCP NICs are instance components; inventory and lifecycle must account for attachment, aliases,
     network/subnet membership, and auto-deleted disks without inventing independently deletable NIC assets.
@@ -1847,6 +2234,12 @@ resources:
     resources: *id023
   azure:
     resources: *id024
+  aws:
+    resources:
+    - AWS::ElasticLoadBalancingV2::LoadBalancer
+    - AWS::ElasticLoadBalancingV2::TargetGroup
+    unimplemented_resources:
+    - AWS::ElasticLoadBalancingV2::Listener
   status: pending_verification
 - alicloud: ACS::OceanBase::Instance
   spec: providers/alicloud/specs/oceanbase-instance.yaml
@@ -1865,6 +2258,9 @@ resources:
     - Microsoft.Sql/servers/databases
     - Microsoft.DBforPostgreSQL/flexibleServers
     - Microsoft.DBforMySQL/flexibleServers
+  aws:
+    resources:
+    - AWS::RDS::DBCluster
   status: pending_verification
 - alicloud: ACS::Ons::Instance
   spec: providers/alicloud/specs/ons-instance.yaml
@@ -1878,6 +2274,9 @@ resources:
     resources: *id025
   azure:
     resources: *id026
+  aws:
+    resources:
+    - AWS::AmazonMQ::Broker
   status: pending_verification
 - alicloud: ACS::OOS::Application
   spec: providers/alicloud/specs/oos-application.yaml
@@ -1894,6 +2293,9 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.Solutions/applications
+  aws:
+    unimplemented_resources:
+    - AWS::ServiceCatalogAppRegistry::Application
   status: pending_verification
 - alicloud: ACS::OpenSearch::AppGroup
   spec: providers/alicloud/specs/opensearch-app-group.yaml
@@ -1909,6 +2311,10 @@ resources:
   azure:
     resources:
     - Microsoft.Search/searchServices
+  aws:
+    unimplemented_resources:
+    - AWS::OpenSearchServerless::Collection
+    - AWS::Kendra::Index
   status: pending_verification
 - alicloud: ACS::OSS::Bucket
   spec: providers/alicloud/specs/oss-bucket.yaml
@@ -1925,6 +2331,9 @@ resources:
   azure:
     resources:
     - Microsoft.Storage/storageAccounts/blobServices/containers
+  aws:
+    resources:
+    - AWS::S3::Bucket
   status: pending_verification
 - alicloud: ACS::PAI::Service
   spec: providers/alicloud/specs/pai-service.yaml
@@ -1941,6 +2350,11 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.MachineLearningServices/workspaces/onlineEndpoints
+  aws:
+    unimplemented_resources:
+    - AWS::SageMaker::Endpoint
+    - AWS::SageMaker::EndpointConfig
+    - AWS::SageMaker::Model
   status: pending_verification
 - alicloud: ACS::VPC::PeerConnection
   spec: providers/alicloud/specs/peer-connection.yaml
@@ -1956,6 +2370,9 @@ resources:
   azure:
     resources: &id036
     - Microsoft.Network/virtualNetworks/virtualNetworkPeerings
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::VPCPeeringConnection
   status: pending_verification
   notes: GCP peering is an independently removable network configuration. Peering cleanup must retain
     the network and unrelated peers.
@@ -1974,6 +2391,9 @@ resources:
   azure:
     resources:
     - Microsoft.Sql/servers
+  aws:
+    unimplemented_resources:
+    - AWS::RDS::DBProxy
   status: pending_verification
 - alicloud: ACS::PolarDB::DBCluster
   spec: providers/alicloud/specs/polardb-cluster.yaml
@@ -1987,6 +2407,10 @@ resources:
     resources: *id027
   azure:
     resources: *id028
+  aws:
+    resources:
+    - AWS::RDS::DBCluster
+    - AWS::RDS::DBInstance
   status: pending_verification
 - alicloud: ACS::DRDS::PolarDBXInstance
   spec: providers/alicloud/specs/polardbx-instance.yaml
@@ -2000,6 +2424,9 @@ resources:
     resources: *id029
   azure:
     resources: *id030
+  aws:
+    unimplemented_resources:
+    - AWS::DSQL::Cluster
   status: pending_verification
 - alicloud: ACS::PrivateZone::Zone
   spec: providers/alicloud/specs/private-zone.yaml
@@ -2015,6 +2442,10 @@ resources:
   azure:
     resources:
     - Microsoft.Network/privateDnsZones
+  aws:
+    unimplemented_resources:
+    - AWS::Route53::HostedZone
+    - AWS::Route53Resolver::ResolverRule
   status: pending_verification
 - alicloud: ACS::PrivateLink::VpcEndpointService
   spec: providers/alicloud/specs/privatelink-endpoint-service.yaml
@@ -2030,6 +2461,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/privateLinkServices
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::VPCEndpointService
   status: pending_verification
 - alicloud: ACS::PrivateLink::VpcEndpoint
   spec: providers/alicloud/specs/privatelink-endpoint.yaml
@@ -2046,6 +2480,9 @@ resources:
   azure:
     resources: &id038
     - Microsoft.Network/privateEndpoints
+  aws:
+    resources:
+    - AWS::EC2::VPCEndpoint
   status: pending_verification
 - alicloud: ACS::ARMS::Prometheus
   spec: providers/alicloud/specs/prometheus-instance.yaml
@@ -2062,6 +2499,10 @@ resources:
   azure:
     resources:
     - Microsoft.Monitor/accounts
+  aws:
+    unimplemented_resources:
+    - AWS::APS::Workspace
+    - AWS::APS::Scraper
   status: pending_verification
   notes: GCP Managed Service for Prometheus uses project metrics scopes rather than a deletable Prometheus
     instance.
@@ -2079,6 +2520,9 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.Graph/groups
+  aws:
+    resources:
+    - AWS::IAM::Group
   status: pending_verification
   notes: Directory-wide group management requires explicit directory scope and suitable OAuth permissions,
     beyond project/subscription inventory.
@@ -2096,6 +2540,9 @@ resources:
   azure:
     resources:
     - Microsoft.Authorization/roleDefinitions
+  aws:
+    resources:
+    - AWS::IAM::ManagedPolicy
   status: pending_verification
 - alicloud: ACS::RAM::Role
   spec: providers/alicloud/specs/ram-role.yaml
@@ -2113,6 +2560,11 @@ resources:
     resources:
     - Microsoft.Authorization/roleDefinitions
     - Microsoft.ManagedIdentity/userAssignedIdentities
+  aws:
+    resources:
+    - AWS::IAM::Role
+    unimplemented_resources:
+    - AWS::IAM::InstanceProfile
   status: pending_verification
 - alicloud: ACS::RAM::User
   spec: providers/alicloud/specs/ram-user.yaml
@@ -2129,6 +2581,9 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.Graph/users
+  aws:
+    resources:
+    - AWS::IAM::User
   status: pending_verification
   notes: GCP service accounts cover cloud workload identities. Human Google identities belong to the directory;
     that difference must be documented and separately assessed.
@@ -2144,6 +2599,9 @@ resources:
     resources: *id027
   azure:
     resources: *id028
+  aws:
+    resources:
+    - AWS::RDS::DBInstance
   status: pending_verification
 - alicloud: ACS::RealtimeCompute::VvpInstance
   spec: providers/alicloud/specs/realtime-compute-instance.yaml
@@ -2159,6 +2617,9 @@ resources:
   azure:
     resources:
     - Microsoft.StreamAnalytics/streamingjobs
+  aws:
+    unimplemented_resources:
+    - AWS::KinesisAnalyticsV2::Application
   status: pending_verification
 - alicloud: ACS::Redis::DBInstance
   spec: providers/alicloud/specs/redis-db-instance.yaml
@@ -2176,6 +2637,12 @@ resources:
     resources:
     - Microsoft.Cache/redis
     - Microsoft.Cache/redisEnterprise
+  aws:
+    unimplemented_resources:
+    - AWS::ElastiCache::ReplicationGroup
+    - AWS::ElastiCache::CacheCluster
+    - AWS::ElastiCache::ServerlessCache
+    - AWS::MemoryDB::Cluster
   status: pending_verification
 - alicloud: ACS::ResourceManager::ResourceDirectory
   spec: providers/alicloud/specs/resource-directory.yaml
@@ -2192,6 +2659,11 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.Management/managementGroups
+  aws:
+    unimplemented_resources:
+    - AWS::Organizations::Organization
+    - AWS::Organizations::OrganizationalUnit
+    - AWS::Organizations::Account
   status: pending_verification
   notes: GCP Organization is inventoried read-only through the connected project's native parent
     chain; denied or changed ancestry preserves prior observations. The public Resource Manager v3
@@ -2213,6 +2685,9 @@ resources:
     resources: *id025
   azure:
     resources: *id026
+  aws:
+    resources:
+    - AWS::AmazonMQ::Broker
   status: pending_verification
 - alicloud: ACS::ROS::StackGroup
   spec: providers/alicloud/specs/ros-stack-group.yaml
@@ -2230,6 +2705,9 @@ resources:
   azure:
     resources:
     - Microsoft.Resources/deploymentStacks
+  aws:
+    unimplemented_resources:
+    - AWS::CloudFormation::StackSet
   status: pending_verification
   notes: GCP deployment groups review current and last-successful-revision deployments before native
     deprovisioning and metadata deletion, with whole-group DELETE/ABANDON or retention of all
@@ -2252,6 +2730,9 @@ resources:
   azure:
     resources:
     - Microsoft.Resources/deploymentStacks
+  aws:
+    resources:
+    - AWS::CloudFormation::Stack
   status: pending_verification
   notes: Use Infrastructure Manager and Azure deployment stacks for owned-resource cleanup. Azure deployment
     history deletion does not delete deployed resources.
@@ -2267,6 +2748,9 @@ resources:
     resources: *id033
   azure:
     resources: *id034
+  aws:
+    resources:
+    - AWS::EC2::RouteTable
   status: pending_verification
 - alicloud: ACS::VPC::RouterInterface
   spec: providers/alicloud/specs/router-interface.yaml
@@ -2280,6 +2764,9 @@ resources:
     resources: *id035
   azure:
     resources: *id036
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::VPCPeeringConnection
   status: pending_verification
   notes: GCP peering is an independently removable network configuration. Peering cleanup must retain
     the network and unrelated peers.
@@ -2295,6 +2782,9 @@ resources:
   azure:
     resources:
     - Microsoft.Communication/communicationServices
+  aws:
+    unimplemented_resources:
+    - AWS::IVS::Stage
   status: pending_verification
   notes: 'Research pending for GCP: do not substitute an unrelated media processing API for an RTC application.'
 - alicloud: ACS::SCDN::Domain
@@ -2309,6 +2799,10 @@ resources:
     resources: *id013
   azure:
     resources: *id014
+  aws:
+    unimplemented_resources:
+    - AWS::CloudFront::Distribution
+    - AWS::WAFv2::WebACL
   status: pending_verification
 - alicloud: ACS::SDDP::Instance
   spec: providers/alicloud/specs/sddp-instance.yaml
@@ -2325,6 +2819,10 @@ resources:
     resources: []
     unimplemented_resources:
     - Microsoft.Purview/accounts
+  aws:
+    unimplemented_resources:
+    - AWS::Macie::Session
+    - AWS::Macie::CustomDataIdentifier
   status: pending_verification
 - alicloud: ACS::ECS::SecurityGroup
   spec: providers/alicloud/specs/security-group.yaml
@@ -2341,6 +2839,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/networkSecurityGroups
+  aws:
+    resources:
+    - AWS::EC2::SecurityGroup
   status: pending_verification
 - alicloud: ACS::SelectDB::DBInstance
   spec: providers/alicloud/specs/selectdb-instance.yaml
@@ -2354,6 +2855,9 @@ resources:
     resources: *id001
   azure:
     resources: *id002
+  aws:
+    unimplemented_resources:
+    - AWS::Redshift::Cluster
   status: pending_verification
 - alicloud: ACS::SLB::LoadBalancer
   spec: providers/alicloud/specs/slb-load-balancer.yaml
@@ -2367,6 +2871,9 @@ resources:
     resources: *id023
   azure:
     resources: *id024
+  aws:
+    unimplemented_resources:
+    - AWS::ElasticLoadBalancing::LoadBalancer
   status: pending_verification
 - alicloud: ACS::SLS::Project
   spec: providers/alicloud/specs/sls-project.yaml
@@ -2383,6 +2890,9 @@ resources:
   azure:
     resources:
     - Microsoft.OperationalInsights/workspaces
+  aws:
+    resources:
+    - AWS::Logs::LogGroup
   status: pending_verification
 - alicloud: ACS::SMS::Template
   spec: providers/alicloud/specs/sms-template.yaml
@@ -2397,6 +2907,9 @@ resources:
   azure:
     resources:
     - Microsoft.Communication/communicationServices
+  aws:
+    unimplemented_resources:
+    - AWS::Pinpoint::SmsTemplate
   status: pending_verification
   notes: Azure Communication and Email inventory and cleanup cover ten ARM/data resource kinds,
     including phone release and room cleanup. SMS template lifecycle differs by provider and regulatory
@@ -2415,6 +2928,9 @@ resources:
   azure:
     resources:
     - Microsoft.Compute/snapshots
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::Snapshot
   status: pending_verification
 - alicloud: ACS::SSLCertificatesService::Certificate
   spec: providers/alicloud/specs/ssl-certificate.yaml
@@ -2434,6 +2950,9 @@ resources:
     - Microsoft.Web/certificates
     unimplemented_resources:
     - Microsoft.KeyVault/vaults/certificates
+  aws:
+    unimplemented_resources:
+    - AWS::CertificateManager::Certificate
   status: pending_verification
 - alicloud: ACS::SWAS::Instance
   spec: providers/alicloud/specs/swas-instance.yaml
@@ -2448,6 +2967,9 @@ resources:
   azure:
     resources:
     - Microsoft.Compute/virtualMachines
+  aws:
+    unimplemented_resources:
+    - AWS::Lightsail::Instance
   status: pending_verification
 - alicloud: ACS::OTS::Instance
   spec: providers/alicloud/specs/tablestore-instance.yaml
@@ -2464,6 +2986,9 @@ resources:
   azure:
     resources:
     - Microsoft.DocumentDB/databaseAccounts
+  aws:
+    resources:
+    - AWS::DynamoDB::Table
   status: pending_verification
 - alicloud: ACS::ThreatDetection::Instance
   spec: providers/alicloud/specs/threat-detection-instance.yaml
@@ -2481,6 +3006,10 @@ resources:
   azure:
     resources:
     - Microsoft.Security/pricings
+  aws:
+    unimplemented_resources:
+    - AWS::GuardDuty::Detector
+    - AWS::SecurityHub::Hub
   status: pending_verification
   notes: >-
     Azure reads native Defender protection tiers, sub-plans, trial and enablement times,
@@ -2510,6 +3039,11 @@ resources:
   azure:
     resources:
     - Microsoft.Kusto/clusters
+  aws:
+    unimplemented_resources:
+    - AWS::Timestream::Database
+    - AWS::Timestream::Table
+    - AWS::Timestream::InfluxDBInstance
   status: pending_verification
 - alicloud: ACS::VOD::Domain
   spec: providers/alicloud/specs/vod-domain.yaml
@@ -2525,6 +3059,9 @@ resources:
   azure:
     resources:
     - Microsoft.Cdn/profiles/afdEndpoints
+  aws:
+    unimplemented_resources:
+    - AWS::CloudFront::Distribution
   status: pending_verification
   notes: Delivery-domain lifecycle maps to CDN endpoints; this is not a claim of codec/streaming-engine
     equivalence.
@@ -2541,6 +3078,9 @@ resources:
     resources: *id037
   azure:
     resources: *id038
+  aws:
+    resources:
+    - AWS::EC2::VPCEndpoint
   status: pending_verification
 - alicloud: ACS::VPC::VPC
   spec: providers/alicloud/specs/vpc.yaml
@@ -2556,6 +3096,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/virtualNetworks
+  aws:
+    resources:
+    - AWS::EC2::VPC
   status: pending_verification
 - alicloud: ACS::VPN::VpnConnection
   spec: providers/alicloud/specs/vpn-connection.yaml
@@ -2571,6 +3114,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/connections
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::VPNConnection
   status: pending_verification
 - alicloud: ACS::VPN::VpnGateway
   spec: providers/alicloud/specs/vpn-gateway.yaml
@@ -2587,6 +3133,9 @@ resources:
   azure:
     resources:
     - Microsoft.Network/virtualNetworkGateways
+  aws:
+    unimplemented_resources:
+    - AWS::EC2::VPNGateway
   status: pending_verification
 - alicloud: ACS::VPC::VSwitch
   spec: providers/alicloud/specs/vswitch.yaml
@@ -2602,8 +3151,14 @@ resources:
   azure:
     resources:
     - Microsoft.Network/virtualNetworks/subnets
+  aws:
+    resources:
+    - AWS::EC2::Subnet
   status: pending_verification
 evidence:
+  aws_cloudformation_schemas: https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/supported-resources.html
+  aws_api_models: https://github.com/aws/api-models-aws
+  aws_elastic_inference_eol: https://aws.amazon.com/machine-learning/elastic-inference/faqs/
   gcp_asset_types: https://docs.cloud.google.com/asset-inventory/docs/asset-types
   gcp_api_directory: https://www.googleapis.com/discovery/v1/apis
   azure_api_sources: https://github.com/Azure/azure-rest-api-specs

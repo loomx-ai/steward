@@ -2,6 +2,7 @@ package providers_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"os"
 	"path/filepath"
@@ -16,6 +17,7 @@ import (
 type parityTarget struct {
 	Resources     []string `yaml:"resources"`
 	Unimplemented []string `yaml:"unimplemented_resources"`
+	Notes         string   `yaml:"notes"`
 }
 
 type parityBaseline struct {
@@ -34,6 +36,7 @@ type parityRow struct {
 	Baseline parityBaseline `yaml:"baseline"`
 	GCP      parityTarget   `yaml:"gcp"`
 	Azure    parityTarget   `yaml:"azure"`
+	AWS      parityTarget   `yaml:"aws"`
 	Status   string         `yaml:"status"`
 	Notes    string         `yaml:"notes"`
 	Sources  []string       `yaml:"sources"`
@@ -67,7 +70,7 @@ func TestParityMatrixMatchesProviderSpecifications(t *testing.T) {
 	}
 	definitions := map[string]map[string]spec.ResourceKindSpec{}
 	paths := map[string]string{}
-	for _, provider := range []string{"alicloud", "gcp", "azure"} {
+	for _, provider := range []string{"alicloud", "gcp", "azure", "aws"} {
 		definitions[provider] = map[string]spec.ResourceKindSpec{}
 		files, err := filepath.Glob(filepath.Join(provider, "specs", "*.yaml"))
 		if err != nil || len(files) == 0 {
@@ -95,6 +98,22 @@ func TestParityMatrixMatchesProviderSpecifications(t *testing.T) {
 			}
 		}
 	}
+	selection, err := os.ReadFile(filepath.Join("aws", "catalog", "source", "selection.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var awsSelection struct {
+		ResourceTypes []struct {
+			NativeType string `json:"nativeType"`
+		} `json:"resource_types"`
+	}
+	if err := json.Unmarshal(selection, &awsSelection); err != nil {
+		t.Fatal(err)
+	}
+	awsCatalogTypes := map[string]bool{}
+	for _, resource := range awsSelection.ResourceTypes {
+		awsCatalogTypes[resource.NativeType] = true
+	}
 	seen := map[string]bool{}
 	for _, row := range matrix.Resources {
 		t.Run(row.Alicloud, func(t *testing.T) {
@@ -119,9 +138,9 @@ func TestParityMatrixMatchesProviderSpecifications(t *testing.T) {
 			if strings.TrimSpace(row.Status) == "" {
 				t.Fatal("missing verification status")
 			}
-			for provider, target := range map[string]parityTarget{"gcp": row.GCP, "azure": row.Azure} {
+			for provider, target := range map[string]parityTarget{"gcp": row.GCP, "azure": row.Azure, "aws": row.AWS} {
 				references := map[string]bool{}
-				if len(target.Resources)+len(target.Unimplemented) == 0 && strings.TrimSpace(row.Notes) == "" {
+				if len(target.Resources)+len(target.Unimplemented) == 0 && strings.TrimSpace(row.Notes) == "" && strings.TrimSpace(target.Notes) == "" {
 					t.Error("empty mapping has no research explanation", provider)
 				}
 				for _, name := range append(slices.Clone(target.Resources), target.Unimplemented...) {
@@ -129,6 +148,9 @@ func TestParityMatrixMatchesProviderSpecifications(t *testing.T) {
 						t.Error("empty or duplicate resource reference", provider, name)
 					}
 					references[name] = true
+					if provider == "aws" && !awsCatalogTypes[name] {
+						t.Error("AWS mapping references a type outside the pinned official catalog selection", name)
+					}
 				}
 				for _, name := range target.Resources {
 					if _, exists := definitions[provider][name]; !exists {
