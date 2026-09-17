@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"net/http"
 	"net/url"
 	"os"
 	"testing"
@@ -14,12 +15,16 @@ import (
 	awsfsx "github.com/aws/aws-sdk-go-v2/service/fsx"
 	fsxtypes "github.com/aws/aws-sdk-go-v2/service/fsx/types"
 	awsopensearch "github.com/aws/aws-sdk-go-v2/service/opensearch"
+	awsorganizations "github.com/aws/aws-sdk-go-v2/service/organizations"
+	orgtypes "github.com/aws/aws-sdk-go-v2/service/organizations/types"
+	awsdomains "github.com/aws/aws-sdk-go-v2/service/route53domains"
+	domaintypes "github.com/aws/aws-sdk-go-v2/service/route53domains/types"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 // Emulator evidence: an independent Moto server implements the native EC2,
-// OpenSearch and FSx APIs. Moto 5.2.3 rejects the docdb engine and encodes
+// OpenSearch, FSx, Route 53 Domains and Organizations APIs. Moto 5.2.3 rejects the docdb engine and encodes
 // DMS timestamps as strings, so DocumentDB and DMS use protocol fixtures. Resources are created with the
 // official SDK, then discovered and deleted only through the Steward runtime.
 //
@@ -35,6 +40,12 @@ func motoConfig(t *testing.T) awssdk.Config {
 	if err != nil || parsed.Scheme != "http" || parsed.Hostname() != "127.0.0.1" || parsed.Port() == "" || parsed.Path != "" {
 		t.Fatal("Moto must use a loopback HTTP origin")
 	}
+	// Each test starts from an empty emulator so earlier runs cannot satisfy it.
+	response, err := http.Post(endpoint+"/moto-api/reset", "application/json", nil)
+	if err != nil || response.StatusCode != http.StatusOK {
+		t.Fatalf("reset Moto: status=%v err=%v", response, err)
+	}
+	response.Body.Close()
 	return awssdk.Config{
 		Region: "us-east-1", BaseEndpoint: awssdk.String(endpoint), RetryMaxAttempts: 1,
 		Credentials: awscredentials.NewStaticCredentialsProvider("testing", "testing", ""),
@@ -199,4 +210,68 @@ func TestMotoOpenSearchAndFSxLifecycle(t *testing.T) {
 		t.Fatal("FSx file system not discovered")
 	}
 	runtime.delete(t, fileSystemItem)
+}
+
+func TestMotoRegisteredDomainLifecycle(t *testing.T) {
+	config := motoConfig(t)
+	ctx := context.Background()
+	contact := &domaintypes.ContactDetail{
+		FirstName: awssdk.String("Ops"), LastName: awssdk.String("Team"), ContactType: domaintypes.ContactTypePerson,
+		AddressLine1: awssdk.String("1 Main St"), City: awssdk.String("Seattle"), CountryCode: domaintypes.CountryCodeUs,
+		ZipCode: awssdk.String("98101"), Email: awssdk.String("ops@example.com"), PhoneNumber: awssdk.String("+1.2065550100"), State: awssdk.String("WA"),
+	}
+	domains := awsdomains.NewFromConfig(config)
+	for _, name := range []string{"steward-moto.com", "steward-moto.company"} {
+		if _, err := domains.RegisterDomain(ctx, &awsdomains.RegisterDomainInput{
+			DomainName: awssdk.String(name), DurationInYears: awssdk.Int32(2),
+			AdminContact: contact, RegistrantContact: contact, TechContact: contact,
+		}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	runtime := newMotoRuntime(t, config)
+	listed := runtime.list(t, "AWS::Route53Domains::Domain")
+	item, ok := listed["steward-moto.com"]
+	if !ok || len(listed) < 2 {
+		t.Fatalf("domains = %v", listed)
+	}
+	runtime.delete(t, item)
+	// The prefix-sharing sibling must survive and must not satisfy readback.
+	if _, ok := runtime.list(t, "AWS::Route53Domains::Domain")["steward-moto.company"]; !ok {
+		t.Fatal("deleting one domain removed a prefix-sharing domain")
+	}
+}
+
+func TestMotoOrganizationTreeParents(t *testing.T) {
+	config := motoConfig(t)
+	ctx := context.Background()
+	organizations := awsorganizations.NewFromConfig(config)
+	if _, err := organizations.CreateOrganization(ctx, &awsorganizations.CreateOrganizationInput{FeatureSet: orgtypes.OrganizationFeatureSetAll}); err != nil {
+		t.Fatal(err)
+	}
+	roots, err := organizations.ListRoots(ctx, &awsorganizations.ListRootsInput{})
+	if err != nil || len(roots.Roots) != 1 {
+		t.Fatalf("roots=%+v err=%v", roots, err)
+	}
+	platform, err := organizations.CreateOrganizationalUnit(ctx, &awsorganizations.CreateOrganizationalUnitInput{ParentId: roots.Roots[0].Id, Name: awssdk.String("platform")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	nested, err := organizations.CreateOrganizationalUnit(ctx, &awsorganizations.CreateOrganizationalUnitInput{ParentId: platform.OrganizationalUnit.Id, Name: awssdk.String("sandbox")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	parents, err := organizationTreeParents(ctx, organizations)
+	if err != nil {
+		t.Fatal(err)
+	}
+	found := map[string]bool{}
+	for _, parent := range parents {
+		found[parent.Identifier] = true
+	}
+	for _, id := range []*string{roots.Roots[0].Id, platform.OrganizationalUnit.Id, nested.OrganizationalUnit.Id} {
+		if !found[awssdk.ToString(id)] {
+			t.Fatalf("organization tree %v misses %s", found, awssdk.ToString(id))
+		}
+	}
 }

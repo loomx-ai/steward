@@ -1,0 +1,42 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::DRS::SourceServer
+  class: storage.replica_group
+presentation:
+  displayNames:
+    zh-CN: 弹性灾难恢复源服务器
+    en-US: Elastic Disaster Recovery Source Server
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: com.amazonaws.drs#DescribeSourceServers
+    itemsPath: items
+    identityPath: sourceServerID
+    statePath: dataReplicationInfo.dataReplicationState
+    pagination:
+      type: token
+      tokenParameter: nextToken
+      tokenPath: nextToken
+      pageSizeParameter: maxResults
+      maxPageSize: 200
+actions:
+  delete:
+    operation: com.amazonaws.drs#DeleteSourceServer
+    parameters:
+      sourceServerID: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.drs#DescribeSourceServers
+      parameters:
+        filters:
+          sourceServerIDs: resource.nativeIdsJson
+      itemsPath: items
+      identityPath: sourceServerID
+      statePath: dataReplicationInfo.dataReplicationState
+extensions:
+  hook: aws.product.resource

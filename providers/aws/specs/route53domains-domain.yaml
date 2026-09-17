@@ -1,0 +1,43 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::Route53Domains::Domain
+  class: dns.registered_domain
+presentation:
+  displayNames:
+    zh-CN: Route 53 注册域名
+    en-US: Route 53 Registered Domain
+  consoleLinkTemplate: https://console.aws.amazon.com/route53/domains/home#/DomainDetail/{nativeId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: com.amazonaws.route53domains#ListDomains
+    itemsPath: Domains
+    identityPath: DomainName
+    pagination:
+      type: token
+      tokenParameter: Marker
+      tokenPath: NextPageMarker
+      pageSizeParameter: MaxItems
+      maxPageSize: 100
+actions:
+  delete:
+    operation: com.amazonaws.route53domains#DeleteDomain
+    parameters:
+      DomainName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.route53domains#ListDomains
+      parameters:
+        FilterConditions:
+        - Name: DomainName
+          Operator: BEGINS_WITH
+          Values: resource.nativeIdsJson
+      itemsPath: Domains
+      identityPath: DomainName
+extensions:
+  hook: aws.product.resource

@@ -1,0 +1,41 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::Pinpoint::SmsTemplate
+  class: messaging.sms_template
+presentation:
+  displayNames:
+    zh-CN: Pinpoint 短信模板
+    en-US: Pinpoint SMS Template
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: com.amazonaws.pinpoint#ListTemplates
+    parameters:
+      TemplateType: SMS
+    itemsPath: TemplatesResponse.Item
+    identityPath: TemplateName
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: TemplatesResponse.NextToken
+      pageSizeParameter: PageSize
+      maxPageSize: 100
+actions:
+  delete:
+    operation: com.amazonaws.pinpoint#DeleteSmsTemplate
+    parameters:
+      TemplateName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.pinpoint#GetSmsTemplate
+      parameters:
+        TemplateName: resource.nativeId
+      itemsPath: SMSTemplateResponse
+      identityPath: TemplateName
+extensions:
+  hook: aws.product.resource

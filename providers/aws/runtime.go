@@ -201,6 +201,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 				return contracts.InventoryBatch{}, err
 			}
 			inventory.WithPlan(plan, func(ctx context.Context) ([]cloudControlParent, error) {
+				if plan.ParentSource == organizationTreeSource {
+					clients, err := r.factory.Native(ctx, credential, awsRegionBootstrap)
+					if err != nil {
+						return nil, NormalizeError(err)
+					}
+					return organizationTreeParents(ctx, clients.Organizations)
+				}
 				return r.listCloudControlParents(ctx, client, plan, request.Scope, "", 0)
 			}, func(ctx context.Context) (string, error) {
 				accountID, _, err := r.factory.CallerIdentity(ctx, credential, region)

@@ -1,0 +1,41 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::StorageGateway::Gateway
+  class: storage.gateway
+presentation:
+  displayNames:
+    zh-CN: Storage Gateway 网关
+    en-US: Storage Gateway
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: com.amazonaws.storagegateway#ListGateways
+    itemsPath: Gateways
+    identityPath: GatewayARN
+    statePath: GatewayOperationalState
+    pagination:
+      type: token
+      tokenParameter: Marker
+      tokenPath: Marker
+      pageSizeParameter: Limit
+      maxPageSize: 100
+actions:
+  delete:
+    operation: com.amazonaws.storagegateway#DeleteGateway
+    parameters:
+      GatewayARN: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.storagegateway#DescribeGatewayInformation
+      parameters:
+        GatewayARN: resource.nativeId
+      itemsPath: $
+      identityPath: GatewayARN
+      statePath: GatewayState
+extensions:
+  hook: aws.product.resource

@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/provider/spec"
 )
 
 type cloudFormationSchemaDigest struct {
@@ -127,7 +128,7 @@ func TestCloudControlSpecificationsMatchOfficialResourceSchemas(t *testing.T) {
 				}
 			}
 			if plan.usesParent() {
-				if definition.Discovery.Parent == nil || definition.Discovery.Parent.Source != cloudControlSource {
+				if definition.Discovery.Parent == nil || (definition.Discovery.Parent.Source != cloudControlSource && definition.Discovery.Parent.Source != organizationTreeSource) {
 					t.Fatal("parent expressions require Cloud Control parent discovery")
 				}
 				if _, ok := runtime.compiledSpec(definition.Discovery.Parent.NativeType); !ok {
@@ -227,10 +228,23 @@ func TestProductAPISpecificationsMatchNativeHandlers(t *testing.T) {
 		if definition.Discovery.List.Operation != kind.listOperation || action.Operation != kind.deleteOperation || action.Read == nil || action.Read.Operation != kind.readOperation {
 			t.Errorf("%s spec operations differ from handler %+v", name, kind)
 		}
-		if definition.Discovery.List.IdentityPath != kind.identity && name != "AWS::OpenSearchService::Domain" {
+		for usage, api := range map[string]*spec.ProductAPISpec{"list": definition.Discovery.List, "read": action.Read} {
+			input := smithyInputMembers(t, api.Operation)
+			for parameter := range api.Parameters {
+				if !input[parameter] {
+					t.Errorf("%s %s parameter %s is not a member of %s input", name, usage, parameter, api.Operation)
+				}
+			}
+		}
+		for parameter := range action.Parameters {
+			if !smithyInputMembers(t, action.Operation)[parameter] {
+				t.Errorf("%s delete parameter %s is not a member of %s input", name, parameter, action.Operation)
+			}
+		}
+		if !strings.EqualFold(definition.Discovery.List.IdentityPath, kind.identity) && name != "AWS::OpenSearchService::Domain" {
 			t.Errorf("%s identity %s differs from handler %s", name, definition.Discovery.List.IdentityPath, kind.identity)
 		}
-		if action.Read.IdentityPath != kind.identity {
+		if !strings.EqualFold(action.Read.IdentityPath, kind.identity) {
 			t.Errorf("%s read identity %s differs from handler %s", name, action.Read.IdentityPath, kind.identity)
 		}
 		if (action.DeletionProtection != nil) != (kind.protection != nil) {
@@ -249,4 +263,34 @@ func TestProductAPISpecificationsMatchNativeHandlers(t *testing.T) {
 			t.Errorf("native handler %s has no product API specification", name)
 		}
 	}
+}
+
+var smithyShapes map[string]struct {
+	Input   struct{ Target string }    `json:"input"`
+	Members map[string]json.RawMessage `json:"members"`
+}
+
+func smithyInputMembers(t *testing.T, operation string) map[string]bool {
+	t.Helper()
+	if smithyShapes == nil {
+		payload, err := os.ReadFile("catalog/source/smithy.json")
+		if err != nil {
+			t.Fatal(err)
+		}
+		var document struct {
+			Shapes map[string]struct {
+				Input   struct{ Target string }    `json:"input"`
+				Members map[string]json.RawMessage `json:"members"`
+			} `json:"shapes"`
+		}
+		if err := json.Unmarshal(payload, &document); err != nil {
+			t.Fatal(err)
+		}
+		smithyShapes = document.Shapes
+	}
+	result := map[string]bool{}
+	for member := range smithyShapes[smithyShapes[operation].Input.Target].Members {
+		result[member] = true
+	}
+	return result
 }

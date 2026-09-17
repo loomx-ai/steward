@@ -786,7 +786,7 @@ resources:
     unimplemented_resources:
     - Microsoft.StorageSync/storageSyncServices
   aws:
-    unimplemented_resources:
+    resources:
     - AWS::StorageGateway::Gateway
   status: pending_verification
 - alicloud: ACS::CloudSSO::Group
@@ -1114,7 +1114,7 @@ resources:
     resources:
     - Microsoft.DomainRegistration/domains
   aws:
-    unimplemented_resources:
+    resources:
     - AWS::Route53Domains::Domain
   status: pending_verification
 - alicloud: ACS::DRDS::DBInstance
@@ -1219,7 +1219,7 @@ resources:
     unimplemented_resources:
     - Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems
   aws:
-    unimplemented_resources:
+    resources:
     - AWS::DRS::SourceServer
   status: pending_verification
   notes: Replication grouping is provider-specific; verify source/target retention and controller membership.
@@ -1239,7 +1239,7 @@ resources:
     unimplemented_resources:
     - Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems
   aws:
-    unimplemented_resources:
+    resources:
     - AWS::DRS::SourceServer
   status: pending_verification
   notes: Regional disk replication and Azure Site Recovery differ from explicit Alibaba disk-replica pairs;
@@ -2652,9 +2652,8 @@ resources:
   aws:
     resources:
     - AWS::Organizations::Organization
-    - AWS::Organizations::Account
-    unimplemented_resources:
     - AWS::Organizations::OrganizationalUnit
+    - AWS::Organizations::Account
   status: pending_verification
   notes: GCP Organization is inventoried read-only through the connected project's native parent
     chain; denied or changed ancestry preserves prior observations. The public Resource Manager v3
@@ -2899,7 +2898,7 @@ resources:
     resources:
     - Microsoft.Communication/communicationServices
   aws:
-    unimplemented_resources:
+    resources:
     - AWS::Pinpoint::SmsTemplate
   status: pending_verification
   notes: Azure Communication and Email inventory and cleanup cover ten ARM/data resource kinds,
