@@ -8,9 +8,9 @@ import (
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	awsbackup "github.com/aws/aws-sdk-go-v2/service/backup"
 	awskms "github.com/aws/aws-sdk-go-v2/service/kms"
+	kmstypes "github.com/aws/aws-sdk-go-v2/service/kms/types"
 	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
-	kmstypes "github.com/aws/aws-sdk-go-v2/service/kms/types"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -29,7 +29,9 @@ func (f fakeBackup) DescribeBackupVault(context.Context, *awsbackup.DescribeBack
 	return f.output, nil
 }
 
-type fakeS3 struct{ output *awss3.ListObjectVersionsOutput }
+type fakeS3 struct {
+	output *awss3.ListObjectVersionsOutput
+}
 
 func (f fakeS3) ListObjectVersions(context.Context, *awss3.ListObjectVersionsInput, ...func(*awss3.Options)) (*awss3.ListObjectVersionsOutput, error) {
 	return f.output, nil

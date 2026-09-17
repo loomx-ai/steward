@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -64,5 +65,57 @@ func TestKMSReferencesIgnoreAmbiguousAliases(t *testing.T) {
 		if relationship.Source == kmsReferenceSource {
 			t.Fatal("ambiguous alias produced an edge", relationship)
 		}
+	}
+}
+
+func TestKMSPolicyWithSoleAdministratorProtectsThePrincipal(t *testing.T) {
+	sole := map[string]any{"Version": "2012-10-17", "Statement": []any{
+		map[string]any{"Sid": "Admin", "Effect": "Allow", "Principal": map[string]any{"AWS": "arn:aws:iam::123456789012:role/platform/KeyAdmin"}, "Action": "kms:*", "Resource": "*"},
+		map[string]any{"Sid": "Use", "Effect": "Allow", "Principal": map[string]any{"AWS": []any{"arn:aws:iam::123456789012:user/app"}}, "Action": []any{"kms:Encrypt", "kms:Decrypt"}, "Resource": "*"},
+	}}
+	rootDelegated := map[string]any{"Statement": []any{
+		map[string]any{"Effect": "Allow", "Principal": map[string]any{"AWS": "arn:aws:iam::123456789012:root"}, "Action": "kms:*", "Resource": "*"},
+		map[string]any{"Effect": "Allow", "Principal": map[string]any{"AWS": "arn:aws:iam::123456789012:role/platform/KeyAdmin"}, "Action": "kms:*", "Resource": "*"},
+	}}
+	conditional := map[string]any{"Statement": []any{
+		map[string]any{"Effect": "Allow", "Principal": map[string]any{"AWS": "arn:aws:iam::123456789012:role/platform/KeyAdmin"}, "Action": "kms:PutKeyPolicy", "Resource": "*"},
+		map[string]any{"Effect": "Allow", "Principal": map[string]any{"AWS": "arn:aws:iam::123456789012:user/breakglass"}, "Action": "kms:*", "Resource": "*", "Condition": map[string]any{"Bool": map[string]any{"aws:MultiFactorAuthPresent": "true"}}},
+	}}
+	twoAdmins := map[string]any{"Statement": map[string]any{"Effect": "Allow", "Principal": map[string]any{"AWS": []any{"arn:aws:iam::123456789012:role/platform/KeyAdmin", "arn:aws:iam::123456789012:user/breakglass"}}, "Action": "kms:*", "Resource": "*"}}
+	wire, _ := json.Marshal(conditional)
+	for name, tc := range map[string]struct {
+		policy any
+		want   bool
+	}{
+		"sole role administrator":  {sole, true},
+		"account root delegation":  {rootDelegated, false},
+		"conditional second admin": {string(wire), true},
+		"two unconditional admins": {twoAdmins, false},
+		"unreadable policy":        {"{not json", false},
+	} {
+		t.Run(name, func(t *testing.T) {
+			assets := []asset.Asset{
+				awsAsset("key", "AWS::KMS::Key", "k1", map[string]any{"KeyPolicy": tc.policy}),
+				awsAsset("admin", "AWS::IAM::Role", "KeyAdmin", nil),
+				awsAsset("app", "AWS::IAM::User", "app", nil),
+			}
+			contribution, err := NewLifecycle().Contribute(context.Background(), "scope", assets)
+			if err != nil {
+				t.Fatal(err)
+			}
+			found := false
+			for _, relationship := range contribution.Relationships {
+				if relationship.Source != kmsReferenceSource {
+					continue
+				}
+				if relationship.SourceAssetID != "key" || relationship.TargetAssetID != "admin" || relationship.Type != graph.RelationshipUses {
+					t.Fatal("unexpected key policy relationship", relationship)
+				}
+				found = true
+			}
+			if found != tc.want {
+				t.Fatal("sole administrator edge", found, tc.want)
+			}
+		})
 	}
 }

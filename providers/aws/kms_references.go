@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"encoding/json"
 	"regexp"
 	"sort"
 	"strings"
@@ -161,4 +162,114 @@ func contributeKMSReferences(result *governance.Contribution, assets []asset.Ass
 			})
 		}
 	}
+}
+
+// A key policy that grants key administration to exactly one IAM user or role,
+// without delegating to the account root, loses all administrators when that
+// principal is deleted; AWS Support must then recover the key. The key uses
+// that principal, so the principal cannot be deleted while the key is live.
+func contributeKMSPolicyAdministrators(result *governance.Contribution, assets []asset.Asset) {
+	principals := map[string][]asset.Asset{}
+	for _, value := range assets {
+		if value.Identity.Provider != asset.ProviderAWS || value.ClosedAt != nil {
+			continue
+		}
+		if value.Identity.NativeType == "AWS::IAM::Role" || value.Identity.NativeType == "AWS::IAM::User" {
+			key := string(value.Identity.ConnectionID) + "\x00" + value.Identity.NativeType + "\x00" + value.Identity.NativeID
+			principals[key] = append(principals[key], value)
+		}
+	}
+	for _, key := range assets {
+		if key.Identity.Provider != asset.ProviderAWS || key.ClosedAt != nil || key.Identity.NativeType != "AWS::KMS::Key" {
+			continue
+		}
+		admins, delegated, ok := kmsPolicyAdministrators(key.Normalized["KeyPolicy"])
+		if !ok || delegated || len(admins) != 1 {
+			continue
+		}
+		match := kmsPrincipalARN.FindStringSubmatch(admins[0])
+		if match == nil {
+			continue
+		}
+		nativeType := map[string]string{"role": "AWS::IAM::Role", "user": "AWS::IAM::User"}[match[1]]
+		name := match[2][strings.LastIndex(match[2], "/")+1:]
+		candidates := principals[string(key.Identity.ConnectionID)+"\x00"+nativeType+"\x00"+name]
+		if len(candidates) != 1 {
+			continue
+		}
+		result.Relationships = append(result.Relationships, graph.Relationship{
+			SourceAssetID: key.ID, TargetAssetID: candidates[0].ID, Type: graph.RelationshipUses, Source: kmsReferenceSource, Confidence: 1,
+			Evidence: map[string]any{"source": "KeyPolicy", "sole_key_administrator": admins[0]},
+		})
+	}
+}
+
+var kmsPrincipalARN = regexp.MustCompile(`^arn:aws(?:-[a-z]+)*:iam::[0-9]{12}:(role|user)/(.+)$`)
+var kmsAccountRoot = regexp.MustCompile(`^(?:arn:aws(?:-[a-z]+)*:iam::)?[0-9]{12}(?::root)?$`)
+
+// kmsPolicyAdministrators returns the principals of unconditional Allow
+// statements that can change the key policy. delegated is true when the
+// account root or any principal can, which lets IAM policies restore access.
+// A policy that cannot be read as a document reports ok false.
+func kmsPolicyAdministrators(value any) ([]string, bool, bool) {
+	document, ok := value.(map[string]any)
+	if text, isText := value.(string); isText {
+		ok = json.Unmarshal([]byte(text), &document) == nil
+	}
+	if !ok || document == nil {
+		return nil, false, false
+	}
+	statements := anySlice(document["Statement"])
+	if statement, single := document["Statement"].(map[string]any); single {
+		statements = []any{statement}
+	}
+	admins := map[string]bool{}
+	delegated := false
+	for _, raw := range statements {
+		statement, _ := raw.(map[string]any)
+		if statement == nil || statement["Effect"] != "Allow" || statement["Condition"] != nil || statement["NotPrincipal"] != nil || statement["NotAction"] != nil {
+			continue
+		}
+		administers := false
+		for _, action := range policyStrings(statement["Action"]) {
+			switch strings.ToLower(action) {
+			case "*", "kms:*", "kms:putkeypolicy":
+				administers = true
+			}
+		}
+		if !administers {
+			continue
+		}
+		principal := statement["Principal"]
+		if principal == "*" {
+			delegated = true
+			continue
+		}
+		for _, arn := range policyStrings(object(principal)["AWS"]) {
+			switch {
+			case arn == "*" || kmsAccountRoot.MatchString(arn):
+				delegated = true
+			default:
+				admins[arn] = true
+			}
+		}
+	}
+	result := make([]string, 0, len(admins))
+	for arn := range admins {
+		result = append(result, arn)
+	}
+	sort.Strings(result)
+	return result, delegated, true
+}
+
+func policyStrings(value any) []string {
+	if text, ok := value.(string); ok {
+		return []string{text}
+	}
+	return stringSliceValue(value)
+}
+
+func object(value any) map[string]any {
+	result, _ := value.(map[string]any)
+	return result
 }

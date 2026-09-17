@@ -2090,6 +2090,7 @@ func isDeletionTimeDependency(value asset.Asset) bool {
 	switch value.Identity.NativeType {
 	case "AWS::KMS::Key",
 		"AWS::IAM::Role",
+		"AWS::IAM::User",
 		"ACS::KMS::Key",
 		"ACS::RAM::Role",
 		"cloudkms.googleapis.com/CryptoKey",

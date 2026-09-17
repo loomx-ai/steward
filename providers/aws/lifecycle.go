@@ -392,6 +392,7 @@ func (*Lifecycle) Contribute(_ context.Context, _ asset.ScopeID, assets []asset.
 		}
 	}
 	contributeKMSReferences(&result, assets)
+	contributeKMSPolicyAdministrators(&result, assets)
 	return result, nil
 }
 

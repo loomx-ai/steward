@@ -1806,6 +1806,7 @@ func TestCleanupServiceBlocksKeysAndIdentitiesUsedOutsidePlan(t *testing.T) {
 	}{
 		{asset.ProviderAWS, "AWS::KMS::Key", "AWS::RDS::DBInstance", graph.RelationshipUses},
 		{asset.ProviderAWS, "AWS::IAM::Role", "AWS::Batch::ComputeEnvironment", graph.RelationshipUses},
+		{asset.ProviderAWS, "AWS::IAM::User", "AWS::KMS::Key", graph.RelationshipUses},
 		{asset.ProviderGCP, "cloudkms.googleapis.com/CryptoKey", "sqladmin.googleapis.com/Instance", graph.RelationshipUses},
 		{asset.ProviderGCP, "iam.googleapis.com/ServiceAccount", "dataproc.googleapis.com/Cluster", graph.RelationshipUses},
 		{asset.ProviderAzure, "Microsoft.ManagedIdentity/userAssignedIdentities", "Microsoft.Web/sites", graph.RelationshipUses},
