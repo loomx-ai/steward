@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "41692096bb11a4a9387b9e92d0462ce368f185b29b3610208a0d628772311879",
+    "checksum": "9f778151cc088abd05c1b9be29dd9106cc1bf0bb8bc824714852cec99a8558c5",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "d07db0b21dd8fcef464eb30464580cb0177a608d497b17a9ba921946d0c23eeb",
+  "content_checksum": "a2efbe0f73222983677c06b225b4ee5a0f7ba2d8642a10193f9c9529199c4bde",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
