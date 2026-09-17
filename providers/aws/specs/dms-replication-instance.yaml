@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::DMS::ReplicationInstance
+  class: data.transfer_job
+presentation:
+  displayNames:
+    zh-CN: DMS 复制实例
+    en-US: DMS Replication Instance
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: com.amazonaws.databasemigrationservice#DescribeReplicationInstances
+    itemsPath: ReplicationInstances
+    identityPath: ReplicationInstanceArn
+    statePath: ReplicationInstanceStatus
+    pagination:
+      type: token
+      tokenParameter: Marker
+      tokenPath: Marker
+      pageSizeParameter: MaxRecords
+      maxPageSize: 100
+relationships:
+- type: member_of
+  targetType: AWS::EC2::VPC
+  targetIdPath: vpc_id
+- type: uses
+  targetType: AWS::EC2::SecurityGroup
+  targetIdPath: security_group_ids
+actions:
+  delete:
+    operation: com.amazonaws.databasemigrationservice#DeleteReplicationInstance
+    parameters:
+      ReplicationInstanceArn: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.databasemigrationservice#DescribeReplicationInstances
+      parameters:
+        Filters:
+        - Name: replication-instance-arn
+          Values: resource.nativeIdsJson
+      itemsPath: ReplicationInstances
+      identityPath: ReplicationInstanceArn
+      statePath: ReplicationInstanceStatus
+extensions:
+  hook: aws.product.resource

@@ -11,26 +11,23 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: cloud-control
-  detail:
-    operation: com.amazonaws.cloudcontrol#GetResource
-    itemsPath: ResourceDescription
-    identityPath: Identifier
-relationships:
-  - type: member_of
-    targetType: AWS::EC2::VPC
-    targetIdPath: vpc_id
-  - type: member_of
-    targetType: AWS::EC2::Subnet
-    targetIdPath: subnet_ids
-  - type: uses
-    targetType: AWS::EC2::SecurityGroup
-    targetIdPath: security_group_ids
+  source: product-api
+  list:
+    operation: com.amazonaws.opensearch#ListDomainNames
+    itemsPath: DomainNames
+    identityPath: DomainName
 actions:
   delete:
-    operation: com.amazonaws.cloudcontrol#DeleteResource
-    idempotency: provider_token
-    waiter: cloud_control_terminal
-    readback: cloud_control_absent
+    operation: com.amazonaws.opensearch#DeleteDomain
+    parameters:
+      DomainName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.opensearch#DescribeDomains
+      parameters:
+        DomainNames: resource.nativeIdsJson
+      itemsPath: DomainStatusList
+      identityPath: DomainName
 extensions:
-  hook: aws.cloudcontrol.resource
+  hook: aws.product.resource

@@ -26,6 +26,7 @@ type clientFactory interface {
 	CloudFormation(context.Context, contracts.Credential, string) (CloudFormationClient, error)
 	CloudControl(context.Context, contracts.Credential, string) (CloudControlClient, error)
 	Network(context.Context, contracts.Credential, string) (NetworkClient, error)
+	Native(context.Context, contracts.Credential, string) (*NativeClients, error)
 }
 
 const awsRegionBootstrap = "us-east-1"
@@ -163,6 +164,7 @@ func (r *Runtime) InventorySources() []contracts.InventorySource {
 	return []contracts.InventorySource{
 		{Name: "resource-explorer", RootScopeKinds: []asset.ScopeKind{asset.ScopeAccount, asset.ScopeOrganization, asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: false},
 		{Name: cloudControlSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, KindSpecific: true, NetworkClosure: true},
+		{Name: productAPISource, RootScopeKinds: []asset.ScopeKind{asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, KindSpecific: true, NetworkClosure: true},
 	}
 }
 
@@ -210,6 +212,20 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		}
 		return inventory.List(ctx, request)
 	}
+	if request.Source == productAPISource {
+		if request.ResourceKind == nil {
+			return contracts.InventoryBatch{}, fmt.Errorf("AWS product API inventory requires a resource kind")
+		}
+		kind, ok := nativeKinds[request.ResourceKind.NativeType]
+		if !ok {
+			return contracts.InventoryBatch{}, fmt.Errorf("AWS kind %s has no product API inventory", request.ResourceKind.NativeType)
+		}
+		clients, err := r.factory.Native(ctx, credential, r.cloudControlInventoryRegion(kind.nativeType, request.Scope))
+		if err != nil {
+			return contracts.InventoryBatch{}, NormalizeError(err)
+		}
+		return (&NativeInventory{clients: clients, kind: kind}).List(ctx, request)
+	}
 	if request.Source != "" && request.Source != "resource-explorer" {
 		return contracts.InventoryBatch{}, fmt.Errorf("AWS inventory source %q is not supported", request.Source)
 	}
@@ -239,6 +255,17 @@ func (r *Runtime) ResolveAction(ctx context.Context, connectionID asset.Connecti
 			return nil, err
 		}
 		return NewCloudFormationAction(client), nil
+	}
+	if kind, ok := nativeKinds[value.Identity.NativeType]; ok && r.productAPIKind(value.Identity.NativeType) {
+		credential, err := r.resolveCredential(ctx, connectionID)
+		if err != nil {
+			return nil, err
+		}
+		clients, err := r.factory.Native(ctx, credential, homeRegion(kind.nativeType, r.specScopeKind(kind.nativeType), value.Location))
+		if err != nil {
+			return nil, NormalizeError(err)
+		}
+		return &NativeAction{clients: clients, kind: kind}, nil
 	}
 	if !r.cloudControlKind(value.Identity.NativeType) {
 		return nil, fmt.Errorf("AWS native type %q has no action driver", value.Identity.NativeType)
@@ -330,10 +357,20 @@ func (r *Runtime) cloudControlKind(nativeType string) bool {
 	return false
 }
 
+func (r *Runtime) productAPIKind(nativeType string) bool {
+	compiled, ok := r.compiledSpec(nativeType)
+	return ok && compiled.Definition.Extensions.Hook == productAPIHook && compiled.Definition.Discovery.Source == productAPISource
+}
+
+func (r *Runtime) specScopeKind(nativeType string) asset.ScopeKind {
+	compiled, _ := r.compiledSpec(nativeType)
+	return compiled.Definition.Scope.Kind
+}
+
 func (r *Runtime) withoutCloudControlItems(items []contracts.InventoryItem) []contracts.InventoryItem {
 	result := make([]contracts.InventoryItem, 0, len(items))
 	for _, item := range items {
-		if !r.cloudControlKind(item.NativeType) {
+		if !r.cloudControlKind(item.NativeType) && !r.productAPIKind(item.NativeType) {
 			result = append(result, item)
 		}
 	}
@@ -405,5 +442,6 @@ func compileEmbeddedSpecs(providerCatalog catalog.Catalog) (spec.Bundle, error) 
 	return spec.CompileBundle(sources, providerCatalog, spec.HookRegistry{
 		"aws.cloudformation.stack": {spec.HookPreflight, spec.HookAction, spec.HookWaiter, spec.HookReadback, spec.HookLifecycle},
 		cloudControlHook:           {spec.HookPreflight, spec.HookAction, spec.HookWaiter, spec.HookReadback},
+		productAPIHook:             {spec.HookPreflight, spec.HookAction, spec.HookWaiter, spec.HookReadback},
 	})
 }

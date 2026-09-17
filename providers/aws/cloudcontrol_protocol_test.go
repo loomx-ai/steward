@@ -49,7 +49,7 @@ func TestCloudControlSDKWireProtocol(t *testing.T) {
 	defer server.Close()
 	client := &cloudControlSDK{client: awscloudcontrol.New(awscloudcontrol.Options{
 		Region: "eu-west-1", BaseEndpoint: awssdk.String(server.URL),
-		Credentials: awscredentials.NewStaticCredentialsProvider("AKID", "SECRET", ""),
+		Credentials:      awscredentials.NewStaticCredentialsProvider("AKID", "SECRET", ""),
 		RetryMaxAttempts: 1,
 	})}
 	ctx := context.Background()

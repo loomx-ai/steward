@@ -1,0 +1,56 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::DocDB::DBInstance
+  class: database.document
+presentation:
+  displayNames:
+    zh-CN: DocumentDB 实例
+    en-US: DocumentDB Instance
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: com.amazonaws.docdb#DescribeDBInstances
+    parameters:
+      Filters:
+      - Name: engine
+        Values:
+        - docdb
+    itemsPath: DBInstances
+    identityPath: DBInstanceIdentifier
+    statePath: DBInstanceStatus
+    pagination:
+      type: token
+      tokenParameter: Marker
+      tokenPath: Marker
+      pageSizeParameter: MaxRecords
+      maxPageSize: 100
+relationships:
+- type: member_of
+  targetType: AWS::EC2::VPC
+  targetIdPath: vpc_id
+- type: uses
+  targetType: AWS::EC2::SecurityGroup
+  targetIdPath: security_group_ids
+- type: member_of
+  targetType: AWS::DocDB::DBCluster
+  targetIdPath: DBClusterIdentifier
+actions:
+  delete:
+    operation: com.amazonaws.docdb#DeleteDBInstance
+    parameters:
+      DBInstanceIdentifier: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.docdb#DescribeDBInstances
+      parameters:
+        DBInstanceIdentifier: resource.nativeId
+      itemsPath: DBInstances
+      identityPath: DBInstanceIdentifier
+      statePath: DBInstanceStatus
+extensions:
+  hook: aws.product.resource

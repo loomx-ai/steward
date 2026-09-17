@@ -1,0 +1,64 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::DocDB::DBCluster
+  class: database.document
+presentation:
+  displayNames:
+    zh-CN: DocumentDB 集群
+    en-US: DocumentDB Cluster
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: com.amazonaws.docdb#DescribeDBClusters
+    parameters:
+      Filters:
+      - Name: engine
+        Values:
+        - docdb
+    itemsPath: DBClusters
+    identityPath: DBClusterIdentifier
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: Marker
+      tokenPath: Marker
+      pageSizeParameter: MaxRecords
+      maxPageSize: 100
+relationships:
+- type: member_of
+  targetType: AWS::EC2::VPC
+  targetIdPath: vpc_id
+- type: uses
+  targetType: AWS::EC2::SecurityGroup
+  targetIdPath: security_group_ids
+actions:
+  delete:
+    operation: com.amazonaws.docdb#DeleteDBCluster
+    parameters:
+      DBClusterIdentifier: resource.nativeId
+      SkipFinalSnapshot: true
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.docdb#DescribeDBClusters
+      parameters:
+        DBClusterIdentifier: resource.nativeId
+      itemsPath: DBClusters
+      identityPath: DBClusterIdentifier
+      statePath: Status
+    deletionProtection:
+      path: DeletionProtection
+      enabledValues:
+      - 'true'
+      disable:
+        operation: com.amazonaws.docdb#ModifyDBCluster
+        parameters:
+          DBClusterIdentifier: resource.nativeId
+          DeletionProtection: false
+          ApplyImmediately: true
+extensions:
+  hook: aws.product.resource

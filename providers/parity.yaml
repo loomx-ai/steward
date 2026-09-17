@@ -1157,11 +1157,10 @@ resources:
     - Microsoft.DataMigration/databaseMigrations
   aws:
     resources:
+    - AWS::DMS::ReplicationInstance
     - AWS::DMS::ReplicationTask
     - AWS::DMS::ReplicationConfig
     - AWS::DMS::Endpoint
-    unimplemented_resources:
-    - AWS::DMS::ReplicationInstance
   status: pending_verification
 - alicloud: ACS::EAIS::Instance
   spec: providers/alicloud/specs/eais-instance.yaml
@@ -1818,7 +1817,7 @@ resources:
     resources:
     - Microsoft.Compute/images
   aws:
-    unimplemented_resources:
+    resources:
     - AWS::EC2::Image
   status: pending_verification
 - alicloud: ACS::VPC::Ipv4Gateway
@@ -2028,10 +2027,9 @@ resources:
     - Microsoft.DocumentDB/mongoClusters
   aws:
     resources:
-    - AWS::DocDBElastic::Cluster
-    unimplemented_resources:
     - AWS::DocDB::DBCluster
     - AWS::DocDB::DBInstance
+    - AWS::DocDBElastic::Cluster
   status: pending_verification
 - alicloud: ACS::MSE::Cluster
   spec: providers/alicloud/specs/mse-cluster.yaml
@@ -2092,7 +2090,6 @@ resources:
   aws:
     resources:
     - AWS::EFS::FileSystem
-    unimplemented_resources:
     - AWS::FSx::FileSystem
   status: pending_verification
 - alicloud: ACS::NAS::MountTarget
@@ -2923,7 +2920,7 @@ resources:
     resources:
     - Microsoft.Compute/snapshots
   aws:
-    unimplemented_resources:
+    resources:
     - AWS::EC2::Snapshot
   status: pending_verification
 - alicloud: ACS::SSLCertificatesService::Certificate

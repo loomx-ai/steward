@@ -98,6 +98,17 @@ func (sdkClientFactory) Network(ctx context.Context, credential contracts.Creden
 	return &networkSDK{client: awsec2.NewFromConfig(config)}, nil
 }
 
+func (sdkClientFactory) Native(ctx context.Context, credential contracts.Credential, region string) (*NativeClients, error) {
+	if strings.TrimSpace(region) == "" {
+		return nil, errors.New("AWS product API request requires a region")
+	}
+	config, err := loadSDKConfig(ctx, credential, region)
+	if err != nil {
+		return nil, err
+	}
+	return newNativeClients(config), nil
+}
+
 func loadSDKConfig(ctx context.Context, credential contracts.Credential, region string) (awssdk.Config, error) {
 	options := []func(*awsconfig.LoadOptions) error{}
 	if region != "" {

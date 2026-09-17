@@ -54,6 +54,8 @@ type runtimeFactory struct {
 	cloudRegion      string
 	resourceExplorer ResourceExplorerClient
 	explorerRegion   string
+	native           *NativeClients
+	nativeRegion     string
 }
 
 func (f *runtimeFactory) ResourceExplorer(_ context.Context, _ contracts.Credential, region string) (ResourceExplorerClient, error) {
@@ -82,6 +84,14 @@ func (f *runtimeFactory) Network(_ context.Context, _ contracts.Credential, regi
 		return nil, errors.New("not used")
 	}
 	return f.network, nil
+}
+
+func (f *runtimeFactory) Native(_ context.Context, _ contracts.Credential, region string) (*NativeClients, error) {
+	f.nativeRegion = region
+	if f.native == nil {
+		return nil, errors.New("not used")
+	}
+	return f.native, nil
 }
 
 func (f *runtimeFactory) CallerIdentity(_ context.Context, _ contracts.Credential, region string) (string, string, error) {

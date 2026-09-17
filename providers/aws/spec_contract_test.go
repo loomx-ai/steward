@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
-	"github.com/loomx-ai/steward/internal/provider/spec"
 )
 
 type cloudFormationSchemaDigest struct {
@@ -37,9 +36,7 @@ var derivedReferenceFields = map[string]bool{
 
 // knownCloudControlDefects lists specifications that still route through a
 // Cloud Control handler the official schema does not provide.
-var knownCloudControlDefects = map[string]string{
-	"AWS::OpenSearchService::Domain": "no list handler; moves to native ListDomainNames",
-}
+var knownCloudControlDefects = map[string]string{}
 
 func loadCloudFormationDigests(t *testing.T) map[string]cloudFormationSchemaDigest {
 	t.Helper()
@@ -195,4 +192,61 @@ func TestHomeRegionRoutesGlobalServices(t *testing.T) {
 	}
 }
 
-var _ = spec.ResourceKindSpec{}
+// Product API kinds are bound to typed SDK handlers; the specification must
+// name the same official operations and those operations must be pinned.
+func TestProductAPISpecificationsMatchNativeHandlers(t *testing.T) {
+	digests := loadCloudFormationDigests(t)
+	runtime, err := newRuntime(&runtimeCredentialSource{}, &runtimeFactory{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	seen := map[string]bool{}
+	for _, compiled := range runtime.bundle.Specs {
+		definition := compiled.Definition
+		if definition.Discovery.Source != productAPISource {
+			continue
+		}
+		name := definition.Metadata.NativeType
+		seen[name] = true
+		kind, ok := nativeKinds[name]
+		if !ok {
+			t.Errorf("%s has no native handler", name)
+			continue
+		}
+		if definition.Extensions.Hook != productAPIHook {
+			t.Errorf("%s must use the product API hook", name)
+		}
+		if digest, ok := digests[name]; ok {
+			if _, hasList := digest.Handlers["list"]; hasList {
+				if _, hasDelete := digest.Handlers["delete"]; hasDelete {
+					t.Errorf("%s has Cloud Control list and delete handlers; use Cloud Control", name)
+				}
+			}
+		}
+		action := definition.Actions["delete"]
+		if definition.Discovery.List.Operation != kind.listOperation || action.Operation != kind.deleteOperation || action.Read == nil || action.Read.Operation != kind.readOperation {
+			t.Errorf("%s spec operations differ from handler %+v", name, kind)
+		}
+		if definition.Discovery.List.IdentityPath != kind.identity && name != "AWS::OpenSearchService::Domain" {
+			t.Errorf("%s identity %s differs from handler %s", name, definition.Discovery.List.IdentityPath, kind.identity)
+		}
+		if action.Read.IdentityPath != kind.identity {
+			t.Errorf("%s read identity %s differs from handler %s", name, action.Read.IdentityPath, kind.identity)
+		}
+		if (action.DeletionProtection != nil) != (kind.protection != nil) {
+			t.Errorf("%s deletion protection declaration differs from handler", name)
+		} else if kind.protection != nil && action.DeletionProtection.Disable.Operation != kind.protection.operation {
+			t.Errorf("%s deletion protection operation differs", name)
+		}
+		for _, operation := range []string{kind.listOperation, kind.readOperation, kind.deleteOperation} {
+			if catalogOperation, ok := runtime.catalog.Operation(operation); !ok || catalogOperation.Call == nil {
+				t.Errorf("%s operation %s is not pinned", name, operation)
+			}
+		}
+	}
+	for name := range nativeKinds {
+		if !seen[name] {
+			t.Errorf("native handler %s has no product API specification", name)
+		}
+	}
+}

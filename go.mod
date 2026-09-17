@@ -15,16 +15,26 @@ require (
 	github.com/alibabacloud-go/tea-roa v1.3.4
 	github.com/alibabacloud-go/vpc-20160428/v7 v7.2.4
 	github.com/aliyun/credentials-go v1.4.12
-	github.com/aws/aws-sdk-go-v2 v1.43.3
+	github.com/aws/aws-sdk-go-v2 v1.47.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.34
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.33
 	github.com/aws/aws-sdk-go-v2/service/cloudcontrol v1.32.3
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.76.0
+	github.com/aws/aws-sdk-go-v2/service/databasemigrationservice v1.71.0
+	github.com/aws/aws-sdk-go-v2/service/docdb v1.56.0
+	github.com/aws/aws-sdk-go-v2/service/drs v1.50.0
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.318.1
+	github.com/aws/aws-sdk-go-v2/service/fsx v1.74.0
+	github.com/aws/aws-sdk-go-v2/service/opensearch v1.80.0
+	github.com/aws/aws-sdk-go-v2/service/organizations v1.60.0
+	github.com/aws/aws-sdk-go-v2/service/pinpoint v1.48.0
 	github.com/aws/aws-sdk-go-v2/service/resourceexplorer2 v1.27.3
+	github.com/aws/aws-sdk-go-v2/service/route53domains v1.44.0
+	github.com/aws/aws-sdk-go-v2/service/storagegateway v1.52.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.45.3
-	github.com/aws/smithy-go v1.27.6
+	github.com/aws/smithy-go v1.28.1
 	github.com/go-chi/chi/v5 v5.3.0
+	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/pressly/goose/v3 v3.27.2
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2
 	github.com/spf13/cobra v1.10.2
@@ -57,11 +67,11 @@ require (
 	github.com/alibabacloud-go/tea-xml v1.1.3 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.34 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.34 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.34 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.3 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.3 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.35 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.15 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.34 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.14.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/signin v1.5.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.33.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.38.3 // indirect
@@ -78,7 +88,6 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.18.5 // indirect
-	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/mfridman/interpolate v0.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
