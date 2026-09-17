@@ -1134,7 +1134,7 @@ const enUS = {
   "error.scan_coverage_incomplete":
     "Scan coverage is incomplete, so the selected range cannot be cleaned safely.",
   "error.cross_scope_dependency":
-    "Another resource depends on a VPC or vSwitch that this task would delete. Add the dependent resource before rebuilding the task.",
+    "Another resource outside this task depends on a resource this task would delete, such as a network, key or identity. Add the dependent resource before rebuilding the task.",
   "error.connection_required":
     "Select a cloud connection before opening this view.",
   "error.connection_not_found":
@@ -2267,7 +2267,7 @@ const zhCN: MessageShape = {
   "error.controller_unavailable": "生命周期控制器或其清理动作不可用。",
   "error.scan_coverage_incomplete": "扫描覆盖不完整，不能安全清理所选范围。",
   "error.cross_scope_dependency":
-    "其他资源依赖本任务将删除的 VPC 或 vSwitch；请先将依赖资源加入资源清单并重新生成任务。",
+    "本任务之外的资源依赖本任务将删除的资源（如网络、密钥或身份）；请先将依赖资源加入资源清单并重新生成任务。",
   "error.connection_required": "打开此页面前必须选择一个云连接。",
   "error.connection_not_found": "所选云连接已不存在。",
   "error.connection_not_validated": "请先验证此云连接，再使用相关功能。",

@@ -1782,7 +1782,10 @@ func appendSelectionBlockers(values []plan.Blocker, input plan.Input, solved pla
 		}
 		_, targetSelected := selected[relationship.TargetAssetID]
 		target := assetsByID[relationship.TargetAssetID]
-		if !(rangeSelection && targetSelected) && !isNetworkFoundation(target) {
+		if !(rangeSelection && targetSelected) && !isNetworkFoundation(target) && !isDeletionTimeDependency(target) {
+			continue
+		}
+		if dependent, known := assetsByID[relationship.SourceAssetID]; known && dependent.ClosedAt != nil {
 			continue
 		}
 		add(plan.Blocker{
@@ -2069,6 +2072,28 @@ func isNetworkFoundation(value asset.Asset) bool {
 		"AWS::EC2::Subnet",
 		"compute.googleapis.com/NamedSet",
 		"networkconnectivity.googleapis.com/Hub":
+		return true
+	default:
+		return false
+	}
+}
+
+// Deleting a key or identity that a live resource still uses can make the
+// resource permanently unreadable or impossible to delete later, for example
+// an encrypted database without its key or a service without its role. An
+// explicit selection never overrides a dependent left outside the plan.
+func isDeletionTimeDependency(value asset.Asset) bool {
+	switch value.Identity.NativeType {
+	case "AWS::KMS::Key",
+		"AWS::IAM::Role",
+		"ACS::KMS::Key",
+		"ACS::RAM::Role",
+		"cloudkms.googleapis.com/CryptoKey",
+		"cloudkms.googleapis.com/CryptoKeyVersion",
+		"iam.googleapis.com/ServiceAccount",
+		"Microsoft.ManagedIdentity/userAssignedIdentities",
+		"Microsoft.KeyVault/vaults",
+		"Microsoft.KeyVault/vaults/keys":
 		return true
 	default:
 		return false

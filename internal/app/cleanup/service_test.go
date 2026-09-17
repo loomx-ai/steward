@@ -1797,3 +1797,49 @@ func containsTaskWarning(values []plan.Warning, code plan.WarningCode, assetID a
 func assetSelector(id asset.AssetID) plan.CleanupSelector {
 	return plan.CleanupSelector{Kind: plan.SelectorAsset, AssetID: id}
 }
+
+func TestCleanupServiceBlocksKeysAndIdentitiesUsedOutsidePlan(t *testing.T) {
+	for _, tc := range []struct {
+		provider          asset.Provider
+		target, dependent string
+		relationship      graph.RelationshipType
+	}{
+		{asset.ProviderAWS, "AWS::KMS::Key", "AWS::RDS::DBInstance", graph.RelationshipUses},
+		{asset.ProviderAWS, "AWS::IAM::Role", "AWS::Batch::ComputeEnvironment", graph.RelationshipUses},
+		{asset.ProviderGCP, "cloudkms.googleapis.com/CryptoKey", "sqladmin.googleapis.com/Instance", graph.RelationshipUses},
+		{asset.ProviderGCP, "iam.googleapis.com/ServiceAccount", "dataproc.googleapis.com/Cluster", graph.RelationshipUses},
+		{asset.ProviderAzure, "Microsoft.ManagedIdentity/userAssignedIdentities", "Microsoft.Web/sites", graph.RelationshipUses},
+		{asset.ProviderAliCloud, "ACS::KMS::Key", "ACS::RDS::DBInstance", graph.RelationshipDependsOn},
+	} {
+		t.Run(tc.target, func(t *testing.T) {
+			ctx := context.Background()
+			repositories := openPlanningRepositories(t)
+			now := time.Date(2026, 9, 17, 12, 0, 0, 0, time.UTC)
+			connectionID := asset.ConnectionID("connection-dependency")
+			target := planningAsset("key-or-identity", connectionID, tc.target, "target-a", now)
+			dependent := planningAsset("dependent", connectionID, tc.dependent, "dependent-a", now)
+			target.Identity.Provider, dependent.Identity.Provider = tc.provider, tc.provider
+			relationship := graph.Relationship{ID: "dependent-uses-target", SourceAssetID: dependent.ID, TargetAssetID: target.ID, Type: tc.relationship, Source: "spec", Confidence: 1, GraphRevision: "graph-dependency", ObservedAt: now}
+			seedPlanningGraph(t, repositories, "scope-a", "graph-dependency", []asset.Asset{target, dependent}, []graph.Relationship{relationship}, nil)
+			taskNumber := 0
+			service := cleanup.NewService(repositories, bundleResolver{tc.provider: {Provider: tc.provider, Revision: "bundle-dependency", Hash: "spec-dependency"}}, cleanup.WithTaskIDGenerator(func() string {
+				taskNumber++
+				return fmt.Sprintf("cln-dependency-%d", taskNumber)
+			}))
+			blocked, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{Selectors: []plan.CleanupSelector{assetSelector(target.ID)}, CreatedBy: "operator"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if blocked.Task.Status != plan.StatusDraft || !containsTaskBlocker(blocked.Task.Blockers, plan.BlockCrossScopeDependency, target.ID) {
+				t.Fatalf("key or identity deleted under a live dependent: %+v", blocked.Task)
+			}
+			ready, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{Selectors: []plan.CleanupSelector{assetSelector(target.ID), assetSelector(dependent.ID)}, CreatedBy: "operator"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if ready.Task.Status != plan.StatusReady || len(ready.Steps) != 2 || ready.Steps[0].AssetID != dependent.ID || ready.Steps[1].AssetID != target.ID {
+				t.Fatalf("dependent must be deleted before its key or identity: %+v", ready)
+			}
+		})
+	}
+}
