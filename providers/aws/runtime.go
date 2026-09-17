@@ -81,7 +81,7 @@ func (r *Runtime) CredentialSchemas() []contracts.CredentialSchema {
 }
 
 func (r *Runtime) ValidateConnection(ctx context.Context, credential contracts.Credential) (contracts.ConnectionIdentity, error) {
-	if credential.Type != asset.CredentialAWSAccessKey && credential.Type != asset.CredentialAWSSession {
+	if credential.Type != asset.CredentialAWSAccessKey && credential.Type != asset.CredentialAWSSession && credential.Type != asset.CredentialOIDC {
 		return contracts.ConnectionIdentity{}, contracts.NewCredentialValidationError(
 			"credential_type_unsupported",
 			"The credential type is not supported by AWS.",

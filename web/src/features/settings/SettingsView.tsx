@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { OIDCTrust } from "./OIDCTrust";
 import {
   keepPreviousData,
   useMutation,
@@ -494,6 +495,9 @@ export function SettingsView({
                                     </DropdownMenu>
                                   </div>
                                 </div>
+                                {connection.credential.type === "oidc" && (
+                                  <OIDCTrust connectionID={connection.id} />
+                                )}
                                 {validation.error &&
                                   validation.variables === connection.id && (
                                     <div className="px-4 pb-3">
@@ -679,6 +683,7 @@ function credentialTypeName(
     {
       access_key: "credentials.accessKey",
       oauth: "credentials.alicloudOAuth",
+      oidc: "credentials.oidc",
       sts: "credentials.sts",
       session: "credentials.session",
       service_account: "credentials.gcpServiceAccount",

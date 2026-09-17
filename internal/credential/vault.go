@@ -16,6 +16,7 @@ import (
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
+	"github.com/loomx-ai/steward/internal/workloadidentity"
 )
 
 const EnvelopeVersion = 1
@@ -23,8 +24,9 @@ const EnvelopeVersion = 1
 var ErrUnavailable = errors.New("connection credential is unavailable")
 
 type Vault struct {
-	repository persistence.CredentialRepository
-	aead       cipher.AEAD
+	WorkloadIdentity *workloadidentity.Broker
+	repository       persistence.CredentialRepository
+	aead             cipher.AEAD
 }
 
 func NewVault(encodedKey string, repository persistence.CredentialRepository) (*Vault, error) {
@@ -50,6 +52,14 @@ func NewVault(encodedKey string, repository persistence.CredentialRepository) (*
 }
 
 func (v *Vault) Seal(connectionID asset.ConnectionID, provider asset.Provider, value contracts.Credential, now time.Time) (asset.ConnectionCredential, error) {
+	if value.Type == asset.CredentialOIDC {
+		if v.WorkloadIdentity == nil {
+			return asset.ConnectionCredential{}, contracts.NewCredentialValidationError("oidc_unavailable", "Workload identity is not configured on this server.", nil)
+		}
+		if err := workloadidentity.ValidateConfig(provider, value); err != nil {
+			return asset.ConnectionCredential{}, err
+		}
+	}
 	if connectionID == "" || provider == "" || value.Type == "" || len(value.Values) == 0 {
 		return asset.ConnectionCredential{}, fmt.Errorf("connection, provider, credential type, and credential values are required")
 	}
@@ -96,7 +106,29 @@ func (v *Vault) Resolve(ctx context.Context, connectionID asset.ConnectionID) (c
 	if record.ExpiresAt != nil && !record.ExpiresAt.After(time.Now()) {
 		return contracts.Credential{}, fmt.Errorf("%w: credential expired", ErrUnavailable)
 	}
-	return contracts.Credential{Type: record.Type, Values: values, ExpiresAt: record.ExpiresAt}, nil
+	value := contracts.Credential{Type: record.Type, Values: values, ExpiresAt: record.ExpiresAt}
+	if record.Type == asset.CredentialOIDC {
+		if v.WorkloadIdentity == nil {
+			return contracts.Credential{}, contracts.NewCredentialValidationError("oidc_unavailable", "Workload identity is not configured on this server.", nil)
+		}
+		return v.WorkloadIdentity.Bind(ctx, record, value)
+	}
+	return value, nil
+}
+
+func (v *Vault) OIDCTrust(ctx context.Context, id asset.ConnectionID) (workloadidentity.Trust, error) {
+	record, err := v.repository.GetCredential(ctx, id)
+	if err != nil {
+		return workloadidentity.Trust{}, err
+	}
+	if record.Type != asset.CredentialOIDC {
+		return workloadidentity.Trust{}, contracts.NewCredentialValidationError("credential_type_unsupported", "This connection does not use OIDC.", nil)
+	}
+	value, err := v.Resolve(workloadidentity.ForValidation(ctx), id)
+	if err != nil {
+		return workloadidentity.Trust{}, err
+	}
+	return v.WorkloadIdentity.Trust(id, record.Provider, value), nil
 }
 
 func associatedData(connectionID asset.ConnectionID, provider asset.Provider, credentialType asset.CredentialType) []byte {

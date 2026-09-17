@@ -18,6 +18,11 @@ export function CredentialFields({
   if (!schema) return null;
   return (
     <div className="space-y-4">
+      {schema.type === "oidc" && (
+        <p className="text-sm text-muted-foreground">
+          {t("connections.oidcCreateHelp")}
+        </p>
+      )}
       {schema.fields.map((field) => (
         <div className="space-y-2" key={field.key}>
           <Label htmlFor={`credential-${field.key}`}>

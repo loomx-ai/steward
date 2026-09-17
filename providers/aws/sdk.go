@@ -114,6 +114,20 @@ func loadSDKConfig(ctx context.Context, credential contracts.Credential, region 
 	if region != "" {
 		options = append(options, awsconfig.WithRegion(region))
 	}
+	if credential.Type == asset.CredentialOIDC {
+		if credential.Dynamic == nil {
+			return awssdk.Config{}, errors.New("OIDC workload identity is unavailable")
+		}
+		provider := awssdk.CredentialsProviderFunc(func(ctx context.Context) (awssdk.Credentials, error) {
+			value, err := credential.Dynamic.Resolve(ctx, "")
+			if err != nil {
+				return awssdk.Credentials{}, err
+			}
+			return awssdk.Credentials{AccessKeyID: value.AccessKeyID, SecretAccessKey: value.SecretAccessKey, SessionToken: value.SessionToken, CanExpire: true, Expires: value.ExpiresAt, Source: "StewardOIDC"}, nil
+		})
+		options = append(options, awsconfig.WithCredentialsProvider(provider))
+		return awsconfig.LoadDefaultConfig(ctx, options...)
+	}
 	accessKey := strings.TrimSpace(credential.Values["access_key_id"])
 	secretKey := strings.TrimSpace(credential.Values["secret_access_key"])
 	if secretKey == "" {

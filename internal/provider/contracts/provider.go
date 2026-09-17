@@ -22,6 +22,22 @@ type Credential struct {
 	ConnectionID asset.ConnectionID   `json:"-"`
 	Site         asset.ConnectionSite `json:"-"`
 	Version      string               `json:"-"`
+	Dynamic      *DynamicCredential   `json:"-"`
+}
+
+// DynamicCredential is runtime-only. Neither assertions nor exchanged cloud
+// credentials may be supplied through the API or serialized into storage.
+type DynamicCredential struct {
+	Key     string
+	Resolve func(context.Context, string) (TemporaryCredential, error)
+}
+
+type TemporaryCredential struct {
+	AccessKeyID     string
+	SecretAccessKey string
+	SessionToken    string
+	AccessToken     string
+	ExpiresAt       time.Time
 }
 
 type CredentialUpdater interface {

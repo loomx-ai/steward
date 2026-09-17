@@ -22,6 +22,7 @@ import (
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
+	"github.com/loomx-ai/steward/internal/workloadidentity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/jwt"
 )
@@ -44,6 +45,19 @@ type client struct {
 func newClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {
 	invalid := func() (*client, error) {
 		return nil, contracts.NewCredentialValidationError("credential_fields_invalid", "A valid Google service account JSON key and project ID are required.", nil)
+	}
+	if credential.Type == asset.CredentialOIDC {
+		if credential.Dynamic == nil {
+			return invalid()
+		}
+		if err := workloadidentity.ValidateConfig(asset.ProviderGCP, credential); err != nil {
+			return nil, err
+		}
+		v := credential.Values
+		if !projectPattern.MatchString(v["project_id"]) || (v["firewall_policy_parent"] != "" && !firewallContainerName(v["firewall_policy_parent"])) || (v["identity_group_parent"] != "" && !identityParentValid(v["identity_group_parent"])) {
+			return invalid()
+		}
+		return &client{project: v["project_id"], email: v["service_account_email"], firewallParent: v["firewall_policy_parent"], identityParent: v["identity_group_parent"], fingerprint: sha256.Sum256([]byte(credential.Dynamic.Key)), http: &http.Client{Transport: &workloadidentity.Transport{Base: transport, Credential: credential.Dynamic}, Timeout: 60 * time.Second, CheckRedirect: noRedirect}}, nil
 	}
 	if credential.Type != asset.CredentialGCPServiceAccount || (credential.ExpiresAt != nil && !credential.ExpiresAt.After(time.Now())) {
 		return invalid()

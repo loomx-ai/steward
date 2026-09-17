@@ -13,6 +13,7 @@ import (
 	"github.com/loomx-ai/steward/internal/idgen"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
+	"github.com/loomx-ai/steward/internal/workloadidentity"
 )
 
 var (
@@ -100,6 +101,17 @@ func (s *Service) List(ctx context.Context, options persistence.ListOptions) (pe
 		result.Items = append(result.Items, item)
 	}
 	return result, nil
+}
+
+func (s *Service) OIDCTrust(ctx context.Context, id asset.ConnectionID) (workloadidentity.Trust, error) {
+	value, err := s.repositories.Connections().GetConnection(ctx, id)
+	if err != nil {
+		return workloadidentity.Trust{}, err
+	}
+	if value.Status == asset.ConnectionDeleted {
+		return workloadidentity.Trust{}, persistence.ErrNotFound
+	}
+	return s.vault.OIDCTrust(ctx, id)
 }
 
 func (s *Service) Create(ctx context.Context, request CreateRequest) (View, error) {
@@ -266,7 +278,7 @@ func (s *Service) Validate(ctx context.Context, id asset.ConnectionID, actor str
 	if err != nil {
 		return View{}, err
 	}
-	resolved, err := s.vault.Resolve(ctx, id)
+	resolved, err := s.vault.Resolve(workloadidentity.ForValidation(ctx), id)
 	if err != nil {
 		return View{}, s.recordValidationFailure(ctx, value, expectedUpdatedAt, expectedCredential, actor, err)
 	}

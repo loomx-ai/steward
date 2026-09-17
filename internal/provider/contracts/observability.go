@@ -50,6 +50,7 @@ func forbiddenRawLogKey(key string) bool {
 	case "accesskeyid", "accesskey" + "secret", "secretaccesskey", "sessiontoken",
 		"securitytoken", "accesstoken", "identitytoken", "webidentitytoken",
 		"oauthaccesstoken", "oauthrefreshtoken", "authorizationcode", "codeverifier",
+		"oidctoken", "clientassertion", "subjecttoken", "assertion",
 		"authorization", "signature", "cookie", "cookies", "credential",
 		"credentials", "password", "privatekey":
 		return true

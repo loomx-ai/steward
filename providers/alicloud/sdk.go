@@ -42,7 +42,7 @@ func (sdkClientFactory) CallerIdentity(ctx context.Context, credential contracts
 	if err := ctx.Err(); err != nil {
 		return "", "", err
 	}
-	cloudCredential, err := cloudCredential(credential)
+	cloudCredential, err := cloudCredential(credential, ctx)
 	if err != nil {
 		return "", "", err
 	}
@@ -67,7 +67,7 @@ func (sdkClientFactory) CallerIdentity(ctx context.Context, credential contracts
 }
 
 func (sdkClientFactory) DiscoverRegions(ctx context.Context, credential contracts.Credential) ([]providerRegion, error) {
-	cloudCredential, err := cloudCredential(credential)
+	cloudCredential, err := cloudCredential(credential, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -120,8 +120,8 @@ func discoverRegionsWithVPC(ctx context.Context, client vpcRegionCaller) ([]prov
 	return regions, nil
 }
 
-func (sdkClientFactory) ResourceCenter(_ context.Context, credential contracts.Credential, region string) (ResourceCenterClient, error) {
-	cloudCredential, err := cloudCredential(credential)
+func (sdkClientFactory) ResourceCenter(ctx context.Context, credential contracts.Credential, region string) (ResourceCenterClient, error) {
+	cloudCredential, err := cloudCredential(credential, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func (sdkClientFactory) Invoke(
 	operation catalog.Operation,
 	invocation contracts.Invocation,
 ) (contracts.InvocationResult, error) {
-	cloudCredential, err := cloudCredential(credential)
+	cloudCredential, err := cloudCredential(credential, ctx)
 	if err != nil {
 		return contracts.InvocationResult{}, err
 	}
@@ -523,8 +523,8 @@ func defaultString(value, fallback string) string {
 	return value
 }
 
-func (sdkClientFactory) ACK(_ context.Context, credential contracts.Credential, region string) (ACKClient, error) {
-	cloudCredential, err := cloudCredential(credential)
+func (sdkClientFactory) ACK(ctx context.Context, credential contracts.Credential, region string) (ACKClient, error) {
+	cloudCredential, err := cloudCredential(credential, ctx)
 	if err != nil {
 		return nil, err
 	}

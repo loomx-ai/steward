@@ -220,6 +220,16 @@ export function createConnection(
   });
 }
 
+export function getConnectionOIDCTrust(id: string): Promise<{
+  issuer: string;
+  jwks_uri: string;
+  audience: string;
+  read_subject: string;
+  write_subject: string;
+}> {
+  return request(`/api/connections/${encodeURIComponent(id)}/oidc`);
+}
+
 export function renameConnection(
   id: string,
   name: string,

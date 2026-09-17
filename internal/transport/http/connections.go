@@ -44,6 +44,20 @@ func (a *API) listConnections(response http.ResponseWriter, request *http.Reques
 	writeJSON(response, http.StatusOK, page)
 }
 
+func (a *API) connectionOIDCTrust(response http.ResponseWriter, request *http.Request) {
+	if a.dependencies.Connections == nil {
+		writeError(response, http.StatusServiceUnavailable, errors.New("connection service is unavailable"))
+		return
+	}
+	trust, err := a.dependencies.Connections.OIDCTrust(request.Context(), asset.ConnectionID(chi.URLParam(request, "id")))
+	if err != nil {
+		writeConnectionError(response, err)
+		return
+	}
+	response.Header().Set("Cache-Control", "no-store")
+	writeJSON(response, http.StatusOK, trust)
+}
+
 func (a *API) createConnection(response http.ResponseWriter, request *http.Request) {
 	if a.dependencies.Connections == nil {
 		writeError(response, http.StatusServiceUnavailable, errors.New("connection service is unavailable"))

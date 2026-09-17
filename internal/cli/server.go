@@ -16,6 +16,7 @@ import (
 
 	"github.com/loomx-ai/steward/internal/server"
 	httptransport "github.com/loomx-ai/steward/internal/transport/http"
+	"github.com/loomx-ai/steward/internal/workloadidentity"
 	"github.com/spf13/cobra"
 )
 
@@ -93,6 +94,7 @@ func newServerStartCommand(version string) *cobra.Command {
 				PollInterval:        2 * time.Second,
 				ScanConcurrency:     scanConcurrency,
 				CredentialMasterKey: os.Getenv("STEWARD_CREDENTIAL_MASTER_KEY"),
+				OIDC:                workloadidentity.Config{IssuerURL: os.Getenv("STEWARD_OIDC_ISSUER_URL"), WorkspaceID: os.Getenv("STEWARD_OIDC_WORKSPACE_ID"), SigningKeyFile: os.Getenv("STEWARD_OIDC_SIGNING_KEY_FILE")},
 				AuthTokens:          bindings,
 				AuthMode:            authMode,
 			})

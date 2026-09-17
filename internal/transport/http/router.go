@@ -24,6 +24,7 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 	"github.com/loomx-ai/steward/internal/provider/spec"
 	"github.com/loomx-ai/steward/internal/transport/events"
+	"github.com/loomx-ai/steward/internal/workloadidentity"
 )
 
 type BundleCatalog interface {
@@ -43,21 +44,22 @@ type NetworkTargetDirectory interface {
 }
 
 type Dependencies struct {
-	Repositories    persistence.Repositories
-	CleanupTasks    *cleanup.Service
-	Connections     *connectionapp.Service
-	Regions         *regionapp.Service
-	Scans           *inventory.Creator
-	ScanControls    *inventory.ControlService
-	NetworkTargets  NetworkTargetDirectory
-	RegionRefreshes connectionapp.RegionRefreshQueue
-	Topology        *topologyapp.Service
-	Bundles         BundleCatalog
-	Providers       ProviderDirectory
-	OAuthFlows      contracts.OAuthFlowService
-	Authenticator   Authenticator
-	AuthMode        string
-	SSEPollInterval time.Duration
+	WorkloadIdentity *workloadidentity.Broker
+	Repositories     persistence.Repositories
+	CleanupTasks     *cleanup.Service
+	Connections      *connectionapp.Service
+	Regions          *regionapp.Service
+	Scans            *inventory.Creator
+	ScanControls     *inventory.ControlService
+	NetworkTargets   NetworkTargetDirectory
+	RegionRefreshes  connectionapp.RegionRefreshQueue
+	Topology         *topologyapp.Service
+	Bundles          BundleCatalog
+	Providers        ProviderDirectory
+	OAuthFlows       contracts.OAuthFlowService
+	Authenticator    Authenticator
+	AuthMode         string
+	SSEPollInterval  time.Duration
 }
 
 type API struct {
@@ -79,6 +81,7 @@ func NewRouter(dependencies Dependencies) http.Handler {
 		router.Get("/providers/alicloud/oauth/flows/{id}", requireRole(RoleAdmin, api.getAliCloudOAuthFlow))
 		router.Get("/connections", requireRole(RoleViewer, api.listConnections))
 		router.Post("/connections", requireRole(RoleAdmin, api.createConnection))
+		router.Get("/connections/{id}/oidc", requireRole(RoleAdmin, api.connectionOIDCTrust))
 		router.Patch("/connections/{id}", requireRole(RoleAdmin, api.renameConnection))
 		router.Put("/connections/{id}/credential", requireRole(RoleAdmin, api.replaceConnectionCredential))
 		router.Post("/connections/{id}/validate", requireRole(RoleAdmin, api.validateConnection))
@@ -159,7 +162,16 @@ func (a *API) listProviders(response http.ResponseWriter, _ *http.Request) {
 		writeJSON(response, http.StatusOK, []contracts.ProviderDescriptor{})
 		return
 	}
-	writeJSON(response, http.StatusOK, a.dependencies.Providers.ProviderDescriptors())
+	descriptors := a.dependencies.Providers.ProviderDescriptors()
+	if a.dependencies.WorkloadIdentity != nil {
+		for index := range descriptors {
+			schema := workloadidentity.Schema(descriptors[index].Provider)
+			if schema.Type != "" {
+				descriptors[index].CredentialSchemas = append(descriptors[index].CredentialSchemas, schema)
+			}
+		}
+	}
+	writeJSON(response, http.StatusOK, descriptors)
 }
 
 func (a *API) listCatalog(response http.ResponseWriter, _ *http.Request) {

@@ -26,6 +26,7 @@ import (
 	providerruntime "github.com/loomx-ai/steward/internal/provider/runtime"
 	httptransport "github.com/loomx-ai/steward/internal/transport/http"
 	"github.com/loomx-ai/steward/internal/webui"
+	"github.com/loomx-ai/steward/internal/workloadidentity"
 	"github.com/loomx-ai/steward/providers/alicloud"
 	provideraws "github.com/loomx-ai/steward/providers/aws"
 	"github.com/loomx-ai/steward/providers/azure"
@@ -33,6 +34,7 @@ import (
 )
 
 type Config struct {
+	OIDC                workloadidentity.Config
 	Addr                string
 	DBDriver            string
 	DSN                 string
@@ -64,6 +66,14 @@ func Run(ctx context.Context, config Config) error {
 	if err != nil {
 		return err
 	}
+	issuer, err := workloadidentity.Load(config.OIDC)
+	if err != nil {
+		return err
+	}
+	var oidc *workloadidentity.Broker
+	if issuer != nil {
+		oidc = workloadidentity.NewBroker(issuer, repositories)
+	}
 	_, loopbackErr := httptransport.NewLocalAuthenticator(config.Addr)
 	if config.CredentialMasterKey == "" && loopbackErr == nil && (config.DBDriver == "" || config.DBDriver == "sqlite") {
 		connections, err := repositories.Connections().ListConnections(ctx, persistence.ListOptions{Limit: 1})
@@ -83,6 +93,7 @@ func Run(ctx context.Context, config Config) error {
 	if err != nil {
 		return err
 	}
+	vault.WorkloadIdentity = oidc
 	credentialSource := config.CredentialSource
 	if credentialSource == nil {
 		credentialSource = vault
@@ -129,7 +140,8 @@ func Run(ctx context.Context, config Config) error {
 		}
 	}()
 	apiHandler := httptransport.NewRouter(httptransport.Dependencies{
-		Repositories: repositories, CleanupTasks: planner, Connections: connectionService, Regions: regionService, RegionRefreshes: regionQueue, Scans: scanCreator, ScanControls: scanControls, NetworkTargets: registry, Topology: topologyService, Bundles: registry, Providers: registry, OAuthFlows: oauthFlows, Authenticator: authenticator,
+		WorkloadIdentity: oidc,
+		Repositories:     repositories, CleanupTasks: planner, Connections: connectionService, Regions: regionService, RegionRefreshes: regionQueue, Scans: scanCreator, ScanControls: scanControls, NetworkTargets: registry, Topology: topologyService, Bundles: registry, Providers: registry, OAuthFlows: oauthFlows, Authenticator: authenticator,
 		SSEPollInterval: config.PollInterval,
 		AuthMode:        authMode,
 	})
@@ -179,7 +191,18 @@ func Run(ctx context.Context, config Config) error {
 		}()
 	}
 
-	httpServer := &http.Server{Addr: config.Addr, Handler: withStaticFallback(apiHandler), ReadHeaderTimeout: 5 * time.Second}
+	handler := withStaticFallback(apiHandler)
+	if issuer != nil {
+		next := handler
+		handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if issuer.Handles(r.URL.Path) {
+				issuer.ServeHTTP(w, r)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+	httpServer := &http.Server{Addr: config.Addr, Handler: handler, ReadHeaderTimeout: 5 * time.Second}
 	errCh := make(chan error, 1)
 	go func() { errCh <- httpServer.ListenAndServe() }()
 	select {

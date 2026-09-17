@@ -214,6 +214,11 @@ func (w *Worker) processOne(ctx context.Context, workerID string) (bool, error) 
 		handlerCtx = requestmeta.WithRequestID(handlerCtx, requestID)
 	}
 	handlerCtx = execution.WithJobLogSink(handlerCtx, logs)
+	phase := "read"
+	if job.Type == execution.JobExecute {
+		phase = "write"
+	}
+	handlerCtx = requestmeta.WithWorkload(handlerCtx, phase, string(job.ID))
 	renewalDone := make(chan error, 1)
 	go w.renewLease(handlerCtx, job.ID, workerID, cancel, renewalDone)
 	handleErr := handler.Handle(handlerCtx, job)

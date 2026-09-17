@@ -19,6 +19,7 @@ import (
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
+	"github.com/loomx-ai/steward/internal/workloadidentity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -114,20 +115,31 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	tenant := strings.ToLower(strings.TrimSpace(credential.Values["tenant_id"]))
 	application := strings.ToLower(strings.TrimSpace(credential.Values["client_id"]))
 	secret := credential.Values["client_secret"]
-	if credential.Type != asset.CredentialAzureServicePrincipal ||
+	dynamic := credential.Type == asset.CredentialOIDC && credential.Dynamic != nil
+	if dynamic {
+		if err := workloadidentity.ValidateConfig(asset.ProviderAzure, credential); err != nil {
+			return nil, err
+		}
+	}
+	if (credential.Type != asset.CredentialAzureServicePrincipal && !dynamic) ||
 		!uuidPattern.MatchString(subscription) || !uuidPattern.MatchString(tenant) || !uuidPattern.MatchString(application) ||
-		strings.TrimSpace(secret) == "" || len(secret) > 16<<10 ||
+		(!dynamic && strings.TrimSpace(secret) == "") || len(secret) > 16<<10 ||
 		(credential.ExpiresAt != nil && !credential.ExpiresAt.After(time.Now())) {
 		return nil, contracts.NewCredentialValidationError("credential_fields_invalid", "A subscription ID, tenant ID, application ID, and client secret are required.", nil)
 	}
 	makeHTTP := func(scope string) *http.Client {
+		if dynamic {
+			return &http.Client{Transport: &workloadidentity.Transport{Base: transport, Credential: credential.Dynamic, Scope: scope}, Timeout: 60 * time.Second, CheckRedirect: noRedirect}
+		}
 		config := clientcredentials.Config{ClientID: application, ClientSecret: secret,
 			TokenURL: "https://login.microsoftonline.com/" + tenant + "/oauth2/v2.0/token",
 			Scopes:   []string{scope}, AuthStyle: oauth2.AuthStyleInParams}
 		return &http.Client{Transport: &tokenTransport{base: transport, config: config}, Timeout: 60 * time.Second, CheckRedirect: noRedirect}
 	}
-	// Only the supplied service principal is used. No ambient Azure CLI, managed
-	// identity, executable credential, or user-selected token endpoint is allowed.
+	// Only the explicit service principal or server-bound OIDC identity is used.
+	if dynamic {
+		secret = credential.Dynamic.Key
+	}
 	return &client{subscription: subscription, tenant: tenant, application: application,
 		fingerprint: sha256.Sum256([]byte(subscription + "\x00" + tenant + "\x00" + application + "\x00" + secret)),
 		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default"), batchHTTP: makeHTTP("https://batch.core.windows.net//.default"), communicationHTTP: makeHTTP("https://communication.azure.com/.default")}, nil

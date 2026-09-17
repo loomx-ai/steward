@@ -68,6 +68,7 @@ const (
 type CredentialType string
 
 const (
+	CredentialOIDC                  CredentialType = "oidc"
 	CredentialAliCloudAccessKey     CredentialType = "access_key"
 	CredentialAliCloudSTS           CredentialType = "sts"
 	CredentialAliCloudOAuth         CredentialType = "oauth"
