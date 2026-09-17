@@ -2666,6 +2666,46 @@
         "ResourceGuardProxy_Get",
         "ProtectionPolicies_Get"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/purview/resource-manager/Microsoft.Purview/Purview/stable/2021-12-01/purview.json",
+      "operations": [
+        "Accounts_Get",
+        "Accounts_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/servicefabric/resource-manager/Microsoft.ServiceFabric/ServiceFabric/stable/2021-06-01/cluster.json",
+      "operations": [
+        "Clusters_Get",
+        "Clusters_List",
+        "Clusters_Delete"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/solutions/resource-manager/Microsoft.Solutions/stable/2021-07-01/managedapplications.json",
+      "operations": [
+        "Applications_Get",
+        "Applications_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/storagesync/resource-manager/Microsoft.StorageSync/StorageSync/stable/2025-12-01/storagesync.json",
+      "operations": [
+        "StorageSyncServices_Get",
+        "StorageSyncServices_ListBySubscription",
+        "StorageSyncServices_Delete"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/stable/2026-07-01/openapi.json",
+      "operations": [
+        "Workspaces_Get",
+        "Workspaces_ListBySubscription",
+        "OnlineEndpoints_Get",
+        "OnlineEndpoints_List",
+        "OnlineEndpoints_Delete"
+      ]
     }
   ],
   "resource_types": [
@@ -11638,6 +11678,108 @@
       "delete_operations": [],
       "list_operations": [
         "Azure.Microsoft.RecoveryServices.DeletedVaults_ListBySubscriptionId"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Purview/accounts",
+      "class": "security.data_protection",
+      "display_name": "Microsoft Purview account",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "accounts",
+      "read_operations": [
+        "Azure.Microsoft.Purview.Accounts_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Purview.Accounts_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceFabric/clusters",
+      "class": "middleware.registry",
+      "display_name": "Service Fabric cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "clusters",
+      "read_operations": [
+        "Azure.Microsoft.ServiceFabric.Clusters_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceFabric.Clusters_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceFabric.Clusters_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Solutions/applications",
+      "class": "application",
+      "display_name": "Managed application",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "applications",
+      "read_operations": [
+        "Azure.Microsoft.Solutions.Applications_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Solutions.Applications_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.StorageSync/storageSyncServices",
+      "class": "storage.gateway",
+      "display_name": "Storage Sync Service",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "storageSyncServices",
+      "read_operations": [
+        "Azure.Microsoft.StorageSync.StorageSyncServices_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.StorageSync.StorageSyncServices_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.StorageSync.StorageSyncServices_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.MachineLearningServices/workspaces",
+      "class": "ai.workspace",
+      "display_name": "Machine Learning workspace",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "workspaces",
+      "read_operations": [
+        "Azure.Microsoft.MachineLearningServices.Workspaces_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.MachineLearningServices.Workspaces_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
+      "class": "ai.inference_service",
+      "display_name": "Machine Learning online endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "onlineEndpoints",
+      "read_operations": [
+        "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_List"
       ]
     }
   ]

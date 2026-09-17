@@ -1,0 +1,56 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.MachineLearningServices/workspaces
+  class: ai.workspace
+presentation:
+  displayNames:
+    en-US: Machine Learning workspace
+    zh-CN: 机器学习工作区
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: Azure.Microsoft.MachineLearningServices.Workspaces_Get
+    itemsPath: $
+    identityPath: id
+  list:
+    operation: Azure.Microsoft.MachineLearningServices.Workspaces_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.KeyVault/vaults
+  targetIdPath: refs_microsoft_keyvault_vaults
+- type: uses
+  targetType: Microsoft.Insights/components
+  targetIdPath: refs_microsoft_insights_components
+- type: uses
+  targetType: Microsoft.ContainerRegistry/registries
+  targetIdPath: refs_microsoft_containerregistry_registries

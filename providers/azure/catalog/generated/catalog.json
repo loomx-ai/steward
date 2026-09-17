@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "6f60287aedcee808db4aa12f38112bb49bd94148a4821cd5c20b965354947d42",
+    "checksum": "9c93c1e25a59c13df8a5308d109a7f396c98c4ab209d29813a74ee75c9902895",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "7380dda050b6ac9e5310a54828ffdc716e8ee0c9a369433f3d96be3dca6803fc",
+  "content_checksum": "f5ab81f1589d4d8835bcb437b6b9e9971ea66059f02dfa191c320c0486284693",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -105490,6 +105490,532 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
     },
     {
+      "id": "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_Delete",
+      "name": "OnlineEndpoints_Delete",
+      "service": "Microsoft.MachineLearningServices",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Online Endpoint name.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "Azure Machine Learning Workspace Name",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,32}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.MachineLearningServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/stable/2026-07-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_Get",
+      "name": "OnlineEndpoints_Get",
+      "service": "Microsoft.MachineLearningServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Online Endpoint name.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "Azure Machine Learning Workspace Name",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,32}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Concrete tracked resource types can be created by aliasing this type using a specific property type.",
+        "properties": {
+          "identity": {
+            "$ref": "../../../../../common-types/resource-management/v3/managedidentity.json#/definitions/ManagedServiceIdentity",
+            "description": "Managed service identity (system assigned and/or user assigned identities)"
+          },
+          "kind": {
+            "description": "Metadata used by portal/tooling/etc to render different UX experiences for resources of the same type.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/OnlineEndpointProperties",
+            "description": "[Required] Additional attributes of the entity."
+          },
+          "sku": {
+            "$ref": "../../../../../common-types/resource-management/v3/types.json#/definitions/Sku",
+            "description": "Sku details required for ARM contract for Autoscaling."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.MachineLearningServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/stable/2026-07-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_List",
+      "name": "OnlineEndpoints_List",
+      "service": "Microsoft.MachineLearningServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$skip": {
+            "description": "Continuation token for pagination.",
+            "in": "query",
+            "name": "$skip",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "computeType": {
+            "description": "EndpointComputeType to be filtered by.",
+            "enum": [
+              "Managed",
+              "Kubernetes",
+              "AzureMLCompute"
+            ],
+            "in": "query",
+            "name": "computeType",
+            "required": false,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "EndpointComputeType",
+              "values": [
+                {
+                  "name": "Managed",
+                  "value": "Managed"
+                },
+                {
+                  "name": "Kubernetes",
+                  "value": "Kubernetes"
+                },
+                {
+                  "name": "AzureMLCompute",
+                  "value": "AzureMLCompute"
+                }
+              ]
+            }
+          },
+          "count": {
+            "description": "Number of endpoints to be retrieved in a page of results.",
+            "format": "int32",
+            "in": "query",
+            "name": "count",
+            "required": false,
+            "type": "integer"
+          },
+          "name": {
+            "description": "Name of the endpoint.",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "The option to order the response.",
+            "enum": [
+              "CreatedAtDesc",
+              "CreatedAtAsc",
+              "UpdatedAtDesc",
+              "UpdatedAtAsc"
+            ],
+            "in": "query",
+            "name": "orderBy",
+            "required": false,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "OrderString",
+              "values": [
+                {
+                  "name": "CreatedAtDesc",
+                  "value": "CreatedAtDesc"
+                },
+                {
+                  "name": "CreatedAtAsc",
+                  "value": "CreatedAtAsc"
+                },
+                {
+                  "name": "UpdatedAtDesc",
+                  "value": "UpdatedAtDesc"
+                },
+                {
+                  "name": "UpdatedAtAsc",
+                  "value": "UpdatedAtAsc"
+                }
+              ]
+            }
+          },
+          "properties": {
+            "description": "A set of properties with which to filter the returned models. It is a comma separated string of properties key and/or properties key=value Example: propKey1,propKey2,propKey3=value3 .",
+            "in": "query",
+            "name": "properties",
+            "required": false,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "tags": {
+            "description": "A set of tags with which to filter the returned models. It is a comma separated string of tags key or tags key=value. Example: tagKey1,tagKey2,tagKey3=value3 .",
+            "in": "query",
+            "name": "tags",
+            "required": false,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "Azure Machine Learning Workspace Name",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,32}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A paginated list of OnlineEndpoint entities.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The OnlineEndpoint items on this page",
+            "items": {
+              "$ref": "#/definitions/OnlineEndpoint"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.MachineLearningServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/stable/2026-07-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.MachineLearningServices.Workspaces_Get",
+      "name": "Workspaces_Get",
+      "service": "Microsoft.MachineLearningServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "Azure Machine Learning Workspace Name",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,32}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "An object that represents a machine learning workspace.",
+        "properties": {
+          "identity": {
+            "$ref": "../../../../../common-types/resource-management/v3/managedidentity.json#/definitions/ManagedServiceIdentity",
+            "description": "The managed service identities assigned to this resource."
+          },
+          "kind": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/WorkspaceProperties",
+            "description": "Additional attributes of the entity.",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "../../../../../common-types/resource-management/v3/types.json#/definitions/Sku",
+            "description": "Optional. This field is required to be implemented by the RP because AML is supporting more than one tier"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.MachineLearningServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/stable/2026-07-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.MachineLearningServices.Workspaces_ListBySubscription",
+      "name": "Workspaces_ListBySubscription",
+      "service": "Microsoft.MachineLearningServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.MachineLearningServices/workspaces",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$skip": {
+            "description": "Continuation token for pagination.",
+            "in": "query",
+            "name": "$skip",
+            "required": false,
+            "type": "string"
+          },
+          "aiCapabilities": {
+            "in": "query",
+            "name": "aiCapabilities",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "kind": {
+            "description": "Kind of workspace.",
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a Workspace list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Workspace items on this page",
+            "items": {
+              "$ref": "#/definitions/Workspace"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.MachineLearningServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.MachineLearningServices/workspaces",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/stable/2026-07-01/openapi.json"
+    },
+    {
       "id": "Azure.Microsoft.ManagedIdentity.UserAssignedIdentities_Delete",
       "name": "UserAssignedIdentities_Delete",
       "service": "Microsoft.ManagedIdentity",
@@ -120990,6 +121516,165 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2022-10-01/Workspaces.json"
     },
     {
+      "id": "Azure.Microsoft.Purview.Accounts_Get",
+      "name": "Accounts_Get",
+      "service": "Microsoft.Purview",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "The name of the account.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "accountName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2021-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The resource group name.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The subscription identifier",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Account resource",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/AccountProperties",
+            "description": "Gets or sets the properties.",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/AccountSku"
+              }
+            ],
+            "description": "Gets or sets the Sku.",
+            "readOnly": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Purview",
+        "version": "2021-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/purview/resource-manager/Microsoft.Purview/Purview/stable/2021-12-01/purview.json"
+    },
+    {
+      "id": "Azure.Microsoft.Purview.Accounts_ListBySubscription",
+      "name": "Accounts_ListBySubscription",
+      "service": "Microsoft.Purview",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Purview/accounts",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$skipToken": {
+            "description": "The skip token.",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2021-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription identifier",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Paged list of Account resources",
+        "properties": {
+          "count": {
+            "description": "Total item count.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "nextLink": {
+            "description": "The Url of next result page.",
+            "type": "string"
+          },
+          "value": {
+            "description": "Collection of items of type results.",
+            "items": {
+              "$ref": "#/definitions/Account"
+            },
+            "type": "array",
+            "uniqueItems": false
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Purview",
+        "version": "2021-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Purview/accounts",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/purview/resource-manager/Microsoft.Purview/Purview/stable/2021-12-01/purview.json"
+    },
+    {
       "id": "Azure.Microsoft.RecoveryServices.BackupOperationResults_Get",
       "name": "BackupOperationResults_Get",
       "service": "Microsoft.RecoveryServices",
@@ -128515,6 +129200,354 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/topics.json"
     },
     {
+      "id": "Azure.Microsoft.ServiceFabric.Clusters_Delete",
+      "name": "Clusters_Delete",
+      "service": "Microsoft.ServiceFabric",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceFabric/clusters/{clusterName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the cluster resource.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The customer subscription identifier.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ServiceFabric",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceFabric/clusters/{clusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/servicefabric/resource-manager/Microsoft.ServiceFabric/ServiceFabric/stable/2021-06-01/cluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.ServiceFabric.Clusters_Get",
+      "name": "Clusters_Get",
+      "service": "Microsoft.ServiceFabric",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceFabric/clusters/{clusterName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the cluster resource.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The customer subscription identifier.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "description": "The cluster resource properties"
+          },
+          {
+            "$ref": "#/definitions/Resource"
+          },
+          {
+            "type": "object"
+          }
+        ],
+        "description": "The cluster resource\n",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/ClusterProperties",
+            "description": "The cluster resource properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ServiceFabric",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceFabric/clusters/{clusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/servicefabric/resource-manager/Microsoft.ServiceFabric/ServiceFabric/stable/2021-06-01/cluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.ServiceFabric.Clusters_List",
+      "name": "Clusters_List",
+      "service": "Microsoft.ServiceFabric",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The customer subscription identifier.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Cluster list results",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to use for getting the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/Cluster"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ServiceFabric",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/servicefabric/resource-manager/Microsoft.ServiceFabric/ServiceFabric/stable/2021-06-01/cluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.Solutions.Applications_Get",
+      "name": "Applications_Get",
+      "service": "Microsoft.Solutions",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Solutions/applications/{applicationName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "applicationName": {
+            "description": "The name of the managed application.",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 3,
+            "name": "applicationName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/GenericResource"
+          }
+        ],
+        "description": "Information about managed application.",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/Identity",
+            "description": "The identity of the resource."
+          },
+          "kind": {
+            "description": "The kind of the managed application. Allowed values are MarketPlace and ServiceCatalog.",
+            "pattern": "^[-\\w\\._,\\(\\)]+$",
+            "type": "string"
+          },
+          "plan": {
+            "$ref": "#/definitions/Plan",
+            "description": "The plan information."
+          },
+          "properties": {
+            "$ref": "#/definitions/ApplicationProperties",
+            "description": "The managed application properties.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Solutions",
+        "version": "2021-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Solutions/applications/{applicationName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/solutions/resource-manager/Microsoft.Solutions/stable/2021-07-01/managedapplications.json"
+    },
+    {
+      "id": "Azure.Microsoft.Solutions.Applications_ListBySubscription",
+      "name": "Applications_ListBySubscription",
+      "service": "Microsoft.Solutions",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Solutions/applications",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of managed applications.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to use for getting the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The array of managed applications.",
+            "items": {
+              "$ref": "#/definitions/Application"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Solutions",
+        "version": "2021-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Solutions/applications",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/solutions/resource-manager/Microsoft.Solutions/stable/2021-07-01/managedapplications.json"
+    },
+    {
       "id": "Azure.Microsoft.Sql.Databases_Delete",
       "name": "Databases_Delete",
       "service": "Microsoft.Sql",
@@ -130900,6 +131933,204 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/storage/resource-manager/Microsoft.Storage/stable/2023-05-01/storage.json"
+    },
+    {
+      "id": "Azure.Microsoft.StorageSync.StorageSyncServices_Delete",
+      "name": "StorageSyncServices_Delete",
+      "service": "Microsoft.StorageSync",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageSync/storageSyncServices/{storageSyncServiceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "storageSyncServiceName": {
+            "description": "Name of Storage Sync Service resource.",
+            "in": "path",
+            "name": "storageSyncServiceName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StorageSync",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageSync/storageSyncServices/{storageSyncServiceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/storagesync/resource-manager/Microsoft.StorageSync/StorageSync/stable/2025-12-01/storagesync.json"
+    },
+    {
+      "id": "Azure.Microsoft.StorageSync.StorageSyncServices_Get",
+      "name": "StorageSyncServices_Get",
+      "service": "Microsoft.StorageSync",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageSync/storageSyncServices/{storageSyncServiceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "storageSyncServiceName": {
+            "description": "Name of Storage Sync Service resource.",
+            "in": "path",
+            "name": "storageSyncServiceName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Storage Sync Service object.",
+        "properties": {
+          "identity": {
+            "$ref": "../../../../../../common-types/resource-management/v5/managedidentity.json#/definitions/ManagedServiceIdentity",
+            "description": "The managed service identities assigned to this resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/StorageSyncServiceProperties",
+            "description": "Storage Sync Service properties.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StorageSync",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageSync/storageSyncServices/{storageSyncServiceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/storagesync/resource-manager/Microsoft.StorageSync/StorageSync/stable/2025-12-01/storagesync.json"
+    },
+    {
+      "id": "Azure.Microsoft.StorageSync.StorageSyncServices_ListBySubscription",
+      "name": "StorageSyncServices_ListBySubscription",
+      "service": "Microsoft.StorageSync",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.StorageSync/storageSyncServices",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Array of StorageSyncServices",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "Collection of StorageSyncServices.",
+            "items": {
+              "$ref": "#/definitions/StorageSyncService"
+            },
+            "type": "array",
+            "x-ms-identifiers": [
+              "id"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.StorageSync",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.StorageSync/storageSyncServices",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/storagesync/resource-manager/Microsoft.StorageSync/StorageSync/stable/2025-12-01/storagesync.json"
     },
     {
       "id": "Azure.Microsoft.StreamAnalytics.Clusters_Delete",
@@ -148172,6 +149403,43 @@
       }
     },
     {
+      "native_type": "Microsoft.MachineLearningServices/workspaces",
+      "class": "ai.workspace",
+      "display_name": "Machine Learning workspace",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "workspaces",
+        "read_operations": [
+          "Azure.Microsoft.MachineLearningServices.Workspaces_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.MachineLearningServices.Workspaces_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
+      "class": "ai.inference_service",
+      "display_name": "Machine Learning online endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "onlineEndpoints",
+        "read_operations": [
+          "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_List"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.ManagedIdentity/userAssignedIdentities",
       "class": "security.identity",
       "display_name": "User-assigned managed identity",
@@ -149708,6 +150976,23 @@
       }
     },
     {
+      "native_type": "Microsoft.Purview/accounts",
+      "class": "security.data_protection",
+      "display_name": "Microsoft Purview account",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "accounts",
+        "read_operations": [
+          "Azure.Microsoft.Purview.Accounts_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Purview.Accounts_ListBySubscription"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.RecoveryServices/locations/deletedVaults",
       "class": "storage.backup_vault",
       "display_name": "Deleted Recovery Services vault",
@@ -150195,6 +151480,43 @@
       }
     },
     {
+      "native_type": "Microsoft.ServiceFabric/clusters",
+      "class": "middleware.registry",
+      "display_name": "Service Fabric cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "clusters",
+        "read_operations": [
+          "Azure.Microsoft.ServiceFabric.Clusters_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.ServiceFabric.Clusters_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ServiceFabric.Clusters_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Solutions/applications",
+      "class": "application",
+      "display_name": "Managed application",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "applications",
+        "read_operations": [
+          "Azure.Microsoft.Solutions.Applications_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Solutions.Applications_ListBySubscription"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.Sql/servers",
       "class": "database.server",
       "display_name": "SQL logical server",
@@ -150317,6 +151639,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Storage.FileShares_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.StorageSync/storageSyncServices",
+      "class": "storage.gateway",
+      "display_name": "Storage Sync Service",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "storageSyncServices",
+        "read_operations": [
+          "Azure.Microsoft.StorageSync.StorageSyncServices_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.StorageSync.StorageSyncServices_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StorageSync.StorageSyncServices_ListBySubscription"
         ]
       }
     },

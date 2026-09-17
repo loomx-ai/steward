@@ -1,0 +1,65 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.MachineLearningServices/workspaces/onlineEndpoints
+  class: ai.inference_service
+presentation:
+  displayNames:
+    en-US: Machine Learning online endpoint
+    zh-CN: 机器学习联机终结点
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: Azure.Microsoft.MachineLearningServices.OnlineEndpoints_Get
+    itemsPath: $
+    identityPath: id
+  list:
+    operation: Azure.Microsoft.MachineLearningServices.OnlineEndpoints_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      workspaceName: parent.normalized.arm_parameters.workspaceName
+    itemsPath: value
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.MachineLearningServices/workspaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.MachineLearningServices/workspaces
+  targetIdPath: refs_microsoft_machinelearningservices_workspaces
+actions:
+  delete:
+    operation: Azure.Microsoft.MachineLearningServices.OnlineEndpoints_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.MachineLearningServices.OnlineEndpoints_Get
+      itemsPath: $
+      identityPath: id

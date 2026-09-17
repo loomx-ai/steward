@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Purview/accounts
+  class: security.data_protection
+presentation:
+  displayNames:
+    en-US: Microsoft Purview account
+    zh-CN: Microsoft Purview 账户
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: Azure.Microsoft.Purview.Accounts_Get
+    itemsPath: $
+    identityPath: id
+  list:
+    operation: Azure.Microsoft.Purview.Accounts_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships: []
