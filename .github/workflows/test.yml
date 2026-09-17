@@ -71,3 +71,25 @@ jobs:
       - run: go test -count=1 -run Moto ./providers/aws
         env:
           STEWARD_AWS_MOTO_URL: http://127.0.0.1:5055
+
+  gcp-emulator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go install github.com/fsouza/fake-gcs-server@v1.52.2
+      - name: Start fake-gcs-server
+        run: |
+          "$(go env GOPATH)/bin/fake-gcs-server" -scheme http -host 127.0.0.1 -port 4443 -backend memory > fake-gcs.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            curl -sf -o /dev/null http://127.0.0.1:4443/storage/v1/b && exit 0
+            sleep 1
+          done
+          cat fake-gcs.log
+          exit 1
+      - run: go test -count=1 -run Emulator ./providers/gcp
+        env:
+          STEWARD_GCS_EMULATOR_URL: http://127.0.0.1:4443

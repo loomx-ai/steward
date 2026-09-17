@@ -7429,3 +7429,27 @@ There are now 1,579 catalog operations; specifications and cleanup bindings rema
 candidate types, six empty mappings, 159 pending rows and eight acceptance gates
 remain open. Next implement authorized scope discovery, complete membership and
 reviewed delete/detach semantics with persisted recovery and own readback.
+
+### Remaining Azure candidates, cross-cloud deletion dependencies and GCS emulator
+
+Azure registers 491 specifications; every candidate type now has one. Site
+Recovery replication protected items, Key Vault certificates (data plane,
+`vault.azure.net` token) and Microsoft Entra users and groups (Microsoft Graph
+v1.0, pinned OpenAPI subset, `graph.microsoft.com` token) are read-only. Azure
+maps 157 of 159 rows; the two empty rows record platform differences.
+
+Deletion-dependency work follows the competitor failure review: keys and
+identities used by live resources outside a task block it, and deleting them
+needs a complete scan of the connection; each connection's own identity and
+access are protected on all four providers; AWS links encrypted resources to KMS
+keys and protects the last key-policy administrators; GCP links workloads to their
+service accounts; Azure refuses occupied subnets, security groups, route tables,
+NAT gateways and public IPs; S3 buckets with versions or delete markers are
+protected at scan time and before deletion; in-use and already-absent provider
+errors are classified.
+
+Evidence: Moto 5.2.3 for S3 and KMS guards; fake-gcs-server v1.52.2 (CI job
+`gcp-emulator`) shows a bucket with a noncurrent version is refused by Steward
+even though the emulator would delete it, and an empty bucket is deleted and
+confirmed absent. Key Vault and Graph remain protocol evidence from official
+examples and documented response shapes. The 159 behavioral rows remain open.
