@@ -40,7 +40,8 @@
     "DescribeNetworkInterfaces",
     "ModifyNetworkInterfaceAttribute",
     "DescribeAddresses",
-    "DescribeNatGateways"
+    "DescribeNatGateways",
+    "DescribeVolumes"
    ],
    "models/opensearch/service/2021-01-01/opensearch-2021-01-01.json": [
     "ListDomainNames",

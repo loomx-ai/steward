@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
@@ -138,6 +139,8 @@ type NetworkClient interface {
 	ListVSwitches(context.Context, NetworkListRequest) (NetworkPage, error)
 	InternetGatewayVPCs(context.Context, string) ([]string, error)
 	DetachInternetGateway(context.Context, string, string) error
+	VPNGatewayVPCs(context.Context, string) ([]string, error)
+	DetachVPNGateway(context.Context, string, string) error
 }
 
 type internetGatewayAction struct {
@@ -157,6 +160,42 @@ func (a *internetGatewayAction) Execute(ctx context.Context, request contracts.A
 	for _, vpcID := range vpcs {
 		if err := a.network.DetachInternetGateway(ctx, id, vpcID); err != nil {
 			return contracts.ActionResult{}, NormalizeError(err)
+		}
+	}
+	return a.CloudControlAction.Execute(ctx, request)
+}
+
+// A virtual private gateway must be detached from its VPC before deletion.
+type vpnGatewayAction struct {
+	*CloudControlAction
+	network NetworkClient
+}
+
+func (a *vpnGatewayAction) Execute(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
+	if err := a.validate(request); err != nil {
+		return contracts.ActionResult{}, err
+	}
+	id := cloudControlIdentifier(request.Asset)
+	vpcs, err := a.network.VPNGatewayVPCs(ctx, id)
+	if err != nil {
+		return contracts.ActionResult{}, NormalizeError(err)
+	}
+	for _, vpcID := range vpcs {
+		if err := a.network.DetachVPNGateway(ctx, id, vpcID); err != nil {
+			return contracts.ActionResult{}, NormalizeError(err)
+		}
+	}
+	if len(vpcs) > 0 {
+		// Detachment is asynchronous; retry until the gateway reports no
+		// attached VPC before submitting the delete.
+		remaining, err := a.network.VPNGatewayVPCs(ctx, id)
+		if err != nil {
+			return contracts.ActionResult{}, NormalizeError(err)
+		}
+		if len(remaining) > 0 {
+			return contracts.ActionResult{}, &contracts.ProviderCallError{Provider: execution.ProviderError{
+				Category: execution.ErrorRetryable, Code: "VpnGatewayDetaching", Message: "AWS virtual private gateway is still detaching from its VPC",
+			}, RetryAfter: cloudControlWaitInterval}
 		}
 	}
 	return a.CloudControlAction.Execute(ctx, request)

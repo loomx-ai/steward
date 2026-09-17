@@ -4,10 +4,10 @@
   "source": {
     "format": "smithy",
     "uri": "catalog/source/smithy.json",
-    "checksum": "ca9941ebae7f980a8ae63ced8637f3adcf5229f42e133ef7fc2bb25322252186",
+    "checksum": "e497c1846eaa220ca2a0aa3db0242411b01bdafc395380883a712e7acf175291",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "996ce3475764d14cd0baf935ca35786f281a866a3e216b2645c0f3d3260fdc2a",
+  "content_checksum": "dd6aa6580093be2bbabfa089969af1fe82202f9eaf3c3baa8942870432ccdfeb",
   "operations": [
     {
       "id": "com.amazonaws.autoscaling#DescribeAutoScalingGroups",
@@ -787,6 +787,35 @@
         "input_token_path": "NextToken",
         "output_token_path": "NextToken",
         "items_path": "Subnets"
+      },
+      "call": {
+        "product": "EC2",
+        "version": "2016-11-15",
+        "style": "aws-smithy",
+        "protocol": "ec2Query",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://ec2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.ec2#DescribeVolumes",
+      "name": "DescribeVolumes",
+      "service": "com.amazonaws.ec2",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "NextToken",
+        "output_token_path": "NextToken",
+        "items_path": "Volumes"
       },
       "call": {
         "product": "EC2",

@@ -287,6 +287,24 @@ func (r *Runtime) ResolveAction(ctx context.Context, connectionID asset.Connecti
 	if err != nil {
 		return nil, err
 	}
+	if value.Identity.NativeType == "AWS::EC2::Instance" {
+		credential, err := r.resolveCredential(ctx, connectionID)
+		if err != nil {
+			return nil, err
+		}
+		clients, err := r.factory.Native(ctx, credential, region)
+		if err != nil {
+			return nil, NormalizeError(err)
+		}
+		return newInstanceAction(driver, clients.Lifecycle)
+	}
+	if value.Identity.NativeType == "AWS::EC2::VPNGateway" {
+		network, err := r.networkClient(ctx, connectionID, region)
+		if err != nil {
+			return nil, err
+		}
+		return &vpnGatewayAction{CloudControlAction: driver, network: network}, nil
+	}
 	if value.Identity.NativeType == "AWS::EC2::InternetGateway" {
 		network, err := r.networkClient(ctx, connectionID, region)
 		if err != nil {

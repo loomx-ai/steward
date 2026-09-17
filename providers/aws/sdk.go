@@ -151,6 +151,28 @@ func (c *networkSDK) InternetGatewayVPCs(ctx context.Context, id string) ([]stri
 	return result, nil
 }
 
+func (c *networkSDK) VPNGatewayVPCs(ctx context.Context, id string) ([]string, error) {
+	output, err := c.client.DescribeVpnGateways(ctx, &awsec2.DescribeVpnGatewaysInput{VpnGatewayIds: []string{id}})
+	if err != nil {
+		return nil, err
+	}
+	var result []string
+	for _, gateway := range output.VpnGateways {
+		for _, attachment := range gateway.VpcAttachments {
+			// Detached attachments remain listed with state "detached".
+			if id := awssdk.ToString(attachment.VpcId); id != "" && attachment.State != ec2types.AttachmentStatusDetached {
+				result = append(result, id)
+			}
+		}
+	}
+	return result, nil
+}
+
+func (c *networkSDK) DetachVPNGateway(ctx context.Context, id, vpcID string) error {
+	_, err := c.client.DetachVpnGateway(ctx, &awsec2.DetachVpnGatewayInput{VpnGatewayId: awssdk.String(id), VpcId: awssdk.String(vpcID)})
+	return err
+}
+
 func (c *networkSDK) DetachInternetGateway(ctx context.Context, id, vpcID string) error {
 	_, err := c.client.DetachInternetGateway(ctx, &awsec2.DetachInternetGatewayInput{
 		InternetGatewayId: awssdk.String(id), VpcId: awssdk.String(vpcID),

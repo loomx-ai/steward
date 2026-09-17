@@ -245,7 +245,7 @@ func TestControllerLocationsAreUniqueSortedAndProviderScoped(t *testing.T) {
 }
 
 func TestNativeCloudAttachmentContributorsAreWiredIntoServer(t *testing.T) {
-	for _, provider := range []asset.Provider{asset.ProviderGCP, asset.ProviderAzure} {
+	for _, provider := range []asset.Provider{asset.ProviderGCP, asset.ProviderAzure, asset.ProviderAWS} {
 		t.Run(string(provider), func(t *testing.T) {
 			controller := asset.Asset{ID: "vm", Identity: asset.Identity{Provider: provider, ConnectionID: "connection"}}
 			child := asset.Asset{ID: "disk", Identity: asset.Identity{Provider: provider, ConnectionID: "connection"}}
@@ -254,6 +254,10 @@ func TestNativeCloudAttachmentContributorsAreWiredIntoServer(t *testing.T) {
 				child.Identity.NativeType = "compute.googleapis.com/Disk"
 				child.Identity.NativeID = "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/disks/boot"
 				controller.Normalized = map[string]any{"project_id": "sample-project", "disks": []any{map[string]any{"source": child.Identity.NativeID, "deviceName": "boot", "autoDelete": true}}}
+			} else if provider == asset.ProviderAWS {
+				controller.Identity.NativeType, controller.Identity.NativeID = "AWS::EC2::Instance", "i-1"
+				child.Identity.NativeType, child.Identity.NativeID = "AWS::EC2::Volume", "vol-1"
+				controller.Normalized = map[string]any{"ebs_attachments": []any{map[string]any{"volume_id": "vol-1", "device_name": "/dev/xvda", "delete_on_termination": true}}}
 			} else {
 				controller.Identity.NativeType = "Microsoft.Compute/virtualMachines"
 				child.Identity.NativeType = "Microsoft.Compute/disks"

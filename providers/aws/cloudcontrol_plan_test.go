@@ -219,7 +219,7 @@ func protectedActionRequest(nativeType, identifier string) contracts.ActionReque
 
 func TestCloudControlActionDisablesDeletionProtectionBeforeDelete(t *testing.T) {
 	client := &scriptedCloudControl{
-		resources: map[string]CloudControlResource{"AWS::EC2::Instance|i-1": {Identifier: "i-1", Properties: `{"InstanceId":"i-1","DisableApiTermination":true}`}},
+		resources: map[string]CloudControlResource{"AWS::DynamoDB::Table|orders": {Identifier: "orders", Properties: `{"TableName":"orders","DeletionProtectionEnabled":true}`}},
 		statuses: map[string]CloudControlProgress{
 			"update-token": {RequestToken: "update-token", Status: "SUCCESS"},
 			"delete-token": {RequestToken: "delete-token", Status: "SUCCESS"},
@@ -230,7 +230,7 @@ func TestCloudControlActionDisablesDeletionProtectionBeforeDelete(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	request := protectedActionRequest("AWS::EC2::Instance", "i-1")
+	request := protectedActionRequest("AWS::DynamoDB::Table", "orders")
 	driver, err := runtime.ResolveAction(context.Background(), "connection-a", request.Asset)
 	if err != nil {
 		t.Fatal(err)
@@ -244,7 +244,7 @@ func TestCloudControlActionDisablesDeletionProtectionBeforeDelete(t *testing.T) 
 		t.Fatalf("result=%+v updates=%+v deletes=%v err=%v", result, client.updates, client.deletes, err)
 	}
 	var patch []map[string]any
-	if err := json.Unmarshal([]byte(client.updates[0].PatchDocument), &patch); err != nil || len(patch) != 1 || patch[0]["path"] != "/DisableApiTermination" || patch[0]["value"] != false || client.updates[0].ClientToken != "step-1:disable-deletion-protection" {
+	if err := json.Unmarshal([]byte(client.updates[0].PatchDocument), &patch); err != nil || len(patch) != 1 || patch[0]["path"] != "/DeletionProtectionEnabled" || patch[0]["value"] != false || client.updates[0].ClientToken != "step-1:disable-deletion-protection" {
 		t.Fatalf("update = %+v", client.updates[0])
 	}
 
@@ -254,9 +254,9 @@ func TestCloudControlActionDisablesDeletionProtectionBeforeDelete(t *testing.T) 
 		t.Fatalf("delete must wait for protection readback: wait=%+v err=%v", wait, err)
 	}
 
-	client.resources["AWS::EC2::Instance|i-1"] = CloudControlResource{Identifier: "i-1", Properties: `{"InstanceId":"i-1","DisableApiTermination":false}`}
+	client.resources["AWS::DynamoDB::Table|orders"] = CloudControlResource{Identifier: "orders", Properties: `{"TableName":"orders","DeletionProtectionEnabled":false}`}
 	wait, err = driver.Wait(context.Background(), request, contracts.ActionResult{ProviderOperationID: result.ProviderOperationID, Data: result.Data})
-	if err != nil || wait.Done || len(client.deletes) != 1 || client.deletes[0] != "i-1|step-1" || wait.Data["phase"] != cloudControlPhaseDelete {
+	if err != nil || wait.Done || len(client.deletes) != 1 || client.deletes[0] != "orders|step-1" || wait.Data["phase"] != cloudControlPhaseDelete {
 		t.Fatalf("wait=%+v deletes=%v err=%v", wait, client.deletes, err)
 	}
 	// The executor persists wait data, not the original operation ID.

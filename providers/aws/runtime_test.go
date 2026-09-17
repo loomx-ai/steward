@@ -266,6 +266,12 @@ func TestRuntimeRoutesAuthoritativeCloudControlInventoryAndDeduplicatesBroadInde
 func (*runtimeNetworkClient) InternetGatewayVPCs(context.Context, string) ([]string, error) {
 	return nil, nil
 }
+func (*runtimeNetworkClient) VPNGatewayVPCs(context.Context, string) ([]string, error) {
+	return nil, nil
+}
+func (*runtimeNetworkClient) DetachVPNGateway(context.Context, string, string) error {
+	return nil
+}
 func (*runtimeNetworkClient) DetachInternetGateway(context.Context, string, string) error {
 	return nil
 }

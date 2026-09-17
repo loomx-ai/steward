@@ -11,6 +11,7 @@ import (
 
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
+	awsautoscaling "github.com/aws/aws-sdk-go-v2/service/autoscaling"
 	awsdms "github.com/aws/aws-sdk-go-v2/service/databasemigrationservice"
 	dmstypes "github.com/aws/aws-sdk-go-v2/service/databasemigrationservice/types"
 	awsdocdb "github.com/aws/aws-sdk-go-v2/service/docdb"
@@ -18,6 +19,7 @@ import (
 	awsdrs "github.com/aws/aws-sdk-go-v2/service/drs"
 	awsec2 "github.com/aws/aws-sdk-go-v2/service/ec2"
 	ec2types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
+	awseks "github.com/aws/aws-sdk-go-v2/service/eks"
 	awsfsx "github.com/aws/aws-sdk-go-v2/service/fsx"
 	awsopensearch "github.com/aws/aws-sdk-go-v2/service/opensearch"
 	awsorganizations "github.com/aws/aws-sdk-go-v2/service/organizations"
@@ -111,6 +113,9 @@ type NativeClients struct {
 	DRS            DRSNativeAPI
 	Pinpoint       PinpointNativeAPI
 	Organizations  OrganizationsNativeAPI
+	Lifecycle      LifecycleEC2API
+	AutoScaling    AutoScalingNativeAPI
+	EKS            EKSNativeAPI
 }
 
 func newNativeClients(config awssdk.Config) *NativeClients {
@@ -118,7 +123,8 @@ func newNativeClients(config awssdk.Config) *NativeClients {
 		EC2: awsec2.NewFromConfig(config), OpenSearch: awsopensearch.NewFromConfig(config), DocDB: awsdocdb.NewFromConfig(config),
 		DMS: awsdms.NewFromConfig(config), FSx: awsfsx.NewFromConfig(config), StorageGateway: awsstoragegateway.NewFromConfig(config),
 		Domains: awsdomains.NewFromConfig(config), DRS: awsdrs.NewFromConfig(config), Pinpoint: awspinpoint.NewFromConfig(config),
-		Organizations: awsorganizations.NewFromConfig(config),
+		Organizations: awsorganizations.NewFromConfig(config), Lifecycle: awsec2.NewFromConfig(config),
+		AutoScaling: awsautoscaling.NewFromConfig(config), EKS: awseks.NewFromConfig(config),
 	}
 }
 

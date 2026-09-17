@@ -192,13 +192,14 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 			return nil, err
 		}
 		if len(locations) == 0 {
-			return nil, nil
+			return []governance.Contributor{provideraws.NewLifecycle()}, nil
 		}
 		provider, ok := runtime.(cloudFormationRuntime)
 		if !ok {
 			return nil, fmt.Errorf("AWS runtime does not expose CloudFormation lifecycle discovery")
 		}
-		contributors := make([]governance.Contributor, 0, len(locations))
+		contributors := make([]governance.Contributor, 0, len(locations)+1)
+		contributors = append(contributors, provideraws.NewLifecycle())
 		for _, location := range locations {
 			client, err := provider.CloudFormation(ctx, connection.ID, location)
 			if err != nil {

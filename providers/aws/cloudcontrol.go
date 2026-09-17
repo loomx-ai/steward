@@ -272,6 +272,19 @@ func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.In
 		execution.LogCloudAPIResponse(ctx, "cloudcontrol", "GetResource", rawCloudPayload(map[string]any{"RequestId": requestID, "ResourceDescription": detail.Raw}))
 		result = append(result, detail)
 	}
+	if request.ResourceKind != nil && lifecycleFactKind(request.ResourceKind.NativeType) && len(result) > 0 {
+		credential, err := r.resolveCredential(ctx, request.ConnectionID)
+		if err != nil {
+			return nil, err
+		}
+		clients, err := r.factory.Native(ctx, credential, region)
+		if err != nil {
+			return nil, NormalizeError(err)
+		}
+		if err := enrichLifecycleFacts(ctx, clients, result); err != nil {
+			return nil, err
+		}
+	}
 	return result, nil
 }
 
