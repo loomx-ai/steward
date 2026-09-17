@@ -37,7 +37,7 @@ func TestRecoveryServicesSourceEvidence(t *testing.T) {
 	if err = json.Unmarshal(wire, &sources); err != nil {
 		t.Fatal(err)
 	}
-	if len(sources) != 15 {
+	if len(sources) != 17 {
 		t.Fatal("missing native evidence")
 	}
 	for _, source := range sources {
@@ -275,6 +275,8 @@ func newRecoveryServicesFixture(t *testing.T) *recoveryServicesFixture {
 			kind = recoveryServicesItem
 		case "deletedvaults":
 			kind = recoveryServicesDeletedVault
+		case "replicationprotecteditems":
+			kind = siteRecoveryItem
 		}
 		if kind != "" {
 			if q.URL.Query().Get("api-version") != recoveryServicesVersion(kind) {

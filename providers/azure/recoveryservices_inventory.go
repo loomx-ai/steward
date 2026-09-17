@@ -23,8 +23,14 @@ const recoveryServicesContainer = recoveryServicesVault + "/backupFabrics/protec
 const recoveryServicesItem = recoveryServicesContainer + "/protectedItems"
 const recoveryServicesDeletedVault = "Microsoft.RecoveryServices/locations/deletedVaults"
 
+// Site Recovery replication is inventoried read-only. Disabling replication
+// removes the replica disks at the recovery location, and purge only removes
+// the vault record; neither is exposed as cleanup.
+const siteRecoveryVersion = "2026-07-01"
+const siteRecoveryItem = recoveryServicesVault + "/replicationFabrics/replicationProtectionContainers/replicationProtectedItems"
+
 func recoveryServicesKind(kind string) string {
-	for _, candidate := range []string{recoveryServicesVault, recoveryServicesContainer, recoveryServicesItem, recoveryServicesDeletedVault} {
+	for _, candidate := range []string{recoveryServicesVault, recoveryServicesContainer, recoveryServicesItem, recoveryServicesDeletedVault, siteRecoveryItem} {
 		if strings.EqualFold(kind, candidate) {
 			return candidate
 		}
@@ -35,6 +41,9 @@ func recoveryServicesKind(kind string) string {
 func recoveryServicesVersion(kind string) string {
 	if kind == recoveryServicesVault || kind == recoveryServicesDeletedVault {
 		return recoveryServicesVaultVersion
+	}
+	if kind == siteRecoveryItem {
+		return siteRecoveryVersion
 	}
 	return recoveryServicesBackupVersion
 }
@@ -54,7 +63,7 @@ func (c *client) recoveryServicesIdentity(value, kind string) (string, error) {
 		return id, nil
 	}
 	canonical, typ, err := parseID(value)
-	size := map[string]int{recoveryServicesVault: 9, recoveryServicesContainer: 13, recoveryServicesItem: 15}[kind]
+	size := map[string]int{recoveryServicesVault: 9, recoveryServicesContainer: 13, recoveryServicesItem: 15, siteRecoveryItem: 15}[kind]
 	if err != nil || typ != strings.ToLower(kind) || len(strings.Split(canonical, "/")) != size || !strings.HasPrefix(canonical, c.root()+"/") {
 		return "", serviceDenied("invalid_recovery_services_identity")
 	}
@@ -109,6 +118,17 @@ func (c *client) recoveryServicesMetadata(raw map[string]any, id, kind string) e
 				return serviceDenied("invalid_recovery_services_item_vault")
 			}
 		}
+	case siteRecoveryItem:
+		if text(props["protectedItemType"]) == "" || text(props["protectionState"]) == "" {
+			return serviceDenied("invalid_site_recovery_item")
+		}
+		for _, key := range []string{"policyId", "recoveryFabricId", "recoveryContainerId"} {
+			if value, exists := props[key]; exists && value != nil {
+				if _, ok := value.(string); !ok {
+					return serviceDenied("invalid_site_recovery_reference")
+				}
+			}
+		}
 	case recoveryServicesDeletedVault:
 		if _, err := c.recoveryServicesIdentity(text(props["vaultId"]), recoveryServicesVault); err != nil {
 			return serviceDenied("invalid_recovery_services_deleted_origin")
@@ -146,10 +166,12 @@ func (c *client) recoveryServicesCollection(ctx context.Context, path, kind stri
 	switch kind {
 	case recoveryServicesVault:
 		validPath = strings.EqualFold(path, c.root()+"/providers/microsoft.recoveryservices/vaults")
-	case recoveryServicesContainer, recoveryServicesItem:
+	case recoveryServicesContainer, recoveryServicesItem, siteRecoveryItem:
 		suffix := "/backupprotectioncontainers"
 		if kind == recoveryServicesItem {
 			suffix = "/backupprotecteditems"
+		} else if kind == siteRecoveryItem {
+			suffix = "/replicationprotecteditems"
 		}
 		if strings.HasSuffix(strings.ToLower(path), suffix) {
 			_, err := c.recoveryServicesIdentity(path[:len(path)-len(suffix)], recoveryServicesVault)
@@ -205,6 +227,8 @@ func (c *client) recoveryServicesCollection(ctx context.Context, path, kind stri
 				member = strings.EqualFold(path, recoveryServicesVaultID(id)+"/backupprotectioncontainers")
 			case recoveryServicesItem:
 				member = strings.EqualFold(path, recoveryServicesVaultID(id)+"/backupprotecteditems")
+			case siteRecoveryItem:
+				member = strings.EqualFold(path, recoveryServicesVaultID(id)+"/replicationprotecteditems")
 			case recoveryServicesDeletedVault:
 				member = strings.EqualFold(path, redisParentID(id)+"/deletedvaults")
 			}
@@ -284,6 +308,8 @@ func (r *Runtime) recoveryServicesSnapshot(ctx context.Context, c *client, req c
 			collection := "backupprotectioncontainers"
 			if kind == recoveryServicesItem {
 				collection = "backupprotecteditems"
+			} else if kind == siteRecoveryItem {
+				collection = "replicationprotecteditems"
 			}
 			targets[id+"/"+collection] = location
 		}
@@ -353,6 +379,8 @@ func (r *Runtime) recoveryServicesSnapshot(ctx context.Context, c *client, req c
 			}
 		} else if kind == recoveryServicesContainer {
 			state = text(props["registrationStatus"])
+		} else if kind == siteRecoveryItem {
+			state = text(props["protectionState"])
 		}
 		normalized := map[string]any{"name": last(id), "state": state, "subscriptionId": c.subscription, "_inventory_source": recoveryServicesSource, "_recovery_services_configuration": c.privateConfiguration(own.data), "cleanup_protected": true, "cleanup_protection_reason": "recovery_services_cleanup_not_implemented"}
 		if kind != recoveryServicesDeletedVault {
@@ -378,6 +406,14 @@ func (r *Runtime) recoveryServicesSnapshot(ctx context.Context, c *client, req c
 			normalized["containerId"] = container
 			normalized[referenceKey(recoveryServicesContainer)] = []string{container}
 			normalized["retained"] = props["isScheduledForDeferredDelete"] == true
+		}
+		if kind == siteRecoveryItem {
+			normalized["replicationFabricId"] = strings.Join(strings.Split(id, "/")[:11], "/")
+			normalized["protectionContainerId"] = redisParentID(id)
+			normalized["protectedItemType"] = props["protectedItemType"]
+			normalized["replicationHealth"] = props["replicationHealth"]
+			normalized["activeLocation"] = props["activeLocation"]
+			normalized["cleanup_protection_reason"] = "site_recovery_replication_read_only"
 		}
 		if kind == recoveryServicesDeletedVault {
 			normalized["originalVaultId"] = strings.ToLower(text(props["vaultId"]))
@@ -482,7 +518,7 @@ func recoveryServicesSafeValue(value any) any {
 		out := map[string]any{}
 		for key, child := range v {
 			switch key {
-			case "id", "name", "type", "location", "state", "provisioningState", "registrationStatus", "protectionState", "protectionStatus", "protectedItemType", "containerType", "backupManagementType", "workloadType", "vaultId", "policyId", "sourceResourceId", "isScheduledForDeferredDelete", "softDeleteRetentionPeriod", "deferredDeleteTimeInUTC", "vaultDeletionTime", "purgeAt", "request_id", "status_code", "method", "path", "api-version", "code":
+			case "id", "name", "type", "location", "state", "provisioningState", "registrationStatus", "protectionState", "protectionStatus", "protectedItemType", "replicationHealth", "activeLocation", "containerType", "backupManagementType", "workloadType", "vaultId", "policyId", "sourceResourceId", "isScheduledForDeferredDelete", "softDeleteRetentionPeriod", "deferredDeleteTimeInUTC", "vaultDeletionTime", "purgeAt", "request_id", "status_code", "method", "path", "api-version", "code":
 				switch child.(type) {
 				case string, bool, float64, int, json.Number, nil:
 					out[key] = child

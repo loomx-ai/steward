@@ -73,5 +73,15 @@
     "file": "SoftDeletedContainers_List.json",
     "sha256": "88e513102d8971a348335170b87ec2b5e65f454a23e00e76fe42e7bf26e32a4e",
     "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/examples/AzureStorage/SoftDeletedContainers_List.json"
+  },
+  {
+    "file": "ReplicationProtectedItems_Get.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicessiterecovery/resource-manager/Microsoft.RecoveryServices/SiteRecovery/stable/2026-07-01/examples/ReplicationProtectedItems_Get.json",
+    "sha256": "0df6316c93414d15735ddc6210bbe2a772a2522fbdd9703ea11d9c136c89a0f3"
+  },
+  {
+    "file": "ReplicationProtectedItems_List.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicessiterecovery/resource-manager/Microsoft.RecoveryServices/SiteRecovery/stable/2026-07-01/examples/ReplicationProtectedItems_List.json",
+    "sha256": "19d9e8d3a94e00dedf58f586f484ecd13e6dac6ba738ea5ded4aee2128577e50"
   }
 ]

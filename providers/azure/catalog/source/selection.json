@@ -2720,6 +2720,13 @@
         "ManagementGroups_Get",
         "ManagementGroups_List"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicessiterecovery/resource-manager/Microsoft.RecoveryServices/SiteRecovery/stable/2026-07-01/service.json",
+      "operations": [
+        "ReplicationProtectedItems_Get",
+        "ReplicationProtectedItems_List"
+      ]
     }
   ],
   "resource_types": [
@@ -11676,6 +11683,22 @@
       ],
       "list_operations": [
         "Azure.Microsoft.RecoveryServices.BackupProtectedItems_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems",
+      "class": "storage.backup",
+      "display_name": "Site Recovery replication protected item",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "replicationProtectedItems",
+      "read_operations": [
+        "Azure.Microsoft.RecoveryServices.ReplicationProtectedItems_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.RecoveryServices.ReplicationProtectedItems_List"
       ]
     },
     {

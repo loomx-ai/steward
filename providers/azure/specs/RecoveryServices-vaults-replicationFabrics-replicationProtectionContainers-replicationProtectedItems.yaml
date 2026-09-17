@@ -1,0 +1,40 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems
+  class: storage.backup
+presentation:
+  displayNames:
+    en-US: Site Recovery replication protected item
+    zh-CN: Site Recovery 复制保护项目
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: recovery-services
+  list:
+    operation: Azure.Microsoft.RecoveryServices.ReplicationProtectedItems_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.RecoveryServices.ReplicationProtectedItems_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name: name
+  state: state
+  subscriptionId: subscriptionId
+  resourceGroup: resourceGroup
+  vaultId: vaultId
+  replicationFabricId: replicationFabricId
+  protectionContainerId: protectionContainerId
+  protectedItemType: protectedItemType
+  replicationHealth: replicationHealth
+  activeLocation: activeLocation
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.RecoveryServices/vaults
+  targetIdPath: refs_microsoft_recoveryservices_vaults

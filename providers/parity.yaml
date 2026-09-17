@@ -1216,14 +1216,15 @@ resources:
     resources:
     - compute.googleapis.com/RegionDisk
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems
   aws:
     resources:
     - AWS::DRS::SourceServer
   status: pending_verification
   notes: Replication grouping is provider-specific; verify source/target retention and controller membership.
+    Azure Site Recovery replication protected items are inventoried read-only in the Recovery
+    Services source; disabling replication removes recovery-side replicas and is not offered.
 - alicloud: ACS::EBS::DiskReplicaPair
   spec: providers/alicloud/specs/ebs-disk-replica-pair.yaml
   class: storage.replica_pair
@@ -1236,15 +1237,15 @@ resources:
     resources:
     - compute.googleapis.com/RegionDisk
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems
   aws:
     resources:
     - AWS::DRS::SourceServer
   status: pending_verification
   notes: Regional disk replication and Azure Site Recovery differ from explicit Alibaba disk-replica pairs;
-    retention and source/target ownership need platform-aware implementation.
+    retention and source/target ownership need platform-aware implementation. Azure replication
+    protected items are read-only inventory; disable-protection lifecycle is not implemented.
 - alicloud: ACS::ECI::ContainerGroup
   spec: providers/alicloud/specs/eci-container-group.yaml
   class: compute.container_group

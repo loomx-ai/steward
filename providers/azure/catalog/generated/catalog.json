@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "1b26673dece7fbd2e1f75348da16e74f643dd70c1309106b64f8a221071fe515",
+    "checksum": "fdb1c643ad124f565d56d0155d1dde4719f8e74a86257be13001632883c248b3",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "0196f7a589cd64516d0c4010008677500086695d91fd3193aeae9206c9f86ca7",
+  "content_checksum": "dd691bd01761d6151039029d4a0011a6cc03d587781d81e4c24a1eb6c4a90f3b",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -123421,6 +123421,199 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/bms.json"
     },
     {
+      "id": "Azure.Microsoft.RecoveryServices.ReplicationProtectedItems_Get",
+      "name": "ReplicationProtectedItems_Get",
+      "service": "Microsoft.RecoveryServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{resourceName}/replicationFabrics/{fabricName}/replicationProtectionContainers/{protectionContainerName}/replicationProtectedItems/{replicatedProtectedItemName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fabricName": {
+            "description": "Fabric name.",
+            "in": "path",
+            "name": "fabricName",
+            "required": true,
+            "type": "string"
+          },
+          "protectionContainerName": {
+            "description": "Protection container name.",
+            "in": "path",
+            "name": "protectionContainerName",
+            "required": true,
+            "type": "string"
+          },
+          "replicatedProtectedItemName": {
+            "description": "Replication protected item name.",
+            "in": "path",
+            "name": "replicatedProtectedItemName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceName": {
+            "description": "The name of the Vault",
+            "in": "path",
+            "name": "resourceName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Replication protected item.",
+        "properties": {
+          "location": {
+            "description": "Resource Location",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ReplicationProtectedItemProperties",
+            "description": "The custom data."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{resourceName}/replicationFabrics/{fabricName}/replicationProtectionContainers/{protectionContainerName}/replicationProtectedItems/{replicatedProtectedItemName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicessiterecovery/resource-manager/Microsoft.RecoveryServices/SiteRecovery/stable/2026-07-01/service.json"
+    },
+    {
+      "id": "Azure.Microsoft.RecoveryServices.ReplicationProtectedItems_List",
+      "name": "ReplicationProtectedItems_List",
+      "service": "Microsoft.RecoveryServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{resourceName}/replicationProtectedItems",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "OData filter options.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceName": {
+            "description": "The name of the recovery services vault.",
+            "in": "path",
+            "name": "resourceName",
+            "required": true,
+            "type": "string"
+          },
+          "skipToken": {
+            "description": "The pagination token. Possible values: \"FabricId\" or \"FabricId_CloudId\" or null.",
+            "in": "query",
+            "name": "skipToken",
+            "required": false,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Replication protected item collection.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The ReplicationProtectedItem items on this page",
+            "items": {
+              "$ref": "#/definitions/ReplicationProtectedItem"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.RecoveryServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.RecoveryServices/vaults/{resourceName}/replicationProtectedItems",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicessiterecovery/resource-manager/Microsoft.RecoveryServices/SiteRecovery/stable/2026-07-01/service.json"
+    },
+    {
       "id": "Azure.Microsoft.RecoveryServices.ResourceGuardProxies_Get",
       "name": "ResourceGuardProxies_Get",
       "service": "Microsoft.RecoveryServices",
@@ -151433,6 +151626,23 @@
         ],
         "list_operations": [
           "Azure.Microsoft.RecoveryServices.BackupProtectedItems_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems",
+      "class": "storage.backup",
+      "display_name": "Site Recovery replication protected item",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "replicationProtectedItems",
+        "read_operations": [
+          "Azure.Microsoft.RecoveryServices.ReplicationProtectedItems_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.RecoveryServices.ReplicationProtectedItems_List"
         ]
       }
     },
