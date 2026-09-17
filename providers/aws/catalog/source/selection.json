@@ -1,0 +1,1851 @@
+{
+ "api_models": {
+  "repository": "https://github.com/aws/api-models-aws",
+  "commit": "d86f18ce2e5917f532d6e3eb98befe94371e698d",
+  "models": {
+   "models/cloudcontrol/service/2021-09-30/cloudcontrol-2021-09-30.json": [
+    "ListResources",
+    "GetResource",
+    "DeleteResource",
+    "UpdateResource",
+    "GetResourceRequestStatus"
+   ],
+   "models/cloudformation/service/2010-05-15/cloudformation-2010-05-15.json": [
+    "ListStackResources",
+    "GetTemplate",
+    "DescribeStacks",
+    "DeleteStack"
+   ],
+   "models/resource-explorer-2/service/2022-07-28/resource-explorer-2-2022-07-28.json": [
+    "ListResources"
+   ],
+   "models/sts/service/2011-06-15/sts-2011-06-15.json": [
+    "GetCallerIdentity"
+   ],
+   "models/ec2/service/2016-11-15/ec2-2016-11-15.json": [
+    "DescribeRegions",
+    "DescribeVpcs",
+    "DescribeSubnets",
+    "DescribeInternetGateways",
+    "DetachInternetGateway",
+    "DescribeVpnGateways",
+    "DetachVpnGateway",
+    "DescribeImages",
+    "DeregisterImage",
+    "DisableImageDeregistrationProtection",
+    "DescribeSnapshots",
+    "DeleteSnapshot",
+    "DescribeInstances",
+    "ModifyInstanceAttribute",
+    "DescribeNetworkInterfaces",
+    "ModifyNetworkInterfaceAttribute",
+    "DescribeAddresses",
+    "DescribeNatGateways"
+   ],
+   "models/opensearch/service/2021-01-01/opensearch-2021-01-01.json": [
+    "ListDomainNames",
+    "DescribeDomains",
+    "DeleteDomain"
+   ],
+   "models/docdb/service/2014-10-31/docdb-2014-10-31.json": [
+    "DescribeDBClusters",
+    "DescribeDBInstances",
+    "DeleteDBCluster",
+    "DeleteDBInstance",
+    "ModifyDBCluster"
+   ],
+   "models/database-migration-service/service/2016-01-01/database-migration-service-2016-01-01.json": [
+    "DescribeReplicationInstances",
+    "DeleteReplicationInstance"
+   ],
+   "models/fsx/service/2018-03-01/fsx-2018-03-01.json": [
+    "DescribeFileSystems",
+    "DeleteFileSystem"
+   ],
+   "models/storage-gateway/service/2013-06-30/storage-gateway-2013-06-30.json": [
+    "ListGateways",
+    "DescribeGatewayInformation",
+    "DeleteGateway"
+   ],
+   "models/route-53-domains/service/2014-05-15/route-53-domains-2014-05-15.json": [
+    "ListDomains",
+    "GetDomainDetail",
+    "DeleteDomain"
+   ],
+   "models/drs/service/2020-02-26/drs-2020-02-26.json": [
+    "DescribeSourceServers",
+    "DeleteSourceServer"
+   ],
+   "models/pinpoint/service/2016-12-01/pinpoint-2016-12-01.json": [
+    "ListTemplates",
+    "GetSmsTemplate",
+    "DeleteSmsTemplate"
+   ],
+   "models/auto-scaling/service/2011-01-01/auto-scaling-2011-01-01.json": [
+    "DescribeAutoScalingGroups"
+   ],
+   "models/eks/service/2017-11-01/eks-2017-11-01.json": [
+    "DescribeNodegroup"
+   ],
+   "models/organizations/service/2016-11-28/organizations-2016-11-28.json": [
+    "ListRoots",
+    "ListOrganizationalUnitsForParent"
+   ],
+   "models/elastic-load-balancing-v2/service/2015-12-01/elastic-load-balancing-v2-2015-12-01.json": [
+    "DescribeLoadBalancerAttributes",
+    "ModifyLoadBalancerAttributes"
+   ]
+  }
+ },
+ "cloudformation": {
+  "archive": "https://schema.cloudformation.us-east-1.amazonaws.com/CloudformationSchema.zip"
+ },
+ "resource_types": [
+  {
+   "nativeType": "AWS::APS::Scraper",
+   "class": "observability.prometheus",
+   "displayName": "Managed Prometheus Scraper",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::APS::Workspace",
+   "class": "observability.prometheus",
+   "displayName": "Managed Prometheus Workspace",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::AccessAnalyzer::Analyzer",
+   "class": "security.analyzer",
+   "displayName": "IAM Access Analyzer",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::AmazonMQ::Broker",
+   "class": "messaging.broker",
+   "displayName": "Amazon MQ Broker",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ApiGateway::DomainName",
+   "class": "network.api_domain",
+   "displayName": "API Gateway Custom Domain",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ApiGateway::RestApi",
+   "class": "api.gateway",
+   "displayName": "API Gateway REST API",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ApiGatewayV2::Api",
+   "class": "api.gateway",
+   "displayName": "API Gateway HTTP/WebSocket API",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ApiGatewayV2::DomainName",
+   "class": "network.api_domain",
+   "displayName": "API Gateway V2 Custom Domain",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::AppRunner::Service",
+   "class": "serverless.service",
+   "displayName": "App Runner Service",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Athena::WorkGroup",
+   "class": "analytics.workgroup",
+   "displayName": "Athena Workgroup",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::AutoScaling::AutoScalingGroup",
+   "class": "compute.autoscaling_group",
+   "displayName": "Auto Scaling Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::AutoScaling::LaunchConfiguration",
+   "class": "compute.launch_template",
+   "displayName": "Auto Scaling Launch Configuration",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Backup::BackupPlan",
+   "class": "storage.backup_plan",
+   "displayName": "AWS Backup Plan",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Backup::BackupSelection",
+   "class": "storage.backup_selection",
+   "displayName": "AWS Backup Selection",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Backup::BackupVault",
+   "class": "storage.backup_vault",
+   "displayName": "AWS Backup Vault",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Backup::LogicallyAirGappedBackupVault",
+   "class": "storage.backup_vault",
+   "displayName": "AWS Backup Logically Air-Gapped Vault",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Batch::ComputeEnvironment",
+   "class": "compute.hpc_cluster",
+   "displayName": "Batch Compute Environment",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Cassandra::Keyspace",
+   "class": "database.wide_column",
+   "displayName": "Keyspaces Keyspace",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Cassandra::Table",
+   "class": "database.wide_column",
+   "displayName": "Keyspaces Table",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::CertificateManager::Certificate",
+   "class": "security.certificate",
+   "displayName": "ACM Certificate",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::CloudFormation::Stack",
+   "class": "orchestration.stack",
+   "displayName": "CloudFormation Stack",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::CloudFormation::StackSet",
+   "class": "orchestration.stack_group",
+   "displayName": "CloudFormation StackSet",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::CloudFront::Distribution",
+   "class": "network.cdn_domain",
+   "displayName": "CloudFront Distribution",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::CloudTrail::EventDataStore",
+   "class": "security.audit_trail",
+   "displayName": "CloudTrail Lake Event Data Store",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::CloudTrail::Trail",
+   "class": "security.audit_trail",
+   "displayName": "CloudTrail Trail",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::CloudWatch::Alarm",
+   "class": "monitoring.alarm",
+   "displayName": "CloudWatch Alarm",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::CloudWatch::CompositeAlarm",
+   "class": "monitoring.alarm",
+   "displayName": "CloudWatch Composite Alarm",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::CloudWatch::Dashboard",
+   "class": "monitoring.dashboard",
+   "displayName": "CloudWatch Dashboard",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::CodePipeline::Pipeline",
+   "class": "devops.pipeline",
+   "displayName": "CodePipeline Pipeline",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DLM::LifecyclePolicy",
+   "class": "storage.snapshot_policy",
+   "displayName": "Data Lifecycle Manager Policy",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DMS::Endpoint",
+   "class": "data.transfer_endpoint",
+   "displayName": "DMS Endpoint",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DMS::ReplicationConfig",
+   "class": "data.transfer_job",
+   "displayName": "DMS Serverless Replication",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DMS::ReplicationInstance",
+   "class": "data.transfer_job",
+   "displayName": "DMS Replication Instance",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DMS::ReplicationTask",
+   "class": "data.transfer_job",
+   "displayName": "DMS Replication Task",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DRS::SourceServer",
+   "class": "storage.replica_group",
+   "displayName": "Elastic Disaster Recovery Source Server",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
+  },
+  {
+   "nativeType": "AWS::DSQL::Cluster",
+   "class": "database.distributed",
+   "displayName": "Aurora DSQL Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DataZone::Domain",
+   "class": "data.workspace",
+   "displayName": "DataZone Domain",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DataZone::Environment",
+   "class": "data.resource_group",
+   "displayName": "DataZone Environment",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DataZone::Project",
+   "class": "data.workspace",
+   "displayName": "DataZone Project",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DirectConnect::Connection",
+   "class": "network.physical_connection",
+   "displayName": "Direct Connect Connection",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DirectConnect::DirectConnectGateway",
+   "class": "network.express_connect_router",
+   "displayName": "Direct Connect Gateway",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DirectConnect::DirectConnectGatewayAssociation",
+   "class": "network.cen_attachment",
+   "displayName": "Direct Connect Gateway Association",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DirectConnect::Lag",
+   "class": "network.physical_connection",
+   "displayName": "Direct Connect Link Aggregation Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DirectConnect::PrivateVirtualInterface",
+   "class": "network.virtual_border_router",
+   "displayName": "Direct Connect Private Virtual Interface",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DirectConnect::PublicVirtualInterface",
+   "class": "network.virtual_border_router",
+   "displayName": "Direct Connect Public Virtual Interface",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DirectConnect::TransitVirtualInterface",
+   "class": "network.virtual_border_router",
+   "displayName": "Direct Connect Transit Virtual Interface",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DocDB::DBCluster",
+   "class": "database.document",
+   "displayName": "DocumentDB Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DocDB::DBInstance",
+   "class": "database.document",
+   "displayName": "DocumentDB Instance",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DocDBElastic::Cluster",
+   "class": "database.document",
+   "displayName": "DocumentDB Elastic Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::DynamoDB::Table",
+   "class": "database.table",
+   "displayName": "DynamoDB Table",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::CapacityReservation",
+   "class": "compute.capacity_reservation",
+   "displayName": "EC2 Capacity Reservation",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::CapacityReservationFleet",
+   "class": "compute.elasticity_assurance",
+   "displayName": "EC2 Capacity Reservation Fleet",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::CustomerGateway",
+   "class": "network.customer_gateway",
+   "displayName": "Customer Gateway",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::DHCPOptions",
+   "class": "network.dhcp_options_set",
+   "displayName": "DHCP Option Set",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::EIP",
+   "class": "network.public_ip",
+   "displayName": "Elastic IP Address",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::EgressOnlyInternetGateway",
+   "class": "network.ipv6_gateway",
+   "displayName": "Egress-Only Internet Gateway",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::FlowLog",
+   "class": "observability.flow_log",
+   "displayName": "VPC Flow Log",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::Host",
+   "class": "compute.dedicated_host",
+   "displayName": "EC2 Dedicated Host",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::Image",
+   "class": "compute.image",
+   "displayName": "Amazon Machine Image",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
+  },
+  {
+   "nativeType": "AWS::EC2::Instance",
+   "class": "compute.instance",
+   "displayName": "EC2 Instance",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::InstanceConnectEndpoint",
+   "class": "security.bastion_host",
+   "displayName": "EC2 Instance Connect Endpoint",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::InternetGateway",
+   "class": "network.internet_gateway",
+   "displayName": "Internet Gateway",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::KeyPair",
+   "class": "security.key_pair",
+   "displayName": "EC2 Key Pair",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::LaunchTemplate",
+   "class": "compute.launch_template",
+   "displayName": "EC2 Launch Template",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::NatGateway",
+   "class": "network.nat_gateway",
+   "displayName": "NAT Gateway",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::NetworkAcl",
+   "class": "network.acl",
+   "displayName": "Network ACL",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::NetworkInterface",
+   "class": "network.interface",
+   "displayName": "Elastic Network Interface",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::RouteTable",
+   "class": "network.route_table",
+   "displayName": "Route Table",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::SecurityGroup",
+   "class": "network.security_group",
+   "displayName": "Security Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::Snapshot",
+   "class": "storage.snapshot",
+   "displayName": "EBS Snapshot",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
+  },
+  {
+   "nativeType": "AWS::EC2::Subnet",
+   "class": "network.subnet",
+   "displayName": "Subnet",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::SubnetCidrBlock",
+   "class": "network.ipv6_address",
+   "displayName": "Subnet IPv6 CIDR Block",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::TransitGateway",
+   "class": "network.transit_router",
+   "displayName": "Transit Gateway",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::TransitGatewayConnect",
+   "class": "network.cen_attachment",
+   "displayName": "Transit Gateway Connect Attachment",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::TransitGatewayMulticastDomain",
+   "class": "network.multicast_domain",
+   "displayName": "Transit Gateway Multicast Domain",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::TransitGatewayMulticastDomainAssociation",
+   "class": "network.multicast_domain_association",
+   "displayName": "Transit Gateway Multicast Domain Association",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::TransitGatewayMulticastGroupMember",
+   "class": "network.multicast_group_member",
+   "displayName": "Transit Gateway Multicast Group Member",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::TransitGatewayMulticastGroupSource",
+   "class": "network.multicast_group_source",
+   "displayName": "Transit Gateway Multicast Group Source",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::TransitGatewayPeeringAttachment",
+   "class": "network.cen_attachment",
+   "displayName": "Transit Gateway Peering Attachment",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::TransitGatewayRouteTable",
+   "class": "network.route_table",
+   "displayName": "Transit Gateway Route Table",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::TransitGatewayVpcAttachment",
+   "class": "network.vpc_attachment",
+   "displayName": "Transit Gateway VPC Attachment",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::VPC",
+   "class": "network.vpc",
+   "displayName": "VPC",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::VPCCidrBlock",
+   "class": "network.ipv6_address",
+   "displayName": "VPC CIDR Block",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::VPCEndpoint",
+   "class": "network.vpc_endpoint",
+   "displayName": "VPC Endpoint",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::VPCEndpointService",
+   "class": "network.endpoint_service",
+   "displayName": "VPC Endpoint Service",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::VPCPeeringConnection",
+   "class": "network.peer_connection",
+   "displayName": "VPC Peering Connection",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::VPNConnection",
+   "class": "network.vpn_connection",
+   "displayName": "Site-to-Site VPN Connection",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::VPNGateway",
+   "class": "network.vpn_gateway",
+   "displayName": "Virtual Private Gateway",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::Volume",
+   "class": "storage.volume",
+   "displayName": "EBS Volume",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ECR::PullThroughCacheRule",
+   "class": "compute.image_cache",
+   "displayName": "ECR Pull Through Cache Rule",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ECR::Repository",
+   "class": "container.repository",
+   "displayName": "ECR Repository",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ECS::Cluster",
+   "class": "container.cluster",
+   "displayName": "ECS Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ECS::Service",
+   "class": "compute.container_group",
+   "displayName": "ECS Service",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ECS::TaskDefinition",
+   "class": "compute.container_definition",
+   "displayName": "ECS Task Definition",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EFS::AccessPoint",
+   "class": "storage.mount_target",
+   "displayName": "EFS Access Point",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EFS::FileSystem",
+   "class": "storage.file_system",
+   "displayName": "EFS File System",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EFS::MountTarget",
+   "class": "storage.mount_target",
+   "displayName": "EFS Mount Target",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EKS::Addon",
+   "class": "container.addon",
+   "displayName": "EKS Add-on",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EKS::Cluster",
+   "class": "container.cluster",
+   "displayName": "EKS Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EKS::FargateProfile",
+   "class": "container.fargate_profile",
+   "displayName": "EKS Fargate Profile",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EKS::Nodegroup",
+   "class": "container.node_pool",
+   "displayName": "EKS Managed Node Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EMRServerless::Application",
+   "class": "data.workspace",
+   "displayName": "EMR Serverless Application",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ElastiCache::CacheCluster",
+   "class": "database.cache",
+   "displayName": "ElastiCache Cache Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ElastiCache::ReplicationGroup",
+   "class": "database.cache",
+   "displayName": "ElastiCache Replication Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ElastiCache::ServerlessCache",
+   "class": "database.cache",
+   "displayName": "ElastiCache Serverless Cache",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ElasticLoadBalancing::LoadBalancer",
+   "class": "network.load_balancer",
+   "displayName": "Classic Load Balancer",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ElasticLoadBalancingV2::Listener",
+   "class": "network.load_balancer_listener",
+   "displayName": "Load Balancer Listener",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "class": "network.load_balancer",
+   "displayName": "Elastic Load Balancer",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "class": "network.target_group",
+   "displayName": "Target Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Events::EventBus",
+   "class": "messaging.event_bus",
+   "displayName": "EventBridge Event Bus",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Events::Rule",
+   "class": "messaging.event_rule",
+   "displayName": "EventBridge Rule",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::FSx::FileSystem",
+   "class": "storage.filesystem",
+   "displayName": "FSx File System",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::GlobalAccelerator::Accelerator",
+   "class": "network.global_accelerator",
+   "displayName": "Global Accelerator",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::GlobalAccelerator::EndpointGroup",
+   "class": "network.global_accelerator_endpoint_group",
+   "displayName": "Global Accelerator Endpoint Group",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::GlobalAccelerator::Listener",
+   "class": "network.global_accelerator_listener",
+   "displayName": "Global Accelerator Listener",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Glue::Database",
+   "class": "data.project",
+   "displayName": "Glue Data Catalog Database",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Grafana::Workspace",
+   "class": "observability.visualization",
+   "displayName": "Managed Grafana Workspace",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::GuardDuty::Detector",
+   "class": "security.security_center",
+   "displayName": "GuardDuty Detector",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::IAM::Group",
+   "class": "identity.group",
+   "displayName": "IAM Group",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::IAM::InstanceProfile",
+   "class": "identity.instance_profile",
+   "displayName": "IAM Instance Profile",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::IAM::ManagedPolicy",
+   "class": "identity.policy",
+   "displayName": "IAM Managed Policy",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::IAM::Role",
+   "class": "identity.role",
+   "displayName": "IAM Role",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::IAM::User",
+   "class": "identity.user",
+   "displayName": "IAM User",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::IVS::Channel",
+   "class": "media.live_domain",
+   "displayName": "IVS Channel",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::IVS::Stage",
+   "class": "media.rtc_application",
+   "displayName": "IVS Real-Time Stage",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::IdentityStore::Group",
+   "class": "identity.group",
+   "displayName": "IAM Identity Center Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::KMS::Alias",
+   "class": "security.encryption_key_alias",
+   "displayName": "KMS Alias",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::KMS::Key",
+   "class": "security.encryption_key",
+   "displayName": "KMS Key",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Kendra::Index",
+   "class": "search.application",
+   "displayName": "Kendra Index",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Kinesis::Stream",
+   "class": "messaging.stream",
+   "displayName": "Kinesis Data Stream",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::KinesisAnalyticsV2::Application",
+   "class": "data.stream_compute",
+   "displayName": "Managed Service for Apache Flink Application",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Lambda::Function",
+   "class": "compute.function",
+   "displayName": "Lambda Function",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Lightsail::Instance",
+   "class": "compute.simple_server",
+   "displayName": "Lightsail Instance",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Logs::LogGroup",
+   "class": "observability.log_group",
+   "displayName": "CloudWatch Log Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::MSK::Cluster",
+   "class": "messaging.broker",
+   "displayName": "MSK Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::MSK::ServerlessCluster",
+   "class": "messaging.broker",
+   "displayName": "MSK Serverless Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Macie::CustomDataIdentifier",
+   "class": "security.data_protection",
+   "displayName": "Macie Custom Data Identifier",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Macie::Session",
+   "class": "security.data_protection",
+   "displayName": "Macie Account Session",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::MemoryDB::Cluster",
+   "class": "database.cache",
+   "displayName": "MemoryDB Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Neptune::DBCluster",
+   "class": "database.graph",
+   "displayName": "Neptune DB Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Neptune::DBInstance",
+   "class": "database.graph",
+   "displayName": "Neptune DB Instance",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::NeptuneGraph::Graph",
+   "class": "database.graph",
+   "displayName": "Neptune Analytics Graph",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::NetworkFirewall::Firewall",
+   "class": "security.firewall",
+   "displayName": "Network Firewall",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::NetworkFirewall::FirewallPolicy",
+   "class": "security.firewall_policy",
+   "displayName": "Network Firewall Policy",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::NetworkFirewall::RuleGroup",
+   "class": "security.firewall_rule_group",
+   "displayName": "Network Firewall Rule Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::NetworkManager::CoreNetwork",
+   "class": "network.cloud_enterprise_network",
+   "displayName": "Cloud WAN Core Network",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::NetworkManager::GlobalNetwork",
+   "class": "network.cloud_enterprise_network",
+   "displayName": "Network Manager Global Network",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::OSIS::Pipeline",
+   "class": "data.pipeline",
+   "displayName": "OpenSearch Ingestion Pipeline",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Oam::Link",
+   "class": "observability.monitoring_environment",
+   "displayName": "CloudWatch Observability Access Manager Link",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Oam::Sink",
+   "class": "observability.monitoring_environment",
+   "displayName": "CloudWatch Observability Access Manager Sink",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::OpenSearchServerless::Collection",
+   "class": "search.application",
+   "displayName": "OpenSearch Serverless Collection",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::OpenSearchService::Domain",
+   "class": "search.domain",
+   "displayName": "OpenSearch Service Domain",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Organizations::Account",
+   "class": "identity.member_account",
+   "displayName": "Organization Member Account",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Organizations::Organization",
+   "class": "identity.resource_directory",
+   "displayName": "AWS Organization",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Organizations::OrganizationalUnit",
+   "class": "identity.resource_folder",
+   "displayName": "Organizational Unit",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::PCS::Cluster",
+   "class": "compute.hpc_cluster",
+   "displayName": "Parallel Computing Service Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Pinpoint::SmsTemplate",
+   "class": "messaging.sms_template",
+   "displayName": "Pinpoint SMS Template",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::QuickSight::Dashboard",
+   "class": "data.workspace",
+   "displayName": "QuickSight Dashboard",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::QuickSight::DataSet",
+   "class": "data.workspace",
+   "displayName": "QuickSight Dataset",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::RDS::DBCluster",
+   "class": "database.cluster",
+   "displayName": "Aurora DB Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::RDS::DBInstance",
+   "class": "database.instance",
+   "displayName": "RDS DB Instance",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::RDS::DBProxy",
+   "class": "application.database",
+   "displayName": "RDS Proxy",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Redshift::Cluster",
+   "class": "database.analytics",
+   "displayName": "Redshift Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::RedshiftServerless::Namespace",
+   "class": "database.analytics",
+   "displayName": "Redshift Serverless Namespace",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::RedshiftServerless::Workgroup",
+   "class": "database.analytics",
+   "displayName": "Redshift Serverless Workgroup",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Route53::HealthCheck",
+   "class": "dns.gtm_instance",
+   "displayName": "Route 53 Health Check",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Route53::HostedZone",
+   "class": "dns.zone",
+   "displayName": "Route 53 Hosted Zone",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Route53Domains::Domain",
+   "class": "dns.registered_domain",
+   "displayName": "Route 53 Registered Domain",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": false
+  },
+  {
+   "nativeType": "AWS::Route53Resolver::ResolverRule",
+   "class": "dns.private_zone",
+   "displayName": "Route 53 Resolver Rule",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::S3::Bucket",
+   "class": "storage.bucket",
+   "displayName": "S3 Bucket",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::SNS::Topic",
+   "class": "messaging.topic",
+   "displayName": "SNS Topic",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::SQS::Queue",
+   "class": "messaging.queue",
+   "displayName": "SQS Queue",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::SSO::Instance",
+   "class": "identity.directory",
+   "displayName": "IAM Identity Center Instance",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::SageMaker::Cluster",
+   "class": "compute.lingjun_cluster",
+   "displayName": "SageMaker HyperPod Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::SageMaker::Endpoint",
+   "class": "ai.inference_service",
+   "displayName": "SageMaker Endpoint",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::SageMaker::EndpointConfig",
+   "class": "ai.inference_config",
+   "displayName": "SageMaker Endpoint Configuration",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::SageMaker::Model",
+   "class": "ai.model",
+   "displayName": "SageMaker Model",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::SecurityHub::Hub",
+   "class": "security.security_center",
+   "displayName": "Security Hub",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ServiceCatalogAppRegistry::Application",
+   "class": "application",
+   "displayName": "AppRegistry Application",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ServiceDiscovery::HttpNamespace",
+   "class": "middleware.registry",
+   "displayName": "Cloud Map HTTP Namespace",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+   "class": "middleware.registry",
+   "displayName": "Cloud Map Private DNS Namespace",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ServiceDiscovery::Service",
+   "class": "middleware.registry_service",
+   "displayName": "Cloud Map Service",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Shield::Protection",
+   "class": "security.ddos_protection",
+   "displayName": "Shield Advanced Protection",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Shield::ProtectionGroup",
+   "class": "security.ddos_protection",
+   "displayName": "Shield Advanced Protection Group",
+   "scopeKinds": [
+    "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::StepFunctions::StateMachine",
+   "class": "orchestration.workflow",
+   "displayName": "Step Functions State Machine",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::StorageGateway::Gateway",
+   "class": "storage.gateway",
+   "displayName": "Storage Gateway",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
+  },
+  {
+   "nativeType": "AWS::Synthetics::Canary",
+   "class": "observability.apm_application",
+   "displayName": "CloudWatch Synthetics Canary",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Timestream::Database",
+   "class": "database.timeseries",
+   "displayName": "Timestream Database",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Timestream::InfluxDBInstance",
+   "class": "database.timeseries",
+   "displayName": "Timestream for InfluxDB Instance",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Timestream::Table",
+   "class": "database.timeseries",
+   "displayName": "Timestream Table",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::VpcLattice::Service",
+   "class": "network.gateway",
+   "displayName": "VPC Lattice Service",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::VpcLattice::ServiceNetwork",
+   "class": "network.gateway",
+   "displayName": "VPC Lattice Service Network",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::WAFv2::WebACL",
+   "class": "security.web_acl",
+   "displayName": "WAF Web ACL",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::XRay::Group",
+   "class": "observability.apm_application",
+   "displayName": "X-Ray Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  }
+ ]
+}

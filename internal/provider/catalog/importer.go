@@ -147,17 +147,46 @@ type smithyDocument struct {
 	ResourceTypes []openAPIResourceType  `json:"x-resource-types"`
 }
 
-type smithyShape struct {
-	Type   string         `json:"type"`
+type smithyTarget struct {
+	Target string `json:"target"`
+}
+
+type smithyMember struct {
+	Target string         `json:"target"`
 	Traits map[string]any `json:"traits"`
 }
 
+type smithyShape struct {
+	Type       string                  `json:"type"`
+	Version    string                  `json:"version"`
+	Input      smithyTarget            `json:"input"`
+	Output     smithyTarget            `json:"output"`
+	Operations []smithyTarget          `json:"operations"`
+	Members    map[string]smithyMember `json:"members"`
+	Traits     map[string]any          `json:"traits"`
+}
+
+// Import reads either a selected official AWS Smithy JSON AST or the legacy
+// operation-only fragment. Operations bound by a service shape receive direct
+// call metadata from the service's protocol and endpoint traits.
 func (SmithyImporter) Import(provider asset.Provider, sourceURI string, source []byte) (Catalog, error) {
 	var document smithyDocument
 	if err := json.Unmarshal(source, &document); err != nil {
 		return Catalog{}, fmt.Errorf("decode Smithy source: %w", err)
 	}
 	c := newCatalog(provider, "smithy", sourceURI, source)
+	services := map[string]string{}
+	for shapeID, shape := range document.Shapes {
+		if shape.Type != "service" {
+			continue
+		}
+		for _, operation := range shape.Operations {
+			if existing, duplicate := services[operation.Target]; duplicate && existing != shapeID {
+				return Catalog{}, fmt.Errorf("Smithy operation %q is bound by services %q and %q", operation.Target, existing, shapeID)
+			}
+			services[operation.Target] = shapeID
+		}
+	}
 	for shapeID, shape := range document.Shapes {
 		if shape.Type != "operation" {
 			continue
@@ -171,12 +200,95 @@ func (SmithyImporter) Import(provider asset.Provider, sourceURI string, source [
 			operation.Method, _ = httpTrait["method"].(string)
 			operation.Path, _ = httpTrait["uri"].(string)
 		}
-		operation.Destructive = isDestructiveOperation(operation.Name, operation.Method)
+		if serviceID, bound := services[shapeID]; bound {
+			call, err := smithyOperationCall(document.Shapes, document.Shapes[serviceID], shape, &operation)
+			if err != nil {
+				return Catalog{}, fmt.Errorf("Smithy operation %q: %w", shapeID, err)
+			}
+			operation.Call = call
+			operation.SourceURI = sourceURI
+			operation.SourceFormat = "aws-smithy"
+		}
+		operation.Destructive = isDestructiveOperation(operation.Name, operation.Method) ||
+			(provider == asset.ProviderAWS && strings.HasPrefix(strings.ToLower(operation.Name), "deregister"))
 		c.Operations = append(c.Operations, operation)
 	}
 	appendResourceTypes(&c, document.ResourceTypes)
 	normalize(&c)
 	return c, nil
+}
+
+func smithyOperationCall(shapes map[string]smithyShape, service, shape smithyShape, operation *Operation) (*OperationCall, error) {
+	metadata, _ := service.Traits["aws.api#service"].(map[string]any)
+	sdkID, _ := metadata["sdkId"].(string)
+	endpointPrefix, _ := metadata["endpointPrefix"].(string)
+	if endpointPrefix == "" {
+		if sigv4, ok := service.Traits["aws.auth#sigv4"].(map[string]any); ok {
+			endpointPrefix, _ = sigv4["name"].(string)
+		}
+	}
+	if strings.TrimSpace(sdkID) == "" || strings.TrimSpace(endpointPrefix) == "" || strings.TrimSpace(service.Version) == "" {
+		return nil, fmt.Errorf("service shape lacks sdkId, endpoint prefix, or version")
+	}
+	protocols := make([]string, 0, 1)
+	for trait := range service.Traits {
+		if strings.HasPrefix(trait, "aws.protocols#") {
+			protocols = append(protocols, strings.TrimPrefix(trait, "aws.protocols#"))
+		}
+	}
+	sort.Strings(protocols)
+	if len(protocols) != 1 {
+		return nil, fmt.Errorf("service must declare exactly one AWS protocol, got %v", protocols)
+	}
+	call := &OperationCall{
+		Product: sdkID, Version: service.Version, Style: "aws-smithy", Protocol: protocols[0],
+		Method: "POST", Path: "/", Endpoint: "https://" + endpointPrefix + ".{region}.amazonaws.com",
+		EndpointParameters: []string{"region"}, BodyType: "json", ParameterPosition: "body",
+	}
+	switch protocols[0] {
+	case "awsJson1_0", "awsJson1_1":
+	case "awsQuery", "ec2Query":
+		call.BodyType, call.ParameterPosition = "form", "body"
+	case "restJson1", "restXml":
+		if operation.Method == "" || operation.Path == "" {
+			return nil, fmt.Errorf("REST protocol operation lacks an HTTP binding")
+		}
+		call.Method, call.Path = operation.Method, operation.Path
+		if protocols[0] == "restXml" {
+			call.BodyType = "xml"
+		}
+	default:
+		return nil, fmt.Errorf("unsupported AWS protocol %q", protocols[0])
+	}
+	if operation.Method == "" {
+		operation.Method, operation.Path = call.Method, call.Path
+	}
+	input := shapes[shape.Input.Target]
+	names := make([]string, 0, len(input.Members))
+	for name := range input.Members {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		if _, ok := input.Members[name].Traits["smithy.api#idempotencyToken"]; ok {
+			call.IdempotencyParameter = name
+		}
+	}
+	paginated, _ := shape.Traits["smithy.api#paginated"].(map[string]any)
+	if paginated != nil {
+		defaults, _ := service.Traits["smithy.api#paginated"].(map[string]any)
+		value := func(key string) string {
+			if text, ok := paginated[key].(string); ok {
+				return text
+			}
+			text, _ := defaults[key].(string)
+			return text
+		}
+		if value("inputToken") != "" && value("outputToken") != "" {
+			operation.Pagination = &Pagination{InputTokenPath: value("inputToken"), OutputTokenPath: value("outputToken"), ItemsPath: value("items")}
+		}
+	}
+	return call, nil
 }
 
 func MarshalGenerated(c Catalog) ([]byte, error) {
