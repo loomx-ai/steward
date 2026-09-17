@@ -85,11 +85,14 @@ matrix, as for GCP and Azure.
 ## Remaining work
 
 - Behavioral acceptance per matrix row, including real-cloud evidence.
-- Cloud Control handler behavior for other individual types (for example S3 or
-  ECR contents) is taken from the official handler contract and is not
-  independently verified. KMS keys (AWS managed keys, scheduled deletion) and
-  Backup vaults (recovery points, compliance lock) have native guards verified
-  on Moto and fakes.
+- Cloud Control handler behavior for other individual types (for example ECR
+  contents) is taken from the official handler contract and is not
+  independently verified. KMS keys (AWS managed keys, scheduled deletion),
+  Backup vaults (recovery points, compliance lock) and S3 buckets (object
+  versions and delete markers) have native guards verified on Moto and fakes.
+  Customer managed KMS keys are ordered after, and blocked by, scanned
+  resources that reference them. Key policies are not parsed for their last
+  administrator.
 - Resource Explorer remains a non-authoritative index for types without rules.
 - Auto Scaling and EKS members cannot be retained individually; the plan blocks
   such requests.

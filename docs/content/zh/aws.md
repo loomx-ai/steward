@@ -84,7 +84,7 @@ Resource Explorer 必须能在被查询地域返回资源。Steward 使用该地
 
 - **保留挂载资源：** 若要保留会随实例删除的卷或网卡，在计划中将其设为保留。终止实例前，Steward 将 `DeleteOnTermination` 设为 false 并回读确认；终止后确认保留资源仍然存在、应删除资源已经消失。这需要 `ec2:ModifyInstanceAttribute` 与 `ec2:ModifyNetworkInterfaceAttribute`。计划审查后挂载关系发生变化时，执行会停止。
 - **删除保护：** EC2 实例、RDS 与 Aurora、DynamoDB、EKS 集群、负载均衡器、日志组、Neptune、网络防火墙、Aurora DSQL、CloudTrail 事件数据存储、Auto Scaling 组、DocumentDB 集群与 AMI 的删除保护会在删除前关闭并回读。这需要 `cloudformation:UpdateResource` 以及产品的修改权限，例如 `rds:ModifyDBCluster` 或 `ec2:DisableImageDeregistrationProtection`。
-- **前置条件：** 互联网网关与虚拟私有网关会先从 VPC 分离。DocumentDB 集群不能有成员实例；弹性灾难恢复源服务器必须已断开复制。AWS 托管的 KMS 密钥不能删除；已扫描资源通过密钥 ID、密钥 ARN、别名或别名 ARN 引用的客户托管密钥，只会在该资源之后删除，若该资源不在任务中则计划被阻止；Backup 备份库必须没有恢复点，且未处于合规模式锁定状态。这些检查需要 `kms:DescribeKey` 与 `backup:DescribeBackupVault`。
+- **前置条件：** 互联网网关与虚拟私有网关会先从 VPC 分离。DocumentDB 集群不能有成员实例；弹性灾难恢复源服务器必须已断开复制。AWS 托管的 KMS 密钥不能删除；已扫描资源通过密钥 ID、密钥 ARN、别名或别名 ARN 引用的客户托管密钥，只会在该资源之后删除，若该资源不在任务中则计划被阻止；Backup 备份库必须没有恢复点，且未处于合规模式锁定状态。S3 存储桶不能有任何对象版本或删除标记（即使版本控制已暂停）；Steward 不会清空存储桶。这些检查需要 `kms:DescribeKey`、`backup:DescribeBackupVault` 与 `s3:ListBucketVersions`。
 - **服务默认行为：** DocumentDB 集群删除时不创建最终快照；FSx 文件系统遵循各类型默认的最终备份行为；KMS 密钥进入计划删除等待期，已处于待删除状态的密钥视为已删除；删除 Route 53 注册域名不可撤销，且只支持部分顶级域名。
 
 非空存储桶和仓库、其他依赖关系以及状态变化仍可能导致操作失败。Steward 会等待异步操作并回读结果；不要把请求已接受当作资源已经删除。执行前阅读[清理资源](./cleanup.md)。

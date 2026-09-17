@@ -299,7 +299,7 @@ func (r *Runtime) ResolveAction(ctx context.Context, connectionID asset.Connecti
 		return newInstanceAction(driver, clients.Lifecycle)
 	}
 	switch value.Identity.NativeType {
-	case "AWS::KMS::Key", "AWS::Backup::BackupVault", "AWS::Backup::LogicallyAirGappedBackupVault":
+	case "AWS::KMS::Key", "AWS::Backup::BackupVault", "AWS::Backup::LogicallyAirGappedBackupVault", "AWS::S3::Bucket":
 		credential, err := r.resolveCredential(ctx, connectionID)
 		if err != nil {
 			return nil, err
@@ -309,8 +309,11 @@ func (r *Runtime) ResolveAction(ctx context.Context, connectionID asset.Connecti
 			return nil, NormalizeError(err)
 		}
 		guard := backupVaultGuard(clients.Backup)
-		if value.Identity.NativeType == "AWS::KMS::Key" {
+		switch value.Identity.NativeType {
+		case "AWS::KMS::Key":
 			guard = kmsKeyGuard(clients.KMS)
+		case "AWS::S3::Bucket":
+			guard = s3BucketGuard(clients.S3)
 		}
 		return &guardedAction{CloudControlAction: driver, guard: guard}, nil
 	}

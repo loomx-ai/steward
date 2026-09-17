@@ -28,6 +28,7 @@ import (
 	awsorganizations "github.com/aws/aws-sdk-go-v2/service/organizations"
 	awspinpoint "github.com/aws/aws-sdk-go-v2/service/pinpoint"
 	awsdomains "github.com/aws/aws-sdk-go-v2/service/route53domains"
+	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	awsstoragegateway "github.com/aws/aws-sdk-go-v2/service/storagegateway"
 	"github.com/aws/smithy-go/middleware"
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -121,6 +122,7 @@ type NativeClients struct {
 	EKS            EKSNativeAPI
 	KMS            KMSNativeAPI
 	Backup         BackupNativeAPI
+	S3             S3NativeAPI
 }
 
 func newNativeClients(config awssdk.Config) *NativeClients {
@@ -130,7 +132,7 @@ func newNativeClients(config awssdk.Config) *NativeClients {
 		Domains: awsdomains.NewFromConfig(config), DRS: awsdrs.NewFromConfig(config), Pinpoint: awspinpoint.NewFromConfig(config),
 		Organizations: awsorganizations.NewFromConfig(config), Lifecycle: awsec2.NewFromConfig(config),
 		AutoScaling: awsautoscaling.NewFromConfig(config), EKS: awseks.NewFromConfig(config),
-		KMS: awskms.NewFromConfig(config), Backup: awsbackup.NewFromConfig(config),
+		KMS: awskms.NewFromConfig(config), Backup: awsbackup.NewFromConfig(config), S3: awss3.NewFromConfig(config),
 	}
 }
 

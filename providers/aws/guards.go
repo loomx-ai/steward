@@ -10,12 +10,17 @@ import (
 	awsbackup "github.com/aws/aws-sdk-go-v2/service/backup"
 	awskms "github.com/aws/aws-sdk-go-v2/service/kms"
 	kmstypes "github.com/aws/aws-sdk-go-v2/service/kms/types"
+	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 type KMSNativeAPI interface {
 	DescribeKey(context.Context, *awskms.DescribeKeyInput, ...func(*awskms.Options)) (*awskms.DescribeKeyOutput, error)
+}
+
+type S3NativeAPI interface {
+	ListObjectVersions(context.Context, *awss3.ListObjectVersionsInput, ...func(*awss3.Options)) (*awss3.ListObjectVersionsOutput, error)
 }
 
 type BackupNativeAPI interface {
@@ -153,5 +158,25 @@ func backupVaultGuard(client BackupNativeAPI) deleteGuard {
 			return guardOutcome{blocked: "the backup vault is locked in compliance mode and cannot be deleted", evidence: evidence}, nil
 		}
 		return guardOutcome{evidence: evidence}, nil
+	}
+}
+
+// Cloud Control cannot delete a bucket that still holds objects. Noncurrent
+// versions and delete markers count even when versioning is suspended, so the
+// check lists versions rather than current objects. Steward does not empty
+// buckets: removing data is left to an explicit, separate decision.
+func s3BucketGuard(client S3NativeAPI) deleteGuard {
+	return func(ctx context.Context, bucket string) (guardOutcome, error) {
+		output, err := client.ListObjectVersions(ctx, &awss3.ListObjectVersionsInput{Bucket: awssdk.String(bucket), MaxKeys: awssdk.Int32(1)})
+		if nativeNotFound(err, "NoSuchBucket") {
+			return guardOutcome{pending: true, evidence: map[string]any{"bucket_state": "absent"}}, nil
+		}
+		if err != nil {
+			return guardOutcome{}, NormalizeError(err)
+		}
+		if len(output.Versions) != 0 || len(output.DeleteMarkers) != 0 {
+			return guardOutcome{blocked: "the S3 bucket still holds object versions or delete markers; empty it before cleanup", evidence: map[string]any{"bucket_empty": false}}, nil
+		}
+		return guardOutcome{evidence: map[string]any{"bucket_empty": true}}, nil
 	}
 }
