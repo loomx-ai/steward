@@ -13,6 +13,7 @@ import (
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	awsautoscaling "github.com/aws/aws-sdk-go-v2/service/autoscaling"
+	awsbackup "github.com/aws/aws-sdk-go-v2/service/backup"
 	awsdms "github.com/aws/aws-sdk-go-v2/service/databasemigrationservice"
 	dmstypes "github.com/aws/aws-sdk-go-v2/service/databasemigrationservice/types"
 	awsdocdb "github.com/aws/aws-sdk-go-v2/service/docdb"
@@ -22,6 +23,7 @@ import (
 	ec2types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	awseks "github.com/aws/aws-sdk-go-v2/service/eks"
 	awsfsx "github.com/aws/aws-sdk-go-v2/service/fsx"
+	awskms "github.com/aws/aws-sdk-go-v2/service/kms"
 	awsopensearch "github.com/aws/aws-sdk-go-v2/service/opensearch"
 	awsorganizations "github.com/aws/aws-sdk-go-v2/service/organizations"
 	awspinpoint "github.com/aws/aws-sdk-go-v2/service/pinpoint"
@@ -117,6 +119,8 @@ type NativeClients struct {
 	Lifecycle      LifecycleEC2API
 	AutoScaling    AutoScalingNativeAPI
 	EKS            EKSNativeAPI
+	KMS            KMSNativeAPI
+	Backup         BackupNativeAPI
 }
 
 func newNativeClients(config awssdk.Config) *NativeClients {
@@ -126,6 +130,7 @@ func newNativeClients(config awssdk.Config) *NativeClients {
 		Domains: awsdomains.NewFromConfig(config), DRS: awsdrs.NewFromConfig(config), Pinpoint: awspinpoint.NewFromConfig(config),
 		Organizations: awsorganizations.NewFromConfig(config), Lifecycle: awsec2.NewFromConfig(config),
 		AutoScaling: awsautoscaling.NewFromConfig(config), EKS: awseks.NewFromConfig(config),
+		KMS: awskms.NewFromConfig(config), Backup: awsbackup.NewFromConfig(config),
 	}
 }
 

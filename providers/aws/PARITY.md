@@ -24,7 +24,7 @@ authoritative Cloud Control inventory could never succeed.
 | Parity rows with an implemented mapping | 149/159 |
 | Rows with a documented platform difference instead of a mapping | 10 |
 | Candidate types without a specification | 0 |
-| Pinned official operations | 59 from 17 Smithy models |
+| Pinned official operations | 61 from 19 Smithy models |
 | Pinned CloudFormation resource schemas | 189 |
 
 These are registration and verification measures, not a claim that every row
@@ -85,9 +85,11 @@ matrix, as for GCP and Azure.
 ## Remaining work
 
 - Behavioral acceptance per matrix row, including real-cloud evidence.
-- Cloud Control handler behavior for individual types (for example KMS keys
-  pending deletion, S3 or ECR contents, Backup vault recovery points) is taken
-  from the official handler contract and is not independently verified.
+- Cloud Control handler behavior for other individual types (for example S3 or
+  ECR contents) is taken from the official handler contract and is not
+  independently verified. KMS keys (AWS managed keys, scheduled deletion) and
+  Backup vaults (recovery points, compliance lock) have native guards verified
+  on Moto and fakes.
 - Resource Explorer remains a non-authoritative index for types without rules.
 - Auto Scaling and EKS members cannot be retained individually; the plan blocks
   such requests.

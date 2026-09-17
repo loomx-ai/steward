@@ -118,6 +118,8 @@ github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.35 h1:Oe8gMKJLO5awqpa5EhAGKVnBv1s
 github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.35/go.mod h1:FZevcG9cOST/FWAAUhHIchjR9fXFXFRCWodOhx+PDLA=
 github.com/aws/aws-sdk-go-v2/service/autoscaling v1.78.0 h1:CN7ZkNEZb5Ob0DtntBQLE7cdpT13gzS1Gn+QMoZOjHA=
 github.com/aws/aws-sdk-go-v2/service/autoscaling v1.78.0/go.mod h1:nkWNnRTHDlkZZrZzhmcPrOkoF+werzJzCOHGpbIpcfA=
+github.com/aws/aws-sdk-go-v2/service/backup v1.65.0 h1:fWz+6hRwjmnJKtiXPBbJZutpmTCGePLgmZ0fbUL9tFc=
+github.com/aws/aws-sdk-go-v2/service/backup v1.65.0/go.mod h1:QEaFmDCzYNbpo7/gAmsRnShieasyDJSy9oM/x/iFIE0=
 github.com/aws/aws-sdk-go-v2/service/cloudcontrol v1.32.3 h1:BI5RYN6Qw6gop7/5uZZFQ6nQSyKL88R+iQwMxV3A1Go=
 github.com/aws/aws-sdk-go-v2/service/cloudcontrol v1.32.3/go.mod h1:dEBF3xt4UDTRmX6U30eClQqI0Ilu5IW24xoXg+hSAoE=
 github.com/aws/aws-sdk-go-v2/service/cloudformation v1.76.0 h1:E0vn0XhHzTW58fCej74npT22XRLHyagyS/5FE1OQ6RA=
@@ -138,6 +140,8 @@ github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19 h1:bAdDl/
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19/go.mod h1:KaUzbLxv4CeSxh6ZCl9B4m7CuFenS8kUEaDs+f/DQr4=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.14.3 h1:bON1rJf67TSTDCKg816AAIE4xSTtoo9tl0XRkO72R+I=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.14.3/go.mod h1:c5BBpjJcQXpfeq9iASyVKA3T6vX6B6LEXY4mL/gklDY=
+github.com/aws/aws-sdk-go-v2/service/kms v1.61.0 h1:Ux0dqd8Pj64DcFk/HLtPyaDgwv6M6GhipSAsMd9YxbM=
+github.com/aws/aws-sdk-go-v2/service/kms v1.61.0/go.mod h1:/eZ9xj8IZyb7fj+/t3HO7x89X+7Vn+gCDDbQ2NHCVtM=
 github.com/aws/aws-sdk-go-v2/service/opensearch v1.80.0 h1:E4cFgebyiuXs8k9Mm/fRUVhK9D1wtJD58GUa4gbfVFI=
 github.com/aws/aws-sdk-go-v2/service/opensearch v1.80.0/go.mod h1:soHkl4mnDqMIOg4ZQiSnDU+DOJLy5KvA+CDJFskXTz8=
 github.com/aws/aws-sdk-go-v2/service/organizations v1.60.0 h1:VymLOZ8YYj/UnprPzNRkp55i+WvkmmSRy5ZrVb0G254=

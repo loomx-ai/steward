@@ -4,10 +4,10 @@
   "source": {
     "format": "smithy",
     "uri": "catalog/source/smithy.json",
-    "checksum": "e497c1846eaa220ca2a0aa3db0242411b01bdafc395380883a712e7acf175291",
+    "checksum": "89a1cfdac01344ff6c6d0655fc47c2c7d54e07f3e7fc3c8a2342bcb4ea6eb4cd",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "dd6aa6580093be2bbabfa089969af1fe82202f9eaf3c3baa8942870432ccdfeb",
+  "content_checksum": "0da6ec726bd5b447a6314b0ca17acad06cb6a78b8a2526e2536d0d3c96292dd0",
   "operations": [
     {
       "id": "com.amazonaws.autoscaling#DescribeAutoScalingGroups",
@@ -33,6 +33,30 @@
           "region"
         ],
         "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.backup#DescribeBackupVault",
+      "name": "DescribeBackupVault",
+      "service": "com.amazonaws.backup",
+      "method": "GET",
+      "path": "/backup-vaults/{BackupVaultName}",
+      "destructive": false,
+      "call": {
+        "product": "Backup",
+        "version": "2018-11-15",
+        "style": "aws-smithy",
+        "protocol": "restJson1",
+        "method": "GET",
+        "path": "/backup-vaults/{BackupVaultName}",
+        "endpoint": "https://backup.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
         "parameter_position": "body"
       },
       "source_uri": "catalog/source/smithy.json",
@@ -1123,6 +1147,30 @@
         "method": "POST",
         "path": "/",
         "endpoint": "https://fsx.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.kms#DescribeKey",
+      "name": "DescribeKey",
+      "service": "com.amazonaws.kms",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "KMS",
+        "version": "2014-11-01",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://kms.{region}.amazonaws.com",
         "endpoint_parameters": [
           "region"
         ],

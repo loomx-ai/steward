@@ -298,6 +298,22 @@ func (r *Runtime) ResolveAction(ctx context.Context, connectionID asset.Connecti
 		}
 		return newInstanceAction(driver, clients.Lifecycle)
 	}
+	switch value.Identity.NativeType {
+	case "AWS::KMS::Key", "AWS::Backup::BackupVault", "AWS::Backup::LogicallyAirGappedBackupVault":
+		credential, err := r.resolveCredential(ctx, connectionID)
+		if err != nil {
+			return nil, err
+		}
+		clients, err := r.factory.Native(ctx, credential, region)
+		if err != nil {
+			return nil, NormalizeError(err)
+		}
+		guard := backupVaultGuard(clients.Backup)
+		if value.Identity.NativeType == "AWS::KMS::Key" {
+			guard = kmsKeyGuard(clients.KMS)
+		}
+		return &guardedAction{CloudControlAction: driver, guard: guard}, nil
+	}
 	if value.Identity.NativeType == "AWS::EC2::VPNGateway" {
 		network, err := r.networkClient(ctx, connectionID, region)
 		if err != nil {

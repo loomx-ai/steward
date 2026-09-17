@@ -7,6 +7,10 @@
     "sha256": "c4e07d4cf465d9be7d187d9f9b9a48dd1e9869cfb039941e2fe96d51b74e55ce"
    },
    {
+    "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/backup/service/2018-11-15/backup-2018-11-15.json",
+    "sha256": "42fd0f16fd8896247137607430b54f69079678c8fb461afe3fe54a4fdf00f65d"
+   },
+   {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/cloudcontrol/service/2021-09-30/cloudcontrol-2021-09-30.json",
     "sha256": "28bb7a61913fc5b0692160ca26547c57893d5a50198a7b82c7afa3b1c8d836ce"
    },
@@ -41,6 +45,10 @@
    {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/fsx/service/2018-03-01/fsx-2018-03-01.json",
     "sha256": "2a96d778f45b7c493a67ad8d009174573135ead6423e2a002e95105ce817bf0b"
+   },
+   {
+    "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/kms/service/2014-11-01/kms-2014-11-01.json",
+    "sha256": "874c9682f2f5e5c63c1f448972f8a87808150c5b2b5f1cbcc806cca6d4b5cf50"
    },
    {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/opensearch/service/2021-01-01/opensearch-2021-01-01.json",
@@ -150,6 +158,136 @@
      "outputToken": "NextToken",
      "items": "AutoScalingGroups",
      "pageSize": "MaxRecords"
+    }
+   }
+  },
+  "com.amazonaws.backup#CryoControllerUserManager": {
+   "type": "service",
+   "version": "2018-11-15",
+   "operations": [
+    {
+     "target": "com.amazonaws.backup#DescribeBackupVault"
+    }
+   ],
+   "traits": {
+    "aws.api#service": {
+     "sdkId": "Backup",
+     "arnNamespace": "backup",
+     "cloudFormationName": "Backup",
+     "cloudTrailEventSource": "backup.amazonaws.com",
+     "endpointPrefix": "backup"
+    },
+    "aws.auth#sigv4": {
+     "name": "backup"
+    },
+    "aws.protocols#restJson1": {}
+   }
+  },
+  "com.amazonaws.backup#DescribeBackupVault": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.backup#DescribeBackupVaultInput"
+   },
+   "output": {
+    "target": "com.amazonaws.backup#DescribeBackupVaultOutput"
+   },
+   "traits": {
+    "smithy.api#http": {
+     "method": "GET",
+     "uri": "/backup-vaults/{BackupVaultName}",
+     "code": 200
+    },
+    "smithy.api#idempotent": {}
+   }
+  },
+  "com.amazonaws.backup#DescribeBackupVaultInput": {
+   "type": "structure",
+   "members": {
+    "BackupVaultAccountId": {
+     "target": "com.amazonaws.backup#string",
+     "traits": {
+      "smithy.api#httpQuery": "backupVaultAccountId"
+     }
+    },
+    "BackupVaultName": {
+     "target": "com.amazonaws.backup#string",
+     "traits": {
+      "smithy.api#httpLabel": {},
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.backup#DescribeBackupVaultOutput": {
+   "type": "structure",
+   "members": {
+    "BackupVaultArn": {
+     "target": "com.amazonaws.backup#ARN",
+     "traits": {}
+    },
+    "BackupVaultName": {
+     "target": "com.amazonaws.backup#string",
+     "traits": {}
+    },
+    "CreationDate": {
+     "target": "com.amazonaws.backup#timestamp",
+     "traits": {}
+    },
+    "CreatorRequestId": {
+     "target": "com.amazonaws.backup#string",
+     "traits": {}
+    },
+    "EncryptionKeyArn": {
+     "target": "com.amazonaws.backup#ARN",
+     "traits": {}
+    },
+    "EncryptionKeyType": {
+     "target": "com.amazonaws.backup#EncryptionKeyType",
+     "traits": {}
+    },
+    "LatestMpaApprovalTeamUpdate": {
+     "target": "com.amazonaws.backup#LatestMpaApprovalTeamUpdate",
+     "traits": {}
+    },
+    "LockDate": {
+     "target": "com.amazonaws.backup#timestamp",
+     "traits": {}
+    },
+    "Locked": {
+     "target": "com.amazonaws.backup#Boolean",
+     "traits": {}
+    },
+    "MaxRetentionDays": {
+     "target": "com.amazonaws.backup#Long",
+     "traits": {}
+    },
+    "MinRetentionDays": {
+     "target": "com.amazonaws.backup#Long",
+     "traits": {}
+    },
+    "MpaApprovalTeamArn": {
+     "target": "com.amazonaws.backup#ARN",
+     "traits": {}
+    },
+    "MpaSessionArn": {
+     "target": "com.amazonaws.backup#ARN",
+     "traits": {}
+    },
+    "NumberOfRecoveryPoints": {
+     "target": "com.amazonaws.backup#Long2",
+     "traits": {}
+    },
+    "SourceBackupVaultArn": {
+     "target": "com.amazonaws.backup#ARN",
+     "traits": {}
+    },
+    "VaultState": {
+     "target": "com.amazonaws.backup#VaultState",
+     "traits": {}
+    },
+    "VaultType": {
+     "target": "com.amazonaws.backup#VaultType",
+     "traits": {}
     }
    }
   },
@@ -2614,6 +2752,62 @@
      "target": "com.amazonaws.fsx#NextToken",
      "traits": {}
     }
+   }
+  },
+  "com.amazonaws.kms#DescribeKey": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.kms#DescribeKeyRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.kms#DescribeKeyResponse"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.kms#DescribeKeyRequest": {
+   "type": "structure",
+   "members": {
+    "GrantTokens": {
+     "target": "com.amazonaws.kms#GrantTokenList",
+     "traits": {}
+    },
+    "KeyId": {
+     "target": "com.amazonaws.kms#KeyIdType",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.kms#DescribeKeyResponse": {
+   "type": "structure",
+   "members": {
+    "KeyMetadata": {
+     "target": "com.amazonaws.kms#KeyMetadata",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.kms#TrentService": {
+   "type": "service",
+   "version": "2014-11-01",
+   "operations": [
+    {
+     "target": "com.amazonaws.kms#DescribeKey"
+    }
+   ],
+   "traits": {
+    "aws.api#service": {
+     "sdkId": "KMS",
+     "arnNamespace": "kms",
+     "cloudFormationName": "KMS",
+     "cloudTrailEventSource": "kms.amazonaws.com",
+     "endpointPrefix": "kms"
+    },
+    "aws.auth#sigv4": {
+     "name": "kms"
+    },
+    "aws.protocols#awsJson1_1": {}
    }
   },
   "com.amazonaws.opensearch#AmazonOpenSearchService": {

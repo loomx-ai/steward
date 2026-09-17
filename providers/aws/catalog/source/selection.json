@@ -3,6 +3,12 @@
   "repository": "https://github.com/aws/api-models-aws",
   "commit": "d86f18ce2e5917f532d6e3eb98befe94371e698d",
   "models": {
+   "models/auto-scaling/service/2011-01-01/auto-scaling-2011-01-01.json": [
+    "DescribeAutoScalingGroups"
+   ],
+   "models/backup/service/2018-11-15/backup-2018-11-15.json": [
+    "DescribeBackupVault"
+   ],
    "models/cloudcontrol/service/2021-09-30/cloudcontrol-2021-09-30.json": [
     "ListResources",
     "GetResource",
@@ -16,11 +22,20 @@
     "DescribeStacks",
     "DeleteStack"
    ],
-   "models/resource-explorer-2/service/2022-07-28/resource-explorer-2-2022-07-28.json": [
-    "ListResources"
+   "models/database-migration-service/service/2016-01-01/database-migration-service-2016-01-01.json": [
+    "DescribeReplicationInstances",
+    "DeleteReplicationInstance"
    ],
-   "models/sts/service/2011-06-15/sts-2011-06-15.json": [
-    "GetCallerIdentity"
+   "models/docdb/service/2014-10-31/docdb-2014-10-31.json": [
+    "DescribeDBClusters",
+    "DescribeDBInstances",
+    "DeleteDBCluster",
+    "DeleteDBInstance",
+    "ModifyDBCluster"
+   ],
+   "models/drs/service/2020-02-26/drs-2020-02-26.json": [
+    "DescribeSourceServers",
+    "DeleteSourceServer"
    ],
    "models/ec2/service/2016-11-15/ec2-2016-11-15.json": [
     "DescribeRegions",
@@ -43,58 +58,49 @@
     "DescribeNatGateways",
     "DescribeVolumes"
    ],
-   "models/opensearch/service/2021-01-01/opensearch-2021-01-01.json": [
-    "ListDomainNames",
-    "DescribeDomains",
-    "DeleteDomain"
+   "models/eks/service/2017-11-01/eks-2017-11-01.json": [
+    "DescribeNodegroup"
    ],
-   "models/docdb/service/2014-10-31/docdb-2014-10-31.json": [
-    "DescribeDBClusters",
-    "DescribeDBInstances",
-    "DeleteDBCluster",
-    "DeleteDBInstance",
-    "ModifyDBCluster"
-   ],
-   "models/database-migration-service/service/2016-01-01/database-migration-service-2016-01-01.json": [
-    "DescribeReplicationInstances",
-    "DeleteReplicationInstance"
+   "models/elastic-load-balancing-v2/service/2015-12-01/elastic-load-balancing-v2-2015-12-01.json": [
+    "DescribeLoadBalancerAttributes",
+    "ModifyLoadBalancerAttributes"
    ],
    "models/fsx/service/2018-03-01/fsx-2018-03-01.json": [
     "DescribeFileSystems",
     "DeleteFileSystem"
    ],
-   "models/storage-gateway/service/2013-06-30/storage-gateway-2013-06-30.json": [
-    "ListGateways",
-    "DescribeGatewayInformation",
-    "DeleteGateway"
+   "models/kms/service/2014-11-01/kms-2014-11-01.json": [
+    "DescribeKey"
    ],
-   "models/route-53-domains/service/2014-05-15/route-53-domains-2014-05-15.json": [
-    "ListDomains",
-    "GetDomainDetail",
+   "models/opensearch/service/2021-01-01/opensearch-2021-01-01.json": [
+    "ListDomainNames",
+    "DescribeDomains",
     "DeleteDomain"
    ],
-   "models/drs/service/2020-02-26/drs-2020-02-26.json": [
-    "DescribeSourceServers",
-    "DeleteSourceServer"
+   "models/organizations/service/2016-11-28/organizations-2016-11-28.json": [
+    "ListRoots",
+    "ListOrganizationalUnitsForParent"
    ],
    "models/pinpoint/service/2016-12-01/pinpoint-2016-12-01.json": [
     "ListTemplates",
     "GetSmsTemplate",
     "DeleteSmsTemplate"
    ],
-   "models/auto-scaling/service/2011-01-01/auto-scaling-2011-01-01.json": [
-    "DescribeAutoScalingGroups"
+   "models/resource-explorer-2/service/2022-07-28/resource-explorer-2-2022-07-28.json": [
+    "ListResources"
    ],
-   "models/eks/service/2017-11-01/eks-2017-11-01.json": [
-    "DescribeNodegroup"
+   "models/route-53-domains/service/2014-05-15/route-53-domains-2014-05-15.json": [
+    "ListDomains",
+    "GetDomainDetail",
+    "DeleteDomain"
    ],
-   "models/organizations/service/2016-11-28/organizations-2016-11-28.json": [
-    "ListRoots",
-    "ListOrganizationalUnitsForParent"
+   "models/storage-gateway/service/2013-06-30/storage-gateway-2013-06-30.json": [
+    "ListGateways",
+    "DescribeGatewayInformation",
+    "DeleteGateway"
    ],
-   "models/elastic-load-balancing-v2/service/2015-12-01/elastic-load-balancing-v2-2015-12-01.json": [
-    "DescribeLoadBalancerAttributes",
-    "ModifyLoadBalancerAttributes"
+   "models/sts/service/2011-06-15/sts-2011-06-15.json": [
+    "GetCallerIdentity"
    ]
   }
  },
