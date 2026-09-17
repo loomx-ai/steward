@@ -40,7 +40,8 @@ The package repository also publishes `releases.json` for the documentation
 version picker, plus a GPG signature for the latest release checksum file.
 The installation page keeps working with its embedded version if this index
 is temporarily unavailable. When releasing, update the fallback version and
-download hashes in both `docs/content/*/installation.md` files.
+executable links in both `docs/content/*/installation.md` files after the assets
+are published. Download integrity remains verified by the release tooling.
 
 No Homebrew core, Scoop main, Winget, Chocolatey, or Snap registry submission
 is performed.
@@ -49,7 +50,7 @@ is performed.
 
 Run `Release` with `workflow_dispatch` on the intended branch. It builds and
 smoke-tests all five targets, installs and tests the Linux deb packages, and
-uploads a combined `release` Actions artifact containing archives, deb/rpm
+uploads a combined `release` Actions artifact containing raw executables, archives, deb/rpm
 packages, `checksums.txt`, `install.sh`, and the Homebrew/Scoop manifests.
 Manual runs never publish or update the tap. Branch builds have version
 `0.0.0-dev.<commit>`; their manifests are previews, not public download URLs.
@@ -77,7 +78,8 @@ Do not move a published tag or replace released artifacts; publish a new version
 
 The tar.gz/ZIP archives contain `steward`/`steward.exe`, the license, and both
 READMEs. The standalone binary needs no external migrations or web directory.
-Checksums cover every archive, package, installer, and manifest. They detect
+Raw downloads are named `steward_<version>_<os>_<arch>` (with `.exe` on Windows).
+Checksums cover every executable, archive, package, installer, and manifest. They detect
 download corruption; they are not a separate code-signing identity. macOS
 binaries are not yet Apple-notarized. No installer disables Gatekeeper.
 
@@ -101,7 +103,22 @@ python3 scripts/release.py package --version 0.0.0-test \
 
 `packaging/nfpm.yaml` is used with nFPM 2.47.0 on Linux. Set `VERSION` and
 `GOARCH` and provide `bin/steward`. `scripts/release.py finalize` refuses missing
-platform archives or Linux packages before generating manifests and checksums.
+platform executables, archives, or Linux packages before generating manifests and checksums.
+
+For an older release with archives only, prepare byte-identical executables from
+its verified archives. This does not rebuild code or replace any existing asset:
+
+```bash
+gh release download v0.1.0 --repo loomx-ai/steward --dir /tmp/steward-original \
+  --pattern '*.tar.gz' --pattern '*.zip' --pattern checksums.txt
+python3 scripts/release.py prepare-binaries --version 0.1.0 \
+  --source /tmp/steward-original --output /tmp/steward-binaries
+```
+
+After reviewing the prepared files, upload only those additional executables.
+Do not replace the original `checksums.txt`; the package index reads GitHub's
+SHA-256 asset digests for additive executables. Future releases list raw binaries
+in their original checksums. Publish the package index before the documentation.
 
 Users must stop Steward and back up the database and original encryption key
 before an upgrade. Packages only install files; they do not start a service or

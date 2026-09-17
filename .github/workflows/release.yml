@@ -112,9 +112,11 @@ jobs:
       - name: Set macOS compatibility target
         if: runner.os == 'macOS'
         run: |
-          echo 'MACOSX_DEPLOYMENT_TARGET=14.0' >> "$GITHUB_ENV"
-          echo 'CGO_CFLAGS=-O2 -g -mmacosx-version-min=14.0' >> "$GITHUB_ENV"
-          echo 'CGO_LDFLAGS=-mmacosx-version-min=14.0' >> "$GITHUB_ENV"
+          {
+            echo 'MACOSX_DEPLOYMENT_TARGET=14.0'
+            echo 'CGO_CFLAGS=-O2 -g -mmacosx-version-min=14.0'
+            echo 'CGO_LDFLAGS=-mmacosx-version-min=14.0'
+          } >> "$GITHUB_ENV"
       - name: Build standalone binary
         env:
           EXTENSION: ${{ matrix.extension }}
@@ -126,7 +128,7 @@ jobs:
         env:
           EXTENSION: ${{ matrix.extension }}
         run: python scripts/smoke-release.py "bin/steward$EXTENSION" "$VERSION"
-      - name: Package archive
+      - name: Package executable and archive
         env:
           EXTENSION: ${{ matrix.extension }}
         run: python scripts/release.py package --version "$VERSION" --target "${GOOS}_${GOARCH}" --binary "bin/steward$EXTENSION"

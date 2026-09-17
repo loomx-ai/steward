@@ -6,6 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import shutil
 import tarfile
 import zipfile
 
@@ -26,11 +27,19 @@ def archive_name(version, target):
     return f"steward_{version}_{target}.{extension}"
 
 
+def binary_name(version, target):
+    extension = ".exe" if target.startswith("windows_") else ""
+    return f"steward_{version}_{target}{extension}"
+
+
 def package(version, target, binary, output):
     output.mkdir(parents=True, exist_ok=True)
+    executable = output / binary_name(version, target)
+    shutil.copyfile(binary, executable)
+    executable.chmod(0o755)
     archive = output / archive_name(version, target)
-    binary_name = "steward.exe" if target.startswith("windows_") else "steward"
-    files = [(binary, binary_name)] + [(ROOT / name, name) for name in ("LICENSE", "README.md", "README.zh-CN.md")]
+    member_name = "steward.exe" if target.startswith("windows_") else "steward"
+    files = [(binary, member_name)] + [(ROOT / name, name) for name in ("LICENSE", "README.md", "README.zh-CN.md")]
     if target.startswith("windows_"):
         with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as bundle:
             for source, name in files:
@@ -39,7 +48,7 @@ def package(version, target, binary, output):
         with tarfile.open(archive, "w:gz") as bundle:
             for source, name in files:
                 info = bundle.gettarinfo(str(source), name)
-                info.mode = 0o755 if name == binary_name else 0o644
+                info.mode = 0o755 if name == member_name else 0o644
                 info.uid = info.gid = 0
                 info.uname = info.gname = "root"
                 with source.open("rb") as data:
@@ -49,6 +58,7 @@ def package(version, target, binary, output):
 
 def finalize(version, output):
     names = [archive_name(version, target) for target in TARGETS]
+    names += [binary_name(version, target) for target in TARGETS]
     names += [f"steward_{version}_linux_{arch}.{kind}" for arch in ("amd64", "arm64") for kind in ("deb", "rpm")]
     # Refuse to publish a partial platform set.
     for name in names:
@@ -101,18 +111,45 @@ def finalize(version, output):
     (output / "checksums.txt").write_text("".join(f"{hashes[name]}  {name}\n" for name in sorted(hashes)))
 
 
+def prepare_binaries(version, source, output):
+    """Prepare additive assets from an existing release, without changing its archives."""
+    checksums = dict(line.split()[::-1] for line in (source / "checksums.txt").read_text().splitlines())
+    output.mkdir(parents=True, exist_ok=True)
+    for target in TARGETS:
+        archive = source / archive_name(version, target)
+        if hashlib.sha256(archive.read_bytes()).hexdigest() != checksums.get(archive.name):
+            raise ValueError(f"Checksum mismatch: {archive.name}")
+        if target.startswith("windows_"):
+            with zipfile.ZipFile(archive) as bundle:
+                binary = bundle.read("steward.exe")
+        else:
+            with tarfile.open(archive) as bundle:
+                member = bundle.getmember("steward")
+                if not member.isfile():
+                    raise ValueError(f"Not a regular executable: {archive.name}")
+                binary = bundle.extractfile(member).read()
+        executable = output / binary_name(version, target)
+        executable.write_bytes(binary)
+        executable.chmod(0o755)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("package", "finalize"))
+    parser.add_argument("command", choices=("package", "finalize", "prepare-binaries"))
     parser.add_argument("--version", required=True, type=version_arg)
     parser.add_argument("--output", type=Path, default=ROOT / "dist")
     parser.add_argument("--target", choices=TARGETS)
     parser.add_argument("--binary", type=Path)
+    parser.add_argument("--source", type=Path)
     args = parser.parse_args()
     if args.command == "package":
         if args.target is None or args.binary is None:
             parser.error("package requires --target and --binary")
         print(package(args.version, args.target, args.binary, args.output))
+    elif args.command == "prepare-binaries":
+        if args.source is None:
+            parser.error("prepare-binaries requires --source with the original archives and checksums.txt")
+        prepare_binaries(args.version, args.source, args.output)
     else:
         finalize(args.version, args.output)
 
