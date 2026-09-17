@@ -62,6 +62,8 @@ func (r *Runtime) InventorySources() []contracts.InventorySource {
 		{Name: managementGroupSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeGlobal}, KindSpecific: true, ReconcileKnownIDs: true},
 		// Certificates are read through each vault's data plane with a separate
 		// vault.azure.net token; a failed vault read is not an empty vault.
+		// Directory objects are tenant-wide and read with a separate Graph token.
+		{Name: graphDirectorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeGlobal}, KindSpecific: true, ReconcileKnownIDs: true},
 		{Name: keyVaultCertificateSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion}, KindSpecific: true, ReconcileKnownIDs: true},
 		{Name: defenderInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeGlobal, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: inventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, NetworkClosure: true},

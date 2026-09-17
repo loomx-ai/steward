@@ -50,6 +50,9 @@ func insightsInventorySource(kind string) string {
 	if strings.EqualFold(kind, keyVaultCertificateType) {
 		return keyVaultCertificateSource
 	}
+	if _, ok := graphKindOf(kind); ok {
+		return graphDirectorySource
+	}
 	if dataMigrationKind(kind) != "" {
 		return dataMigrationInventorySource
 	}

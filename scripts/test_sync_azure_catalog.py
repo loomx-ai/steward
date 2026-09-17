@@ -73,6 +73,8 @@ class AzureRefreshTests(unittest.TestCase):
     def test_native_fragments_and_recursive_references_are_unchanged(self):
         selected = json.loads((root / "selection.json").read_text())
         checked_in = json.loads((root / "swagger.json").read_text())
+        # Microsoft Graph sources are pinned by their own script and test.
+        checked_in["documents"] = [item for item in checked_in["documents"] if item.get("source_format") != "msgraph-openapi3"]
         originals = {item["source_uri"]: item["document"] for item in checked_in["documents"]}
         def fetch(uri):
             self.assertIn(uri, originals)

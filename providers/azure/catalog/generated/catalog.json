@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "93454ede26287662803164e5ddb925d28c408bd51568e2ae987afa26b63dc384",
+    "checksum": "fb2f22c4f25e241b26bc68e832459bcee4f39947a7d78364616846d45c41099a",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "17f5ee4cd2efb85724118b261e20eaae46a970aae609984b03212fd50ab4f4d5",
+  "content_checksum": "1bb0ef6931d181c3533ac72a80ddde831830c8c6966ca2dfbaebb5b234a29ed5",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -92741,6 +92741,303 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/SchemaRegistry.json"
     },
     {
+      "id": "Azure.Microsoft.Graph.groups.ListMembers",
+      "name": "groups.ListMembers",
+      "service": "Microsoft.Graph",
+      "method": "GET",
+      "path": "/v1.0/groups/{groupId}/members",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$count": {
+            "in": "query",
+            "name": "$count",
+            "type": "boolean"
+          },
+          "$expand": {
+            "in": "query",
+            "name": "$expand"
+          },
+          "$filter": {
+            "in": "query",
+            "name": "$filter",
+            "type": "string"
+          },
+          "$orderby": {
+            "in": "query",
+            "name": "$orderby"
+          },
+          "$search": {
+            "in": "query",
+            "name": "$search",
+            "type": "string"
+          },
+          "$select": {
+            "in": "query",
+            "name": "$select"
+          },
+          "$skip": {
+            "in": "query",
+            "name": "$skip",
+            "type": "integer"
+          },
+          "$top": {
+            "in": "query",
+            "name": "$top",
+            "type": "integer"
+          },
+          "ConsistencyLevel": {
+            "in": "header",
+            "name": "ConsistencyLevel",
+            "type": "string"
+          },
+          "groupId": {
+            "in": "path",
+            "name": "groupId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "@odata.nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Graph",
+        "version": "v1.0",
+        "style": "azure-graph-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1.0/groups/{groupId}/members",
+        "endpoint": "https://graph.microsoft.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/28e4d24f3547898328eb52c700f2beb869116cfe/openapi/v1.0/openapi.yaml",
+      "source_format": "msgraph-openapi3"
+    },
+    {
+      "id": "Azure.Microsoft.Graph.groups.group.GetGroup",
+      "name": "groups.group.GetGroup",
+      "service": "Microsoft.Graph",
+      "method": "GET",
+      "path": "/v1.0/groups/{groupId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "in": "query",
+            "name": "$expand"
+          },
+          "$select": {
+            "in": "query",
+            "name": "$select"
+          },
+          "groupId": {
+            "in": "path",
+            "name": "groupId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Graph",
+        "version": "v1.0",
+        "style": "azure-graph-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1.0/groups/{groupId}",
+        "endpoint": "https://graph.microsoft.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/28e4d24f3547898328eb52c700f2beb869116cfe/openapi/v1.0/openapi.yaml",
+      "source_format": "msgraph-openapi3"
+    },
+    {
+      "id": "Azure.Microsoft.Graph.groups.group.ListGroup",
+      "name": "groups.group.ListGroup",
+      "service": "Microsoft.Graph",
+      "method": "GET",
+      "path": "/v1.0/groups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$count": {
+            "in": "query",
+            "name": "$count",
+            "type": "boolean"
+          },
+          "$expand": {
+            "in": "query",
+            "name": "$expand"
+          },
+          "$filter": {
+            "in": "query",
+            "name": "$filter",
+            "type": "string"
+          },
+          "$orderby": {
+            "in": "query",
+            "name": "$orderby"
+          },
+          "$search": {
+            "in": "query",
+            "name": "$search",
+            "type": "string"
+          },
+          "$select": {
+            "in": "query",
+            "name": "$select"
+          },
+          "$skip": {
+            "in": "query",
+            "name": "$skip",
+            "type": "integer"
+          },
+          "$top": {
+            "in": "query",
+            "name": "$top",
+            "type": "integer"
+          },
+          "ConsistencyLevel": {
+            "in": "header",
+            "name": "ConsistencyLevel",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "@odata.nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Graph",
+        "version": "v1.0",
+        "style": "azure-graph-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1.0/groups",
+        "endpoint": "https://graph.microsoft.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/28e4d24f3547898328eb52c700f2beb869116cfe/openapi/v1.0/openapi.yaml",
+      "source_format": "msgraph-openapi3"
+    },
+    {
+      "id": "Azure.Microsoft.Graph.users.user.GetUser",
+      "name": "users.user.GetUser",
+      "service": "Microsoft.Graph",
+      "method": "GET",
+      "path": "/v1.0/users/{userId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "in": "query",
+            "name": "$expand"
+          },
+          "$select": {
+            "in": "query",
+            "name": "$select"
+          },
+          "userId": {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Graph",
+        "version": "v1.0",
+        "style": "azure-graph-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1.0/users/{userId}",
+        "endpoint": "https://graph.microsoft.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/28e4d24f3547898328eb52c700f2beb869116cfe/openapi/v1.0/openapi.yaml",
+      "source_format": "msgraph-openapi3"
+    },
+    {
+      "id": "Azure.Microsoft.Graph.users.user.ListUser",
+      "name": "users.user.ListUser",
+      "service": "Microsoft.Graph",
+      "method": "GET",
+      "path": "/v1.0/users",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$count": {
+            "in": "query",
+            "name": "$count",
+            "type": "boolean"
+          },
+          "$expand": {
+            "in": "query",
+            "name": "$expand"
+          },
+          "$filter": {
+            "in": "query",
+            "name": "$filter",
+            "type": "string"
+          },
+          "$orderby": {
+            "in": "query",
+            "name": "$orderby"
+          },
+          "$search": {
+            "in": "query",
+            "name": "$search",
+            "type": "string"
+          },
+          "$select": {
+            "in": "query",
+            "name": "$select"
+          },
+          "$top": {
+            "in": "query",
+            "name": "$top",
+            "type": "integer"
+          },
+          "ConsistencyLevel": {
+            "in": "header",
+            "name": "ConsistencyLevel",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "@odata.nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Graph",
+        "version": "v1.0",
+        "style": "azure-graph-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1.0/users",
+        "endpoint": "https://graph.microsoft.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/28e4d24f3547898328eb52c700f2beb869116cfe/openapi/v1.0/openapi.yaml",
+      "source_format": "msgraph-openapi3"
+    },
+    {
       "id": "Azure.Microsoft.HybridCompute.HybridIdentityMetadata_Get",
       "name": "HybridIdentityMetadata_Get",
       "service": "Microsoft.HybridCompute",
@@ -149303,6 +149600,40 @@
         ],
         "list_operations": [
           "Azure.Microsoft.EventHub.SchemaRegistry_ListByNamespace"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Graph/groups",
+      "class": "identity.group",
+      "display_name": "Microsoft Entra group",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "groups",
+        "read_operations": [
+          "Azure.Microsoft.Graph.groups.group.GetGroup"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Graph.groups.group.ListGroup"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Graph/users",
+      "class": "identity.user",
+      "display_name": "Microsoft Entra user",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "users",
+        "read_operations": [
+          "Azure.Microsoft.Graph.users.user.GetUser"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Graph.users.user.ListUser"
         ]
       }
     },

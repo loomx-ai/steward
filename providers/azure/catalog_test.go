@@ -55,7 +55,7 @@ func TestCatalogReproducibleAndSpecsExecutable(t *testing.T) {
 			// Native inheritance, replication, Batch tasks, and APIM revisions,
 			// backend pools/fragments use explicit same-kind resource references.
 			apimReference := isAPIMType(kind.NativeType) && (last(kind.NativeType) == "apis" || last(kind.NativeType) == "backends" || last(kind.NativeType) == "policyFragments")
-			if relation.TargetType == kind.NativeType && !apimReference && kind.NativeType != "Microsoft.Network/firewallPolicies" && kind.NativeType != "Microsoft.Network/trafficManagerProfiles" && kind.NativeType != serviceBusQueueType && kind.NativeType != cognitiveDeploymentType && kind.NativeType != cosmosMongoRoleType && kind.NativeType != mongoClusterType && kind.NativeType != kustoType && kind.NativeType != batchTaskType && kind.NativeType != synapsePipelineType && kind.NativeType != netappVolumeType {
+			if relation.TargetType == kind.NativeType && !apimReference && kind.NativeType != "Microsoft.Network/firewallPolicies" && kind.NativeType != "Microsoft.Network/trafficManagerProfiles" && kind.NativeType != serviceBusQueueType && kind.NativeType != cognitiveDeploymentType && kind.NativeType != cosmosMongoRoleType && kind.NativeType != mongoClusterType && kind.NativeType != kustoType && kind.NativeType != batchTaskType && kind.NativeType != synapsePipelineType && kind.NativeType != netappVolumeType && kind.NativeType != graphGroupType {
 				t.Fatalf("unexpected blanket/self dependency for %s", kind.NativeType)
 			}
 		}
@@ -73,7 +73,7 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	c := &client{subscription: testSubscription}
+	c := &client{subscription: testSubscription, tenant: testTenant}
 	for _, kind := range metadata.kinds {
 		t.Run(kind.NativeType, func(t *testing.T) {
 			operation, _ := metadata.catalog.Operation(kind.ReadOperations[0])
@@ -142,6 +142,10 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 					nativeID = resourceID(synapseType, "stewardtest") + "/" + d.collection + "/stewardtest"
 				}
 			}
+			if graph, ok := graphKindOf(kind.NativeType); ok {
+				objectID := "3f2504e0-4f89-41d3-9a0c-0305e82c3301"
+				nativeID, wantPath = rbacPrincipalSelector(testTenant, objectID), "/v1.0/"+graph.collection+"/"+objectID
+			}
 			if kind.NativeType == keyVaultCertificateType {
 				nativeID, wantPath = resourceID(keyVaultType, "stewardtest")+"/certificates/stewardtest", "/certificates/stewardtest/"
 			}
@@ -164,7 +168,7 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				t.Fatalf("binding %s: %v", nativeID, err)
 			}
 			u, _ := url.Parse(endpoint)
-			if !strings.EqualFold(u.Path, wantPath) || !synapseDataKind(kind.NativeType).spark && u.Query().Get("api-version") != operation.Call.Version || synapseDataKind(kind.NativeType).spark && (u.Query().Has("api-version") || !strings.Contains(u.Path, "/versions/"+synapseDataVersion+"/")) {
+			if !strings.EqualFold(u.Path, wantPath) || !synapseDataKind(kind.NativeType).spark && operation.Call.Style != "azure-graph-rest" && u.Query().Get("api-version") != operation.Call.Version || operation.Call.Style == "azure-graph-rest" && u.RawQuery != "" || synapseDataKind(kind.NativeType).spark && (u.Query().Has("api-version") || !strings.Contains(u.Path, "/versions/"+synapseDataVersion+"/")) {
 				t.Fatalf("wrong request %s", endpoint)
 			}
 			if isCommunicationDataType(kind.NativeType) && (u.Path != wantPath || u.Host != "account.communication.azure.com") {

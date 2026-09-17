@@ -11859,6 +11859,38 @@
       ]
     },
     {
+      "native_type": "Microsoft.Graph/groups",
+      "class": "identity.group",
+      "display_name": "Microsoft Entra group",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "groups",
+      "read_operations": [
+        "Azure.Microsoft.Graph.groups.group.GetGroup"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Graph.groups.group.ListGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Graph/users",
+      "class": "identity.user",
+      "display_name": "Microsoft Entra user",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "users",
+      "read_operations": [
+        "Azure.Microsoft.Graph.users.user.GetUser"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Graph.users.user.ListUser"
+      ]
+    },
+    {
       "native_type": "Microsoft.Management/managementGroups",
       "class": "identity.resource_directory",
       "display_name": "Management group",

@@ -5,7 +5,7 @@ candidate and mapping-research backlog was worked through. This is a repository
 scope audit, not cloud feature acceptance.
 
 The matrix covers all 159 Alibaba Cloud specifications for GCP, Azure and AWS.
-The repository contains 205 GCP, 489 Azure and 194 AWS specifications; those
+The repository contains 205 GCP, 491 Azure and 194 AWS specifications; those
 counts do not prove equivalence. All 159 rows remain pending behavioral
 verification.
 
@@ -20,25 +20,22 @@ check verifies matrix consistency only. AWS progress and evidence are tracked in
 
 | Measure | GCP | Azure | AWS |
 | --- | --- | --- | --- |
-| Explicit native specifications | 205 | 489 | 194 |
-| Baseline rows with at least one existing mapped specification | 156/159 | 154/159 | 149/159 |
-| Candidate types still without a specification | 0 | 2 | 0 |
-| Baseline rows affected by missing candidate specifications | 0 | 3 | 0 |
+| Explicit native specifications | 205 | 491 | 194 |
+| Baseline rows with at least one existing mapped specification | 156/159 | 157/159 | 149/159 |
+| Candidate types still without a specification | 0 | 0 | 0 |
+| Baseline rows affected by missing candidate specifications | 0 | 0 | 0 |
 | Empty mappings with a documented platform difference | 3 | 2 | 10 |
 
 These are registration/mapping measures, not functional completion percentages.
 A row can have both an implemented mapping and an absent candidate. None of the
 159 rows has a closed, requirement-by-requirement behavioral acceptance record.
 
-## Azure candidates without explicit resource specifications
+## Azure read-only registrations
 
-| Candidate | Alibaba Cloud rows affected | Blocker |
-| --- | --- | --- |
-| `Microsoft.Graph/groups` | `ACS::CloudSSO::Group`, `ACS::RAM::Group` | Microsoft Graph object: needs a Graph token audience, Graph API catalog source and directory permissions. |
-| `Microsoft.Graph/users` | `ACS::RAM::User` | Same Graph integration as groups. |
-
-Purview accounts, managed applications, Machine Learning workspaces, Key Vault
-keys and certificates, management groups and Site Recovery replication protected items are registered read-only; their matrix notes record
+Every Azure candidate type now has a specification. Purview accounts, managed
+applications, Machine Learning workspaces, Key Vault keys and certificates,
+management groups, Site Recovery replication protected items and Microsoft Entra
+users and groups (Microsoft Graph) are registered read-only; their matrix notes record
 why cleanup is not offered. Service Fabric clusters, Storage Sync services and
 Machine Learning online endpoints are registered with cleanup.
 

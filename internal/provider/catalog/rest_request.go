@@ -20,12 +20,15 @@ type RESTRequest struct {
 
 func BindREST(operation Operation, parameters map[string]any) (RESTRequest, error) {
 	call := operation.Call
-	if call == nil || (call.Style != "google-rest" && call.Style != "azure-rest" && call.Style != "azure-batch-rest" && call.Style != "azure-communication-rest" && call.Style != "azure-synapse-rest" && call.Style != "azure-keyvault-rest") {
+	if call == nil || (call.Style != "google-rest" && call.Style != "azure-rest" && call.Style != "azure-batch-rest" && call.Style != "azure-communication-rest" && call.Style != "azure-synapse-rest" && call.Style != "azure-keyvault-rest" && call.Style != "azure-graph-rest") {
 		return RESTRequest{}, fmt.Errorf("operation %q is not a REST operation", operation.ID)
 	}
 	domain := "googleapis.com"
 	if call.Style == "azure-rest" {
 		domain = "management.azure.com"
+	}
+	if call.Style == "azure-graph-rest" {
+		domain = "graph.microsoft.com"
 	}
 	origin, err := trustedRESTOrigin(call.Endpoint, domain)
 	if call.Style == "azure-batch-rest" {
@@ -48,6 +51,9 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 		if call.Endpoint != "{endpoint}" || !slices.Equal(call.EndpointParameters, []string{"endpoint"}) || !azureSynapseOrigin.MatchString(endpoint) {
 			return RESTRequest{}, fmt.Errorf("invalid Azure Synapse endpoint")
 		}
+	}
+	if call.Style == "azure-graph-rest" && (call.Endpoint != "https://graph.microsoft.com" || origin != call.Endpoint || call.Version != "v1.0" || !strings.HasPrefix(call.Path, "/v1.0/")) {
+		return RESTRequest{}, fmt.Errorf("invalid Microsoft Graph endpoint")
 	}
 	if call.Style == "azure-keyvault-rest" {
 		endpoint, _ := parameters["vaultBaseUrl"].(string)

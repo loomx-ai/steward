@@ -214,6 +214,12 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 		if upstream.Dependency {
 			continue
 		}
+		if upstream.SourceFormat == msgraphSourceFormat {
+			if err := importMicrosoftGraph(&c, upstream); err != nil {
+				return Catalog{}, err
+			}
+			continue
+		}
 		var document azureSwagger
 		if err := json.Unmarshal(upstream.Document, &document); err != nil {
 			return Catalog{}, fmt.Errorf("decode Azure OpenAPI document: %w", err)

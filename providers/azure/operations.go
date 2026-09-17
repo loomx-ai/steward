@@ -70,8 +70,8 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if !ok || operation.Call == nil {
 		return contracts.InvocationResult{}, fmt.Errorf("unknown Azure operation %q", invocation.Operation)
 	}
-	if operation.Call.Style == "azure-keyvault-rest" {
-		return contracts.InvocationResult{}, serviceDenied("keyvault_data_plane_invocation_not_supported")
+	if operation.Call.Style == "azure-keyvault-rest" || operation.Call.Style == "azure-graph-rest" {
+		return contracts.InvocationResult{}, serviceDenied("data_plane_invocation_not_supported")
 	}
 	if operation.Call.Style == "azure-synapse-rest" {
 		if operation.Call.Method != "GET" && !synapseCancelKind(operation.ID).spark {
@@ -260,6 +260,21 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 
 	if kind.NativeType == managementGroupType {
 		return managementGroupOperation(nativeID, method)
+	}
+	if graph, ok := graphKindOf(kind.NativeType); ok {
+		objectID, err := c.graphIdentity(nativeID)
+		if err != nil || method != "GET" {
+			return catalog.Operation{}, nil, serviceDenied("invalid_graph_directory_operation")
+		}
+		metadata, err := providerData()
+		if err != nil {
+			return catalog.Operation{}, nil, err
+		}
+		operation, ok := metadata.catalog.Operation(graph.get)
+		if !ok {
+			return catalog.Operation{}, nil, serviceDenied("graph_native_contract_missing")
+		}
+		return operation, map[string]any{graph.idParameter: objectID}, nil
 	}
 	if kind.NativeType == keyVaultCertificateType {
 		_, vault, name, err := c.keyVaultCertificateIdentity(nativeID)

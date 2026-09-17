@@ -1,0 +1,33 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Graph/users
+  class: identity.user
+presentation:
+  displayNames:
+    en-US: Microsoft Entra user
+    zh-CN: Microsoft Entra 用户
+scope:
+  kind: global
+discovery:
+  source: microsoft-graph-directory
+  list:
+    operation: Azure.Microsoft.Graph.users.user.ListUser
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Graph.users.user.GetUser
+    itemsPath: $
+    identityPath: id
+fields:
+  name: name
+  state: state
+  objectId: object_id
+  tenantId: tenant_id
+  userPrincipalName: userPrincipalName
+  accountEnabled: accountEnabled
+  userType: userType
+  onPremisesSyncEnabled: onPremisesSyncEnabled
+extensions:
+  hook: azure.resource

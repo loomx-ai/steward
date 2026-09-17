@@ -1,0 +1,42 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Graph/groups
+  class: identity.group
+presentation:
+  displayNames:
+    en-US: Microsoft Entra group
+    zh-CN: Microsoft Entra 组
+scope:
+  kind: global
+discovery:
+  source: microsoft-graph-directory
+  list:
+    operation: Azure.Microsoft.Graph.groups.group.ListGroup
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Graph.groups.group.GetGroup
+    itemsPath: $
+    identityPath: id
+fields:
+  name: name
+  state: state
+  objectId: object_id
+  tenantId: tenant_id
+  securityEnabled: securityEnabled
+  mailEnabled: mailEnabled
+  groupTypes: groupTypes
+  isAssignableToRole: isAssignableToRole
+  onPremisesSyncEnabled: onPremisesSyncEnabled
+extensions:
+  hook: azure.resource
+relationships:
+- type: connected_to
+  targetType: Microsoft.Graph/users
+  targetIdPath: refs_microsoft_graph_users
+- type: connected_to
+  targetType: Microsoft.Graph/groups
+  targetIdPath: refs_microsoft_graph_groups
+

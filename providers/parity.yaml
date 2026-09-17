@@ -802,10 +802,11 @@ resources:
     resources: &id031
     - cloudidentity.googleapis.com/Group
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.Graph/groups
-    notes: Entra ID groups are Microsoft Graph objects, not ARM resources; support needs a Graph token audience, a Graph API catalog source and directory permissions.
+    notes: Entra ID groups are Microsoft Graph directory objects read read-only through a separate
+      graph.microsoft.com token, with direct user and group members; deleting a group affects the whole
+      tenant and is not offered.
   aws:
     resources:
     - AWS::IdentityStore::Group
@@ -2511,10 +2512,11 @@ resources:
   gcp:
     resources: *id031
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.Graph/groups
-    notes: Entra ID groups are Microsoft Graph objects, not ARM resources; support needs a Graph token audience, a Graph API catalog source and directory permissions.
+    notes: Entra ID groups are Microsoft Graph directory objects read read-only through a separate
+      graph.microsoft.com token, with direct user and group members; deleting a group affects the whole
+      tenant and is not offered.
   aws:
     resources:
     - AWS::IAM::Group
@@ -2572,10 +2574,10 @@ resources:
     resources:
     - iam.googleapis.com/ServiceAccount
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.Graph/users
-    notes: Entra ID users are Microsoft Graph objects, not ARM resources; support needs a Graph token audience, a Graph API catalog source and directory permissions.
+    notes: Entra ID users are Microsoft Graph directory objects read read-only through a separate
+      graph.microsoft.com token; deleting a user affects the whole tenant and is not offered.
   aws:
     resources:
     - AWS::IAM::User

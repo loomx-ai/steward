@@ -160,6 +160,9 @@ def main():
     directory = Path(__file__).resolve().parents[1] / "providers/azure/catalog/source"
     selection = json.loads((directory / "selection.json").read_text())
     result = snapshot(selection)
+    # Microsoft Graph documents are pinned separately by sync-azure-graph-catalog.py.
+    existing = json.loads((directory / "swagger.json").read_text())
+    result["documents"] = sorted(result["documents"] + [document for document in existing["documents"] if document.get("source_format") == "msgraph-openapi3"], key=lambda document: document["source_uri"])
     (directory / "swagger.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
     roots = len(selection["documents"])
     print(f"Saved {roots} API documents and {len(result['documents']) - roots} reference documents")
