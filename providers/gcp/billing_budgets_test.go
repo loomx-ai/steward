@@ -35,6 +35,18 @@ func emptyBillingAccountsFixture(t *testing.T, req *http.Request) *http.Response
 	return apiResponse(req, 200, `{}`)
 }
 
+// The pinned upstream Monitoring mock implements dashboard GET and DELETE but
+// not ListDashboards. Tests that need dependency discovery to continue past
+// that read substitute an explicit empty collection; the separate uptime and
+// dashboard tests verify the unsupported-LIST path against the mock itself.
+func emptyDashboardListFixture(t *testing.T, req *http.Request) (*http.Response, bool) {
+	t.Helper()
+	if req.Method != "GET" || req.URL.Host != "monitoring.googleapis.com" || !strings.HasSuffix(req.URL.Path, "/dashboards") {
+		return nil, false
+	}
+	return apiResponse(req, 200, `{"dashboards":[]}`), true
+}
+
 func assertBudgetCoverage(t *testing.T, refs []graph.UnresolvedReference, id asset.AssetID) []graph.UnresolvedReference {
 	t.Helper()
 	remaining := []graph.UnresolvedReference{}

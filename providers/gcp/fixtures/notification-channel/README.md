@@ -88,6 +88,12 @@ STEWARD_NOTIFICATION_CHANNEL_MOCKGCP_URL=http://127.0.0.1:PORT \
   go test ./providers/gcp -run '^TestNotificationChannel(Delete)?IndependentMockGCP$' -count=1 -v
 ```
 
+`python3 scripts/run-mockgcp-tests.py` performs this checkout, build and run for
+every mockgcp test, each against a freshly started harness; CI job `gcp-mockgcp`
+runs it. The pinned mock has no `ListDashboards`, so dashboard consumer
+discovery uses an explicit empty-collection fixture in these tests; the uptime
+and dashboard tests verify the unsupported-LIST path against the mock itself.
+
 The independent run initially passed with five forwarded native GETs. The incoming
 policy milestone extends it to twelve forwarded GETs (0.15s test body), including
 native AlertPolicy inventory and channel dependency discovery.

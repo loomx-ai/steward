@@ -7455,3 +7455,16 @@ confirmed absent. Azurite 3.35.0 with OAuth (CI job `azure-emulator`)
 verifies that the Blob container check sees committed blobs and uncommitted
 blocks and reports an emptied container as empty. Key Vault and Graph remain protocol evidence from official
 examples and documented response shapes. The 159 behavioral rows remain open.
+
+### Mock-server verification now runs automatically
+
+`scripts/run-mockgcp-tests.py` checks out Google's Config Connector mocks at the
+pinned revision, builds the four retained harnesses and runs all 19 mockgcp
+tests, each against a freshly started harness. CI job `gcp-mockgcp` runs it, and
+`gcp-emulator` now also runs the pinned bttest Bigtable harness. Three stale
+expectations were corrected against current runtime behavior: the uptime cleanup
+block is `uptime_referenced_by_monitoring_consumer` since dashboards became
+consumers, and the notification-channel counts now include the policy re-reads
+of dashboard consumer discovery. Dashboard LIST is unimplemented upstream, so
+those tests substitute an explicit empty collection while the uptime and
+dashboard tests keep verifying the unsupported-LIST path against the mock.

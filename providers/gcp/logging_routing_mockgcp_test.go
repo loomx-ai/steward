@@ -106,7 +106,12 @@ func TestLoggingRoutingIndependentMockGCP(t *testing.T) {
 	listFixture, nativeListFailed := false, false
 	listFixtureCalls, reverseFixtureCalls, nativeCalls, deletes := 0, 0, 0, 0
 	org := newOrganizationScenario()
+	dashboardFixtureCalls := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if response, ok := emptyDashboardListFixture(t, req); ok {
+			dashboardFixtureCalls++
+			return response, nil
+		}
 		if req.URL.Host == resourceManagerHost && req.URL.Path == "/v3/projects/foreign-project" {
 			return apiResponse(req, 200, `{"name":"projects/987654","projectId":"foreign-project","state":"ACTIVE"}`), nil
 		}
@@ -193,8 +198,11 @@ func TestLoggingRoutingIndependentMockGCP(t *testing.T) {
 	}
 	_, err = driver.Execute(t.Context(), contracts.ActionRequest{Action: "delete", Asset: value, IdempotencyKey: "native-routing-block"})
 	var blocked *contracts.ProviderCallError
-	if !errors.As(err, &blocked) || blocked.Provider.Code != "uptime_referenced_by_alert_policy" || deletes != 0 {
+	if !errors.As(err, &blocked) || blocked.Provider.Code != "uptime_referenced_by_monitoring_consumer" || deletes != 0 {
 		t.Fatal("routed native policy failed to block DELETE", err, deletes)
+	}
+	if dashboardFixtureCalls == 0 {
+		t.Fatal("dashboard consumer discovery did not run")
 	}
 	if listFixtureCalls < 12 || nativeCalls < 10 {
 		t.Fatal("missing repeated native sink/policy reads", listFixtureCalls, nativeCalls)

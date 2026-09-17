@@ -140,7 +140,12 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, bi
 	calls := []string{}
 	billingFixtureCalls := 0
 	budgetRuntimeDeletes := 0
+	dashboardFixtureCalls := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if response, ok := emptyDashboardListFixture(t, req); ok {
+			dashboardFixtureCalls++
+			return response, nil
+		}
 		if projectBudget && req.URL.Host == "cloudbilling.googleapis.com" && req.URL.Path == "/v1/billingAccounts" {
 			if req.Method != "GET" || req.URL.RawQuery != "pageSize=100" {
 				t.Fatal(req.URL)
@@ -324,12 +329,17 @@ func testNotificationChannelIndependentMockGCP(t *testing.T, delivery string, bi
 	if err != nil || len(contribution.Unresolved) != 0 || len(contribution.Relationships) != 1 || contribution.Relationships[0].SourceAssetID != channel.ID || contribution.Relationships[0].TargetAssetID != policyAsset.ID {
 		t.Fatal(contribution, err)
 	}
-	wantCalls := 12
+	// Dashboard consumer discovery re-reads each referring policy; its own
+	// LIST is the substituted fixture above and is counted separately.
+	wantCalls := 14
 	if withBudget {
 		wantCalls += 7
 	}
 	if len(calls) != wantCalls {
 		t.Fatal("unexpected native reads", calls)
+	}
+	if dashboardFixtureCalls == 0 {
+		t.Fatal("dashboard consumer discovery did not run")
 	}
 	if withBudget {
 		native("PATCH", "/v1/"+budgetName+"?updateMask=notificationsRule", map[string]any{"name": budgetName, "notificationsRule": map[string]any{"monitoringNotificationChannels": []any{}}})

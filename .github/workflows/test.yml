@@ -90,9 +90,35 @@ jobs:
           done
           cat fake-gcs.log
           exit 1
+      - name: Start the pinned Bigtable harness
+        run: |
+          cd providers/gcp/fixtures/bigtable/harness
+          go run . -listen 127.0.0.1:8091 > "$RUNNER_TEMP/bigtable.log" 2>&1 &
+          for attempt in $(seq 1 60); do
+            grep -q "http://127.0.0.1:8091" "$RUNNER_TEMP/bigtable.log" && exit 0
+            sleep 2
+          done
+          cat "$RUNNER_TEMP/bigtable.log"
+          exit 1
       - run: go test -count=1 -run Emulator ./providers/gcp
         env:
           STEWARD_GCS_EMULATOR_URL: http://127.0.0.1:4443
+          STEWARD_BIGTABLE_EMULATOR_URL: http://127.0.0.1:8091
+
+  gcp-mockgcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Builds Google's pinned Config Connector mocks and runs every test that
+      # needs them, each against a freshly started harness.
+      - run: python3 scripts/run-mockgcp-tests.py
 
   azure-emulator:
     runs-on: ubuntu-latest
