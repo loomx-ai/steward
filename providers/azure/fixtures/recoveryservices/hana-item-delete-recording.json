@@ -1,0 +1,720 @@
+[
+  {
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_item.yaml",
+    "source_sha256": "9b8079ca16e0622f9c7a31cf3dd30310a49ccc716092477996a8ce124eb91f1d",
+    "interaction": 77,
+    "request": {
+      "body": null,
+      "headers": {
+        "Accept": [
+          "application/json"
+        ],
+        "Accept-Encoding": [
+          "gzip, deflate"
+        ],
+        "CommandName": [
+          "backup protection disable"
+        ],
+        "Connection": [
+          "keep-alive"
+        ],
+        "Content-Length": [
+          "0"
+        ],
+        "ParameterSetName": [
+          "-v -g -c --backup-management-type --workload-type -i -y --delete-backup-data"
+        ],
+        "User-Agent": [
+          "AZURECLI/2.52.0 (PIP) azsdk-python-mgmt-recoveryservicesbackup/1.0.0b1 Python/3.10.7 (Windows-10-10.0.22621-SP0)"
+        ]
+      },
+      "method": "DELETE",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupFabrics/Azure/protectionContainers/VMAppContainer%3Bcompute%3Bsaphana-clitest-rg%3Bsaphana-clitestvm-donotuse2/protectedItems/SAPHanaDatabase%3Bhxe%3Bsystemdb?api-version=2023-04-01"
+    },
+    "response": {
+      "body": {
+        "string": ""
+      },
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupOperations/5b49aa66-ec73-40a7-9728-8b64f6d706b2?api-version=2023-04-01"
+        ],
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "0"
+        ],
+        "date": [
+          "Thu, 11 May 2023 12:58:03 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupOperationResults/5b49aa66-ec73-40a7-9728-8b64f6d706b2?api-version=2023-04-01"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-deletes": [
+          "14999"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 202,
+        "message": "Accepted"
+      }
+    }
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_item.yaml",
+    "source_sha256": "9b8079ca16e0622f9c7a31cf3dd30310a49ccc716092477996a8ce124eb91f1d",
+    "interaction": 78,
+    "request": {
+      "body": null,
+      "headers": {
+        "Accept": [
+          "application/json"
+        ],
+        "Accept-Encoding": [
+          "gzip, deflate"
+        ],
+        "CommandName": [
+          "backup protection disable"
+        ],
+        "Connection": [
+          "keep-alive"
+        ],
+        "ParameterSetName": [
+          "-v -g -c --backup-management-type --workload-type -i -y --delete-backup-data"
+        ],
+        "User-Agent": [
+          "AZURECLI/2.52.0 (PIP) azsdk-python-mgmt-recoveryservicesbackup/1.0.0b1 Python/3.10.7 (Windows-10-10.0.22621-SP0)"
+        ]
+      },
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupOperations/5b49aa66-ec73-40a7-9728-8b64f6d706b2?api-version=2023-04-01"
+    },
+    "response": {
+      "body": {
+        "string": "{\"id\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"name\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"status\":\"InProgress\",\"startTime\":\"2023-05-11T12:58:03.3389774Z\",\"endTime\":\"0001-01-01T00:00:00\"}"
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "188"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Thu, 11 May 2023 12:58:04 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "transfer-encoding": [
+          "chunked"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "299"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    }
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_item.yaml",
+    "source_sha256": "9b8079ca16e0622f9c7a31cf3dd30310a49ccc716092477996a8ce124eb91f1d",
+    "interaction": 79,
+    "request": {
+      "body": null,
+      "headers": {
+        "Accept": [
+          "application/json"
+        ],
+        "Accept-Encoding": [
+          "gzip, deflate"
+        ],
+        "CommandName": [
+          "backup protection disable"
+        ],
+        "Connection": [
+          "keep-alive"
+        ],
+        "ParameterSetName": [
+          "-v -g -c --backup-management-type --workload-type -i -y --delete-backup-data"
+        ],
+        "User-Agent": [
+          "AZURECLI/2.52.0 (PIP) azsdk-python-mgmt-recoveryservicesbackup/1.0.0b1 Python/3.10.7 (Windows-10-10.0.22621-SP0)"
+        ]
+      },
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupOperations/5b49aa66-ec73-40a7-9728-8b64f6d706b2?api-version=2023-04-01"
+    },
+    "response": {
+      "body": {
+        "string": "{\"id\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"name\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"status\":\"InProgress\",\"startTime\":\"2023-05-11T12:58:03.3389774Z\",\"endTime\":\"0001-01-01T00:00:00\"}"
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "188"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Thu, 11 May 2023 12:58:10 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "transfer-encoding": [
+          "chunked"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "298"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    }
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_item.yaml",
+    "source_sha256": "9b8079ca16e0622f9c7a31cf3dd30310a49ccc716092477996a8ce124eb91f1d",
+    "interaction": 80,
+    "request": {
+      "body": null,
+      "headers": {
+        "Accept": [
+          "application/json"
+        ],
+        "Accept-Encoding": [
+          "gzip, deflate"
+        ],
+        "CommandName": [
+          "backup protection disable"
+        ],
+        "Connection": [
+          "keep-alive"
+        ],
+        "ParameterSetName": [
+          "-v -g -c --backup-management-type --workload-type -i -y --delete-backup-data"
+        ],
+        "User-Agent": [
+          "AZURECLI/2.52.0 (PIP) azsdk-python-mgmt-recoveryservicesbackup/1.0.0b1 Python/3.10.7 (Windows-10-10.0.22621-SP0)"
+        ]
+      },
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupOperations/5b49aa66-ec73-40a7-9728-8b64f6d706b2?api-version=2023-04-01"
+    },
+    "response": {
+      "body": {
+        "string": "{\"id\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"name\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"status\":\"InProgress\",\"startTime\":\"2023-05-11T12:58:03.3389774Z\",\"endTime\":\"0001-01-01T00:00:00\"}"
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "188"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Thu, 11 May 2023 12:58:15 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "transfer-encoding": [
+          "chunked"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "297"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    }
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_item.yaml",
+    "source_sha256": "9b8079ca16e0622f9c7a31cf3dd30310a49ccc716092477996a8ce124eb91f1d",
+    "interaction": 81,
+    "request": {
+      "body": null,
+      "headers": {
+        "Accept": [
+          "application/json"
+        ],
+        "Accept-Encoding": [
+          "gzip, deflate"
+        ],
+        "CommandName": [
+          "backup protection disable"
+        ],
+        "Connection": [
+          "keep-alive"
+        ],
+        "ParameterSetName": [
+          "-v -g -c --backup-management-type --workload-type -i -y --delete-backup-data"
+        ],
+        "User-Agent": [
+          "AZURECLI/2.52.0 (PIP) azsdk-python-mgmt-recoveryservicesbackup/1.0.0b1 Python/3.10.7 (Windows-10-10.0.22621-SP0)"
+        ]
+      },
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupOperations/5b49aa66-ec73-40a7-9728-8b64f6d706b2?api-version=2023-04-01"
+    },
+    "response": {
+      "body": {
+        "string": "{\"id\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"name\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"status\":\"InProgress\",\"startTime\":\"2023-05-11T12:58:03.3389774Z\",\"endTime\":\"0001-01-01T00:00:00\"}"
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "188"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Thu, 11 May 2023 12:58:20 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "transfer-encoding": [
+          "chunked"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "296"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    }
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_item.yaml",
+    "source_sha256": "9b8079ca16e0622f9c7a31cf3dd30310a49ccc716092477996a8ce124eb91f1d",
+    "interaction": 82,
+    "request": {
+      "body": null,
+      "headers": {
+        "Accept": [
+          "application/json"
+        ],
+        "Accept-Encoding": [
+          "gzip, deflate"
+        ],
+        "CommandName": [
+          "backup protection disable"
+        ],
+        "Connection": [
+          "keep-alive"
+        ],
+        "ParameterSetName": [
+          "-v -g -c --backup-management-type --workload-type -i -y --delete-backup-data"
+        ],
+        "User-Agent": [
+          "AZURECLI/2.52.0 (PIP) azsdk-python-mgmt-recoveryservicesbackup/1.0.0b1 Python/3.10.7 (Windows-10-10.0.22621-SP0)"
+        ]
+      },
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupOperations/5b49aa66-ec73-40a7-9728-8b64f6d706b2?api-version=2023-04-01"
+    },
+    "response": {
+      "body": {
+        "string": "{\"id\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"name\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"status\":\"InProgress\",\"startTime\":\"2023-05-11T12:58:03.3389774Z\",\"endTime\":\"0001-01-01T00:00:00\"}"
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "188"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Thu, 11 May 2023 12:58:27 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "transfer-encoding": [
+          "chunked"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "295"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    }
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_item.yaml",
+    "source_sha256": "9b8079ca16e0622f9c7a31cf3dd30310a49ccc716092477996a8ce124eb91f1d",
+    "interaction": 83,
+    "request": {
+      "body": null,
+      "headers": {
+        "Accept": [
+          "application/json"
+        ],
+        "Accept-Encoding": [
+          "gzip, deflate"
+        ],
+        "CommandName": [
+          "backup protection disable"
+        ],
+        "Connection": [
+          "keep-alive"
+        ],
+        "ParameterSetName": [
+          "-v -g -c --backup-management-type --workload-type -i -y --delete-backup-data"
+        ],
+        "User-Agent": [
+          "AZURECLI/2.52.0 (PIP) azsdk-python-mgmt-recoveryservicesbackup/1.0.0b1 Python/3.10.7 (Windows-10-10.0.22621-SP0)"
+        ]
+      },
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupOperations/5b49aa66-ec73-40a7-9728-8b64f6d706b2?api-version=2023-04-01"
+    },
+    "response": {
+      "body": {
+        "string": "{\"id\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"name\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"status\":\"InProgress\",\"startTime\":\"2023-05-11T12:58:03.3389774Z\",\"endTime\":\"0001-01-01T00:00:00\"}"
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "188"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Thu, 11 May 2023 12:58:31 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "transfer-encoding": [
+          "chunked"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "294"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    }
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_item.yaml",
+    "source_sha256": "9b8079ca16e0622f9c7a31cf3dd30310a49ccc716092477996a8ce124eb91f1d",
+    "interaction": 84,
+    "request": {
+      "body": null,
+      "headers": {
+        "Accept": [
+          "application/json"
+        ],
+        "Accept-Encoding": [
+          "gzip, deflate"
+        ],
+        "CommandName": [
+          "backup protection disable"
+        ],
+        "Connection": [
+          "keep-alive"
+        ],
+        "ParameterSetName": [
+          "-v -g -c --backup-management-type --workload-type -i -y --delete-backup-data"
+        ],
+        "User-Agent": [
+          "AZURECLI/2.52.0 (PIP) azsdk-python-mgmt-recoveryservicesbackup/1.0.0b1 Python/3.10.7 (Windows-10-10.0.22621-SP0)"
+        ]
+      },
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupOperations/5b49aa66-ec73-40a7-9728-8b64f6d706b2?api-version=2023-04-01"
+    },
+    "response": {
+      "body": {
+        "string": "{\"id\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"name\":\"5b49aa66-ec73-40a7-9728-8b64f6d706b2\",\"status\":\"Succeeded\",\"startTime\":\"2023-05-11T12:58:03.3389774Z\",\"endTime\":\"2023-05-11T12:58:03.3389774Z\",\"properties\":{\"objectType\":\"OperationStatusJobExtendedInfo\",\"jobId\":\"1ded3b7b-3535-4621-95e2-95ae7e4952e8\"}}"
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "304"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Thu, 11 May 2023 12:58:38 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "transfer-encoding": [
+          "chunked"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "293"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    }
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/Azure/azure-cli/79fa7556f80f3edce83676e10a2d0952776b7022/src/azure-cli/azure/cli/command_modules/backup/tests/latest/recordings/test_backup_wl_hana_item.yaml",
+    "source_sha256": "9b8079ca16e0622f9c7a31cf3dd30310a49ccc716092477996a8ce124eb91f1d",
+    "interaction": 85,
+    "request": {
+      "body": null,
+      "headers": {
+        "Accept": [
+          "application/json"
+        ],
+        "Accept-Encoding": [
+          "gzip, deflate"
+        ],
+        "CommandName": [
+          "backup protection disable"
+        ],
+        "Connection": [
+          "keep-alive"
+        ],
+        "ParameterSetName": [
+          "-v -g -c --backup-management-type --workload-type -i -y --delete-backup-data"
+        ],
+        "User-Agent": [
+          "AZURECLI/2.52.0 (PIP) azsdk-python-mgmt-recoveryservicesbackup/1.0.0b1 Python/3.10.7 (Windows-10-10.0.22621-SP0)"
+        ]
+      },
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupJobs/1ded3b7b-3535-4621-95e2-95ae7e4952e8?api-version=2023-04-01"
+    },
+    "response": {
+      "body": {
+        "string": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/saphana-clitest-rg/providers/Microsoft.RecoveryServices/vaults/saphana-clitestvault-donotuse/backupJobs/1ded3b7b-3535-4621-95e2-95ae7e4952e8\",\"name\":\"1ded3b7b-3535-4621-95e2-95ae7e4952e8\",\"type\":\"Microsoft.RecoveryServices/vaults/backupJobs\",\"properties\":{\"jobType\":\"AzureWorkloadJob\",\"workloadType\":\"SAPHanaDatabase\",\"duration\":\"PT33.2057316S\",\"extendedInfo\":{\"tasksList\":[],\"propertyBag\":{}},\"isUserTriggered\":true,\"entityFriendlyName\":\"systemdb\",\"backupManagementType\":\"AzureWorkload\",\"operation\":\"DeleteBackupData\",\"status\":\"Completed\",\"startTime\":\"2023-05-11T12:58:03.3389774Z\",\"endTime\":\"2023-05-11T12:58:36.544709Z\",\"activityId\":\"73f56133-effb-11ed-b3c4-c8f750f92764\"}}"
+      },
+      "headers": {
+        "cache-control": [
+          "no-cache"
+        ],
+        "content-length": [
+          "750"
+        ],
+        "content-type": [
+          "application/json"
+        ],
+        "date": [
+          "Thu, 11 May 2023 12:58:39 GMT"
+        ],
+        "expires": [
+          "-1"
+        ],
+        "pragma": [
+          "no-cache"
+        ],
+        "server": [
+          "Microsoft-IIS/10.0",
+          "Microsoft-IIS/10.0"
+        ],
+        "strict-transport-security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "transfer-encoding": [
+          "chunked"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "x-content-type-options": [
+          "nosniff"
+        ],
+        "x-ms-ratelimit-remaining-subscription-resource-requests": [
+          "149"
+        ],
+        "x-powered-by": [
+          "ASP.NET"
+        ]
+      },
+      "status": {
+        "code": 200,
+        "message": "OK"
+      }
+    }
+  }
+]

@@ -569,3 +569,27 @@ for (const locale of ["en-US", "zh-CN"] as const) {
     );
   });
 }
+
+for (const locale of ["en-US", "zh-CN"] as const) {
+  it(`explains Recovery Services item retention in ${locale}`, () => {
+    localStorage.setItem(localePreferenceKey, locale);
+    render(
+      <LocaleProvider>
+        <ErrorProbe
+          error={{ code: "recovery_services_item_delete", message: "fallback" }}
+        />
+      </LocaleProvider>,
+    );
+    const text = screen.getByTestId("error").textContent;
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "任务完成不代表永久清除"
+        : "completion does not mean permanent purge",
+    );
+    expect(text).toContain(
+      locale === "zh-CN"
+        ? "源工作负载、策略、保护容器和保管库将保留"
+        : "source workload, policy, protection container and vault are retained",
+    );
+  });
+}

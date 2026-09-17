@@ -41,3 +41,14 @@ relationships:
 - type: uses
   targetType: Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers
   targetIdPath: refs_microsoft_recoveryservices_vaults_backupfabrics_protectioncontainers
+
+actions:
+  delete:
+    operation: Azure.Microsoft.RecoveryServices.ProtectedItems_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.RecoveryServices.ProtectedItems_Get
+      itemsPath: $
+      identityPath: id

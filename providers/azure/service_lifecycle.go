@@ -514,6 +514,16 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	})
 	dnsOwners := map[string]asset.AssetID{}
 	for _, parent := range parents {
+		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == recoveryServicesItem {
+			contribution, err := s.client.contributeRecoveryItemPrerequisites(ctx, s.connectionID, parent, assets)
+			if err != nil {
+				return result, err
+			}
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+			continue
+		}
+
 		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == dataProtectionInstance {
 			contribution, err := s.client.contributeDataProtectionSources(ctx, s.connectionID, parent, assets)
 			if err != nil {

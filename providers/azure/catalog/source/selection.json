@@ -2655,7 +2655,16 @@
         "ProtectedItems_Get",
         "BackupProtectedItems_List",
         "ProtectionContainers_Unregister",
-        "ProtectionContainerOperationResults_Get"
+        "ProtectionContainerOperationResults_Get",
+        "ProtectedItems_Delete",
+        "ProtectedItemOperationResults_Get",
+        "ProtectedItemOperationStatuses_Get",
+        "BackupOperationResults_Get",
+        "BackupOperationStatuses_Get",
+        "JobDetails_Get",
+        "ResourceGuardProxies_Get",
+        "ResourceGuardProxy_Get",
+        "ProtectionPolicies_Get"
       ]
     }
   ],
@@ -11608,7 +11617,9 @@
       "read_operations": [
         "Azure.Microsoft.RecoveryServices.ProtectedItems_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.RecoveryServices.ProtectedItems_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.RecoveryServices.BackupProtectedItems_List"
       ]

@@ -17,7 +17,14 @@ import (
 // extract its validated operation ID and bind the original container's native
 // operationResults route. No foreign address or arbitrary query is followed.
 func (c *client) recoveryContainerCallback(id, endpoint, role string) (token string, legacy bool, err error) {
-	owner, e := c.recoveryServicesIdentity(id, recoveryServicesContainer)
+	return c.recoveryBackupCallback(id, recoveryServicesContainer, endpoint, role)
+}
+
+func (c *client) recoveryBackupCallback(id, kind, endpoint, role string) (token string, legacy bool, err error) {
+	if kind != recoveryServicesContainer && kind != recoveryServicesItem {
+		return "", false, serviceDenied("invalid_recovery_backup_callback_kind")
+	}
+	owner, e := c.recoveryServicesIdentity(id, kind)
 	if e != nil || owner != id || endpoint != strings.TrimSpace(endpoint) || len(endpoint) > 32<<10 || c.validateURL(endpoint) != nil {
 		return "", false, serviceDenied("invalid_recovery_container_callback_owner")
 	}
@@ -42,7 +49,11 @@ func (c *client) recoveryContainerCallback(id, endpoint, role string) (token str
 			return "", false, serviceDenied("recovery_container_callback_scope_changed")
 		}
 	case "status":
-		if !slices.Contains([]string{id + "/operationsstatus", vault + "/backupfabrics/" + fabric + "/operationsstatus", vault + "/backupoperations"}, parent) {
+		allowed := []string{id + "/operationsstatus", vault + "/backupoperations"}
+		if kind == recoveryServicesContainer {
+			allowed = append(allowed, vault+"/backupfabrics/"+fabric+"/operationsstatus")
+		}
+		if !slices.Contains(allowed, parent) {
 			return "", false, serviceDenied("recovery_container_callback_scope_changed")
 		}
 	default:
@@ -56,9 +67,9 @@ func (c *client) recoveryContainerCallback(id, endpoint, role string) (token str
 	// unsigned callbacks supply an operation identity only; bind the selected
 	// catalog version rather than sending a request to an obsolete endpoint.
 	historical := func(version string) bool {
-		return slices.Contains([]string{"2017-07-01", "2019-05-13-preview", "2023-04-01"}, version)
+		return slices.Contains([]string{"2017-07-01", "2019-05-13-preview", "2023-04-01"}, version) || kind == recoveryServicesItem && version == "2025-02-01"
 	}
-	if role == "result" && parent == vault+"/backupoperationresults" && len(q) == 1 && len(q["fabricName"]) == 1 {
+	if kind == recoveryServicesContainer && role == "result" && parent == vault+"/backupoperationresults" && len(q) == 1 && len(q["fabricName"]) == 1 {
 		value := q.Get("fabricName")
 		name, version, suffix := strings.Cut(value, "?api-version=")
 		// The CLI recording contains a second '?' in Location. Consume only this

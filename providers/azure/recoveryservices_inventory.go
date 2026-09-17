@@ -395,6 +395,14 @@ func (r *Runtime) recoveryServicesSnapshot(ctx context.Context, c *client, req c
 		}
 	}
 
+	if kind == recoveryServicesItem {
+		for i := range items {
+			if err := r.recoveryItemInventory(ctx, c, req, &items[i]); err != nil {
+				return nil, nil, err
+			}
+		}
+	}
+
 	for id, raw := range containers {
 		own, err := c.recoveryServicesRead(ctx, id, recoveryServicesContainer)
 		if err != nil {

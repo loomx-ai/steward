@@ -43,5 +43,30 @@
     "file": "ProtectionContainerOperationResults_Get.json",
     "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/examples/AzureStorage/ProtectionContainers_Inquire_Result.json",
     "sha256": "b3f35ff505f763264719105294644bc7cdc37850d4f9519ffb25d70b644500f4"
+  },
+  {
+    "file": "hana-item-delete-recording.json",
+    "sha256": "c8943e5bce934a2686c81215cd0ef62051f9bf83eb4617f2035ad537e3ea02d5",
+    "note": "Unchanged selected requests and responses from official CLI YAML; source URL, hash and interaction index embedded. Historical API versions preserved."
+  },
+  {
+    "file": "vm-item-delete-recording.json",
+    "sha256": "f5ab16fc031c3ca3391a682d822fc9c62f4c8f19019713fade6c8ae190da18c3",
+    "note": "Unchanged selected requests and responses from official CLI YAML; source URL, hash and interaction index embedded. Historical API versions preserved."
+  },
+  {
+    "file": "ResourceGuardProxy_Get.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/examples/ResourceGuardProxyCRUD/GetResourceGuardProxy.json",
+    "sha256": "2f8d50d9ea78e0a84ea86bfdcff86898416bf99634513cbf4dd285c5b53c06a5"
+  },
+  {
+    "file": "ResourceGuardProxies_Get.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/examples/ResourceGuardProxyCRUD/ListResourceGuardProxy.json",
+    "sha256": "6f37a3409234c11f35ac99c0f20295ccc6f5d40a14221a050b89c36c767385ce"
+  },
+  {
+    "file": "ProtectionPolicies_Get.json",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/examples/AzureIaasVm/ProtectionPolicies_Get.json",
+    "sha256": "eda98bfe840757571a3578eb9c6a9541d74aed9111ef0d50a6a37e703f826f55"
   }
 ]

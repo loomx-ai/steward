@@ -1134,6 +1134,19 @@ active and retained item checks, parent protection checks, strict scoped polling
 and durable SQLite worker recovery. Operation completion still requires own
 resource absence; no backup data purge or source-workload mutation is performed.
 Historical official CLI responses exercise the protocol adapter without claiming
-current-version wire replay. Protected-item and vault deletion, retention recovery,
-policy/source dependencies, Site Recovery replication items and independent/live
-acceptance remain open. No baseline row or overall acceptance gate is closed.
+current-version wire replay.
+
+Active protected items now support reviewed bodyless native DELETE, scoped
+operation/result polling, durable backup-job checkpoints and own-item readback.
+Same-ID soft deletion is recorded as retained backup data, not permanent purge;
+SQLite rescan reopens that same inventory identity as non-actionable. Policy and
+operation-specific Resource Guard dependencies are reread, and late source,
+protection, policy, immutability or registration changes block completion. HANA
+instance snapshot protection is an explicitly selected prerequisite of related
+database cleanup. Graph and actual SQLite worker tests cover ordering and restart;
+these HANA relation fixtures are synthetic. Bilingual warnings explain backup
+stoppage, recovery-point deletion, retention and the preserved source workload.
+
+Vault deletion, policy cleanup, full source-workload graph coverage, retention
+recovery/purge, Site Recovery replication items and independent/live acceptance
+remain open. No baseline row or overall acceptance gate is closed.

@@ -33,8 +33,8 @@ Registered inventory additionally tests region scoping, persisted SQLite scan an
 graph processing, known-ID omission/readback, failed-shard preservation and private
 configuration-bound continuations. Containers and items reference their native
 parents without authorizing parent deletion. Empty, registered, unprotected containers now support reviewed unregistration.
-The other three resource types remain non-actionable; their cleanup and overall
-end-to-end acceptance are unfinished.
+Active protected items now support reviewed deletion. Active and deleted vaults
+remain non-actionable; overall end-to-end acceptance is unfinished.
 
 Recorded item vaultId may be an absolute HTTPS ARM URL. Its host, subscription
 and vault path are checked without following it; userinfo, ports, query strings,
@@ -77,3 +77,43 @@ A pending result may have an empty decoded payload, including `{}` or null, but
 never establishes completion. A native result resource is likewise not an own
 read and cannot prove disappearance. No test here authorizes purging backup data,
 disabling protection, unregistering an occupied source, or deleting a vault.
+
+
+Protected-item deletion uses native bodyless DELETE and validates scoped status
+and result callbacks. Operation success can carry one or several backup job IDs;
+each job must complete before own-item readback can establish the outcome.
+CompletedWithWarnings remains subject to own readback. Failure, cancellation,
+malformed jobs, foreign identities and unavailable dependencies cannot establish
+success. Signed receipts preserve the status-to-job checkpoint across restart.
+
+`hana-item-delete-recording.json` preserves CLI interactions 77–85 from
+`test_backup_wl_hana_item.yaml` (2023-04-01). Its unchanged responses exercise the
+historical protocol adapter through operation status and backup job completion.
+`vm-item-delete-recording.json` preserves interactions 118–127 from
+`test_vault_soft_delete_with_items.yaml` (2025-02-01). The VM list before and after
+delete returns the same native ID, with protection stopped, policy links cleared,
+and deferred deletion enabled. Tests use this observed transition without
+assuming a fixed retention duration or claiming permanent purge. Historical
+signed callback URLs are preserved as evidence but are not rewritten or followed
+by the current-version client. Current signed callback tests are synthetic.
+
+The unchanged policy and Resource Guard examples establish reviewed dependency
+contracts. A documented internal guard proxy ID is bound to its known vault and
+proxy name; it is never followed as a URL. List and own guard examples are separate
+observations, not a synchronized fixture. Operation-specific delete authorization
+remains enforced by Azure. The implementation neither disables guards nor changes
+immutability settings, and does not add cross-tenant auxiliary authorization.
+
+HANA database cleanup requires explicit selection and prior cessation of related
+instance snapshot protection. Synthetic native-schema fixtures exercise relation
+fields, list omissions, ambiguity, graph ordering, and actual SQLite worker
+execution with out-of-order job delivery and provider restart. They are not a
+recording of a real HANA instance-snapshot deletion. Separate registered-runtime
+tests reject policy, source, protection and registration changes before DELETE and
+after acknowledgement. SQLite rescan tests rediscover the same retained native ID
+as non-actionable after cleanup completes. English and Chinese plan warnings make
+the backup-data deletion and retention consequences visible.
+
+Vault deletion, full source-workload graph coverage, policy cleanup, retention
+recovery/purge, Site Recovery, independent current-version replay and live-cloud
+acceptance remain unfinished. No parity baseline or acceptance gate is closed.

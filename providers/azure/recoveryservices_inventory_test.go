@@ -37,7 +37,7 @@ func TestRecoveryServicesSourceEvidence(t *testing.T) {
 	if err = json.Unmarshal(wire, &sources); err != nil {
 		t.Fatal(err)
 	}
-	if len(sources) != 9 {
+	if len(sources) != 14 {
 		t.Fatal("missing native evidence")
 	}
 	for _, source := range sources {
@@ -261,6 +261,9 @@ func newRecoveryServicesFixture(t *testing.T) *recoveryServicesFixture {
 			}
 			return jsonResponse(200, raw, nil), nil
 		}
+		if strings.EqualFold(path, f.vault+"/backupResourceGuardProxies") {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
 		collection := last(path)
 		kind := ""
 		switch collection {
@@ -313,7 +316,7 @@ func TestRecoveryServicesRegisteredInventory(t *testing.T) {
 			t.Fatal(kind, err, len(batch.Items))
 		}
 		item := batch.Items[0]
-		if item.NativeType != kind || item.Location != "eastus" || item.Actionable == nil || *item.Actionable || item.Normalized["cleanup_protected"] != true {
+		if item.NativeType != kind || item.Location != "eastus" || item.Actionable == nil || *item.Actionable != (kind == recoveryServicesItem) || item.Normalized["cleanup_protected"] != (kind != recoveryServicesItem) {
 			t.Fatal("invalid inventory authority", kind, item)
 		}
 		if kind == recoveryServicesDeletedVault && (item.State != "soft_deleted" || item.Normalized["originalVaultId"] != f.vault) {
@@ -484,7 +487,7 @@ func TestRecoveryServicesSQLiteScanReconciliation(t *testing.T) {
 		t.Fatal("registered scan lost native resources", len(values))
 	}
 	for _, value := range values {
-		if value.Capabilities.Has(asset.CapabilityActionable) || value.Location != "eastus" || value.Normalized["_inventory_source"] != recoveryServicesSource {
+		if value.Capabilities.Has(asset.CapabilityActionable) != (value.Identity.NativeType == recoveryServicesItem) || value.Location != "eastus" || value.Normalized["_inventory_source"] != recoveryServicesSource {
 			t.Fatal("scan assigned unsupported cleanup capability")
 		}
 	}

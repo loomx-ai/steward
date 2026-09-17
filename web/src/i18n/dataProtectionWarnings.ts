@@ -13,3 +13,10 @@ export const dataProtectionVaultDeletionWarning: Record<Locale, string> = {
   "zh-CN":
     "删除此备份保险库前，必须先移除其活动备份实例和策略。Azure 可能按软删除规则保留保险库及备份数据，保留期间可能仍可恢复并产生费用。任务完成不代表数据已永久清除。源工作负载和外部 Resource Guard 资源将保留；不会禁用安全设置。",
 };
+
+export const recoveryServicesItemDeletionWarning: Record<Locale, string> = {
+  "en-US":
+    "Deleting this backup item stops its backups and requests deletion of recovery points under Azure retention rules. Soft-deleted backups may remain recoverable and incur charges; completion does not mean permanent purge. The source workload, policy, protection container and vault are retained.",
+  "zh-CN":
+    "删除此备份项将停止其备份，并按 Azure 保留规则请求删除恢复点。软删除的备份可能仍可恢复并产生费用；任务完成不代表永久清除。源工作负载、策略、保护容器和保管库将保留。",
+};
