@@ -7468,3 +7468,11 @@ consumers, and the notification-channel counts now include the policy re-reads
 of dashboard consumer discovery. Dashboard LIST is unimplemented upstream, so
 those tests substitute an explicit empty collection while the uptime and
 dashboard tests keep verifying the unsupported-LIST path against the mock.
+
+### Azure independent runs are automated too
+
+CI job `azure-apim-emulator` builds the pinned community APIM emulator and runs
+`TestAPIMIndependentEmulator`; `azure-test-proxy` verifies the SHA-256 of
+Microsoft's pinned Test Proxy release and runs the Data Protection playback
+tests. The APIM adapter now answers the Monitor, RBAC, diagnostic and RBAC scope
+indexes with the shared empty native fixtures, which the emulator does not own.

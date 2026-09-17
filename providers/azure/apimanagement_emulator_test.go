@@ -94,7 +94,16 @@ func TestAPIMIndependentEmulator(t *testing.T) {
 				return jsonResponse(200, map[string]any{"value": []any{map[string]any{"id": group, "name": last(group), "type": groupType, "location": "centralus"}}}, nil), nil
 			case group:
 				return jsonResponse(200, map[string]any{"id": group, "name": last(group), "type": groupType, "location": "centralus"}, nil), nil
+			case "/subscriptions/" + testSubscription + "/resources":
+				// The RBAC scope index is a read-only ARM listing; the emulator
+				// owns no resources outside its own APIM service.
+				return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 			}
+		}
+		// Monitor, RBAC and diagnostic dependency indexes are read-only ARM
+		// reads outside the emulator's scope; they use empty native fixtures.
+		if response, handled := emptyMonitorIndexResponse(t, req); handled {
+			return response, nil
 		}
 		if !strings.Contains(path, "/providers/microsoft.apimanagement/") {
 			t.Fatalf("unexpected non-APIM emulator adapter request %s %s", req.Method, path)

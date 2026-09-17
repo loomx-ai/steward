@@ -146,3 +146,51 @@ jobs:
       - run: go test -count=1 -run Azurite ./providers/azure
         env:
           STEWARD_AZURITE_BLOB_URL: https://127.0.0.1:10000
+
+  azure-apim-emulator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Build the pinned community APIM emulator
+        run: |
+          git -C "$RUNNER_TEMP" init apim-emulator
+          cd "$RUNNER_TEMP/apim-emulator"
+          git remote add origin https://github.com/calvinchengx/azure-apim-emulator.git
+          git fetch --depth 1 origin a1aafcf2d9743967684d9458a3371dcc86e09ef6
+          git checkout -q FETCH_HEAD
+          go build -o "$RUNNER_TEMP/apim-emulator-bin" ./cmd/azure-apim-emulator
+      - name: Start the emulator
+        run: |
+          "$RUNNER_TEMP/apim-emulator-bin" --disable-auth --disable-tls --addr 127.0.0.1:18085 --data-dir '' --location westus --default-service steward-test > "$RUNNER_TEMP/apim.log" 2>&1 &
+          for attempt in $(seq 1 30); do
+            curl -s -o /dev/null http://127.0.0.1:18085/ && exit 0
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/apim.log"
+          exit 1
+      - run: go test -count=1 -run '^TestAPIMIndependentEmulator$' ./providers/azure
+        env:
+          STEWARD_APIM_EMULATOR_URL: http://127.0.0.1:18085
+
+  azure-test-proxy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Fetch Microsoft's pinned Test Proxy
+        run: |
+          cd "$RUNNER_TEMP"
+          curl -sfL -o test-proxy.tar.gz https://github.com/Azure/azure-sdk-tools/releases/download/Azure.Sdk.Tools.TestProxy_1.0.0-dev.20260521.2/test-proxy-standalone-linux-x64.tar.gz
+          echo "ea0aa71e50fc279e511ba245d3457a9e9c8b5cce60bd58080b3e6ff48bb4cbcd  test-proxy.tar.gz" | sha256sum -c -
+          mkdir -p test-proxy && tar -xzf test-proxy.tar.gz -C test-proxy
+          chmod +x test-proxy/Azure.Sdk.Tools.TestProxy
+      - run: go test -count=1 -run 'TestDataProtection' ./providers/azure
+        env:
+          STEWARD_AZURE_TEST_PROXY: ${{ runner.temp }}/test-proxy/Azure.Sdk.Tools.TestProxy
