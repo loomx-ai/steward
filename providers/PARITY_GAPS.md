@@ -39,6 +39,24 @@ users and groups (Microsoft Graph) are registered read-only; their matrix notes 
 why cleanup is not offered. Service Fabric clusters, Storage Sync services and
 Machine Learning online endpoints are registered with cleanup.
 
+## Independent mock-server evidence
+
+| Server | Pinned version | Provider paths covered | CI job |
+| --- | --- | --- | --- |
+| Moto | 5.2.3 | EC2 instances, volumes, snapshots and images; OpenSearch; FSx; Route 53 domains; Organizations; VPN gateway detach; KMS and Backup guards; S3 bucket contents; full scan/plan/execute pipeline | `aws-emulator` |
+| Google Config Connector mockgcp | `673a614` | Compute firewall policies and future reservations; Monitoring scopes, groups, dashboards, alert policies, uptime checks and notification channels; Billing budgets; Logging sinks; Cloud Identity groups; Infrastructure Manager deployment groups | `gcp-mockgcp` |
+| fake-gcs-server | v1.52.2 | Cloud Storage bucket contents and deletion | `gcp-emulator` |
+| Google bttest | `4dc7532` | Bigtable tables | `gcp-emulator` |
+| Azurite | 3.35.0 | Blob container contents | `azure-emulator` |
+| azure-apim-emulator | `a1aafcf` | API Management service and child deletion | `azure-apim-emulator` |
+| Azure SDK Test Proxy | `1.0.0-dev.20260521.2` | Data Protection vault deletion playback | `azure-test-proxy` |
+
+`scripts/run-mockgcp-tests.py` builds the mockgcp harnesses and runs all 19 of
+those tests, each against a freshly started server. Matrix rows carry a
+`verification` list naming the tests that exercise them; 19 mappings across the
+three providers currently carry one. Recording evidence is not acceptance: every
+row stays `pending_verification` until its behavior is accepted per requirement.
+
 ## Mapping research outcomes
 
 | Baseline | Provider | Outcome |

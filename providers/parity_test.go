@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
@@ -18,6 +19,10 @@ type parityTarget struct {
 	Resources     []string `yaml:"resources"`
 	Unimplemented []string `yaml:"unimplemented_resources"`
 	Notes         string   `yaml:"notes"`
+	// Verification names Go tests that exercise this mapping against an
+	// independent mock server or emulator. It records where evidence exists;
+	// it never closes the row's behavioral acceptance.
+	Verification []string `yaml:"verification"`
 }
 
 type parityBaseline struct {
@@ -41,6 +46,8 @@ type parityRow struct {
 	Notes    string         `yaml:"notes"`
 	Sources  []string       `yaml:"sources"`
 }
+
+var testFunction = regexp.MustCompile(`(?m)^func (Test[A-Za-z0-9_]+)\(t \*testing\.T\)`)
 
 // This checks scope and source consistency, not cloud feature equivalence. A
 // mapped spec or passing test does not satisfy the matrix's behavioral acceptance.
@@ -114,6 +121,23 @@ func TestParityMatrixMatchesProviderSpecifications(t *testing.T) {
 	for _, resource := range awsSelection.ResourceTypes {
 		awsCatalogTypes[resource.NativeType] = true
 	}
+	providerTests := map[string]map[string]bool{}
+	for _, provider := range []string{"gcp", "azure", "aws"} {
+		providerTests[provider] = map[string]bool{}
+		files, err := filepath.Glob(filepath.Join(provider, "*_test.go"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, path := range files {
+			raw, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, match := range testFunction.FindAllStringSubmatch(string(raw), -1) {
+				providerTests[provider][match[1]] = true
+			}
+		}
+	}
 	seen := map[string]bool{}
 	for _, row := range matrix.Resources {
 		t.Run(row.Alicloud, func(t *testing.T) {
@@ -137,6 +161,25 @@ func TestParityMatrixMatchesProviderSpecifications(t *testing.T) {
 			}
 			if strings.TrimSpace(row.Status) == "" {
 				t.Fatal("missing verification status")
+			}
+			for provider, target := range map[string]parityTarget{"gcp": row.GCP, "azure": row.Azure, "aws": row.AWS} {
+				if len(target.Verification) == 0 {
+					continue
+				}
+				if len(target.Resources) == 0 {
+					t.Fatal("verification without a mapped resource", provider)
+				}
+				sorted := slices.Clone(target.Verification)
+				slices.Sort(sorted)
+				sorted = slices.Compact(sorted)
+				if !slices.Equal(sorted, target.Verification) {
+					t.Fatal("verification tests must be sorted and unique", provider)
+				}
+				for _, name := range target.Verification {
+					if !providerTests[provider][name] {
+						t.Fatal("unknown verification test", provider, name)
+					}
+				}
 			}
 			for provider, target := range map[string]parityTarget{"gcp": row.GCP, "azure": row.Azure, "aws": row.AWS} {
 				references := map[string]bool{}
