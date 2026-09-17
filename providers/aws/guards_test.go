@@ -145,6 +145,10 @@ func TestMotoS3BucketGuard(t *testing.T) {
 	if preflight, err := driver.Preflight(ctx, request); err != nil || preflight.Allowed || preflight.Reason == "" {
 		t.Fatalf("versioned bucket preflight=%+v err=%v", preflight, err)
 	}
+	items := []contracts.InventoryItem{{NativeType: "AWS::S3::Bucket", NativeID: bucket, Normalized: map[string]any{}}}
+	if err := enrichLifecycleFacts(ctx, clients, items); err != nil || items[0].Normalized["cleanup_protected"] != true || items[0].Normalized["bucket_empty"] != false {
+		t.Fatalf("scan did not surface the non-empty bucket: %+v err=%v", items[0].Normalized, err)
+	}
 	for _, version := range []*string{put.VersionId, removed.VersionId} {
 		if _, err := s3.DeleteObject(ctx, &awss3.DeleteObjectInput{Bucket: awssdk.String(bucket), Key: awssdk.String("report.csv"), VersionId: version}); err != nil {
 			t.Fatal(err)
@@ -152,6 +156,10 @@ func TestMotoS3BucketGuard(t *testing.T) {
 	}
 	if preflight, err := driver.Preflight(ctx, request); err != nil || !preflight.Allowed || preflight.Evidence["bucket_empty"] != true {
 		t.Fatalf("empty bucket preflight=%+v err=%v", preflight, err)
+	}
+	items = []contracts.InventoryItem{{NativeType: "AWS::S3::Bucket", NativeID: bucket, Normalized: map[string]any{}}}
+	if err := enrichLifecycleFacts(ctx, clients, items); err != nil || items[0].Normalized["cleanup_protected"] != nil || items[0].Normalized["bucket_empty"] != true {
+		t.Fatalf("scan protected an empty bucket: %+v err=%v", items[0].Normalized, err)
 	}
 	if preflight, err := driver.Preflight(ctx, guardRequest("AWS::S3::Bucket", "steward-absent-bucket")); err != nil || !preflight.Absent {
 		t.Fatalf("absent bucket preflight=%+v err=%v", preflight, err)

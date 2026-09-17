@@ -3,6 +3,7 @@ package aws
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"sort"
@@ -106,7 +107,7 @@ func attachmentDocuments[T any](values []T) []any {
 
 func lifecycleFactKind(nativeType string) bool {
 	switch nativeType {
-	case "AWS::EC2::Instance", "AWS::EC2::NetworkInterface", "AWS::AutoScaling::AutoScalingGroup", "AWS::EKS::Nodegroup":
+	case "AWS::EC2::Instance", "AWS::EC2::NetworkInterface", "AWS::AutoScaling::AutoScalingGroup", "AWS::EKS::Nodegroup", "AWS::S3::Bucket":
 		return true
 	}
 	return false
@@ -132,6 +133,11 @@ func enrichLifecycleFacts(ctx context.Context, clients *NativeClients, items []c
 	}
 	if indexes := byType["AWS::AutoScaling::AutoScalingGroup"]; len(indexes) > 0 {
 		if err := enrichAutoScalingGroups(ctx, clients.AutoScaling, items, indexes); err != nil {
+			return err
+		}
+	}
+	for _, index := range byType["AWS::S3::Bucket"] {
+		if err := enrichBucketContents(ctx, clients.S3, &items[index]); err != nil {
 			return err
 		}
 	}
@@ -607,6 +613,30 @@ func stringSliceValue(value any) []string {
 			}
 		}
 		return result
+	}
+	return nil
+}
+
+// A bucket that still holds object versions or delete markers cannot be deleted
+// by Cloud Control. Recording it at scan time shows the blocker in the plan;
+// the delete guard checks the live bucket again before deletion.
+func enrichBucketContents(ctx context.Context, client S3NativeAPI, item *contracts.InventoryItem) error {
+	outcome, err := s3BucketGuard(client)(ctx, item.NativeID)
+	if err != nil {
+		var providerError *contracts.ProviderCallError
+		if errors.As(err, &providerError) && (providerError.Provider.Code == "PermanentRedirect" || providerError.Provider.Code == "AuthorizationHeaderMalformed") {
+			return nil // A bucket in another region is checked by its own regional scan.
+		}
+		return err
+	}
+	if outcome.pending {
+		return nil
+	}
+	empty, _ := outcome.evidence["bucket_empty"].(bool)
+	item.Normalized["bucket_empty"] = empty
+	if !empty {
+		item.Normalized["cleanup_protected"] = true
+		item.Normalized["cleanup_protection_reason"] = "s3_bucket_not_empty"
 	}
 	return nil
 }
