@@ -8,22 +8,40 @@ navTitle: "快速开始"
 
 ## 准备环境
 
-选择一种[安装方式](./installation.md)。发布版二进制已包含本机运行所需内容；仅源码构建需要 Go 和 Node.js。
+选择一种[安装方式](./installation.md)。Steward 已包含 Web 控制台和数据库，无需额外安装运行环境。
 
 <span id="run"></span>
 
-## 安装并启动
+## 启动 Steward
 
-```
-brew install loomx-ai/tap/steward
+<div data-docs-tabs data-label="启动方式">
+<div data-tab="macOS / Linux">
+
+### macOS / Linux
+
+```sh
 mkdir -p "$HOME/steward-data"
 cd "$HOME/steward-data"
 steward server start
 ```
 
+</div>
+<div data-tab="Windows">
+
+### Windows
+
+```powershell
+New-Item -ItemType Directory -Force "$HOME/steward-data" | Out-Null
+Set-Location "$HOME/steward-data"
+steward server start
+```
+
+</div>
+</div>
+
 打开 [http://127.0.0.1:8585](http://127.0.0.1:8585)，无需注册或登录。服务默认只接受本机访问。
 
-按 Ctrl+C 停止服务。后续可直接运行已构建的程序：
+按 Ctrl+C 停止服务。下次从同一工作目录启动：
 
 ```
 steward server start
@@ -42,18 +60,6 @@ steward server start
 
 [凭证类型和连接步骤 →](./connections.md)
 
-<span id="development"></span>
-
-## 开发模式
-
-在[源码目录](./installation.md#source)执行 `make install` 后运行：
-
-```
-make dev
-```
-
-打开 [http://127.0.0.1:5858](http://127.0.0.1:5858)。前端支持热更新；开发代理使用自动生成的令牌连接 API，无需手动登录。不要与 make run 同时运行，两者使用同一个 API 端口。
-
 <span id="data"></span>
 
 ## 数据保存在哪里
@@ -62,4 +68,4 @@ make dev
 
 <aside class="docs-note">备份必须同时保存数据库和原始密钥。更换密钥会导致已有云凭证无法解密。</aside>
 
-[网络访问、备份和升级 →](./deployment.md)
+[网络访问与备份 →](./deployment.md)

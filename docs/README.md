@@ -1,6 +1,6 @@
 # Steward documentation
 
-The public guide is at [loomx.ai/steward/docs](https://loomx.ai/steward/docs). This repository owns its content and screenshots. The shared `loomx-ai/docs` repository builds and publishes the documentation site independently of the company website.
+The public guide is at [loomx.ai/steward/docs](https://loomx.ai/steward/docs). This repository owns its content and screenshots. LoomX maintains the documentation site and handles its build and publication.
 
 ## Edit the guide
 
@@ -9,7 +9,9 @@ The public guide is at [loomx.ai/steward/docs](https://loomx.ai/steward/docs). T
 - Use relative Markdown links, such as `./connections.md` or `../index.md#start`. The site resolves them within the selected product, version, and language.
 - Store images in `assets/` and link to them relative to the Markdown file. Keep screenshots at their original dimensions and include descriptive alt text and a sample-data caption.
 - A standalone `<span id="stable-id"></span>` before a heading preserves an existing anchor. The renderer applies that ID to the heading and the page's table of contents.
-- Installation pages may declare `release: {version, index}` in frontmatter to add a version picker. The HTTPS index uses the product repository's verified GitHub Release URLs. Keep fallback download links and SHA-256 values in Markdown usable without JavaScript.
+- `primaryNavigation` defines the product header's Install, Tutorials, and Documentation links with a chapter `page` and translated `label`. Each destination must also appear in the sidebar navigation.
+- Keep installation focused on package-manager commands and executable downloads. Put walkthroughs in Tutorials, operations in Documentation, and source builds in the developer guide.
+- Installation pages may declare `release: {version, index}` in frontmatter to add a version picker. The HTTPS index uses the product repository's verified GitHub Release URLs. Keep fallback executable links in Markdown usable without JavaScript; publish the assets before publishing their links. Integrity checks stay in release tooling.
 - Group related installation methods with `<div data-docs-tabs data-label="…">` and child `<div data-tab="…">` blocks. Every block must have a heading for readers without JavaScript. Downloads can use the shared `docs-downloads` and `docs-download` styles.
 - Keep implementation notes such as `localstack.md` outside `content/`; they are not published as user documentation.
 - Introductions explain the problem, working model, and useful scenarios. Tutorials state the outcome and prerequisites, use one coherent example, and include a result check after each step. Operation guides cover specific tasks and recovery.
@@ -17,15 +19,7 @@ The public guide is at [loomx.ai/steward/docs](https://loomx.ai/steward/docs). T
 
 Run `node docs/check.mjs` before submitting a change. CI checks navigation, translation completeness, relative links, and screenshot integrity.
 
-To preview the full site from a sibling checkout of `loomx-ai/docs`:
-
-```sh
-cd ../docs
-npm ci
-DOCS_PREVIEW=1 DOCS_SOURCES='{"steward":"../steward"}' npm run dev
-```
-
-Open `http://127.0.0.1:4321/steward/docs/latest/en/` or replace `en` with `zh`. Local overrides are preview-only and cannot be published through the production deploy command. See the shared site's README for release and rollback procedures.
+Submit documentation changes as a pull request to this repository after running the check above. You can use GitHub's Markdown preview to review text and basic formatting; site-specific components may render differently on the published site. Full-site preview and publication are handled by the maintainers and do not require contributors to access any other repository.
 
 ## Screenshots
 

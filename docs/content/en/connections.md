@@ -17,6 +17,8 @@ Use a dedicated cloud identity. Start with read permissions for inventory; add d
 | [Google Cloud (GCP)](./gcp.md) | Project ID + service account JSON key. |
 | [Microsoft Azure](./azure.md) | Subscription ID + Tenant ID + Application (client) ID + Client secret. |
 
+When the server is configured for workload identity, all four clouds offer [OIDC connections](./oidc.md), exchanging trusted workload identities for temporary credentials without uploading long-lived cloud keys.
+
 Alibaba Cloud also supports browser authorization when the login option is available. Choose the China or International site to match your account.
 
 Successful validation confirms the identity, not permission to call every resource API. Resolve permission errors reported by the scan.
