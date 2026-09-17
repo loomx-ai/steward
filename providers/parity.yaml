@@ -604,6 +604,7 @@ resources:
     - networkservices.googleapis.com/MulticastDomain
   azure:
     resources: []
+    notes: Azure virtual networks block multicast and broadcast traffic (see azure_vnet_multicast), and Virtual WAN exposes no multicast domain resource.
   aws:
     resources:
     - AWS::EC2::TransitGatewayMulticastDomain
@@ -611,7 +612,7 @@ resources:
     - AWS::EC2::TransitGatewayMulticastGroupMember
     - AWS::EC2::TransitGatewayMulticastGroupSource
   status: pending_verification
-  notes: Azure multicast mapping requires API and lifecycle research; an empty mapping is unfinished.
+  notes: Azure has no multicast equivalent; GCP and AWS map to their native multicast domains.
 - alicloud: ACS::CEN::TransitRouterPeerAttachment
   spec: providers/alicloud/specs/cen-transit-router-peer-attachment.yaml
   class: network.cen_attachment
@@ -1296,12 +1297,14 @@ resources:
     - delete
   gcp:
     resources: []
+    notes: Google Cloud offers no hosted Android cloud-phone instance service; Compute Engine VMs are not an equivalent.
   azure:
     resources: []
+    notes: Azure offers no hosted Android cloud-phone instance service; Windows 365 Cloud PCs and virtual machines are not equivalents.
   aws:
     notes: AWS offers no cloud phone instance service.
   status: pending_verification
-  notes: 'Research pending: hosted Android/cloud-phone lifecycle is not represented by a generic VM mapping.'
+  notes: Hosted Android/cloud-phone lifecycle is not represented by a generic VM mapping on any of the three clouds.
 - alicloud: ACS::ECS::Instance
   spec: providers/alicloud/specs/ecs-instance.yaml
   class: compute.instance
@@ -2769,6 +2772,7 @@ resources:
     actions: []
   gcp:
     resources: []
+    notes: Google Cloud has no managed real-time communication application resource. The Meet Media API reads Workspace conferences and the Gemini Live API is a model session API; neither is an RTC application with its own lifecycle.
   azure:
     resources:
     - Microsoft.Communication/communicationServices
@@ -2776,7 +2780,7 @@ resources:
     resources:
     - AWS::IVS::Stage
   status: pending_verification
-  notes: 'Research pending for GCP: do not substitute an unrelated media processing API for an RTC application.'
+  notes: An unrelated media processing API is not substituted for an RTC application.
 - alicloud: ACS::SCDN::Domain
   spec: providers/alicloud/specs/scdn-domain.yaml
   class: network.cdn_domain
@@ -2894,6 +2898,7 @@ resources:
     - delete
   gcp:
     resources: []
+    notes: Google Cloud has no SMS template resource. Identity Platform's sendSms.smsTemplate is an output-only field of the project configuration (see gcp_identity_platform_sms_template), with no create or delete lifecycle.
   azure:
     resources:
     - Microsoft.Communication/communicationServices
@@ -3146,6 +3151,8 @@ resources:
     - AWS::EC2::Subnet
   status: pending_verification
 evidence:
+  azure_vnet_multicast: https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-faq
+  gcp_identity_platform_sms_template: https://docs.cloud.google.com/identity-platform/docs/reference/rest/v2/Config
   aws_cloudformation_schemas: https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/supported-resources.html
   aws_api_models: https://github.com/aws/api-models-aws
   aws_elastic_inference_eol: https://aws.amazon.com/machine-learning/elastic-inference/faqs/
