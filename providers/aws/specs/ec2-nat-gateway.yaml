@@ -6,25 +6,36 @@ metadata:
   class: network.nat_gateway
 presentation:
   displayNames:
-    en-US: EC2 NAT Gateway
+    zh-CN: NAT 网关
+    en-US: NAT Gateway
+  consoleLinkTemplate: https://{regionId}.console.aws.amazon.com/vpcconsole/home?region={regionId}#NatGatewayDetails:natGatewayId={nativeId}
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::EC2::NatGateway
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
     identityPath: Identifier
 relationships:
-  - type: member_of
-    targetType: AWS::EC2::VPC
-    targetIdPath: vpc_id
-  - type: member_of
-    targetType: AWS::EC2::Subnet
-    targetIdPath: subnet_ids
-  - type: uses
-    targetType: AWS::EC2::SecurityGroup
-    targetIdPath: security_group_ids
+- type: member_of
+  targetType: AWS::EC2::VPC
+  targetIdPath: vpc_id
+- type: member_of
+  targetType: AWS::EC2::Subnet
+  targetIdPath: subnet_ids
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource

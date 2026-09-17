@@ -1,0 +1,38 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::VpcLattice::ServiceNetwork
+  class: network.gateway
+presentation:
+  displayNames:
+    zh-CN: VPC Lattice 服务网络
+    en-US: VPC Lattice Service Network
+scope:
+  kind: region
+discovery:
+  source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::VpcLattice::ServiceNetwork
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  detail:
+    operation: com.amazonaws.cloudcontrol#GetResource
+    itemsPath: ResourceDescription
+    identityPath: Identifier
+actions:
+  delete:
+    operation: com.amazonaws.cloudcontrol#DeleteResource
+    idempotency: provider_token
+    waiter: cloud_control_terminal
+    readback: cloud_control_absent
+extensions:
+  hook: aws.cloudcontrol.resource

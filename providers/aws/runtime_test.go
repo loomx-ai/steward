@@ -203,6 +203,10 @@ func (*runtimeCloudControlClient) GetResourceRequestStatus(context.Context, stri
 	return CloudControlProgress{}, "", errors.New("not used")
 }
 
+func (*runtimeCloudControlClient) UpdateResource(context.Context, CloudControlUpdateRequest) (CloudControlProgress, string, error) {
+	return CloudControlProgress{}, "", errors.New("not used")
+}
+
 type runtimeResourceExplorerClient struct {
 	page SearchPage
 }

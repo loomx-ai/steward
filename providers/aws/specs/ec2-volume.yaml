@@ -6,15 +6,33 @@ metadata:
   class: storage.volume
 presentation:
   displayNames:
+    zh-CN: EBS 卷
     en-US: EBS Volume
+  consoleLinkTemplate: https://{regionId}.console.aws.amazon.com/ec2/home?region={regionId}#VolumeDetails:volumeId={nativeId}
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::EC2::Volume
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
     identityPath: Identifier
+relationships:
+- type: uses
+  targetType: AWS::EC2::Snapshot
+  targetIdPath: SnapshotId
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource

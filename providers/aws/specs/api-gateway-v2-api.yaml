@@ -6,11 +6,24 @@ metadata:
   class: api.gateway
 presentation:
   displayNames:
-    en-US: API Gateway V2 API
+    zh-CN: API Gateway HTTP/WebSocket API
+    en-US: API Gateway HTTP/WebSocket API
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::ApiGatewayV2::Api
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription

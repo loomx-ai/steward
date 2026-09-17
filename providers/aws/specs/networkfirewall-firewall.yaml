@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::NetworkFirewall::Firewall
+  class: security.firewall
+presentation:
+  displayNames:
+    zh-CN: 网络防火墙
+    en-US: Network Firewall
+scope:
+  kind: region
+discovery:
+  source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::NetworkFirewall::Firewall
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  detail:
+    operation: com.amazonaws.cloudcontrol#GetResource
+    itemsPath: ResourceDescription
+    identityPath: Identifier
+relationships:
+- type: member_of
+  targetType: AWS::EC2::VPC
+  targetIdPath: vpc_id
+- type: member_of
+  targetType: AWS::EC2::Subnet
+  targetIdPath: subnet_ids
+- type: uses
+  targetType: AWS::NetworkFirewall::FirewallPolicy
+  targetIdPath: FirewallPolicyArn
+actions:
+  delete:
+    operation: com.amazonaws.cloudcontrol#DeleteResource
+    idempotency: provider_token
+    waiter: cloud_control_terminal
+    readback: cloud_control_absent
+    read:
+      operation: com.amazonaws.cloudcontrol#GetResource
+      parameters:
+        TypeName: AWS::NetworkFirewall::Firewall
+        Identifier: resource.nativeId
+      itemsPath: ResourceDescription.Properties
+      identityPath: Identifier
+    deletionProtection:
+      path: DeleteProtection
+      enabledValues:
+      - 'true'
+      disable:
+        operation: com.amazonaws.cloudcontrol#UpdateResource
+        parameters:
+          TypeName: AWS::NetworkFirewall::Firewall
+          Identifier: resource.nativeId
+          PatchOperation: replace
+          PatchValue: false
+extensions:
+  hook: aws.cloudcontrol.resource

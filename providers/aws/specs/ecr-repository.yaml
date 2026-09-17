@@ -6,11 +6,24 @@ metadata:
   class: container.repository
 presentation:
   displayNames:
+    zh-CN: ECR 镜像仓库
     en-US: ECR Repository
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::ECR::Repository
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription

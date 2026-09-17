@@ -123,6 +123,13 @@ type cloudControlClient struct {
 	listCalls      []provideraws.CloudControlListRequest
 	deleteCalls    []cloudControlDeleteCall
 	waitCalls      []string
+	updateProgress provideraws.CloudControlProgress
+	updateCalls    []provideraws.CloudControlUpdateRequest
+}
+
+func (c *cloudControlClient) UpdateResource(_ context.Context, request provideraws.CloudControlUpdateRequest) (provideraws.CloudControlProgress, string, error) {
+	c.updateCalls = append(c.updateCalls, request)
+	return c.updateProgress, "update-request", nil
 }
 
 func (c *cloudControlClient) ListResources(_ context.Context, request provideraws.CloudControlListRequest) (provideraws.CloudControlPage, error) {

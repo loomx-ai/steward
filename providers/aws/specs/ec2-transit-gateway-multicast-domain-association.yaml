@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::EC2::TransitGatewayMulticastDomainAssociation
+  class: network.multicast_domain_association
+presentation:
+  displayNames:
+    zh-CN: 中转网关组播域关联
+    en-US: Transit Gateway Multicast Domain Association
+scope:
+  kind: region
+discovery:
+  source: cloud-control
+  parent:
+    source: cloud-control
+    nativeType: AWS::EC2::TransitGatewayMulticastDomain
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::EC2::TransitGatewayMulticastDomainAssociation
+      ResourceModel.TransitGatewayMulticastDomainId: parent.nativeId
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  detail:
+    operation: com.amazonaws.cloudcontrol#GetResource
+    itemsPath: ResourceDescription
+    identityPath: Identifier
+relationships:
+- type: member_of
+  targetType: AWS::EC2::VPC
+  targetIdPath: vpc_id
+- type: member_of
+  targetType: AWS::EC2::Subnet
+  targetIdPath: subnet_ids
+- type: member_of
+  targetType: AWS::EC2::TransitGatewayMulticastDomain
+  targetIdPath: TransitGatewayMulticastDomainId
+- type: depends_on
+  targetType: AWS::EC2::TransitGatewayVpcAttachment
+  targetIdPath: TransitGatewayAttachmentId
+actions:
+  delete:
+    operation: com.amazonaws.cloudcontrol#DeleteResource
+    idempotency: provider_token
+    waiter: cloud_control_terminal
+    readback: cloud_control_absent
+extensions:
+  hook: aws.cloudcontrol.resource

@@ -6,15 +6,32 @@ metadata:
   class: messaging.event_rule
 presentation:
   displayNames:
+    zh-CN: EventBridge 规则
     en-US: EventBridge Rule
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::Events::Rule
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
     identityPath: Identifier
+relationships:
+- type: member_of
+  targetType: AWS::Events::EventBus
+  targetIdPath: EventBusName
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource

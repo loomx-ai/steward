@@ -6,11 +6,25 @@ metadata:
   class: identity.user
 presentation:
   displayNames:
+    zh-CN: IAM 用户
     en-US: IAM User
+  consoleLinkTemplate: https://console.aws.amazon.com/iam/home#/users/details/{nativeId}
 scope:
   kind: global
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::IAM::User
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription

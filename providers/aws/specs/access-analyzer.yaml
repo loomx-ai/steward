@@ -6,11 +6,24 @@ metadata:
   class: security.analyzer
 presentation:
   displayNames:
-    en-US: Access Analyzer
+    zh-CN: IAM 访问分析器
+    en-US: IAM Access Analyzer
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::AccessAnalyzer::Analyzer
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription

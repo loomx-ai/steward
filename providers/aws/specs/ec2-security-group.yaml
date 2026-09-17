@@ -6,25 +6,33 @@ metadata:
   class: network.security_group
 presentation:
   displayNames:
-    en-US: EC2 Security Group
+    zh-CN: 安全组
+    en-US: Security Group
+  consoleLinkTemplate: https://{regionId}.console.aws.amazon.com/ec2/home?region={regionId}#SecurityGroup:groupId={nativeId}
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::EC2::SecurityGroup
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
     identityPath: Identifier
 relationships:
-  - type: member_of
-    targetType: AWS::EC2::VPC
-    targetIdPath: vpc_id
-  - type: member_of
-    targetType: AWS::EC2::Subnet
-    targetIdPath: subnet_ids
-  - type: uses
-    targetType: AWS::EC2::SecurityGroup
-    targetIdPath: security_group_ids
+- type: member_of
+  targetType: AWS::EC2::VPC
+  targetIdPath: vpc_id
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource

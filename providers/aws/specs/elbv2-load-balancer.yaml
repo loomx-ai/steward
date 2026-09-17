@@ -6,30 +6,61 @@ metadata:
   class: network.load_balancer
 presentation:
   displayNames:
+    zh-CN: 弹性负载均衡器
     en-US: Elastic Load Balancer
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::ElasticLoadBalancingV2::LoadBalancer
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
     identityPath: Identifier
 relationships:
-  - type: member_of
-    targetType: AWS::EC2::VPC
-    targetIdPath: vpc_id
-  - type: member_of
-    targetType: AWS::EC2::Subnet
-    targetIdPath: subnet_ids
-  - type: uses
-    targetType: AWS::EC2::SecurityGroup
-    targetIdPath: security_group_ids
+- type: member_of
+  targetType: AWS::EC2::VPC
+  targetIdPath: vpc_id
+- type: member_of
+  targetType: AWS::EC2::Subnet
+  targetIdPath: subnet_ids
+- type: uses
+  targetType: AWS::EC2::SecurityGroup
+  targetIdPath: security_group_ids
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource
     idempotency: provider_token
     waiter: cloud_control_terminal
     readback: cloud_control_absent
+    read:
+      operation: com.amazonaws.cloudcontrol#GetResource
+      parameters:
+        TypeName: AWS::ElasticLoadBalancingV2::LoadBalancer
+        Identifier: resource.nativeId
+      itemsPath: ResourceDescription.Properties
+      identityPath: Identifier
+    deletionProtection:
+      path: LoadBalancerAttributes[Key=deletion_protection.enabled].Value
+      enabledValues:
+      - 'true'
+      disable:
+        operation: com.amazonaws.cloudcontrol#UpdateResource
+        parameters:
+          TypeName: AWS::ElasticLoadBalancingV2::LoadBalancer
+          Identifier: resource.nativeId
+          PatchOperation: replace
+          PatchValue: 'false'
 extensions:
   hook: aws.cloudcontrol.resource

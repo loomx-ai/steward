@@ -1,0 +1,56 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::DSQL::Cluster
+  class: database.distributed
+presentation:
+  displayNames:
+    zh-CN: Aurora DSQL 集群
+    en-US: Aurora DSQL Cluster
+scope:
+  kind: region
+discovery:
+  source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::DSQL::Cluster
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  detail:
+    operation: com.amazonaws.cloudcontrol#GetResource
+    itemsPath: ResourceDescription
+    identityPath: Identifier
+actions:
+  delete:
+    operation: com.amazonaws.cloudcontrol#DeleteResource
+    idempotency: provider_token
+    waiter: cloud_control_terminal
+    readback: cloud_control_absent
+    read:
+      operation: com.amazonaws.cloudcontrol#GetResource
+      parameters:
+        TypeName: AWS::DSQL::Cluster
+        Identifier: resource.nativeId
+      itemsPath: ResourceDescription.Properties
+      identityPath: Identifier
+    deletionProtection:
+      path: DeletionProtectionEnabled
+      enabledValues:
+      - 'true'
+      disable:
+        operation: com.amazonaws.cloudcontrol#UpdateResource
+        parameters:
+          TypeName: AWS::DSQL::Cluster
+          Identifier: resource.nativeId
+          PatchOperation: replace
+          PatchValue: false
+extensions:
+  hook: aws.cloudcontrol.resource

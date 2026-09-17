@@ -6,25 +6,33 @@ metadata:
   class: network.subnet
 presentation:
   displayNames:
-    en-US: EC2 Subnet
+    zh-CN: 子网
+    en-US: Subnet
+  consoleLinkTemplate: https://{regionId}.console.aws.amazon.com/vpcconsole/home?region={regionId}#SubnetDetails:subnetId={nativeId}
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::EC2::Subnet
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
     identityPath: Identifier
 relationships:
-  - type: member_of
-    targetType: AWS::EC2::VPC
-    targetIdPath: vpc_id
-  - type: member_of
-    targetType: AWS::EC2::Subnet
-    targetIdPath: subnet_ids
-  - type: uses
-    targetType: AWS::EC2::SecurityGroup
-    targetIdPath: security_group_ids
+- type: member_of
+  targetType: AWS::EC2::VPC
+  targetIdPath: vpc_id
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource

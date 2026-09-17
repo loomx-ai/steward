@@ -6,7 +6,8 @@ metadata:
   class: search.domain
 presentation:
   displayNames:
-    en-US: OpenSearch Domain
+    zh-CN: OpenSearch Service 域
+    en-US: OpenSearch Service Domain
 scope:
   kind: region
 discovery:

@@ -6,11 +6,25 @@ metadata:
   class: container.cluster
 presentation:
   displayNames:
+    zh-CN: ECS 集群
     en-US: ECS Cluster
+  consoleLinkTemplate: https://{regionId}.console.aws.amazon.com/ecs/v2/clusters/{nativeId}?region={regionId}
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::ECS::Cluster
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription

@@ -6,28 +6,44 @@ metadata:
   class: network.vpc_endpoint
 presentation:
   displayNames:
-    en-US: EC2 VPC Endpoint
+    zh-CN: VPC 终端节点
+    en-US: VPC Endpoint
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::EC2::VPCEndpoint
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
     identityPath: Identifier
 relationships:
-  - type: uses
-    targetType: AWS::EC2::RouteTable
-    targetIdPath: RouteTableIds
-  - type: member_of
-    targetType: AWS::EC2::VPC
-    targetIdPath: vpc_id
-  - type: member_of
-    targetType: AWS::EC2::Subnet
-    targetIdPath: subnet_ids
-  - type: uses
-    targetType: AWS::EC2::SecurityGroup
-    targetIdPath: security_group_ids
+- type: member_of
+  targetType: AWS::EC2::VPC
+  targetIdPath: vpc_id
+- type: member_of
+  targetType: AWS::EC2::Subnet
+  targetIdPath: subnet_ids
+- type: uses
+  targetType: AWS::EC2::SecurityGroup
+  targetIdPath: security_group_ids
+- type: uses
+  targetType: AWS::EC2::RouteTable
+  targetIdPath: RouteTableIds
+- type: uses
+  targetType: AWS::EC2::VPCEndpointService
+  targetIdPath: service_id
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource

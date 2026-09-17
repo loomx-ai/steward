@@ -6,19 +6,28 @@ metadata:
   class: network.internet_gateway
 presentation:
   displayNames:
-    en-US: EC2 Internet Gateway
+    zh-CN: 互联网网关
+    en-US: Internet Gateway
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::EC2::InternetGateway
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
     identityPath: Identifier
-relationships:
-  - type: member_of
-    targetType: AWS::EC2::VPC
-    targetIdPath: vpc_id
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource

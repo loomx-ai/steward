@@ -6,11 +6,24 @@ metadata:
   class: monitoring.dashboard
 presentation:
   displayNames:
+    zh-CN: CloudWatch 控制面板
     en-US: CloudWatch Dashboard
 scope:
   kind: global
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::CloudWatch::Dashboard
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription

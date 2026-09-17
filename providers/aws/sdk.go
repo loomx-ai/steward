@@ -288,6 +288,9 @@ func (c *cloudControlSDK) ListResources(ctx context.Context, request CloudContro
 	if request.Limit > 0 {
 		input.MaxResults = awssdk.Int32(int32(request.Limit))
 	}
+	if request.ResourceModel != "" {
+		input.ResourceModel = awssdk.String(request.ResourceModel)
+	}
 	output, err := c.client.ListResources(ctx, input)
 	if err != nil {
 		return CloudControlPage{}, err
@@ -325,6 +328,18 @@ func (c *cloudControlSDK) GetResource(ctx context.Context, typeName, identifier 
 func (c *cloudControlSDK) DeleteResource(ctx context.Context, typeName, identifier, clientToken string) (CloudControlProgress, string, error) {
 	output, err := c.client.DeleteResource(ctx, &awscloudcontrol.DeleteResourceInput{
 		TypeName: awssdk.String(typeName), Identifier: awssdk.String(identifier), ClientToken: awssdk.String(clientToken),
+	})
+	if err != nil {
+		return CloudControlProgress{}, requestIDFromNormalized(NormalizeError(err)), err
+	}
+	requestID, _ := awsmiddleware.GetRequestIDMetadata(output.ResultMetadata)
+	return cloudControlProgress(output.ProgressEvent), requestID, nil
+}
+
+func (c *cloudControlSDK) UpdateResource(ctx context.Context, request CloudControlUpdateRequest) (CloudControlProgress, string, error) {
+	output, err := c.client.UpdateResource(ctx, &awscloudcontrol.UpdateResourceInput{
+		TypeName: awssdk.String(request.TypeName), Identifier: awssdk.String(request.Identifier),
+		PatchDocument: awssdk.String(request.PatchDocument), ClientToken: awssdk.String(request.ClientToken),
 	})
 	if err != nil {
 		return CloudControlProgress{}, requestIDFromNormalized(NormalizeError(err)), err

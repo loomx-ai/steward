@@ -6,11 +6,25 @@ metadata:
   class: database.table
 presentation:
   displayNames:
+    zh-CN: DynamoDB 表
     en-US: DynamoDB Table
+  consoleLinkTemplate: https://{regionId}.console.aws.amazon.com/dynamodbv2/home?region={regionId}#table?name={nativeId}
 scope:
   kind: region
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::DynamoDB::Table
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
@@ -21,5 +35,23 @@ actions:
     idempotency: provider_token
     waiter: cloud_control_terminal
     readback: cloud_control_absent
+    read:
+      operation: com.amazonaws.cloudcontrol#GetResource
+      parameters:
+        TypeName: AWS::DynamoDB::Table
+        Identifier: resource.nativeId
+      itemsPath: ResourceDescription.Properties
+      identityPath: Identifier
+    deletionProtection:
+      path: DeletionProtectionEnabled
+      enabledValues:
+      - 'true'
+      disable:
+        operation: com.amazonaws.cloudcontrol#UpdateResource
+        parameters:
+          TypeName: AWS::DynamoDB::Table
+          Identifier: resource.nativeId
+          PatchOperation: replace
+          PatchValue: false
 extensions:
   hook: aws.cloudcontrol.resource

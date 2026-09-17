@@ -6,11 +6,25 @@ metadata:
   class: storage.bucket
 presentation:
   displayNames:
+    zh-CN: S3 存储桶
     en-US: S3 Bucket
+  consoleLinkTemplate: https://s3.console.aws.amazon.com/s3/buckets/{nativeId}
 scope:
   kind: global
 discovery:
   source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::S3::Bucket
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
   detail:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription

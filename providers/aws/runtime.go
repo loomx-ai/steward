@@ -184,11 +184,31 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		return contracts.InventoryBatch{}, err
 	}
 	if request.Source == cloudControlSource {
-		client, err := r.factory.CloudControl(ctx, credential, cloudControlRegion(request.Scope))
+		if request.ResourceKind == nil {
+			return contracts.InventoryBatch{}, fmt.Errorf("AWS Cloud Control inventory requires a resource kind")
+		}
+		region := r.cloudControlInventoryRegion(request.ResourceKind.NativeType, request.Scope)
+		client, err := r.factory.CloudControl(ctx, credential, region)
 		if err != nil {
 			return contracts.InventoryBatch{}, NormalizeError(err)
 		}
-		return NewCloudControlInventory(client).List(ctx, request)
+		inventory := NewCloudControlInventory(client)
+		if compiled, ok := r.compiledSpec(request.ResourceKind.NativeType); ok {
+			plan, err := cloudControlListPlanFromSpec(compiled.Definition)
+			if err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			inventory.WithPlan(plan, func(ctx context.Context) ([]cloudControlParent, error) {
+				return r.listCloudControlParents(ctx, client, plan, request.Scope, "", 0)
+			}, func(ctx context.Context) (string, error) {
+				accountID, _, err := r.factory.CallerIdentity(ctx, credential, region)
+				if err != nil {
+					return "", NormalizeError(err)
+				}
+				return strings.TrimSpace(accountID), nil
+			})
+		}
+		return inventory.List(ctx, request)
 	}
 	if request.Source != "" && request.Source != "resource-explorer" {
 		return contracts.InventoryBatch{}, fmt.Errorf("AWS inventory source %q is not supported", request.Source)
@@ -223,18 +243,24 @@ func (r *Runtime) ResolveAction(ctx context.Context, connectionID asset.Connecti
 	if !r.cloudControlKind(value.Identity.NativeType) {
 		return nil, fmt.Errorf("AWS native type %q has no action driver", value.Identity.NativeType)
 	}
-	client, err := r.CloudControl(ctx, connectionID, value.Location)
+	compiled, _ := r.compiledSpec(value.Identity.NativeType)
+	region := homeRegion(value.Identity.NativeType, compiled.Definition.Scope.Kind, value.Location)
+	client, err := r.CloudControl(ctx, connectionID, region)
+	if err != nil {
+		return nil, err
+	}
+	driver, err := NewCloudControlActionForSpec(client, value.Identity.NativeType, compiled.Definition.Actions["delete"])
 	if err != nil {
 		return nil, err
 	}
 	if value.Identity.NativeType == "AWS::EC2::InternetGateway" {
-		network, err := r.networkClient(ctx, connectionID, value.Location)
+		network, err := r.networkClient(ctx, connectionID, region)
 		if err != nil {
 			return nil, err
 		}
-		return &internetGatewayAction{CloudControlAction: NewCloudControlAction(client), network: network}, nil
+		return &internetGatewayAction{CloudControlAction: driver, network: network}, nil
 	}
-	return NewCloudControlAction(client), nil
+	return driver, nil
 }
 
 func (r *Runtime) networkClient(ctx context.Context, connectionID asset.ConnectionID, region string) (NetworkClient, error) {
@@ -274,6 +300,13 @@ func (r *Runtime) CloudControl(ctx context.Context, connectionID asset.Connectio
 		return nil, NormalizeError(err)
 	}
 	return client, nil
+}
+
+func (r *Runtime) cloudControlInventoryRegion(nativeType string, scope asset.Scope) string {
+	if scope.Kind == asset.ScopeGlobal {
+		return homeRegion(nativeType, asset.ScopeGlobal, "")
+	}
+	return cloudControlRegion(scope)
 }
 
 func cloudControlRegion(scope asset.Scope) string {

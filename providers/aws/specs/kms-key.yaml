@@ -1,0 +1,39 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::KMS::Key
+  class: security.encryption_key
+presentation:
+  displayNames:
+    zh-CN: KMS 密钥
+    en-US: KMS Key
+  consoleLinkTemplate: https://{regionId}.console.aws.amazon.com/kms/home?region={regionId}#/kms/keys/{nativeId}
+scope:
+  kind: region
+discovery:
+  source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::KMS::Key
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  detail:
+    operation: com.amazonaws.cloudcontrol#GetResource
+    itemsPath: ResourceDescription
+    identityPath: Identifier
+actions:
+  delete:
+    operation: com.amazonaws.cloudcontrol#DeleteResource
+    idempotency: provider_token
+    waiter: cloud_control_terminal
+    readback: cloud_control_absent
+extensions:
+  hook: aws.cloudcontrol.resource

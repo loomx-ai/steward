@@ -1,0 +1,56 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::CloudTrail::EventDataStore
+  class: security.audit_trail
+presentation:
+  displayNames:
+    zh-CN: CloudTrail Lake 事件数据存储
+    en-US: CloudTrail Lake Event Data Store
+scope:
+  kind: region
+discovery:
+  source: cloud-control
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::CloudTrail::EventDataStore
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  detail:
+    operation: com.amazonaws.cloudcontrol#GetResource
+    itemsPath: ResourceDescription
+    identityPath: Identifier
+actions:
+  delete:
+    operation: com.amazonaws.cloudcontrol#DeleteResource
+    idempotency: provider_token
+    waiter: cloud_control_terminal
+    readback: cloud_control_absent
+    read:
+      operation: com.amazonaws.cloudcontrol#GetResource
+      parameters:
+        TypeName: AWS::CloudTrail::EventDataStore
+        Identifier: resource.nativeId
+      itemsPath: ResourceDescription.Properties
+      identityPath: Identifier
+    deletionProtection:
+      path: TerminationProtectionEnabled
+      enabledValues:
+      - 'true'
+      disable:
+        operation: com.amazonaws.cloudcontrol#UpdateResource
+        parameters:
+          TypeName: AWS::CloudTrail::EventDataStore
+          Identifier: resource.nativeId
+          PatchOperation: replace
+          PatchValue: false
+extensions:
+  hook: aws.cloudcontrol.resource

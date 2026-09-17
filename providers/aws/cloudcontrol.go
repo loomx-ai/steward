@@ -12,6 +12,7 @@ import (
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
+	"github.com/loomx-ai/steward/internal/provider/spec"
 )
 
 const (
@@ -25,6 +26,9 @@ type CloudControlListRequest struct {
 	TypeName  string
 	NextToken string
 	Limit     int
+	// ResourceModel is the canonical JSON model required by list handlers
+	// whose schema declares handlerSchema inputs, for example a parent ID.
+	ResourceModel string
 }
 
 type CloudControlResource struct {
@@ -52,14 +56,32 @@ type CloudControlClient interface {
 	GetResource(context.Context, string, string) (CloudControlResource, string, error)
 	DeleteResource(context.Context, string, string, string) (CloudControlProgress, string, error)
 	GetResourceRequestStatus(context.Context, string) (CloudControlProgress, string, error)
+	UpdateResource(context.Context, CloudControlUpdateRequest) (CloudControlProgress, string, error)
+}
+
+type CloudControlUpdateRequest struct {
+	TypeName      string
+	Identifier    string
+	PatchDocument string
+	ClientToken   string
 }
 
 type CloudControlInventory struct {
-	client CloudControlClient
+	client    CloudControlClient
+	plan      *CloudControlListPlan
+	parents   func(context.Context) ([]cloudControlParent, error)
+	accountID func(context.Context) (string, error)
 }
 
 func NewCloudControlInventory(client CloudControlClient) *CloudControlInventory {
 	return &CloudControlInventory{client: client}
+}
+
+// WithPlan applies the spec-declared list request. Parent and account lookups
+// are only invoked when the plan references them.
+func (i *CloudControlInventory) WithPlan(plan CloudControlListPlan, parents func(context.Context) ([]cloudControlParent, error), accountID func(context.Context) (string, error)) *CloudControlInventory {
+	i.plan, i.parents, i.accountID = &plan, parents, accountID
+	return i
 }
 
 func (i *CloudControlInventory) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
@@ -77,21 +99,75 @@ func (i *CloudControlInventory) List(ctx context.Context, request contracts.Inve
 		limit = cloudControlPageLimit
 	}
 	typeName := strings.TrimSpace(request.ResourceKind.NativeType)
+	plan := CloudControlListPlan{TypeName: typeName}
+	if i.plan != nil {
+		plan = *i.plan
+	}
+	if plan.TypeName != typeName {
+		return contracts.InventoryBatch{}, fmt.Errorf("AWS Cloud Control list plan %s does not match kind %s", plan.TypeName, typeName)
+	}
+	var parents []cloudControlParent
+	if plan.usesParent() {
+		if i.parents == nil {
+			return contracts.InventoryBatch{}, fmt.Errorf("AWS Cloud Control kind %s requires parent discovery", typeName)
+		}
+		var err error
+		if parents, err = i.parents(ctx); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+	}
+	accountID := ""
+	for _, value := range plan.Model {
+		if value == "scope.accountId" {
+			if i.accountID == nil {
+				return contracts.InventoryBatch{}, fmt.Errorf("AWS Cloud Control kind %s requires the account ID", typeName)
+			}
+			var err error
+			if accountID, err = i.accountID(ctx); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+		}
+	}
+	variants, err := plan.variants(parents, request.Scope, accountID)
+	if err != nil {
+		return contracts.InventoryBatch{}, err
+	}
+	if len(variants) == 0 {
+		return contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: true}, nil
+	}
+	fingerprint := variantFingerprint(typeName, variants)
+	cursor, err := decodeCloudControlCursor(request.Cursor, variants, fingerprint)
+	if err != nil {
+		return contracts.InventoryBatch{}, err
+	}
+	variant := variants[cursor.Variant]
 	requestPayload := map[string]any{"TypeName": typeName, "MaxResults": limit}
-	if request.Cursor != "" {
-		requestPayload["NextToken"] = request.Cursor
+	if cursor.Token != "" {
+		requestPayload["NextToken"] = cursor.Token
+	}
+	if variant.Model != "" {
+		requestPayload["ResourceModel"] = variant.Model
 	}
 	execution.LogCloudAPIRequest(ctx, "cloudcontrol", "ListResources", rawCloudPayload(requestPayload))
-	page, err := i.client.ListResources(ctx, CloudControlListRequest{TypeName: typeName, NextToken: request.Cursor, Limit: limit})
+	page, err := i.client.ListResources(ctx, CloudControlListRequest{TypeName: typeName, NextToken: cursor.Token, Limit: limit, ResourceModel: variant.Model})
 	if err != nil {
 		execution.LogCloudAPIFailure(ctx, "cloudcontrol", "ListResources", err)
 		return contracts.InventoryBatch{}, NormalizeError(err)
 	}
-	responseResources := make([]any, 0, len(page.Resources))
-	batch := contracts.InventoryBatch{
-		Items: make([]contracts.InventoryItem, 0, len(page.Resources)), NextCursor: page.NextToken,
-		RequestID: page.RequestID, Complete: page.NextToken == "",
+	if page.NextToken != "" && page.NextToken == cursor.Token {
+		return contracts.InventoryBatch{}, fmt.Errorf("AWS Cloud Control repeated the %s page token", typeName)
 	}
+	responseResources := make([]any, 0, len(page.Resources))
+	batch := contracts.InventoryBatch{Items: make([]contracts.InventoryItem, 0, len(page.Resources)), RequestID: page.RequestID}
+	if page.NextToken != "" {
+		cursor.Token = page.NextToken
+	} else {
+		cursor.Variant, cursor.Token = cursor.Variant+1, ""
+	}
+	if cursor.Variant < len(variants) {
+		batch.NextCursor = encodeCloudControlCursor(cursor, variants)
+	}
+	batch.Complete = batch.NextCursor == ""
 	for _, resource := range page.Resources {
 		identifier := strings.TrimSpace(resource.Identifier)
 		if identifier == "" {
@@ -132,6 +208,7 @@ func cloudControlItem(resource CloudControlResource, kind asset.ResourceKind, sc
 		normalized["state"] = state
 	}
 	normalizeCloudControlNetwork(normalized)
+	deriveCloudControlReferences(kind.NativeType, normalized)
 	return contracts.InventoryItem{
 		NativeType: kind.NativeType, NativeID: identifier, ResourceKind: kind,
 		Scope: contracts.InventoryScope{Kind: scope.Kind, NativeID: scope.NativeID, Name: scope.Name, Location: location},
@@ -148,7 +225,11 @@ func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.In
 	if request.Source != cloudControlSource || len(items) == 0 {
 		return items, nil
 	}
-	client, err := r.CloudControl(ctx, request.ConnectionID, cloudControlRegion(request.Scope))
+	region := cloudControlRegion(request.Scope)
+	if request.ResourceKind != nil {
+		region = r.cloudControlInventoryRegion(request.ResourceKind.NativeType, request.Scope)
+	}
+	client, err := r.CloudControl(ctx, request.ConnectionID, region)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +256,7 @@ func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.In
 			return nil, err
 		}
 		if item.NativeType == "AWS::EC2::InternetGateway" {
-			network, err := r.networkClient(ctx, request.ConnectionID, cloudControlRegion(request.Scope))
+			network, err := r.networkClient(ctx, request.ConnectionID, region)
 			if err != nil {
 				return nil, err
 			}
@@ -303,11 +384,21 @@ func cloudControlTags(properties map[string]any) map[string]string {
 }
 
 type CloudControlAction struct {
-	client CloudControlClient
+	client     CloudControlClient
+	protection *cloudControlProtection
 }
 
 func NewCloudControlAction(client CloudControlClient) *CloudControlAction {
 	return &CloudControlAction{client: client}
+}
+
+// NewCloudControlActionForSpec applies the kind's reviewed delete action rules.
+func NewCloudControlActionForSpec(client CloudControlClient, nativeType string, action spec.ActionSpec) (*CloudControlAction, error) {
+	protection, err := cloudControlProtectionFromSpec(nativeType, action)
+	if err != nil {
+		return nil, err
+	}
+	return &CloudControlAction{client: client, protection: protection}, nil
 }
 
 func (*CloudControlAction) DeletionCheckTimeout() time.Duration { return time.Hour }
@@ -323,15 +414,74 @@ func (a *CloudControlAction) Preflight(ctx context.Context, request contracts.Ac
 		}
 		return contracts.PreflightResult{}, NormalizeError(err)
 	}
-	return contracts.PreflightResult{Allowed: true, Evidence: map[string]any{
+	evidence := map[string]any{
 		"provider_request_id": requestID, "identifier": resource.Identifier, "type_name": request.Asset.Identity.NativeType,
-	}}, nil
+	}
+	if a.protection != nil {
+		model, err := cloudControlModel(resource.Properties)
+		if err != nil {
+			return contracts.PreflightResult{}, fmt.Errorf("decode AWS Cloud Control preflight model: %w", err)
+		}
+		enabled, _, err := a.protection.evaluate(model)
+		if err != nil {
+			return contracts.PreflightResult{}, err
+		}
+		evidence["deletion_protection"] = enabled
+		if enabled {
+			evidence["pre_delete_action"] = cloudControlPhaseDisableProtection
+		}
+	}
+	return contracts.PreflightResult{Allowed: true, Evidence: evidence}, nil
 }
 
 func (a *CloudControlAction) Execute(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	if err := a.validate(request); err != nil {
 		return contracts.ActionResult{}, err
 	}
+	if a.protection != nil {
+		resource, requestID, err := a.client.GetResource(ctx, request.Asset.Identity.NativeType, cloudControlIdentifier(request.Asset))
+		if err != nil {
+			if cloudControlNotFound(err) {
+				return contracts.ActionResult{ProviderRequestID: requestID, Data: map[string]any{"phase": cloudControlPhaseDelete, "status": "FAILED", "error_code": "NotFound"}}, nil
+			}
+			return contracts.ActionResult{}, NormalizeError(err)
+		}
+		model, err := cloudControlModel(resource.Properties)
+		if err != nil {
+			return contracts.ActionResult{}, fmt.Errorf("decode AWS Cloud Control model: %w", err)
+		}
+		enabled, patch, err := a.protection.evaluate(model)
+		if err != nil {
+			return contracts.ActionResult{}, err
+		}
+		if enabled {
+			return a.disableProtection(ctx, request, patch)
+		}
+	}
+	return a.submitDelete(ctx, request)
+}
+
+func (a *CloudControlAction) disableProtection(ctx context.Context, request contracts.ActionRequest, patch string) (contracts.ActionResult, error) {
+	payload := map[string]any{"TypeName": request.Asset.Identity.NativeType, "Identifier": cloudControlIdentifier(request.Asset), "PatchDocument": patch}
+	execution.LogCloudAPIRequest(ctx, "cloudcontrol", "UpdateResource", rawCloudPayload(payload))
+	progress, requestID, err := a.client.UpdateResource(ctx, CloudControlUpdateRequest{
+		TypeName: request.Asset.Identity.NativeType, Identifier: cloudControlIdentifier(request.Asset),
+		PatchDocument: patch, ClientToken: request.IdempotencyKey + ":disable-deletion-protection",
+	})
+	if err != nil {
+		execution.LogCloudAPIFailure(ctx, "cloudcontrol", "UpdateResource", err)
+		return contracts.ActionResult{}, NormalizeError(err)
+	}
+	if cloudControlFailed(progress.Status) {
+		return contracts.ActionResult{}, cloudControlProgressError(progress, requestID)
+	}
+	data := cloudControlProgressData(progress)
+	data["phase"] = cloudControlPhaseDisableProtection
+	data["patch_document"] = patch
+	return contracts.ActionResult{ProviderRequestID: requestID, ProviderOperationID: progress.RequestToken, RetryAfter: cloudControlRetryAfter(progress), Data: data}, nil
+}
+
+func (a *CloudControlAction) submitDelete(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	progress, requestID, err := a.client.DeleteResource(
 		ctx, request.Asset.Identity.NativeType, cloudControlIdentifier(request.Asset), request.IdempotencyKey,
 	)
@@ -340,10 +490,9 @@ func (a *CloudControlAction) Execute(ctx context.Context, request contracts.Acti
 	}
 	if cloudControlFailed(progress.Status) {
 		if strings.EqualFold(progress.ErrorCode, "NotFound") {
-			return contracts.ActionResult{
-				ProviderRequestID: requestID, ProviderOperationID: progress.RequestToken,
-				Data: cloudControlProgressData(progress),
-			}, nil
+			data := cloudControlProgressData(progress)
+			data["phase"] = cloudControlPhaseDelete
+			return contracts.ActionResult{ProviderRequestID: requestID, ProviderOperationID: progress.RequestToken, Data: data}, nil
 		}
 		return contracts.ActionResult{}, cloudControlProgressError(progress, requestID)
 	}
@@ -354,9 +503,11 @@ func (a *CloudControlAction) Execute(ctx context.Context, request contracts.Acti
 	if !strings.EqualFold(progress.Status, "SUCCESS") {
 		retryAfter = cloudControlRetryAfter(progress)
 	}
+	data := cloudControlProgressData(progress)
+	data["phase"] = cloudControlPhaseDelete
 	return contracts.ActionResult{
 		ProviderRequestID: requestID, ProviderOperationID: progress.RequestToken,
-		RetryAfter: retryAfter, Data: cloudControlProgressData(progress),
+		RetryAfter: retryAfter, Data: data,
 	}, nil
 }
 
@@ -364,14 +515,20 @@ func (a *CloudControlAction) Wait(ctx context.Context, request contracts.ActionR
 	if err := a.validate(request); err != nil {
 		return contracts.WaitResult{}, err
 	}
+	phase := stringValue(result.Data["phase"])
 	status := stringValue(result.Data["status"])
-	if strings.EqualFold(status, "SUCCESS") {
-		return contracts.WaitResult{Done: true, State: status, Data: result.Data}, nil
+	token := strings.TrimSpace(stringValue(result.Data["request_token"]))
+	if token == "" {
+		token = strings.TrimSpace(result.ProviderOperationID)
 	}
-	if strings.EqualFold(status, "FAILED") && strings.EqualFold(stringValue(result.Data["error_code"]), "NotFound") {
-		return contracts.WaitResult{Done: true, State: "absent", Data: result.Data}, nil
+	if phase != cloudControlPhaseDisableProtection {
+		if strings.EqualFold(status, "SUCCESS") {
+			return contracts.WaitResult{Done: true, State: status, Data: result.Data}, nil
+		}
+		if strings.EqualFold(status, "FAILED") && strings.EqualFold(stringValue(result.Data["error_code"]), "NotFound") {
+			return contracts.WaitResult{Done: true, State: "absent", Data: result.Data}, nil
+		}
 	}
-	token := strings.TrimSpace(result.ProviderOperationID)
 	if token == "" {
 		return contracts.WaitResult{}, fmt.Errorf("AWS Cloud Control wait requires an operation token")
 	}
@@ -379,8 +536,27 @@ func (a *CloudControlAction) Wait(ctx context.Context, request contracts.ActionR
 	if err != nil {
 		return contracts.WaitResult{}, NormalizeError(err)
 	}
+	if progress.RequestToken != "" && progress.RequestToken != token {
+		return contracts.WaitResult{}, fmt.Errorf("AWS Cloud Control returned status for another operation")
+	}
 	data := cloudControlProgressData(progress)
 	data["provider_request_id"] = requestID
+	data["request_token"] = token
+	if phase == cloudControlPhaseDisableProtection {
+		data["phase"] = phase
+		switch strings.ToUpper(strings.TrimSpace(progress.Status)) {
+		case "SUCCESS":
+			return a.afterProtectionDisabled(ctx, request, data)
+		case "FAILED", "CANCEL_COMPLETE":
+			if strings.EqualFold(progress.ErrorCode, "NotFound") {
+				return contracts.WaitResult{Done: true, State: "absent", Data: data}, nil
+			}
+			return contracts.WaitResult{}, cloudControlProgressError(progress, requestID)
+		default:
+			return contracts.WaitResult{Done: false, RetryAfter: cloudControlRetryAfter(progress), State: "disabling_deletion_protection", Data: data}, nil
+		}
+	}
+	data["phase"] = cloudControlPhaseDelete
 	switch strings.ToUpper(strings.TrimSpace(progress.Status)) {
 	case "SUCCESS":
 		return contracts.WaitResult{Done: true, State: progress.Status, Data: data}, nil
@@ -392,6 +568,41 @@ func (a *CloudControlAction) Wait(ctx context.Context, request contracts.ActionR
 	default:
 		return contracts.WaitResult{Done: false, RetryAfter: cloudControlRetryAfter(progress), State: progress.Status, Data: data}, nil
 	}
+}
+
+// The protection update is only a preparation step: read the model again and
+// submit the delete only after the live resource reports protection disabled.
+func (a *CloudControlAction) afterProtectionDisabled(ctx context.Context, request contracts.ActionRequest, data map[string]any) (contracts.WaitResult, error) {
+	resource, _, err := a.client.GetResource(ctx, request.Asset.Identity.NativeType, cloudControlIdentifier(request.Asset))
+	if err != nil {
+		if cloudControlNotFound(err) {
+			return contracts.WaitResult{Done: true, State: "absent", Data: data}, nil
+		}
+		return contracts.WaitResult{}, NormalizeError(err)
+	}
+	model, err := cloudControlModel(resource.Properties)
+	if err != nil {
+		return contracts.WaitResult{}, err
+	}
+	if enabled, _, err := a.protection.evaluate(model); err != nil {
+		return contracts.WaitResult{}, err
+	} else if enabled {
+		return contracts.WaitResult{}, &contracts.ProviderCallError{Provider: execution.ProviderError{
+			Category: execution.ErrorConflict, Code: "DeletionProtectionStillEnabled",
+			Message: "AWS resource still reports deletion protection after the update completed",
+		}}
+	}
+	deleted, err := a.submitDelete(ctx, request)
+	if err != nil {
+		return contracts.WaitResult{}, err
+	}
+	deleted.Data["protection_request_token"] = data["request_token"]
+	deleted.Data["provider_request_id"] = deleted.ProviderRequestID
+	retry := deleted.RetryAfter
+	if retry <= 0 {
+		retry = cloudControlWaitInterval
+	}
+	return contracts.WaitResult{Done: false, RetryAfter: retry, State: "deleting", Data: deleted.Data}, nil
 }
 
 func (a *CloudControlAction) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
