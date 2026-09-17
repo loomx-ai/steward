@@ -1,0 +1,39 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Management/managementGroups
+  class: identity.resource_directory
+presentation:
+  displayNames:
+    en-US: Management group
+    zh-CN: 管理组
+  consoleLinkTemplate: https://portal.azure.com/#view/Microsoft_Azure_ManagementGroups/ManagmentGroupDrilldownMenuBlade/~/overview/tenantId//mgId/{nativeId|suffix:/}
+scope:
+  kind: global
+discovery:
+  source: management-groups-visible
+  list:
+    operation: Azure.Microsoft.Management.ManagementGroups_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Management.ManagementGroups_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  displayName:
+    path: display_name
+    type: string
+  tenantId:
+    path: tenant_id
+    type: string
+  parentId:
+    path: parent_id
+    type: string
+extensions:
+  hook: azure.resource
+relationships: []

@@ -44,6 +44,9 @@ func insightsInventorySource(kind string) string {
 	if strings.EqualFold(kind, defenderPricingType) {
 		return defenderInventorySource
 	}
+	if strings.EqualFold(kind, managementGroupType) {
+		return managementGroupSource
+	}
 	if dataMigrationKind(kind) != "" {
 		return dataMigrationInventorySource
 	}

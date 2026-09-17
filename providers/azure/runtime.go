@@ -57,6 +57,9 @@ func (r *Runtime) InventorySources() []contracts.InventorySource {
 		{Name: elasticSanSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: azureLocalSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: hybridComputeSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
+		// The visible tenant directory depends on caller access; only a saved
+		// group's own 404 closes it.
+		{Name: managementGroupSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeGlobal}, KindSpecific: true, ReconcileKnownIDs: true},
 		{Name: defenderInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeGlobal, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: inventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, NetworkClosure: true},
 		{Name: insightsAnnotationSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},

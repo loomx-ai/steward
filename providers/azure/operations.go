@@ -255,6 +255,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return op, params, nil
 	}
 
+	if kind.NativeType == managementGroupType {
+		return managementGroupOperation(nativeID, method)
+	}
 	if kind.NativeType == defenderPricingType {
 		_, scope, err := c.defenderIdentity(nativeID)
 		if err != nil {

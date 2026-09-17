@@ -216,3 +216,65 @@ func TestParityKeyVaultKeysListThroughVaultsReadOnly(t *testing.T) {
 		t.Fatal("ARM exposes no key deletion; the kind must stay read-only")
 	}
 }
+
+func TestParityManagementGroupsListVisibleDirectoryReadOnly(t *testing.T) {
+	groupID := func(name string) string { return "/providers/Microsoft.Management/managementGroups/" + name }
+	groups := map[string]map[string]any{
+		testTenant: {"id": groupID(testTenant), "type": "Microsoft.Management/managementGroups", "name": testTenant, "properties": map[string]any{"tenantId": testTenant, "displayName": "Tenant Root Group", "details": map[string]any{}}},
+		"platform": {"id": groupID("platform"), "type": "Microsoft.Management/managementGroups", "name": "platform", "properties": map[string]any{"tenantId": testTenant, "displayName": "Platform", "details": map[string]any{"parent": map[string]any{"id": groupID(testTenant), "name": testTenant}}}},
+	}
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method != "GET" {
+			t.Fatalf("mutation %s %s", req.Method, req.URL)
+		}
+		path := req.URL.Path
+		if strings.EqualFold(path, "/providers/Microsoft.Management/managementGroups") {
+			if req.URL.Query().Get("api-version") != "2023-04-01" {
+				t.Fatalf("wrong version %s", req.URL)
+			}
+			values := []any{}
+			for _, name := range []string{testTenant, "platform"} {
+				if group, ok := groups[name]; ok {
+					values = append(values, map[string]any{"id": group["id"], "type": group["type"], "name": name, "properties": map[string]any{"tenantId": testTenant, "displayName": object(group["properties"])["displayName"]}})
+				}
+			}
+			return jsonResponse(200, map[string]any{"value": values}, http.Header{"X-Ms-Request-Id": {"mg-list"}}), nil
+		}
+		name := path[strings.LastIndex(path, "/")+1:]
+		if group, ok := groups[name]; ok {
+			return jsonResponse(200, group, nil), nil
+		}
+		return jsonResponse(404, map[string]any{"error": map[string]any{"code": "NotFound"}}, nil), nil
+	})
+	request := productRequest(r, "Microsoft.Management/managementGroups")
+	batch, err := r.List(context.Background(), request)
+	if err != nil || !batch.Complete || len(batch.Items) != 2 || batch.RequestID != "mg-list" {
+		t.Fatalf("batch=%+v err=%v", batch, err)
+	}
+	var platform contracts.InventoryItem
+	for _, item := range batch.Items {
+		if item.Name == "Platform" {
+			platform = item
+		}
+	}
+	if platform.Name != "Platform" || platform.Normalized["parent_id"] != strings.ToLower(groupID(testTenant)) || platform.Actionable == nil || *platform.Actionable {
+		t.Fatalf("platform = %+v", platform)
+	}
+	// A group missing from the visible list closes only after its own 404.
+	delete(groups, "platform")
+	request.KnownNativeIDs = []string{strings.ToLower(groupID("platform"))}
+	batch, err = r.List(context.Background(), request)
+	if err != nil || len(batch.Items) != 1 || len(batch.AbsentNativeIDs) != 1 {
+		t.Fatalf("absence batch=%+v err=%v", batch, err)
+	}
+	groups["foreign"] = map[string]any{"id": groupID("foreign"), "type": "Microsoft.Management/managementGroups", "name": "foreign", "properties": map[string]any{"tenantId": "99999999-9999-4999-8999-999999999999"}}
+	request.KnownNativeIDs = []string{strings.ToLower(groupID("foreign"))}
+	if _, err := r.List(context.Background(), request); err == nil {
+		t.Fatal("a group from another tenant was accepted")
+	}
+	value := actionAsset("Microsoft.Management/managementGroups", "x")
+	value.Identity.NativeID = strings.ToLower(groupID(testTenant))
+	if _, err := r.ResolveAction(context.Background(), "connection", value); err == nil {
+		t.Fatal("management groups must stay read-only")
+	}
+}

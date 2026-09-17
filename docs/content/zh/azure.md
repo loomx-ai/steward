@@ -32,7 +32,7 @@ Communication Services 的电话号码、预留号码和房间使用独立的 Mi
 
 ## 盘点与清理范围
 
-Steward 识别 455 类资源，其中 418 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 487 类资源，其中 440 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -80,6 +80,11 @@ Steward 识别 455 类资源，其中 418 类具有原生清理操作（包括 B
 | Azure RBAC | 自定义和内置角色定义；订阅、资源组及资源范围的角色分配 | 符合条件的自定义角色与分配独立删除；内置或跨范围共享角色、PIM 管理的分配保持受保护 |
 | 诊断设置 | 资源和订阅级设置，包括 Blob、File、Queue、Table 各自的服务范围 | 先独立删除设置，再删除其引用的源、目标或祖先；共享目标资源保持独立 |
 | 预算 | 订阅及资源组范围的 Consumption、Cost Management 预算 | 独立清理，通知动作组保持独立 |
+| 管理组 | 租户中可见的管理组目录及其父级 | 只读；需要对要盘点的管理组具有 `Microsoft.Management/managementGroups/read` |
+| Service Fabric 与存储同步 | Service Fabric 群集与存储同步服务 | 支持 |
+| 机器学习 | 工作区与托管联机终结点 | 支持终结点清理；工作区作为只读父资源 |
+| Purview 与托管应用程序 | Microsoft Purview 账户与托管应用程序 | 只读：删除它们会同时删除托管资源组，该级联尚未纳入审查 |
+| Key Vault 密钥 | 通过 ARM 密钥 API 列出的密钥 | 只读：密钥删除是 ARM 未提供的数据面软删除 |
 | 尚待实现生命周期的集合资源 | 资源组、Key Vault、Container Apps 环境 | 只读 |
 
 Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难恢复别名的授权视图、Uniform 伸缩集网络资源和 VPN 连接链路没有独立原生删除操作。默认命名空间授权规则 `RootManageSharedAccessKey` 也必须随命名空间删除。这些资源会纳入所属控制资源的删除影响；保留这类内置子资源会阻止删除所属控制资源。资源组、Key Vault 和 Container Apps 环境的清理仍未实现。

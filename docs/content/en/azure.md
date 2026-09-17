@@ -32,7 +32,7 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 455 resource types; 418 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 487 resource types; 440 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -80,6 +80,11 @@ Steward recognizes 455 resource types; 418 have native cleanup actions, includin
 | Azure RBAC | Custom and built-in role definitions; subscription, resource-group and resource role assignments | Independent deletion for eligible custom roles and assignments; built-in/shared-scope roles and PIM-managed assignments remain protected |
 | Diagnostic settings | Resource and subscription settings, including separate Blob, File, Queue and Table service scopes | Independent deletion before a referenced source, destination or ancestor; destinations remain separate resources |
 | Budgets | Consumption and Cost Management budgets at subscription and resource-group scopes | Independent cleanup; notification action groups remain separate |
+| Management groups | The tenant's visible management group directory, with parent groups | Read-only; requires `Microsoft.Management/managementGroups/read` on the groups to inventory |
+| Service Fabric and Storage Sync | Service Fabric clusters and Storage Sync services | Supported |
+| Machine Learning | Workspaces and managed online endpoints | Endpoint cleanup; workspaces are read-only parents |
+| Purview and managed applications | Microsoft Purview accounts and managed applications | Read-only: deleting them also deletes their managed resource group, which is not yet reviewed as a cascade |
+| Key Vault keys | Keys listed through the ARM Keys API | Read-only: key deletion is a data-plane soft delete not exposed by ARM |
 | Aggregate resources still awaiting lifecycle support | Resource groups, Key Vaults and Container Apps environments | Read-only |
 
 Service Bus/Event Hubs network rule sets, Event Hubs network perimeter configurations, recovery-alias authorization views, Uniform scale-set network resources and VPN connection links have no independent native delete action. The default namespace authorization rule, `RootManageSharedAccessKey`, also requires namespace deletion. These resources appear in the owning controller's reviewed deletion impacts. Retaining an intrinsic child blocks that controller's deletion. Resource-group, Key Vault and Container Apps environment cleanup remains unimplemented.

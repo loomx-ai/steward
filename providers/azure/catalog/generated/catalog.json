@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "9f778151cc088abd05c1b9be29dd9106cc1bf0bb8bc824714852cec99a8558c5",
+    "checksum": "1b26673dece7fbd2e1f75348da16e74f643dd70c1309106b64f8a221071fe515",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "a2efbe0f73222983677c06b225b4ee5a0f7ba2d8642a10193f9c9529199c4bde",
+  "content_checksum": "0196f7a589cd64516d0c4010008677500086695d91fd3193aeae9206c9f86ca7",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -106504,6 +106504,186 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/msi/resource-manager/Microsoft.ManagedIdentity/ManagedIdentity/stable/2023-01-31/ManagedIdentity.json"
     },
     {
+      "id": "Azure.Microsoft.Management.ManagementGroups_Get",
+      "name": "ManagementGroups_Get",
+      "service": "Microsoft.Management",
+      "method": "GET",
+      "path": "/providers/Microsoft.Management/managementGroups/{groupId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The $expand=children query string parameter allows clients to request inclusion of children in the response payload.  $expand=path includes the path from the root group to the current group.  $expand=ancestors includes the ancestor Ids of the current group.",
+            "enum": [
+              "children",
+              "path",
+              "ancestors"
+            ],
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ManagementGroupExpandType",
+              "values": [
+                {
+                  "description": "children",
+                  "name": "children",
+                  "value": "children"
+                },
+                {
+                  "description": "path",
+                  "name": "path",
+                  "value": "path"
+                },
+                {
+                  "description": "ancestors",
+                  "name": "ancestors",
+                  "value": "ancestors"
+                }
+              ]
+            }
+          },
+          "$filter": {
+            "description": "A filter which allows the exclusion of subscriptions from results (i.e. '$filter=children.childType ne Subscription')",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "$recurse": {
+            "description": "The $recurse=true query string parameter allows clients to request inclusion of entire hierarchy in the response payload. Note that  $expand=children must be passed up if $recurse is set to true.",
+            "in": "query",
+            "name": "$recurse",
+            "required": false,
+            "type": "boolean"
+          },
+          "Cache-Control": {
+            "default": "no-cache",
+            "description": "Indicates whether the request should utilize any caches. Populate the header with 'no-cache' value to bypass existing caches.",
+            "in": "header",
+            "name": "Cache-Control",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2023-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "groupId": {
+            "description": "Management Group ID.",
+            "in": "path",
+            "name": "groupId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "The management group details.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/ManagementGroupProperties",
+            "description": "The generic properties of a management group.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Management",
+        "version": "2023-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/providers/Microsoft.Management/managementGroups/{groupId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/management/resource-manager/Microsoft.Management/ManagementGroups/stable/2023-04-01/management.json"
+    },
+    {
+      "id": "Azure.Microsoft.Management.ManagementGroups_List",
+      "name": "ManagementGroups_List",
+      "service": "Microsoft.Management",
+      "method": "GET",
+      "path": "/providers/Microsoft.Management/managementGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$skiptoken": {
+            "description": "Page continuation token is only used if a previous operation returned a partial result.\nIf a previous response contains a nextLink element, the value of the nextLink element will include a token parameter that specifies a starting point to use for subsequent calls.",
+            "in": "query",
+            "name": "$skiptoken",
+            "required": false,
+            "type": "string"
+          },
+          "Cache-Control": {
+            "default": "no-cache",
+            "description": "Indicates whether the request should utilize any caches. Populate the header with 'no-cache' value to bypass existing caches.",
+            "in": "header",
+            "name": "Cache-Control",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2023-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Describes the result of the request to list management groups.",
+        "properties": {
+          "@nextLink": {
+            "description": "The URL to use for getting the next set of results.",
+            "readOnly": true,
+            "type": "string",
+            "x-ms-client-name": "NextLink"
+          },
+          "value": {
+            "description": "The list of management groups.",
+            "items": {
+              "$ref": "#/definitions/ManagementGroupInfo"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "@nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Management",
+        "version": "2023-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/providers/Microsoft.Management/managementGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/management/resource-manager/Microsoft.Management/ManagementGroups/stable/2023-04-01/management.json"
+    },
+    {
       "id": "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_Delete",
       "name": "AzureMonitorWorkspaces_Delete",
       "service": "Microsoft.Monitor",
@@ -149630,6 +149810,23 @@
         ],
         "list_operations": [
           "Azure.Microsoft.ManagedIdentity.UserAssignedIdentities_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Management/managementGroups",
+      "class": "identity.resource_directory",
+      "display_name": "Management group",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "managementGroups",
+        "read_operations": [
+          "Azure.Microsoft.Management.ManagementGroups_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Management.ManagementGroups_List"
         ]
       }
     },

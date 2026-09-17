@@ -2650,10 +2650,9 @@ resources:
     resources:
     - cloudresourcemanager.googleapis.com/Organization
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.Management/managementGroups
-    notes: Management groups sit above the connection subscription. Discovering the subscription ancestry needs the tenant-level getEntities POST read or tenant-scoped ARM identities, which the subscription-bound catalog and identity rules do not accept yet.
+    notes: The visible tenant management group directory is inventoried read-only through tenant-scoped GET reads; deleting management groups is not offered.
   aws:
     resources:
     - AWS::Organizations::Organization
