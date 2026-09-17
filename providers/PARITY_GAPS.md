@@ -1147,6 +1147,14 @@ database cleanup. Graph and actual SQLite worker tests cover ordering and restar
 these HANA relation fixtures are synthetic. Bilingual warnings explain backup
 stoppage, recovery-point deletion, retention and the preserved source workload.
 
-Vault deletion, policy cleanup, full source-workload graph coverage, retention
-recovery/purge, Site Recovery replication items and independent/live acceptance
-remain open. No baseline row or overall acceptance gate is closed.
+Explicit ARM source references now connect active backup items and containers to
+independently owned VM/storage resources. Registered graph tests preserve separate
+selection and order jointly selected backup deletion before source deletion.
+SQLite worker tests cover that order, out-of-order delivery and runtime restart;
+the VM is pre-persisted synthetic inventory, not a VM discovery acceptance test.
+Native own reads reject source drift and forged retention; retained backup history
+does not become a live-source dependency. Unscanned/cross-subscription identities
+remain unresolved and are never followed as URLs.
+
+Vault deletion, policy cleanup, non-ARM source coverage, retention recovery/purge,
+Site Recovery replication items and independent/live acceptance remain open. No baseline row or overall acceptance gate is closed.

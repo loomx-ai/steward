@@ -37,7 +37,7 @@ func TestRecoveryServicesSourceEvidence(t *testing.T) {
 	if err = json.Unmarshal(wire, &sources); err != nil {
 		t.Fatal(err)
 	}
-	if len(sources) != 14 {
+	if len(sources) != 15 {
 		t.Fatal("missing native evidence")
 	}
 	for _, source := range sources {

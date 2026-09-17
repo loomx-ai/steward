@@ -68,5 +68,10 @@
     "file": "ProtectionPolicies_Get.json",
     "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/examples/AzureIaasVm/ProtectionPolicies_Get.json",
     "sha256": "eda98bfe840757571a3578eb9c6a9541d74aed9111ef0d50a6a37e703f826f55"
+  },
+  {
+    "file": "SoftDeletedContainers_List.json",
+    "sha256": "88e513102d8971a348335170b87ec2b5e65f454a23e00e76fe42e7bf26e32a4e",
+    "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/recoveryservicesbackup/resource-manager/Microsoft.RecoveryServices/RecoveryServicesBackup/stable/2026-08-01/examples/AzureStorage/SoftDeletedContainers_List.json"
   }
 ]

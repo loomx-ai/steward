@@ -90,7 +90,7 @@ success. Signed receipts preserve the status-to-job checkpoint across restart.
 `test_backup_wl_hana_item.yaml` (2023-04-01). Its unchanged responses exercise the
 historical protocol adapter through operation status and backup job completion.
 `vm-item-delete-recording.json` preserves interactions 118–127 from
-`test_vault_soft_delete_with_items.yaml` (2025-02-01). The VM list before and after
+`test_backup_item.yaml` (2025-02-01). The VM list before and after
 delete returns the same native ID, with protection stopped, policy links cleared,
 and deferred deletion enabled. Tests use this observed transition without
 assuming a fixed retention duration or claiming permanent purge. Historical
@@ -117,3 +117,35 @@ the backup-data deletion and retention consequences visible.
 Vault deletion, full source-workload graph coverage, policy cleanup, retention
 recovery/purge, Site Recovery, independent current-version replay and live-cloud
 acceptance remain unfinished. No parity baseline or acceptance gate is closed.
+
+
+Source graph coverage now reads explicit `sourceResourceId` and `virtualMachineId`
+fields from active protected items and protection containers. Fully qualified ARM
+URLs are accepted only at the Azure management origin without credentials, ports,
+queries, fragments or encoded paths, and are parsed as identities rather than
+followed. The two VM identity fields must agree when both are present. Workload
+labels never substitute for resource IDs. VM and HANA unchanged recordings cover
+these fields; container/storage and malformed-input cases use synthetic fixtures.
+
+Source references establish independent `uses` relationships. Selecting a backup
+alone does not select its source; selecting both orders backup deletion before
+source deletion. Unscanned and cross-subscription sources remain unresolved without
+being fetched. Retained backups omit live-source dependencies only after an own
+read matches the reviewed configuration and retention flag. Container/source
+changes, duplicate targets and forged retention are rejected.
+
+The SQLite worker test persists an already-discovered synthetic VM, runs native
+backup inventory and graph contribution, then invokes both registered deletion
+drivers through restart and out-of-order job delivery. Both native DELETEs occur
+once, backup first. It validates joint execution, not VM discovery or live Azure.
+Non-ARM source coverage and the previously listed family/acceptance gaps remain
+open.
+
+
+`SoftDeletedContainers_List.json` is the unchanged 2026-08-01 REST example for
+`DeletedProtectionContainers_List`. It returns the original protection-container
+ID with `registrationStatus: SoftDeleted`, rather than a protected-item retention
+flag. Source graph tests consume the original example and separately scope-adapt
+it for registered inventory; such containers preserve historical provenance
+without acquiring live source dependencies. The deleted-container collection is
+not yet registered as a separate inventory path in this milestone.
