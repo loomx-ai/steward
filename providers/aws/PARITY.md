@@ -91,9 +91,9 @@ matrix, as for GCP and Azure.
   Backup vaults (recovery points, compliance lock) and S3 buckets (object
   versions and delete markers) have native guards verified on Moto and fakes.
   Customer managed KMS keys are ordered after, and blocked by, scanned
-  resources that reference them. A key policy's sole unconditional
-  administrator (without account-root delegation) is protected while the key
-  remains.
+  resources that reference them. The last scanned unconditional
+  administrators of a key policy (without account-root delegation) cannot all be
+  deleted while the key remains.
 - Resource Explorer remains a non-authoritative index for types without rules.
 - Auto Scaling and EKS members cannot be retained individually; the plan blocks
   such requests.

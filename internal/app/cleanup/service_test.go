@@ -1834,6 +1834,14 @@ func TestCleanupServiceBlocksKeysAndIdentitiesUsedOutsidePlan(t *testing.T) {
 			if blocked.Task.Status != plan.StatusDraft || !containsTaskBlocker(blocked.Task.Blockers, plan.BlockCrossScopeDependency, target.ID) {
 				t.Fatalf("key or identity deleted under a live dependent: %+v", blocked.Task)
 			}
+			unscanned, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{Selectors: []plan.CleanupSelector{assetSelector(target.ID), assetSelector(dependent.ID)}, CreatedBy: "operator"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if unscanned.Task.Status != plan.StatusDraft || !containsTaskBlocker(unscanned.Task.Blockers, plan.BlockUnresolvedCleanup, target.ID) {
+				t.Fatalf("key or identity deleted without a complete scan: %+v", unscanned.Task.Blockers)
+			}
+			seedCompleteScan(t, repositories, connectionID, "scope-a", now)
 			ready, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{Selectors: []plan.CleanupSelector{assetSelector(target.ID), assetSelector(dependent.ID)}, CreatedBy: "operator"})
 			if err != nil {
 				t.Fatal(err)
@@ -1864,5 +1872,44 @@ func TestCleanupServiceProtectsTheConnectionsOwnIdentity(t *testing.T) {
 	}
 	if blocked.Task.Status != plan.StatusDraft || !containsTaskBlocker(blocked.Task.Blockers, plan.BlockProtected, role.ID) || containsTaskBlocker(blocked.Task.Blockers, plan.BlockProtected, other.ID) {
 		t.Fatalf("connection identity was not protected: %+v", blocked.Task.Blockers)
+	}
+}
+
+func TestCleanupServiceBlocksOnlyTheLastAlternativeAdministrator(t *testing.T) {
+	ctx := context.Background()
+	repositories := openPlanningRepositories(t)
+	now := time.Date(2026, 9, 17, 14, 0, 0, 0, time.UTC)
+	connectionID := asset.ConnectionID("connection-key-admins")
+	key := planningAsset("key", connectionID, "AWS::KMS::Key", "k1", now)
+	admin := planningAsset("admin", connectionID, "AWS::IAM::Role", "KeyAdmin", now)
+	breakglass := planningAsset("breakglass", connectionID, "AWS::IAM::User", "breakglass", now)
+	for _, value := range []*asset.Asset{&key, &admin, &breakglass} {
+		value.Identity.Provider = asset.ProviderAWS
+	}
+	group := map[string]any{graph.RelationshipEvidenceAlternativeGroup: "kms-key-administrators:key"}
+	relationships := []graph.Relationship{
+		{ID: "key-admin", SourceAssetID: key.ID, TargetAssetID: admin.ID, Type: graph.RelationshipUses, Source: "aws:kms_reference", Confidence: 1, GraphRevision: "graph-admins", ObservedAt: now, Evidence: group},
+		{ID: "key-breakglass", SourceAssetID: key.ID, TargetAssetID: breakglass.ID, Type: graph.RelationshipUses, Source: "aws:kms_reference", Confidence: 1, GraphRevision: "graph-admins", ObservedAt: now, Evidence: group},
+	}
+	seedPlanningGraph(t, repositories, "scope-a", "graph-admins", []asset.Asset{key, admin, breakglass}, relationships, nil)
+	seedCompleteScan(t, repositories, connectionID, "scope-a", now)
+	number := 0
+	service := cleanup.NewService(repositories, bundleResolver{asset.ProviderAWS: {Provider: asset.ProviderAWS, Revision: "bundle-admins", Hash: "spec-admins"}}, cleanup.WithTaskIDGenerator(func() string {
+		number++
+		return fmt.Sprintf("cln-admins-%d", number)
+	}))
+	one, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{Selectors: []plan.CleanupSelector{assetSelector(admin.ID)}, CreatedBy: "operator"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if containsTaskBlocker(one.Task.Blockers, plan.BlockCrossScopeDependency, admin.ID) {
+		t.Fatalf("remaining administrator ignored: %+v", one.Task.Blockers)
+	}
+	both, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{Selectors: []plan.CleanupSelector{assetSelector(admin.ID), assetSelector(breakglass.ID)}, CreatedBy: "operator"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if both.Task.Status != plan.StatusDraft || !containsTaskBlocker(both.Task.Blockers, plan.BlockCrossScopeDependency, admin.ID) || !containsTaskBlocker(both.Task.Blockers, plan.BlockCrossScopeDependency, breakglass.ID) {
+		t.Fatalf("last key administrators deleted: %+v", both.Task.Blockers)
 	}
 }

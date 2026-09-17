@@ -89,7 +89,10 @@ const (
 	// controller itself. This never selects another controller implicitly.
 	RelationshipEvidenceDeletionCascadeControllers = "deletion_cascade_controllers"
 	RelationshipEvidenceAuthority                  = "authority"
-	DeletionOrderTargetBeforeSource                = "target_before_source"
+	// Relationships from one source that share this group are alternatives:
+	// the source keeps working while any of their targets remains.
+	RelationshipEvidenceAlternativeGroup = "alternative_group"
+	DeletionOrderTargetBeforeSource      = "target_before_source"
 )
 
 type LifecycleBinding struct {

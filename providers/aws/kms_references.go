@@ -184,23 +184,39 @@ func contributeKMSPolicyAdministrators(result *governance.Contribution, assets [
 			continue
 		}
 		admins, delegated, ok := kmsPolicyAdministrators(key.Normalized["KeyPolicy"])
-		if !ok || delegated || len(admins) != 1 {
+		if !ok || delegated || len(admins) == 0 {
 			continue
 		}
-		match := kmsPrincipalARN.FindStringSubmatch(admins[0])
-		if match == nil {
-			continue
+		// Every administrator must resolve to a scanned principal: an unscanned
+		// or external administrator may still manage the key.
+		var targets []asset.Asset
+		for _, admin := range admins {
+			match := kmsPrincipalARN.FindStringSubmatch(admin)
+			if match == nil {
+				targets = nil
+				break
+			}
+			nativeType := map[string]string{"role": "AWS::IAM::Role", "user": "AWS::IAM::User"}[match[1]]
+			name := match[2][strings.LastIndex(match[2], "/")+1:]
+			candidates := principals[string(key.Identity.ConnectionID)+"\x00"+nativeType+"\x00"+name]
+			if len(candidates) != 1 {
+				targets = nil
+				break
+			}
+			targets = append(targets, candidates[0])
 		}
-		nativeType := map[string]string{"role": "AWS::IAM::Role", "user": "AWS::IAM::User"}[match[1]]
-		name := match[2][strings.LastIndex(match[2], "/")+1:]
-		candidates := principals[string(key.Identity.ConnectionID)+"\x00"+nativeType+"\x00"+name]
-		if len(candidates) != 1 {
-			continue
+		for _, target := range targets {
+			evidence := map[string]any{"source": "KeyPolicy", "key_administrator": target.Identity.NativeID}
+			if len(targets) == 1 {
+				evidence["sole_key_administrator"] = admins[0]
+			} else {
+				// The planner blocks only when every administrator is deleted.
+				evidence[graph.RelationshipEvidenceAlternativeGroup] = "kms-key-administrators:" + string(key.ID)
+			}
+			result.Relationships = append(result.Relationships, graph.Relationship{
+				SourceAssetID: key.ID, TargetAssetID: target.ID, Type: graph.RelationshipUses, Source: kmsReferenceSource, Confidence: 1, Evidence: evidence,
+			})
 		}
-		result.Relationships = append(result.Relationships, graph.Relationship{
-			SourceAssetID: key.ID, TargetAssetID: candidates[0].ID, Type: graph.RelationshipUses, Source: kmsReferenceSource, Confidence: 1,
-			Evidence: map[string]any{"source": "KeyPolicy", "sole_key_administrator": admins[0]},
-		})
 	}
 }
 

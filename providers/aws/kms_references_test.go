@@ -119,3 +119,35 @@ func TestKMSPolicyWithSoleAdministratorProtectsThePrincipal(t *testing.T) {
 		})
 	}
 }
+
+func TestKMSPolicyAdministratorsFormAnAlternativeGroup(t *testing.T) {
+	policy := map[string]any{"Statement": map[string]any{"Effect": "Allow", "Principal": map[string]any{"AWS": []any{"arn:aws:iam::123456789012:role/platform/KeyAdmin", "arn:aws:iam::123456789012:user/breakglass"}}, "Action": "kms:*", "Resource": "*"}}
+	assets := []asset.Asset{
+		awsAsset("key", "AWS::KMS::Key", "k1", map[string]any{"KeyPolicy": policy}),
+		awsAsset("admin", "AWS::IAM::Role", "KeyAdmin", nil),
+		awsAsset("breakglass", "AWS::IAM::User", "breakglass", nil),
+	}
+	contribution, err := NewLifecycle().Contribute(context.Background(), "scope", assets)
+	if err != nil {
+		t.Fatal(err)
+	}
+	targets := map[asset.AssetID]string{}
+	for _, relationship := range contribution.Relationships {
+		if relationship.Source == kmsReferenceSource {
+			targets[relationship.TargetAssetID], _ = relationship.Evidence[graph.RelationshipEvidenceAlternativeGroup].(string)
+		}
+	}
+	if len(targets) != 2 || targets["admin"] == "" || targets["admin"] != targets["breakglass"] {
+		t.Fatal("administrator group", targets)
+	}
+	// An administrator outside the inventory may still manage the key.
+	contribution, err = NewLifecycle().Contribute(context.Background(), "scope", assets[:2])
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, relationship := range contribution.Relationships {
+		if relationship.Source == kmsReferenceSource {
+			t.Fatal("partially scanned administrators produced an edge", relationship)
+		}
+	}
+}

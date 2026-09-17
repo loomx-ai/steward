@@ -163,6 +163,20 @@ func testRBACRegisteredScanGraphPlanAndWorkerRecovery(t *testing.T, principal bo
 			t.Fatal("a role assignment outside the identity's group did not block its persisted plan", blocked, err)
 		}
 	}
+	if principal {
+		// Deleting an identity also requires a complete scan of the connection:
+		// the kind-limited scans above cannot rule out other identity users.
+		finished := time.Now().UTC()
+		complete := asset.ScanRun{ID: "complete-all-regions", ConnectionID: connection.ID, Status: asset.ScanSucceeded, ScopeMode: asset.ScanAllActiveRegions, CreatedAt: finished, FinishedAt: &finished, Targets: []asset.ScanTarget{{Key: "region:westus", Kind: asset.ScanTargetRegion, RegionID: "westus"}, {Key: "global", Kind: asset.ScanTargetGlobal, RegionID: "global"}}}
+		if err := repository.CreateScanRun(ctx, complete); err != nil {
+			t.Fatal(err)
+		}
+		for _, target := range complete.Targets {
+			if err := repository.PutScanShard(ctx, asset.ScanShard{ID: asset.ScanShardID("complete-" + target.RegionID), ScanRunID: complete.ID, Provider: asset.ProviderAzure, Source: productInventorySource, TargetKey: target.Key, RegionID: target.RegionID, ScopeID: root.ID, Status: asset.ShardSucceeded, Coverage: asset.Coverage{Complete: true, FreshAt: finished}, CreatedAt: finished, FinishedAt: &finished}); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
 	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: connection.ID, Selectors: selectors, CreatedBy: "operator"})
 	if err != nil || task.Task.Status != plan.StatusReady || len(task.Steps) != 3 || len(task.ImpactItems) != 0 {
 		t.Fatal("RBAC did not produce three independent native deletion steps", task, err)

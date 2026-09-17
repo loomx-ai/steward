@@ -344,6 +344,9 @@ func (s *Service) CreateTask(ctx context.Context, request CreateTaskRequest) (pe
 			return err
 		}
 		result.Blockers = appendSelectionBlockers(result.Blockers, input, result)
+		if result.Blockers, err = s.appendDependentCoverageBlockers(ctx, repositories, selection, input, result); err != nil {
+			return err
+		}
 		result.Warnings = appendSelectionWarnings(result.Warnings, input, result)
 		status := plan.StatusReady
 		if len(result.Blockers) > 0 {
@@ -443,6 +446,9 @@ func (s *Service) AddTaskAssets(ctx context.Context, request AddTaskAssetsReques
 			return err
 		}
 		result.Blockers = appendSelectionBlockers(result.Blockers, input, result)
+		if result.Blockers, err = s.appendDependentCoverageBlockers(ctx, repositories, selection, input, result); err != nil {
+			return err
+		}
 		result.Warnings = appendSelectionWarnings(result.Warnings, input, result)
 		status := plan.StatusReady
 		if len(result.Blockers) > 0 {
@@ -546,6 +552,9 @@ func (s *Service) ValidateTask(ctx context.Context, id plan.CleanupTaskID) (pers
 			return err
 		}
 		current.Blockers = appendSelectionBlockers(current.Blockers, input, current)
+		if current.Blockers, err = s.appendDependentCoverageBlockers(ctx, repositories, selection, input, current); err != nil {
+			return err
+		}
 		current.Warnings = appendSelectionWarnings(current.Warnings, input, current)
 		if stored.Task.Status == plan.StatusReady && len(current.Blockers) > 0 {
 			freshnessErr := fmt.Errorf("%w: cleanup planning rules now report %d blocker(s)", plan.ErrCleanupTaskInvalidated, len(current.Blockers))
@@ -668,6 +677,9 @@ func (s *Service) CreateExecution(ctx context.Context, request CreateExecutionRe
 			return err
 		}
 		current.Blockers = appendSelectionBlockers(current.Blockers, input, current)
+		if current.Blockers, err = s.appendDependentCoverageBlockers(ctx, repositories, selection, input, current); err != nil {
+			return err
+		}
 		current.Warnings = appendSelectionWarnings(current.Warnings, input, current)
 		if len(current.Blockers) > 0 {
 			freshnessErr := fmt.Errorf("%w: cleanup planning rules now report %d blocker(s)", plan.ErrCleanupTaskInvalidated, len(current.Blockers))
@@ -1547,6 +1559,18 @@ func lifecycleComponentFromSnapshot(selected []asset.AssetID, allAssets []asset.
 		assets = append(assets, value)
 	}
 	sort.Slice(assets, func(i, j int) bool { return assets[i].ID < assets[j].ID })
+	// An alternative relationship is meaningful only with its whole group.
+	groups := map[string]bool{}
+	for _, relationship := range relationshipsByKey {
+		if group, ok := relationship.Evidence[graph.RelationshipEvidenceAlternativeGroup].(string); ok && group != "" {
+			groups[string(relationship.SourceAssetID)+"\x00"+group] = true
+		}
+	}
+	for _, relationship := range allRelationships {
+		if group, ok := relationship.Evidence[graph.RelationshipEvidenceAlternativeGroup].(string); ok && groups[string(relationship.SourceAssetID)+"\x00"+group] {
+			relationshipsByKey[relationshipIdentity(relationship)] = relationship
+		}
+	}
 	relationships := make([]graph.Relationship, 0, len(relationshipsByKey))
 	for _, value := range relationshipsByKey {
 		relationships = append(relationships, value)
@@ -1775,9 +1799,27 @@ func appendSelectionBlockers(values []plan.Blocker, input plan.Input, solved pla
 	for _, value := range input.Assets {
 		assetsByID[value.ID] = value
 	}
+	alternatives := map[string][]asset.AssetID{}
+	for _, relationship := range input.Relationships {
+		if group, ok := relationship.Evidence[graph.RelationshipEvidenceAlternativeGroup].(string); ok && group != "" && relationship.ClosedAt == nil {
+			key := string(relationship.SourceAssetID) + "\x00" + group
+			alternatives[key] = append(alternatives[key], relationship.TargetAssetID)
+		}
+	}
 	for _, relationship := range input.Relationships {
 		if relationship.ClosedAt != nil || !ordersCleanupDependency(relationship.Type) {
 			continue
+		}
+		if group, ok := relationship.Evidence[graph.RelationshipEvidenceAlternativeGroup].(string); ok && group != "" {
+			remaining := false
+			for _, target := range alternatives[string(relationship.SourceAssetID)+"\x00"+group] {
+				if _, planned := plannedDeletion[target]; !planned {
+					remaining = true
+				}
+			}
+			if remaining {
+				continue
+			}
 		}
 		_, targetPlanned := plannedDeletion[relationship.TargetAssetID]
 		_, sourcePlanned := plannedDeletion[relationship.SourceAssetID]
@@ -2086,6 +2128,57 @@ func isNetworkFoundation(value asset.Asset) bool {
 // resource permanently unreadable or impossible to delete later, for example
 // an encrypted database without its key or a service without its role. An
 // explicit selection never overrides a dependent left outside the plan.
+// Dependents of a key or identity can live anywhere in the connection, so the
+// absence of a dependent relationship is evidence only after a complete scan
+// of every active region and global scope. Unlike range coverage, this is not
+// advisory: an unscanned dependent could be left permanently unreadable.
+func (s *Service) appendDependentCoverageBlockers(ctx context.Context, repositories persistence.Repositories, selection resolvedSelection, input plan.Input, solved plan.Result) ([]plan.Blocker, error) {
+	result := solved.Blockers
+	assetsByID := make(map[asset.AssetID]asset.Asset, len(input.Assets))
+	for _, value := range input.Assets {
+		assetsByID[value.ID] = value
+	}
+	statuses := map[asset.ConnectionID]scancoverage.ConnectionSummary{}
+	for _, step := range solved.Steps {
+		target, known := assetsByID[step.AssetID]
+		if step.Action != "delete" || !known || !isDeletionTimeDependency(target) {
+			continue
+		}
+		connectionID := target.Identity.ConnectionID
+		summary, evaluated := statuses[connectionID]
+		if !evaluated {
+			requirement := scancoverage.Requirement{}
+			provider := target.Identity.Provider
+			for _, connection := range selection.Connections {
+				if connection.ID == connectionID {
+					provider = connection.Provider
+				}
+			}
+			global, provable := contracts.ProviderSupportsRootScope(s.bundles.ProviderDescriptors(), provider, asset.ScopeGlobal)
+			requirement.Global, requirement.Unprovable = global, !provable
+			regions, err := repositories.Regions().ListRegionsByConnection(ctx, connectionID)
+			if err != nil {
+				return nil, err
+			}
+			requirement.RegionIDs = scancoverage.ActiveRegionRequirement(regions, connectionID).RegionIDs
+			if summary, err = scancoverage.EvaluateConnection(ctx, repositories.Inventory(), connectionID, requirement); err != nil {
+				return nil, err
+			}
+			statuses[connectionID] = summary
+		}
+		if summary.Status == "complete" {
+			continue
+		}
+		result = append(result, plan.Blocker{
+			Code: plan.BlockUnresolvedCleanup, AssetID: target.ID,
+			Message:  "Resources that use this key or identity cannot be ruled out because the connection's latest scan is incomplete. Run a complete scan of all active regions before continuing.",
+			Evidence: map[string]any{"reason": "dependent_scan_incomplete", "coverage_status": summary.Status, "failed_shards": summary.FailedShards},
+		})
+	}
+	sort.Slice(result, func(i, j int) bool { return selectionBlockerKey(result[i]) < selectionBlockerKey(result[j]) })
+	return result, nil
+}
+
 func isDeletionTimeDependency(value asset.Asset) bool {
 	switch value.Identity.NativeType {
 	case "AWS::KMS::Key",
