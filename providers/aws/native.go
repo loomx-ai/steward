@@ -3,6 +3,7 @@ package aws
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -560,23 +561,73 @@ type NativeInventory struct {
 	kind    nativeKind
 }
 
+// nativeCursor resumes inside an oversized provider page. Services may return
+// more items than the worker's batch limit (or ignore MaxResults entirely).
+type nativeCursor struct {
+	Token  string `json:"t,omitempty"`
+	Offset int    `json:"o,omitempty"`
+}
+
+const nativeCursorPrefix = "native1:"
+
+func decodeNativeCursor(raw string) (nativeCursor, error) {
+	if !strings.HasPrefix(raw, nativeCursorPrefix) {
+		return nativeCursor{Token: raw}, nil
+	}
+	payload, err := base64.RawURLEncoding.DecodeString(strings.TrimPrefix(raw, nativeCursorPrefix))
+	var cursor nativeCursor
+	if err == nil {
+		err = json.Unmarshal(payload, &cursor)
+	}
+	if err != nil || cursor.Offset < 0 {
+		return nativeCursor{}, fmt.Errorf("AWS product API cursor is malformed")
+	}
+	return cursor, nil
+}
+
+func encodeNativeCursor(cursor nativeCursor) string {
+	if cursor.Offset == 0 {
+		return cursor.Token
+	}
+	payload, _ := json.Marshal(cursor)
+	return nativeCursorPrefix + base64.RawURLEncoding.EncodeToString(payload)
+}
+
 func (i *NativeInventory) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
 	if request.ResourceKind == nil || request.ResourceKind.NativeType != i.kind.nativeType {
 		return contracts.InventoryBatch{}, fmt.Errorf("AWS product API inventory kind mismatch")
 	}
+	limit := request.Limit
+	if limit <= 0 || limit > 1000 {
+		limit = 1000
+	}
+	cursor, err := decodeNativeCursor(request.Cursor)
+	if err != nil {
+		return contracts.InventoryBatch{}, err
+	}
 	operation := i.kind.listOperation[strings.Index(i.kind.listOperation, "#")+1:]
-	execution.LogCloudAPIRequest(ctx, i.kind.service, operation, rawCloudPayload(map[string]any{"NextToken": request.Cursor}))
-	page, err := i.kind.list(ctx, i.clients, request.Cursor)
+	execution.LogCloudAPIRequest(ctx, i.kind.service, operation, rawCloudPayload(map[string]any{"NextToken": cursor.Token}))
+	page, err := i.kind.list(ctx, i.clients, cursor.Token)
 	if err != nil {
 		execution.LogCloudAPIFailure(ctx, i.kind.service, operation, err)
 		return contracts.InventoryBatch{}, NormalizeError(err)
 	}
-	if page.NextToken != "" && page.NextToken == request.Cursor {
+	if page.NextToken != "" && page.NextToken == cursor.Token {
 		return contracts.InventoryBatch{}, fmt.Errorf("AWS %s repeated its page token", operation)
 	}
 	execution.LogCloudAPIResponse(ctx, i.kind.service, operation, rawCloudPayload(map[string]any{"RequestId": page.RequestID, "NextToken": page.NextToken, "Items": page.Items}))
-	batch := contracts.InventoryBatch{Items: make([]contracts.InventoryItem, 0, len(page.Items)), NextCursor: page.NextToken, RequestID: page.RequestID, Complete: page.NextToken == ""}
-	for _, model := range page.Items {
+	if cursor.Offset > len(page.Items) {
+		return contracts.InventoryBatch{}, fmt.Errorf("AWS %s page shrank during pagination; restart the shard", operation)
+	}
+	items := page.Items[cursor.Offset:]
+	next := nativeCursor{Token: page.NextToken}
+	if len(items) > limit {
+		items = items[:limit]
+		next = nativeCursor{Token: cursor.Token, Offset: cursor.Offset + limit}
+	}
+	batch := contracts.InventoryBatch{Items: make([]contracts.InventoryItem, 0, len(items)), NextCursor: encodeNativeCursor(next), RequestID: page.RequestID}
+	batch.Complete = batch.NextCursor == ""
+	for _, model := range items {
 		identifier := strings.TrimSpace(stringValue(model[i.kind.identity]))
 		if identifier == "" {
 			return contracts.InventoryBatch{}, fmt.Errorf("AWS %s returned a %s without %s", operation, i.kind.nativeType, i.kind.identity)

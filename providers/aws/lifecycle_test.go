@@ -170,3 +170,57 @@ func TestInstanceActionRetainsPrimaryInterfaceBeforeTermination(t *testing.T) {
 		t.Fatal("changed live deletion policy must stop termination")
 	}
 }
+
+type pagedSnapshots struct {
+	EC2NativeAPI
+	count int
+	calls []string
+}
+
+func (p *pagedSnapshots) DescribeSnapshots(_ context.Context, input *awsec2.DescribeSnapshotsInput, _ ...func(*awsec2.Options)) (*awsec2.DescribeSnapshotsOutput, error) {
+	p.calls = append(p.calls, awssdk.ToString(input.NextToken))
+	output := &awsec2.DescribeSnapshotsOutput{}
+	if awssdk.ToString(input.NextToken) == "" {
+		for index := 0; index < p.count; index++ {
+			output.Snapshots = append(output.Snapshots, ec2types.Snapshot{SnapshotId: awssdk.String("snap-" + string(rune('a'+index%26)) + string(rune('a'+index/26)))})
+		}
+		output.NextToken = awssdk.String("page-2")
+		return output, nil
+	}
+	output.Snapshots = []ec2types.Snapshot{{SnapshotId: awssdk.String("snap-last")}}
+	return output, nil
+}
+
+// Services may return more items than the batch limit; the cursor must resume
+// inside the provider page and then continue with its token.
+func TestNativeInventorySlicesOversizedProviderPages(t *testing.T) {
+	api := &pagedSnapshots{count: 5}
+	inventory := &NativeInventory{clients: &NativeClients{EC2: api}, kind: nativeKinds["AWS::EC2::Snapshot"]}
+	kind := asset.ResourceKind{NativeType: "AWS::EC2::Snapshot"}
+	request := contracts.InventoryRequest{ResourceKind: &kind, Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: "us-east-1"}, Limit: 2}
+	var ids []string
+	for step := 0; step < 6; step++ {
+		batch, err := inventory.List(context.Background(), request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(batch.Items) > 2 {
+			t.Fatalf("batch exceeded limit: %d", len(batch.Items))
+		}
+		for _, item := range batch.Items {
+			ids = append(ids, item.NativeID)
+		}
+		if batch.Complete {
+			break
+		}
+		request.Cursor = batch.NextCursor
+	}
+	if len(ids) != 6 || ids[5] != "snap-last" {
+		t.Fatalf("ids = %v calls = %v", ids, api.calls)
+	}
+	api.count = 1
+	request.Cursor = encodeNativeCursor(nativeCursor{Offset: 4})
+	if _, err := inventory.List(context.Background(), request); err == nil {
+		t.Fatal("a shrunken provider page must restart the shard")
+	}
+}
