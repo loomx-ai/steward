@@ -1912,9 +1912,9 @@ resources:
     - cloudkms.googleapis.com/CryptoKey
     - cloudkms.googleapis.com/CryptoKeyVersion
   azure:
-    resources: []
-    unimplemented_resources:
+    resources:
     - Microsoft.KeyVault/vaults/keys
+    notes: Keys are inventoried read-only through the ARM Keys API. Key deletion is a Key Vault data-plane soft delete that ARM does not expose, so cleanup requires a data-plane integration.
   aws:
     resources:
     - AWS::KMS::Key

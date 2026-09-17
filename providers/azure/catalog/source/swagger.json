@@ -284657,6 +284657,516 @@
           }
         }
       }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/common.json",
+      "source_sha256": "61642f0507ddb34e009b51a7da67f252b87336795269e30ccca9e7766cdf3a8c",
+      "dependency": true,
+      "document": {
+        "definitions": {
+          "CloudError": {
+            "description": "An error response from Key Vault resource provider",
+            "properties": {
+              "error": {
+                "$ref": "#/definitions/CloudErrorBody"
+              }
+            },
+            "x-ms-external": true,
+            "type": "object"
+          },
+          "CloudErrorBody": {
+            "description": "An error response from Key Vault resource provider",
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Error code. This is a mnemonic that can be consumed programmatically."
+              },
+              "message": {
+                "type": "string",
+                "description": "User friendly error message. The message is typically localized and may vary with service version."
+              }
+            },
+            "x-ms-external": true,
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/keys.json",
+      "source_sha256": "90be8c48259a66a184b1ebff01f7aa01cce46847d48bb7fd6c9c325f912687c9",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "version": "2023-07-01",
+          "title": "KeyVaultManagementClient",
+          "description": "The Azure management API provides a RESTful set of web services that interact with Azure Key Vault."
+        },
+        "host": "management.azure.com",
+        "schemes": [
+          "https"
+        ],
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys/{keyName}": {
+            "get": {
+              "tags": [
+                "Keys"
+              ],
+              "operationId": "Keys_Get",
+              "description": "Gets the current version of the specified key from the specified key vault.",
+              "parameters": [
+                {
+                  "$ref": "#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "name": "resourceGroupName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The name of the resource group which contains the specified key vault."
+                },
+                {
+                  "name": "vaultName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9-]{3,24}$",
+                  "description": "The name of the vault which contains the key to be retrieved."
+                },
+                {
+                  "name": "keyName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9-]{1,127}$",
+                  "description": "The name of the key to be retrieved."
+                },
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The retrieved key.",
+                  "schema": {
+                    "$ref": "#/definitions/Key"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Get a key": {
+                  "$ref": "./examples/getKey.json"
+                }
+              },
+              "produces": [
+                "application/json"
+              ],
+              "consumes": [
+                "application/json"
+              ]
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys": {
+            "get": {
+              "tags": [
+                "Keys"
+              ],
+              "operationId": "Keys_List",
+              "description": "Lists the keys in the specified key vault.",
+              "parameters": [
+                {
+                  "$ref": "#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "name": "resourceGroupName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The name of the resource group which contains the specified key vault."
+                },
+                {
+                  "name": "vaultName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9-]{3,24}$",
+                  "description": "The name of the vault which contains the keys to be retrieved."
+                },
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The retrieved page of keys.",
+                  "schema": {
+                    "$ref": "#/definitions/KeyListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "List keys in the vault": {
+                  "$ref": "./examples/listKeys.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              },
+              "produces": [
+                "application/json"
+              ],
+              "consumes": [
+                "application/json"
+              ]
+            }
+          }
+        },
+        "definitions": {
+          "KeyListResult": {
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Key"
+                },
+                "description": "The key resources."
+              },
+              "nextLink": {
+                "type": "string",
+                "description": "The URL to get the next page of keys."
+              }
+            },
+            "description": "The page of keys.",
+            "type": "object"
+          },
+          "Key": {
+            "properties": {
+              "properties": {
+                "x-ms-client-flatten": true,
+                "$ref": "#/definitions/KeyProperties",
+                "description": "The properties of the key."
+              }
+            },
+            "required": [
+              "properties"
+            ],
+            "allOf": [
+              {
+                "$ref": "./keyvault.json#/definitions/Resource"
+              }
+            ],
+            "description": "The key resource.",
+            "type": "object"
+          },
+          "KeyProperties": {
+            "properties": {
+              "attributes": {
+                "$ref": "#/definitions/KeyAttributes",
+                "description": "The attributes of the key."
+              },
+              "kty": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The type of the key. For valid values, see JsonWebKeyType.",
+                "enum": [
+                  "EC",
+                  "EC-HSM",
+                  "RSA",
+                  "RSA-HSM"
+                ],
+                "x-ms-enum": {
+                  "name": "JsonWebKeyType",
+                  "modelAsString": true
+                }
+              },
+              "keyOps": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "The permitted JSON web key operations of the key. For more information, see JsonWebKeyOperation.",
+                  "enum": [
+                    "encrypt",
+                    "decrypt",
+                    "sign",
+                    "verify",
+                    "wrapKey",
+                    "unwrapKey",
+                    "import",
+                    "release"
+                  ],
+                  "x-ms-enum": {
+                    "name": "JsonWebKeyOperation",
+                    "modelAsString": true
+                  }
+                }
+              },
+              "keySize": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The key size in bits. For example: 2048, 3072, or 4096 for RSA."
+              },
+              "curveName": {
+                "type": "string",
+                "description": "The elliptic curve name. For valid values, see JsonWebKeyCurveName.",
+                "enum": [
+                  "P-256",
+                  "P-384",
+                  "P-521",
+                  "P-256K"
+                ],
+                "x-ms-enum": {
+                  "name": "JsonWebKeyCurveName",
+                  "modelAsString": true
+                }
+              },
+              "keyUri": {
+                "type": "string",
+                "description": "The URI to retrieve the current version of the key.",
+                "readOnly": true
+              },
+              "keyUriWithVersion": {
+                "type": "string",
+                "description": "The URI to retrieve the specific version of the key.",
+                "readOnly": true
+              },
+              "rotationPolicy": {
+                "$ref": "#/definitions/RotationPolicy",
+                "description": "Key rotation policy in response. It will be used for both output and input. Omitted if empty"
+              },
+              "release_policy": {
+                "$ref": "#/definitions/KeyReleasePolicy",
+                "description": "Key release policy in response. It will be used for both output and input. Omitted if empty"
+              }
+            },
+            "description": "The properties of the key.",
+            "type": "object"
+          },
+          "KeyReleasePolicy": {
+            "properties": {
+              "contentType": {
+                "description": "Content type and version of key release policy",
+                "type": "string",
+                "default": "application/json; charset=utf-8"
+              },
+              "data": {
+                "description": "Blob encoding the policy rules under which the key can be released.",
+                "type": "string",
+                "format": "base64url"
+              }
+            },
+            "type": "object"
+          },
+          "RotationPolicy": {
+            "properties": {
+              "attributes": {
+                "$ref": "#/definitions/KeyRotationPolicyAttributes",
+                "description": "The attributes of key rotation policy."
+              },
+              "lifetimeActions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/LifetimeAction"
+                },
+                "x-ms-identifiers": [],
+                "description": "The lifetimeActions for key rotation action."
+              }
+            },
+            "type": "object"
+          },
+          "LifetimeAction": {
+            "properties": {
+              "trigger": {
+                "$ref": "#/definitions/Trigger",
+                "description": "The trigger of key rotation policy lifetimeAction."
+              },
+              "action": {
+                "$ref": "#/definitions/Action",
+                "description": "The action of key rotation policy lifetimeAction."
+              }
+            },
+            "type": "object"
+          },
+          "Action": {
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "The type of action.",
+                "enum": [
+                  "rotate",
+                  "notify"
+                ],
+                "x-ms-enum": {
+                  "name": "KeyRotationPolicyActionType",
+                  "modelAsString": false
+                }
+              }
+            },
+            "type": "object"
+          },
+          "Trigger": {
+            "properties": {
+              "timeAfterCreate": {
+                "type": "string",
+                "description": "The time duration after key creation to rotate the key. It only applies to rotate. It will be in ISO 8601 duration format. Eg: 'P90D', 'P1Y'."
+              },
+              "timeBeforeExpiry": {
+                "type": "string",
+                "description": "The time duration before key expiring to rotate or notify. It will be in ISO 8601 duration format. Eg: 'P90D', 'P1Y'."
+              }
+            },
+            "type": "object"
+          },
+          "KeyRotationPolicyAttributes": {
+            "properties": {
+              "created": {
+                "type": "integer",
+                "format": "int64",
+                "readOnly": true,
+                "description": "Creation time in seconds since 1970-01-01T00:00:00Z."
+              },
+              "updated": {
+                "type": "integer",
+                "format": "int64",
+                "readOnly": true,
+                "description": "Last updated time in seconds since 1970-01-01T00:00:00Z."
+              },
+              "expiryTime": {
+                "type": "string",
+                "description": "The expiration time for the new key version. It should be in ISO8601 format. Eg: 'P90D', 'P1Y'."
+              }
+            },
+            "type": "object"
+          },
+          "KeyAttributes": {
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "description": "Determines whether or not the object is enabled."
+              },
+              "nbf": {
+                "x-ms-client-name": "NotBefore",
+                "type": "integer",
+                "format": "int64",
+                "description": "Not before date in seconds since 1970-01-01T00:00:00Z."
+              },
+              "exp": {
+                "x-ms-client-name": "Expires",
+                "type": "integer",
+                "format": "int64",
+                "description": "Expiry date in seconds since 1970-01-01T00:00:00Z."
+              },
+              "created": {
+                "type": "integer",
+                "format": "int64",
+                "readOnly": true,
+                "description": "Creation time in seconds since 1970-01-01T00:00:00Z."
+              },
+              "updated": {
+                "type": "integer",
+                "format": "int64",
+                "readOnly": true,
+                "description": "Last updated time in seconds since 1970-01-01T00:00:00Z."
+              },
+              "recoveryLevel": {
+                "type": "string",
+                "description": "The deletion recovery level currently in effect for the object. If it contains 'Purgeable', then the object can be permanently deleted by a privileged user; otherwise, only the system can purge the object at the end of the retention interval.",
+                "enum": [
+                  "Purgeable",
+                  "Recoverable+Purgeable",
+                  "Recoverable",
+                  "Recoverable+ProtectedSubscription"
+                ],
+                "x-ms-enum": {
+                  "name": "DeletionRecoveryLevel",
+                  "modelAsString": true
+                },
+                "readOnly": true,
+                "x-nullable": false
+              },
+              "exportable": {
+                "type": "boolean",
+                "description": "Indicates if the private key can be exported.",
+                "default": false
+              }
+            },
+            "description": "The object attributes managed by the Azure Key Vault service.",
+            "type": "object"
+          }
+        },
+        "parameters": {
+          "ApiVersionParameter": {
+            "name": "api-version",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Client Api Version."
+          },
+          "SubscriptionIdParameter": {
+            "name": "subscriptionId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call."
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/keyvault.json",
+      "source_sha256": "87c09cb2aaf65cebb5dba56ef397c53f894b3ab546bc6bbdef9fada8341f49fc",
+      "dependency": true,
+      "document": {
+        "definitions": {
+          "Resource": {
+            "properties": {
+              "id": {
+                "readOnly": true,
+                "type": "string",
+                "description": "Fully qualified identifier of the key vault resource."
+              },
+              "name": {
+                "readOnly": true,
+                "type": "string",
+                "description": "Name of the key vault resource."
+              },
+              "type": {
+                "readOnly": true,
+                "type": "string",
+                "description": "Resource type of the key vault resource."
+              },
+              "location": {
+                "readOnly": true,
+                "type": "string",
+                "description": "Azure location of the key vault resource."
+              },
+              "tags": {
+                "readOnly": true,
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Tags assigned to the key vault resource."
+              }
+            },
+            "description": "Key Vault resource",
+            "x-ms-azure-resource": true,
+            "type": "object"
+          }
+        }
+      }
     }
   ],
   "x-resource-types": [
@@ -294700,6 +295210,24 @@
         ],
         "list_operations": [
           "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_List"
+        ]
+      }
+    },
+    {
+      "nativeType": "Microsoft.KeyVault/vaults/keys",
+      "class": "security.encryption_key",
+      "displayName": "Key Vault key",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "keys",
+        "read_operations": [
+          "Azure.Microsoft.KeyVault.Keys_Get"
+        ],
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.KeyVault.Keys_List"
         ]
       }
     }

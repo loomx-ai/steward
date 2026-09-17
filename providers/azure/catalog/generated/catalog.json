@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "9c93c1e25a59c13df8a5308d109a7f396c98c4ab209d29813a74ee75c9902895",
+    "checksum": "41692096bb11a4a9387b9e92d0462ce368f185b29b3610208a0d628772311879",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "f5ab81f1589d4d8835bcb437b6b9e9971ea66059f02dfa191c320c0486284693",
+  "content_checksum": "d07db0b21dd8fcef464eb30464580cb0177a608d497b17a9ba921946d0c23eeb",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -102071,6 +102071,162 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
     },
     {
+      "id": "Azure.Microsoft.KeyVault.Keys_Get",
+      "name": "Keys_Get",
+      "service": "Microsoft.KeyVault",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys/{keyName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "keyName": {
+            "description": "The name of the key to be retrieved.",
+            "in": "path",
+            "name": "keyName",
+            "pattern": "^[a-zA-Z0-9-]{1,127}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group which contains the specified key vault.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the vault which contains the key to be retrieved.",
+            "in": "path",
+            "name": "vaultName",
+            "pattern": "^[a-zA-Z0-9-]{3,24}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./keyvault.json#/definitions/Resource"
+          }
+        ],
+        "description": "The key resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/KeyProperties",
+            "description": "The properties of the key.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.KeyVault",
+        "version": "2023-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys/{keyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/keys.json"
+    },
+    {
+      "id": "Azure.Microsoft.KeyVault.Keys_List",
+      "name": "Keys_List",
+      "service": "Microsoft.KeyVault",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group which contains the specified key vault.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the vault which contains the keys to be retrieved.",
+            "in": "path",
+            "name": "vaultName",
+            "pattern": "^[a-zA-Z0-9-]{3,24}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The page of keys.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next page of keys.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The key resources.",
+            "items": {
+              "$ref": "#/definitions/Key"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.KeyVault",
+        "version": "2023-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/keys.json"
+    },
+    {
       "id": "Azure.Microsoft.KeyVault.Vaults_Delete",
       "name": "Vaults_Delete",
       "service": "Microsoft.KeyVault",
@@ -149189,6 +149345,23 @@
         ],
         "list_operations": [
           "Azure.Microsoft.KeyVault.Vaults_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.KeyVault/vaults/keys",
+      "class": "security.encryption_key",
+      "display_name": "Key Vault key",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "keys",
+        "read_operations": [
+          "Azure.Microsoft.KeyVault.Keys_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.KeyVault.Keys_List"
         ]
       }
     },

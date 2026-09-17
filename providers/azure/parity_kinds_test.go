@@ -178,3 +178,41 @@ func TestParityManagedGroupControllersAreReadOnly(t *testing.T) {
 		}
 	}
 }
+
+func TestParityKeyVaultKeysListThroughVaultsReadOnly(t *testing.T) {
+	root := "/subscriptions/" + testSubscription
+	vault := nativeResource("Microsoft.KeyVault/vaults", "keys-vault", "eastus", map[string]any{})
+	keyID := text(vault["id"]) + "/keys/signing"
+	key := map[string]any{"id": keyID, "name": "signing", "type": "Microsoft.KeyVault/vaults/keys", "location": "eastus", "properties": map[string]any{"kty": "RSA", "keyUri": "https://keys-vault.vault.azure.net/keys/signing"}}
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method != "GET" || req.URL.Host != "management.azure.com" {
+			t.Fatalf("key inventory left the ARM read plane: %s %s", req.Method, req.URL)
+		}
+		switch strings.ToLower(req.URL.Path) {
+		case root + "/providers/microsoft.keyvault/vaults":
+			return jsonResponse(200, map[string]any{"value": []any{vault}}, nil), nil
+		case strings.ToLower(text(vault["id"])):
+			return jsonResponse(200, vault, nil), nil
+		case strings.ToLower(text(vault["id"]) + "/keys"):
+			if req.URL.Query().Get("api-version") != "2023-07-01" {
+				t.Fatalf("wrong key API version %s", req.URL)
+			}
+			return jsonResponse(200, map[string]any{"value": []any{key}}, nil), nil
+		case strings.ToLower(keyID):
+			return jsonResponse(200, key, nil), nil
+		case root + "/resourcegroups", root + "/providers/microsoft.authorization/locks":
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
+		t.Fatalf("unexpected request %s", req.URL)
+		return nil, nil
+	})
+	request := productRequest(r, "Microsoft.KeyVault/vaults/keys")
+	request.Scope.Kind, request.Scope.NativeID = "region", "eastus"
+	batch, err := r.List(context.Background(), request)
+	if err != nil || !batch.Complete || len(batch.Items) != 1 || batch.Items[0].NativeID != strings.ToLower(keyID) {
+		t.Fatalf("batch=%+v err=%v", batch, err)
+	}
+	if _, err := r.ResolveAction(context.Background(), "connection", actionAsset("Microsoft.KeyVault/vaults/keys", "keys-vault/keys/signing")); err == nil {
+		t.Fatal("ARM exposes no key deletion; the kind must stay read-only")
+	}
+}

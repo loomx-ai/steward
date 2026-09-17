@@ -2706,6 +2706,13 @@
         "OnlineEndpoints_List",
         "OnlineEndpoints_Delete"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/keys.json",
+      "operations": [
+        "Keys_Get",
+        "Keys_List"
+      ]
     }
   ],
   "resource_types": [
@@ -11780,6 +11787,22 @@
       ],
       "list_operations": [
         "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.KeyVault/vaults/keys",
+      "class": "security.encryption_key",
+      "display_name": "Key Vault key",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "keys",
+      "read_operations": [
+        "Azure.Microsoft.KeyVault.Keys_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.KeyVault.Keys_List"
       ]
     }
   ]

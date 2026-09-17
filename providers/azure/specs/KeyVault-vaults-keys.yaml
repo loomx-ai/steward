@@ -1,0 +1,49 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.KeyVault/vaults/keys
+  class: security.encryption_key
+presentation:
+  displayNames:
+    en-US: Key Vault key
+    zh-CN: Key Vault 密钥
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: Azure.Microsoft.KeyVault.Keys_Get
+    itemsPath: $
+    identityPath: id
+  list:
+    operation: Azure.Microsoft.KeyVault.Keys_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      vaultName: parent.normalized.arm_parameters.vaultName
+    itemsPath: value
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.KeyVault/vaults
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: member_of
+  targetType: Microsoft.KeyVault/vaults
+  targetIdPath: refs_microsoft_keyvault_vaults
