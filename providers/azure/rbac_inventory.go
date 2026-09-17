@@ -57,6 +57,11 @@ func (c *client) rbacContext(ctx context.Context, kind string, raw map[string]an
 	if kind == rbacRoleType && text(object(raw["properties"])["type"]) == "BuiltInRole" {
 		reason = "azure_rbac_builtin_role"
 	}
+	if kind == rbacAssignmentType {
+		if objectID, known := c.connectionPrincipal(); known && (objectID == "" || strings.EqualFold(objectID, text(object(raw["properties"])["principalId"]))) {
+			reason = "azure_rbac_connection_principal"
+		}
+	}
 	for _, candidate := range scopes {
 		scope, err := rbacScope(candidate)
 		if err != nil {

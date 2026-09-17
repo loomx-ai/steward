@@ -1391,10 +1391,14 @@ func (s *Service) loadPlanningInput(ctx context.Context, repositories persistenc
 	}
 	assets = refreshPlanningActionability(assets, planningBundles)
 	protections := make([]plan.ProtectionPolicy, 0, len(assets))
+	ownIdentity := connectionIdentityProtections(selection.Connections, selection.Assets)
 	for _, value := range assets {
 		policy := s.protectionEvaluator(value)
 		if policy.AssetID == "" {
 			policy.AssetID = value.ID
+		}
+		if identity, exists := ownIdentity[value.ID]; exists && !policy.Protected {
+			policy = identity
 		}
 		if policy.Protected || policy.Source != "" {
 			protections = append(protections, policy)

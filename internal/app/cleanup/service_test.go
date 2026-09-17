@@ -1843,3 +1843,25 @@ func TestCleanupServiceBlocksKeysAndIdentitiesUsedOutsidePlan(t *testing.T) {
 		})
 	}
 }
+
+func TestCleanupServiceProtectsTheConnectionsOwnIdentity(t *testing.T) {
+	ctx := context.Background()
+	repositories := openPlanningRepositories(t)
+	now := time.Date(2026, 9, 17, 13, 0, 0, 0, time.UTC)
+	connectionID := asset.ConnectionID("connection-own-identity")
+	if err := repositories.Connections().PutConnection(ctx, asset.CloudConnection{ID: connectionID, Name: "prod", Provider: asset.ProviderAWS, Partition: "aws", Principal: "arn:aws:sts::123456789012:assumed-role/StewardRole/session", Status: asset.ConnectionActive, CreatedAt: now, UpdatedAt: now}); err != nil {
+		t.Fatal(err)
+	}
+	role := planningAsset("steward-role", connectionID, "AWS::IAM::Role", "StewardRole", now)
+	other := planningAsset("other-role", connectionID, "AWS::IAM::Role", "OtherRole", now)
+	role.Identity.Provider, other.Identity.Provider = asset.ProviderAWS, asset.ProviderAWS
+	seedPlanningGraph(t, repositories, "scope-a", "graph-own-identity", []asset.Asset{role, other}, nil, nil)
+	service := cleanup.NewService(repositories, bundleResolver{asset.ProviderAWS: {Provider: asset.ProviderAWS, Revision: "bundle-identity", Hash: "spec-identity"}}, cleanup.WithTaskIDGenerator(func() string { return "cln-own-identity" }))
+	blocked, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{Selectors: []plan.CleanupSelector{assetSelector(role.ID), assetSelector(other.ID)}, CreatedBy: "operator"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if blocked.Task.Status != plan.StatusDraft || !containsTaskBlocker(blocked.Task.Blockers, plan.BlockProtected, role.ID) || containsTaskBlocker(blocked.Task.Blockers, plan.BlockProtected, other.ID) {
+		t.Fatalf("connection identity was not protected: %+v", blocked.Task.Blockers)
+	}
+}

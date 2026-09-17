@@ -35,6 +35,7 @@ type client struct {
 	http, storageHTTP, batchHTTP, communicationHTTP, keyVaultHTTP *http.Client
 	subscription, tenant, application                             string
 	fingerprint                                                   [32]byte
+	principal                                                     *principalObserver
 }
 type response struct {
 	data      map[string]any
@@ -127,7 +128,12 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 		(credential.ExpiresAt != nil && !credential.ExpiresAt.After(time.Now())) {
 		return nil, contracts.NewCredentialValidationError("credential_fields_invalid", "A subscription ID, tenant ID, application ID, and client secret are required.", nil)
 	}
+	observer := &principalObserver{base: transport}
 	makeHTTP := func(scope string) *http.Client {
+		transport := transport
+		if scope == armOrigin+"/.default" {
+			transport = observer
+		}
 		if dynamic {
 			return &http.Client{Transport: &workloadidentity.Transport{Base: transport, Credential: credential.Dynamic, Scope: scope}, Timeout: 60 * time.Second, CheckRedirect: noRedirect}
 		}
@@ -142,7 +148,7 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	}
 	return &client{subscription: subscription, tenant: tenant, application: application,
 		fingerprint: sha256.Sum256([]byte(subscription + "\x00" + tenant + "\x00" + application + "\x00" + secret)),
-		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default"), batchHTTP: makeHTTP("https://batch.core.windows.net//.default"), communicationHTTP: makeHTTP("https://communication.azure.com/.default"), keyVaultHTTP: makeHTTP("https://vault.azure.net/.default")}, nil
+		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default"), batchHTTP: makeHTTP("https://batch.core.windows.net//.default"), communicationHTTP: makeHTTP("https://communication.azure.com/.default"), keyVaultHTTP: makeHTTP("https://vault.azure.net/.default"), principal: observer}, nil
 }
 
 // Cache the token, while binding every refresh to the active request context.
