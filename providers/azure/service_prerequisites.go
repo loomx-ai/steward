@@ -192,7 +192,49 @@ func (a *action) servicePrerequisitesAbsent(ctx context.Context, request contrac
 	return nil
 }
 
+// Network resources report their live occupants on their own read. Azure
+// refuses to delete them while occupied (InUseSubnetCannotBeDeleted,
+// InUseNetworkSecurityGroupCannotBeDeleted, PublicIPAddressInUse), and a
+// service association link can only be removed by its owning service.
+var networkOccupants = map[string]struct {
+	reason string
+	fields []string
+}{
+	subnetType: {"azure_subnet_in_use", []string{"ipConfigurations", "privateEndpoints", "serviceAssociationLinks", "resourceNavigationLinks", "applicationGatewayIPConfigurations", "ipConfigurationProfiles"}},
+	"Microsoft.Network/networkSecurityGroups": {"azure_network_security_group_associated", []string{"subnets", "networkInterfaces"}},
+	"Microsoft.Network/routeTables":           {"azure_route_table_associated", []string{"subnets"}},
+	"Microsoft.Network/natGateways":           {"azure_nat_gateway_associated", []string{"subnets"}},
+	"Microsoft.Network/publicIPAddresses":     {"azure_public_ip_associated", []string{"ipConfiguration", "natGateway"}},
+}
+
+func networkOccupantReason(kind string, raw map[string]any) string {
+	rule, ok := networkOccupants[kind]
+	if !ok {
+		return ""
+	}
+	props := object(raw["properties"])
+	for _, field := range rule.fields {
+		switch value := props[field].(type) {
+		case nil:
+		case []any:
+			if len(value) != 0 {
+				return rule.reason
+			}
+		case map[string]any:
+			if len(value) != 0 {
+				return rule.reason
+			}
+		default:
+			return rule.reason
+		}
+	}
+	return ""
+}
+
 func serviceAssociationReason(kind string, raw map[string]any) string {
+	if reason := networkOccupantReason(kind, raw); reason != "" {
+		return reason
+	}
 	var fields []string
 	switch kind {
 	case hostType:
