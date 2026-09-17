@@ -46,3 +46,28 @@ jobs:
       - run: npm --prefix web run test
       - run: npm --prefix web run lint
       - run: npm --prefix web run build
+
+  aws-emulator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 -m pip install "moto[server]==5.2.3"
+      - name: Start Moto
+        run: |
+          moto_server -H 127.0.0.1 -p 5055 > moto.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            curl -sf -o /dev/null http://127.0.0.1:5055/moto-api/ && exit 0
+            sleep 1
+          done
+          cat moto.log
+          exit 1
+      - run: go test -count=1 -run Moto ./providers/aws
+        env:
+          STEWARD_AWS_MOTO_URL: http://127.0.0.1:5055
