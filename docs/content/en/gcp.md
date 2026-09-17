@@ -691,3 +691,17 @@ write reservation. Older collection-specific reservations are recognized, and un
 failed/canceled Uptime actions retain that reservation until independently settled.
 Arbitrary dashboards outside the discovered projects, detailed log-view authority and
 unsupported query languages remain outside the currently proven coverage.
+
+## OS Login SSH public keys
+
+Enable the OS Login API to inventory the SSH public keys in the connection service
+account's own OS Login profile. Steward reads the profile with
+`oslogin.users.getLoginProfile` and each key with `oslogin.users.sshPublicKeys.get`,
+and shows keys in the connection's global inventory. Other users' profiles are not
+read or changed, and project or instance `ssh-keys` metadata entries are not
+separate resources.
+
+A key missing from the profile is closed only after its own read returns 404.
+Cleanup deletes one key with `oslogin.users.sshPublicKeys.delete` after rereading
+it: a replaced key or changed expiration requires a fresh scan. See the
+[OS Login API reference](https://docs.cloud.google.com/compute/docs/oslogin/rest/v1/users.sshPublicKeys/delete).

@@ -134754,6 +134754,233 @@
           }
         }
       }
+    },
+    {
+      "document": {
+        "methods": {
+          "oslogin.users.getLoginProfile": {
+            "description": "Retrieves the profile information used for logging in to a virtual machine on Google Compute Engine.",
+            "flatPath": "v1/users/{usersId}/loginProfile",
+            "httpMethod": "GET",
+            "id": "oslogin.users.getLoginProfile",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. The unique ID for the user in format `users/{user}`.",
+                "location": "path",
+                "pattern": "^users/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "projectId": {
+                "description": "Required. The project ID of the Google Cloud Platform project.",
+                "location": "query",
+                "type": "string"
+              },
+              "systemId": {
+                "description": "Optional. A system ID for filtering the results of the request.",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}/loginProfile",
+            "response": {
+              "$ref": "LoginProfile"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/cloud-platform.read-only",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ]
+          },
+          "oslogin.users.sshPublicKeys.delete": {
+            "description": "Deletes an SSH public key.",
+            "flatPath": "v1/users/{usersId}/sshPublicKeys/{sshPublicKeysId}",
+            "httpMethod": "DELETE",
+            "id": "oslogin.users.sshPublicKeys.delete",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. The fingerprint of the public key to update. Public keys are identified by their SHA-256 fingerprint. The fingerprint of the public key is in format `users/{user}/sshPublicKeys/{fingerprint}`.",
+                "location": "path",
+                "pattern": "^users/[^/]+/sshPublicKeys/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "Empty"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute"
+            ]
+          },
+          "oslogin.users.sshPublicKeys.get": {
+            "description": "Retrieves an SSH public key.",
+            "flatPath": "v1/users/{usersId}/sshPublicKeys/{sshPublicKeysId}",
+            "httpMethod": "GET",
+            "id": "oslogin.users.sshPublicKeys.get",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. The fingerprint of the public key to retrieve. Public keys are identified by their SHA-256 fingerprint. The fingerprint of the public key is in format `users/{user}/sshPublicKeys/{fingerprint}`.",
+                "location": "path",
+                "pattern": "^users/[^/]+/sshPublicKeys/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "SshPublicKey"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute"
+            ]
+          }
+        },
+        "name": "oslogin",
+        "revision": "20260913",
+        "rootUrl": "https://oslogin.googleapis.com/",
+        "schemas": {
+          "Empty": {
+            "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+            "id": "Empty",
+            "properties": {},
+            "type": "object"
+          },
+          "LoginProfile": {
+            "description": "The user profile information used for logging in to a virtual machine on Google Compute Engine.",
+            "id": "LoginProfile",
+            "properties": {
+              "name": {
+                "description": "Required. A unique user ID.",
+                "type": "string"
+              },
+              "posixAccounts": {
+                "description": "The list of POSIX accounts associated with the user.",
+                "items": {
+                  "$ref": "PosixAccount"
+                },
+                "type": "array"
+              },
+              "sshPublicKeys": {
+                "additionalProperties": {
+                  "$ref": "SshPublicKey"
+                },
+                "description": "A map from SSH public key fingerprint to the associated key object.",
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "PosixAccount": {
+            "description": "The POSIX account information associated with a Google account.",
+            "id": "PosixAccount",
+            "properties": {
+              "accountId": {
+                "description": "Output only. A POSIX account identifier.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "gecos": {
+                "description": "The GECOS (user information) entry for this account.",
+                "type": "string"
+              },
+              "gid": {
+                "description": "The default group ID.",
+                "format": "int64",
+                "type": "string"
+              },
+              "homeDirectory": {
+                "description": "The path to the home directory for this account.",
+                "type": "string"
+              },
+              "name": {
+                "description": "Output only. The canonical resource name.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "operatingSystemType": {
+                "description": "The operating system type where this account applies.",
+                "enum": [
+                  "OPERATING_SYSTEM_TYPE_UNSPECIFIED",
+                  "LINUX",
+                  "WINDOWS"
+                ],
+                "enumDescriptions": [
+                  "The operating system type associated with the user account information is unspecified.",
+                  "Linux user account information.",
+                  "Windows user account information."
+                ],
+                "type": "string"
+              },
+              "primary": {
+                "description": "Only one POSIX account can be marked as primary.",
+                "type": "boolean"
+              },
+              "shell": {
+                "description": "The path to the logic shell for this account.",
+                "type": "string"
+              },
+              "systemId": {
+                "description": "System identifier for which account the username or uid applies to. By default, the empty value is used.",
+                "type": "string"
+              },
+              "uid": {
+                "description": "The user ID.",
+                "format": "int64",
+                "type": "string"
+              },
+              "username": {
+                "description": "The username of the POSIX account.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "SshPublicKey": {
+            "description": "The SSH public key information associated with a Google account.",
+            "id": "SshPublicKey",
+            "properties": {
+              "expirationTimeUsec": {
+                "description": "An expiration time in microseconds since epoch.",
+                "format": "int64",
+                "type": "string"
+              },
+              "fingerprint": {
+                "description": "Output only. The SHA-256 fingerprint of the SSH public key.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "key": {
+                "description": "Required. Public key text in SSH format, defined by [RFC4253](https://www.ietf.org/rfc/rfc4253.txt) section 6.6.",
+                "type": "string"
+              },
+              "name": {
+                "description": "Output only. The canonical resource name.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "servicePath": "",
+        "version": "v1"
+      },
+      "source_sha256": "2f9ab8cf74da30aa90fdc95a051f23419ac4c6fa1f16b84a3daa346c3100f0e0",
+      "source_uri": "https://oslogin.googleapis.com/$discovery/rest?version=v1"
     }
   ],
   "x-resource-types": [
@@ -138880,6 +139107,26 @@
         ],
         "read_operations": [
           "monitoring.projects.groups.get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "security.key_pair",
+      "displayName": "OS Login SSH public key",
+      "nativeType": "oslogin.googleapis.com/SshPublicKey",
+      "rest": {
+        "collection": "sshPublicKeys",
+        "delete_operations": [
+          "oslogin.users.sshPublicKeys.delete"
+        ],
+        "list_operations": [
+          "oslogin.users.getLoginProfile"
+        ],
+        "read_operations": [
+          "oslogin.users.sshPublicKeys.get"
         ]
       },
       "scopeKinds": [

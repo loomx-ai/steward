@@ -1084,6 +1084,14 @@
         "monitoring.projects.groups.list",
         "monitoring.projects.groups.members.list"
       ]
+    },
+    {
+      "methods": [
+        "oslogin.users.getLoginProfile",
+        "oslogin.users.sshPublicKeys.delete",
+        "oslogin.users.sshPublicKeys.get"
+      ],
+      "source_uri": "https://oslogin.googleapis.com/$discovery/rest?version=v1"
     }
   ],
   "resource_types": [
@@ -4767,6 +4775,24 @@
       "native_type": "monitoring.googleapis.com/NotificationChannel",
       "read_operations": [
         "monitoring.projects.notificationChannels.get"
+      ],
+      "scope_kinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "security.key_pair",
+      "collection": "sshPublicKeys",
+      "delete_operations": [
+        "oslogin.users.sshPublicKeys.delete"
+      ],
+      "display_name": "OS Login SSH public key",
+      "list_operations": [
+        "oslogin.users.getLoginProfile"
+      ],
+      "native_type": "oslogin.googleapis.com/SshPublicKey",
+      "read_operations": [
+        "oslogin.users.sshPublicKeys.get"
       ],
       "scope_kinds": [
         "global"

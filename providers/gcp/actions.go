@@ -30,7 +30,7 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if value.Identity.NativeType == notificationChannelType && value.Normalized["type"] == "email" {
 		return nil, groupDenied("notification_channel_budget_scope_required")
 	}
-	if (value.Identity.NativeType == billingBudgetType || isMonitoringConfig(value.Identity.NativeType) || isRouterComponent(value.Identity.NativeType) || value.Identity.NativeType == storagePoolType || value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType) || isIdentityGroup(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
+	if (value.Identity.NativeType == billingBudgetType || isMonitoringConfig(value.Identity.NativeType) || isRouterComponent(value.Identity.NativeType) || value.Identity.NativeType == storagePoolType || value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType) || isIdentityGroup(value.Identity.NativeType) || value.Identity.NativeType == osLoginKeyType) && (id == "" || id != value.Identity.ConnectionID) {
 		return nil, groupDenied("native_connection_changed")
 	}
 	kind, ok := findType(value.Identity.NativeType)
@@ -66,6 +66,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if a.kind.NativeType == billingBudgetType {
 		read, err := a.billingBudgetReadback(ctx, request)
 		return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists}, err
+	}
+	if a.kind.NativeType == osLoginKeyType {
+		return a.osLoginPreflight(ctx, request)
 	}
 	if isMonitoringConfig(a.kind.NativeType) {
 		return a.monitoringPreflight(ctx, request)
@@ -268,6 +271,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if a.kind.NativeType == billingBudgetType {
 		return a.executeBillingBudget(ctx, request)
+	}
+	if a.kind.NativeType == osLoginKeyType {
+		return a.executeOSLogin(ctx, request)
 	}
 	if isMonitoringConfig(a.kind.NativeType) {
 		return a.executeMonitoring(ctx, request)
@@ -491,6 +497,9 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 	if a.kind.NativeType == billingBudgetType {
 		return a.waitBillingBudget(ctx, request, result)
 	}
+	if a.kind.NativeType == osLoginKeyType {
+		return a.waitOSLogin(ctx, request, result)
+	}
 	if isMonitoringConfig(a.kind.NativeType) {
 		return a.waitMonitoring(ctx, request, result)
 	}
@@ -644,6 +653,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	if a.kind.NativeType == billingBudgetType {
 		return a.billingBudgetReadback(ctx, request)
+	}
+	if a.kind.NativeType == osLoginKeyType {
+		return a.osLoginReadback(ctx, request)
 	}
 	if isMonitoringConfig(a.kind.NativeType) {
 		return a.monitoringReadback(ctx, request)

@@ -125,7 +125,7 @@ func (r *Runtime) projectProperties(item *contracts.InventoryItem) {
 }
 
 func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource && request.Source != organizationInventorySource && request.Source != identityInventorySource && request.Source != billingBudgetSource && request.Source != securityBillingSource && request.Source != securityServiceSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource && request.Source != organizationInventorySource && request.Source != identityInventorySource && request.Source != billingBudgetSource && request.Source != securityBillingSource && request.Source != securityServiceSource && request.Source != osLoginSource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported GCP inventory source")
 	}
 	c, err := r.resolve(ctx, request.ConnectionID)
@@ -143,6 +143,9 @@ func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Source == organizationInventorySource {
 		return r.listOrganization(ctx, c, request)
+	}
+	if request.Source == osLoginSource {
+		return r.listOSLoginKeys(ctx, c, request)
 	}
 	if request.Source == firewallInventorySource {
 		if request.ResourceKind == nil || firewallParentType(request.ResourceKind.NativeType) != firewallPolicyType {

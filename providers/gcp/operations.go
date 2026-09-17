@@ -265,6 +265,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 	if kind.NativeType == organizationType {
 		return organizationOperation(metadata, nativeID, method)
 	}
+	if kind.NativeType == osLoginKeyType {
+		return c.osLoginOperation(metadata, nativeID, method)
+	}
 	if isInfra(kind.NativeType) {
 		if _, err := c.infraName(kind.NativeType, nativeID); err != nil {
 			return catalog.Operation{}, nil, err

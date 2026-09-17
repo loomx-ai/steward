@@ -1888,7 +1888,8 @@ resources:
     actions:
     - delete
   gcp:
-    resources: []
+    resources:
+    - oslogin.googleapis.com/SshPublicKey
   azure:
     resources:
     - Microsoft.Compute/sshPublicKeys
@@ -1896,9 +1897,7 @@ resources:
     resources:
     - AWS::EC2::KeyPair
   status: pending_verification
-  notes: GCP service-account keys are workload credentials and are not SSH key-pair equivalents.
-    Project and instance SSH metadata plus OS Login key discovery, ownership, expiry and removal
-    remain unmapped and require native API and lifecycle implementation.
+  notes: GCP service-account keys are workload credentials and are not SSH key-pair equivalents. OS Login SSH public keys of the connection service account are inventoried and deleted with review and absence readback; project and instance SSH metadata entries are strings inside metadata, not resources, and remain outside this mapping.
 - alicloud: ACS::KMS::Key
   spec: providers/alicloud/specs/kms-key.yaml
   class: security.encryption_key

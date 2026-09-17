@@ -1,0 +1,41 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: oslogin.googleapis.com/SshPublicKey
+  class: security.key_pair
+presentation:
+  displayNames:
+    en-US: OS Login SSH public key
+    zh-CN: OS Login SSH 公钥
+scope:
+  kind: global
+discovery:
+  source: oslogin-profile
+  list:
+    operation: oslogin.users.getLoginProfile
+    itemsPath: sshPublicKeys.*
+    identityPath: name
+  detail: &read
+    operation: oslogin.users.sshPublicKeys.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  fingerprint:
+    path: fingerprint
+    type: string
+  expirationTimeUsec:
+    path: expirationTimeUsec
+    type: string
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: oslogin.users.sshPublicKeys.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *read

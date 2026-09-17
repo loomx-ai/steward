@@ -539,3 +539,14 @@ LIST 前后会复核指标范围和日志路由；权限失败或配置变化会
 Monitoring 资源现在统一使用同连接、同项目的写入范围，并兼容旧任务按资源类型保存
 的范围。失败或取消后的 Uptime 动作结果不确定时，仍保留范围，直到独立核验完成。
 发现范围以外的任意仪表板、详细日志视图权限和未支持的查询语言仍待补齐。
+
+## OS Login SSH 公钥
+
+启用 OS Login API 后，Steward 盘点连接服务账号自身 OS Login 资料中的 SSH 公钥：
+使用 `oslogin.users.getLoginProfile` 读取资料，并用 `oslogin.users.sshPublicKeys.get`
+读取单个密钥，结果显示在连接的全局资源中。Steward 不读取或修改其他用户的资料；
+项目或实例元数据中的 `ssh-keys` 条目不是独立资源。
+
+密钥从资料中消失时，只有其自身读取返回 404 才会关闭该资源。清理先重新读取密钥，
+再调用 `oslogin.users.sshPublicKeys.delete` 删除；密钥被替换或到期时间变化时需要重新扫描。
+参阅 [OS Login API 参考](https://docs.cloud.google.com/compute/docs/oslogin/rest/v1/users.sshPublicKeys/delete)。

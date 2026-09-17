@@ -68,6 +68,9 @@ func (r *Runtime) InventorySources() []contracts.InventorySource {
 		{Name: securityBillingSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeRegion, asset.ScopeGlobal}, KindSpecific: true},
 		// Project moves and lost ancestor visibility do not delete organizations.
 		{Name: organizationInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeGlobal}, KindSpecific: true},
+		// Only the connection identity's own profile is listed; replacing the
+		// credential must not close another identity's keys without a direct read.
+		{Name: osLoginSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeGlobal}, KindSpecific: true, ReconcileKnownIDs: true},
 	}
 }
 func (c *client) projectIdentity(ctx context.Context) (map[string]any, error) {
