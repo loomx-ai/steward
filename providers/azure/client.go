@@ -421,6 +421,15 @@ func apiError(status int, code string, header http.Header) error {
 	if code == "" {
 		code = strconv.Itoa(status)
 	}
+	// Network resources report occupants with InUse codes, for example
+	// InUseSubnetCannotBeDeleted or PublicIPAddressInUse. A concurrent operation
+	// on the same resource is transient.
+	if strings.Contains(code, "InUse") {
+		category = execution.ErrorDependencyViolation
+	}
+	if code == "AnotherOperationInProgress" || code == "RetryableError" {
+		category = execution.ErrorRetryable
+	}
 	if code == "ScopeLocked" {
 		category = execution.ErrorProtected
 	}

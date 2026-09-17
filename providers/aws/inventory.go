@@ -316,6 +316,15 @@ func errorCategory(code string, status int) execution.ErrorCategory {
 	case normalized == "unsupportedoperation" || normalized == "unsupportedactionexception" ||
 		normalized == "typenotfoundexception" || normalized == "optinrequired":
 		return execution.ErrorUnsupported
+	case normalized == "nosuchentity" || normalized == "nosuchbucket" || normalized == "nosuchhostedzone":
+		return execution.ErrorNotFound
+	case normalized == "dependencyviolation" || normalized == "deleteconflict" || strings.Contains(normalized, "resourceinuse") ||
+		normalized == "bucketnotempty" || normalized == "hostedzonenotempty" || normalized == "invalidnetworkinterface.inuse" ||
+		strings.HasSuffix(normalized, ".inuse"):
+		// Retrying cannot succeed while another resource holds the target.
+		return execution.ErrorDependencyViolation
+	case normalized == "requestlimitexceeded" || normalized == "slowdown":
+		return execution.ErrorThrottled
 	case status == 429 || strings.Contains(normalized, "throttl") || strings.Contains(normalized, "toomanyrequests"):
 		return execution.ErrorThrottled
 	case status == 403 || status == 401 || strings.Contains(normalized, "accessdenied") || strings.Contains(normalized, "unauthorized"):

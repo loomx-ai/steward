@@ -340,6 +340,13 @@ func apiError(status int, code string, detail map[string]any, retry string) erro
 	case status >= 400:
 		category = execution.ErrorInvalidRequest
 	}
+	// Compute reports a deletion blocked by a user of the resource as a 400
+	// with this reason; retrying cannot succeed until that user is removed.
+	for _, item := range array(detail["errors"]) {
+		if reason := text(object(item)["reason"]); reason == "resourceInUseByAnotherResource" {
+			category, code = execution.ErrorDependencyViolation, reason
+		}
+	}
 	if code == "" {
 		code = strconv.Itoa(status)
 	}

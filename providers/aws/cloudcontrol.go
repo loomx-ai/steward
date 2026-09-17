@@ -692,8 +692,29 @@ func cloudControlProgressError(progress CloudControlProgress, requestID string) 
 		message = "AWS Cloud Control resource operation failed"
 	}
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{
-		Category: execution.ErrorProviderFailure, Code: code, Message: message, RequestID: requestID,
+		Category: cloudControlHandlerCategory(code, message), Code: code, Message: message, RequestID: requestID,
 	}}
+}
+
+// Cloud Control reports handler failures on a finished request. A NotFound
+// delete lets the worker confirm absence by readback; the other codes are
+// final for this request token, so none of them is classified as retryable.
+func cloudControlHandlerCategory(code, message string) execution.ErrorCategory {
+	lower := strings.ToLower(message)
+	switch code {
+	case "NotFound":
+		return execution.ErrorNotFound
+	case "AccessDenied", "InvalidCredentials":
+		return execution.ErrorPermissionDenied
+	case "InvalidRequest", "NotUpdatable":
+		return execution.ErrorInvalidRequest
+	case "ResourceConflict":
+		if strings.Contains(lower, "dependencyviolation") || strings.Contains(lower, "dependent object") || strings.Contains(lower, "in use") || strings.Contains(lower, "has dependencies") {
+			return execution.ErrorDependencyViolation
+		}
+		return execution.ErrorConflict
+	}
+	return execution.ErrorProviderFailure
 }
 
 func cloudControlRetryAfter(progress CloudControlProgress) time.Duration {
