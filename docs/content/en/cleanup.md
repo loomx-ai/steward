@@ -28,17 +28,17 @@ The identity a connection itself uses is always protected: the AWS IAM user or r
 
 If a selected controller cannot be cleaned up, its dependent child deletion steps are blocked too. To clean up supported children independently, select those children without the controller and review the new task.
 
-### Example: an unselected instance still uses the vSwitch
+### Example: an unselected instance still uses the subnet
 
-The sample task selects `api-01`, `public-gateway`, and the `application` vSwitch. Another instance, `api-02`, is outside the selection but still uses that vSwitch.
+The sample task selects `api-01`, `public-gateway`, and the `application` subnet. Another instance, `api-02`, is outside the selection but still uses that subnet.
 
-<figure class="docs-figure"><a href="../../assets/cleanup-dependency-en.svg" target="_blank" rel="noreferrer" aria-label="How api-02 outside the selection blocks vSwitch deletion (open full size)"><img src="../../assets/cleanup-dependency-en.svg" alt="api-01, public-gateway, and the application vSwitch are selected for cleanup. Unselected api-02 still uses the vSwitch, blocking its deletion." width="640" height="700"></a><figcaption>The diagram shows the resources involved in this blocker. Arrows indicate use; dependencies outside the selection also affect the plan.</figcaption></figure>
+<figure class="docs-figure"><a href="../../assets/cleanup-dependency-en.svg" target="_blank" rel="noreferrer" aria-label="How api-02 outside the selection blocks subnet deletion (open full size)"><img src="../../assets/cleanup-dependency-en.svg" alt="api-01, public-gateway, and the application subnet are selected for cleanup. Unselected api-02 still uses the subnet, blocking its deletion." width="640" height="700"></a><figcaption>The diagram shows the resources involved in this blocker. Arrows indicate use; dependencies outside the selection also affect the plan.</figcaption></figure>
 
-If `api-02` must stay, remove the vSwitch target. If it should also be deleted, add the dependency and review the updated task. Expanding the selection is a new scope decision; do not add a resource just to clear a blocker.
+If `api-02` must stay, remove the subnet target. If it should also be deleted, add the dependency and review the updated task. Expanding the selection is a new scope decision; do not add a resource just to clear a blocker.
 
 Open the task's blocker details to check the resource IDs and relationship evidence. The actual interface below shows the same sample data:
 
-<figure class="docs-figure"><a href="../../assets/cleanup-en.png" target="_blank" rel="noreferrer" aria-label="The application vSwitch is still used by api-02 outside the cleanup selection (open full size)"><img src="../../assets/cleanup-en.png" alt="The application vSwitch is still used by api-02 outside the cleanup selection" width="1440" height="960"></a><figcaption>The application vSwitch is still used by api-02 outside the cleanup selection <span>· Sample data · click to enlarge</span></figcaption></figure>
+<figure class="docs-figure"><a href="../../assets/cleanup-en.png" target="_blank" rel="noreferrer" aria-label="The application subnet is still used by api-02 outside the cleanup selection (open full size)"><img src="../../assets/cleanup-en.png" alt="The application subnet is still used by api-02 outside the cleanup selection" width="1440" height="960"></a><figcaption>The application subnet is still used by api-02 outside the cleanup selection <span>· Sample data · click to enlarge</span></figcaption></figure>
 
 <aside class="docs-note">Incomplete scan coverage is a warning and may not prevent execution. Scan the relevant scope first; zero blockers does not prove every dependency has been discovered.</aside>
 
@@ -61,3 +61,5 @@ After fixing the cause, use the task’s available continue or resume action; co
 For Google Cloud, review the [supported actions and deletion protections](./gcp.md#deletion-protections), including VM auto-delete disks, nonempty buckets, and read-only GKE clusters.
 
 For Azure, review [cleanup protections](./azure.md#cleanup-protections), including management locks, VM attachment settings, empty storage requirements, and managed resources.
+
+For an exercise that stops before execution, follow [Review cloud resource dependencies before cleanup](./tutorials/review-cleanup-dependencies.md).

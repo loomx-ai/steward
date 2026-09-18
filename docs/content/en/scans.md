@@ -12,7 +12,7 @@ Select a connection, then open Scans → Start scan. Begin with one region to ch
 
 -   **All active regions + global**: includes the connection’s active regions and global resources.
 -   **Selected regions**: scans only your selection. Include Global when you need global resources.
--   **Selected VPCs / vSwitches**: scans a network scope. Choose a region, then find targets by name or ID.
+-   **Selected VPCs / vSwitches**: scans a network scope (AWS subnets). Choose a region, then find targets by name or ID.
 
 Region scans can be limited to resource types; leaving the selection empty uses all indexed types. Network scans derive the types from their targets.
 

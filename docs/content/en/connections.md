@@ -12,8 +12,8 @@ Use a dedicated cloud identity. Start with read permissions for inventory; add d
 
 | Provider | Credential options |
 | --- | --- |
-| [Alibaba Cloud](./alicloud.md) | AccessKey ID + AccessKey Secret<br>STS: also supply a Security Token and expiration time. |
 | [AWS](./aws.md) | Access Key ID + Secret Access Key<br>Session credentials: also supply a Session Token and expiration time. |
+| [Alibaba Cloud](./alicloud.md) | AccessKey ID + AccessKey Secret<br>STS: also supply a Security Token and expiration time. |
 | [Google Cloud (GCP)](./gcp.md) | Project ID + service account JSON key. |
 | [Microsoft Azure](./azure.md) | Subscription ID + Tenant ID + Application (client) ID + Client secret. |
 

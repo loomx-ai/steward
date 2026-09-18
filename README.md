@@ -1,11 +1,11 @@
 <p align="center">
-  <a href="https://loomx.ai/steward"><img src="web/public/brand/steward-symbol.svg" alt="Steward" width="72" height="72"></a>
+  <a href="https://loomx.ai/en/"><img src="web/public/brand/steward-symbol.svg" alt="Steward" width="72" height="72"></a>
 </p>
 
-<h1 align="center">steward</h1>
+<h1 align="center">Steward</h1>
 
 <p align="center">
-  <strong>See your cloud. Take control of cleanup.</strong>
+  <strong>Multi-cloud resource inventory, dependency visualization, and reviewed cleanup.</strong>
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <a href="https://loomx.ai/steward">Website</a> ·
+  <a href="https://loomx.ai/en/">Website</a> ·
   <a href="https://loomx.ai/steward/docs/latest/en/">Documentation</a> ·
   <a href="https://loomx.ai/steward/docs/latest/en/tutorials/first-inventory/">Tutorial</a>
 </p>
@@ -24,14 +24,14 @@
   English / <a href="README.zh-CN.md">简体中文</a>
 </p>
 
-Steward is an open-source tool for discovering, understanding, and cleaning up cloud resources. It brings [Alibaba Cloud](https://loomx.ai/steward/docs/latest/en/alicloud/), [AWS](https://loomx.ai/steward/docs/latest/en/aws/), [Google Cloud](https://loomx.ai/steward/docs/latest/en/gcp/), and [Microsoft Azure](https://loomx.ai/steward/docs/latest/en/azure/) into one interface, so you can see what is running and review what a cleanup would affect.
+Steward by LoomX is an open-source tool for multi-cloud resource inventory, dependency visualization, and reviewed cleanup. It brings [AWS](https://loomx.ai/steward/docs/latest/en/aws/), [Alibaba Cloud](https://loomx.ai/steward/docs/latest/en/alicloud/), [Google Cloud](https://loomx.ai/steward/docs/latest/en/gcp/), and [Microsoft Azure](https://loomx.ai/steward/docs/latest/en/azure/) into one interface, so you can see what is running and review what a cleanup would affect.
 
 Get started in your browser with [Steward Cloud](https://steward.console.loomx.ai), or [install Steward](https://loomx.ai/steward/docs/latest/en/installation/) to run it yourself.
 
 <p align="center">
-  <a href="https://loomx.ai/steward/docs/latest/en/topology/"><img src="docs/assets/relationships-en.png" alt="Steward resource panorama showing instances, a load balancer, a security group, and their relationships in a sample Alibaba Cloud VPC" width="960"></a>
+  <a href="https://loomx.ai/steward/docs/latest/en/topology/"><img src="docs/assets/relationships-en.png" alt="Steward resource panorama showing instances, a load balancer, a security group, and their relationships in a sample AWS VPC" width="960"></a>
   <br>
-  <sub>Resource panorama · Alibaba Cloud sample data</sub>
+  <sub>Resource panorama · AWS sample data</sub>
 </p>
 
 ## What Steward does
@@ -48,6 +48,8 @@ Get started in your browser with [Steward Cloud](https://steward.console.loomx.a
 Learn the concepts in [What is Steward?](https://loomx.ai/steward/docs/latest/en/intro/), then follow the [quick start](https://loomx.ai/steward/docs/latest/en/quick-start/) or work through your [first resource inventory](https://loomx.ai/steward/docs/latest/en/tutorials/first-inventory/).
 
 The [documentation](https://loomx.ai/steward/docs/latest/en/) covers cloud connections, inventory, relationships, cleanup, and deployment.
+
+Try a focused workflow: [inventory AWS resources across regions](https://loomx.ai/steward/docs/latest/en/tutorials/aws-resource-inventory/) or [review cloud dependencies before cleanup](https://loomx.ai/steward/docs/latest/en/tutorials/review-cleanup-dependencies/).
 
 ## Developing Steward
 

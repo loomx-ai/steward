@@ -1,20 +1,20 @@
 ---
 title: "Steward documentation"
-description: "Inventory cloud resources, understand dependencies, and review cleanup."
+description: "Learn Steward by LoomX: open-source multi-cloud inventory, dependency visualization, and cleanup review for AWS, Azure, Google Cloud, and Alibaba Cloud."
 navTitle: "Home"
 ---
 
-<div class="docs-start-links docs-entry-links"><a href="./installation.md"><strong>Install Steward</strong><span aria-hidden="true">→</span><span>Choose your system and install</span></a><a href="./tutorials.md"><strong>Tutorials</strong><span aria-hidden="true">→</span><span>From starting Steward to your first inventory</span></a><a href="./guides.md"><strong>Documentation</strong><span aria-hidden="true">→</span><span>Look up connections, scans, relationships, and cleanup</span></a></div>
+<div class="docs-start-links docs-entry-links"><a href="./installation.md"><strong>Install Steward</strong><span aria-hidden="true">→</span><span>Choose your system and install</span></a><a href="./tutorials.md"><strong>Tutorials</strong><span aria-hidden="true">→</span><span>Inventory AWS resources and review cleanup dependencies</span></a><a href="./guides.md"><strong>Documentation</strong><span aria-hidden="true">→</span><span>Look up connections, scans, relationships, and cleanup</span></a></div>
 
 ## What is Steward?
 
-Steward helps you inventory existing cloud resources, inspect dependencies, and review cleanup before execution. Run it locally or on a server, or use [Steward Cloud](https://steward.console.loomx.ai).
+Steward by LoomX is an open-source multi-cloud resource inventory and cleanup tool. Discover existing resources, visualize dependencies, and review cleanup before execution. Run it locally or on a server, or use [Steward Cloud](https://steward.console.loomx.ai).
 
 [How Steward works →](./intro.md)
 
 ## Connect a cloud platform
 
-<div class="docs-cloud-links"><a href="./alicloud.md"><strong>Alibaba Cloud</strong><span>RAM, STS, and browser authorization</span></a><a href="./aws.md"><strong>AWS</strong><span>IAM and resource discovery</span></a><a href="./gcp.md"><strong>Google Cloud</strong><span>Projects and service accounts</span></a><a href="./azure.md"><strong>Microsoft Azure</strong><span>Subscriptions and service principals</span></a></div>
+<div class="docs-cloud-links"><a href="./aws.md"><strong>AWS</strong><span>IAM and resource discovery</span></a><a href="./alicloud.md"><strong>Alibaba Cloud</strong><span>RAM, STS, and browser authorization</span></a><a href="./gcp.md"><strong>Google Cloud</strong><span>Projects and service accounts</span></a><a href="./azure.md"><strong>Microsoft Azure</strong><span>Subscriptions and service principals</span></a></div>
 
 ## Featured documentation
 

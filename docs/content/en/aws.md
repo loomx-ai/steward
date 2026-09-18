@@ -116,3 +116,5 @@ AWS has no equivalent for some resources available on other clouds. Steward does
 | A stack or resource cannot be deleted | Inspect termination protection, retention policy, dependencies, and operation errors before retrying. |
 
 Next: [Scan resources](./scans.md) · [Query resources](./resources.md) · [Clean up resources](./cleanup.md)
+
+For a coverage record you can verify across regions and connections, follow [Inventory AWS resources across regions](./tutorials/aws-resource-inventory.md).

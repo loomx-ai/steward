@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createDemoTransport } from './transport.mjs';
-import { connectionID, initialPath, kinds, scan } from './data.mjs';
+import { createDemoData } from './data.mjs';
 
 const source = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const web = path.resolve(process.env.STEWARD_SOURCE || source, 'web');
@@ -13,7 +13,9 @@ const requireSteward = createRequire(path.join(web, 'package.json'));
 const { createServer } = await import(pathToFileURL(requireSteward.resolve('vite')));
 const { default: react } = await import(pathToFileURL(requireSteward.resolve('@vitejs/plugin-react')));
 const { default: tailwindcss } = await import(pathToFileURL(requireSteward.resolve('@tailwindcss/vite')));
-const transport = createDemoTransport();
+const locale = process.env.DEMO_LOCALE === 'en' ? 'en' : 'zh';
+const { connectionID, initialPath, kinds, scan } = createDemoData(locale);
+const transport = createDemoTransport(locale);
 // Completed sample scan for documentation captures, using the real log protocol.
 const scanLogs = [
   ['2026-09-06T08:30:00Z', 'Scan started: ap-southeast-1, 6 resource types'],
@@ -21,7 +23,7 @@ const scanLogs = [
   ['2026-09-06T08:30:12Z', 'Scan completed: 6/6 targets succeeded'],
 ].map(([created_at, message], index) => ({ id: `demo-log-${index}`, level: 'info', target_key: 'ap-southeast-1', created_at, message }));
 const initializer = `const params = new URLSearchParams(location.search);
-localStorage.setItem('steward.locale', params.get('locale') === 'en' ? 'en-US' : 'zh-CN');
+localStorage.setItem('steward.locale', ${JSON.stringify(locale)} === 'en' ? 'en-US' : 'zh-CN');
 localStorage.setItem('steward.theme', params.get('theme') === 'dark' ? 'dark' : 'light');
 localStorage.setItem('steward.active-connection', ${JSON.stringify(connectionID)});
 localStorage.setItem('steward.sidebar-expanded', 'true');
@@ -67,4 +69,4 @@ const server = await createServer({
   }, react(), tailwindcss()],
 });
 await server.listen();
-console.log(`Unmodified Steward reference: http://localhost:5859${initialPath}?locale=zh&theme=light`);
+console.log(`Unmodified Steward reference: http://localhost:5859${initialPath}?locale=${locale}&theme=light`);
