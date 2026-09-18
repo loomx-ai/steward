@@ -54,7 +54,7 @@ dev:
 		api_pid=; \
 		trap 'if [ -n "$$api_pid" ]; then kill $$api_pid >/dev/null 2>&1 || true; wait $$api_pid >/dev/null 2>&1 || true; fi; rm -rf "$$dev_dir"' INT TERM EXIT; \
 		go build -o "$$dev_dir/steward" ./cmd/steward; \
-		STEWARD_AUTH_TOKEN=$$dev_token "$$dev_dir/steward" server start & \
+		STEWARD_HOME=.steward STEWARD_AUTH_TOKEN=$$dev_token "$$dev_dir/steward" server start & \
 		api_pid=$$!; \
 		ready=0; \
 		attempt=0; \

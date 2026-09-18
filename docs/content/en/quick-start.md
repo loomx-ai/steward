@@ -14,38 +14,13 @@ Choose an [installation method](./installation.md). Steward includes the web con
 
 ## Start Steward
 
-<div data-docs-tabs data-label="Start commands">
-<div data-tab="macOS / Linux">
-
-### macOS / Linux
-
 ```sh
-mkdir -p "$HOME/steward-data"
-cd "$HOME/steward-data"
 steward server start
 ```
-
-</div>
-<div data-tab="Windows">
-
-### Windows
-
-```powershell
-New-Item -ItemType Directory -Force "$HOME/steward-data" | Out-Null
-Set-Location "$HOME/steward-data"
-steward server start
-```
-
-</div>
-</div>
 
 Open [http://127.0.0.1:8585](http://127.0.0.1:8585). No account or login is required. The server accepts local connections by default.
 
-Press Ctrl+C to stop. On subsequent starts, use the same working directory:
-
-```
-steward server start
-```
+Press Ctrl+C to stop.
 
 <span id="first-scan"></span>
 
@@ -64,7 +39,7 @@ With the server running, follow [First resource inventory](./tutorials/first-inv
 
 ## Where data lives
 
-The default database is .steward/steward.db; the credential key is .steward/credential-master-key. Paths are relative to the directory where you start Steward. Use the same directory on restart.
+Data is stored in `~/.steward` (on Windows, `%USERPROFILE%\.steward`): the database `steward.db` and the credential key `credential-master-key`. Set `STEWARD_HOME` to use another directory.
 
 <aside class="docs-note">Back up the database and its original key together. Replacing the key makes existing cloud credentials unreadable.</aside>
 

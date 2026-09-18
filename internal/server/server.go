@@ -19,6 +19,7 @@ import (
 	topologyapp "github.com/loomx-ai/steward/internal/app/topology"
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/credential"
+	"github.com/loomx-ai/steward/internal/datadir"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/persistence/postgres"
 	"github.com/loomx-ai/steward/internal/persistence/sqlite"
@@ -82,7 +83,9 @@ func Run(ctx context.Context, config Config) error {
 		}
 		dsn := config.DSN
 		if dsn == "" {
-			dsn = filepath.Join(".steward", "steward.db")
+			if dsn, err = datadir.DatabasePath(); err != nil {
+				return err
+			}
 		}
 		config.CredentialMasterKey, err = localCredentialKey(filepath.Dir(dsn), len(connections.Items) == 0)
 		if err != nil {
@@ -256,7 +259,11 @@ func openRepositories(config Config) (persistence.Repositories, error) {
 	switch driver {
 	case "sqlite":
 		if strings.TrimSpace(config.DSN) == "" {
-			config.DSN = filepath.Join(".steward", "steward.db")
+			path, err := datadir.DatabasePath()
+			if err != nil {
+				return nil, err
+			}
+			config.DSN = path
 		}
 		if err := os.MkdirAll(filepath.Dir(config.DSN), 0o755); err != nil {
 			return nil, err

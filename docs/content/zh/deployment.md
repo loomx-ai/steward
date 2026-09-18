@@ -8,15 +8,13 @@ navTitle: "部署服务"
 
 ## 运行服务
 
-按[安装指南](./installation.md)安装 Steward，并在固定目录启动：
+按[安装指南](./installation.md)安装 Steward，然后启动：
 
 ```sh
-mkdir -p "$HOME/steward-data"
-cd "$HOME/steward-data"
 steward server start
 ```
 
-使用进程管理器时，将工作目录设为该目录，并为 `.steward/` 保留写权限。
+数据保存在运行用户的 `~/.steward`。使用进程管理器时，将 `STEWARD_HOME` 设为服务可写的持久目录。
 
 <span id="network"></span>
 
@@ -39,14 +37,14 @@ STEWARD_CREDENTIAL_MASTER_KEY=<saved-base64-key>
 STEWARD_ADDR=0.0.0.0:8585
 ```
 
-以上是配置模板，需替换占位值。用户通过 HTTPS 打开界面后，使用保存的 Token 登录。从本机模式迁移时，加密密钥必须使用原 .steward/credential-master-key 中的值。
+以上是配置模板，需替换占位值。用户通过 HTTPS 打开界面后，使用保存的 Token 登录。从本机模式迁移时，加密密钥必须使用原 `~/.steward/credential-master-key` 中的值。
 
 <span id="backup"></span>
 
 ## 备份数据
 
-停止服务后，备份整个 `.steward/` 目录，包括数据库和原始凭证密钥。数据库或密钥配置在其他位置时也需一并保存；PostgreSQL 使用数据库自己的备份工具。
+停止服务后，备份整个数据目录（`~/.steward` 或 `STEWARD_HOME`），包括数据库和原始凭证密钥。数据库或密钥配置在其他位置时也需一并保存；PostgreSQL 使用数据库自己的备份工具。
 
-恢复时使用原数据库、原密钥和相同的工作目录。更换密钥会导致已有凭证无法解密。
+恢复时将原数据库和原密钥放回同一数据目录。更换密钥会导致已有凭证无法解密。
 
 [配置参考 →](./configuration.md) · [故障排查 →](./troubleshooting.md)

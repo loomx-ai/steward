@@ -8,15 +8,13 @@ navTitle: "Deploy the server"
 
 ## Run the server
 
-Follow [Installation](./installation.md), then start Steward from a stable directory:
+Follow [Installation](./installation.md), then start Steward:
 
 ```sh
-mkdir -p "$HOME/steward-data"
-cd "$HOME/steward-data"
 steward server start
 ```
 
-When using a process manager, set its working directory to this directory and allow writes to `.steward/`.
+Data is stored in `~/.steward` for the user running Steward. When using a process manager, set `STEWARD_HOME` to a persistent directory the service can write.
 
 <span id="network"></span>
 
@@ -39,14 +37,14 @@ STEWARD_CREDENTIAL_MASTER_KEY=<saved-base64-key>
 STEWARD_ADDR=0.0.0.0:8585
 ```
 
-This is a configuration template: replace the placeholders. Users open the HTTPS URL and sign in with the saved token. When migrating from local mode, reuse the value in the original .steward/credential-master-key.
+This is a configuration template: replace the placeholders. Users open the HTTPS URL and sign in with the saved token. When migrating from local mode, reuse the value in the original `~/.steward/credential-master-key`.
 
 <span id="backup"></span>
 
 ## Back up data
 
-Stop the server and back up the entire `.steward/` directory, including the database and its original credential key. Include databases or keys stored elsewhere. Use database-native backup tools for PostgreSQL.
+Stop the server and back up the entire data directory (`~/.steward` or `STEWARD_HOME`), including the database and its original credential key. Include databases or keys stored elsewhere. Use database-native backup tools for PostgreSQL.
 
-Restore the original database and key, and use the same working directory. Replacing the key makes stored credentials unreadable.
+Restore the original database and key, to the same data directory. Replacing the key makes stored credentials unreadable.
 
 [Configuration reference →](./configuration.md) · [Troubleshooting →](./troubleshooting.md)

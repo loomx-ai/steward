@@ -10,7 +10,7 @@ Check the selected connection, scan scope, and failed targets. Creating a connec
 
 ## Credentials cannot be decrypted after restart
 
-Restore the original key and check the database and working directory. Do not overwrite the old key with a new one.
+Restore the original key and check the data directory (`~/.steward` or `STEWARD_HOME`). Do not overwrite the old key with a new one.
 
 ## Cleanup reports a permission error
 

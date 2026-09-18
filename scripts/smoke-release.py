@@ -25,6 +25,12 @@ def main():
         shutil.copy2(source, binary)
         env = {key: value for key, value in os.environ.items() if not key.startswith("STEWARD_")}
         env["STEWARD_AUTH_MODE"] = "local"
+        # Data defaults to ~/.steward; keep it inside the temporary directory.
+        home = Path(directory) / "home"
+        home.mkdir()
+        env["HOME"] = env["USERPROFILE"] = str(home)
+        elsewhere = Path(directory) / "elsewhere"
+        elsewhere.mkdir()
         if os.name == "nt":
             # A user's machine does not have MinGW's DLLs on PATH.
             system_root = os.environ["SystemRoot"]
@@ -57,14 +63,15 @@ def main():
                 assert scripts, "the release has no bundled JavaScript"
                 with http.open(base + scripts[0], timeout=5) as response:
                     assert response.status == 200 and len(response.read()) > 0
-                data = Path(directory) / ".steward"
+                data = home / ".steward"
                 assert (data / "credential-master-key").is_file()
                 with closing(sqlite3.connect(data / "steward.db")) as db:
                     assert db.execute("SELECT MAX(version_id) FROM goose_db_version WHERE is_applied").fetchone()[0] > 0
                     assert db.execute("SELECT COUNT(*) FROM cloud_connections").fetchone()[0] == 0
-                status = subprocess.check_output([binary, "server", "status"], cwd=directory, env=env, text=True)
+                assert not (Path(directory) / ".steward").exists()
+                status = subprocess.check_output([binary, "server", "status"], cwd=elsewhere, env=env, text=True)
                 assert "status=running" in status and f"version={version}" in status, status
-                subprocess.run([binary, "server", "stop"], cwd=directory, env=env, check=True)
+                subprocess.run([binary, "server", "stop"], cwd=elsewhere, env=env, check=True)
                 process.wait(timeout=15)
                 status = subprocess.check_output([binary, "server", "status"], cwd=directory, env=env, text=True)
                 assert "status=stopped" in status, status

@@ -14,38 +14,13 @@ navTitle: "快速开始"
 
 ## 启动 Steward
 
-<div data-docs-tabs data-label="启动方式">
-<div data-tab="macOS / Linux">
-
-### macOS / Linux
-
 ```sh
-mkdir -p "$HOME/steward-data"
-cd "$HOME/steward-data"
 steward server start
 ```
-
-</div>
-<div data-tab="Windows">
-
-### Windows
-
-```powershell
-New-Item -ItemType Directory -Force "$HOME/steward-data" | Out-Null
-Set-Location "$HOME/steward-data"
-steward server start
-```
-
-</div>
-</div>
 
 打开 [http://127.0.0.1:8585](http://127.0.0.1:8585)，无需注册或登录。服务默认只接受本机访问。
 
-按 Ctrl+C 停止服务。下次从同一工作目录启动：
-
-```
-steward server start
-```
+按 Ctrl+C 停止服务。
 
 <span id="first-scan"></span>
 
@@ -64,7 +39,7 @@ steward server start
 
 ## 数据保存在哪里
 
-默认数据库为 .steward/steward.db，凭证加密密钥为 .steward/credential-master-key，路径相对于启动目录。重启时使用同一目录。
+数据保存在 `~/.steward`（Windows 为 `%USERPROFILE%\.steward`）：数据库 `steward.db` 和凭证密钥 `credential-master-key`。设置 `STEWARD_HOME` 可改用其他目录。
 
 <aside class="docs-note">备份必须同时保存数据库和原始密钥。更换密钥会导致已有云凭证无法解密。</aside>
 

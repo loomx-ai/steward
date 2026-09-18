@@ -14,6 +14,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/loomx-ai/steward/internal/datadir"
 	"github.com/loomx-ai/steward/internal/server"
 	httptransport "github.com/loomx-ai/steward/internal/transport/http"
 	"github.com/loomx-ai/steward/internal/workloadidentity"
@@ -62,8 +63,18 @@ func newServerStartCommand(version string) *cobra.Command {
 			if dbDriver == "" {
 				dbDriver = envDefault("STEWARD_DB_DRIVER", "sqlite")
 			}
+			data, err := datadir.Resolve()
+			if err != nil {
+				return err
+			}
+			if data.WorkingDirectory {
+				fmt.Fprintf(cmd.ErrOrStderr(), "Using data in %s. Move it to ~/%s or set STEWARD_HOME to keep one location.\n", data.Path, datadir.Name)
+			}
 			if dbDriver == "sqlite" && dsn == "" {
-				dsn = filepath.Join(".steward", "steward.db")
+				dsn = filepath.Join(data.Path, "steward.db")
+			}
+			if statusPath == "" {
+				statusPath = filepath.Join(data.Path, "server.json")
 			}
 			role := httptransport.Role(strings.ToLower(strings.TrimSpace(authRole)))
 			if role != httptransport.RoleViewer && role != httptransport.RoleOperator && role != httptransport.RoleAdmin {
@@ -104,7 +115,7 @@ func newServerStartCommand(version string) *cobra.Command {
 	cmd.Flags().StringVar(&dbDriver, "db-driver", envDefault("STEWARD_DB_DRIVER", "sqlite"), "database driver: sqlite or postgres")
 	cmd.Flags().StringVar(&dsn, "db-dsn", "", "database DSN or SQLite path; defaults to STEWARD_DB_DSN")
 	cmd.Flags().StringVar(&migrationsDir, "migrations-dir", "", "directory overriding the embedded database migrations")
-	cmd.Flags().StringVar(&statusPath, "status-file", defaultStatusPath(), "server status file")
+	cmd.Flags().StringVar(&statusPath, "status-file", "", "server status file; defaults to server.json in the data directory")
 	cmd.Flags().StringVar(&authMode, "auth-mode", os.Getenv("STEWARD_AUTH_MODE"), "authentication mode: local, token, or cloud; defaults to local unless a token is configured")
 	cmd.Flags().StringVar(&authToken, "auth-token", os.Getenv("STEWARD_AUTH_TOKEN"), "bearer token for token or cloud authentication")
 	cmd.Flags().StringVar(&authSubject, "auth-subject", envDefault("STEWARD_AUTH_SUBJECT", "local-admin"), "server-verified subject for the configured token")
@@ -130,6 +141,10 @@ func newServerStopCommand() *cobra.Command {
 		Use:   "stop",
 		Short: "Stop the local server",
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			statusPath, err := resolveStatusPath(statusPath)
+			if err != nil {
+				return err
+			}
 			status, err := readServerStatus(statusPath)
 			if err != nil {
 				return err
@@ -146,7 +161,7 @@ func newServerStopCommand() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&statusPath, "status-file", defaultStatusPath(), "server status file")
+	cmd.Flags().StringVar(&statusPath, "status-file", "", "server status file; defaults to server.json in the data directory")
 	return cmd
 }
 
@@ -156,6 +171,10 @@ func newServerStatusCommand() *cobra.Command {
 		Use:   "status",
 		Short: "Show local server status",
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			statusPath, err := resolveStatusPath(statusPath)
+			if err != nil {
+				return err
+			}
 			status, err := readServerStatus(statusPath)
 			if err != nil {
 				fmt.Fprintln(cmd.OutOrStdout(), "status=stopped")
@@ -171,7 +190,7 @@ func newServerStatusCommand() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&statusPath, "status-file", defaultStatusPath(), "server status file")
+	cmd.Flags().StringVar(&statusPath, "status-file", "", "server status file; defaults to server.json in the data directory")
 	return cmd
 }
 
@@ -205,8 +224,15 @@ func readServerStatus(path string) (ServerStatus, error) {
 	return status, nil
 }
 
-func defaultStatusPath() string {
-	return filepath.Join(".steward", "server.json")
+func resolveStatusPath(path string) (string, error) {
+	if path != "" {
+		return path, nil
+	}
+	data, err := datadir.Path()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(data, "server.json"), nil
 }
 
 func envDefault(name string, fallback string) string {
