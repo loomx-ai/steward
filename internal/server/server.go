@@ -134,14 +134,19 @@ func Run(ctx context.Context, config Config) error {
 	if err != nil {
 		return err
 	}
-	oauthFlows := alicloud.NewOAuthFlowManager()
-	defer func() {
-		closeCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		if err := oauthFlows.Close(closeCtx); err != nil {
-			slog.Error("Alibaba Cloud OAuth flow service did not close cleanly", "error", err)
-		}
-	}()
+	// Browser OAuth completes on a loopback callback, which a hosted cloud server cannot receive.
+	var oauthFlows contracts.OAuthFlowService
+	if authMode != "cloud" {
+		manager := alicloud.NewOAuthFlowManager()
+		defer func() {
+			closeCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			if err := manager.Close(closeCtx); err != nil {
+				slog.Error("Alibaba Cloud OAuth flow service did not close cleanly", "error", err)
+			}
+		}()
+		oauthFlows = manager
+	}
 	apiHandler := httptransport.NewRouter(httptransport.Dependencies{
 		WorkloadIdentity: oidc,
 		Repositories:     repositories, CleanupTasks: planner, Connections: connectionService, Regions: regionService, RegionRefreshes: regionQueue, Scans: scanCreator, ScanControls: scanControls, NetworkTargets: registry, Topology: topologyService, Bundles: registry, Providers: registry, OAuthFlows: oauthFlows, Authenticator: authenticator,

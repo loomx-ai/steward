@@ -163,6 +163,17 @@ func (a *API) listProviders(response http.ResponseWriter, _ *http.Request) {
 		return
 	}
 	descriptors := a.dependencies.Providers.ProviderDescriptors()
+	if a.dependencies.OAuthFlows == nil {
+		for index := range descriptors {
+			schemas := make([]contracts.CredentialSchema, 0, len(descriptors[index].CredentialSchemas))
+			for _, schema := range descriptors[index].CredentialSchemas {
+				if schema.Flow != "browser_oauth" {
+					schemas = append(schemas, schema)
+				}
+			}
+			descriptors[index].CredentialSchemas = schemas
+		}
+	}
 	if a.dependencies.WorkloadIdentity != nil {
 		for index := range descriptors {
 			schema := workloadidentity.Schema(descriptors[index].Provider)

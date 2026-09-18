@@ -48,3 +48,32 @@ func TestOIDCDiscoveryRequiresConfigurationAndTrustRequiresAdmin(t *testing.T) {
 		}
 	}
 }
+
+type oauthFlowsStub struct{ contracts.OAuthFlowService }
+
+type oauthProviders struct{}
+
+func (oauthProviders) ProviderDescriptors() []contracts.ProviderDescriptor {
+	return []contracts.ProviderDescriptor{{Provider: asset.ProviderAliCloud, CredentialSchemas: []contracts.CredentialSchema{
+		{Type: asset.CredentialAliCloudAccessKey},
+		{Type: asset.CredentialAliCloudOAuth, Flow: "browser_oauth"},
+	}}}
+}
+
+func TestProvidersHideBrowserOAuthWithoutFlowService(t *testing.T) {
+	auth := NewStaticBearerAuthenticator([]TokenBinding{{Token: "viewer", Principal: Principal{Subject: "viewer", Roles: []Role{RoleViewer}}}})
+	for _, enabled := range []bool{false, true} {
+		deps := Dependencies{Authenticator: auth, Providers: oauthProviders{}}
+		if enabled {
+			deps.OAuthFlows = oauthFlowsStub{}
+		}
+		req := httptest.NewRequest("GET", "/api/providers", nil)
+		req.Header.Set("Authorization", "Bearer viewer")
+		w := httptest.NewRecorder()
+		NewRouter(deps).ServeHTTP(w, req)
+		body := w.Body.String()
+		if w.Code != 200 || !strings.Contains(body, `"type":"access_key"`) || strings.Contains(body, `"flow":"browser_oauth"`) != enabled {
+			t.Fatalf("OAuth availability mismatch (enabled=%v): %d %s", enabled, w.Code, body)
+		}
+	}
+}
