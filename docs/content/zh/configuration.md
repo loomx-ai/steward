@@ -14,6 +14,7 @@ navTitle: "配置参考"
 | `STEWARD_HOME` | SQLite 数据库、凭证密钥和服务状态的目录；`~/.steward` |
 | `STEWARD_DB_DRIVER` | sqlite / postgres；默认 sqlite |
 | `STEWARD_DB_DSN` | SQLite 路径或 PostgreSQL 连接串 |
+| `STEWARD_DB_MAX_CONNS` | PostgreSQL 连接池上限；默认不限制，必须为正整数。应低于数据库角色的连接数限制 |
 | `STEWARD_CREDENTIAL_MASTER_KEY` | 32 字节密钥的 Base64 编码；必须持久保存 |
 | `STEWARD_SCAN_CONCURRENCY` | 扫描并发；默认 4，必须为正整数 |
 | `STEWARD_AUTH_ROLE` | viewer / operator / admin；Token 对应角色，默认 admin |

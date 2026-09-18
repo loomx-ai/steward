@@ -9,7 +9,9 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func Open(dsn, migrationsDirectory string) (*Repositories, error) {
+// Open connects to PostgreSQL. A positive maxConns caps the connection pool so
+// callers queue instead of exceeding a role's CONNECTION LIMIT.
+func Open(dsn, migrationsDirectory string, maxConns int) (*Repositories, error) {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{TranslateError: true, Logger: logger.Default.LogMode(logger.Silent)})
 	if err != nil {
 		return nil, fmt.Errorf("open postgres: %w", err)
@@ -17,6 +19,10 @@ func Open(dsn, migrationsDirectory string) (*Repositories, error) {
 	sqlDB, err := db.DB()
 	if err != nil {
 		return nil, fmt.Errorf("get postgres database: %w", err)
+	}
+	if maxConns > 0 {
+		sqlDB.SetMaxOpenConns(maxConns)
+		sqlDB.SetMaxIdleConns(maxConns)
 	}
 	if err := persistence.Migrate(sqlDB, "postgres", migrationsDirectory); err != nil {
 		_ = sqlDB.Close()

@@ -14,6 +14,7 @@ navTitle: "Configuration"
 | `STEWARD_HOME` | Data directory for the SQLite database, credential key, and server status; `~/.steward` |
 | `STEWARD_DB_DRIVER` | sqlite / postgres; default sqlite |
 | `STEWARD_DB_DSN` | SQLite path or PostgreSQL connection string |
+| `STEWARD_DB_MAX_CONNS` | PostgreSQL connection pool limit; unlimited by default, positive integer. Keep it below the database role's connection limit |
 | `STEWARD_CREDENTIAL_MASTER_KEY` | Base64-encoded 32-byte key; retain permanently |
 | `STEWARD_SCAN_CONCURRENCY` | Scan concurrency; default 4, positive integer |
 | `STEWARD_AUTH_ROLE` | viewer / operator / admin; token role, default admin |

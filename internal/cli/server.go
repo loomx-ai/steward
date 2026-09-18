@@ -57,6 +57,10 @@ func newServerStartCommand(version string) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			dbMaxConns, err := positiveEnvInt("STEWARD_DB_MAX_CONNS", 0)
+			if err != nil {
+				return err
+			}
 			if dsn == "" {
 				dsn = os.Getenv("STEWARD_DB_DSN")
 			}
@@ -104,6 +108,7 @@ func newServerStartCommand(version string) *cobra.Command {
 				MigrationsDir:       migrationsDir,
 				PollInterval:        2 * time.Second,
 				ScanConcurrency:     scanConcurrency,
+				DBMaxConns:          dbMaxConns,
 				CredentialMasterKey: os.Getenv("STEWARD_CREDENTIAL_MASTER_KEY"),
 				OIDC:                workloadidentity.Config{IssuerURL: os.Getenv("STEWARD_OIDC_ISSUER_URL"), WorkspaceID: os.Getenv("STEWARD_OIDC_WORKSPACE_ID"), SigningKeyFile: os.Getenv("STEWARD_OIDC_SIGNING_KEY_FILE")},
 				AuthTokens:          bindings,

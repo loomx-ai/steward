@@ -42,6 +42,7 @@ type Config struct {
 	MigrationsDir       string
 	PollInterval        time.Duration
 	ScanConcurrency     int
+	DBMaxConns          int
 	AuthTokens          []httptransport.TokenBinding
 	AuthMode            string
 	CredentialMasterKey string
@@ -278,7 +279,7 @@ func openRepositories(config Config) (persistence.Repositories, error) {
 		if strings.TrimSpace(config.DSN) == "" {
 			return nil, fmt.Errorf("PostgreSQL DSN is required")
 		}
-		return postgres.Open(config.DSN, config.MigrationsDir)
+		return postgres.Open(config.DSN, config.MigrationsDir, config.DBMaxConns)
 	default:
 		return nil, fmt.Errorf("unsupported database driver %q: only sqlite and postgres are supported", config.DBDriver)
 	}
