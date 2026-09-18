@@ -7476,3 +7476,12 @@ CI job `azure-apim-emulator` builds the pinned community APIM emulator and runs
 Microsoft's pinned Test Proxy release and runs the Data Protection playback
 tests. The APIM adapter now answers the Monitor, RBAC, diagnostic and RBAC scope
 indexes with the shared empty native fixtures, which the emulator does not own.
+
+### Race verification split per package group
+
+`providers/azure` alone needs more than the previous shared 30-minute race
+budget: 346 of its tests pass inside 25 minutes under `-race`, with one Azure
+Local recovery test at 216s and several APIM tests between 50s and 93s. The race
+run is now a separate matrix job with one 60-minute timeout per group (internal,
+Azure, GCP, AWS with Alibaba Cloud and the matrix package), so a large package
+cannot exhaust another group's time and a genuine hang is still caught.

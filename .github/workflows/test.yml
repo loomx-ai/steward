@@ -41,11 +41,45 @@ jobs:
       - run: npm --prefix web ci
       - run: python3 -m unittest discover -s scripts -p 'test_*.py'
       - run: go test ./...
-      - run: go test -race -timeout 30m ./internal/... ./providers/...
       - run: go vet ./...
       - run: npm --prefix web run test
       - run: npm --prefix web run lint
       - run: npm --prefix web run build
+
+  # The race detector multiplies each package's runtime, and providers/azure
+  # alone exceeds a shared 30-minute budget. Each group gets its own job and
+  # timeout so one large package cannot exhaust the others' time.
+  race:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: internal
+            packages: ./internal/...
+          - name: azure-abc
+            packages: ./providers/azure/...
+            run: "-run ^Test[A-C]"
+          - name: azure-de
+            packages: ./providers/azure/...
+            run: "-run ^Test[D-E]"
+          - name: azure-fp
+            packages: ./providers/azure/...
+            run: "-run ^Test[F-P]"
+          - name: azure-rw
+            packages: ./providers/azure/...
+            run: "-run ^Test[R-W]"
+          - name: gcp
+            packages: ./providers/gcp/...
+          - name: aws-alicloud
+            packages: ./providers/aws/... ./providers/alicloud/... ./providers
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go test -race -count=1 -timeout 60m ${{ matrix.run }} ${{ matrix.packages }}
 
   aws-emulator:
     runs-on: ubuntu-latest
