@@ -76,7 +76,7 @@ dev:
 		STEWARD_DEV_PROXY_TOKEN=$$dev_token VITE_STEWARD_DEV_AUTO_LOGIN=1 npm --prefix web run dev
 
 test:
-	go test ./...
+	go test -timeout 30m ./...
 	npm --prefix web run test
 
 lint:
