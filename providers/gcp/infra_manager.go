@@ -166,7 +166,7 @@ func (c *client) infraIdentity(kind, id string, data map[string]any) error {
 	if kind == infraResource || kind == infraChange || kind == infraDrift {
 		info, ok := data["terraformInfo"].(map[string]any)
 		if !ok || text(info["address"]) == "" || text(info["type"]) == "" {
-			return groupDenied("infra_terraform_identity_missing")
+			return groupDenied("infra_deployment_identity_missing")
 		}
 	}
 	return nil

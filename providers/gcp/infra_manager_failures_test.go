@@ -241,7 +241,7 @@ func TestInfraManagerChangedPlansNeverReachDelete(t *testing.T) {
 	}
 }
 
-func TestInfraManagerOpaqueTerraformRecordsRequireExplicitAbandon(t *testing.T) {
+func TestInfraManagerOpaqueDeploymentRecordsRequireExplicitAbandon(t *testing.T) {
 	for _, mode := range []string{"iam-member", "unknown-provider", "missing-cai", "many-cai", "wrong-tf-id", "cross-project", "unreconciled"} {
 		t.Run(mode, func(t *testing.T) {
 			s := newInfraScenario(t)
@@ -326,7 +326,7 @@ func TestInfraManagerWaitRequiresPhysicalAndMetadataProof(t *testing.T) {
 				s.physical[infraTestNetwork] = oldPhysical
 				wantErr = true
 			case "physical-deleting-config":
-				// Terraform can change attachments/configuration during destroy.
+				// The deployment engine can change attachments/configuration during teardown.
 				// The original immutable Compute ID must remain a pending resource.
 				oldPhysical["subnetworks"] = []any{}
 				s.physical[infraTestNetwork] = oldPhysical
@@ -475,7 +475,7 @@ func TestInfraManagerRejectsChangedOperationAndRecoveryState(t *testing.T) {
 			}
 			encoded, _ := json.Marshal(err)
 			if strings.Contains(string(encoded), "INFRA_PRIVATE_ERROR") {
-				t.Fatal("Terraform failure leaked private text")
+				t.Fatal("deployment failure leaked private text")
 			}
 		})
 	}

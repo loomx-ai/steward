@@ -62,7 +62,7 @@ func (s *infraScenario) transport(t *testing.T) roundTripFunc {
 		respond := func(code int, data any) (*http.Response, error) { return dataformResponse(req, code, data), nil }
 		if req.URL.Host == "compute.googleapis.com" {
 			if req.Method != "GET" {
-				t.Fatalf("Terraform cleanup sent a direct Compute mutation: %s", req.URL)
+				t.Fatalf("deployment cleanup sent a direct Compute mutation: %s", req.URL)
 			}
 			prefix := "/compute/v1/projects/sample-project/global/networks"
 			if req.URL.Path == prefix {
@@ -85,7 +85,7 @@ func (s *infraScenario) transport(t *testing.T) roundTripFunc {
 		}
 		if req.URL.Host == "storage.googleapis.com" {
 			if req.Method != "GET" {
-				t.Fatalf("Terraform cleanup sent a direct Storage mutation: %s", req.URL)
+				t.Fatalf("deployment cleanup sent a direct Storage mutation: %s", req.URL)
 			}
 			if req.URL.Path == "/storage/v1/b" {
 				values := []any{}

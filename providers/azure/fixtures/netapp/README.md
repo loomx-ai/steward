@@ -283,10 +283,8 @@ automatic unassignment, or live cloud acceptance.
 
 Snapshot-policy cleanup uses the selected `Volumes_Update` PATCH schema with only
 `properties.dataProtection.snapshot.snapshotPolicyId` set to the empty string.
-A pinned upstream implementation independently uses this shape for removal:
-[AzureRM volume helper](https://github.com/hashicorp/terraform-provider-azurerm/blob/2c9b06e2976765e90af69918b6793fb5b0ca8378/internal/services/netapp/netapp_volume_helper.go#L360),
-called by its volume PATCH update path. Microsoft requires policies to be removed
-from all volumes before policy deletion. This is API/schema and upstream-code
+Microsoft requires policies to be removed from all volumes before policy
+deletion. This is API/schema and upstream-code
 evidence, not an Azure recording of a PATCH or unassignment. The separately
 retrieved Azure CLI binding recordings use PUT and do not establish unassignment.
 
@@ -312,8 +310,8 @@ to a volume's `latestBackupStatus/current`. Its only declared successful respons
 is HTTP 200 with root-level `BackupStatus` fields (not an ARM `properties` wrapper).
 The status reader permits the next policy step only for explicit `Idle`;
 `Transferring` waits, while Failed, Unknown, omitted and future states fail closed.
-HTTP 204 is not native evidence of an idle backup: Terraform's similarly named
-204 state is an internal waiter sentinel. Tests cover the pinned example, native
+HTTP 204 is not native evidence of an idle backup: it carries no transfer
+state at all. Tests cover the pinned example, native
 transfer states, malformed/absent responses, asynchronous headers, HTTP failures
 and foreign resource scope. This is a prerequisite for backup-policy unassignment;
 it does not yet enable that cleanup action or establish live Azure acceptance.
@@ -337,9 +335,9 @@ snapshot bindings, other writable settings and native policy UUID remain bound.
 requests and diagnostic headers are omitted. The native completed policy includes
 backupPolicyId UUID and provisioningState Succeeded, while the earlier creation
 response does not. Thus missing UUID or incomplete membership prevents cleanup.
-The pinned AzureRM volume deletion source cited above explicitly separates
-suspension and ID clearing. Its subsequent volume DELETE/forceDelete is not part
-of policy cleanup; all volumes, children, vaults and historical backups remain.
+Suspension and ID clearing stay separate steps. A subsequent volume
+DELETE/forceDelete is not part of policy cleanup; all volumes, children, vaults
+and historical backups remain.
 Synchronous/asynchronous fixtures and SQLite restart tests are offline validation;
 real Azure PATCH/unassignment acceptance remains open.
 
@@ -350,9 +348,9 @@ surround each pass, and final parent/current-consumer checks bind the membership
 to its assignment review. Signed membership binds the exact backup deletion impacts
 of vault cleanup; newly appearing backups require a fresh review.
 
-The pinned [AzureRM vault deletion implementation](https://github.com/hashicorp/terraform-provider-azurerm/blob/2c9b06e2976765e90af69918b6793fb5b0ca8378/internal/services/netapp/netapp_backup_vault_resource.go#L200)
-describes backups becoming visible after source-volume deletion. Its automatic
-retry/delete behavior is not authorization to delete unreviewed resources here.
+Backups can become visible only after their source volume is deleted, so a
+vault that listed no backups earlier can hold them later. Retrying a vault
+deletion is never authorization to delete unreviewed backups here.
 [Native vault management](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-vault-manage)
 requires removing backups before vault unassignment. These sources establish
 sequencing constraints; they do not prove a volume PATCH clearing backupVaultId.

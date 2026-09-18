@@ -7,7 +7,7 @@ import (
 )
 
 // A direct driver's Preflight may allow a preparation phase (for example,
-// changing disk autoDelete) before its DELETE. Terraform owns this deletion, so
+// changing disk autoDelete) before its DELETE. the deployment owns this deletion, so
 // that permission alone cannot authorize skipping the preparation. Its current
 // native cascade must already match every reviewed descendant policy.
 func (a *action) infraNativeDeleteReady(ctx context.Context, request contracts.ActionRequest) error {

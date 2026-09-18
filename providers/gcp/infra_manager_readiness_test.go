@@ -66,7 +66,7 @@ func TestInfraManagerDoesNotSkipNativeResourcePreparation(t *testing.T) {
 			t.Fatalf("GKE fixture must allow its normal preparation flow: %+v %v", check, err)
 		}
 		if err := driver.infraNativeDeleteReady(context.Background(), request); err == nil || len(f.mutations) != 0 {
-			t.Fatal("Terraform may not bypass pending Kubernetes finalizers")
+			t.Fatal("deployment teardown may not bypass pending Kubernetes finalizers")
 		}
 	})
 	t.Run("tpu-data-disks", func(t *testing.T) {
@@ -80,7 +80,7 @@ func TestInfraManagerDoesNotSkipNativeResourcePreparation(t *testing.T) {
 		}
 		driver := raw.(*action)
 		if err := driver.infraNativeDeleteReady(context.Background(), request); err == nil {
-			t.Fatal("Terraform may not bypass TPU data disk detachment")
+			t.Fatal("deployment teardown may not bypass TPU data disk detachment")
 		}
 		delete(s.resources[tpuTestNode], "dataDisks")
 		if err := driver.infraNativeDeleteReady(context.Background(), request); err != nil {

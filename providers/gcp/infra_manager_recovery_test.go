@@ -132,7 +132,7 @@ func TestInfraManagerTransitiveGKENodePoolCleanup(t *testing.T) {
 			s.handle = func(req *http.Request) (*http.Response, bool) {
 				if req.URL.Host == "container.googleapis.com" || req.URL.Host == "compute.googleapis.com" && !strings.Contains(req.URL.Path, "/global/networks") {
 					if req.Method != "GET" && !(req.Method == "POST" && (strings.HasSuffix(req.URL.Path, "/listPerInstanceConfigs") || strings.HasSuffix(req.URL.Path, "/listManagedInstances"))) {
-						t.Fatalf("Infra Manager bypassed Terraform: %s %s", req.Method, req.URL)
+						t.Fatalf("Infra Manager bypassed its deployment engine: %s %s", req.Method, req.URL)
 					}
 					response, err := f.roundTrip(req)
 					if err != nil {
@@ -190,7 +190,7 @@ func TestInfraManagerTransitiveGKENodePoolCleanup(t *testing.T) {
 			}
 			action, err := driver.Execute(context.Background(), request)
 			if err != nil || len(s.writes) != 1 {
-				t.Fatalf("native Terraform delete: %+v %v", action, err)
+				t.Fatalf("native deployment delete: %+v %v", action, err)
 			}
 			s.finish(action.ProviderOperationID, false)
 			driver, action = infraRestart(t, s, request, action)
@@ -219,7 +219,7 @@ func TestInfraManagerTransitiveGKENodePoolCleanup(t *testing.T) {
 				t.Fatalf("completed nested lifecycle: %+v %v", wait, err)
 			}
 			if f.live("data") == nil || f.live("ip") == nil || f.deletes != 0 || len(f.mutations) != 0 || len(s.writes) != 1 {
-				t.Fatal("Terraform delegation lost persistent resources or sent child writes")
+				t.Fatal("deployment delegation lost persistent resources or sent child writes")
 			}
 		})
 	}

@@ -1,0 +1,212 @@
+{
+  "cai_alias_sha256": "e270808543c64ac73f76bb060a262f1b311acbbc9cd5e5761ea59a1a771224a5",
+  "cai_alias_source": "https://cloud.google.com/asset-inventory/docs/asset-types",
+  "cai_sha256": "6e3fbd4f152ca4d0de443c1bc74f8b0a163ba81da2751d596507a735082538b9",
+  "cai_source": "https://docs.cloud.google.com/asset-inventory/docs/asset-names",
+  "resources": {
+    "google_alloydb_cluster": {
+      "state_id_format": "projects/{{project}}/locations/{{location}}/clusters/{{cluster_id}}"
+    },
+    "google_alloydb_instance": {
+      "state_id_format": "{{cluster}}/instances/{{instance_id}}"
+    },
+    "google_artifact_registry_repository": {
+      "state_id_format": "projects/{{project}}/locations/{{location}}/repositories/{{repository_id}}"
+    },
+    "google_bigtable_instance": {
+      "state_id_format": "projects/{{project}}/instances/{{name}}"
+    },
+    "google_bigtable_table": {
+      "state_id_format": "projects/{{project}}/instances/{{instance_name}}/tables/{{name}}"
+    },
+    "google_certificate_manager_certificate": {
+      "state_id_format": "projects/{{project}}/locations/{{location}}/certificates/{{name}}"
+    },
+    "google_certificate_manager_certificate_map": {
+      "state_id_format": "projects/{{project}}/locations/global/certificateMaps/{{name}}"
+    },
+    "google_cloud_run_v2_job": {
+      "state_id_format": "projects/{{project}}/locations/{{location}}/jobs/{{name}}"
+    },
+    "google_cloud_run_v2_service": {
+      "state_id_format": "projects/{{project}}/locations/{{location}}/services/{{name}}"
+    },
+    "google_cloud_tasks_queue": {
+      "state_id_format": "projects/{{project}}/locations/{{location}}/queues/{{name}}"
+    },
+    "google_compute_address": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/addresses/{{name}}"
+    },
+    "google_compute_autoscaler": {
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/autoscalers/{{name}}"
+    },
+    "google_compute_backend_bucket": {
+      "state_id_format": "projects/{{project}}/global/backendBuckets/{{name}}"
+    },
+    "google_compute_backend_service": {
+      "state_id_format": "projects/{{project}}/global/backendServices/{{name}}"
+    },
+    "google_compute_disk": {
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/disks/{{name}}"
+    },
+    "google_compute_firewall": {
+      "state_id_format": "projects/{{project}}/global/firewalls/{{name}}"
+    },
+    "google_compute_forwarding_rule": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/forwardingRules/{{name}}"
+    },
+    "google_compute_global_address": {
+      "state_id_format": "projects/{{project}}/global/addresses/{{name}}"
+    },
+    "google_compute_global_forwarding_rule": {
+      "state_id_format": "projects/{{project}}/global/forwardingRules/{{name}}"
+    },
+    "google_compute_global_network_endpoint_group": {
+      "state_id_format": "projects/{{project}}/global/networkEndpointGroups/{{name}}"
+    },
+    "google_compute_health_check": {
+      "state_id_format": "projects/{{project}}/global/healthChecks/{{name}}"
+    },
+    "google_compute_http_health_check": {
+      "state_id_format": "projects/{{project}}/global/httpHealthChecks/{{name}}"
+    },
+    "google_compute_https_health_check": {
+      "state_id_format": "projects/{{project}}/global/httpsHealthChecks/{{name}}"
+    },
+    "google_compute_image": {
+      "state_id_format": "projects/{{project}}/global/images/{{name}}"
+    },
+    "google_compute_instance": {
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/instances/{{name}}"
+    },
+    "google_compute_instance_group": {
+      "state_id_format": "projects/{{project_id}}/zones/{{zone}}/instanceGroups/{{instance_group_id}}"
+    },
+    "google_compute_instance_group_manager": {
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/instanceGroupManagers/{{name}}"
+    },
+    "google_compute_instance_template": {
+      "state_id_format": "projects/{{project}}/global/instanceTemplates/{{name}}"
+    },
+    "google_compute_network": {
+      "state_id_format": "projects/{{project}}/global/networks/{{name}}"
+    },
+    "google_compute_network_attachment": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/networkAttachments/{{name}}"
+    },
+    "google_compute_network_endpoint_group": {
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/networkEndpointGroups/{{name}}"
+    },
+    "google_compute_region_autoscaler": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/autoscalers/{{name}}"
+    },
+    "google_compute_region_backend_service": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/backendServices/{{name}}"
+    },
+    "google_compute_region_disk": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/disks/{{name}}"
+    },
+    "google_compute_region_health_check": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/healthChecks/{{name}}"
+    },
+    "google_compute_region_instance_group_manager": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/instanceGroupManagers/{{name}}"
+    },
+    "google_compute_region_instance_template": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/instanceTemplates/{{name}}"
+    },
+    "google_compute_region_network_endpoint_group": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/networkEndpointGroups/{{name}}"
+    },
+    "google_compute_region_security_policy": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/securityPolicies/{{name}}"
+    },
+    "google_compute_region_ssl_certificate": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/sslCertificates/{{name}}"
+    },
+    "google_compute_region_url_map": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/urlMaps/{{name}}"
+    },
+    "google_compute_reservation": {
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/reservations/{{name}}"
+    },
+    "google_compute_resource_policy": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/resourcePolicies/{{name}}"
+    },
+    "google_compute_route": {
+      "state_id_format": "projects/{{project}}/global/routes/{{name}}"
+    },
+    "google_compute_router": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/routers/{{name}}"
+    },
+    "google_compute_security_policy": {
+      "state_id_format": "projects/{{project}}/global/securityPolicies/{{name}}"
+    },
+    "google_compute_snapshot": {
+      "state_id_format": "projects/{{project}}/global/snapshots/{{name}}"
+    },
+    "google_compute_ssl_certificate": {
+      "state_id_format": "projects/{{project}}/global/sslCertificates/{{name}}"
+    },
+    "google_compute_subnetwork": {
+      "state_id_format": "projects/{{project}}/regions/{{region}}/subnetworks/{{name}}"
+    },
+    "google_compute_url_map": {
+      "state_id_format": "projects/{{project}}/global/urlMaps/{{name}}"
+    },
+    "google_container_cluster": {
+      "state_id_format": "projects/{{project_id}}/locations/{{location}}/clusters/{{cluster_id}}"
+    },
+    "google_container_node_pool": {
+      "state_id_format": "projects/{{project}}/locations/{{location}}/clusters/{{cluster}}/nodePools/{{name}}"
+    },
+    "google_data_fusion_instance": {
+      "state_id_format": "projects/{{project}}/locations/{{region}}/instances/{{name}}"
+    },
+    "google_dataform_repository": {
+      "state_id_format": "projects/{{project}}/locations/{{region}}/repositories/{{name}}"
+    },
+    "google_datastream_connection_profile": {
+      "state_id_format": "projects/{{project}}/locations/{{location}}/connectionProfiles/{{connection_profile_id}}"
+    },
+    "google_datastream_private_connection": {
+      "state_id_format": "projects/{{project}}/locations/{{location}}/privateConnections/{{private_connection_id}}"
+    },
+    "google_datastream_stream": {
+      "state_id_format": "projects/{{project}}/locations/{{location}}/streams/{{stream_id}}"
+    },
+    "google_filestore_instance": {
+      "state_id_format": "projects/{{project}}/locations/{{location}}/instances/{{name}}"
+    },
+    "google_pubsub_subscription": {
+      "state_id_format": "projects/{{project}}/subscriptions/{{name}}"
+    },
+    "google_pubsub_topic": {
+      "state_id_format": "projects/{{project}}/topics/{{name}}"
+    },
+    "google_redis_instance": {
+      "state_id_format": "projects/{{project}}/locations/{{region}}/instances/{{name}}"
+    },
+    "google_secret_manager_secret": {
+      "state_id_format": "projects/{{project}}/secrets/{{secret_id}}"
+    },
+    "google_service_account": {
+      "state_id_format": "projects/{{project}}/serviceAccounts/{{email}}"
+    },
+    "google_spanner_database": {
+      "state_id_format": "{{instance}}/{{name}}"
+    },
+    "google_spanner_instance": {
+      "state_id_format": "{{project}}/{{name}}"
+    },
+    "google_sql_database_instance": {
+      "state_id_format": "projects/{{project}}/instances/{{name}}"
+    },
+    "google_storage_bucket": {
+      "state_id_format": "{{name}}"
+    },
+    "google_tpu_v2_vm": {
+      "state_id_format": "projects/{{project}}/locations/{{zone}}/nodes/{{name}}"
+    }
+  }
+}

@@ -721,19 +721,19 @@ background evidence only, not acceptance evidence for this work.
   all earlier source documents remain unchanged.
 - Inventory reconciles native metadata list/detail responses, two complete child
   sets and the root configuration. Child cursors bind their revision/deployment
-  identity. Physical ownership requires one current reconciled Terraform record,
+  identity. Physical ownership requires one current reconciled deployment record,
   an explicitly supported whole-object type, matching state/CAI identities and
   native product readback. Historical revisions and preview proposals establish
   no physical ownership. Root/latest execution accounts and source buckets remain
-  dependencies; Terraform state, source objects and credentials are not exported.
+  dependencies; deployment state, source objects and credentials are not exported.
 - The actual solver includes controller metadata and native physical cascades.
   Deployment DELETE uses native `force=true`, UUID request IDs and whole-deployment
   `DELETE` or `ABANDON`; preview deletion removes only preview metadata. Retaining
-  provisioned resources still deletes controller metadata. Unknown Terraform
+  provisioned resources still deletes controller metadata. Unknown deployment
   records require explicit ABANDON, partial retention and unsupported options are
   rejected, and locks are never removed. Physical child drivers check their own
   reviewed cascades; preparation-dependent VM/MIG, GKE and TPU flows currently
-  block Terraform destruction and remain unfinished composition work.
+  block deployment teardown and remain unfinished composition work.
 - Persisted phases handle settling deployments, already-running deletion and
   serialized restart. Config operation target, region, verb, version, cancellation,
   failure and Deployment/Preview response types are validated. Completion requires
@@ -743,7 +743,7 @@ background evidence only, not acceptance evidence for this work.
   legitimate deletion transitions where the product exposes them.
 - Seventeen Infra Manager test functions cover the native HTTP boundary, actual
   contributor/solver, SQLite scan recovery, serialized actions and more than 100
-  fault cases. Sixty-eight source-backed Terraform state-ID/CAI contracts also
+  fault cases. Sixty-eight source-backed state-ID/CAI contracts also
   test foreign identities, non-owning types and documented CAI API aliases. These
   verify exact native GET routing, not successful deletion of every mapped product.
   A deployment containing a GKE node pool exercises nested VM/disk deletion and
@@ -753,15 +753,15 @@ background evidence only, not acceptance evidence for this work.
   source tests, documentation checks and deterministic generation pass. Infra
   Manager race tests were repeated after the final CAI alias correction. The
   [Infra Manager evidence](providers/gcp/fixtures/infra-manager/README.md) records
-  pinned Discovery/HashiCorp sources, hashes, contracts and verification limits.
+  pinned Discovery sources, hashes, contracts and verification limits.
   Google's inspected Config Connector mock implements DeploymentGroup, but has no
   Deployment/Preview CRUD handlers; no independent Config deletion emulator or
   real-cloud acceptance is claimed. The APIs provide no atomic configuration
-  condition across Terraform's native product mutations.
+  condition across the deployment engine's native product mutations.
 - The parity map now also names native DeploymentGroup and DeploymentGroupRevision,
   exposing their still-unimplemented deprovisioning workflow. Five mapped GCP kinds
   and 49 mapped Azure kinds lack specifications. Composed preparations, broader
-  Terraform mappings, remaining lifecycle behavior, independent environment and
+  deployment resource mappings, remaining lifecycle behavior, independent environment and
   end-to-end acceptance, and final publication remain open.
 
 - GCP now has 187 explicit rules, 170 kinds with native deletion and 747 selected
@@ -771,7 +771,7 @@ background evidence only, not acceptance evidence for this work.
   the earlier 16 Config methods/schemas and all 54 other documents are unchanged.
 - Group inventory reviews its current deployments and the deployments referenced
   by the last successful group revision, including removed cross-region members
-  that native deprovision also deletes. It binds each child's existing Terraform
+  that native deprovision also deletes. It binds each child's existing deployment
   and physical-resource manifest, validates native unit DAG order, reconciles two
   complete revision sets and re-reads the group. Unknown revision outcomes and
   ambiguous success history block cleanup. Selecting the latest successful
@@ -782,7 +782,7 @@ background evidence only, not acceptance evidence for this work.
   The first two remove deployment metadata before group metadata. The third uses
   only native group DELETE with `IGNORE_DEPLOYMENT_REFERENCES`, retaining the
   reviewed deployments and descendants. Partial retention is rejected. Existing
-  deployment drivers enforce their own Terraform mappings, locks, protection and
+  deployment drivers enforce their own deployment resource mappings, locks, protection and
   native preparation guards; no direct physical DELETE is substituted for Config.
 - Persisted settle/deprovision/delete phases validate operation region, target,
   type, verb, per-unit progress, failure and cancellation. Already-running
@@ -807,7 +807,7 @@ background evidence only, not acceptance evidence for this work.
   checkout/binary removed. No independent deprovision or real-cloud acceptance
   is claimed, and deprovision has no native request ID or atomic condition.
 - Three mapped GCP kinds and 49 mapped Azure kinds still lack specifications.
-  Composed VM/MIG/GKE/TPU preparations, broader Terraform mappings, other lifecycle
+  Composed VM/MIG/GKE/TPU preparations, broader deployment resource mappings, other lifecycle
   behavior, independent environment/end-to-end acceptance and publication remain
   open. The parity rows remain pending; resource-rule counts do not establish
   complete behavioral parity.
@@ -5044,7 +5044,7 @@ background evidence only, not acceptance evidence for this work.
   adapters, removing unsupported state/label/name/creation-time declarations.
   Added specific native metadata: Discovery document IDs/schema/index times,
   target-site indexing status, branch default/import metadata, conversation and
-  session intervals, Infra change intent/Terraform type, KMS key creation/purpose/
+  session intervals, Infra change intent/resource type, KMS key creation/purpose/
   primary-version state, bucket times/storage class and Artifact Registry format,
   mode, times and exact byte counts. These names preserve native semantics rather
   than treating indexing, execution or a key version as a parent resource state.
@@ -7251,7 +7251,7 @@ unchanged official example. The scoped, bodyless volume GET accepts only native
 HTTP 200 and root-level relationshipStatus. Explicit Idle permits a subsequent
 step; Transferring waits. Failed, Unknown, future/omitted states, malformed bodies,
 asynchronous headers and failed reads cannot authorize a policy mutation.
-Terraform's internal waiter state 204 is not a successful native HTTP response.
+An internal waiter sentinel of 204 is not a successful native HTTP response.
 The status helper and 22 response/scope cases are a prerequisite; backup-policy
 unassignment is not yet enabled. Counts are 469 specifications, 1,569 operations
 and 429 cleanup bindings. All 159 parity rows and eight acceptance gates remain

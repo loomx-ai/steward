@@ -140,7 +140,7 @@ func (a *action) infraReviewedMembers(request contracts.ActionRequest, members [
 		}
 	}
 	if unmapped && (policy != "ABANDON" || request.Parameters["retain_all_resources"] != true) {
-		return nil, "", groupDenied("infra_unmapped_terraform_resource_requires_explicit_abandon")
+		return nil, "", groupDenied("infra_unmapped_deployment_resource_requires_explicit_abandon")
 	}
 	return members, policy, nil
 }

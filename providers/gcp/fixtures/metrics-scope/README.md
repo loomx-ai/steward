@@ -97,9 +97,9 @@ remain covered by the separate protocol tests. This is independent emulator
 coverage for this native path, not real-cloud acceptance or complete Monitoring
 emulation.
 
-To reproduce, use a temporary checkout of the pinned revision with `mockgcp`,
-`pkg` and `third_party/github.com/hashicorp/terraform-provider-google-beta`
-available. From the Steward repository root, copy
+To reproduce, use a temporary shallow clone of the pinned revision. The
+`mockgcp` module resolves paths from the repository root, so clone it whole
+rather than a subdirectory. From the Steward repository root, copy
 `providers/gcp/fixtures/metrics-scope/testdata/mockgcp/main.go` into
 `mockgcp/steward-metrics-harness/main.go` in that checkout, then build from its
 `mockgcp` directory:

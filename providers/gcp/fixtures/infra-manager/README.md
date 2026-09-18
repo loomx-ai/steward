@@ -18,19 +18,19 @@ controller; no child DELETE method is invented.
   but no deployment force or resource-retention policy. A preview's proposed
   changes do not establish ownership of the described physical resources.
 - [Deployment resources](https://docs.cloud.google.com/infrastructure-manager/docs/reference/rest/v1/projects.locations.deployments.revisions.resources)
-  expose Terraform address/type/state ID, reconciliation intent/state and CAI
+  expose deployment resource address, type and state identifier, reconciliation intent/state and CAI
   full names. Only reconciled current-revision resources can establish physical
   ownership. Old revisions remain metadata; completed DELETE records own no
-  live resource. Terraform type and ID must agree with one whole-object CAI asset.
+  live resource. The resource type and state identifier must agree with one whole-object CAI asset.
 - The [RPC contract](https://docs.cloud.google.com/infrastructure-manager/docs/reference/rpc/google.cloud.config.v1)
   returns `google.longrunning.Operation`, with regional Config OperationMetadata.
   DeleteDeployment's response type is Deployment and DeletePreview's is Preview,
   rather than `google.protobuf.Empty`. Target, verb, API version, cancellation,
   failure, operation region and typed completion are checked before readback.
 - Google's [deletion guide](https://docs.cloud.google.com/infrastructure-manager/docs/delete-deployments)
-  requires the last deployment service account and Terraform configuration to
+  requires the last deployment service account and configuration to
   remain valid. Both root and latest-revision account/source-bucket references
-  remain dependencies. The adapter never exports Terraform state or fetches
+  remain dependencies. The adapter never exports deployment state or fetches
   source objects, credentials or output values to discover those dependencies.
 
 `native-schemas.json` retains unmodified selected schemas and their transitive
@@ -42,11 +42,11 @@ raw response. The Config catalog now also includes the separate
 [Deployment Group methods](../deployment-group/README.md); these original methods
 and schemas remain unchanged.
 
-`terraform-provenance.json` records the source URL, SHA-256 and SetId line for
-each of the 68 mapped Terraform resources. Stable-provider implementations are
-pinned to HashiCorp's `08e8f4f28ecac4783bd9174dded1480ba0a6061d`; the beta-only TPU
-VM implementation is pinned to `c7a6d05ccb84424b850bb71c894db4826955a638` in the
-Google beta provider. `physical-identities.json` records their state IDs, CAI
+`resource-mappings.json` records the state-identifier format of each of the 68
+mapped deployment resource types. Every format is checked against the pinned
+Infrastructure Manager example responses in this directory and against Google's
+Cloud Asset Inventory name reference; no third-party implementation is used as a
+source. `physical-identities.json` records their state IDs, CAI
 names, native identities and literal GET URLs. The [CAI name reference](https://docs.cloud.google.com/asset-inventory/docs/asset-names)
 and [CAI type reference](https://cloud.google.com/asset-inventory/docs/asset-types)
 are separately recorded with their source hashes. Distinct regional/global types
@@ -58,7 +58,7 @@ The mapping intentionally excludes resource fragments such as IAM members,
 policies, peering and bucket objects: naming an asset does not prove ownership
 of its containing object's deletion. There is no `google_batch_job` resource in
 the inspected provider, and the inspected CAI name table has no TPU queued-resource
-entry. Neither is advertised as a verified Terraform-to-CAI mapping.
+entry. Neither is advertised as a verified resource-to-CAI mapping.
 
 ## Inventory, planning and recovery tests
 
@@ -85,8 +85,8 @@ A SQLite scan-worker test proves a failed revision read preserves prior resource
 records and observations instead of closing them.
 
 The reviewed manifest separates controller metadata, physical members, observed
-physical absences and opaque Terraform records. Its hashes are calculated before
-redacting configuration, Terraform inputs/outputs, provider configuration and
+physical absences and opaque deployment records. Its hashes are calculated before
+redacting configuration, deployment inputs/outputs, provider configuration and
 change/drift values. Only current-revision resources establish ownership; source
 buckets and execution accounts remain dependencies. Metadata always has a delete
 impact when its controller is deleted, including when provisioned resources are
@@ -105,7 +105,7 @@ remain, and original operation IDs surviving a settle-to-delete restart. The
 existing GKE node-pool/Compute protocol fixture is nested under a deployment: the
 plan includes its VMs and disks, a missing pool cannot hide surviving VMs, and
 ABANDON verifies retained descendants. No direct child mutation is substituted
-for Terraform destruction in these tests.
+for deployment teardown in these tests.
 
 Readback checks every reviewed metadata/physical resource and native child-driver
 cascade. A completed or expired LRO alone is never sufficient. Retained resources
@@ -124,19 +124,19 @@ revisions, resources, previews, `resourcechanges` and `resourcedrifts`, plus
 The resourcechanges/resourcedrifts IAM names are lowercase even though their REST
 collections use camel case. Steward also needs native read/list permissions for
 reviewed physical resources and their cascades; bucket checks include object
-versions. Terraform executes using the deployment's service account, which needs
+versions. The deployment executes using its service account, which needs
 its own product permissions. Successful connection validation does not prove these
-permissions or Terraform configuration remain valid.
+permissions or deployment configuration remain valid.
 
 The supported request options are typed `retain_all_resources` and
 `retain_resources`. Retention must resolve to ABANDON for all physical members;
 arbitrary partial retention is rejected. Opaque, multi-asset, non-reconciled or
-unmapped Terraform records require explicit `retain_all_resources=true`, so an
+unmapped deployment records require explicit `retain_all_resources=true`, so an
 unknown resource is never silently included in destructive cleanup. Direct-native
 `deletePolicy`/`force` and unknown options are rejected rather than ignored.
 
 Some native child drivers perform preparations before their own DELETE. Config's
-Terraform delegation does not currently run those preparations: VM/MIG retention
+Deployment delegation does not currently run those preparations: VM/MIG retention
 changes and deletion-protection removal, pending GKE workload/network finalizers,
 and TPU data-disk detachment block destructive deployment cleanup. This guard is
 tested against the existing native drivers. Those composed preparation flows
@@ -144,9 +144,9 @@ remain unfinished; ABANDON keeps provisioned resources available for separate
 reviewed cleanup after the deployment is removed. Native-ready cascades, including
 GKE node pools and their default retained volumes, are exercised end to end.
 
-Terraform's own deletion policies or protection settings can still prevent
+The deployment's own deletion policies or protection settings can still prevent
 destruction. The native response and physical readback report that outcome; the
-adapter does not rewrite Terraform configuration. There is no atomic lock across
+adapter does not rewrite deployment configuration. There is no atomic lock across
 all product reads and Config DELETE, and the adapter does not unlock deployments.
 Avoid concurrent deployment/resource changes during cleanup.
 
@@ -158,4 +158,4 @@ the deletion behavior uses Steward-owned native protocol scenarios. No independe
 Deployment/Preview deletion server or real-cloud acceptance is claimed. The
 separate [Deployment Group workflow](../deployment-group/README.md) records its
 deprovision policies and limited independent metadata-delete coverage. Broader
-Terraform mappings and composed preparation flows remain part of the parity work.
+deployment resource mappings and composed preparation flows remain part of the parity work.

@@ -547,8 +547,8 @@ func TestGCPRemainingNativePropertyQueries(t *testing.T) {
 		s := newInfraScenario(t)
 		r := protocolRuntime(t, s.transport(t))
 		values := s.inventory(t, r)
-		assertGCPPropertyQuery(t, r, values, infraChange, "/resourceChanges/network", `properties.intent = "DELETE" AND properties.terraformType = "google_compute_network"`)
-		assertGCPPropertyQuery(t, r, values, infraDrift, "/resourceDrifts/network", `properties.terraformType = "google_compute_network"`)
+		assertGCPPropertyQuery(t, r, values, infraChange, "/resourceChanges/network", `properties.intent = "DELETE" AND properties.deploymentResourceType = "google_compute_network"`)
+		assertGCPPropertyQuery(t, r, values, infraDrift, "/resourceDrifts/network", `properties.deploymentResourceType = "google_compute_network"`)
 		for _, value := range values {
 			if value.Identity.NativeType == infraChange || value.Identity.NativeType == infraDrift {
 				original := s.resources[strings.TrimPrefix(value.Identity.NativeID, "//"+infraHost+"/")]

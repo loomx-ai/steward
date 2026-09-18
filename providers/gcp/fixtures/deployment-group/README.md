@@ -3,7 +3,7 @@
 The native Config v1 DeploymentGroup and DeploymentGroupRevision rules add six
 methods: group list/get/deprovision/delete and revision list/get. Revisions are
 controller metadata and have no independent delete action. Deployment ownership,
-Terraform identity matching and physical readback reuse the
+Deployment identity matching and physical readback reuse the
 [Infrastructure Manager implementation](../infra-manager/README.md).
 
 ## Native contracts and source provenance
@@ -71,7 +71,7 @@ is substituted for Config's own deprovision operation.
 | Retain every referenced Deployment via `retain_resources` | Group DELETE with `IGNORE_DEPLOYMENT_REFERENCES` | Group/revision metadata absent; deployments and all descendants unchanged |
 
 The native policy is global: partial deployment or physical retention is rejected.
-An opaque Terraform record still requires explicit `retain_all_resources=true`.
+An opaque deployment record still requires explicit `retain_all_resources=true`.
 Group revision metadata is always removed. Independently selected deployments
 retain their existing native cleanup action through the actual solver.
 
@@ -79,7 +79,7 @@ Complete inventory compares two metadata sets and root configuration, hashes
 unredacted configuration, and binds each child deployment's physical manifest.
 Project-number aliases are accepted within the connection's project; foreign
 projects, malformed names and invalid unit DAGs fail. Source configuration,
-annotations, Terraform inputs and operation artifact paths are redacted before
+annotations, deployment inputs and operation artifact paths are redacted before
 export. A failed revision detail read in the SQLite scan test preserves all three
 previous revision observations.
 
@@ -137,12 +137,12 @@ and `.delete`, plus `config.deploymentgrouprevisions.get` and `.list` (see the
 revision [GET contract](https://docs.cloud.google.com/infrastructure-manager/docs/reference/rest/v1/projects.locations.deploymentGroups.revisions/get)
 and [LIST contract](https://docs.cloud.google.com/infrastructure-manager/docs/reference/rest/v1/projects.locations.deploymentGroups.revisions/list)).
 Location/operation reads and existing deployment/physical-resource permissions
-are also needed. Referenced deployments still execute Terraform with their own
+are also needed. Referenced deployments still execute with their own
 service accounts and source configurations.
 
 The existing VM/MIG retention/protection changes, GKE finalizer cleanup and TPU
-disk-detachment prerequisites are not yet composed with Terraform destruction.
-The child preflight guards continue to block those cases. Terraform protection,
+disk-detachment prerequisites are not yet composed with deployment teardown.
+The child preflight guards continue to block those cases. Deployment protection,
 deletion policies or invalid source configuration can also prevent destruction.
 No API supplies an atomic condition across the reviewed group, deployments and
 physical resources. Deprovision has no native idempotency token; after an ambiguous

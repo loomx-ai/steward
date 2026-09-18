@@ -4,7 +4,7 @@ description: "通过工作负载身份联邦获取临时云凭证，无需上传
 navTitle: "OIDC 云连接"
 ---
 
-Steward 参考 Terraform Cloud 的动态凭证模式：为工作负载签发短期 JWT，云厂商验证客户配置的信任关系，再返回临时凭证。支持 AWS、阿里云、GCP 和 Azure。OIDC 是后台工作负载授权，不是用户浏览器登录。
+Steward 使用 OIDC 工作负载身份联合：为工作负载签发短期 JWT，云厂商验证客户配置的信任关系，再返回临时凭证。支持 AWS、阿里云、GCP 和 Azure。OIDC 是后台工作负载授权，不是用户浏览器登录。
 
 ## 管理员准备
 
@@ -122,8 +122,7 @@ AWS 当前使用商业分区 STS，Azure 使用公共云 Entra/ARM，GCP 使用 
 
 ## 参考
 
-- [Terraform Cloud 工作负载身份](https://developer.hashicorp.com/terraform/cloud-docs/dynamic-provider-credentials/workload-identity-tokens)
-- [Terraform Cloud AWS 配置](https://developer.hashicorp.com/terraform/cloud-docs/dynamic-provider-credentials/aws-configuration)
-- [Terraform Cloud Azure 配置](https://developer.hashicorp.com/terraform/cloud-docs/dynamic-provider-credentials/azure-configuration)
-- [Terraform Cloud GCP 配置](https://developer.hashicorp.com/terraform/cloud-docs/dynamic-provider-credentials/gcp-configuration)
-- [阿里云 OIDC 角色扮演](https://www.alibabacloud.com/help/en/terraform/terraform-authentication)
+- [AWS OIDC 身份提供商](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html)
+- [Microsoft Entra 工作负载身份联合](https://learn.microsoft.com/zh-cn/entra/workload-id/workload-identity-federation)
+- [Google Cloud 工作负载身份联合](https://docs.cloud.google.com/iam/docs/workload-identity-federation)
+- [阿里云 OIDC 单点登录](https://www.alibabacloud.com/help/zh/ram/user-guide/overview-of-oidc-based-sso)

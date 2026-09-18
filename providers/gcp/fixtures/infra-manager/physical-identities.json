@@ -1,7 +1,7 @@
 [
   {
-    "terraform_type": "google_compute_network",
-    "terraform_id": "projects/sample-project/global/networks/item",
+    "deployment_type": "google_compute_network",
+    "deployment_state_id": "projects/sample-project/global/networks/item",
     "cai_type": "compute.googleapis.com/Network",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/networks/item",
     "native_type": "compute.googleapis.com/Network",
@@ -9,8 +9,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/networks/item"
   },
   {
-    "terraform_type": "google_compute_subnetwork",
-    "terraform_id": "projects/sample-project/regions/us-central1/subnetworks/item",
+    "deployment_type": "google_compute_subnetwork",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/subnetworks/item",
     "cai_type": "compute.googleapis.com/Subnetwork",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/subnetworks/item",
     "native_type": "compute.googleapis.com/Subnetwork",
@@ -18,8 +18,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/subnetworks/item"
   },
   {
-    "terraform_type": "google_compute_firewall",
-    "terraform_id": "projects/sample-project/global/firewalls/item",
+    "deployment_type": "google_compute_firewall",
+    "deployment_state_id": "projects/sample-project/global/firewalls/item",
     "cai_type": "compute.googleapis.com/Firewall",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/firewalls/item",
     "native_type": "compute.googleapis.com/Firewall",
@@ -27,8 +27,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/firewalls/item"
   },
   {
-    "terraform_type": "google_compute_disk",
-    "terraform_id": "projects/sample-project/zones/us-central1-a/disks/item",
+    "deployment_type": "google_compute_disk",
+    "deployment_state_id": "projects/sample-project/zones/us-central1-a/disks/item",
     "cai_type": "compute.googleapis.com/Disk",
     "cai_name": "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/disks/item",
     "native_type": "compute.googleapis.com/Disk",
@@ -36,8 +36,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/disks/item"
   },
   {
-    "terraform_type": "google_compute_region_disk",
-    "terraform_id": "projects/sample-project/regions/us-central1/disks/item",
+    "deployment_type": "google_compute_region_disk",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/disks/item",
     "cai_type": "compute.googleapis.com/RegionDisk",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/disks/item",
     "native_type": "compute.googleapis.com/RegionDisk",
@@ -45,8 +45,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/disks/item"
   },
   {
-    "terraform_type": "google_compute_snapshot",
-    "terraform_id": "projects/sample-project/global/snapshots/item",
+    "deployment_type": "google_compute_snapshot",
+    "deployment_state_id": "projects/sample-project/global/snapshots/item",
     "cai_type": "compute.googleapis.com/Snapshot",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/snapshots/item",
     "native_type": "compute.googleapis.com/Snapshot",
@@ -54,8 +54,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/snapshots/item"
   },
   {
-    "terraform_type": "google_compute_image",
-    "terraform_id": "projects/sample-project/global/images/item",
+    "deployment_type": "google_compute_image",
+    "deployment_state_id": "projects/sample-project/global/images/item",
     "cai_type": "compute.googleapis.com/Image",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/images/item",
     "native_type": "compute.googleapis.com/Image",
@@ -63,8 +63,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/images/item"
   },
   {
-    "terraform_type": "google_compute_instance",
-    "terraform_id": "projects/sample-project/zones/us-central1-a/instances/item",
+    "deployment_type": "google_compute_instance",
+    "deployment_state_id": "projects/sample-project/zones/us-central1-a/instances/item",
     "cai_type": "compute.googleapis.com/Instance",
     "cai_name": "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/instances/item",
     "native_type": "compute.googleapis.com/Instance",
@@ -72,8 +72,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instances/item"
   },
   {
-    "terraform_type": "google_compute_instance_template",
-    "terraform_id": "projects/sample-project/global/instanceTemplates/item",
+    "deployment_type": "google_compute_instance_template",
+    "deployment_state_id": "projects/sample-project/global/instanceTemplates/item",
     "cai_type": "compute.googleapis.com/InstanceTemplate",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/instanceTemplates/item",
     "native_type": "compute.googleapis.com/InstanceTemplate",
@@ -81,8 +81,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/instanceTemplates/item"
   },
   {
-    "terraform_type": "google_compute_region_instance_template",
-    "terraform_id": "projects/sample-project/regions/us-central1/instanceTemplates/item",
+    "deployment_type": "google_compute_region_instance_template",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/instanceTemplates/item",
     "cai_type": "compute.googleapis.com/InstanceTemplate",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/instanceTemplates/item",
     "native_type": "compute.googleapis.com/InstanceTemplate",
@@ -90,8 +90,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/instanceTemplates/item"
   },
   {
-    "terraform_type": "google_compute_instance_group",
-    "terraform_id": "projects/sample-project/zones/us-central1-a/instanceGroups/item",
+    "deployment_type": "google_compute_instance_group",
+    "deployment_state_id": "projects/sample-project/zones/us-central1-a/instanceGroups/item",
     "cai_type": "compute.googleapis.com/InstanceGroup",
     "cai_name": "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/instanceGroups/item",
     "native_type": "compute.googleapis.com/InstanceGroup",
@@ -99,8 +99,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instanceGroups/item"
   },
   {
-    "terraform_type": "google_compute_instance_group_manager",
-    "terraform_id": "projects/sample-project/zones/us-central1-a/instanceGroupManagers/item",
+    "deployment_type": "google_compute_instance_group_manager",
+    "deployment_state_id": "projects/sample-project/zones/us-central1-a/instanceGroupManagers/item",
     "cai_type": "compute.googleapis.com/InstanceGroupManager",
     "cai_name": "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/instanceGroupManagers/item",
     "native_type": "compute.googleapis.com/InstanceGroupManager",
@@ -108,8 +108,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instanceGroupManagers/item"
   },
   {
-    "terraform_type": "google_compute_region_instance_group_manager",
-    "terraform_id": "projects/sample-project/regions/us-central1/instanceGroupManagers/item",
+    "deployment_type": "google_compute_region_instance_group_manager",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/instanceGroupManagers/item",
     "cai_type": "compute.googleapis.com/InstanceGroupManager",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/instanceGroupManagers/item",
     "native_type": "compute.googleapis.com/InstanceGroupManager",
@@ -117,8 +117,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/instanceGroupManagers/item"
   },
   {
-    "terraform_type": "google_compute_autoscaler",
-    "terraform_id": "projects/sample-project/zones/us-central1-a/autoscalers/item",
+    "deployment_type": "google_compute_autoscaler",
+    "deployment_state_id": "projects/sample-project/zones/us-central1-a/autoscalers/item",
     "cai_type": "compute.googleapis.com/Autoscaler",
     "cai_name": "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/autoscalers/item",
     "native_type": "compute.googleapis.com/Autoscaler",
@@ -126,8 +126,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/autoscalers/item"
   },
   {
-    "terraform_type": "google_compute_region_autoscaler",
-    "terraform_id": "projects/sample-project/regions/us-central1/autoscalers/item",
+    "deployment_type": "google_compute_region_autoscaler",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/autoscalers/item",
     "cai_type": "compute.googleapis.com/Autoscaler",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/autoscalers/item",
     "native_type": "compute.googleapis.com/Autoscaler",
@@ -135,8 +135,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/autoscalers/item"
   },
   {
-    "terraform_type": "google_compute_address",
-    "terraform_id": "projects/sample-project/regions/us-central1/addresses/item",
+    "deployment_type": "google_compute_address",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/addresses/item",
     "cai_type": "compute.googleapis.com/Address",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/addresses/item",
     "native_type": "compute.googleapis.com/Address",
@@ -144,8 +144,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/addresses/item"
   },
   {
-    "terraform_type": "google_compute_global_address",
-    "terraform_id": "projects/sample-project/global/addresses/item",
+    "deployment_type": "google_compute_global_address",
+    "deployment_state_id": "projects/sample-project/global/addresses/item",
     "cai_type": "compute.googleapis.com/GlobalAddress",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/addresses/item",
     "native_type": "compute.googleapis.com/GlobalAddress",
@@ -153,8 +153,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/addresses/item"
   },
   {
-    "terraform_type": "google_compute_router",
-    "terraform_id": "projects/sample-project/regions/us-central1/routers/item",
+    "deployment_type": "google_compute_router",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/routers/item",
     "cai_type": "compute.googleapis.com/Router",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/routers/item",
     "native_type": "compute.googleapis.com/Router",
@@ -162,8 +162,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/routers/item"
   },
   {
-    "terraform_type": "google_compute_route",
-    "terraform_id": "projects/sample-project/global/routes/item",
+    "deployment_type": "google_compute_route",
+    "deployment_state_id": "projects/sample-project/global/routes/item",
     "cai_type": "compute.googleapis.com/Route",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/routes/item",
     "native_type": "compute.googleapis.com/Route",
@@ -171,8 +171,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/routes/item"
   },
   {
-    "terraform_type": "google_compute_forwarding_rule",
-    "terraform_id": "projects/sample-project/regions/us-central1/forwardingRules/item",
+    "deployment_type": "google_compute_forwarding_rule",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/forwardingRules/item",
     "cai_type": "compute.googleapis.com/ForwardingRule",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/forwardingRules/item",
     "native_type": "compute.googleapis.com/ForwardingRule",
@@ -180,8 +180,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/forwardingRules/item"
   },
   {
-    "terraform_type": "google_compute_global_forwarding_rule",
-    "terraform_id": "projects/sample-project/global/forwardingRules/item",
+    "deployment_type": "google_compute_global_forwarding_rule",
+    "deployment_state_id": "projects/sample-project/global/forwardingRules/item",
     "cai_type": "compute.googleapis.com/GlobalForwardingRule",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/forwardingRules/item",
     "native_type": "compute.googleapis.com/GlobalForwardingRule",
@@ -189,8 +189,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/forwardingRules/item"
   },
   {
-    "terraform_type": "google_compute_backend_service",
-    "terraform_id": "projects/sample-project/global/backendServices/item",
+    "deployment_type": "google_compute_backend_service",
+    "deployment_state_id": "projects/sample-project/global/backendServices/item",
     "cai_type": "compute.googleapis.com/BackendService",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/backendServices/item",
     "native_type": "compute.googleapis.com/BackendService",
@@ -198,8 +198,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/backendServices/item"
   },
   {
-    "terraform_type": "google_compute_region_backend_service",
-    "terraform_id": "projects/sample-project/regions/us-central1/backendServices/item",
+    "deployment_type": "google_compute_region_backend_service",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/backendServices/item",
     "cai_type": "compute.googleapis.com/RegionBackendService",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/backendServices/item",
     "native_type": "compute.googleapis.com/RegionBackendService",
@@ -207,8 +207,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/backendServices/item"
   },
   {
-    "terraform_type": "google_compute_backend_bucket",
-    "terraform_id": "projects/sample-project/global/backendBuckets/item",
+    "deployment_type": "google_compute_backend_bucket",
+    "deployment_state_id": "projects/sample-project/global/backendBuckets/item",
     "cai_type": "compute.googleapis.com/BackendBucket",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/backendBuckets/item",
     "native_type": "compute.googleapis.com/BackendBucket",
@@ -216,8 +216,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/backendBuckets/item"
   },
   {
-    "terraform_type": "google_compute_health_check",
-    "terraform_id": "projects/sample-project/global/healthChecks/item",
+    "deployment_type": "google_compute_health_check",
+    "deployment_state_id": "projects/sample-project/global/healthChecks/item",
     "cai_type": "compute.googleapis.com/HealthCheck",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/healthChecks/item",
     "native_type": "compute.googleapis.com/HealthCheck",
@@ -225,8 +225,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/healthChecks/item"
   },
   {
-    "terraform_type": "google_compute_region_health_check",
-    "terraform_id": "projects/sample-project/regions/us-central1/healthChecks/item",
+    "deployment_type": "google_compute_region_health_check",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/healthChecks/item",
     "cai_type": "compute.googleapis.com/HealthCheck",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/healthChecks/item",
     "native_type": "compute.googleapis.com/HealthCheck",
@@ -234,8 +234,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/healthChecks/item"
   },
   {
-    "terraform_type": "google_compute_http_health_check",
-    "terraform_id": "projects/sample-project/global/httpHealthChecks/item",
+    "deployment_type": "google_compute_http_health_check",
+    "deployment_state_id": "projects/sample-project/global/httpHealthChecks/item",
     "cai_type": "compute.googleapis.com/HttpHealthCheck",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/httpHealthChecks/item",
     "native_type": "compute.googleapis.com/HttpHealthCheck",
@@ -243,8 +243,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/httpHealthChecks/item"
   },
   {
-    "terraform_type": "google_compute_https_health_check",
-    "terraform_id": "projects/sample-project/global/httpsHealthChecks/item",
+    "deployment_type": "google_compute_https_health_check",
+    "deployment_state_id": "projects/sample-project/global/httpsHealthChecks/item",
     "cai_type": "compute.googleapis.com/HttpsHealthCheck",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/httpsHealthChecks/item",
     "native_type": "compute.googleapis.com/HttpsHealthCheck",
@@ -252,8 +252,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/httpsHealthChecks/item"
   },
   {
-    "terraform_type": "google_compute_url_map",
-    "terraform_id": "projects/sample-project/global/urlMaps/item",
+    "deployment_type": "google_compute_url_map",
+    "deployment_state_id": "projects/sample-project/global/urlMaps/item",
     "cai_type": "compute.googleapis.com/UrlMap",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/urlMaps/item",
     "native_type": "compute.googleapis.com/UrlMap",
@@ -261,8 +261,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/urlMaps/item"
   },
   {
-    "terraform_type": "google_compute_region_url_map",
-    "terraform_id": "projects/sample-project/regions/us-central1/urlMaps/item",
+    "deployment_type": "google_compute_region_url_map",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/urlMaps/item",
     "cai_type": "compute.googleapis.com/UrlMap",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/urlMaps/item",
     "native_type": "compute.googleapis.com/UrlMap",
@@ -270,8 +270,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/urlMaps/item"
   },
   {
-    "terraform_type": "google_compute_ssl_certificate",
-    "terraform_id": "projects/sample-project/global/sslCertificates/item",
+    "deployment_type": "google_compute_ssl_certificate",
+    "deployment_state_id": "projects/sample-project/global/sslCertificates/item",
     "cai_type": "compute.googleapis.com/SslCertificate",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/sslCertificates/item",
     "native_type": "compute.googleapis.com/SslCertificate",
@@ -279,8 +279,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/sslCertificates/item"
   },
   {
-    "terraform_type": "google_compute_region_ssl_certificate",
-    "terraform_id": "projects/sample-project/regions/us-central1/sslCertificates/item",
+    "deployment_type": "google_compute_region_ssl_certificate",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/sslCertificates/item",
     "cai_type": "compute.googleapis.com/SslCertificate",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/sslCertificates/item",
     "native_type": "compute.googleapis.com/SslCertificate",
@@ -288,8 +288,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/sslCertificates/item"
   },
   {
-    "terraform_type": "google_compute_security_policy",
-    "terraform_id": "projects/sample-project/global/securityPolicies/item",
+    "deployment_type": "google_compute_security_policy",
+    "deployment_state_id": "projects/sample-project/global/securityPolicies/item",
     "cai_type": "compute.googleapis.com/SecurityPolicy",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/securityPolicies/item",
     "native_type": "compute.googleapis.com/SecurityPolicy",
@@ -297,8 +297,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/securityPolicies/item"
   },
   {
-    "terraform_type": "google_compute_region_security_policy",
-    "terraform_id": "projects/sample-project/regions/us-central1/securityPolicies/item",
+    "deployment_type": "google_compute_region_security_policy",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/securityPolicies/item",
     "cai_type": "compute.googleapis.com/SecurityPolicy",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/securityPolicies/item",
     "native_type": "compute.googleapis.com/SecurityPolicy",
@@ -306,8 +306,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/securityPolicies/item"
   },
   {
-    "terraform_type": "google_compute_network_endpoint_group",
-    "terraform_id": "projects/sample-project/zones/us-central1-a/networkEndpointGroups/item",
+    "deployment_type": "google_compute_network_endpoint_group",
+    "deployment_state_id": "projects/sample-project/zones/us-central1-a/networkEndpointGroups/item",
     "cai_type": "compute.googleapis.com/NetworkEndpointGroup",
     "cai_name": "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/networkEndpointGroups/item",
     "native_type": "compute.googleapis.com/NetworkEndpointGroup",
@@ -315,8 +315,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/networkEndpointGroups/item"
   },
   {
-    "terraform_type": "google_compute_region_network_endpoint_group",
-    "terraform_id": "projects/sample-project/regions/us-central1/networkEndpointGroups/item",
+    "deployment_type": "google_compute_region_network_endpoint_group",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/networkEndpointGroups/item",
     "cai_type": "compute.googleapis.com/NetworkEndpointGroup",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/networkEndpointGroups/item",
     "native_type": "compute.googleapis.com/NetworkEndpointGroup",
@@ -324,8 +324,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/networkEndpointGroups/item"
   },
   {
-    "terraform_type": "google_compute_global_network_endpoint_group",
-    "terraform_id": "projects/sample-project/global/networkEndpointGroups/item",
+    "deployment_type": "google_compute_global_network_endpoint_group",
+    "deployment_state_id": "projects/sample-project/global/networkEndpointGroups/item",
     "cai_type": "compute.googleapis.com/NetworkEndpointGroup",
     "cai_name": "//compute.googleapis.com/projects/sample-project/global/networkEndpointGroups/item",
     "native_type": "compute.googleapis.com/NetworkEndpointGroup",
@@ -333,8 +333,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/global/networkEndpointGroups/item"
   },
   {
-    "terraform_type": "google_compute_network_attachment",
-    "terraform_id": "projects/sample-project/regions/us-central1/networkAttachments/item",
+    "deployment_type": "google_compute_network_attachment",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/networkAttachments/item",
     "cai_type": "compute.googleapis.com/NetworkAttachment",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/networkAttachments/item",
     "native_type": "compute.googleapis.com/NetworkAttachment",
@@ -342,8 +342,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/networkAttachments/item"
   },
   {
-    "terraform_type": "google_compute_resource_policy",
-    "terraform_id": "projects/sample-project/regions/us-central1/resourcePolicies/item",
+    "deployment_type": "google_compute_resource_policy",
+    "deployment_state_id": "projects/sample-project/regions/us-central1/resourcePolicies/item",
     "cai_type": "compute.googleapis.com/ResourcePolicy",
     "cai_name": "//compute.googleapis.com/projects/sample-project/regions/us-central1/resourcePolicies/item",
     "native_type": "compute.googleapis.com/ResourcePolicy",
@@ -351,8 +351,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/resourcePolicies/item"
   },
   {
-    "terraform_type": "google_compute_reservation",
-    "terraform_id": "projects/sample-project/zones/us-central1-a/reservations/item",
+    "deployment_type": "google_compute_reservation",
+    "deployment_state_id": "projects/sample-project/zones/us-central1-a/reservations/item",
     "cai_type": "compute.googleapis.com/Reservation",
     "cai_name": "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/reservations/item",
     "native_type": "compute.googleapis.com/Reservation",
@@ -360,8 +360,8 @@
     "get_url": "https://compute.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/reservations/item"
   },
   {
-    "terraform_type": "google_storage_bucket",
-    "terraform_id": "item",
+    "deployment_type": "google_storage_bucket",
+    "deployment_state_id": "item",
     "cai_type": "storage.googleapis.com/Bucket",
     "cai_name": "//storage.googleapis.com/item",
     "native_type": "storage.googleapis.com/Bucket",
@@ -369,8 +369,8 @@
     "get_url": "https://storage.googleapis.com/storage/v1/b/item"
   },
   {
-    "terraform_type": "google_pubsub_topic",
-    "terraform_id": "projects/sample-project/topics/item",
+    "deployment_type": "google_pubsub_topic",
+    "deployment_state_id": "projects/sample-project/topics/item",
     "cai_type": "pubsub.googleapis.com/Topic",
     "cai_name": "//pubsub.googleapis.com/projects/sample-project/topics/item",
     "native_type": "pubsub.googleapis.com/Topic",
@@ -378,8 +378,8 @@
     "get_url": "https://pubsub.googleapis.com/v1/projects/sample-project/topics/item"
   },
   {
-    "terraform_type": "google_pubsub_subscription",
-    "terraform_id": "projects/sample-project/subscriptions/item",
+    "deployment_type": "google_pubsub_subscription",
+    "deployment_state_id": "projects/sample-project/subscriptions/item",
     "cai_type": "pubsub.googleapis.com/Subscription",
     "cai_name": "//pubsub.googleapis.com/projects/sample-project/subscriptions/item",
     "native_type": "pubsub.googleapis.com/Subscription",
@@ -387,8 +387,8 @@
     "get_url": "https://pubsub.googleapis.com/v1/projects/sample-project/subscriptions/item"
   },
   {
-    "terraform_type": "google_cloud_run_v2_service",
-    "terraform_id": "projects/sample-project/locations/us-central1/services/item",
+    "deployment_type": "google_cloud_run_v2_service",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/services/item",
     "cai_type": "run.googleapis.com/Service",
     "cai_name": "//run.googleapis.com/projects/sample-project/locations/us-central1/services/item",
     "native_type": "run.googleapis.com/Service",
@@ -396,8 +396,8 @@
     "get_url": "https://run.googleapis.com/v2/projects/sample-project/locations/us-central1/services/item"
   },
   {
-    "terraform_type": "google_cloud_run_v2_job",
-    "terraform_id": "projects/sample-project/locations/us-central1/jobs/item",
+    "deployment_type": "google_cloud_run_v2_job",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/jobs/item",
     "cai_type": "run.googleapis.com/Job",
     "cai_name": "//run.googleapis.com/projects/sample-project/locations/us-central1/jobs/item",
     "native_type": "run.googleapis.com/Job",
@@ -405,8 +405,8 @@
     "get_url": "https://run.googleapis.com/v2/projects/sample-project/locations/us-central1/jobs/item"
   },
   {
-    "terraform_type": "google_container_cluster",
-    "terraform_id": "projects/sample-project/locations/us-central1/clusters/parent",
+    "deployment_type": "google_container_cluster",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/clusters/parent",
     "cai_type": "container.googleapis.com/Cluster",
     "cai_name": "//container.googleapis.com/projects/sample-project/locations/us-central1/clusters/parent",
     "native_type": "container.googleapis.com/Cluster",
@@ -414,8 +414,8 @@
     "get_url": "https://container.googleapis.com/v1/projects/sample-project/locations/us-central1/clusters/parent"
   },
   {
-    "terraform_type": "google_container_node_pool",
-    "terraform_id": "projects/sample-project/locations/us-central1/clusters/parent/nodePools/item",
+    "deployment_type": "google_container_node_pool",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/clusters/parent/nodePools/item",
     "cai_type": "container.googleapis.com/NodePool",
     "cai_name": "//container.googleapis.com/projects/sample-project/locations/us-central1/clusters/parent/nodePools/item",
     "native_type": "container.googleapis.com/NodePool",
@@ -423,8 +423,8 @@
     "get_url": "https://container.googleapis.com/v1/projects/sample-project/locations/us-central1/clusters/parent/nodePools/item"
   },
   {
-    "terraform_type": "google_service_account",
-    "terraform_id": "projects/sample-project/serviceAccounts/managed@sample-project.iam.gserviceaccount.com",
+    "deployment_type": "google_service_account",
+    "deployment_state_id": "projects/sample-project/serviceAccounts/managed@sample-project.iam.gserviceaccount.com",
     "cai_type": "iam.googleapis.com/ServiceAccount",
     "cai_name": "//iam.googleapis.com/projects/sample-project/serviceAccounts/managed@sample-project.iam.gserviceaccount.com",
     "native_type": "iam.googleapis.com/ServiceAccount",
@@ -432,8 +432,8 @@
     "get_url": "https://iam.googleapis.com/v1/projects/sample-project/serviceAccounts/managed@sample-project.iam.gserviceaccount.com"
   },
   {
-    "terraform_type": "google_sql_database_instance",
-    "terraform_id": "projects/sample-project/instances/item",
+    "deployment_type": "google_sql_database_instance",
+    "deployment_state_id": "projects/sample-project/instances/item",
     "cai_type": "sqladmin.googleapis.com/Instance",
     "cai_name": "//cloudsql.googleapis.com/projects/sample-project/instances/item",
     "native_type": "sqladmin.googleapis.com/Instance",
@@ -441,8 +441,8 @@
     "get_url": "https://sqladmin.googleapis.com/sql/v1beta4/projects/sample-project/instances/item"
   },
   {
-    "terraform_type": "google_secret_manager_secret",
-    "terraform_id": "projects/sample-project/secrets/item",
+    "deployment_type": "google_secret_manager_secret",
+    "deployment_state_id": "projects/sample-project/secrets/item",
     "cai_type": "secretmanager.googleapis.com/Secret",
     "cai_name": "//secretmanager.googleapis.com/projects/sample-project/secrets/item",
     "native_type": "secretmanager.googleapis.com/Secret",
@@ -450,8 +450,8 @@
     "get_url": "https://secretmanager.googleapis.com/v1/projects/sample-project/secrets/item"
   },
   {
-    "terraform_type": "google_artifact_registry_repository",
-    "terraform_id": "projects/sample-project/locations/us-central1/repositories/item",
+    "deployment_type": "google_artifact_registry_repository",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/repositories/item",
     "cai_type": "artifactregistry.googleapis.com/Repository",
     "cai_name": "//artifactregistry.googleapis.com/projects/sample-project/locations/us-central1/repositories/item",
     "native_type": "artifactregistry.googleapis.com/Repository",
@@ -459,8 +459,8 @@
     "get_url": "https://artifactregistry.googleapis.com/v1/projects/sample-project/locations/us-central1/repositories/item"
   },
   {
-    "terraform_type": "google_redis_instance",
-    "terraform_id": "projects/sample-project/locations/us-central1/instances/item",
+    "deployment_type": "google_redis_instance",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/instances/item",
     "cai_type": "redis.googleapis.com/Instance",
     "cai_name": "//redis.googleapis.com/projects/sample-project/locations/us-central1/instances/item",
     "native_type": "redis.googleapis.com/Instance",
@@ -468,8 +468,8 @@
     "get_url": "https://redis.googleapis.com/v1/projects/sample-project/locations/us-central1/instances/item"
   },
   {
-    "terraform_type": "google_spanner_instance",
-    "terraform_id": "sample-project/item",
+    "deployment_type": "google_spanner_instance",
+    "deployment_state_id": "sample-project/item",
     "cai_type": "spanner.googleapis.com/Instance",
     "cai_name": "//spanner.googleapis.com/projects/sample-project/instances/item",
     "native_type": "spanner.googleapis.com/Instance",
@@ -477,8 +477,8 @@
     "get_url": "https://spanner.googleapis.com/v1/projects/sample-project/instances/item"
   },
   {
-    "terraform_type": "google_spanner_database",
-    "terraform_id": "parent/item",
+    "deployment_type": "google_spanner_database",
+    "deployment_state_id": "parent/item",
     "cai_type": "spanner.googleapis.com/Database",
     "cai_name": "//spanner.googleapis.com/projects/sample-project/instances/parent/databases/item",
     "native_type": "spanner.googleapis.com/Database",
@@ -486,8 +486,8 @@
     "get_url": "https://spanner.googleapis.com/v1/projects/sample-project/instances/parent/databases/item"
   },
   {
-    "terraform_type": "google_bigtable_instance",
-    "terraform_id": "projects/sample-project/instances/item",
+    "deployment_type": "google_bigtable_instance",
+    "deployment_state_id": "projects/sample-project/instances/item",
     "cai_type": "bigtableadmin.googleapis.com/Instance",
     "cai_name": "//bigtable.googleapis.com/projects/sample-project/instances/item",
     "native_type": "bigtableadmin.googleapis.com/Instance",
@@ -495,8 +495,8 @@
     "get_url": "https://bigtableadmin.googleapis.com/v2/projects/sample-project/instances/item"
   },
   {
-    "terraform_type": "google_bigtable_table",
-    "terraform_id": "projects/sample-project/instances/parent/tables/item",
+    "deployment_type": "google_bigtable_table",
+    "deployment_state_id": "projects/sample-project/instances/parent/tables/item",
     "cai_type": "bigtableadmin.googleapis.com/Table",
     "cai_name": "//bigtable.googleapis.com/projects/sample-project/instances/parent/tables/item",
     "native_type": "bigtableadmin.googleapis.com/Table",
@@ -504,8 +504,8 @@
     "get_url": "https://bigtableadmin.googleapis.com/v2/projects/sample-project/instances/parent/tables/item?view=FULL"
   },
   {
-    "terraform_type": "google_alloydb_cluster",
-    "terraform_id": "projects/sample-project/locations/us-central1/clusters/parent",
+    "deployment_type": "google_alloydb_cluster",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/clusters/parent",
     "cai_type": "alloydb.googleapis.com/Cluster",
     "cai_name": "//alloydb.googleapis.com/projects/sample-project/locations/us-central1/clusters/parent",
     "native_type": "alloydb.googleapis.com/Cluster",
@@ -513,8 +513,8 @@
     "get_url": "https://alloydb.googleapis.com/v1/projects/sample-project/locations/us-central1/clusters/parent"
   },
   {
-    "terraform_type": "google_alloydb_instance",
-    "terraform_id": "projects/sample-project/locations/us-central1/clusters/parent/instances/item",
+    "deployment_type": "google_alloydb_instance",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/clusters/parent/instances/item",
     "cai_type": "alloydb.googleapis.com/Instance",
     "cai_name": "//alloydb.googleapis.com/projects/sample-project/locations/us-central1/clusters/parent/instances/item",
     "native_type": "alloydb.googleapis.com/Instance",
@@ -522,8 +522,8 @@
     "get_url": "https://alloydb.googleapis.com/v1/projects/sample-project/locations/us-central1/clusters/parent/instances/item"
   },
   {
-    "terraform_type": "google_filestore_instance",
-    "terraform_id": "projects/sample-project/locations/us-central1/instances/item",
+    "deployment_type": "google_filestore_instance",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/instances/item",
     "cai_type": "file.googleapis.com/Instance",
     "cai_name": "//file.googleapis.com/projects/sample-project/locations/us-central1/instances/item",
     "native_type": "file.googleapis.com/Instance",
@@ -531,8 +531,8 @@
     "get_url": "https://file.googleapis.com/v1/projects/sample-project/locations/us-central1/instances/item"
   },
   {
-    "terraform_type": "google_data_fusion_instance",
-    "terraform_id": "projects/sample-project/locations/us-central1/instances/item",
+    "deployment_type": "google_data_fusion_instance",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/instances/item",
     "cai_type": "datafusion.googleapis.com/Instance",
     "cai_name": "//datafusion.googleapis.com/projects/sample-project/locations/us-central1/instances/item",
     "native_type": "datafusion.googleapis.com/Instance",
@@ -540,8 +540,8 @@
     "get_url": "https://datafusion.googleapis.com/v1/projects/sample-project/locations/us-central1/instances/item"
   },
   {
-    "terraform_type": "google_dataform_repository",
-    "terraform_id": "projects/sample-project/locations/us-central1/repositories/item",
+    "deployment_type": "google_dataform_repository",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/repositories/item",
     "cai_type": "dataform.googleapis.com/Repository",
     "cai_name": "//dataform.googleapis.com/projects/sample-project/locations/us-central1/repositories/item",
     "native_type": "dataform.googleapis.com/Repository",
@@ -549,8 +549,8 @@
     "get_url": "https://dataform.googleapis.com/v1/projects/sample-project/locations/us-central1/repositories/item"
   },
   {
-    "terraform_type": "google_tpu_v2_vm",
-    "terraform_id": "projects/sample-project/locations/us-central1-a/nodes/item",
+    "deployment_type": "google_tpu_v2_vm",
+    "deployment_state_id": "projects/sample-project/locations/us-central1-a/nodes/item",
     "cai_type": "tpu.googleapis.com/Node",
     "cai_name": "//tpu.googleapis.com/projects/123456/locations/us-central1-a/nodes/item",
     "native_type": "tpu.googleapis.com/Node",
@@ -558,8 +558,8 @@
     "get_url": "https://tpu.googleapis.com/v2/projects/sample-project/locations/us-central1-a/nodes/item"
   },
   {
-    "terraform_type": "google_cloud_tasks_queue",
-    "terraform_id": "projects/sample-project/locations/us-central1/queues/item",
+    "deployment_type": "google_cloud_tasks_queue",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/queues/item",
     "cai_type": "cloudtasks.googleapis.com/Queue",
     "cai_name": "//cloudtasks.googleapis.com/projects/sample-project/locations/us-central1/queues/item",
     "native_type": "cloudtasks.googleapis.com/Queue",
@@ -567,8 +567,8 @@
     "get_url": "https://cloudtasks.googleapis.com/v2/projects/sample-project/locations/us-central1/queues/item"
   },
   {
-    "terraform_type": "google_datastream_stream",
-    "terraform_id": "projects/sample-project/locations/us-central1/streams/item",
+    "deployment_type": "google_datastream_stream",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/streams/item",
     "cai_type": "datastream.googleapis.com/Stream",
     "cai_name": "//datastream.googleapis.com/projects/sample-project/locations/us-central1/streams/item",
     "native_type": "datastream.googleapis.com/Stream",
@@ -576,8 +576,8 @@
     "get_url": "https://datastream.googleapis.com/v1/projects/sample-project/locations/us-central1/streams/item"
   },
   {
-    "terraform_type": "google_datastream_connection_profile",
-    "terraform_id": "projects/sample-project/locations/us-central1/connectionProfiles/item",
+    "deployment_type": "google_datastream_connection_profile",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/connectionProfiles/item",
     "cai_type": "datastream.googleapis.com/ConnectionProfile",
     "cai_name": "//datastream.googleapis.com/projects/sample-project/locations/us-central1/connectionProfiles/item",
     "native_type": "datastream.googleapis.com/ConnectionProfile",
@@ -585,8 +585,8 @@
     "get_url": "https://datastream.googleapis.com/v1/projects/sample-project/locations/us-central1/connectionProfiles/item"
   },
   {
-    "terraform_type": "google_datastream_private_connection",
-    "terraform_id": "projects/sample-project/locations/us-central1/privateConnections/item",
+    "deployment_type": "google_datastream_private_connection",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/privateConnections/item",
     "cai_type": "datastream.googleapis.com/PrivateConnection",
     "cai_name": "//datastream.googleapis.com/projects/sample-project/locations/us-central1/privateConnections/item",
     "native_type": "datastream.googleapis.com/PrivateConnection",
@@ -594,8 +594,8 @@
     "get_url": "https://datastream.googleapis.com/v1/projects/sample-project/locations/us-central1/privateConnections/item"
   },
   {
-    "terraform_type": "google_certificate_manager_certificate",
-    "terraform_id": "projects/sample-project/locations/us-central1/certificates/item",
+    "deployment_type": "google_certificate_manager_certificate",
+    "deployment_state_id": "projects/sample-project/locations/us-central1/certificates/item",
     "cai_type": "certificatemanager.googleapis.com/Certificate",
     "cai_name": "//certificatemanager.googleapis.com/projects/sample-project/locations/us-central1/certificates/item",
     "native_type": "certificatemanager.googleapis.com/Certificate",
@@ -603,8 +603,8 @@
     "get_url": "https://certificatemanager.googleapis.com/v1/projects/sample-project/locations/us-central1/certificates/item"
   },
   {
-    "terraform_type": "google_certificate_manager_certificate_map",
-    "terraform_id": "projects/sample-project/locations/global/certificateMaps/item",
+    "deployment_type": "google_certificate_manager_certificate_map",
+    "deployment_state_id": "projects/sample-project/locations/global/certificateMaps/item",
     "cai_type": "certificatemanager.googleapis.com/CertificateMap",
     "cai_name": "//certificatemanager.googleapis.com/projects/sample-project/locations/global/certificateMaps/item",
     "native_type": "certificatemanager.googleapis.com/CertificateMap",

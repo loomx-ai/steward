@@ -83,8 +83,7 @@ Google Config Connector mockgcp is pinned at
 Its unchanged [AlertPolicy implementation](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/673a61419de1b8e4f7d26070ce20dde2daa61da8/mockgcp/mockmonitoring/alertpolicy.go)
 provides CREATE/LIST/GET/UPDATE/DELETE. Reuse the retained
 [Monitoring harness](../metrics-scope/testdata/mockgcp/main.go) in a disposable
-sparse checkout containing `mockgcp`, `pkg`, and
-`third_party/github.com/hashicorp/terraform-provider-google-beta`. Copy the harness
+shallow clone of the pinned revision. Copy the harness
 to `mockgcp/steward-alert-harness/main.go`, then from `mockgcp`:
 
 ```sh

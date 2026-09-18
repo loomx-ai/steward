@@ -11,13 +11,13 @@ import (
 )
 
 type infraPhysicalCase struct {
-	TerraformType string `json:"terraform_type"`
-	TerraformID   string `json:"terraform_id"`
-	CAIType       string `json:"cai_type"`
-	CAIName       string `json:"cai_name"`
-	NativeType    string `json:"native_type"`
-	NativeID      string `json:"native_id"`
-	GetURL        string `json:"get_url"`
+	DeploymentType    string `json:"deployment_type"`
+	DeploymentStateID string `json:"deployment_state_id"`
+	CAIType           string `json:"cai_type"`
+	CAIName           string `json:"cai_name"`
+	NativeType        string `json:"native_type"`
+	NativeID          string `json:"native_id"`
+	GetURL            string `json:"get_url"`
 }
 
 func TestInfraManagerKeepsLatestRevisionExecutionDependencies(t *testing.T) {
@@ -37,7 +37,7 @@ func TestInfraManagerKeepsLatestRevisionExecutionDependencies(t *testing.T) {
 	}
 	buckets, err := discoveryStrings(batch.Items[0].Normalized[referenceKey("storage.googleapis.com/Bucket")])
 	if err != nil || len(buckets) != 2 || !slices.Contains(buckets, "//storage.googleapis.com/latest-source") {
-		t.Fatalf("latest Terraform source dependency lost: %v %v", buckets, err)
+		t.Fatalf("latest deployment source dependency lost: %v %v", buckets, err)
 	}
 	if len(s.writes) != 0 {
 		t.Fatal("execution dependencies were mutated")
@@ -45,7 +45,7 @@ func TestInfraManagerKeepsLatestRevisionExecutionDependencies(t *testing.T) {
 }
 
 func (v infraPhysicalCase) record() map[string]any {
-	return map[string]any{"intent": "CREATE", "state": "RECONCILED", "terraformInfo": map[string]any{"type": v.TerraformType, "id": v.TerraformID, "address": v.TerraformType + ".item"}, "caiAssets": map[string]any{v.CAIType: map[string]any{"fullResourceName": v.CAIName}}}
+	return map[string]any{"intent": "CREATE", "state": "RECONCILED", "terraformInfo": map[string]any{"type": v.DeploymentType, "id": v.DeploymentStateID, "address": v.DeploymentType + ".item"}, "caiAssets": map[string]any{v.CAIType: map[string]any{"fullResourceName": v.CAIName}}}
 }
 
 func TestInfraManagerPhysicalNativeIdentityContracts(t *testing.T) {
@@ -57,11 +57,11 @@ func TestInfraManagerPhysicalNativeIdentityContracts(t *testing.T) {
 	if err := json.Unmarshal(raw, &cases); err != nil {
 		t.Fatal(err)
 	}
-	if len(cases) != len(infraTerraformKinds) {
-		t.Fatal("Terraform mapping has no corresponding source-backed identity contract")
+	if len(cases) != len(infraDeploymentKinds) {
+		t.Fatal("deployment mapping has no corresponding source-backed identity contract")
 	}
 	for _, test := range cases {
-		t.Run(test.TerraformType, func(t *testing.T) {
+		t.Run(test.DeploymentType, func(t *testing.T) {
 			calls := 0
 			c := &client{project: "sample-project", number: "123456", http: &http.Client{Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
 				calls++
@@ -80,7 +80,7 @@ func TestInfraManagerPhysicalNativeIdentityContracts(t *testing.T) {
 				"google_compute_region_backend_service": "compute.googleapis.com/BackendService",
 				"google_compute_global_forwarding_rule": "compute.googleapis.com/ForwardingRule",
 			}
-			if alias := aliases[test.TerraformType]; alias != "" {
+			if alias := aliases[test.DeploymentType]; alias != "" {
 				row := test.record()
 				row["caiAssets"] = map[string]any{alias: object(row["caiAssets"])[test.CAIType]}
 				member, known, err := c.infraPhysicalMember(context.Background(), row)
@@ -89,7 +89,7 @@ func TestInfraManagerPhysicalNativeIdentityContracts(t *testing.T) {
 				}
 			}
 			for _, mutate := range []func(map[string]any){
-				func(row map[string]any) { object(row["terraformInfo"])["type"] = test.TerraformType + "_iam_member" },
+				func(row map[string]any) { object(row["terraformInfo"])["type"] = test.DeploymentType + "_iam_member" },
 				func(row map[string]any) { object(row["terraformInfo"])["id"] = "other-resource" },
 				func(row map[string]any) {
 					row["caiAssets"] = map[string]any{"unsupported.googleapis.com/Asset": map[string]any{"fullResourceName": test.CAIName}}
@@ -120,7 +120,7 @@ func TestInfraManagerServiceAccountCAIAliases(t *testing.T) {
 			if mode == "project-number" {
 				cai = strings.Replace(cai, "/sample-project/", "/123456/", 1)
 			}
-			row := infraPhysicalCase{TerraformType: "google_service_account", TerraformID: name, CAIType: "iam.googleapis.com/ServiceAccount", CAIName: cai}.record()
+			row := infraPhysicalCase{DeploymentType: "google_service_account", DeploymentStateID: name, CAIType: "iam.googleapis.com/ServiceAccount", CAIName: cai}.record()
 			reads := 0
 			c := &client{project: "sample-project", number: "123456", http: &http.Client{Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
 				reads++

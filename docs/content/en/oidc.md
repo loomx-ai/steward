@@ -4,7 +4,7 @@ description: "Exchange workload identities for temporary cloud credentials witho
 navTitle: "OIDC connections"
 ---
 
-Steward follows Terraform Cloud's dynamic credential model: sign a short-lived workload JWT, let the cloud verify an explicitly configured trust relationship, and exchange it for temporary credentials. AWS, Alibaba Cloud, GCP, and Azure are supported. This is workload authentication, not browser sign-in.
+Steward uses OIDC workload identity federation: it signs a short-lived workload JWT, the cloud verifies an explicitly configured trust relationship, and returns temporary credentials. AWS, Alibaba Cloud, GCP, and Azure are supported. This is workload authentication, not browser sign-in.
 
 ## Operator setup
 
@@ -122,8 +122,7 @@ This establishes trust only. Attach a separate permission policy for resource re
 
 ## References
 
-- [Terraform Cloud workload identity](https://developer.hashicorp.com/terraform/cloud-docs/dynamic-provider-credentials/workload-identity-tokens)
-- [AWS configuration](https://developer.hashicorp.com/terraform/cloud-docs/dynamic-provider-credentials/aws-configuration)
-- [Azure configuration](https://developer.hashicorp.com/terraform/cloud-docs/dynamic-provider-credentials/azure-configuration)
-- [GCP configuration](https://developer.hashicorp.com/terraform/cloud-docs/dynamic-provider-credentials/gcp-configuration)
-- [Alibaba Cloud OIDC role assumption](https://www.alibabacloud.com/help/en/terraform/terraform-authentication)
+- [AWS OIDC identity providers](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html)
+- [Microsoft Entra workload identity federation](https://learn.microsoft.com/en-us/entra/workload-id/workload-identity-federation)
+- [Google Cloud workload identity federation](https://docs.cloud.google.com/iam/docs/workload-identity-federation)
+- [Alibaba Cloud OIDC-based SSO](https://www.alibabacloud.com/help/en/ram/user-guide/overview-of-oidc-based-sso)

@@ -77,9 +77,8 @@ Google Config Connector mockgcp is pinned at
 [NotificationChannel service](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/673a61419de1b8e4f7d26070ce20dde2daa61da8/mockgcp/mockmonitoring/notificationchannel.go)
 implements native LIST/GET/CREATE/UPDATE/DELETE. Reuse the retained
 [Monitoring harness](../metrics-scope/testdata/mockgcp/main.go) in a disposable
-sparse checkout with `mockgcp`, `pkg`,
-`third_party/github.com/hashicorp/terraform-provider-google-beta` and
-`config/crds/resources`. Copy it to `mockgcp/steward-monitoring-harness/main.go`
+shallow clone of the pinned revision. Copy it to
+`mockgcp/steward-monitoring-harness/main.go`
 and build inside `mockgcp` with `GOWORK=off go build ./steward-monitoring-harness`.
 Run the harness and pass its printed loopback origin:
 

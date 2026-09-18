@@ -8,12 +8,12 @@ import (
 	"time"
 )
 
-// These Terraform resources manage complete native objects. Deliberately do not
+// These deployment resource types manage complete native objects. Deliberately do not
 // derive this mapping by removing a google_ prefix: IAM members/policies, bucket
 // objects, router NAT, peering and attachment resources can name a containing CAI
 // asset without owning that asset's lifecycle. The native TF ID must also agree
 // with the CAI full resource name before a mapping can authorize destruction.
-var infraTerraformKinds = map[string]string{
+var infraDeploymentKinds = map[string]string{
 	"google_compute_network":                       "compute.googleapis.com/Network",
 	"google_compute_subnetwork":                    "compute.googleapis.com/Subnetwork",
 	"google_compute_firewall":                      "compute.googleapis.com/Firewall",
@@ -86,7 +86,7 @@ var infraTerraformKinds = map[string]string{
 
 // CAI search/analysis use broader types than list/export for these collections.
 // Accept those documented aliases only after trying the distinct native type;
-// the full CAI name and Terraform state ID must still identify the same object.
+// the full CAI name and deployment state ID must still identify the same object.
 func infraCAIType(kind string) string {
 	switch kind {
 	case "compute.googleapis.com/RegionDisk":
@@ -109,7 +109,7 @@ func (c *client) infraPhysicalMember(ctx context.Context, record map[string]any)
 		return infraMember{}, false, nil
 	}
 	info := object(record["terraformInfo"])
-	kind := infraTerraformKinds[text(info["type"])]
+	kind := infraDeploymentKinds[text(info["type"])]
 	assets, ok := record["caiAssets"].(map[string]any)
 	if kind == "" || !ok || len(assets) != 1 {
 		return infraMember{}, false, nil

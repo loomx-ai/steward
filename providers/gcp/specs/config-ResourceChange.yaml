@@ -42,7 +42,7 @@ fields:
   intent:
     path: intent
     type: string
-  terraformType:
+  deploymentResourceType:
     path: terraformInfo.type
     type: string
 extensions:

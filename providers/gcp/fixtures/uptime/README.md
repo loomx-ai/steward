@@ -80,8 +80,7 @@ native alert-policy locks and redact every header regardless of maskHeaders;
 those limits remain explicit. This is a hybrid test, not complete cloud emulation.
 
 Reuse the retained [Monitoring harness](../metrics-scope/testdata/mockgcp/main.go)
-inside a temporary sparse checkout containing `mockgcp`, `pkg`, and
-`third_party/github.com/hashicorp/terraform-provider-google-beta` at that revision.
+inside a temporary shallow clone of that revision.
 Copy it to `mockgcp/steward-uptime-harness/main.go`, then build from `mockgcp`:
 
 ```sh

@@ -131,7 +131,7 @@ func TestInfraManagerIdentityScopeCursorAndInvokeBoundaries(t *testing.T) {
 	}
 	encoded, _ := json.Marshal(result)
 	if strings.Contains(string(encoded), "INFRA_PRIVATE") {
-		t.Fatal("native Invoke exposed Terraform inputs")
+		t.Fatal("native Invoke exposed deployment inputs")
 	}
 	before := len(s.calls)
 	for _, name := range []string{strings.Replace(infraTestDeployment, "sample-project", "other-project", 1), infraTestDeployment + "/..", strings.Replace(infraTestDeployment, "stack-a", "..", 1), strings.Replace(infraTestDeployment, "stack-a", "%2fprivate", 1), "https://config.googleapis.com/v1/" + infraTestDeployment} {
@@ -153,10 +153,10 @@ func TestInfraManagerIdentityScopeCursorAndInvokeBoundaries(t *testing.T) {
 	if _, err := r.List(context.Background(), request); err == nil {
 		t.Fatal("stale parent cursor skipped an altered deployment")
 	}
-	for _, kind := range infraTerraformKinds {
+	for _, kind := range infraDeploymentKinds {
 		native, ok := findType(kind)
 		if !ok || len(native.ReadOperations) == 0 || len(native.DeleteOperations) == 0 {
-			t.Fatalf("Terraform mapping has no native driver: %s", kind)
+			t.Fatalf("deployment mapping has no native driver: %s", kind)
 		}
 	}
 	if !slices.Contains(r.resourceKind(infraDeployment).Capabilities, asset.CapabilityActionable) {
