@@ -18,6 +18,8 @@ navTitle: "Configuration"
 | `STEWARD_SCAN_CONCURRENCY` | Scan concurrency; default 4, positive integer |
 | `STEWARD_AUTH_ROLE` | viewer / operator / admin; token role, default admin |
 
+The command line uses Chinese when `LC_ALL`, `LC_MESSAGES`, or `LANG` selects a Chinese locale, and English otherwise.
+
 
 
 [Network access and authentication →](./deployment.md#network)

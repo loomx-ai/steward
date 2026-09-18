@@ -18,6 +18,8 @@ navTitle: "配置参考"
 | `STEWARD_SCAN_CONCURRENCY` | 扫描并发；默认 4，必须为正整数 |
 | `STEWARD_AUTH_ROLE` | viewer / operator / admin；Token 对应角色，默认 admin |
 
+当 `LC_ALL`、`LC_MESSAGES` 或 `LANG` 为中文语言环境时，命令行显示中文，否则显示英文。
+
 
 
 [网络访问与认证配置 →](./deployment.md#network)

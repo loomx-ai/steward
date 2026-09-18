@@ -31,7 +31,7 @@ type ServerStatus struct {
 func newServerCommand(version string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "server",
-		Short: "Manage the local Steward server",
+		Short: tr("Manage the local Steward server", "管理本地 Steward 服务"),
 	}
 	cmd.AddCommand(newServerStartCommand(version))
 	cmd.AddCommand(newServerStopCommand())
@@ -51,7 +51,7 @@ func newServerStartCommand(version string) *cobra.Command {
 	var authRole string
 	cmd := &cobra.Command{
 		Use:   "start",
-		Short: "Start the local server",
+		Short: tr("Start the local server", "启动本地服务"),
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			scanConcurrency, err := positiveEnvInt("STEWARD_SCAN_CONCURRENCY", 4)
 			if err != nil {
@@ -68,7 +68,7 @@ func newServerStartCommand(version string) *cobra.Command {
 				return err
 			}
 			if data.WorkingDirectory {
-				fmt.Fprintf(cmd.ErrOrStderr(), "Using data in %s. Move it to ~/%s or set STEWARD_HOME to keep one location.\n", data.Path, datadir.Name)
+				fmt.Fprintf(cmd.ErrOrStderr(), tr("Using data in %s. Move it to ~/%s or set STEWARD_HOME to keep one location.\n", "正在使用 %s 中的数据。请将其移至 ~/%s，或设置 STEWARD_HOME 固定数据位置。\n"), data.Path, datadir.Name)
 			}
 			if dbDriver == "sqlite" && dsn == "" {
 				dsn = filepath.Join(data.Path, "steward.db")
@@ -78,7 +78,7 @@ func newServerStartCommand(version string) *cobra.Command {
 			}
 			role := httptransport.Role(strings.ToLower(strings.TrimSpace(authRole)))
 			if role != httptransport.RoleViewer && role != httptransport.RoleOperator && role != httptransport.RoleAdmin {
-				return fmt.Errorf("invalid server role %q", authRole)
+				return fmt.Errorf(tr("invalid server role %q", "无效的服务角色 %q"), authRole)
 			}
 			var bindings []httptransport.TokenBinding
 			if strings.TrimSpace(authToken) != "" {
@@ -96,7 +96,7 @@ func newServerStartCommand(version string) *cobra.Command {
 				return err
 			}
 			defer os.Remove(statusPath)
-			fmt.Fprintf(cmd.OutOrStdout(), "Steward server listening on %s\n", serverURL(addr))
+			fmt.Fprintf(cmd.OutOrStdout(), tr("Steward server listening on %s\n", "Steward 服务已在 %s 监听\n"), serverURL(addr))
 			return server.Run(ctx, server.Config{
 				Addr:                addr,
 				DBDriver:            dbDriver,
@@ -111,15 +111,15 @@ func newServerStartCommand(version string) *cobra.Command {
 			})
 		},
 	}
-	cmd.Flags().StringVar(&addr, "addr", envDefault("STEWARD_ADDR", "127.0.0.1:8585"), "server listen address")
-	cmd.Flags().StringVar(&dbDriver, "db-driver", envDefault("STEWARD_DB_DRIVER", "sqlite"), "database driver: sqlite or postgres")
-	cmd.Flags().StringVar(&dsn, "db-dsn", "", "database DSN or SQLite path; defaults to STEWARD_DB_DSN")
-	cmd.Flags().StringVar(&migrationsDir, "migrations-dir", "", "directory overriding the embedded database migrations")
-	cmd.Flags().StringVar(&statusPath, "status-file", "", "server status file; defaults to server.json in the data directory")
-	cmd.Flags().StringVar(&authMode, "auth-mode", os.Getenv("STEWARD_AUTH_MODE"), "authentication mode: local, token, or cloud; defaults to local unless a token is configured")
-	cmd.Flags().StringVar(&authToken, "auth-token", os.Getenv("STEWARD_AUTH_TOKEN"), "bearer token for token or cloud authentication")
-	cmd.Flags().StringVar(&authSubject, "auth-subject", envDefault("STEWARD_AUTH_SUBJECT", "local-admin"), "server-verified subject for the configured token")
-	cmd.Flags().StringVar(&authRole, "auth-role", envDefault("STEWARD_AUTH_ROLE", "admin"), "role for the configured token: viewer, operator, or admin")
+	cmd.Flags().StringVar(&addr, "addr", envDefault("STEWARD_ADDR", "127.0.0.1:8585"), tr("server listen address", "服务监听地址"))
+	cmd.Flags().StringVar(&dbDriver, "db-driver", envDefault("STEWARD_DB_DRIVER", "sqlite"), tr("database driver: sqlite or postgres", "数据库驱动：sqlite 或 postgres"))
+	cmd.Flags().StringVar(&dsn, "db-dsn", "", tr("database DSN or SQLite path; defaults to STEWARD_DB_DSN", "数据库 DSN 或 SQLite 路径；默认读取 STEWARD_DB_DSN"))
+	cmd.Flags().StringVar(&migrationsDir, "migrations-dir", "", tr("directory overriding the embedded database migrations", "替代内置数据库迁移的目录"))
+	cmd.Flags().StringVar(&statusPath, "status-file", "", tr("server status file; defaults to server.json in the data directory", "服务状态文件；默认为数据目录中的 server.json"))
+	cmd.Flags().StringVar(&authMode, "auth-mode", os.Getenv("STEWARD_AUTH_MODE"), tr("authentication mode: local, token, or cloud; defaults to local unless a token is configured", "认证模式：local、token 或 cloud；未配置 Token 时默认 local"))
+	cmd.Flags().StringVar(&authToken, "auth-token", os.Getenv("STEWARD_AUTH_TOKEN"), tr("bearer token for token or cloud authentication", "token 或 cloud 认证使用的 Bearer Token"))
+	cmd.Flags().StringVar(&authSubject, "auth-subject", envDefault("STEWARD_AUTH_SUBJECT", "local-admin"), tr("server-verified subject for the configured token", "所配置 Token 对应的服务端认证主体"))
+	cmd.Flags().StringVar(&authRole, "auth-role", envDefault("STEWARD_AUTH_ROLE", "admin"), tr("role for the configured token: viewer, operator, or admin", "所配置 Token 的角色：viewer、operator 或 admin"))
 	return cmd
 }
 
@@ -130,7 +130,7 @@ func positiveEnvInt(name string, fallback int) (int, error) {
 	}
 	parsed, err := strconv.Atoi(value)
 	if err != nil || parsed <= 0 {
-		return 0, fmt.Errorf("%s must be a positive integer", name)
+		return 0, fmt.Errorf(tr("%s must be a positive integer", "%s 必须是正整数"), name)
 	}
 	return parsed, nil
 }
@@ -139,13 +139,16 @@ func newServerStopCommand() *cobra.Command {
 	var statusPath string
 	cmd := &cobra.Command{
 		Use:   "stop",
-		Short: "Stop the local server",
+		Short: tr("Stop the local server", "停止本地服务"),
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			statusPath, err := resolveStatusPath(statusPath)
 			if err != nil {
 				return err
 			}
 			status, err := readServerStatus(statusPath)
+			if errors.Is(err, os.ErrNotExist) {
+				return errors.New(tr("Steward server is not running", "Steward 服务未运行"))
+			}
 			if err != nil {
 				return err
 			}
@@ -157,11 +160,11 @@ func newServerStopCommand() *cobra.Command {
 			if err := stopProcess(process); err != nil {
 				return err
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "requested stop for server pid %d\n", status.PID)
+			fmt.Fprintf(cmd.OutOrStdout(), tr("requested stop for server pid %d\n", "已请求停止服务进程 %d\n"), status.PID)
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&statusPath, "status-file", "", "server status file; defaults to server.json in the data directory")
+	cmd.Flags().StringVar(&statusPath, "status-file", "", tr("server status file; defaults to server.json in the data directory", "服务状态文件；默认为数据目录中的 server.json"))
 	return cmd
 }
 
@@ -169,7 +172,7 @@ func newServerStatusCommand() *cobra.Command {
 	var statusPath string
 	cmd := &cobra.Command{
 		Use:   "status",
-		Short: "Show local server status",
+		Short: tr("Show local server status", "查看本地服务状态"),
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			statusPath, err := resolveStatusPath(statusPath)
 			if err != nil {
@@ -190,7 +193,7 @@ func newServerStatusCommand() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&statusPath, "status-file", "", "server status file; defaults to server.json in the data directory")
+	cmd.Flags().StringVar(&statusPath, "status-file", "", tr("server status file; defaults to server.json in the data directory", "服务状态文件；默认为数据目录中的 server.json"))
 	return cmd
 }
 
