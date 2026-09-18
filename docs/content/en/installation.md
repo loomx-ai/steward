@@ -112,6 +112,16 @@ In your downloads directory, use the file for your architecture:
 <pre><code>sudo install -d /usr/local/bin
 sudo install -m 755 steward_<span data-release-version>0.2.0</span>_linux_amd64 /usr/local/bin/steward</code></pre>
 
+<span id="update"></span>
+
+## Update
+
+```sh
+steward update
+```
+
+Steward updates itself through the method you installed it with: Homebrew, Scoop, APT, DNF, or a downloaded binary (replaced in place after SHA-256 verification). APT and DNF ask for your sudo password. Run `steward update --check` to only check for a new version. Restart a running server after updating.
+
 <span id="start"></span>
 
 ## Next steps

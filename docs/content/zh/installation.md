@@ -112,6 +112,16 @@ brew install loomx-ai/tap/steward
 <pre><code>sudo install -d /usr/local/bin
 sudo install -m 755 steward_<span data-release-version>0.2.0</span>_linux_amd64 /usr/local/bin/steward</code></pre>
 
+<span id="update"></span>
+
+## 更新
+
+```sh
+steward update
+```
+
+Steward 会按安装方式更新：Homebrew、Scoop、APT、DNF，或直接下载的可执行文件（校验 SHA-256 后原地替换）。APT 和 DNF 需要输入 sudo 密码。运行 `steward update --check` 仅检查新版本。更新后需重启正在运行的服务。
+
 <span id="start"></span>
 
 ## 下一步

@@ -11,5 +11,6 @@ func NewRootCommand(version string) *cobra.Command {
 		SilenceErrors: true,
 	}
 	cmd.AddCommand(newServerCommand(version))
+	cmd.AddCommand(newUpdateCommand(version))
 	return cmd
 }
