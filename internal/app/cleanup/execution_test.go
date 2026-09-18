@@ -810,6 +810,12 @@ func TestExecutionHandlerPersistsWaiterDataForTheNextPoll(t *testing.T) {
 	}
 }
 
+// parallelCleanupProgressTimeout bounds waits for expected progress. Twenty
+// workers share one SQLite connection, so under the race detector on a busy
+// CI runner the first action can take seconds to start; the waits return as
+// soon as progress happens, so the generous bound only affects failures.
+const parallelCleanupProgressTimeout = 30 * time.Second
+
 func TestCleanupWorkerProcessesTwentyProviderCallsConcurrently(t *testing.T) {
 	if cleanup.ExecutionWorkerConcurrency != 20 {
 		t.Fatalf("cleanup worker concurrency = %d, want 20", cleanup.ExecutionWorkerConcurrency)
@@ -876,7 +882,7 @@ func TestCleanupWorkerProcessesTwentyProviderCallsConcurrently(t *testing.T) {
 		cancelWorker()
 		select {
 		case <-workerDone:
-		case <-time.After(2 * time.Second):
+		case <-time.After(parallelCleanupProgressTimeout):
 			t.Error("cleanup worker did not stop")
 		}
 	})
@@ -886,7 +892,7 @@ func TestCleanupWorkerProcessesTwentyProviderCallsConcurrently(t *testing.T) {
 		case <-started:
 		case err := <-workerErrors:
 			t.Fatalf("cleanup worker failed before filling concurrency slots: %v", err)
-		case <-time.After(2 * time.Second):
+		case <-time.After(parallelCleanupProgressTimeout):
 			t.Fatalf("only %d independent cleanup actions started", index)
 		}
 	}
@@ -905,12 +911,12 @@ func TestCleanupWorkerProcessesTwentyProviderCallsConcurrently(t *testing.T) {
 	case <-started:
 	case err := <-workerErrors:
 		t.Fatalf("cleanup worker failed before starting the queued action: %v", err)
-	case <-time.After(2 * time.Second):
+	case <-time.After(parallelCleanupProgressTimeout):
 		t.Fatal("queued independent cleanup action did not start")
 	}
 
 	releaseAll()
-	deadline := time.After(10 * time.Second)
+	deadline := time.After(parallelCleanupProgressTimeout)
 	for {
 		stored, err := repositories.Executions().GetExecution(ctx, created.ID)
 		if err != nil {
@@ -949,7 +955,7 @@ func TestCleanupWorkerProcessesTwentyProviderCallsConcurrently(t *testing.T) {
 	if completedEvents != 1 {
 		t.Fatalf("execution.completed events=%d, want 1", completedEvents)
 	}
-	jobsDeadline := time.After(3 * time.Second)
+	jobsDeadline := time.After(parallelCleanupProgressTimeout)
 	for {
 		jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "cleanup_task", "cln-parallel")
 		if err != nil {
@@ -977,7 +983,7 @@ func TestCleanupWorkerProcessesTwentyProviderCallsConcurrently(t *testing.T) {
 			t.Fatalf("cleanup worker stop error = %v", err)
 		}
 		workerStopped = true
-	case <-time.After(2 * time.Second):
+	case <-time.After(parallelCleanupProgressTimeout):
 		t.Fatal("cleanup worker did not stop")
 	}
 }
