@@ -7483,5 +7483,9 @@ indexes with the shared empty native fixtures, which the emulator does not own.
 budget: 346 of its tests pass inside 25 minutes under `-race`, with one Azure
 Local recovery test at 216s and several APIM tests between 50s and 93s. The race
 run is now a separate matrix job with one 60-minute timeout per group (internal,
-Azure, GCP, AWS with Alibaba Cloud and the matrix package), so a large package
-cannot exhaust another group's time and a genuine hang is still caught.
+GCP, AWS with Alibaba Cloud and the matrix package, and seven Azure shards by
+test-name prefix), so a large package cannot exhaust another group's time and a
+genuine hang is still caught. Measured locally: the `^Test[R-W]` shard takes
+340s and the former `^Test[A-C]` shard 1565s, which is why the two heavy
+prefixes are split further. `TestRaceShardsCoverEveryTest` fails if any Azure
+test matches zero or several shards, so none can leave race verification.

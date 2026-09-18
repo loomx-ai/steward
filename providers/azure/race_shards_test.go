@@ -10,7 +10,9 @@ import (
 // The race detector makes this package too slow for one CI job, so the race
 // workflow shards it by test-name prefix. Every test must fall in exactly one
 // shard, or it would silently stop being race-checked.
-var raceShards = []string{"^Test[A-C]", "^Test[D-E]", "^Test[F-P]", "^Test[R-W]"}
+var raceShards = []string{
+	"^TestA[A-Z]", "^TestA[a-z]", "^Test[B-C]", "^TestD", "^TestE", "^Test[F-P]", "^Test[R-W]",
+}
 
 func TestRaceShardsCoverEveryTest(t *testing.T) {
 	files, err := filepath.Glob("*_test.go")

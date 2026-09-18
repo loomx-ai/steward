@@ -57,12 +57,21 @@ jobs:
         include:
           - name: internal
             packages: ./internal/...
-          - name: azure-abc
+          - name: azure-a-upper
             packages: ./providers/azure/...
-            run: "-run ^Test[A-C]"
-          - name: azure-de
+            run: "-run ^TestA[A-Z]"
+          - name: azure-a-lower
             packages: ./providers/azure/...
-            run: "-run ^Test[D-E]"
+            run: "-run ^TestA[a-z]"
+          - name: azure-bc
+            packages: ./providers/azure/...
+            run: "-run ^Test[B-C]"
+          - name: azure-d
+            packages: ./providers/azure/...
+            run: "-run ^TestD"
+          - name: azure-e
+            packages: ./providers/azure/...
+            run: "-run ^TestE"
           - name: azure-fp
             packages: ./providers/azure/...
             run: "-run ^Test[F-P]"
