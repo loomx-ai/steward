@@ -7448,20 +7448,19 @@ NAT gateways and public IPs; S3 buckets with versions or delete markers are
 protected at scan time and before deletion; in-use and already-absent provider
 errors are classified.
 
-Evidence: Moto 5.2.3 for S3 and KMS guards; fake-gcs-server v1.52.2 (CI job
-`gcp-emulator`) shows a bucket with a noncurrent version is refused by Steward
-even though the emulator would delete it, and an empty bucket is deleted and
-confirmed absent. Azurite 3.35.0 with OAuth (CI job `azure-emulator`)
-verifies that the Blob container check sees committed blobs and uncommitted
-blocks and reports an emptied container as empty. Key Vault and Graph remain protocol evidence from official
+Evidence: Moto 5.2.3 for S3 and KMS guards; fake-gcs-server v1.52.2 shows a
+bucket with a noncurrent version is refused by Steward even though the emulator
+would delete it, and an empty bucket is deleted and confirmed absent. Azurite
+3.35.0 with OAuth verifies that the Blob container check sees committed blobs and
+uncommitted blocks and reports an emptied container as empty. All of these runs
+are local and opt-in. Key Vault and Graph remain protocol evidence from official
 examples and documented response shapes. The 159 behavioral rows remain open.
 
-### Mock-server verification now runs automatically
+### Mock-server verification stays local
 
-`scripts/run-mockgcp-tests.py` checks out Google's Config Connector mocks at the
-pinned revision, builds the four retained harnesses and runs all 19 mockgcp
-tests, each against a freshly started harness. CI job `gcp-mockgcp` runs it, and
-`gcp-emulator` now also runs the pinned bttest Bigtable harness. Three stale
+All 19 mockgcp tests were run locally against Google's Config Connector mocks at
+the pinned revision, each against a freshly started harness built from the four
+retained harnesses, together with the pinned bttest Bigtable harness. Three stale
 expectations were corrected against current runtime behavior: the uptime cleanup
 block is `uptime_referenced_by_monitoring_consumer` since dashboards became
 consumers, and the notification-channel counts now include the policy re-reads
@@ -7471,11 +7470,11 @@ dashboard tests keep verifying the unsupported-LIST path against the mock.
 
 ### Azure independent runs are automated too
 
-CI job `azure-apim-emulator` builds the pinned community APIM emulator and runs
-`TestAPIMIndependentEmulator`; `azure-test-proxy` verifies the SHA-256 of
-Microsoft's pinned Test Proxy release and runs the Data Protection playback
-tests. The APIM adapter now answers the Monitor, RBAC, diagnostic and RBAC scope
-indexes with the shared empty native fixtures, which the emulator does not own.
+The pinned community APIM emulator ran `TestAPIMIndependentEmulator`, and
+Microsoft's pinned Test Proxy release, verified by SHA-256, ran the Data
+Protection playback tests. Both are local, opt-in runs. The APIM adapter now
+answers the Monitor, RBAC, diagnostic and RBAC scope indexes with the shared
+empty native fixtures, which the emulator does not own.
 
 ### Race verification split per package group
 

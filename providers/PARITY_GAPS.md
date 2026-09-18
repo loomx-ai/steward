@@ -41,21 +41,25 @@ Machine Learning online endpoints are registered with cleanup.
 
 ## Independent mock-server evidence
 
-| Server | Pinned version | Provider paths covered | CI job |
-| --- | --- | --- | --- |
-| Moto | 5.2.3 | EC2 instances, volumes, snapshots and images; OpenSearch; FSx; Route 53 domains; Organizations; VPN gateway detach; KMS and Backup guards; S3 bucket contents; full scan/plan/execute pipeline | `aws-emulator` |
-| Google Config Connector mockgcp | `673a614` | Compute firewall policies and future reservations; Monitoring scopes, groups, dashboards, alert policies, uptime checks and notification channels; Billing budgets; Logging sinks; Cloud Identity groups; Infrastructure Manager deployment groups | `gcp-mockgcp` |
-| fake-gcs-server | v1.52.2 | Cloud Storage bucket contents and deletion | `gcp-emulator` |
-| Google bttest | `4dc7532` | Bigtable tables | `gcp-emulator` |
-| Azurite | 3.35.0 | Blob container contents | `azure-emulator` |
-| azure-apim-emulator | `a1aafcf` | API Management service and child deletion | `azure-apim-emulator` |
-| Azure SDK Test Proxy | `1.0.0-dev.20260521.2` | Data Protection vault deletion playback | `azure-test-proxy` |
+These tests are opt-in: each one skips unless its environment variable points at
+a locally started server, so `go test ./...` and CI never depend on a mock
+server. Each fixture README documents how to start its server and run its test.
 
-`scripts/run-mockgcp-tests.py` builds the mockgcp harnesses and runs all 19 of
-those tests, each against a freshly started server. Matrix rows carry a
-`verification` list naming the tests that exercise them; 19 mappings across the
-three providers currently carry one. Recording evidence is not acceptance: every
-row stays `pending_verification` until its behavior is accepted per requirement.
+| Server | Pinned version | Provider paths covered | Switch |
+| --- | --- | --- | --- |
+| Moto | 5.2.3 | EC2 instances, volumes, snapshots and images; OpenSearch; FSx; Route 53 domains; Organizations; VPN gateway detach; KMS and Backup guards; S3 bucket contents; full scan/plan/execute pipeline | `STEWARD_AWS_MOTO_URL` |
+| Google Config Connector mockgcp | `673a614` | Compute firewall policies and future reservations; Monitoring scopes, groups, dashboards, alert policies, uptime checks and notification channels; Billing budgets; Logging sinks; Cloud Identity groups; Infrastructure Manager deployment groups | `STEWARD_*_MOCKGCP_URL` |
+| fake-gcs-server | v1.52.2 | Cloud Storage bucket contents and deletion | `STEWARD_GCS_EMULATOR_URL` |
+| Google bttest | `4dc7532` | Bigtable tables | `STEWARD_BIGTABLE_EMULATOR_URL` |
+| Azurite | 3.35.0 | Blob container contents | `STEWARD_AZURITE_BLOB_URL` |
+| azure-apim-emulator | `a1aafcf` | API Management service and child deletion | `STEWARD_APIM_EMULATOR_URL` |
+| Azure SDK Test Proxy | `1.0.0-dev.20260521.2` | Data Protection vault deletion playback | `STEWARD_AZURE_TEST_PROXY` |
+
+Every behavior above also has ordinary unit tests that run without any server.
+Matrix rows carry a `verification` list naming the tests that exercise them; 19
+mappings across the three providers currently carry one. Recording evidence is
+not acceptance: every row stays `pending_verification` until its behavior is
+accepted per requirement.
 
 ## Mapping research outcomes
 
