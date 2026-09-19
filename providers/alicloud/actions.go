@@ -4150,7 +4150,7 @@ func readbackResource(
 			continue
 		}
 		foundResource = true
-		identity := strings.TrimSpace(stringValue(valueAtPath(resource, identityPath)))
+		identity := recordIdentity(resource, identityPath)
 		if identity == strings.TrimSpace(wantID) {
 			return resource, true, nil
 		}
@@ -4169,7 +4169,7 @@ func validateReadbackIdentity(
 	identityPath string,
 	wantID string,
 ) (map[string]any, bool, error) {
-	identity := strings.TrimSpace(stringValue(valueAtPath(resource, identityPath)))
+	identity := recordIdentity(resource, identityPath)
 	if identity == strings.TrimSpace(wantID) {
 		return resource, true, nil
 	}

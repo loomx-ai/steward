@@ -80,3 +80,43 @@ func TestRouterInterfaceActionDeletesAndConfirmsAbsence(t *testing.T) {
 		t.Fatalf("router interface read invocation=%+v", read)
 	}
 }
+
+func TestKafkaTopicActionDeletesByInstanceAndName(t *testing.T) {
+	t.Parallel()
+
+	topic := func(requestID string, items ...any) contracts.InvocationResult {
+		return contracts.InvocationResult{RequestID: requestID, Data: map[string]any{
+			"Total": len(items), "TopicList": map[string]any{"TopicVO": items},
+		}}
+	}
+	orders := map[string]any{"InstanceId": "alikafka-a", "Topic": "orders", "StatusName": "服务中"}
+	provider := &invocationProvider{results: []contracts.InvocationResult{
+		topic("preflight", orders), {RequestID: "delete"}, topic("absent"),
+	}}
+	hook, err := alicloud.NewActionHook(provider, "connection-a", "cn-hangzhou", "ACS::AliKafka::Topic")
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := contracts.ActionRequest{
+		Asset: asset.Asset{
+			Identity: asset.Identity{Provider: asset.ProviderAliCloud, NativeType: "ACS::AliKafka::Topic", NativeID: "alikafka-a/orders"},
+			Normalized: map[string]any{"instanceId": "alikafka-a", "topic": "orders"},
+		},
+		Action: "delete", IdempotencyKey: "kafka-topic-step",
+	}
+	if preflight, err := hook.Preflight(context.Background(), request); err != nil || !preflight.Allowed {
+		t.Fatalf("preflight=%+v err=%v", preflight, err)
+	}
+	result, err := hook.Execute(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if wait, err := hook.Wait(context.Background(), request, result); err != nil || !wait.Done || wait.State != "absent" {
+		t.Fatalf("wait=%+v err=%v", wait, err)
+	}
+	deleted := provider.invocations[1]
+	if deleted.Operation != "AlibabaCloud.AliKafka.DeleteTopic" || deleted.Parameters["InstanceId"] != "alikafka-a" ||
+		deleted.Parameters["Topic"] != "orders" || deleted.Parameters["RegionId"] != "cn-hangzhou" {
+		t.Fatalf("delete invocation=%+v", deleted)
+	}
+}

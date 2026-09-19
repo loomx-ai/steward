@@ -17,12 +17,18 @@ func TestOwnedSubresourcesAreDeletedBeforeTheirParent(t *testing.T) {
 		{"ACS::ALB::LoadBalancer", "ACS::ALB::Listener", "lsn-a", "alb:ListListeners"},
 		{"ACS::NLB::LoadBalancer", "ACS::NLB::Listener", "lsn-b", "nlb:ListListeners"},
 		{"ACS::SLB::LoadBalancer", "ACS::SLB::VServerGroup", "rsp-a", "slb:DescribeVServerGroups"},
+		{"ACS::Ons::Instance", "ACS::Ons::Topic", "MQ_INST_a/orders", "ons:OnsTopicList"},
+		{"ACS::Ons::Instance", "ACS::Ons::Group", "MQ_INST_a/GID_orders", "ons:OnsGroupList"},
+		{"ACS::AliKafka::Instance", "ACS::AliKafka::Topic", "alikafka-a/orders", "alikafka:GetTopicList"},
+		{"ACS::AliKafka::Instance", "ACS::AliKafka::ConsumerGroup", "alikafka-a/orders", "alikafka:GetConsumerList"},
+		{"ACS::RocketMQ::Instance", "ACS::RocketMQ::Topic", "rmq-a/orders", "rocketmq:ListTopics"},
+		{"ACS::RocketMQ::Instance", "ACS::RocketMQ::ConsumerGroup", "rmq-a/GID_orders", "rocketmq:ListConsumerGroups"},
 	} {
 		t.Run(test.childType, func(t *testing.T) {
 			t.Parallel()
 			parent := nasAsset("parent", test.parentType, "lb-a", nil)
-			child := nasAsset("child", test.childType, test.childID, map[string]any{"loadBalancerId": "lb-a"})
-			other := nasAsset("other", test.childType, "other", map[string]any{"loadBalancerId": "lb-unscanned"})
+			child := nasAsset("child", test.childType, test.childID, map[string]any{"loadBalancerId": "lb-a", "instanceId": "lb-a"})
+			other := nasAsset("other", test.childType, "other", map[string]any{"loadBalancerId": "lb-unscanned", "instanceId": "lb-unscanned"})
 			contribution, err := hooks.NewSubresourceOwnership().Contribute(context.Background(), "scope-hangzhou", []asset.Asset{child, other, parent})
 			if err != nil {
 				t.Fatal(err)

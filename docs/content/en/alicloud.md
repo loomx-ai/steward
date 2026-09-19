@@ -50,7 +50,7 @@ A successful connection check establishes the cloud identity. Run a scan to veri
 
 ## Resource coverage and relationships
 
-Steward identifies 187 Alibaba Cloud resource types, 147 of which have a native cleanup action; other types that Resource Center returns appear as a read-only inventory. Every product API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
+Steward identifies 187 Alibaba Cloud resource types, 153 of which have a native cleanup action; other types that Resource Center returns appear as a read-only inventory. Every product API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
 
 Common types include ECS instances, disks, and interfaces; VPCs, vSwitches, security groups, NAT gateways, and EIPs; load balancers; RDS, Redis, and PolarDB; and storage, container, and orchestration resources. Discoverability depends on supported types, selected regions, and the current identity's permissions.
 
@@ -66,6 +66,7 @@ Inventory permissions do not authorize cleanup. Deletion also requires the resou
 - **VPCs and vSwitches:** Review instances, interfaces, gateways, and other dependencies. Resolve blockers caused by dependencies outside the selection.
 - **OSS buckets:** Objects, versions, retention settings, and other provider conditions may prevent deletion. Follow the review findings and OSS response.
 - **Load balancer children:** Deleting an ALB, NLB or CLB instance first deletes its listeners and CLB virtual server groups, each as its own step. Server groups, CLB access control lists and certificates are independent resources: the provider rejects deleting one that a listener or forwarding rule still uses, and server groups managed by an ALB Ingress controller are not deleted directly.
+- **Message queue topics and groups:** Deleting a Kafka, RocketMQ 4.0 or RocketMQ 5.0 instance first deletes its topics and consumer groups, each as its own step confirmed while the instance can still be queried. RocketMQ 4.0 topics are deleted only when this account holds them, never when another account authorized them. Deleting a topic discards its messages.
 - **Managed resources:** For clusters and resource stacks, review the controller and its managed objects to understand the full effect.
 
 Creating a cleanup task does not delete resources. Cloud operations begin after [reviewing the plan](./cleanup.md) and confirming execution.

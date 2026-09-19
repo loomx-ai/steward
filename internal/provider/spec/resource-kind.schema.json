@@ -74,7 +74,7 @@
           "properties": {
             "operation": {"type": "string", "minLength": 1},
             "itemsPath": {"$ref": "#/$defs/path"},
-            "identityPath": {"$ref": "#/$defs/path"}
+            "identityPath": {"$ref": "#/$defs/identityPath"}
           }
         }
       }
@@ -221,6 +221,14 @@
         {"pattern": "^[A-Za-z_][A-Za-z0-9_-]*(\\.[A-Za-z_][A-Za-z0-9_-]*)*$"}
       ]
     },
+    "identityPath": {
+      "description": "A response path, or several joined by + for a child unique only within its parent; the runtime joins their values with /.",
+      "type": "string",
+      "anyOf": [
+        {"$ref": "#/$defs/path"},
+        {"pattern": "^[A-Za-z_][A-Za-z0-9_-]*(\\.[A-Za-z_][A-Za-z0-9_-]*)*(\\+[A-Za-z_][A-Za-z0-9_-]*(\\.[A-Za-z_][A-Za-z0-9_-]*)*)+$"}
+      ]
+    },
     "listPath": {
       "type": "string",
       "anyOf": [
@@ -236,7 +244,7 @@
         "operation": {"type": "string", "minLength": 1},
         "parameters": {"type": "object", "additionalProperties": true},
         "itemsPath": {"$ref": "#/$defs/listPath"},
-        "identityPath": {"$ref": "#/$defs/path"},
+        "identityPath": {"$ref": "#/$defs/identityPath"},
         "statePath": {"$ref": "#/$defs/path"},
         "maxBatchSize": {"type": "integer", "minimum": 1, "maximum": 1000},
         "supportedRegions": {

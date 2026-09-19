@@ -351,3 +351,20 @@ func TestProductAPIMissingItemsWithZeroTotalIsAnEmptyTerminalPage(t *testing.T) 
 		})
 	}
 }
+
+func TestRecordIdentityJoinsParentScopedPaths(t *testing.T) {
+	t.Parallel()
+
+	record := map[string]any{"InstanceId": "alikafka-a", "Topic": "orders", "Empty": ""}
+	for path, want := range map[string]string{
+		"Topic":             "orders",
+		"InstanceId+Topic":  "alikafka-a/orders",
+		"InstanceId+ Topic": "alikafka-a/orders",
+		"InstanceId+Empty":  "",
+		"Missing+Topic":     "",
+	} {
+		if got := recordIdentity(record, path); got != want {
+			t.Errorf("recordIdentity(%q) = %q, want %q", path, got, want)
+		}
+	}
+}

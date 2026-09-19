@@ -278,8 +278,8 @@ func validateTopologyDetailCoverage(
 				"record has no resource identity at %s", definition.api.IdentityPath,
 			)
 		}
-		nativeID, ok := nonEmptyString(valueAtPath(record, definition.api.IdentityPath))
-		if !ok {
+		nativeID := recordIdentity(record, definition.api.IdentityPath)
+		if nativeID == "" {
 			return nil, topologyDetailResponseError(
 				label, providerRequestID,
 				"record has no resource identity at %s", definition.api.IdentityPath,

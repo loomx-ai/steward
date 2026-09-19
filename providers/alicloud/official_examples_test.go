@@ -171,10 +171,11 @@ func TestSpecResponsePathsMatchOfficialMetadata(t *testing.T) {
 				continue
 			}
 			paths := responsePaths[key]
-			for _, required := range []string{
-				joinResponsePath(block.itemsPath, ""),
-				joinResponsePath(block.itemsPath, block.identityPath),
-			} {
+			required := []string{joinResponsePath(block.itemsPath, "")}
+			for _, part := range strings.Split(block.identityPath, "+") {
+				required = append(required, joinResponsePath(block.itemsPath, strings.TrimSpace(part)))
+			}
+			for _, required := range required {
 				if required != "" && !slices.Contains(paths, required) {
 					t.Errorf("%s%s: %s is not in the official %s response", path, block.location, required, key)
 				}
@@ -201,7 +202,7 @@ func TestSpecResponsePathsMatchOfficialMetadata(t *testing.T) {
 			}
 			for index, item := range items {
 				record, ok := productAPIResourceMap(item)
-				if !ok || strings.TrimSpace(stringValue(valueAtPath(record, block.identityPath))) == "" {
+				if !ok || recordIdentity(record, block.identityPath) == "" {
 					t.Errorf("%s%s: record %d of the official %s example has no identity at %q", path, block.location, index, key, block.identityPath)
 				}
 			}

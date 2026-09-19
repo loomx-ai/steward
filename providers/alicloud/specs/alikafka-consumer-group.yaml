@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::AliKafka::ConsumerGroup
+  class: messaging.consumer_group
+presentation:
+  consoleLinkTemplate: "https://kafka.console.aliyun.com/region/{regionId}/instance/{parentId}/consumer"
+  displayNames:
+    zh-CN: Kafka 消费组
+    en-US: Kafka Consumer Group
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    operation: AlibabaCloud.AliKafka.GetInstanceList
+    parameters:
+      RegionId: scope.location
+    itemsPath: InstanceList.InstanceVO
+    identityPath: InstanceId
+  list:
+    operation: AlibabaCloud.AliKafka.GetConsumerList
+    parameters:
+      RegionId: scope.location
+      InstanceId: parent.nativeId
+    itemsPath: ConsumerList.ConsumerVO
+    identityPath: InstanceId+ConsumerId
+    pagination:
+      type: page-number
+      pageParameter: CurrentPage
+      pageSizeParameter: PageSize
+      totalPath: Total
+      maxPageSize: 100
+fields:
+  name: ConsumerId
+  consumerId: ConsumerId
+  createdAt: CreateTime
+  instanceId: _parent.nativeId
+  automaticallyCreatedGroup: AutomaticallyCreatedGroup
+  remark: Remark
+relationships:
+  - type: member_of
+    targetType: ACS::AliKafka::Instance
+    targetIdPath: instanceId
+actions:
+  delete:
+    operation: AlibabaCloud.AliKafka.DeleteConsumerGroup
+    parameters:
+      RegionId: scope.location
+      InstanceId: resource.normalized.instanceId
+      ConsumerId: resource.normalized.consumerId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.AliKafka.GetConsumerList
+      parameters:
+        RegionId: scope.location
+        InstanceId: resource.normalized.instanceId
+        ConsumerId: resource.normalized.consumerId
+      itemsPath: ConsumerList.ConsumerVO
+      identityPath: InstanceId+ConsumerId

@@ -368,7 +368,7 @@ func inventoryItemsFromProductAPI(
 		if request.Scope.Kind == asset.ScopeRegion && !productAPIResourceMatchesRegion(resource, region) {
 			continue
 		}
-		nativeID := strings.TrimSpace(stringValue(valueAtPath(resource, list.IdentityPath)))
+		nativeID := recordIdentity(resource, list.IdentityPath)
 		if nativeID == "" {
 			if list.Operation == "AlibabaCloud.CloudFirewall.DescribeUserBuyVersion" &&
 				cloudFirewallInventoryAbsent(resource) {
@@ -580,7 +580,7 @@ func (r *Runtime) collectDirectProductAPIParents(
 					raw,
 				)
 			}
-			nativeID := strings.TrimSpace(stringValue(valueAtPath(resource, parent.IdentityPath)))
+			nativeID := recordIdentity(resource, parent.IdentityPath)
 			if nativeID == "" {
 				return nil, fmt.Errorf(
 					"Alibaba Cloud operation %q parent item %d has no identity at %q",
@@ -891,6 +891,22 @@ func valueAtPathSegment(value any, segment string) (any, bool) {
 		}
 	}
 	return nil, false
+}
+
+// recordIdentity reads a resource's native ID. A child that is unique only
+// within its parent names several paths joined by "+" (InstanceId+Topic); its
+// native ID joins their values with "/", and is empty when any part is.
+func recordIdentity(record any, identityPath string) string {
+	parts := strings.Split(identityPath, "+")
+	values := make([]string, 0, len(parts))
+	for _, part := range parts {
+		value := strings.TrimSpace(stringValue(valueAtPath(record, strings.TrimSpace(part))))
+		if value == "" {
+			return ""
+		}
+		values = append(values, value)
+	}
+	return strings.Join(values, "/")
 }
 
 func stringValue(value any) string {

@@ -1,0 +1,58 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Ons::Topic
+  class: messaging.topic
+presentation:
+  consoleLinkTemplate: "https://ons.console.aliyun.com/region/{regionId}/instance/{parentId}/topic"
+  displayNames:
+    zh-CN: RocketMQ 4.0 Topic
+    en-US: RocketMQ 4.0 Topic
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    operation: AlibabaCloud.ONS.OnsInstanceInServiceList
+    itemsPath: Data.InstanceVO
+    identityPath: InstanceId
+  list:
+    operation: AlibabaCloud.ONS.OnsTopicList
+    parameters:
+      InstanceId: parent.nativeId
+    itemsPath: Data.PublishInfoDo
+    identityPath: InstanceId+Topic
+fields:
+  name: Topic
+  topic: Topic
+  createdAt: CreateTime
+  instanceId: _parent.nativeId
+  messageType: MessageType
+  relation: Relation
+  owner: Owner
+  remark: Remark
+relationships:
+  - type: member_of
+    targetType: ACS::Ons::Instance
+    targetIdPath: instanceId
+actions:
+  delete:
+    operation: AlibabaCloud.ONS.OnsTopicDelete
+    parameters:
+      InstanceId: resource.normalized.instanceId
+      Topic: resource.normalized.topic
+    preconditions:
+      - path: Relation
+        allowedValues: ["1"]
+        reason: only topics this account holds can be deleted; authorized topics belong to another account
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ONS.OnsTopicList
+      parameters:
+        InstanceId: resource.normalized.instanceId
+        Topic: resource.normalized.topic
+      itemsPath: Data.PublishInfoDo
+      identityPath: InstanceId+Topic

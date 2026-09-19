@@ -10,10 +10,12 @@ import (
 )
 
 // ownedSubresource describes a child resource that exists only inside its
-// parent and can be deleted on its own. The parent's native delete removes it
-// too, so the child is listed as an exclusive, directly cleaned child: a plan
-// that deletes the parent shows and deletes the child first, with its own
-// readback.
+// parent and can be deleted on its own. The child is deleted as its own step
+// before the parent, and its readback runs while the parent still answers.
+// RocketMQ 4.0 instances cannot be deleted until their topics and groups are
+// gone; Kafka and RocketMQ 5.0 releases would remove them, but confirming a
+// child's absence after its instance is gone depends on error codes the
+// products do not document, so they are deleted first as well.
 type ownedSubresource struct {
 	parentType  string
 	parentField string
@@ -21,9 +23,15 @@ type ownedSubresource struct {
 }
 
 var ownedSubresources = map[string]ownedSubresource{
-	"ACS::ALB::Listener":     {parentType: "ACS::ALB::LoadBalancer", parentField: "loadBalancerId", source: "alb:ListListeners"},
-	"ACS::NLB::Listener":     {parentType: "ACS::NLB::LoadBalancer", parentField: "loadBalancerId", source: "nlb:ListListeners"},
-	"ACS::SLB::VServerGroup": {parentType: "ACS::SLB::LoadBalancer", parentField: "loadBalancerId", source: "slb:DescribeVServerGroups"},
+	"ACS::ALB::Listener":           {parentType: "ACS::ALB::LoadBalancer", parentField: "loadBalancerId", source: "alb:ListListeners"},
+	"ACS::NLB::Listener":           {parentType: "ACS::NLB::LoadBalancer", parentField: "loadBalancerId", source: "nlb:ListListeners"},
+	"ACS::SLB::VServerGroup":       {parentType: "ACS::SLB::LoadBalancer", parentField: "loadBalancerId", source: "slb:DescribeVServerGroups"},
+	"ACS::Ons::Topic":              {parentType: "ACS::Ons::Instance", parentField: "instanceId", source: "ons:OnsTopicList"},
+	"ACS::Ons::Group":              {parentType: "ACS::Ons::Instance", parentField: "instanceId", source: "ons:OnsGroupList"},
+	"ACS::AliKafka::Topic":         {parentType: "ACS::AliKafka::Instance", parentField: "instanceId", source: "alikafka:GetTopicList"},
+	"ACS::AliKafka::ConsumerGroup": {parentType: "ACS::AliKafka::Instance", parentField: "instanceId", source: "alikafka:GetConsumerList"},
+	"ACS::RocketMQ::Topic":         {parentType: "ACS::RocketMQ::Instance", parentField: "instanceId", source: "rocketmq:ListTopics"},
+	"ACS::RocketMQ::ConsumerGroup": {parentType: "ACS::RocketMQ::Instance", parentField: "instanceId", source: "rocketmq:ListConsumerGroups"},
 }
 
 // SubresourceOwnership binds owned subresources to their parents.

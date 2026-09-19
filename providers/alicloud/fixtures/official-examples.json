@@ -6406,6 +6406,31 @@
    "RequestId": "EE205C00-30E4-****-****-87E3A8A2AA0C",
    "TotalCount": 2
   },
+  "Ons@2019-02-14#OnsGroupList": {
+   "Data": {
+    "SubscribeInfoDo": [
+     {
+      "CreateTime": 1568896605000,
+      "GroupId": "GID_test_group_id",
+      "GroupType": "tcp",
+      "IndependentNaming": true,
+      "InstanceId": "MQ_INST_111111111111_DOxxxxxx",
+      "Owner": "138015630679****",
+      "Remark": "test",
+      "Tags": {
+       "Tag": [
+        {
+         "Key": "CartService",
+         "Value": "ServiceA"
+        }
+       ]
+      },
+      "UpdateTime": 1570700979000
+     }
+    ]
+   },
+   "RequestId": "16996623-AC4A-43AF-9248-FD9D2D75****"
+  },
   "Ons@2019-02-14#OnsInstanceInServiceList": {
    "Data": {
     "InstanceVO": [
@@ -6431,6 +6456,33 @@
     ]
    },
    "RequestId": "0598E46F-DB06-40E2-AD7B-C45923EE****"
+  },
+  "Ons@2019-02-14#OnsTopicList": {
+   "Data": {
+    "PublishInfoDo": [
+     {
+      "CreateTime": 1570700947000,
+      "IndependentNaming": true,
+      "InstanceId": "MQ_INST_188077086902****_BXSuW61e",
+      "MessageType": 0,
+      "Owner": "138015630679****",
+      "Relation": 6,
+      "RelationName": "授权发布/订阅",
+      "Remark": "测试",
+      "ServiceStatus": 0,
+      "Tags": {
+       "Tag": [
+        {
+         "Key": "CartService",
+         "Value": "SrviceA"
+        }
+       ]
+      },
+      "Topic": "test"
+     }
+    ]
+   },
+   "RequestId": "4A978869-7681-4529-B470-107E1379****"
   },
   "OpenSearch@2017-12-25#ListAppGroups": {
    "requestId": "0A6EB64B-B4C8-CF02-810F-E660812972FF",
@@ -7417,6 +7469,35 @@
     "RootFolderId": "r-Zo****"
    }
   },
+  "RocketMQ@2022-08-01#GetConsumerGroup": {
+   "code": "InvalidConsumerGroupId",
+   "data": {
+    "consumeRetryPolicy": {
+     "deadLetterTargetTopic": "DLQ_mqtest",
+     "fixedIntervalRetryTime": 20,
+     "maxRetryTimes": 16,
+     "retryPolicy": "DefaultRetryPolicy"
+    },
+    "consumerGroupId": "CID-TEST",
+    "createTime": "2022-08-01 20:05:50",
+    "deliveryOrderType": "Concurrently",
+    "exclusive": false,
+    "instanceId": "rmq-cn-7e22ody****",
+    "maxReceiveTps": 2000,
+    "messageModel": "LITE_SELECTIVE",
+    "regionId": "cn-hangzhou",
+    "remark": "This is the remark for test.",
+    "status": "RUNNING",
+    "topicName": "test1",
+    "updateTime": "2022-08-01 20:05:50"
+   },
+   "dynamicCode": "ConsumerGroupId",
+   "dynamicMessage": "consumerGroupId",
+   "httpStatusCode": 400,
+   "message": "Parameter consumerGroupId is invalid.",
+   "requestId": "C7F94090-3358-506A-97DC-34BC803C****",
+   "success": true
+  },
   "RocketMQ@2022-08-01#GetInstance": {
    "code": "MissingInstanceId",
    "data": {
@@ -7536,6 +7617,56 @@
    "requestId": "05AB7FBD-F1D3-5D87-BF78-BD782249****",
    "success": true
   },
+  "RocketMQ@2022-08-01#GetTopic": {
+   "code": "Topic.NotFound",
+   "data": {
+    "createTime": "2022-08-01 20:05:50",
+    "instanceId": "rmq-cn-7e22ody****",
+    "liteTopicExpiration": 60,
+    "maxSendTps": 1000,
+    "messageType": "NORMAL",
+    "priority": 9,
+    "regionId": "cn-hangzhou",
+    "remark": "This is the remark for test.\n",
+    "status": "RUNNING",
+    "topicName": "topic_test",
+    "updateTime": "2022-08-01 20:05:50"
+   },
+   "dynamicCode": "TopicName",
+   "dynamicMessage": "topicName",
+   "httpStatusCode": 400,
+   "message": "The topic cannot be found.",
+   "requestId": "AF9A8B10-C426-530F-A0DD-96320B39****",
+   "success": true
+  },
+  "RocketMQ@2022-08-01#ListConsumerGroups": {
+   "code": "MissingInstanceId",
+   "data": {
+    "list": [
+     {
+      "consumerGroupId": "GID-TEST",
+      "createTime": "2022-08-01 20:05:50",
+      "instanceId": "rmq-cn-7e22ody****",
+      "maxReceiveTps": 1000,
+      "messageModel": "LITE_SELECTIVE",
+      "regionId": "cn-hangzhou",
+      "remark": "This is the remark for test.",
+      "status": "RUNNING",
+      "topicName": "test1",
+      "updateTime": "2022-08-01 20:05:50"
+     }
+    ],
+    "pageNumber": 1,
+    "pageSize": 10,
+    "totalCount": 1
+   },
+   "dynamicCode": "InstanceId",
+   "dynamicMessage": "instanceId",
+   "httpStatusCode": 400,
+   "message": "Parameter InstanceId is mandatory for this action .",
+   "requestId": "5503A460-98ED-5543-92CF-4853DE28****",
+   "success": true
+  },
   "RocketMQ@2022-08-01#ListInstances": {
    "code": "MissingPageNumber",
    "data": {
@@ -7581,6 +7712,34 @@
    "httpStatusCode": 400,
    "message": "Parameter pageNumber is mandatory for this action .",
    "requestId": "84445A20-2B50-5306-A3C0-AF99FC1833C6",
+   "success": true
+  },
+  "RocketMQ@2022-08-01#ListTopics": {
+   "code": "Topic.NotFound",
+   "data": {
+    "list": [
+     {
+      "createTime": "2022-08-01 20:05:50",
+      "instanceId": "rmq-cn-7e22ody****",
+      "liteTopicExpiration": 20,
+      "maxSendTps": 1000,
+      "messageType": "NORMAL",
+      "regionId": "cn-hangzhou",
+      "remark": "This is the remark for test.",
+      "status": "RUNNING",
+      "topicName": "topic_test",
+      "updateTime": "2022-08-01 20:05:50"
+     }
+    ],
+    "pageNumber": 1,
+    "pageSize": 3,
+    "totalCount": 1
+   },
+   "dynamicCode": "TopicName",
+   "dynamicMessage": "topicName",
+   "httpStatusCode": 400,
+   "message": "The topic cannot be found.",
+   "requestId": "AF9A8B10-C426-530F-A0DD-96320B39****",
    "success": true
   },
   "SWAS-OPEN@2020-06-01#ListInstances": {
@@ -9422,6 +9581,35 @@
    ],
    "RequestId": "2D676EFC-8C04-5CCE-A08E-BB97D24B47E8"
   },
+  "alikafka@2019-09-16#GetConsumerList": {
+   "Code": 200,
+   "ConsumerList": {
+    "ConsumerVO": [
+     {
+      "AutomaticallyCreatedGroup": false,
+      "ConsumerId": "kafka-test",
+      "CreateTime": 1729736584002,
+      "InstanceId": "alikafka_post-cn-v0h18sav****",
+      "RegionId": "cn-hangzhou",
+      "Remark": "test",
+      "Tags": {
+       "TagVO": [
+        {
+         "Key": "test",
+         "Value": "test"
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "CurrentPage": 1,
+   "Message": "operation success.",
+   "PageSize": 10,
+   "RequestId": "808F042B-CB9A-4FBC-9009-00E7DDB6****",
+   "Success": true,
+   "Total": 12
+  },
   "alikafka@2019-09-16#GetInstanceList": {
    "Code": 200,
    "InstanceList": {
@@ -9538,6 +9726,41 @@
    "Message": "operation success.",
    "RequestId": "4B6D821D-7F67-4CAA-9E13-A5A997C3****",
    "Success": true
+  },
+  "alikafka@2019-09-16#GetTopicList": {
+   "Code": 200,
+   "CurrentPage": 1,
+   "Message": "operation success.",
+   "PageSize": 10,
+   "RequestId": "C0D3DC5B-5C37-47AD-9F22-1F559880****",
+   "Success": true,
+   "TopicList": {
+    "TopicVO": [
+     {
+      "AutoCreate": false,
+      "CompactTopic": false,
+      "CreateTime": 1576563109000,
+      "InstanceId": "alikafka_pre-cn-0pp1954n****",
+      "LocalTopic": false,
+      "PartitionNum": 6,
+      "RegionId": "cn-hangzhou",
+      "Remark": "test",
+      "Status": 0,
+      "StatusName": "In service",
+      "Tags": {
+       "TagVO": [
+        {
+         "Key": "Test",
+         "Value": "Test"
+        }
+       ]
+      },
+      "Topic": "topic_name",
+      "TopicConfig": "{\"replication-factor\":3}"
+     }
+    ]
+   },
+   "Total": 1
   },
   "cas@2020-04-07#GetUserCertificateDetail": {
    "Algorithm": "RSA",

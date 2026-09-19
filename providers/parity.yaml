@@ -167,6 +167,42 @@ resources:
     - AWS::ElasticLoadBalancingV2::Listener
     - AWS::ElasticLoadBalancingV2::TargetGroup
   status: pending_verification
+- alicloud: ACS::AliKafka::ConsumerGroup
+  spec: providers/alicloud/specs/alikafka-consumer-group.yaml
+  class: messaging.consumer_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    unimplemented_resources:
+    - managedkafka.googleapis.com/ConsumerGroup
+  azure:
+    resources:
+    - Microsoft.EventHub/namespaces/eventhubs/consumergroups
+  aws:
+    notes: Amazon MSK consumer groups are managed through the Kafka protocol, not a resource API.
+  status: pending_verification
+- alicloud: ACS::AliKafka::Topic
+  spec: providers/alicloud/specs/alikafka-topic.yaml
+  class: messaging.topic
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - managedkafka.googleapis.com/Topic
+  azure:
+    resources:
+    - Microsoft.EventHub/namespaces/eventhubs
+  aws:
+    notes: Amazon MSK topics are managed through the Kafka protocol, not a resource API.
+  status: pending_verification
 - alicloud: ACS::Alidns::DnsGtmInstance
   spec: providers/alicloud/specs/alidns-dns-gtm-instance.yaml
   class: dns.gtm_instance
@@ -936,6 +972,80 @@ resources:
   aws:
     resources:
     - AWS::ElasticLoadBalancingV2::TargetGroup
+  status: pending_verification
+- alicloud: ACS::Ons::Group
+  spec: providers/alicloud/specs/ons-group.yaml
+  class: messaging.consumer_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - pubsub.googleapis.com/Subscription
+  azure:
+    resources:
+    - Microsoft.ServiceBus/namespaces/topics/subscriptions
+  aws:
+    notes: Amazon SNS subscriptions attach queues and endpoints to topics; they are not modeled yet.
+  status: pending_verification
+- alicloud: ACS::Ons::Topic
+  spec: providers/alicloud/specs/ons-topic.yaml
+  class: messaging.topic
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - pubsub.googleapis.com/Topic
+  azure:
+    resources:
+    - Microsoft.ServiceBus/namespaces/topics
+  aws:
+    resources:
+    - AWS::SNS::Topic
+  status: pending_verification
+- alicloud: ACS::RocketMQ::ConsumerGroup
+  spec: providers/alicloud/specs/rocketmq-consumer-group.yaml
+  class: messaging.consumer_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - pubsub.googleapis.com/Subscription
+  azure:
+    resources:
+    - Microsoft.ServiceBus/namespaces/topics/subscriptions
+  aws:
+    notes: Amazon SNS subscriptions attach queues and endpoints to topics; they are not modeled yet.
+  status: pending_verification
+- alicloud: ACS::RocketMQ::Topic
+  spec: providers/alicloud/specs/rocketmq-topic.yaml
+  class: messaging.topic
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - pubsub.googleapis.com/Topic
+  azure:
+    resources:
+    - Microsoft.ServiceBus/namespaces/topics
+  aws:
+    resources:
+    - AWS::SNS::Topic
   status: pending_verification
 - alicloud: ACS::SLB::AccessControlList
   spec: providers/alicloud/specs/slb-access-control-list.yaml

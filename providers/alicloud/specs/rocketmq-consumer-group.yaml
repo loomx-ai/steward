@@ -1,0 +1,67 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::RocketMQ::ConsumerGroup
+  class: messaging.consumer_group
+presentation:
+  consoleLinkTemplate: "https://rocketmq.console.aliyun.com/region/{regionId}/instances/{parentId}/group"
+  displayNames:
+    zh-CN: RocketMQ 5.0 消费者分组
+    en-US: RocketMQ 5.0 Consumer Group
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    operation: AlibabaCloud.RocketMQ.ListInstances
+    itemsPath: data.list
+    identityPath: instanceId
+    pagination:
+      type: page-number
+      pageParameter: pageNumber
+      pageSizeParameter: pageSize
+      totalPath: data.totalCount
+      maxPageSize: 100
+  list:
+    operation: AlibabaCloud.RocketMQ.ListConsumerGroups
+    parameters:
+      instanceId: parent.nativeId
+    itemsPath: data.list
+    identityPath: instanceId+consumerGroupId
+    statePath: status
+    pagination:
+      type: page-number
+      pageParameter: pageNumber
+      pageSizeParameter: pageSize
+      totalPath: data.totalCount
+      maxPageSize: 100
+fields:
+  name: consumerGroupId
+  consumerGroupId: consumerGroupId
+  state: status
+  createdAt: createTime
+  instanceId: _parent.nativeId
+  messageModel: messageModel
+  remark: remark
+relationships:
+  - type: member_of
+    targetType: ACS::RocketMQ::Instance
+    targetIdPath: instanceId
+actions:
+  delete:
+    operation: AlibabaCloud.RocketMQ.DeleteConsumerGroup
+    parameters:
+      instanceId: resource.normalized.instanceId
+      consumerGroupId: resource.normalized.consumerGroupId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.RocketMQ.GetConsumerGroup
+      parameters:
+        instanceId: resource.normalized.instanceId
+        consumerGroupId: resource.normalized.consumerGroupId
+      itemsPath: data
+      identityPath: instanceId+consumerGroupId
+      statePath: status

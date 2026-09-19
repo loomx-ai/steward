@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "1f2d685bbdff1d65d543188579da81c32cf82cb63f7e9ba28813c2f866b74ea9",
+    "checksum": "db2bcb86eebeb2570d3c542b9e5f7afb62e941fb8ae694db9e5071dca7713657",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "ebe38ba435fb1a51bbcb19f1992c56f51fd055c8b35be298d5f1170c9ccc516c",
+  "content_checksum": "5e264adf12d87da10707cdd838bc129beeebe7b40dff1086fcd173baba0480d3",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -673,6 +673,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.AliKafka.DeleteConsumerGroup",
+      "name": "DeleteConsumerGroup",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/alikafka/instances/{InstanceId}/consumer-groups/{ConsumerId}",
+      "destructive": true,
+      "call": {
+        "product": "alikafka",
+        "version": "2019-09-16",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "alikafka.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.AliKafka.DeleteInstance",
       "name": "DeleteInstance",
       "service": "AlibabaCloud",
@@ -693,11 +713,71 @@
       }
     },
     {
+      "id": "AlibabaCloud.AliKafka.DeleteTopic",
+      "name": "DeleteTopic",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/alikafka/instances/{InstanceId}/topics/{Topic}",
+      "destructive": true,
+      "call": {
+        "product": "alikafka",
+        "version": "2019-09-16",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "alikafka.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.AliKafka.GetConsumerList",
+      "name": "GetConsumerList",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/alikafka/instances/{InstanceId}/consumer-groups",
+      "destructive": false,
+      "call": {
+        "product": "alikafka",
+        "version": "2019-09-16",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "alikafka.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.AliKafka.GetInstanceList",
       "name": "GetInstanceList",
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/alikafka/instances",
+      "destructive": false,
+      "call": {
+        "product": "alikafka",
+        "version": "2019-09-16",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "alikafka.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.AliKafka.GetTopicList",
+      "name": "GetTopicList",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/alikafka/instances/{InstanceId}/topics",
       "destructive": false,
       "call": {
         "product": "alikafka",
@@ -6516,6 +6596,46 @@
       }
     },
     {
+      "id": "AlibabaCloud.ONS.OnsGroupDelete",
+      "name": "OnsGroupDelete",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/ons/instances/{InstanceId}/groups/{GroupId}",
+      "destructive": true,
+      "call": {
+        "product": "Ons",
+        "version": "2019-02-14",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ons.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ONS.OnsGroupList",
+      "name": "OnsGroupList",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/ons/instances/{InstanceId}/groups",
+      "destructive": false,
+      "call": {
+        "product": "Ons",
+        "version": "2019-02-14",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ons.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.ONS.OnsInstanceDelete",
       "name": "OnsInstanceDelete",
       "service": "AlibabaCloud",
@@ -6541,6 +6661,46 @@
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/ons/instances",
+      "destructive": false,
+      "call": {
+        "product": "Ons",
+        "version": "2019-02-14",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ons.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ONS.OnsTopicDelete",
+      "name": "OnsTopicDelete",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/ons/instances/{InstanceId}/topics/{Topic}",
+      "destructive": true,
+      "call": {
+        "product": "Ons",
+        "version": "2019-02-14",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ons.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ONS.OnsTopicList",
+      "name": "OnsTopicList",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/ons/instances/{InstanceId}/topics",
       "destructive": false,
       "call": {
         "product": "Ons",
@@ -8770,6 +8930,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.RocketMQ.DeleteConsumerGroup",
+      "name": "DeleteConsumerGroup",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/rocketmq/instances/{instanceId}/consumer-groups/{consumerGroupId}",
+      "destructive": true,
+      "call": {
+        "product": "RocketMQ",
+        "version": "2022-08-01",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/instances/{instanceId}/consumerGroups/{consumerGroupId}",
+        "endpoint": "rocketmq.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.RocketMQ.DeleteInstance",
       "name": "DeleteInstance",
       "service": "AlibabaCloud",
@@ -8783,6 +8963,46 @@
         "protocol": "HTTPS",
         "method": "DELETE",
         "path": "/instances/{instanceId}",
+        "endpoint": "rocketmq.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.RocketMQ.DeleteTopic",
+      "name": "DeleteTopic",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/rocketmq/instances/{instanceId}/topics/{topicName}",
+      "destructive": true,
+      "call": {
+        "product": "RocketMQ",
+        "version": "2022-08-01",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/instances/{instanceId}/topics/{topicName}",
+        "endpoint": "rocketmq.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.RocketMQ.GetConsumerGroup",
+      "name": "GetConsumerGroup",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/rocketmq/instances/{instanceId}/consumer-groups/{consumerGroupId}",
+      "destructive": false,
+      "call": {
+        "product": "RocketMQ",
+        "version": "2022-08-01",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/instances/{instanceId}/consumerGroups/{consumerGroupId}",
         "endpoint": "rocketmq.{region}.aliyuncs.com",
         "request_body_type": "json",
         "body_type": "json",
@@ -8810,6 +9030,46 @@
       }
     },
     {
+      "id": "AlibabaCloud.RocketMQ.GetTopic",
+      "name": "GetTopic",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/rocketmq/instances/{instanceId}/topics/{topicName}",
+      "destructive": false,
+      "call": {
+        "product": "RocketMQ",
+        "version": "2022-08-01",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/instances/{instanceId}/topics/{topicName}",
+        "endpoint": "rocketmq.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.RocketMQ.ListConsumerGroups",
+      "name": "ListConsumerGroups",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/rocketmq/instances/{instanceId}/consumer-groups",
+      "destructive": false,
+      "call": {
+        "product": "RocketMQ",
+        "version": "2022-08-01",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/instances/{instanceId}/consumerGroups",
+        "endpoint": "rocketmq.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.RocketMQ.ListInstances",
       "name": "ListInstances",
       "service": "AlibabaCloud",
@@ -8823,6 +9083,26 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/instances",
+        "endpoint": "rocketmq.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.RocketMQ.ListTopics",
+      "name": "ListTopics",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/rocketmq/instances/{instanceId}/topics",
+      "destructive": false,
+      "call": {
+        "product": "RocketMQ",
+        "version": "2022-08-01",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/instances/{instanceId}/topics",
         "endpoint": "rocketmq.{region}.aliyuncs.com",
         "request_body_type": "json",
         "body_type": "json",
@@ -9811,9 +10091,25 @@
       ]
     },
     {
+      "native_type": "ACS::AliKafka::ConsumerGroup",
+      "class": "messaging.consumer_group",
+      "display_name": "Kafka Consumer Group",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::AliKafka::Instance",
       "class": "messaging.broker",
       "display_name": "ApsaraMQ for Kafka Instance",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::AliKafka::Topic",
+      "class": "messaging.topic",
+      "display_name": "Kafka Topic",
       "scope_kinds": [
         "region"
       ]
@@ -10659,9 +10955,25 @@
       ]
     },
     {
+      "native_type": "ACS::Ons::Group",
+      "class": "messaging.consumer_group",
+      "display_name": "RocketMQ 4.0 Group",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::Ons::Instance",
       "class": "messaging.broker",
       "display_name": "RocketMQ 4.0 Instance",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::Ons::Topic",
+      "class": "messaging.topic",
+      "display_name": "RocketMQ 4.0 Topic",
       "scope_kinds": [
         "region"
       ]
@@ -10811,9 +11123,25 @@
       ]
     },
     {
+      "native_type": "ACS::RocketMQ::ConsumerGroup",
+      "class": "messaging.consumer_group",
+      "display_name": "RocketMQ 5.0 Consumer Group",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::RocketMQ::Instance",
       "class": "messaging.broker",
       "display_name": "RocketMQ 5.0 Instance",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::RocketMQ::Topic",
+      "class": "messaging.topic",
+      "display_name": "RocketMQ 5.0 Topic",
       "scope_kinds": [
         "region"
       ]
