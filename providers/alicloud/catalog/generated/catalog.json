@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "e291826e4f4df745dd9ed32aaa61ebd4e82b8ae6a7cc03f6c7e0be3b78b9f4d7",
+    "checksum": "12022c8c7001db86908b6af3b132f08dc547b1fec9a91f9f250a51c897e8ee9f",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "7adcf75ceee5f30c47b031c8ab2165163cb82f11e47ff7f2628b5f812f738271",
+  "content_checksum": "e16417c6b03235c7d9a440b66df33cbd3c72871e063e981b32a5a91a3c2fe731",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -5109,6 +5109,86 @@
         "method": "GET",
         "path": "/",
         "endpoint": "ehpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.EMR.DeleteCluster",
+      "name": "DeleteCluster",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/emr/clusters/{ClusterId}",
+      "destructive": true,
+      "call": {
+        "product": "Emr",
+        "version": "2021-03-20",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "emr.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.EMR.GetCluster",
+      "name": "GetCluster",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/emr/clusters/{ClusterId}",
+      "destructive": false,
+      "call": {
+        "product": "Emr",
+        "version": "2021-03-20",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "emr.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.EMR.ListClusters",
+      "name": "ListClusters",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/emr/clusters",
+      "destructive": false,
+      "call": {
+        "product": "Emr",
+        "version": "2021-03-20",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "emr.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.EMR.UpdateClusterAttribute",
+      "name": "UpdateClusterAttribute",
+      "service": "AlibabaCloud",
+      "method": "PUT",
+      "path": "/emr/clusters/{ClusterId}/attributes",
+      "destructive": false,
+      "call": {
+        "product": "Emr",
+        "version": "2021-03-20",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "emr.{region}.aliyuncs.com",
         "request_body_type": "formData",
         "body_type": "json",
         "parameter_position": "query"
@@ -11847,6 +11927,14 @@
       "native_type": "ACS::EIP::EipAddress",
       "class": "network.public_ip",
       "display_name": "Elastic IP Address",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::EMR::Cluster",
+      "class": "data.processing_cluster",
+      "display_name": "EMR Cluster",
       "scope_kinds": [
         "region"
       ]

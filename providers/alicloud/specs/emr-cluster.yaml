@@ -1,0 +1,80 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::EMR::Cluster
+  class: data.processing_cluster
+presentation:
+  consoleLinkTemplate: "https://emr-next.console.aliyun.com/#/region/{regionId}/resource/all/ecs/detail/{nativeId}/overview"
+  displayNames:
+    zh-CN: EMR 集群
+    en-US: EMR Cluster
+  icon: cluster
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.EMR.ListClusters
+    parameters:
+      RegionId: scope.location
+      ClusterStates.1: STARTING
+      ClusterStates.2: START_FAILED
+      ClusterStates.3: BOOTSTRAPPING
+      ClusterStates.4: RUNNING
+      ClusterStates.5: TERMINATING
+      ClusterStates.6: TERMINATE_FAILED
+    itemsPath: Clusters
+    identityPath: ClusterId
+    statePath: ClusterState
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: ClusterName
+  state: ClusterState
+  createdAt: CreateTime
+  expireTime: ExpireTime
+  clusterType: ClusterType
+  paymentType: PaymentType
+  releaseVersion: ReleaseVersion
+  resourceGroupId: ResourceGroupId
+  deletionProtection: DeletionProtection
+actions:
+  delete:
+    operation: AlibabaCloud.EMR.DeleteCluster
+    parameters:
+      RegionId: scope.location
+      ClusterId: resource.nativeId
+    preconditions:
+      - path: PaymentType
+        allowedValues: [PayAsYouGo]
+        reason: subscription clusters are released when they expire and cannot be deleted through the product API
+    idempotency: readback
+    waiter: terminal
+    terminalStates:
+      - TERMINATED
+    failureStates:
+      - TERMINATE_FAILED
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.EMR.GetCluster
+      parameters:
+        RegionId: scope.location
+        ClusterId: resource.nativeId
+      itemsPath: Cluster
+      identityPath: ClusterId
+      statePath: ClusterState
+    deletionProtection:
+      path: DeletionProtection
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.EMR.UpdateClusterAttribute
+        parameters:
+          RegionId: scope.location
+          ClusterId: resource.nativeId
+          DeletionProtection: false

@@ -278,3 +278,46 @@ func TestBatchDeleteReportsAFailedItem(t *testing.T) {
 		t.Fatalf("error = %v", err)
 	}
 }
+
+func TestEMRClusterDeletionFinishesWhenTerminated(t *testing.T) {
+	t.Parallel()
+
+	cluster := func(state string, protected bool) contracts.InvocationResult {
+		return contracts.InvocationResult{Data: map[string]any{"Cluster": map[string]any{
+			"ClusterId": "c-a", "ClusterState": state, "PaymentType": "PayAsYouGo", "DeletionProtection": protected,
+		}}}
+	}
+	provider := &invocationProvider{results: []contracts.InvocationResult{
+		cluster("RUNNING", true), cluster("RUNNING", true), {RequestID: "unprotect"}, {RequestID: "delete"},
+		cluster("TERMINATING", false), cluster("TERMINATED", false),
+	}}
+	hook, err := alicloud.NewActionHook(provider, "connection-a", "cn-hangzhou", "ACS::EMR::Cluster")
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := contracts.ActionRequest{
+		Asset:  asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAliCloud, NativeType: "ACS::EMR::Cluster", NativeID: "c-a"}},
+		Action: "delete", IdempotencyKey: "emr-step",
+	}
+	if preflight, err := hook.Preflight(context.Background(), request); err != nil || !preflight.Allowed {
+		t.Fatalf("preflight=%+v err=%v", preflight, err)
+	}
+	result, err := hook.Execute(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if wait, err := hook.Wait(context.Background(), request, result); err != nil || wait.Done {
+		t.Fatalf("terminating wait=%+v err=%v", wait, err)
+	}
+	if wait, err := hook.Wait(context.Background(), request, result); err != nil || !wait.Done {
+		t.Fatalf("terminated wait=%+v err=%v", wait, err)
+	}
+	operations := make([]string, len(provider.invocations))
+	for index, invocation := range provider.invocations {
+		operations[index] = invocation.Operation
+	}
+	if len(operations) != 6 || operations[2] != "AlibabaCloud.EMR.UpdateClusterAttribute" || operations[3] != "AlibabaCloud.EMR.DeleteCluster" ||
+		provider.invocations[2].Parameters["DeletionProtection"] != false {
+		t.Fatalf("operations = %v", operations)
+	}
+}

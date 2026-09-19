@@ -1217,6 +1217,25 @@ resources:
     resources:
     - AWS::ECR::Repository
   status: pending_verification
+- alicloud: ACS::EMR::Cluster
+  spec: providers/alicloud/specs/emr-cluster.yaml
+  class: data.processing_cluster
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - dataproc.googleapis.com/Cluster
+  azure:
+    unimplemented_resources:
+    - Microsoft.HDInsight/clusters
+  aws:
+    notes: Amazon EMR clusters are not in the pinned AWS resource selection yet.
+  status: pending_verification
+  notes: Only pay-as-you-go clusters are deleted. Release protection is turned off as its own reviewed
+    step, and deletion completes when the cluster reports TERMINATED.
 - alicloud: ACS::Eflo::Node
   spec: providers/alicloud/specs/eflo-node.yaml
   class: compute.node

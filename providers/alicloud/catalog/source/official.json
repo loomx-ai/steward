@@ -15975,6 +15975,410 @@
   },
   {
    "apis": {
+    "DeleteCluster": {
+     "deprecated": false,
+     "error_codes": [
+      "ConflictParameters",
+      "IncompleteSignature",
+      "InternalError",
+      "InvalidAction",
+      "InvalidParameter",
+      "InvalidParameterValue",
+      "MissingAction",
+      "MissingParameter",
+      "NotAuthorized",
+      "OperationDenied",
+      "ResourceNotFound",
+      "ServiceFailure",
+      "ServiceUnavailable",
+      "ThrottlingException"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClusterId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "OperationId",
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "GetCluster": {
+     "deprecated": false,
+     "error_codes": [
+      "ConflictParameters",
+      "IncompleteSignature",
+      "InternalError",
+      "InvalidAction",
+      "InvalidParameter",
+      "InvalidParameterValue",
+      "MissingAction",
+      "MissingParameter",
+      "NotAuthorized",
+      "ResourceNotFound",
+      "ServiceFailure",
+      "ServiceUnavailable",
+      "ThrottlingException"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClusterId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Cluster",
+      "Cluster.ClusterId",
+      "Cluster.ClusterName",
+      "Cluster.ClusterState",
+      "Cluster.ClusterType",
+      "Cluster.CreateTime",
+      "Cluster.DeletionProtection",
+      "Cluster.DeployMode",
+      "Cluster.Description",
+      "Cluster.EmrDefaultRole",
+      "Cluster.EndTime",
+      "Cluster.ExpireTime",
+      "Cluster.NodeAttributes",
+      "Cluster.NodeAttributes.DataDiskEncrypted",
+      "Cluster.NodeAttributes.DataDiskKMSKeyId",
+      "Cluster.NodeAttributes.KeyPairName",
+      "Cluster.NodeAttributes.MasterRootPassword",
+      "Cluster.NodeAttributes.RamRole",
+      "Cluster.NodeAttributes.SecurityGroupId",
+      "Cluster.NodeAttributes.SystemDiskEncrypted",
+      "Cluster.NodeAttributes.SystemDiskKMSKeyId",
+      "Cluster.NodeAttributes.VpcId",
+      "Cluster.NodeAttributes.ZoneId",
+      "Cluster.PaymentType",
+      "Cluster.ReadyTime",
+      "Cluster.RegionId",
+      "Cluster.ReleaseVersion",
+      "Cluster.ResourceGroupId",
+      "Cluster.SecurityMode",
+      "Cluster.StateChangeReason",
+      "Cluster.StateChangeReason.Code",
+      "Cluster.StateChangeReason.Message",
+      "Cluster.SubscriptionConfig",
+      "Cluster.SubscriptionConfig.AutoRenew",
+      "Cluster.SubscriptionConfig.AutoRenewDuration",
+      "Cluster.SubscriptionConfig.AutoRenewDurationUnit",
+      "Cluster.SubscriptionConfig.PaymentDuration",
+      "Cluster.SubscriptionConfig.PaymentDurationUnit",
+      "Cluster.Tags",
+      "Cluster.Tags.Key",
+      "Cluster.Tags.Value",
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "ListClusters": {
+     "deprecated": false,
+     "error_codes": [
+      "ConflictParameters",
+      "IncompleteSignature",
+      "InternalError",
+      "InvalidAction",
+      "InvalidParameter",
+      "InvalidParameterValue",
+      "MissingAction",
+      "MissingParameter",
+      "NotAuthorized",
+      "ResourceNotFound",
+      "ServiceFailure",
+      "ServiceUnavailable",
+      "ThrottlingException"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClusterIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "ClusterName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ClusterStates",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "ClusterTypes",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PaymentTypes",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tags",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Clusters",
+      "Clusters.ClusterId",
+      "Clusters.ClusterName",
+      "Clusters.ClusterState",
+      "Clusters.ClusterType",
+      "Clusters.CreateTime",
+      "Clusters.DeletionProtection",
+      "Clusters.Description",
+      "Clusters.EmrDefaultRole",
+      "Clusters.EndTime",
+      "Clusters.ExpireTime",
+      "Clusters.PaymentType",
+      "Clusters.ReadyTime",
+      "Clusters.ReleaseVersion",
+      "Clusters.ResourceGroupId",
+      "Clusters.StateChangeReason",
+      "Clusters.StateChangeReason.Code",
+      "Clusters.StateChangeReason.Message",
+      "Clusters.Tags",
+      "Clusters.Tags.Key",
+      "Clusters.Tags.Value",
+      "MaxResults",
+      "NextToken",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "UpdateClusterAttribute": {
+     "deprecated": false,
+     "error_codes": [
+      "ConflictParameters",
+      "IncompleteSignature",
+      "InternalError",
+      "InvalidAction",
+      "InvalidParameter",
+      "InvalidParameterValue",
+      "MissingAction",
+      "MissingParameter",
+      "NotAuthorized",
+      "ResourceNotFound",
+      "ServiceFailure",
+      "ServiceUnavailable",
+      "ThrottlingException"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "update",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClusterId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ClusterName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DeletionProtection",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "Description",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    }
+   },
+   "endpoints": [
+    {
+     "endpoint": "emr.ap-northeast-1.aliyuncs.com",
+     "region": "ap-northeast-1"
+    },
+    {
+     "endpoint": "emr.ap-southeast-1.aliyuncs.com",
+     "region": "ap-southeast-1"
+    },
+    {
+     "endpoint": "emr.ap-southeast-3.aliyuncs.com",
+     "region": "ap-southeast-3"
+    },
+    {
+     "endpoint": "emr.ap-southeast-5.aliyuncs.com",
+     "region": "ap-southeast-5"
+    },
+    {
+     "endpoint": "emr.cn-beijing.aliyuncs.com",
+     "region": "cn-beijing"
+    },
+    {
+     "endpoint": "emr.cn-chengdu.aliyuncs.com",
+     "region": "cn-chengdu"
+    },
+    {
+     "endpoint": "emr.cn-hangzhou.aliyuncs.com",
+     "region": "cn-hangzhou"
+    },
+    {
+     "endpoint": "emr.cn-heyuan-acdr-1.aliyuncs.com",
+     "region": "cn-heyuan-acdr-1"
+    },
+    {
+     "endpoint": "emr.cn-hongkong.aliyuncs.com",
+     "region": "cn-hongkong"
+    },
+    {
+     "endpoint": "emr.cn-huhehaote.aliyuncs.com",
+     "region": "cn-huhehaote"
+    },
+    {
+     "endpoint": "emr.cn-qingdao.aliyuncs.com",
+     "region": "cn-qingdao"
+    },
+    {
+     "endpoint": "emr.cn-shanghai.aliyuncs.com",
+     "region": "cn-shanghai"
+    },
+    {
+     "endpoint": "emr.cn-shanghai-finance-1.aliyuncs.com",
+     "region": "cn-shanghai-finance-1"
+    },
+    {
+     "endpoint": "emr.cn-shenzhen.aliyuncs.com",
+     "region": "cn-shenzhen"
+    },
+    {
+     "endpoint": "emr.cn-wulanchabu.aliyuncs.com",
+     "region": "cn-wulanchabu"
+    },
+    {
+     "endpoint": "emr.cn-zhangjiakou.aliyuncs.com",
+     "region": "cn-zhangjiakou"
+    },
+    {
+     "endpoint": "emr.eu-central-1.aliyuncs.com",
+     "region": "eu-central-1"
+    },
+    {
+     "endpoint": "emr.eu-west-1.aliyuncs.com",
+     "region": "eu-west-1"
+    },
+    {
+     "endpoint": "emr.me-central-1.aliyuncs.com",
+     "region": "me-central-1"
+    },
+    {
+     "endpoint": "emr.me-east-1.aliyuncs.com",
+     "region": "me-east-1"
+    },
+    {
+     "endpoint": "emr.na-south-1.aliyuncs.com",
+     "region": "na-south-1"
+    },
+    {
+     "endpoint": "emr.us-east-1.aliyuncs.com",
+     "region": "us-east-1"
+    },
+    {
+     "endpoint": "emr.us-west-1.aliyuncs.com",
+     "region": "us-west-1"
+    }
+   ],
+   "product": "Emr",
+   "source_sha256": "c5041973ca0e85cf7061c7af6da3ed486d3046565d8ec736c12d76456079daef",
+   "source_uri": "https://api.aliyun.com/meta/v1/products/Emr/versions/2021-03-20/api-docs.json",
+   "style": "RPC",
+   "version": "2021-03-20"
+  },
+  {
+   "apis": {
     "DescribeInstanceAutoRenewAttribute": {
      "deprecated": false,
      "error_codes": [

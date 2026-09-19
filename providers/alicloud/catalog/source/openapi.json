@@ -4139,6 +4139,32 @@
         "x-operation-call": {"product":"amqp-open","version":"2019-12-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"amqp-open.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/emr/clusters": {
+      "get": {
+        "operationId": "EMR.ListClusters",
+        "x-operation-name": "ListClusters",
+        "x-operation-call": {"product":"Emr","version":"2021-03-20","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"emr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/emr/clusters/{ClusterId}": {
+      "get": {
+        "operationId": "EMR.GetCluster",
+        "x-operation-name": "GetCluster",
+        "x-operation-call": {"product":"Emr","version":"2021-03-20","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"emr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      },
+      "delete": {
+        "operationId": "EMR.DeleteCluster",
+        "x-operation-name": "DeleteCluster",
+        "x-operation-call": {"product":"Emr","version":"2021-03-20","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"emr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/emr/clusters/{ClusterId}/attributes": {
+      "put": {
+        "operationId": "EMR.UpdateClusterAttribute",
+        "x-operation-name": "UpdateClusterAttribute",
+        "x-operation-call": {"product":"Emr","version":"2021-03-20","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"emr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/container-registry/instances": {
       "get": {
         "operationId": "CR.ListInstance",
@@ -4272,6 +4298,7 @@
     {"nativeType": "ACS::EBS::DiskReplicaPair", "class": "storage.replica_pair", "displayName": "Disk Replica Pair", "scopeKinds": ["region"]},
     {"nativeType": "ACS::EBS::DedicatedBlockStorageCluster", "class": "storage.dedicated_cluster", "displayName": "Dedicated Block Storage Cluster", "scopeKinds": ["region"]},
     {"nativeType": "ACS::EAIS::Instance", "class": "compute.accelerator", "displayName": "Elastic Accelerated Computing Instance", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::EMR::Cluster", "class": "data.processing_cluster", "displayName": "EMR Cluster", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ESS::ScalingGroup", "class": "compute.scaling_group", "displayName": "Auto Scaling Group", "scopeKinds": ["region"]},
     {"nativeType": "ACS::Elasticsearch::Instance", "class": "database.search", "displayName": "Elasticsearch Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::Elasticsearch::Logstash", "class": "data.pipeline", "displayName": "Logstash Instance", "scopeKinds": ["region"]},

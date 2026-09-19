@@ -50,7 +50,7 @@ A successful connection check establishes the cloud identity. Run a scan to veri
 
 ## Resource coverage and relationships
 
-Steward identifies 202 Alibaba Cloud resource types, 175 of which have a native cleanup action; other types that Resource Center returns appear as a read-only inventory. Every product API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
+Steward identifies 203 Alibaba Cloud resource types, 176 of which have a native cleanup action; other types that Resource Center returns appear as a read-only inventory. Every product API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
 
 Common types include ECS instances, disks, and interfaces; VPCs, vSwitches, security groups, NAT gateways, and EIPs; load balancers; RDS, Redis, and PolarDB; and storage, container, and orchestration resources. Discoverability depends on supported types, selected regions, and the current identity's permissions.
 
@@ -73,6 +73,7 @@ Inventory permissions do not authorize cleanup. Deletion also requires the resou
 - **Cloud Config:** Rules and compliance packs are inventoried in cn-shanghai and ap-southeast-1. Deleting a compliance pack also deletes the rules it created, which the plan confirms afterward; those rules cannot be deleted on their own. Aggregators are inventoried only.
 - **Elastic Desktop Service:** Only pay-as-you-go desktops outside desktop pools are cleaned up; subscription desktops are released when they expire. An office network is deleted only after all its desktops are released, and system policies are kept.
 - **EventBridge and RabbitMQ:** Event rules are deleted before their event bus. Only pay-as-you-go RabbitMQ instances are deleted; subscription instances are released when they expire.
+- **EMR clusters:** Only pay-as-you-go clusters are cleaned up. Release protection is turned off before deletion, and the cluster counts as deleted once it reports TERMINATED; Steward waits up to 10 minutes.
 - **Managed resources:** For clusters and resource stacks, review the controller and its managed objects to understand the full effect.
 
 Creating a cleanup task does not delete resources. Cloud operations begin after [reviewing the plan](./cleanup.md) and confirming execution.

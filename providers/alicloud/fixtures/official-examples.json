@@ -5366,6 +5366,91 @@
    "RequestId": "4EC47282-1B74-4534-BD0E-403F3EE64CAF",
    "TotalCount": 100
   },
+  "Emr@2021-03-20#GetCluster": {
+   "Cluster": {
+    "ClusterId": "c-b933c5aac8fe****",
+    "ClusterName": "emrtest",
+    "ClusterState": "RUNNING",
+    "ClusterType": "DATALAKE",
+    "CreateTime": 1592837465784,
+    "DeletionProtection": false,
+    "DeployMode": "HA",
+    "Description": "EMR cluster",
+    "EmrDefaultRole": "AliyunEMRDefaultRole",
+    "EndTime": 1592837465784,
+    "ExpireTime": 1592837465784,
+    "NodeAttributes": {
+     "DataDiskEncrypted": false,
+     "DataDiskKMSKeyId": "0e478b7a-4262-4802-b8cb-00d3fb40****",
+     "KeyPairName": "emr_login",
+     "MasterRootPassword": "EAQ#86****",
+     "RamRole": "AliyunECSInstanceForEMRRole",
+     "SecurityGroupId": "sg-hp3abbae8lb6lmb1****",
+     "SystemDiskEncrypted": false,
+     "SystemDiskKMSKeyId": "0e478b7a-4262-4802-b8cb-00d3fb40****",
+     "VpcId": "vpc-bp1tgey2p0ytxmdo5****",
+     "ZoneId": "cn-beijing-h"
+    },
+    "PaymentType": "PayAsYouGo",
+    "ReadyTime": 1592837465784,
+    "RegionId": "cn-hangzhou",
+    "ReleaseVersion": "EMR-5.8.0",
+    "ResourceGroupId": "rg-acfmzabjyop****",
+    "SecurityMode": "NORMAL",
+    "StateChangeReason": {
+     "Code": "OutOfStock",
+     "Message": "The requested resource is sold out in the specified zone, try other types of resources or other regions and zones."
+    },
+    "SubscriptionConfig": {
+     "AutoRenew": true,
+     "AutoRenewDuration": 12,
+     "AutoRenewDurationUnit": "Month",
+     "PaymentDuration": 12,
+     "PaymentDurationUnit": "Month"
+    },
+    "Tags": [
+     {
+      "Key": "department",
+      "Value": "IT"
+     }
+    ]
+   },
+   "RequestId": "DD6B1B2A-5837-5237-ABE4-FF0C8944****"
+  },
+  "Emr@2021-03-20#ListClusters": {
+   "Clusters": [
+    {
+     "ClusterId": "c-b933c5aac8fe****",
+     "ClusterName": "emrtest",
+     "ClusterState": "RUNNING",
+     "ClusterType": "DATALAKE",
+     "CreateTime": 1592837465788,
+     "DeletionProtection": false,
+     "Description": "EMR cluster",
+     "EmrDefaultRole": "AliyunEMRDefaultRole",
+     "EndTime": 1592837485788,
+     "ExpireTime": 1592837475788,
+     "PaymentType": "PayAsYouGo",
+     "ReadyTime": 1592837465788,
+     "ReleaseVersion": "EMR-5.8.0",
+     "ResourceGroupId": "rg-acfmzabjyop****",
+     "StateChangeReason": {
+      "Code": "OutOfStock",
+      "Message": "The requested resource is sold out in the specified zone, try other types of resources or other regions and zones."
+     },
+     "Tags": [
+      {
+       "Key": "department",
+       "Value": "IT"
+      }
+     ]
+    }
+   ],
+   "MaxResults": 20,
+   "NextToken": "eyJlY21OZXh0VG9rZW4iOiIxIiwidGFpaGFvTmV4dFRva2VuIjoiNTYiLCJ0YWloYW9OZXh0VG9rZW5JbnQiOjU2LCJlY21OZXh0VG9rZW5JbnQiOjF9",
+   "RequestId": "9E3A7161-EB7B-172B-8D18-FFB06BA3896A",
+   "TotalCount": 1000
+  },
   "Ens@2017-11-10#DescribeInstanceAutoRenewAttribute": {
    "Code": 0,
    "InstanceRenewAttributes": {
