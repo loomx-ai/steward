@@ -1237,6 +1237,44 @@ resources:
     resources:
     - AWS::SNS::Topic
   status: pending_verification
+- alicloud: ACS::SAE::Application
+  spec: providers/alicloud/specs/sae-application.yaml
+  class: compute.application
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - run.googleapis.com/Service
+  azure:
+    resources:
+    - Microsoft.App/containerApps
+  aws:
+    resources:
+    - AWS::AppRunner::Service
+    - AWS::ECS::Service
+  status: pending_verification
+- alicloud: ACS::SAE::Namespace
+  spec: providers/alicloud/specs/sae-namespace.yaml
+  class: compute.namespace
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: Cloud Run services are scoped by project and region; there is no environment resource.
+  azure:
+    resources:
+    - Microsoft.App/managedEnvironments
+  aws:
+    resources:
+    - AWS::ECS::Cluster
+  status: pending_verification
+  notes: A namespace is deleted only after its applications; the default namespace of a region is kept.
+    Configuration maps are not inventoried because their content would be stored with the record.
 - alicloud: ACS::SLB::AccessControlList
   spec: providers/alicloud/specs/slb-access-control-list.yaml
   class: network.acl

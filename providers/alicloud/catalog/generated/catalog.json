@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "53eecbae5cfc90213696565c5a73e4f77a1f311d168db737d8a3fff90a86fc9e",
+    "checksum": "3137df9e2114c371891cdce94d333d82285909b314e3a5d65cca88e01aff47ef",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "9ed31b2a50db400cf244fb2da55854bd045e19dfc4c55841866137df70a0576f",
+  "content_checksum": "9d69725fc52dc6e917324688b012060fded8580eb4b38062d5f8856dbbec1be6",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -9633,6 +9633,126 @@
       }
     },
     {
+      "id": "AlibabaCloud.SAE.DeleteApplication",
+      "name": "DeleteApplication",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/sae/applications/{AppId}",
+      "destructive": true,
+      "call": {
+        "product": "sae",
+        "version": "2019-05-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/pop/v1/sam/app/deleteApplication",
+        "endpoint": "sae.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SAE.DeleteNamespace",
+      "name": "DeleteNamespace",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/sae/namespaces/{NamespaceId}",
+      "destructive": true,
+      "call": {
+        "product": "sae",
+        "version": "2019-05-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/pop/v1/paas/namespace",
+        "endpoint": "sae.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SAE.DescribeApplicationConfig",
+      "name": "DescribeApplicationConfig",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/sae/applications/{AppId}",
+      "destructive": false,
+      "call": {
+        "product": "sae",
+        "version": "2019-05-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/pop/v1/sam/app/describeApplicationConfig",
+        "endpoint": "sae.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SAE.DescribeNamespace",
+      "name": "DescribeNamespace",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/sae/namespaces/{NamespaceId}",
+      "destructive": false,
+      "call": {
+        "product": "sae",
+        "version": "2019-05-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/pop/v1/paas/namespace",
+        "endpoint": "sae.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SAE.DescribeNamespaceList",
+      "name": "DescribeNamespaceList",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/sae/namespaces",
+      "destructive": false,
+      "call": {
+        "product": "sae",
+        "version": "2019-05-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/pop/v1/sam/namespace/describeNamespaceList",
+        "endpoint": "sae.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SAE.ListApplications",
+      "name": "ListApplications",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/sae/applications",
+      "destructive": false,
+      "call": {
+        "product": "sae",
+        "version": "2019-05-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/pop/v1/sam/app/listApplications",
+        "endpoint": "sae.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.SCDN.DeleteScdnDomain",
       "name": "DeleteScdnDomain",
       "service": "AlibabaCloud",
@@ -11822,6 +11942,22 @@
       "native_type": "ACS::RocketMQ::Topic",
       "class": "messaging.topic",
       "display_name": "RocketMQ 5.0 Topic",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::SAE::Application",
+      "class": "compute.application",
+      "display_name": "SAE Application",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::SAE::Namespace",
+      "class": "compute.namespace",
+      "display_name": "SAE Namespace",
       "scope_kinds": [
         "region"
       ]

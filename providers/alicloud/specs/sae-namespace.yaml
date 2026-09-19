@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SAE::Namespace
+  class: compute.namespace
+presentation:
+  consoleLinkTemplate: "https://sae.console.aliyun.com/#/Namespace?regionId={regionId}"
+  displayNames:
+    zh-CN: SAE 命名空间
+    en-US: SAE Namespace
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SAE.DescribeNamespaceList
+    parameters:
+      ContainCustom: true
+    itemsPath: Data
+    identityPath: NamespaceId
+fields:
+  name: NamespaceName
+  custom: Custom
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+  securityGroupId: SecurityGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.SAE.DeleteNamespace
+    parameters:
+      NamespaceId: resource.nativeId
+    preconditions:
+      - path: Custom
+        allowedValues: ["true"]
+        reason: the default namespace of a region cannot be deleted
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.SAE.DescribeNamespace
+      parameters:
+        NamespaceId: resource.nativeId
+      itemsPath: Data
+      identityPath: NamespaceId

@@ -3967,6 +3967,44 @@
         "x-operation-call": {"product":"Cms","version":"2019-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"metrics.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/sae/applications": {
+      "get": {
+        "operationId": "SAE.ListApplications",
+        "x-operation-name": "ListApplications",
+        "x-operation-call": {"product":"sae","version":"2019-05-06","style":"ROA","protocol":"HTTPS","method":"GET","path":"/pop/v1/sam/app/listApplications","endpoint":"sae.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/sae/applications/{AppId}": {
+      "get": {
+        "operationId": "SAE.DescribeApplicationConfig",
+        "x-operation-name": "DescribeApplicationConfig",
+        "x-operation-call": {"product":"sae","version":"2019-05-06","style":"ROA","protocol":"HTTPS","method":"GET","path":"/pop/v1/sam/app/describeApplicationConfig","endpoint":"sae.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      },
+      "delete": {
+        "operationId": "SAE.DeleteApplication",
+        "x-operation-name": "DeleteApplication",
+        "x-operation-call": {"product":"sae","version":"2019-05-06","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/pop/v1/sam/app/deleteApplication","endpoint":"sae.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/sae/namespaces": {
+      "get": {
+        "operationId": "SAE.DescribeNamespaceList",
+        "x-operation-name": "DescribeNamespaceList",
+        "x-operation-call": {"product":"sae","version":"2019-05-06","style":"ROA","protocol":"HTTPS","method":"GET","path":"/pop/v1/sam/namespace/describeNamespaceList","endpoint":"sae.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/sae/namespaces/{NamespaceId}": {
+      "get": {
+        "operationId": "SAE.DescribeNamespace",
+        "x-operation-name": "DescribeNamespace",
+        "x-operation-call": {"product":"sae","version":"2019-05-06","style":"ROA","protocol":"HTTPS","method":"GET","path":"/pop/v1/paas/namespace","endpoint":"sae.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      },
+      "delete": {
+        "operationId": "SAE.DeleteNamespace",
+        "x-operation-name": "DeleteNamespace",
+        "x-operation-call": {"product":"sae","version":"2019-05-06","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/pop/v1/paas/namespace","endpoint":"sae.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/container-registry/instances": {
       "get": {
         "operationId": "CR.ListInstance",
@@ -4174,6 +4212,8 @@
     {"nativeType": "ACS::Redis::DBInstance", "class": "database.cache", "displayName": "Redis Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::RealtimeCompute::VvpInstance", "class": "data.stream_compute", "displayName": "Realtime Compute Workspace", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ResourceManager::ResourceDirectory", "class": "identity.resource_directory", "displayName": "Resource Directory", "scopeKinds": ["global"]},
+    {"nativeType": "ACS::SAE::Application", "class": "compute.application", "displayName": "SAE Application", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::SAE::Namespace", "class": "compute.namespace", "displayName": "SAE Namespace", "scopeKinds": ["region"]},
     {"nativeType": "ACS::SelectDB::DBInstance", "class": "database.analytics", "displayName": "SelectDB Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::SCDN::Domain", "class": "network.cdn_domain", "displayName": "SCDN Domain", "scopeKinds": ["global"]},
     {"nativeType": "ACS::SDDP::Instance", "class": "security.data_protection", "displayName": "Data Security Center Instance", "scopeKinds": ["global"]},

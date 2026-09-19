@@ -46677,6 +46677,596 @@
   },
   {
    "apis": {
+    "DeleteApplication": {
+     "deprecated": false,
+     "error_codes": [
+      "Application.ChangerOrderRunning",
+      "InvalidApplication.NotFound",
+      "InvalidParameter.NotEmpty",
+      "InvalidParameter.Obviously",
+      "InvalidParameter.WithMessage"
+     ],
+     "methods": [
+      "delete"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AppId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "/pop/v1/sam/app/deleteApplication",
+     "response_paths": [
+      "Code",
+      "Data",
+      "Data.ChangeOrderId",
+      "ErrorCode",
+      "Message",
+      "RequestId",
+      "Success",
+      "TraceId"
+     ],
+     "risk_type": ""
+    },
+    "DeleteNamespace": {
+     "deprecated": false,
+     "error_codes": [
+      "InvalidNamespaceId.NotFound",
+      "InvalidOperation.NamespaceClusterNotDeleted",
+      "Namespace.AppExists",
+      "OperationFailed.DauthHttpRequest",
+      "System.Upgrading"
+     ],
+     "methods": [
+      "delete"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "NameSpaceShortId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NamespaceId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/pop/v1/paas/namespace",
+     "response_paths": [
+      "Code",
+      "ErrorCode",
+      "Message",
+      "RequestId",
+      "Success",
+      "TraceId"
+     ],
+     "risk_type": ""
+    },
+    "DescribeApplicationConfig": {
+     "deprecated": false,
+     "error_codes": [
+      "InvalidAppId.NotFound",
+      "InvalidApplication.NotFound"
+     ],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AppId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "VersionId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/pop/v1/sam/app/describeApplicationConfig",
+     "response_paths": [
+      "Code",
+      "Data",
+      "Data.AcrAssumeRoleArn",
+      "Data.AcrInstanceId",
+      "Data.AgentVersion",
+      "Data.AlbIngressReadinessGate",
+      "Data.AppDescription",
+      "Data.AppId",
+      "Data.AppName",
+      "Data.AppSource",
+      "Data.AssociateEip",
+      "Data.BaseAppId",
+      "Data.BatchWaitTime",
+      "Data.ClusterId",
+      "Data.CmsServiceId",
+      "Data.Command",
+      "Data.CommandArgs",
+      "Data.ConfigMapMountDesc",
+      "Data.ConfigMapMountDesc.ConfigMapId",
+      "Data.ConfigMapMountDesc.ConfigMapName",
+      "Data.ConfigMapMountDesc.Key",
+      "Data.ConfigMapMountDesc.MountPath",
+      "Data.Cpu",
+      "Data.CustomHostAlias",
+      "Data.CustomImageNetworkType",
+      "Data.DeploymentName",
+      "Data.DiskSize",
+      "Data.Dotnet",
+      "Data.EdasContainerVersion",
+      "Data.EmptyDirDesc",
+      "Data.EmptyDirDesc.MountPath",
+      "Data.EmptyDirDesc.Name",
+      "Data.EnableAhas",
+      "Data.EnableCpuBurst",
+      "Data.EnableGreyTagRoute",
+      "Data.EnableIdle",
+      "Data.EnableNamespaceAgentVersion",
+      "Data.EnableNewArms",
+      "Data.EnablePrometheus",
+      "Data.Envs",
+      "Data.GpuCount",
+      "Data.GpuType",
+      "Data.HeadlessPvtzDiscovery",
+      "Data.Html",
+      "Data.IdleHour",
+      "Data.ImagePullSecrets",
+      "Data.ImageUrl",
+      "Data.InitContainersConfig",
+      "Data.InitContainersConfig.Command",
+      "Data.InitContainersConfig.CommandArgs",
+      "Data.InitContainersConfig.ConfigMapMountDesc",
+      "Data.InitContainersConfig.ConfigMapMountDesc.ConfigMapId",
+      "Data.InitContainersConfig.ConfigMapMountDesc.ConfigMapName",
+      "Data.InitContainersConfig.ConfigMapMountDesc.Key",
+      "Data.InitContainersConfig.ConfigMapMountDesc.MountPath",
+      "Data.InitContainersConfig.EmptyDirDesc",
+      "Data.InitContainersConfig.EmptyDirDesc.MountPath",
+      "Data.InitContainersConfig.EmptyDirDesc.Name",
+      "Data.InitContainersConfig.Envs",
+      "Data.InitContainersConfig.ImageUrl",
+      "Data.InitContainersConfig.Name",
+      "Data.InitContainersConfig.SecretMountDesc",
+      "Data.InitContainersConfig.SecretMountDesc.Key",
+      "Data.InitContainersConfig.SecretMountDesc.MountPath",
+      "Data.InitContainersConfig.SecretMountDesc.SecretId",
+      "Data.InitContainersConfig.SecretMountDesc.SecretName",
+      "Data.IsStateful",
+      "Data.JarStartArgs",
+      "Data.JarStartOptions",
+      "Data.Jdk",
+      "Data.KafkaConfigs",
+      "Data.Labels",
+      "Data.Liveness",
+      "Data.LokiConfigs",
+      "Data.MaxSurgeInstanceRatio",
+      "Data.MaxSurgeInstances",
+      "Data.Memory",
+      "Data.MicroRegistration",
+      "Data.MicroRegistrationConfig",
+      "Data.MicroserviceEngineConfig",
+      "Data.MinReadyInstanceRatio",
+      "Data.MinReadyInstances",
+      "Data.MountDesc",
+      "Data.MountDesc.MountPath",
+      "Data.MountDesc.NasPath",
+      "Data.MountHost",
+      "Data.MseApplicationId",
+      "Data.MseApplicationName",
+      "Data.NamespaceId",
+      "Data.NasConfigs",
+      "Data.NasId",
+      "Data.NewSaeVersion",
+      "Data.OidcRoleName",
+      "Data.OssAkId",
+      "Data.OssAkSecret",
+      "Data.OssMountDescs",
+      "Data.OssMountDescs.bucketName",
+      "Data.OssMountDescs.bucketPath",
+      "Data.OssMountDescs.mountPath",
+      "Data.OssMountDescs.readOnly",
+      "Data.PackageType",
+      "Data.PackageUrl",
+      "Data.PackageVersion",
+      "Data.Php",
+      "Data.PhpArmsConfigLocation",
+      "Data.PhpConfig",
+      "Data.PhpConfigLocation",
+      "Data.PostStart",
+      "Data.PreStop",
+      "Data.ProgrammingLanguage",
+      "Data.PvtzDiscovery",
+      "Data.Python",
+      "Data.PythonModules",
+      "Data.RaspConfig",
+      "Data.RaspConfig.EnableRasp",
+      "Data.RaspConfig.RaspAppKey",
+      "Data.RaspConfig.RaspAppName",
+      "Data.Readiness",
+      "Data.RegionId",
+      "Data.Replicas",
+      "Data.ResourceType",
+      "Data.SecretMountDesc",
+      "Data.SecretMountDesc.Key",
+      "Data.SecretMountDesc.MountPath",
+      "Data.SecretMountDesc.SecretId",
+      "Data.SecretMountDesc.SecretName",
+      "Data.SecurityGroupId",
+      "Data.ServiceTags",
+      "Data.SidecarContainersConfig",
+      "Data.SidecarContainersConfig.AcrInstanceId",
+      "Data.SidecarContainersConfig.Command",
+      "Data.SidecarContainersConfig.CommandArgs",
+      "Data.SidecarContainersConfig.ConfigMapMountDesc",
+      "Data.SidecarContainersConfig.ConfigMapMountDesc.ConfigMapId",
+      "Data.SidecarContainersConfig.ConfigMapMountDesc.ConfigMapName",
+      "Data.SidecarContainersConfig.ConfigMapMountDesc.Key",
+      "Data.SidecarContainersConfig.ConfigMapMountDesc.MountPath",
+      "Data.SidecarContainersConfig.Cpu",
+      "Data.SidecarContainersConfig.EmptyDirDesc",
+      "Data.SidecarContainersConfig.EmptyDirDesc.MountPath",
+      "Data.SidecarContainersConfig.EmptyDirDesc.Name",
+      "Data.SidecarContainersConfig.Envs",
+      "Data.SidecarContainersConfig.ImageUrl",
+      "Data.SidecarContainersConfig.Liveness",
+      "Data.SidecarContainersConfig.Memory",
+      "Data.SidecarContainersConfig.Name",
+      "Data.SidecarContainersConfig.PostStart",
+      "Data.SidecarContainersConfig.PreStop",
+      "Data.SidecarContainersConfig.Readiness",
+      "Data.SidecarContainersConfig.SecretMountDesc",
+      "Data.SidecarContainersConfig.SecretMountDesc.Key",
+      "Data.SidecarContainersConfig.SecretMountDesc.MountPath",
+      "Data.SidecarContainersConfig.SecretMountDesc.SecretId",
+      "Data.SidecarContainersConfig.SecretMountDesc.SecretName",
+      "Data.SlsConfigs",
+      "Data.SlsLogEnvTags",
+      "Data.StartupProbe",
+      "Data.SwimlanePvtzDiscovery",
+      "Data.Tags",
+      "Data.Tags.Key",
+      "Data.Tags.Value",
+      "Data.TerminationGracePeriodSeconds",
+      "Data.Timezone",
+      "Data.TomcatConfig",
+      "Data.UpdateStrategy",
+      "Data.VSwitchId",
+      "Data.VpcId",
+      "Data.WarStartOptions",
+      "Data.WebContainer",
+      "ErrorCode",
+      "Message",
+      "RequestId",
+      "Success",
+      "TraceId"
+     ],
+     "risk_type": "none"
+    },
+    "DescribeNamespace": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "NameSpaceShortId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NamespaceId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/pop/v1/paas/namespace",
+     "response_paths": [
+      "Code",
+      "Data",
+      "Data.EnableMicroRegistration",
+      "Data.NameSpaceShortId",
+      "Data.NamespaceDescription",
+      "Data.NamespaceId",
+      "Data.NamespaceName",
+      "Data.RegionId",
+      "ErrorCode",
+      "Message",
+      "RequestId",
+      "Success",
+      "TraceId"
+     ],
+     "risk_type": ""
+    },
+    "DescribeNamespaceList": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ContainCustom",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "HybridCloudExclude",
+       "required": false,
+       "type": "boolean"
+      }
+     ],
+     "path": "/pop/v1/sam/namespace/describeNamespaceList",
+     "response_paths": [
+      "Code",
+      "Data",
+      "Data.AgentInstall",
+      "Data.Current",
+      "Data.Custom",
+      "Data.HybridCloudEnable",
+      "Data.NameSpaceShortId",
+      "Data.NamespaceId",
+      "Data.NamespaceName",
+      "Data.RegionId",
+      "Data.SecurityGroupId",
+      "Data.VSwitchId",
+      "Data.VpcId",
+      "ErrorCode",
+      "Message",
+      "RequestId",
+      "Success",
+      "TraceId"
+     ],
+     "risk_type": ""
+    },
+    "ListApplications": {
+     "deprecated": false,
+     "error_codes": [
+      "Illegal.argument"
+     ],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AppName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "AppSource",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "CurrentPage",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "FieldType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "FieldValue",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "IsStateful",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NamespaceId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NewSaeVersion",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "OrderBy",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "ProgrammingLanguage",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Reverse",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "Tags",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/pop/v1/sam/app/listApplications",
+     "response_paths": [
+      "Code",
+      "CurrentPage",
+      "Data",
+      "Data.Applications",
+      "Data.Applications.AppDeletingStatus",
+      "Data.Applications.AppDescription",
+      "Data.Applications.AppId",
+      "Data.Applications.AppName",
+      "Data.Applications.AppType",
+      "Data.Applications.BaseAppId",
+      "Data.Applications.Children",
+      "Data.Applications.Children.AppDeletingStatus",
+      "Data.Applications.Children.AppDescription",
+      "Data.Applications.Children.AppId",
+      "Data.Applications.Children.AppName",
+      "Data.Applications.Children.AppType",
+      "Data.Applications.Children.BaseAppId",
+      "Data.Applications.Children.Cpu",
+      "Data.Applications.Children.EnableIdle",
+      "Data.Applications.Children.Instances",
+      "Data.Applications.Children.IsStateful",
+      "Data.Applications.Children.Mem",
+      "Data.Applications.Children.MseEnabled",
+      "Data.Applications.Children.NamespaceId",
+      "Data.Applications.Children.NamespaceName",
+      "Data.Applications.Children.NewSaeVersion",
+      "Data.Applications.Children.ProgrammingLanguage",
+      "Data.Applications.Children.RegionId",
+      "Data.Applications.Children.ResourceType",
+      "Data.Applications.Children.RunningInstances",
+      "Data.Applications.Children.ScaleRuleEnabled",
+      "Data.Applications.Children.ScaleRuleType",
+      "Data.Applications.Children.Tags",
+      "Data.Applications.Children.Tags.Key",
+      "Data.Applications.Children.Tags.Value",
+      "Data.Applications.Cpu",
+      "Data.Applications.DiskSize",
+      "Data.Applications.EnableIdle",
+      "Data.Applications.ImageUrl",
+      "Data.Applications.Instances",
+      "Data.Applications.IsStateful",
+      "Data.Applications.Labels",
+      "Data.Applications.Mem",
+      "Data.Applications.MseEnabled",
+      "Data.Applications.MseNamespaceId",
+      "Data.Applications.NamespaceId",
+      "Data.Applications.NamespaceName",
+      "Data.Applications.NewSaeVersion",
+      "Data.Applications.PackageUrl",
+      "Data.Applications.ProgrammingLanguage",
+      "Data.Applications.RaspEnabled",
+      "Data.Applications.RegionId",
+      "Data.Applications.ResourceType",
+      "Data.Applications.RunningInstances",
+      "Data.Applications.Tags",
+      "Data.Applications.Tags.Key",
+      "Data.Applications.Tags.Value",
+      "Data.Applications.VpcId",
+      "Data.CurrentPage",
+      "Data.PageSize",
+      "Data.TotalSize",
+      "ErrorCode",
+      "Message",
+      "PageSize",
+      "RequestId",
+      "Success",
+      "TotalSize"
+     ],
+     "risk_type": "none"
+    }
+   },
+   "endpoints": [
+    {
+     "endpoint": "sae.ap-northeast-1.aliyuncs.com",
+     "region": "ap-northeast-1"
+    },
+    {
+     "endpoint": "sae.ap-southeast-1.aliyuncs.com",
+     "region": "ap-southeast-1"
+    },
+    {
+     "endpoint": "sae.cn-beijing.aliyuncs.com",
+     "region": "cn-beijing"
+    },
+    {
+     "endpoint": "sae.cn-chengdu.aliyuncs.com",
+     "region": "cn-chengdu"
+    },
+    {
+     "endpoint": "sae.cn-guangzhou.aliyuncs.com",
+     "region": "cn-guangzhou"
+    },
+    {
+     "endpoint": "sae.cn-hangzhou.aliyuncs.com",
+     "region": "cn-hangzhou"
+    },
+    {
+     "endpoint": "sae.cn-heyuan.aliyuncs.com",
+     "region": "cn-heyuan"
+    },
+    {
+     "endpoint": "sae.cn-hongkong.aliyuncs.com",
+     "region": "cn-hongkong"
+    },
+    {
+     "endpoint": "sae.cn-shanghai.aliyuncs.com",
+     "region": "cn-shanghai"
+    },
+    {
+     "endpoint": "sae.cn-shenzhen.aliyuncs.com",
+     "region": "cn-shenzhen"
+    },
+    {
+     "endpoint": "sae.cn-wulanchabu.aliyuncs.com",
+     "region": "cn-wulanchabu"
+    },
+    {
+     "endpoint": "sae.cn-zhangjiakou.aliyuncs.com",
+     "region": "cn-zhangjiakou"
+    },
+    {
+     "endpoint": "sae.eu-central-1.aliyuncs.com",
+     "region": "eu-central-1"
+    },
+    {
+     "endpoint": "sae.us-east-1.aliyuncs.com",
+     "region": "us-east-1"
+    },
+    {
+     "endpoint": "sae.us-west-1.aliyuncs.com",
+     "region": "us-west-1"
+    }
+   ],
+   "product": "sae",
+   "source_sha256": "84b8f04bbd9b306200c45546c24f0388d5427f6021a31bca28f7fbdd5ffbc0de",
+   "source_uri": "https://api.aliyun.com/meta/v1/products/sae/versions/2019-05-06/api-docs.json",
+   "style": "ROA",
+   "version": "2019-05-06"
+  },
+  {
+   "apis": {
     "DeleteDBInstance": {
      "deprecated": false,
      "error_codes": [

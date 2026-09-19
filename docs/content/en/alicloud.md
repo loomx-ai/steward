@@ -50,7 +50,7 @@ A successful connection check establishes the cloud identity. Run a scan to veri
 
 ## Resource coverage and relationships
 
-Steward identifies 191 Alibaba Cloud resource types, 165 of which have a native cleanup action; other types that Resource Center returns appear as a read-only inventory. Every product API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
+Steward identifies 193 Alibaba Cloud resource types, 167 of which have a native cleanup action; other types that Resource Center returns appear as a read-only inventory. Every product API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
 
 Common types include ECS instances, disks, and interfaces; VPCs, vSwitches, security groups, NAT gateways, and EIPs; load balancers; RDS, Redis, and PolarDB; and storage, container, and orchestration resources. Discoverability depends on supported types, selected regions, and the current identity's permissions.
 
@@ -69,6 +69,7 @@ Inventory permissions do not authorize cleanup. Deletion also requires the resou
 - **Message queue topics and groups:** Deleting a Kafka, RocketMQ 4.0 or RocketMQ 5.0 instance first deletes its topics and consumer groups, each as its own step confirmed while the instance can still be queried. RocketMQ 4.0 topics are deleted only when this account holds them, never when another account authorized them. Deleting a topic discards its messages.
 - **Registries, logstores and VPN servers:** Deleting a Container Registry namespace also deletes its repositories and images, so the plan deletes each repository first. Deleting a Simple Log Service project deletes all of its logstores, including service-created `internal-` logstores; the plan lists them as deleted with the project and confirms each afterward. SSL-VPN client certificates, SSL-VPN servers and IPsec servers are deleted before their VPN gateway.
 - **CloudMonitor:** Custom application groups, alert rules, alert contacts and contact groups can be cleaned up. Application groups synchronized from another service, tags or resource groups are recreated by their source and are not deleted directly. Alert rules that name a deleted contact or contact group stop notifying it.
+- **SAE:** Applications are deleted before their namespace, and the default namespace of each region is kept. Application deletion is asynchronous; Steward waits up to 10 minutes to confirm it.
 - **Managed resources:** For clusters and resource stacks, review the controller and its managed objects to understand the full effect.
 
 Creating a cleanup task does not delete resources. Cloud operations begin after [reviewing the plan](./cleanup.md) and confirming execution.

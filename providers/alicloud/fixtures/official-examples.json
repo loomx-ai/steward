@@ -13319,6 +13319,355 @@
    "TotalNum": 1,
    "TotalPage": 1
   },
+  "sae@2019-05-06#DescribeApplicationConfig": {
+   "Code": "200",
+   "Data": {
+    "AcrAssumeRoleArn": "acs:ram::123456789012****:role/adminrole",
+    "AcrInstanceId": "cri-xxxxxx",
+    "AgentVersion": "",
+    "AlbIngressReadinessGate": "",
+    "AppDescription": "Sample application",
+    "AppId": "7171a6ca-d1cd-4928-8642-7d5cfe69****",
+    "AppName": "demo-app",
+    "AppSource": "micro_service",
+    "AssociateEip": true,
+    "BaseAppId": "8c573618-8d72-4407-baf4-f7b64b******",
+    "BatchWaitTime": 10,
+    "ClusterId": "495fc79c-ae61-4600-866d-a09d68******",
+    "CmsServiceId": "",
+    "Command": "echo",
+    "CommandArgs": "[\"a\",\"b\"]",
+    "ConfigMapMountDesc": [
+     {
+      "ConfigMapId": 1,
+      "ConfigMapName": "test",
+      "Key": "k1",
+      "MountPath": "/tmp"
+     }
+    ],
+    "Cpu": 1000,
+    "CustomHostAlias": "[{\"hostName\":\"test.host.name\",\"ip\":\"0.0.0.0\"}]",
+    "CustomImageNetworkType": "internet",
+    "DeploymentName": "demo-b0cdce9b-3d1f-4168-b206-b59f348f1a8a",
+    "DiskSize": 20,
+    "Dotnet": ".NET 8.0",
+    "EdasContainerVersion": "3.5.3",
+    "EmptyDirDesc": [
+     {
+      "MountPath": "",
+      "Name": ""
+     }
+    ],
+    "EnableAhas": "true",
+    "EnableCpuBurst": "true",
+    "EnableGreyTagRoute": false,
+    "EnableIdle": false,
+    "EnableNamespaceAgentVersion": true,
+    "EnableNewArms": false,
+    "EnablePrometheus": true,
+    "Envs": "[{\"name\":\"TEST_ENV_KEY\",\"value\":\"TEST_ENV_VAR\"}]",
+    "GpuCount": "",
+    "GpuType": "",
+    "HeadlessPvtzDiscovery": "",
+    "Html": "",
+    "IdleHour": "",
+    "ImagePullSecrets": "10",
+    "ImageUrl": "docker.io/library/nginx:1.14.2",
+    "InitContainersConfig": [
+     {
+      "Command": "/bin/sh",
+      "CommandArgs": "[\"a\",\"b\"]\n",
+      "ConfigMapMountDesc": [
+       {
+        "ConfigMapId": 1,
+        "ConfigMapName": "test\n",
+        "Key": "k1\n",
+        "MountPath": "/tmp\n"
+       }
+      ],
+      "EmptyDirDesc": [
+       {
+        "MountPath": "",
+        "Name": ""
+       }
+      ],
+      "Envs": "[{\"name\":\"TEST_ENV_KEY\",\"value\":\"TEST_ENV_VAR\"}]\n",
+      "ImageUrl": "registry.cn-shenzhen.aliyuncs.com/sae-serverless-demo/sae-demo:microservice-java-provider-v1.0",
+      "Name": "init-container",
+      "SecretMountDesc": [
+       {
+        "Key": "",
+        "MountPath": "",
+        "SecretId": 0,
+        "SecretName": ""
+       }
+      ]
+     }
+    ],
+    "IsStateful": true,
+    "JarStartArgs": "start",
+    "JarStartOptions": "-Dtest=true",
+    "Jdk": "Open JDK 8",
+    "KafkaConfigs": "{\"kafkaEndpoint\":\"10.0.X.XXX:XXXX,10.0.X.XXX:XXXX,10.0.X.XXX:XXXX\",\"kafkaInstanceId\":\"alikafka_pre-cn-7pp2l8kr****\",\"kafkaConfigs\":[{\"logType\":\"file_log\",\"logDir\":\"/tmp/a.log\",\"kafkaTopic\":\"test2\"},{\"logType\":\"stdout\",\"logDir\":\"\",\"kafkaTopic\":\"test\"}]}",
+    "Labels": {
+     "key": ""
+    },
+    "Liveness": "{\"exec\":{\"command\":[\"curl http://localhost:8080\"]},\"initialDelaySeconds\":20,\"timeoutSeconds\":3}",
+    "LokiConfigs": "",
+    "MaxSurgeInstanceRatio": 0,
+    "MaxSurgeInstances": 0,
+    "Memory": 2048,
+    "MicroRegistration": "\"0\"",
+    "MicroRegistrationConfig": "{\\\"instanceId\\\":\\\"mse-cn-1ls43******\\\",\\\"namespace\\\":\\\"62ee12fb-c279-4da4-be96-21**********\\\"}",
+    "MicroserviceEngineConfig": "{\\\"Enable\\\":true,\\\"MseLosslessRule\\\":{\\\"enable\\\":true,\\\"notice\\\":true,\\\"delayTime\\\":10,\\\"warmupTime\\\":120,\\\"funcType\\\":2,\\\"aligned\\\":false,\\\"related\\\":false,\\\"lossLessDetail\\\":false}}",
+    "MinReadyInstanceRatio": -1,
+    "MinReadyInstances": 1,
+    "MountDesc": [
+     {
+      "MountPath": "/tmp",
+      "NasPath": "/"
+     }
+    ],
+    "MountHost": "example.com",
+    "MseApplicationId": "xxxxxxx@xxxxx",
+    "MseApplicationName": "cn-shenzhen-alb-demo-5c****",
+    "NamespaceId": "cn-beijing:test",
+    "NasConfigs": "[{\"mountPath\":\"/test1\",\"readOnly\":false,\"nasId\":\"nasId1\",\"mountDomain\":\"nasId1.cn-shenzhen.nas.aliyuncs.com\",\"nasPath\":\"/test1\"},{\"nasId\":\"nasId2\",\"mountDomain\":\"nasId2.cn-shenzhen.nas.aliyuncs.com\",\"readOnly\":false,\"nasPath\":\"/test2\",\"mountPath\":\"/test2\"}]",
+    "NasId": "AKSN****",
+    "NewSaeVersion": "pro",
+    "OidcRoleName": "sae-test",
+    "OssAkId": "xxxxxx",
+    "OssAkSecret": "xxxxxx",
+    "OssMountDescs": [
+     {
+      "bucketName": "oss-bucket",
+      "bucketPath": "data/user.data",
+      "mountPath": "/usr/data/user.data",
+      "readOnly": true
+     }
+    ],
+    "PackageType": "War",
+    "PackageUrl": "https://edas-bj.oss-cn-beijing.aliyuncs.com/apps/K8s_APP_ID/d4c97c37-aba3-403e-ae1e-6f7d8742****/hello-sae.war",
+    "PackageVersion": "1.0",
+    "Php": "PHP-FPM 7.0",
+    "PhpArmsConfigLocation": "/usr/local/etc/php/conf.d/arms.ini",
+    "PhpConfig": "k1=v1",
+    "PhpConfigLocation": "/usr/local/etc/php/php.ini",
+    "PostStart": "{\"exec\":{\"command\":[\"cat\",\"/etc/group\"]}}",
+    "PreStop": "{\"exec\":{\"command\":[\"cat\",\"/etc/group\"]}}",
+    "ProgrammingLanguage": "java",
+    "PvtzDiscovery": "{     \"serviceName\": \"bwm-poc-sc-gateway-cn-beijing-front\",     \"namespaceId\": \"cn-beijing:front\",     \"portAndProtocol\": {         \"18012\": \"TCP\"     },     \"portProtocols\": [         {             \"port\": \"18012\",             \"protocol\": \"TCP\"         }     ],     \"enable\": true }",
+    "Python": "PYTHON 3.9.15",
+    "PythonModules": "Flask==2.0",
+    "RaspConfig": [
+     {
+      "EnableRasp": true,
+      "RaspAppKey": "",
+      "RaspAppName": ""
+     }
+    ],
+    "Readiness": "{\"exec\":{\"command\":[\"curl http://localhost:8080\"]},\"initialDelaySeconds\":20,\"timeoutSeconds\":5}",
+    "RegionId": "cn-beijing",
+    "Replicas": 2,
+    "ResourceType": "application",
+    "SecretMountDesc": [
+     {
+      "Key": "task-center",
+      "MountPath": "/opt/www/runtime/logs",
+      "SecretId": 520,
+      "SecretName": "dummy-name-opaque-894"
+     }
+    ],
+    "SecurityGroupId": "sg-wz969ngg2e49q5i4****",
+    "ServiceTags": {
+     "key": "tag1"
+    },
+    "SidecarContainersConfig": [
+     {
+      "AcrInstanceId": "cri-fhzlneorxala66ip",
+      "Command": "/bin/sh",
+      "CommandArgs": "[\\\"-c\\\",\\\"echo \\\\\\\"test\\\\\\\" > /home/nas/test.log && sleep 10000000s\\\"]",
+      "ConfigMapMountDesc": [
+       {
+        "ConfigMapId": 7361,
+        "ConfigMapName": "ConfigMap-test",
+        "Key": "key",
+        "MountPath": "/mnt/test"
+       }
+      ],
+      "Cpu": 500,
+      "EmptyDirDesc": [
+       {
+        "MountPath": "/mnt/cache",
+        "Name": "sidecar-container"
+       }
+      ],
+      "Envs": "[{\\\"name\\\":\\\"k1\\\",\\\"value\\\":\\\"c8e3a815-e5d3-4adf-abb3-98b106a607c4\\\"}]",
+      "ImageUrl": "registry.cn-beijing.aliyuncs.com/sae-dev-test/nginx:stable",
+      "Liveness": "",
+      "Memory": 1024,
+      "Name": "test",
+      "PostStart": "",
+      "PreStop": "",
+      "Readiness": "",
+      "SecretMountDesc": [
+       {
+        "Key": "",
+        "MountPath": "",
+        "SecretId": 0,
+        "SecretName": ""
+       }
+      ]
+     }
+    ],
+    "SlsConfigs": "[{\"logDir\":\"\",\"logType\":\"stdout\"},{\"logDir\":\"/tmp/a.log\"}]",
+    "SlsLogEnvTags": "",
+    "StartupProbe": "{\\\"exec\\\":{\\\"command\\\":[\\\"/bin/sh\\\",\\\"-c\\\",\\\"#!Note: If microservice config is enabled, the application will be automatically injected with the prestop configuration for lossless offline. If you delete this prestop configuration, lossless offline will not be effective.\\\\n echo stop > /tmp/prestop; /home/admin/.tools/curl http://127.0.0.1:54199/offline; sleep 30\\\"]}}",
+    "SwimlanePvtzDiscovery": "{\\\"enable\\\":\\\"false\\\",\\\"namespaceId\\\":\\\"cn-beijing:test\\\",\\\"portAndProtocol\\\":{\\\"2000:TCP\\\":\\\"18081\\\"},\\\"portProtocols\\\":[{\\\"port\\\":2000,\\\"protocol\\\":\\\"TCP\\\",\\\"targetPort\\\":18081}],\\\"pvtzDiscoveryName\\\":\\\"cn-beijing-1421801774382676\\\",\\\"serviceId\\\":\\\"3513\\\",\\\"serviceName\\\":\\\"demo-gray.test\\\"}",
+    "Tags": [
+     {
+      "Key": "k1",
+      "Value": "v1"
+     }
+    ],
+    "TerminationGracePeriodSeconds": 10,
+    "Timezone": "Asia/Shanghai",
+    "TomcatConfig": "{\"port\":8080,\"contextPath\":\"/\",\"maxThreads\":400,\"uriEncoding\":\"ISO-8859-1\",\"useBodyEncodingForUri\":true}",
+    "UpdateStrategy": "{\"type\":\"GrayBatchUpdate\",\"batchUpdate\":{\"batch\":2,\"releaseType\":\"auto\",\"batchWaitTime\":1},\"grayUpdate\":{\"gray\":1}}",
+    "VSwitchId": "vsw-2ze559r1z1bpwqxwp****",
+    "VpcId": "vpc-2ze0i263cnn311nvj****",
+    "WarStartOptions": "custom-option",
+    "WebContainer": "apache-tomcat-7.0.91"
+   },
+   "ErrorCode": "",
+   "Message": "success",
+   "RequestId": "01CF26C7-00A3-4AA6-BA76-7E95F2A3****",
+   "Success": true,
+   "TraceId": "ac1a0b2215622246421415014e****"
+  },
+  "sae@2019-05-06#DescribeNamespace": {
+   "Code": "200",
+   "Data": {
+    "EnableMicroRegistration": true,
+    "NameSpaceShortId": "test",
+    "NamespaceDescription": "desc",
+    "NamespaceId": "cn-beijing:test",
+    "NamespaceName": "name",
+    "RegionId": "cn-beijing"
+   },
+   "ErrorCode": "",
+   "Message": "success",
+   "RequestId": "91F93257-7A4A-4BD3-9A7E-2F6EAE6D****",
+   "Success": true,
+   "TraceId": "0a981dd515966966104121683d****"
+  },
+  "sae@2019-05-06#DescribeNamespaceList": {
+   "Code": "200",
+   "Data": [
+    {
+     "AgentInstall": "http://edas-bj.oss-cn-beijing-internal.aliyuncs.com/test/install.sh",
+     "Current": false,
+     "Custom": true,
+     "HybridCloudEnable": false,
+     "NameSpaceShortId": "test",
+     "NamespaceId": "cn-beijing:test",
+     "NamespaceName": "test",
+     "RegionId": "cn-beijing",
+     "SecurityGroupId": "sg-wz969ngg2e49q5i4****",
+     "VSwitchId": "vsw-2ze559r1z1bpwqxwp****",
+     "VpcId": "vpc-2ze0i263cnn311nvj****"
+    }
+   ],
+   "ErrorCode": "",
+   "Message": "success",
+   "RequestId": "30375C38-F4ED-4135-A0AE-5C75DC7F****",
+   "Success": true,
+   "TraceId": "ac1a0b2215622920113732501e****"
+  },
+  "sae@2019-05-06#ListApplications": {
+   "Code": "200",
+   "CurrentPage": 1,
+   "Data": {
+    "Applications": [
+     {
+      "AppDeletingStatus": false,
+      "AppDescription": "description",
+      "AppId": "f7730764-d88f-4b9a-8d8e-cd8efbfe****",
+      "AppName": "demo-app",
+      "AppType": "Image",
+      "BaseAppId": "xxx-xxx-xx-xxx",
+      "Children": [
+       {
+        "AppDeletingStatus": false,
+        "AppDescription": "Test application",
+        "AppId": "xxx-xxx-xxx-xxx",
+        "AppName": "app1",
+        "AppType": "Image",
+        "BaseAppId": " ee99cce6-1c8e-4bfa-96c3-3e2fa9******",
+        "Cpu": 2000,
+        "EnableIdle": "",
+        "Instances": 2,
+        "IsStateful": true,
+        "Mem": 2048,
+        "MseEnabled": true,
+        "NamespaceId": "cn-beijing:demo",
+        "NamespaceName": "demo",
+        "NewSaeVersion": "pro",
+        "ProgrammingLanguage": "java",
+        "RegionId": "cn-beijing",
+        "ResourceType": "",
+        "RunningInstances": 2,
+        "ScaleRuleEnabled": false,
+        "ScaleRuleType": "timing",
+        "Tags": [
+         {
+          "Key": "key",
+          "Value": "value"
+         }
+        ]
+       }
+      ],
+      "Cpu": 1000,
+      "DiskSize": 20,
+      "EnableIdle": "false",
+      "ImageUrl": "registry.cn-hangzhou.aliyuncs.com/sae-serverless-demo/sae-demo:microservice-java-provider-v1.0",
+      "Instances": 2,
+      "IsStateful": true,
+      "Labels": {
+       "key": ""
+      },
+      "Mem": 1024,
+      "MseEnabled": true,
+      "MseNamespaceId": "sae-ent",
+      "NamespaceId": "cn-beijing:demo",
+      "NamespaceName": "demo",
+      "NewSaeVersion": "pro",
+      "PackageUrl": "https://sae-oss-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/apps/K8S_APP_ID/1421801774382676/adf2624a-66fd-4a2b-8caa-6921da******/hello-sae.jar",
+      "ProgrammingLanguage": "java",
+      "RaspEnabled": true,
+      "RegionId": "cn-beijing",
+      "ResourceType": "",
+      "RunningInstances": 2,
+      "Tags": [
+       {
+        "Key": "key",
+        "Value": "value"
+       }
+      ],
+      "VpcId": ""
+     }
+    ],
+    "CurrentPage": 1,
+    "PageSize": 20,
+    "TotalSize": 2
+   },
+   "ErrorCode": "",
+   "Message": "success",
+   "PageSize": 20,
+   "RequestId": "B4D805CA-926D-41B1-8E63-7AD0C1ED****",
+   "Success": true,
+   "TotalSize": 2
+  },
   "selectdb@2023-05-22#DescribeDBInstances": {
    "Items": [
     {

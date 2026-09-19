@@ -1,0 +1,51 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SAE::Application
+  class: compute.application
+presentation:
+  consoleLinkTemplate: "https://sae.console.aliyun.com/#/AppList/AppDetail?appId={nativeId}&regionId={regionId}"
+  displayNames:
+    zh-CN: SAE 应用
+    en-US: SAE Application
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SAE.ListApplications
+    itemsPath: Data.Applications
+    identityPath: AppId
+    pagination:
+      type: page-number
+      pageParameter: CurrentPage
+      pageSizeParameter: PageSize
+      totalPath: Data.TotalSize
+      maxPageSize: 100
+fields:
+  name: AppName
+  namespaceId: NamespaceId
+  deleting: AppDeletingStatus
+  instances: Instances
+  runningInstances: RunningInstances
+  description: AppDescription
+relationships:
+  - type: member_of
+    targetType: ACS::SAE::Namespace
+    targetIdPath: namespaceId
+actions:
+  delete:
+    operation: AlibabaCloud.SAE.DeleteApplication
+    parameters:
+      AppId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.SAE.DescribeApplicationConfig
+      parameters:
+        AppId: resource.nativeId
+      itemsPath: Data
+      identityPath: AppId
