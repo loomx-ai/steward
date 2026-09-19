@@ -50,7 +50,7 @@ A successful connection check establishes the cloud identity. Run a scan to veri
 
 ## Resource coverage and relationships
 
-Steward identifies 187 Alibaba Cloud resource types, 139 of which have a native cleanup action; other types that Resource Center returns appear as a read-only inventory. Every product API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
+Steward identifies 187 Alibaba Cloud resource types, 147 of which have a native cleanup action; other types that Resource Center returns appear as a read-only inventory. Every product API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
 
 Common types include ECS instances, disks, and interfaces; VPCs, vSwitches, security groups, NAT gateways, and EIPs; load balancers; RDS, Redis, and PolarDB; and storage, container, and orchestration resources. Discoverability depends on supported types, selected regions, and the current identity's permissions.
 
@@ -65,6 +65,7 @@ Inventory permissions do not authorize cleanup. Deletion also requires the resou
 - **ECS instances:** Supported deletion flows may forcibly stop and release an instance. Handling deletion protection may also modify instance attributes. Review effects on the instance and related resources; cloud-side deletion protection is not the sole execution barrier.
 - **VPCs and vSwitches:** Review instances, interfaces, gateways, and other dependencies. Resolve blockers caused by dependencies outside the selection.
 - **OSS buckets:** Objects, versions, retention settings, and other provider conditions may prevent deletion. Follow the review findings and OSS response.
+- **Load balancer children:** Deleting an ALB, NLB or CLB instance first deletes its listeners and CLB virtual server groups, each as its own step. Server groups, CLB access control lists and certificates are independent resources: the provider rejects deleting one that a listener or forwarding rule still uses, and server groups managed by an ALB Ingress controller are not deleted directly.
 - **Managed resources:** For clusters and resource stacks, review the controller and its managed objects to understand the full effect.
 
 Creating a cleanup task does not delete resources. Cloud operations begin after [reviewing the plan](./cleanup.md) and confirming execution.

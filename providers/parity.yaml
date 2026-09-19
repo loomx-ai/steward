@@ -29,6 +29,45 @@ resources:
     - AWS::EKS::FargateProfile
     - AWS::EKS::Addon
   status: pending_verification
+- alicloud: ACS::ALB::Listener
+  spec: providers/alicloud/specs/alb-listener.yaml
+  class: network.load_balancer_listener
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/TargetHttpProxy
+    - compute.googleapis.com/TargetHttpsProxy
+  azure:
+    notes: Application Gateway listeners are properties of Microsoft.Network/applicationGateways, not
+      separate ARM resources.
+  aws:
+    resources:
+    - AWS::ElasticLoadBalancingV2::Listener
+  status: pending_verification
+- alicloud: ACS::ALB::ServerGroup
+  spec: providers/alicloud/specs/alb-server-group.yaml
+  class: network.target_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/BackendService
+    - compute.googleapis.com/RegionBackendService
+  azure:
+    notes: Application Gateway backend pools are properties of Microsoft.Network/applicationGateways.
+  aws:
+    resources:
+    - AWS::ElasticLoadBalancingV2::TargetGroup
+  status: pending_verification
+  notes: Server groups managed by an ALB Ingress controller report ConfigManagedEnabled and are not
+    deleted directly.
 - alicloud: ACS::AckOne::Cluster
   spec: providers/alicloud/specs/ack-one-cluster.yaml
   class: container.fleet
@@ -863,6 +902,110 @@ resources:
   aws:
     resources:
     - AWS::ECR::Repository
+  status: pending_verification
+- alicloud: ACS::NLB::Listener
+  spec: providers/alicloud/specs/nlb-listener.yaml
+  class: network.load_balancer_listener
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/ForwardingRule
+  azure:
+    notes: Load-balancing rules are properties of Microsoft.Network/loadBalancers.
+  aws:
+    resources:
+    - AWS::ElasticLoadBalancingV2::Listener
+  status: pending_verification
+- alicloud: ACS::NLB::ServerGroup
+  spec: providers/alicloud/specs/nlb-server-group.yaml
+  class: network.target_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/RegionBackendService
+  azure:
+    notes: Backend address pools are properties of Microsoft.Network/loadBalancers.
+  aws:
+    resources:
+    - AWS::ElasticLoadBalancingV2::TargetGroup
+  status: pending_verification
+- alicloud: ACS::SLB::AccessControlList
+  spec: providers/alicloud/specs/slb-access-control-list.yaml
+  class: network.acl
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/SecurityPolicy
+  azure:
+    notes: Load balancer access is restricted by network security groups; there is no listener ACL
+      resource.
+  aws:
+    notes: Elastic Load Balancing restricts listener access with security groups; there is no listener
+      ACL resource.
+  status: pending_verification
+- alicloud: ACS::SLB::CACertificate
+  spec: providers/alicloud/specs/slb-ca-certificate.yaml
+  class: security.certificate
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    unimplemented_resources:
+    - certificatemanager.googleapis.com/TrustConfig
+  azure:
+    notes: Trusted client CA certificates are properties of Microsoft.Network/applicationGateways.
+  aws:
+    notes: Load balancer trust stores are not modeled yet.
+  status: pending_verification
+- alicloud: ACS::SLB::ServerCertificate
+  spec: providers/alicloud/specs/slb-server-certificate.yaml
+  class: security.certificate
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/SslCertificate
+  azure:
+    resources:
+    - Microsoft.KeyVault/vaults/certificates
+  aws:
+    resources:
+    - AWS::CertificateManager::Certificate
+  status: pending_verification
+- alicloud: ACS::SLB::VServerGroup
+  spec: providers/alicloud/specs/slb-vserver-group.yaml
+  class: network.target_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - compute.googleapis.com/RegionBackendService
+  azure:
+    notes: Backend address pools are properties of Microsoft.Network/loadBalancers.
+  aws:
+    resources:
+    - AWS::ElasticLoadBalancingV2::TargetGroup
   status: pending_verification
 - alicloud: ACS::VPN::CustomerGateway
   spec: providers/alicloud/specs/customer-gateway.yaml
@@ -1933,6 +2076,7 @@ resources:
     scope: region
     actions:
     - delete
+    enrichment: true
   gcp:
     resources:
     - cloudkms.googleapis.com/KeyRing

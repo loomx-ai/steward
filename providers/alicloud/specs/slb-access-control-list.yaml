@@ -1,0 +1,48 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SLB::AccessControlList
+  class: network.acl
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/slb/{regionId}/acls"
+  displayNames:
+    zh-CN: CLB 访问控制策略组
+    en-US: CLB Access Control List
+  icon: shield
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SLB.DescribeAccessControlLists
+    parameters:
+      RegionId: scope.location
+    itemsPath: Acls.Acl
+    identityPath: AclId
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: AclName
+  createdAt: CreateTime
+  addressIPVersion: AddressIPVersion
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.SLB.DeleteAccessControlList
+    parameters:
+      RegionId: scope.location
+      AclId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.SLB.DescribeAccessControlListAttribute
+      parameters:
+        RegionId: scope.location
+        AclId: resource.nativeId
+      itemsPath: $
+      identityPath: AclId

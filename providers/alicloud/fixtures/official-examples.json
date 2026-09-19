@@ -1,5 +1,75 @@
 {
  "examples": {
+  "ALB@2020-06-16#ListListeners": {
+   "Listeners": [
+    {
+     "DefaultActions": [
+      {
+       "ForwardGroupConfig": {
+        "ServerGroupTuples": [
+         {
+          "ServerGroupId": "sgp-i5qt20******"
+         }
+        ]
+       },
+       "Type": "ForwardGroup"
+      }
+     ],
+     "GzipEnabled": false,
+     "Http2Enabled": false,
+     "IdleTimeout": 3,
+     "ListenerDescription": "HTTP_80",
+     "ListenerId": "lsn-o4u34y73wq7b******",
+     "ListenerPort": 80,
+     "ListenerProtocol": "HTTP",
+     "ListenerStatus": "Running",
+     "LoadBalancerId": "alb-bd6oylbckp6k9x****",
+     "LogConfig": {
+      "AccessLogRecordCustomizedHeadersEnabled": true,
+      "AccessLogTracingConfig": {
+       "TracingEnabled": true,
+       "TracingSample": 100,
+       "TracingType": "Zipkin"
+      }
+     },
+     "QuicConfig": {
+      "QuicListenerId": "lsn-o4u54y73wq7b******",
+      "QuicUpgradeEnabled": true
+     },
+     "RequestTimeout": 34,
+     "SecurityPolicyId": "tls_cipher_policy_1_1",
+     "Tags": [
+      {
+       "Key": "env",
+       "Value": "product"
+      }
+     ],
+     "XForwardedForConfig": {
+      "XForwardedForClientCertClientVerifyAlias": "test_client-verify-alias_123456",
+      "XForwardedForClientCertClientVerifyEnabled": true,
+      "XForwardedForClientCertFingerprintAlias": "test_finger-print-alias_123456",
+      "XForwardedForClientCertFingerprintEnabled": true,
+      "XForwardedForClientCertIssuerDNAlias": "test_issue-dn-alias_123456",
+      "XForwardedForClientCertIssuerDNEnabled": true,
+      "XForwardedForClientCertSubjectDNAlias": "test_subject-dn-alias_123456",
+      "XForwardedForClientCertSubjectDNEnabled": true,
+      "XForwardedForClientSourceIpsEnabled": false,
+      "XForwardedForClientSourceIpsTrusted": "10.1.1.0/24",
+      "XForwardedForClientSrcPortEnabled": true,
+      "XForwardedForEnabled": true,
+      "XForwardedForHostEnabled": false,
+      "XForwardedForProcessingMode": "append",
+      "XForwardedForProtoEnabled": true,
+      "XForwardedForSLBIdEnabled": true,
+      "XForwardedForSLBPortEnabled": true
+     }
+    }
+   ],
+   "MaxResults": 50,
+   "NextToken": "FFmyTO70tTpLG6I3FmYAXGKPd****",
+   "RequestId": "365F4154-92F6-4AE4-92F8-7FF3******",
+   "TotalCount": 1000
+  },
   "ALB@2020-06-16#ListLoadBalancers": {
    "LoadBalancers": [
     {
@@ -53,6 +123,75 @@
    "NextToken": "FFmyTO70tTpLG6I3FmYAXGKPd****",
    "RequestId": "365F4154-92F6-4AE4-92F8-7FF34B540710",
    "TotalCount": 100
+  },
+  "ALB@2020-06-16#ListServerGroups": {
+   "MaxResults": 50,
+   "NextToken": "caeba0bbb2be03f8****",
+   "RequestId": "CEF72CEB-54B6-4AE8-B225-F876******",
+   "ServerGroups": [
+    {
+     "ConfigManagedEnabled": false,
+     "ConnectionDrainConfig": {
+      "ConnectionDrainEnabled": false,
+      "ConnectionDrainTimeout": 300
+     },
+     "CreateTime": "2022-07-02T02:49:05Z",
+     "CrossZoneEnabled": true,
+     "HealthCheckConfig": {
+      "HealthCheckCodes": [
+       "http_2xx"
+      ],
+      "HealthCheckConnectPort": 80,
+      "HealthCheckEnabled": true,
+      "HealthCheckHost": "www.example.com",
+      "HealthCheckHttpVersion": "HTTP1.1",
+      "HealthCheckInterval": 5,
+      "HealthCheckMethod": "HEAD",
+      "HealthCheckPath": "/test/index.html",
+      "HealthCheckProtocol": "HTTP",
+      "HealthCheckTimeout": 3,
+      "HealthyThreshold": 4,
+      "UnhealthyThreshold": 4
+     },
+     "IpVersionAffinityMode": "Affinity",
+     "Ipv6Enabled": false,
+     "Protocol": "HTTP",
+     "RelatedLoadBalancerIds": [
+      "alb-n5qw04uq8savfe****"
+     ],
+     "ResourceGroupId": "rg-atstuj3rtop****",
+     "Scheduler": "Wrr",
+     "ServerCount": 1,
+     "ServerGroupId": "sgp-cige6j****",
+     "ServerGroupName": "Group3",
+     "ServerGroupStatus": "Available",
+     "ServerGroupType": "Instance",
+     "ServiceName": "test",
+     "SlowStartConfig": {
+      "SlowStartDuration": 30,
+      "SlowStartEnabled": false
+     },
+     "StickySessionConfig": {
+      "Cookie": "B490B5EBF6F3CD402E515D22BCDA****",
+      "CookieTimeout": 1000,
+      "StickySessionEnabled": false,
+      "StickySessionType": "Insert"
+     },
+     "Tags": [
+      {
+       "Key": "Test",
+       "Value": "Test"
+      }
+     ],
+     "UchConfig": {
+      "Type": "QueryString",
+      "Value": "abc"
+     },
+     "UpstreamKeepaliveEnabled": false,
+     "VpcId": "vpc-bp15zckdt37pq72zv****"
+    }
+   ],
+   "TotalCount": 1000
   },
   "APIG@2024-03-27#GetGateway": {
    "code": "Ok",
@@ -6005,6 +6144,52 @@
     }
    ]
   },
+  "Nlb@2022-04-30#ListListeners": {
+   "Listeners": [
+    {
+     "AlpnEnabled": false,
+     "AlpnPolicy": "HTTP1Only",
+     "CaCertificateIds": [
+      "139a00******"
+     ],
+     "CaEnabled": false,
+     "CertificateIds": [
+      "123157******"
+     ],
+     "Cps": 1000,
+     "EndPort": "455",
+     "IdleTimeout": 900,
+     "ListenerDescription": "tcpssl_443",
+     "ListenerId": "lsn-ga6sjjcll6ou34l1et****",
+     "ListenerPort": 443,
+     "ListenerProtocol": "TCPSSL",
+     "ListenerStatus": "Running",
+     "LoadBalancerId": "nlb-83ckzc8d4xlp8o****",
+     "Mss": 200,
+     "ProxyProtocolEnabled": false,
+     "ProxyProtocolV2Config": {
+      "Ppv2PrivateLinkEpIdEnabled": false,
+      "Ppv2PrivateLinkEpsIdEnabled": false,
+      "Ppv2VpcIdEnabled": false
+     },
+     "RegionId": "cn-hangzhou",
+     "SecSensorEnabled": false,
+     "SecurityPolicyId": "tls_cipher_policy_1_1",
+     "ServerGroupId": "sgp-ppdpc14gdm3x4o****",
+     "StartPort": "233",
+     "Tags": [
+      {
+       "Key": "Created",
+       "Value": "TF"
+      }
+     ]
+    }
+   ],
+   "MaxResults": 20,
+   "NextToken": "FFmyTO70tTpLG6I3FmYAXGKPd****",
+   "RequestId": "CEF72CEB-54B6-4AE8-B225-F876FF7BA984",
+   "TotalCount": 4
+  },
   "Nlb@2022-04-30#ListLoadBalancers": {
    "LoadBalancers": [
     {
@@ -6075,6 +6260,60 @@
    "NextToken": "FFmyTO70tTpLG6I3FmYAXGKPd****",
    "RequestId": "CEF72CEB-54B6-4AE8-B225-F876FF7BA984",
    "TotalCount": 10
+  },
+  "Nlb@2022-04-30#ListServerGroups": {
+   "MaxResults": 20,
+   "NextToken": "FFmyTO70tTpLG6I3FmYAXGKPd****",
+   "RequestId": "54B28E3D-DF70-471B-AA93-08E683A1B45",
+   "ServerGroups": [
+    {
+     "AddressIPVersion": "ipv4",
+     "AliUid": 0,
+     "AnyPortEnabled": false,
+     "ConnectionDrainEnabled": false,
+     "ConnectionDrainTimeout": 200,
+     "HealthCheck": {
+      "HealthCheckConnectPort": 200,
+      "HealthCheckConnectTimeout": 200,
+      "HealthCheckDomain": "$SERVER_IP",
+      "HealthCheckEnabled": false,
+      "HealthCheckExp": "ok",
+      "HealthCheckHttpCode": [
+       "http_2xx"
+      ],
+      "HealthCheckHttpVersion": "HTTP1.0",
+      "HealthCheckInterval": 10,
+      "HealthCheckReq": "hello",
+      "HealthCheckType": "TCP",
+      "HealthCheckUrl": "/test/index.html",
+      "HealthyThreshold": 2,
+      "HttpCheckMethod": "GET",
+      "UnhealthyThreshold": 3
+     },
+     "IpVersionAffinityMode": "Affinity",
+     "PreserveClientIpEnabled": true,
+     "Protocol": "TCP",
+     "RegionId": "cn-hangzhou",
+     "RelatedLoadBalancerIds": [
+      "nlb-83ckzc8d4xlp8o****"
+     ],
+     "ResourceGroupId": "rg-atstuj3rtop****",
+     "Scheduler": "Wrr",
+     "ServerCount": 2,
+     "ServerGroupId": "sgp-atstuj3rtoptyui****",
+     "ServerGroupName": "NLB_ServerGroup",
+     "ServerGroupStatus": "Available",
+     "ServerGroupType": "Instance",
+     "Tags": [
+      {
+       "Key": "Test",
+       "Value": "Test"
+      }
+     ],
+     "VpcId": "vpc-bp15zckdt37pq72zv****"
+    }
+   ],
+   "TotalCount": 1
   },
   "OceanBasePro@2019-09-01#DescribeInstances": {
    "Instances": [
@@ -7521,6 +7760,94 @@
     "UseOssSize": 234
    }
   },
+  "Slb@2014-05-15#DescribeAccessControlListAttribute": {
+   "AclEntrys": {
+    "AclEntry": [
+     {
+      "AclEntryComment": "The remarks of the ACL entry.",
+      "AclEntryIP": "192.168.0.1"
+     }
+    ]
+   },
+   "AclId": "acl-bp1ut10zzvh1y8dfs****",
+   "AclName": "doctest",
+   "AddressIPVersion": "ipv4",
+   "CreateTime": "2022-08-31T02:49:05Z",
+   "RelatedListeners": {
+    "RelatedListener": [
+     {
+      "AclType": "white",
+      "ListenerPort": 443,
+      "LoadBalancerId": "lb-bp1qpzldlm38bnexl****",
+      "Protocol": "https"
+     }
+    ]
+   },
+   "RequestId": "C9906A1D-86F7-4C9C-A369-54DA42EF206A",
+   "ResourceGroupId": "rg-acfmz3jksig****",
+   "Tags": {
+    "Tag": [
+     {
+      "TagKey": "TestKey",
+      "TagValue": "TestValue"
+     }
+    ]
+   },
+   "TotalAclEntry": 200
+  },
+  "Slb@2014-05-15#DescribeAccessControlLists": {
+   "Acls": {
+    "Acl": [
+     {
+      "AclId": "acl-bp1l0kk4gxce43k*****",
+      "AclName": "rule1",
+      "AddressIPVersion": "ipv4",
+      "CreateTime": "2022-08-31T02:49:05Z",
+      "ResourceGroupId": "rg-jfenfbp1lhl0****",
+      "Tags": {
+       "Tag": [
+        {
+         "TagKey": "test",
+         "TagValue": "1"
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "Count": 1,
+   "PageNumber": 1,
+   "PageSize": 10,
+   "RequestId": "3CB646EF-6147-4566-A9D9-CE8FBE86F971",
+   "TotalCount": 1
+  },
+  "Slb@2014-05-15#DescribeCACertificates": {
+   "CACertificates": {
+    "CACertificate": [
+     {
+      "CACertificateId": "139a00604bd-cn-east-hangzho****",
+      "CACertificateName": "test",
+      "CommonName": "www.example.com",
+      "CreateTime": "2021-08-31T02:49:05Z",
+      "CreateTimeStamp": 1504147745000,
+      "ExpireTime": "2024-11-21T06:04:25Z",
+      "ExpireTimeStamp": 1732169065000,
+      "Fingerprint": "79:43:fb:7d:a4:7f:44:32:61:16:57:17:e3:e8:b7:36:03:57:f6:89",
+      "RegionId": "cn-hangzhou",
+      "ResourceGroupId": "rg-atstuj3rtop****",
+      "Tags": {
+       "Tag": [
+        {
+         "TagKey": "test",
+         "TagValue": "1"
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "RequestId": "365F4154-92F6-4AE4-92F8-7FF******"
+  },
   "Slb@2014-05-15#DescribeLoadBalancerAttribute": {
    "Address": "42.XX.XX.6",
    "AddressIPVersion": "ipv4",
@@ -7641,6 +7968,109 @@
    "PageSize": 50,
    "RequestId": "8B9DB03B-ED39-5DB8-9C9F-1ED5F548D61E",
    "TotalCount": 1
+  },
+  "Slb@2014-05-15#DescribeServerCertificates": {
+   "RequestId": "365F4154-92F6-4AE4-92F8-7FF34B540710",
+   "ServerCertificates": {
+    "ServerCertificate": [
+     {
+      "AliCloudCertificateId": "7309********_15d97e7709a_71445759hr_789289731",
+      "AliCloudCertificateName": "testcertkey",
+      "CommonName": "www.example.com",
+      "CreateTime": "2021-08-31T02:49:05Z",
+      "CreateTimeStamp": 1504147745000,
+      "ExpireTime": "2023-01-26T23:59:59Z",
+      "ExpireTimeStamp": 15041477450,
+      "Fingerprint": "68:08:1a:f8:2c:97:69:a3:a1:e6:16:41:4b:ca:4f:5d:ee:a5:ef:0d",
+      "IsAliCloudCertificate": 0,
+      "RegionId": "cn-hangzhou",
+      "ResourceGroupId": "rg-atstuj3rtop****",
+      "ServerCertificateId": "123157********_166f8204689_1714763408_709981430-cn-east-hangzhou-02",
+      "ServerCertificateName": "slb",
+      "SubjectAlternativeNames": {
+       "SubjectAlternativeName": [
+        "[\"demo.aliyundoc.com\",\"example.aliyundoc.com\"]"
+       ]
+      },
+      "Tags": {
+       "Tag": [
+        {
+         "TagKey": "test",
+         "TagValue": "1"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "Slb@2014-05-15#DescribeVServerGroupAttribute": {
+   "BackendServers": {
+    "BackendServer": [
+     {
+      "Description": "The description of the server group.",
+      "Port": 90,
+      "ServerId": "vm-233",
+      "ServerIp": "192.XX.XX.11",
+      "Type": "ecs",
+      "Weight": 100
+     }
+    ]
+   },
+   "CreateTime": "2022-08-31T02:49:05Z",
+   "LoadBalancerId": "lb-jfakd****",
+   "RequestId": "9DEC9C28-AB05-4DDF-9A78-6B******",
+   "Tags": {
+    "Tag": [
+     {
+      "TagKey": "TestKey",
+      "TagValue": "TestValue"
+     }
+    ]
+   },
+   "VServerGroupId": "rsp-cige6****",
+   "VServerGroupName": "Group1"
+  },
+  "Slb@2014-05-15#DescribeVServerGroups": {
+   "RequestId": "9DEC9C28-AB05-4DDF-9A78-6B08******",
+   "VServerGroups": {
+    "VServerGroup": [
+     {
+      "AssociatedObjects": {
+       "Listeners": {
+        "Listener": [
+         {
+          "Port": 80,
+          "Protocol": "tcp"
+         }
+        ]
+       },
+       "Rules": {
+        "Rule": [
+         {
+          "Domain": "www.example.com",
+          "RuleId": "rule-a3x3pg1******",
+          "RuleName": "test",
+          "Url": "/example"
+         }
+        ]
+       }
+      },
+      "CreateTime": "2022-08-31T02:49:05Z",
+      "ServerCount": 1,
+      "Tags": {
+       "Tag": [
+        {
+         "TagKey": "TestKey",
+         "TagValue": "TestValue"
+        }
+       ]
+      },
+      "VServerGroupId": "rsp-0bf******",
+      "VServerGroupName": "Group3"
+     }
+    ]
+   }
   },
   "Sls@2020-12-30#GetProject": {
    "createTime": "2021-07-07 14:08:09",

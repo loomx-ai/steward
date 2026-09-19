@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ALB::Listener
+  class: network.load_balancer_listener
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/alb/{regionId}/albs/{parentId}/listeners"
+  displayNames:
+    zh-CN: ALB 监听
+    en-US: ALB Listener
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ALB.ListListeners
+    itemsPath: Listeners
+    identityPath: ListenerId
+    statePath: ListenerStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: ListenerDescription
+  state: ListenerStatus
+  loadBalancerId: LoadBalancerId
+  listenerProtocol: ListenerProtocol
+  listenerPort: ListenerPort
+relationships:
+  - type: member_of
+    targetType: ACS::ALB::LoadBalancer
+    targetIdPath: loadBalancerId
+  - type: uses
+    targetType: ACS::ALB::ServerGroup
+    targetIdPath: serverGroupIds
+actions:
+  delete:
+    operation: AlibabaCloud.ALB.DeleteListener
+    parameters:
+      ListenerId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ALB.ListListeners
+      parameters:
+        ListenerIds: resources.nativeIds
+        MaxResults: 1
+      itemsPath: Listeners
+      identityPath: ListenerId
+      statePath: ListenerStatus

@@ -1,0 +1,60 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ALB::ServerGroup
+  class: network.target_group
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/alb/{regionId}/server-groups/{nativeId}"
+  displayNames:
+    zh-CN: ALB 服务器组
+    en-US: ALB Server Group
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ALB.ListServerGroups
+    itemsPath: ServerGroups
+    identityPath: ServerGroupId
+    statePath: ServerGroupStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: ServerGroupName
+  state: ServerGroupStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+  serverGroupType: ServerGroupType
+  protocol: Protocol
+  resourceGroupId: ResourceGroupId
+  relatedLoadBalancerIds: RelatedLoadBalancerIds
+  configManagedEnabled: ConfigManagedEnabled
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: AlibabaCloud.ALB.DeleteServerGroup
+    parameters:
+      ServerGroupId: resource.nativeId
+    preconditions:
+      - path: ConfigManagedEnabled
+        allowedValues: ["false"]
+        reason: server groups managed by an ALB Ingress controller are recreated by the controller and must be removed through it
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ALB.ListServerGroups
+      parameters:
+        ServerGroupIds: resources.nativeIds
+        MaxResults: 1
+      itemsPath: ServerGroups
+      identityPath: ServerGroupId
+      statePath: ServerGroupStatus

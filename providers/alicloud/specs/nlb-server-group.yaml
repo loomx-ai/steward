@@ -1,0 +1,58 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::NLB::ServerGroup
+  class: network.target_group
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/nlb/{regionId}/server-groups/{nativeId}"
+  displayNames:
+    zh-CN: NLB 服务器组
+    en-US: NLB Server Group
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.NLB.ListServerGroups
+    parameters:
+      RegionId: scope.location
+    itemsPath: ServerGroups
+    identityPath: ServerGroupId
+    statePath: ServerGroupStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: ServerGroupName
+  state: ServerGroupStatus
+  vpcId: VpcId
+  serverGroupType: ServerGroupType
+  protocol: Protocol
+  resourceGroupId: ResourceGroupId
+  relatedLoadBalancerIds: RelatedLoadBalancerIds
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: AlibabaCloud.NLB.DeleteServerGroup
+    parameters:
+      RegionId: scope.location
+      ServerGroupId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.NLB.ListServerGroups
+      parameters:
+        RegionId: scope.location
+        ServerGroupIds: resources.nativeIds
+        MaxResults: 1
+      itemsPath: ServerGroups
+      identityPath: ServerGroupId
+      statePath: ServerGroupStatus

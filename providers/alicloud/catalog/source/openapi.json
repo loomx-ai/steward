@@ -910,6 +910,34 @@
         "x-operation-call": {"product":"ALB","version":"2020-06-16","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"alb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
       }
     },
+    "/alb/listeners": {
+      "get": {
+        "operationId": "ALB.ListListeners",
+        "x-operation-name": "ListListeners",
+        "x-operation-call": {"product":"ALB","version":"2020-06-16","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"alb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/alb/listeners/{ListenerId}": {
+      "delete": {
+        "operationId": "ALB.DeleteListener",
+        "x-operation-name": "DeleteListener",
+        "x-operation-call": {"product":"ALB","version":"2020-06-16","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"alb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/alb/server-groups": {
+      "get": {
+        "operationId": "ALB.ListServerGroups",
+        "x-operation-name": "ListServerGroups",
+        "x-operation-call": {"product":"ALB","version":"2020-06-16","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"alb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/alb/server-groups/{ServerGroupId}": {
+      "delete": {
+        "operationId": "ALB.DeleteServerGroup",
+        "x-operation-name": "DeleteServerGroup",
+        "x-operation-call": {"product":"ALB","version":"2020-06-16","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"alb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
     "/nlb/load-balancers": {
       "get": {
         "operationId": "NLB.ListLoadBalancers",
@@ -937,6 +965,34 @@
         "x-operation-call": {"product":"Nlb","version":"2022-04-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"nlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
       }
     },
+    "/nlb/listeners": {
+      "get": {
+        "operationId": "NLB.ListListeners",
+        "x-operation-name": "ListListeners",
+        "x-operation-call": {"product":"Nlb","version":"2022-04-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"nlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/nlb/listeners/{ListenerId}": {
+      "delete": {
+        "operationId": "NLB.DeleteListener",
+        "x-operation-name": "DeleteListener",
+        "x-operation-call": {"product":"Nlb","version":"2022-04-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"nlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/nlb/server-groups": {
+      "get": {
+        "operationId": "NLB.ListServerGroups",
+        "x-operation-name": "ListServerGroups",
+        "x-operation-call": {"product":"Nlb","version":"2022-04-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"nlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/nlb/server-groups/{ServerGroupId}": {
+      "delete": {
+        "operationId": "NLB.DeleteServerGroup",
+        "x-operation-name": "DeleteServerGroup",
+        "x-operation-call": {"product":"Nlb","version":"2022-04-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"nlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
     "/slb/load-balancers": {
       "get": {
         "operationId": "SLB.DescribeLoadBalancers",
@@ -961,6 +1017,72 @@
         "operationId": "SLB.SetLoadBalancerDeleteProtection",
         "x-operation-name": "SetLoadBalancerDeleteProtection",
         "x-destructive": true,
+        "x-operation-call": {"product":"Slb","version":"2014-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"slb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/slb/load-balancers/{LoadBalancerId}/vserver-groups": {
+      "get": {
+        "operationId": "SLB.DescribeVServerGroups",
+        "x-operation-name": "DescribeVServerGroups",
+        "x-operation-call": {"product":"Slb","version":"2014-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"slb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/slb/vserver-groups/{VServerGroupId}": {
+      "get": {
+        "operationId": "SLB.DescribeVServerGroupAttribute",
+        "x-operation-name": "DescribeVServerGroupAttribute",
+        "x-operation-call": {"product":"Slb","version":"2014-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"slb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      },
+      "delete": {
+        "operationId": "SLB.DeleteVServerGroup",
+        "x-operation-name": "DeleteVServerGroup",
+        "x-operation-call": {"product":"Slb","version":"2014-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"slb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/slb/access-control-lists": {
+      "get": {
+        "operationId": "SLB.DescribeAccessControlLists",
+        "x-operation-name": "DescribeAccessControlLists",
+        "x-operation-call": {"product":"Slb","version":"2014-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"slb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/slb/access-control-lists/{AclId}": {
+      "get": {
+        "operationId": "SLB.DescribeAccessControlListAttribute",
+        "x-operation-name": "DescribeAccessControlListAttribute",
+        "x-operation-call": {"product":"Slb","version":"2014-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"slb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      },
+      "delete": {
+        "operationId": "SLB.DeleteAccessControlList",
+        "x-operation-name": "DeleteAccessControlList",
+        "x-operation-call": {"product":"Slb","version":"2014-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"slb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/slb/server-certificates": {
+      "get": {
+        "operationId": "SLB.DescribeServerCertificates",
+        "x-operation-name": "DescribeServerCertificates",
+        "x-operation-call": {"product":"Slb","version":"2014-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"slb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/slb/server-certificates/{ServerCertificateId}": {
+      "delete": {
+        "operationId": "SLB.DeleteServerCertificate",
+        "x-operation-name": "DeleteServerCertificate",
+        "x-operation-call": {"product":"Slb","version":"2014-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"slb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/slb/ca-certificates": {
+      "get": {
+        "operationId": "SLB.DescribeCACertificates",
+        "x-operation-name": "DescribeCACertificates",
+        "x-operation-call": {"product":"Slb","version":"2014-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"slb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/slb/ca-certificates/{CACertificateId}": {
+      "delete": {
+        "operationId": "SLB.DeleteCACertificate",
+        "x-operation-name": "DeleteCACertificate",
         "x-operation-call": {"product":"Slb","version":"2014-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"slb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
@@ -3607,7 +3729,9 @@
     {"nativeType": "ACS::ActionTrail::Trail", "class": "security.audit_trail", "displayName": "ActionTrail Trail", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ADB::DBCluster", "class": "database.analytics", "displayName": "AnalyticDB Cluster", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ADB::DBClusterLakeVersion", "class": "database.analytics", "displayName": "AnalyticDB Lakehouse Cluster", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::ALB::Listener", "class": "network.load_balancer_listener", "displayName": "ALB Listener", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ALB::LoadBalancer", "class": "network.load_balancer", "displayName": "Application Load Balancer", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::ALB::ServerGroup", "class": "network.target_group", "displayName": "ALB Server Group", "scopeKinds": ["region"]},
     {"nativeType": "ACS::APIG::Gateway", "class": "network.api_gateway", "displayName": "Cloud-native API Gateway", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ApiGateway::Instance", "class": "network.api_gateway", "displayName": "API Gateway Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::BPStudio::Application", "class": "application.architecture", "displayName": "CADT Application", "scopeKinds": ["global"]},
@@ -3713,7 +3837,9 @@
     {"nativeType": "ACS::NAS::MountTarget", "class": "storage.mount_target", "displayName": "NAS Mount Target", "scopeKinds": ["region"]},
     {"nativeType": "ACS::NAT::NatGateway", "class": "network.nat_gateway", "displayName": "NAT Gateway", "scopeKinds": ["region"]},
     {"nativeType": "ACS::NAT::NatIp", "class": "network.nat_ip", "displayName": "NAT IP", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::NLB::Listener", "class": "network.load_balancer_listener", "displayName": "NLB Listener", "scopeKinds": ["region"]},
     {"nativeType": "ACS::NLB::LoadBalancer", "class": "network.load_balancer", "displayName": "Network Load Balancer", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::NLB::ServerGroup", "class": "network.target_group", "displayName": "NLB Server Group", "scopeKinds": ["region"]},
     {"nativeType": "ACS::OceanBase::Instance", "class": "database.relational", "displayName": "OceanBase Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::OOS::Application", "class": "application", "displayName": "OOS Application", "scopeKinds": ["region"]},
     {"nativeType": "ACS::OSS::Bucket", "class": "storage.object_bucket", "displayName": "OSS Bucket", "scopeKinds": ["region"]},
@@ -3741,6 +3867,10 @@
     {"nativeType": "ACS::SelectDB::DBInstance", "class": "database.analytics", "displayName": "SelectDB Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::SCDN::Domain", "class": "network.cdn_domain", "displayName": "SCDN Domain", "scopeKinds": ["global"]},
     {"nativeType": "ACS::SDDP::Instance", "class": "security.data_protection", "displayName": "Data Security Center Instance", "scopeKinds": ["global"]},
+    {"nativeType": "ACS::SLB::AccessControlList", "class": "network.acl", "displayName": "CLB Access Control List", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::SLB::CACertificate", "class": "security.certificate", "displayName": "CLB CA Certificate", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::SLB::ServerCertificate", "class": "security.certificate", "displayName": "CLB Server Certificate", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::SLB::VServerGroup", "class": "network.target_group", "displayName": "CLB Virtual Server Group", "scopeKinds": ["region"]},
     {"nativeType": "ACS::SLS::Project", "class": "observability.logs", "displayName": "Simple Log Service Project", "scopeKinds": ["region"]},
     {"nativeType": "ACS::SMS::Template", "class": "messaging.sms_template", "displayName": "SMS Template", "scopeKinds": ["global"]},
     {"nativeType": "ACS::SSLCertificatesService::Certificate", "class": "security.certificate", "displayName": "SSL Certificate", "scopeKinds": ["global"]},

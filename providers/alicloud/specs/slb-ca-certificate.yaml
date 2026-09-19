@@ -1,0 +1,44 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SLB::CACertificate
+  class: security.certificate
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/slb/{regionId}/certs"
+  displayNames:
+    zh-CN: CLB CA 证书
+    en-US: CLB CA Certificate
+  icon: certificate
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SLB.DescribeCACertificates
+    parameters:
+      RegionId: scope.location
+    itemsPath: CACertificates.CACertificate
+    identityPath: CACertificateId
+fields:
+  name: CACertificateName
+  createdAt: CreateTime
+  expireTime: ExpireTime
+  commonName: CommonName
+  fingerprint: Fingerprint
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.SLB.DeleteCACertificate
+    parameters:
+      RegionId: scope.location
+      CACertificateId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.SLB.DescribeCACertificates
+      parameters:
+        RegionId: scope.location
+        CACertificateId: resource.nativeId
+      itemsPath: CACertificates.CACertificate
+      identityPath: CACertificateId

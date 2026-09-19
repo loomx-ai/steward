@@ -425,8 +425,8 @@ func TestAlibabaContributorResolverAddsStaticAndACKContributors(t *testing.T) {
 	if !reflect.DeepEqual(runtime.ackRegions, []string{"cn-shanghai"}) {
 		t.Fatalf("ACK regions = %v", runtime.ackRegions)
 	}
-	if len(contributors) != 13 {
-		t.Fatalf("contributors = %d, want twelve Alibaba static contributors and one ACK", len(contributors))
+	if len(contributors) != 14 {
+		t.Fatalf("contributors = %d, want thirteen Alibaba static contributors and one ACK", len(contributors))
 	}
 }
 

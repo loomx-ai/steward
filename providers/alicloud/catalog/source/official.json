@@ -2,6 +2,49 @@
  "products": [
   {
    "apis": {
+    "DeleteListener": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.LoadBalancer",
+      "IncorrectStatus.Listener",
+      "IncorrectStatus.LoadBalancer",
+      "ResourceInConfiguring.Listener",
+      "ResourceInUse.Listener",
+      "ResourceNotFound.Listener",
+      "ResourceNotFound.LoadBalancer"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "ListenerId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "JobId",
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
     "DeleteLoadBalancer": {
      "deprecated": false,
      "error_codes": [
@@ -49,6 +92,47 @@
      ],
      "risk_type": "none"
     },
+    "DeleteServerGroup": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.ServerGroup",
+      "IncorrectStatus.ServerGroup",
+      "ResourceInConfiguring",
+      "ResourceInUse.ServerGroup",
+      "ResourceNotFound.ServerGroup"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "ServerGroupId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "JobId",
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
     "DisableDeletionProtection": {
      "deprecated": false,
      "error_codes": [
@@ -87,6 +171,110 @@
       "RequestId"
      ],
      "risk_type": ""
+    },
+    "ListListeners": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.LoadBalancer"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ListenerIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "ListenerProtocol",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "LoadBalancerIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Listeners",
+      "Listeners.DefaultActions",
+      "Listeners.DefaultActions.ForwardGroupConfig",
+      "Listeners.DefaultActions.ForwardGroupConfig.ServerGroupTuples",
+      "Listeners.DefaultActions.ForwardGroupConfig.ServerGroupTuples.ServerGroupId",
+      "Listeners.DefaultActions.Type",
+      "Listeners.GzipEnabled",
+      "Listeners.Http2Enabled",
+      "Listeners.IdleTimeout",
+      "Listeners.ListenerDescription",
+      "Listeners.ListenerId",
+      "Listeners.ListenerPort",
+      "Listeners.ListenerProtocol",
+      "Listeners.ListenerStatus",
+      "Listeners.LoadBalancerId",
+      "Listeners.LogConfig",
+      "Listeners.LogConfig.AccessLogRecordCustomizedHeadersEnabled",
+      "Listeners.LogConfig.AccessLogTracingConfig",
+      "Listeners.LogConfig.AccessLogTracingConfig.TracingEnabled",
+      "Listeners.LogConfig.AccessLogTracingConfig.TracingSample",
+      "Listeners.LogConfig.AccessLogTracingConfig.TracingType",
+      "Listeners.QuicConfig",
+      "Listeners.QuicConfig.QuicListenerId",
+      "Listeners.QuicConfig.QuicUpgradeEnabled",
+      "Listeners.RequestTimeout",
+      "Listeners.SecurityPolicyId",
+      "Listeners.Tags",
+      "Listeners.Tags.Key",
+      "Listeners.Tags.Value",
+      "Listeners.XForwardedForConfig",
+      "Listeners.XForwardedForConfig.XForwardedForClientCertClientVerifyAlias",
+      "Listeners.XForwardedForConfig.XForwardedForClientCertClientVerifyEnabled",
+      "Listeners.XForwardedForConfig.XForwardedForClientCertFingerprintAlias",
+      "Listeners.XForwardedForConfig.XForwardedForClientCertFingerprintEnabled",
+      "Listeners.XForwardedForConfig.XForwardedForClientCertIssuerDNAlias",
+      "Listeners.XForwardedForConfig.XForwardedForClientCertIssuerDNEnabled",
+      "Listeners.XForwardedForConfig.XForwardedForClientCertSubjectDNAlias",
+      "Listeners.XForwardedForConfig.XForwardedForClientCertSubjectDNEnabled",
+      "Listeners.XForwardedForConfig.XForwardedForClientSourceIpsEnabled",
+      "Listeners.XForwardedForConfig.XForwardedForClientSourceIpsTrusted",
+      "Listeners.XForwardedForConfig.XForwardedForClientSrcPortEnabled",
+      "Listeners.XForwardedForConfig.XForwardedForEnabled",
+      "Listeners.XForwardedForConfig.XForwardedForHostEnabled",
+      "Listeners.XForwardedForConfig.XForwardedForProcessingMode",
+      "Listeners.XForwardedForConfig.XForwardedForProtoEnabled",
+      "Listeners.XForwardedForConfig.XForwardedForSLBIdEnabled",
+      "Listeners.XForwardedForConfig.XForwardedForSLBPortEnabled",
+      "MaxResults",
+      "NextToken",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
     },
     "ListLoadBalancers": {
      "deprecated": false,
@@ -226,6 +414,121 @@
       "MaxResults",
       "NextToken",
       "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "ListServerGroups": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ServerGroupIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "ServerGroupNames",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "ServerGroupType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "VpcId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "MaxResults",
+      "NextToken",
+      "RequestId",
+      "ServerGroups",
+      "ServerGroups.ConfigManagedEnabled",
+      "ServerGroups.ConnectionDrainConfig",
+      "ServerGroups.ConnectionDrainConfig.ConnectionDrainEnabled",
+      "ServerGroups.ConnectionDrainConfig.ConnectionDrainTimeout",
+      "ServerGroups.CreateTime",
+      "ServerGroups.CrossZoneEnabled",
+      "ServerGroups.HealthCheckConfig",
+      "ServerGroups.HealthCheckConfig.HealthCheckCodes",
+      "ServerGroups.HealthCheckConfig.HealthCheckConnectPort",
+      "ServerGroups.HealthCheckConfig.HealthCheckEnabled",
+      "ServerGroups.HealthCheckConfig.HealthCheckHost",
+      "ServerGroups.HealthCheckConfig.HealthCheckHttpVersion",
+      "ServerGroups.HealthCheckConfig.HealthCheckInterval",
+      "ServerGroups.HealthCheckConfig.HealthCheckMethod",
+      "ServerGroups.HealthCheckConfig.HealthCheckPath",
+      "ServerGroups.HealthCheckConfig.HealthCheckProtocol",
+      "ServerGroups.HealthCheckConfig.HealthCheckTimeout",
+      "ServerGroups.HealthCheckConfig.HealthyThreshold",
+      "ServerGroups.HealthCheckConfig.UnhealthyThreshold",
+      "ServerGroups.IpVersionAffinityMode",
+      "ServerGroups.Ipv6Enabled",
+      "ServerGroups.Protocol",
+      "ServerGroups.RelatedLoadBalancerIds",
+      "ServerGroups.ResourceGroupId",
+      "ServerGroups.Scheduler",
+      "ServerGroups.ServerCount",
+      "ServerGroups.ServerGroupId",
+      "ServerGroups.ServerGroupName",
+      "ServerGroups.ServerGroupStatus",
+      "ServerGroups.ServerGroupType",
+      "ServerGroups.ServiceName",
+      "ServerGroups.SlowStartConfig",
+      "ServerGroups.SlowStartConfig.SlowStartDuration",
+      "ServerGroups.SlowStartConfig.SlowStartEnabled",
+      "ServerGroups.StickySessionConfig",
+      "ServerGroups.StickySessionConfig.Cookie",
+      "ServerGroups.StickySessionConfig.CookieTimeout",
+      "ServerGroups.StickySessionConfig.StickySessionEnabled",
+      "ServerGroups.StickySessionConfig.StickySessionType",
+      "ServerGroups.Tags",
+      "ServerGroups.Tags.Key",
+      "ServerGroups.Tags.Value",
+      "ServerGroups.UchConfig",
+      "ServerGroups.UchConfig.Type",
+      "ServerGroups.UchConfig.Value",
+      "ServerGroups.UpstreamKeepaliveEnabled",
+      "ServerGroups.VpcId",
       "TotalCount"
      ],
      "risk_type": "none"
@@ -18335,6 +18638,55 @@
   },
   {
    "apis": {
+    "DeleteListener": {
+     "deprecated": false,
+     "error_codes": [
+      "Conflict.Lock",
+      "DryRunOperation",
+      "Forbidden.NoPermission",
+      "IncorrectStatus.listener",
+      "IncorrectStatus.loadbalancer",
+      "ResourceNotFound.listener",
+      "ResourceNotFound.loadBalancer",
+      "SystemBusy"
+     ],
+     "methods": [
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "formData",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "formData",
+       "name": "ListenerId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "RegionId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "JobId",
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
     "DeleteLoadBalancer": {
      "deprecated": false,
      "error_codes": [
@@ -18384,6 +18736,54 @@
       "RequestId"
      ],
      "risk_type": "none"
+    },
+    "DeleteServerGroup": {
+     "deprecated": false,
+     "error_codes": [
+      "Conflict.Lock",
+      "DryRunOperation",
+      "Forbidden.NoPermission",
+      "IncorrectStatus.serverGroup",
+      "ResourceInUse.ServerGroup",
+      "ResourceNotFound.serverGroup",
+      "SystemBusy"
+     ],
+     "methods": [
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "formData",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "formData",
+       "name": "RegionId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "ServerGroupId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "JobId",
+      "RequestId"
+     ],
+     "risk_type": ""
     },
     "GetLoadBalancerAttribute": {
      "deprecated": false,
@@ -18476,6 +18876,106 @@
       "ZoneMappings.ZoneId"
      ],
      "risk_type": ""
+    },
+    "ListListeners": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.NoPermission",
+      "IllegalParam",
+      "SystemBusy"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ListenerIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "ListenerProtocol",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "LoadBalancerIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SecSensorEnabled",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Listeners",
+      "Listeners.AlpnEnabled",
+      "Listeners.AlpnPolicy",
+      "Listeners.CaCertificateIds",
+      "Listeners.CaEnabled",
+      "Listeners.CertificateIds",
+      "Listeners.Cps",
+      "Listeners.EndPort",
+      "Listeners.IdleTimeout",
+      "Listeners.ListenerDescription",
+      "Listeners.ListenerId",
+      "Listeners.ListenerPort",
+      "Listeners.ListenerProtocol",
+      "Listeners.ListenerStatus",
+      "Listeners.LoadBalancerId",
+      "Listeners.Mss",
+      "Listeners.ProxyProtocolEnabled",
+      "Listeners.ProxyProtocolV2Config",
+      "Listeners.ProxyProtocolV2Config.Ppv2PrivateLinkEpIdEnabled",
+      "Listeners.ProxyProtocolV2Config.Ppv2PrivateLinkEpsIdEnabled",
+      "Listeners.ProxyProtocolV2Config.Ppv2VpcIdEnabled",
+      "Listeners.RegionId",
+      "Listeners.SecSensorEnabled",
+      "Listeners.SecurityPolicyId",
+      "Listeners.ServerGroupId",
+      "Listeners.StartPort",
+      "Listeners.Tags",
+      "Listeners.Tags.Key",
+      "Listeners.Tags.Value",
+      "MaxResults",
+      "NextToken",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
     },
     "ListLoadBalancers": {
      "deprecated": false,
@@ -18639,6 +19139,120 @@
       "MaxResults",
       "NextToken",
       "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "ListServerGroups": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.%s",
+      "Forbidden.NoPermission",
+      "SystemBusy"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "formData",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "formData",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "RegionId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "ServerGroupIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "formData",
+       "name": "ServerGroupNames",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "formData",
+       "name": "ServerGroupType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "formData",
+       "name": "VpcId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "MaxResults",
+      "NextToken",
+      "RequestId",
+      "ServerGroups",
+      "ServerGroups.AddressIPVersion",
+      "ServerGroups.AliUid",
+      "ServerGroups.AnyPortEnabled",
+      "ServerGroups.ConnectionDrainEnabled",
+      "ServerGroups.ConnectionDrainTimeout",
+      "ServerGroups.HealthCheck",
+      "ServerGroups.HealthCheck.HealthCheckConnectPort",
+      "ServerGroups.HealthCheck.HealthCheckConnectTimeout",
+      "ServerGroups.HealthCheck.HealthCheckDomain",
+      "ServerGroups.HealthCheck.HealthCheckEnabled",
+      "ServerGroups.HealthCheck.HealthCheckExp",
+      "ServerGroups.HealthCheck.HealthCheckHttpCode",
+      "ServerGroups.HealthCheck.HealthCheckHttpVersion",
+      "ServerGroups.HealthCheck.HealthCheckInterval",
+      "ServerGroups.HealthCheck.HealthCheckReq",
+      "ServerGroups.HealthCheck.HealthCheckType",
+      "ServerGroups.HealthCheck.HealthCheckUrl",
+      "ServerGroups.HealthCheck.HealthyThreshold",
+      "ServerGroups.HealthCheck.HttpCheckMethod",
+      "ServerGroups.HealthCheck.UnhealthyThreshold",
+      "ServerGroups.IpVersionAffinityMode",
+      "ServerGroups.PreserveClientIpEnabled",
+      "ServerGroups.Protocol",
+      "ServerGroups.RegionId",
+      "ServerGroups.RelatedLoadBalancerIds",
+      "ServerGroups.ResourceGroupId",
+      "ServerGroups.Scheduler",
+      "ServerGroups.ServerCount",
+      "ServerGroups.ServerGroupId",
+      "ServerGroups.ServerGroupName",
+      "ServerGroups.ServerGroupStatus",
+      "ServerGroups.ServerGroupType",
+      "ServerGroups.Tags",
+      "ServerGroups.Tags.Key",
+      "ServerGroups.Tags.Value",
+      "ServerGroups.VpcId",
       "TotalCount"
      ],
      "risk_type": "none"
@@ -25371,6 +25985,66 @@
   },
   {
    "apis": {
+    "DeleteAccessControlList": {
+     "deprecated": false,
+     "error_codes": [
+      "OperationFailed.AclBindedWithVip"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AclId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DeleteCACertificate": {
+     "deprecated": false,
+     "error_codes": [
+      "CertificateAndPrivateKeyIsRefered"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "CACertificateId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
     "DeleteLoadBalancer": {
      "deprecated": false,
      "error_codes": [
@@ -25400,6 +26074,268 @@
      ],
      "path": "",
      "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DeleteServerCertificate": {
+     "deprecated": false,
+     "error_codes": [
+      "CertificateAndPrivateKeyIsRefered",
+      "CertificateRelatedDomainExtensionExist"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ServerCertificateId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DeleteVServerGroup": {
+     "deprecated": false,
+     "error_codes": [
+      "RspoolVipExist"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "VServerGroupId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DescribeAccessControlListAttribute": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AclEntryComment",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "AclId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Page",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "AclEntrys",
+      "AclEntrys.AclEntry",
+      "AclEntrys.AclEntry.AclEntryComment",
+      "AclEntrys.AclEntry.AclEntryIP",
+      "AclId",
+      "AclName",
+      "AddressIPVersion",
+      "CreateTime",
+      "RelatedListeners",
+      "RelatedListeners.RelatedListener",
+      "RelatedListeners.RelatedListener.AclType",
+      "RelatedListeners.RelatedListener.ListenerPort",
+      "RelatedListeners.RelatedListener.LoadBalancerId",
+      "RelatedListeners.RelatedListener.Protocol",
+      "RequestId",
+      "ResourceGroupId",
+      "Tags",
+      "Tags.Tag",
+      "Tags.Tag.TagKey",
+      "Tags.Tag.TagValue",
+      "TotalAclEntry"
+     ],
+     "risk_type": "none"
+    },
+    "DescribeAccessControlLists": {
+     "deprecated": false,
+     "error_codes": [
+      "InvalidResourceGroupId.NotFound",
+      "LocationServiceTimeout"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AclName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "AddressIPVersion",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Acls",
+      "Acls.Acl",
+      "Acls.Acl.AclId",
+      "Acls.Acl.AclName",
+      "Acls.Acl.AddressIPVersion",
+      "Acls.Acl.CreateTime",
+      "Acls.Acl.ResourceGroupId",
+      "Acls.Acl.Tags",
+      "Acls.Acl.Tags.Tag",
+      "Acls.Acl.Tags.Tag.TagKey",
+      "Acls.Acl.Tags.Tag.TagValue",
+      "Count",
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "DescribeCACertificates": {
+     "deprecated": false,
+     "error_codes": [
+      "Abs.CACertificateIdAndResourceGroupId.MissMatch",
+      "LocationServiceTimeout"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "CACertificateId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "CACertificates",
+      "CACertificates.CACertificate",
+      "CACertificates.CACertificate.CACertificateId",
+      "CACertificates.CACertificate.CACertificateName",
+      "CACertificates.CACertificate.CommonName",
+      "CACertificates.CACertificate.CreateTime",
+      "CACertificates.CACertificate.CreateTimeStamp",
+      "CACertificates.CACertificate.ExpireTime",
+      "CACertificates.CACertificate.ExpireTimeStamp",
+      "CACertificates.CACertificate.Fingerprint",
+      "CACertificates.CACertificate.RegionId",
+      "CACertificates.CACertificate.ResourceGroupId",
+      "CACertificates.CACertificate.Tags",
+      "CACertificates.CACertificate.Tags.Tag",
+      "CACertificates.CACertificate.Tags.Tag.TagKey",
+      "CACertificates.CACertificate.Tags.Tag.TagValue",
       "RequestId"
      ],
      "risk_type": ""
@@ -25669,6 +26605,192 @@
       "TotalCount"
      ],
      "risk_type": "none"
+    },
+    "DescribeServerCertificates": {
+     "deprecated": false,
+     "error_codes": [
+      "Abs.ServerCertificateIdAndResourceGroupId.MissMatch",
+      "LocationServiceTimeout"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ServerCertificateId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId",
+      "ServerCertificates",
+      "ServerCertificates.ServerCertificate",
+      "ServerCertificates.ServerCertificate.AliCloudCertificateId",
+      "ServerCertificates.ServerCertificate.AliCloudCertificateName",
+      "ServerCertificates.ServerCertificate.CommonName",
+      "ServerCertificates.ServerCertificate.CreateTime",
+      "ServerCertificates.ServerCertificate.CreateTimeStamp",
+      "ServerCertificates.ServerCertificate.ExpireTime",
+      "ServerCertificates.ServerCertificate.ExpireTimeStamp",
+      "ServerCertificates.ServerCertificate.Fingerprint",
+      "ServerCertificates.ServerCertificate.IsAliCloudCertificate",
+      "ServerCertificates.ServerCertificate.RegionId",
+      "ServerCertificates.ServerCertificate.ResourceGroupId",
+      "ServerCertificates.ServerCertificate.ServerCertificateId",
+      "ServerCertificates.ServerCertificate.ServerCertificateName",
+      "ServerCertificates.ServerCertificate.SubjectAlternativeNames",
+      "ServerCertificates.ServerCertificate.SubjectAlternativeNames.SubjectAlternativeName",
+      "ServerCertificates.ServerCertificate.Tags",
+      "ServerCertificates.ServerCertificate.Tags.Tag",
+      "ServerCertificates.ServerCertificate.Tags.Tag.TagKey",
+      "ServerCertificates.ServerCertificate.Tags.Tag.TagValue"
+     ],
+     "risk_type": ""
+    },
+    "DescribeVServerGroupAttribute": {
+     "deprecated": false,
+     "error_codes": [
+      "LocationServiceTimeout",
+      "UnauthorizedRegion"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "VServerGroupId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "BackendServers",
+      "BackendServers.BackendServer",
+      "BackendServers.BackendServer.Description",
+      "BackendServers.BackendServer.Port",
+      "BackendServers.BackendServer.ServerId",
+      "BackendServers.BackendServer.ServerIp",
+      "BackendServers.BackendServer.Type",
+      "BackendServers.BackendServer.Weight",
+      "CreateTime",
+      "LoadBalancerId",
+      "RequestId",
+      "Tags",
+      "Tags.Tag",
+      "Tags.Tag.TagKey",
+      "Tags.Tag.TagValue",
+      "VServerGroupId",
+      "VServerGroupName"
+     ],
+     "risk_type": ""
+    },
+    "DescribeVServerGroups": {
+     "deprecated": false,
+     "error_codes": [
+      "MissingParam.TagKey"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "Description",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "IncludeListener",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "IncludeRule",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "LoadBalancerId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId",
+      "VServerGroups",
+      "VServerGroups.VServerGroup",
+      "VServerGroups.VServerGroup.AssociatedObjects",
+      "VServerGroups.VServerGroup.AssociatedObjects.Listeners",
+      "VServerGroups.VServerGroup.AssociatedObjects.Listeners.Listener",
+      "VServerGroups.VServerGroup.AssociatedObjects.Listeners.Listener.Port",
+      "VServerGroups.VServerGroup.AssociatedObjects.Listeners.Listener.Protocol",
+      "VServerGroups.VServerGroup.AssociatedObjects.Rules",
+      "VServerGroups.VServerGroup.AssociatedObjects.Rules.Rule",
+      "VServerGroups.VServerGroup.AssociatedObjects.Rules.Rule.Domain",
+      "VServerGroups.VServerGroup.AssociatedObjects.Rules.Rule.RuleId",
+      "VServerGroups.VServerGroup.AssociatedObjects.Rules.Rule.RuleName",
+      "VServerGroups.VServerGroup.AssociatedObjects.Rules.Rule.Url",
+      "VServerGroups.VServerGroup.CreateTime",
+      "VServerGroups.VServerGroup.ServerCount",
+      "VServerGroups.VServerGroup.Tags",
+      "VServerGroups.VServerGroup.Tags.Tag",
+      "VServerGroups.VServerGroup.Tags.Tag.TagKey",
+      "VServerGroups.VServerGroup.Tags.Tag.TagValue",
+      "VServerGroups.VServerGroup.VServerGroupId",
+      "VServerGroups.VServerGroup.VServerGroupName"
+     ],
+     "risk_type": ""
     },
     "SetLoadBalancerDeleteProtection": {
      "deprecated": false,

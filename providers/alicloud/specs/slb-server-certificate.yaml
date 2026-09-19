@@ -1,0 +1,45 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SLB::ServerCertificate
+  class: security.certificate
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/slb/{regionId}/certs"
+  displayNames:
+    zh-CN: CLB 服务器证书
+    en-US: CLB Server Certificate
+  icon: certificate
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SLB.DescribeServerCertificates
+    parameters:
+      RegionId: scope.location
+    itemsPath: ServerCertificates.ServerCertificate
+    identityPath: ServerCertificateId
+fields:
+  name: ServerCertificateName
+  createdAt: CreateTime
+  expireTime: ExpireTime
+  commonName: CommonName
+  fingerprint: Fingerprint
+  resourceGroupId: ResourceGroupId
+  isAliCloudCertificate: IsAliCloudCertificate
+actions:
+  delete:
+    operation: AlibabaCloud.SLB.DeleteServerCertificate
+    parameters:
+      RegionId: scope.location
+      ServerCertificateId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.SLB.DescribeServerCertificates
+      parameters:
+        RegionId: scope.location
+        ServerCertificateId: resource.nativeId
+      itemsPath: ServerCertificates.ServerCertificate
+      identityPath: ServerCertificateId

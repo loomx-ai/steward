@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "6ec686b960d24362f14324fb8a81dc707ff3f19e609fac1405dbbb531d9ec749",
+    "checksum": "1f2d685bbdff1d65d543188579da81c32cf82cb63f7e9ba28813c2f866b74ea9",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "a15cfc1fe9e289afea2231691122313cce33492686a5f5c7ed4f57f0eb375c7a",
+  "content_checksum": "ebe38ba435fb1a51bbcb19f1992c56f51fd055c8b35be298d5f1170c9ccc516c",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -60,11 +60,59 @@
       }
     },
     {
+      "id": "AlibabaCloud.ALB.DeleteListener",
+      "name": "DeleteListener",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/alb/listeners/{ListenerId}",
+      "destructive": true,
+      "call": {
+        "product": "ALB",
+        "version": "2020-06-16",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "alb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou-finance": "alb.cn-hangzhou.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
       "id": "AlibabaCloud.ALB.DeleteLoadBalancer",
       "name": "DeleteLoadBalancer",
       "service": "AlibabaCloud",
       "method": "DELETE",
       "path": "/alb/load-balancers/{LoadBalancerId}",
+      "destructive": true,
+      "call": {
+        "product": "ALB",
+        "version": "2020-06-16",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "alb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou-finance": "alb.cn-hangzhou.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ALB.DeleteServerGroup",
+      "name": "DeleteServerGroup",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/alb/server-groups/{ServerGroupId}",
       "destructive": true,
       "call": {
         "product": "ALB",
@@ -108,11 +156,57 @@
       }
     },
     {
+      "id": "AlibabaCloud.ALB.ListListeners",
+      "name": "ListListeners",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/alb/listeners",
+      "destructive": false,
+      "call": {
+        "product": "ALB",
+        "version": "2020-06-16",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "alb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou-finance": "alb.cn-hangzhou.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.ALB.ListLoadBalancers",
       "name": "ListLoadBalancers",
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/alb/load-balancers",
+      "destructive": false,
+      "call": {
+        "product": "ALB",
+        "version": "2020-06-16",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "alb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou-finance": "alb.cn-hangzhou.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ALB.ListServerGroups",
+      "name": "ListServerGroups",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/alb/server-groups",
       "destructive": false,
       "call": {
         "product": "ALB",
@@ -6257,11 +6351,53 @@
       }
     },
     {
+      "id": "AlibabaCloud.NLB.DeleteListener",
+      "name": "DeleteListener",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/nlb/listeners/{ListenerId}",
+      "destructive": true,
+      "call": {
+        "product": "Nlb",
+        "version": "2022-04-30",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "nlb.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
       "id": "AlibabaCloud.NLB.DeleteLoadBalancer",
       "name": "DeleteLoadBalancer",
       "service": "AlibabaCloud",
       "method": "DELETE",
       "path": "/nlb/load-balancers/{LoadBalancerId}",
+      "destructive": true,
+      "call": {
+        "product": "Nlb",
+        "version": "2022-04-30",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "nlb.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.NLB.DeleteServerGroup",
+      "name": "DeleteServerGroup",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/nlb/server-groups/{ServerGroupId}",
       "destructive": true,
       "call": {
         "product": "Nlb",
@@ -6299,11 +6435,51 @@
       }
     },
     {
+      "id": "AlibabaCloud.NLB.ListListeners",
+      "name": "ListListeners",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/nlb/listeners",
+      "destructive": false,
+      "call": {
+        "product": "Nlb",
+        "version": "2022-04-30",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "nlb.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.NLB.ListLoadBalancers",
       "name": "ListLoadBalancers",
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/nlb/load-balancers",
+      "destructive": false,
+      "call": {
+        "product": "Nlb",
+        "version": "2022-04-30",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "nlb.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.NLB.ListServerGroups",
+      "name": "ListServerGroups",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/nlb/server-groups",
       "destructive": false,
       "call": {
         "product": "Nlb",
@@ -8718,12 +8894,180 @@
       }
     },
     {
+      "id": "AlibabaCloud.SLB.DeleteAccessControlList",
+      "name": "DeleteAccessControlList",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/slb/access-control-lists/{AclId}",
+      "destructive": true,
+      "call": {
+        "product": "Slb",
+        "version": "2014-05-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "slb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "slb.aliyuncs.com",
+          "cn-hangzhou-finance": "slb.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SLB.DeleteCACertificate",
+      "name": "DeleteCACertificate",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/slb/ca-certificates/{CACertificateId}",
+      "destructive": true,
+      "call": {
+        "product": "Slb",
+        "version": "2014-05-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "slb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "slb.aliyuncs.com",
+          "cn-hangzhou-finance": "slb.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.SLB.DeleteLoadBalancer",
       "name": "DeleteLoadBalancer",
       "service": "AlibabaCloud",
       "method": "DELETE",
       "path": "/slb/load-balancers/{LoadBalancerId}",
       "destructive": true,
+      "call": {
+        "product": "Slb",
+        "version": "2014-05-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "slb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "slb.aliyuncs.com",
+          "cn-hangzhou-finance": "slb.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SLB.DeleteServerCertificate",
+      "name": "DeleteServerCertificate",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/slb/server-certificates/{ServerCertificateId}",
+      "destructive": true,
+      "call": {
+        "product": "Slb",
+        "version": "2014-05-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "slb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "slb.aliyuncs.com",
+          "cn-hangzhou-finance": "slb.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SLB.DeleteVServerGroup",
+      "name": "DeleteVServerGroup",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/slb/vserver-groups/{VServerGroupId}",
+      "destructive": true,
+      "call": {
+        "product": "Slb",
+        "version": "2014-05-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "slb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "slb.aliyuncs.com",
+          "cn-hangzhou-finance": "slb.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SLB.DescribeAccessControlListAttribute",
+      "name": "DescribeAccessControlListAttribute",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/slb/access-control-lists/{AclId}",
+      "destructive": false,
+      "call": {
+        "product": "Slb",
+        "version": "2014-05-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "slb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "slb.aliyuncs.com",
+          "cn-hangzhou-finance": "slb.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SLB.DescribeAccessControlLists",
+      "name": "DescribeAccessControlLists",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/slb/access-control-lists",
+      "destructive": false,
+      "call": {
+        "product": "Slb",
+        "version": "2014-05-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "slb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "slb.aliyuncs.com",
+          "cn-hangzhou-finance": "slb.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SLB.DescribeCACertificates",
+      "name": "DescribeCACertificates",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/slb/ca-certificates",
+      "destructive": false,
       "call": {
         "product": "Slb",
         "version": "2014-05-15",
@@ -8771,6 +9115,78 @@
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/slb/load-balancers",
+      "destructive": false,
+      "call": {
+        "product": "Slb",
+        "version": "2014-05-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "slb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "slb.aliyuncs.com",
+          "cn-hangzhou-finance": "slb.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SLB.DescribeServerCertificates",
+      "name": "DescribeServerCertificates",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/slb/server-certificates",
+      "destructive": false,
+      "call": {
+        "product": "Slb",
+        "version": "2014-05-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "slb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "slb.aliyuncs.com",
+          "cn-hangzhou-finance": "slb.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SLB.DescribeVServerGroupAttribute",
+      "name": "DescribeVServerGroupAttribute",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/slb/vserver-groups/{VServerGroupId}",
+      "destructive": false,
+      "call": {
+        "product": "Slb",
+        "version": "2014-05-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "slb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "slb.aliyuncs.com",
+          "cn-hangzhou-finance": "slb.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SLB.DescribeVServerGroups",
+      "name": "DescribeVServerGroups",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/slb/load-balancers/{LoadBalancerId}/vserver-groups",
       "destructive": false,
       "call": {
         "product": "Slb",
@@ -9315,9 +9731,25 @@
       ]
     },
     {
+      "native_type": "ACS::ALB::Listener",
+      "class": "network.load_balancer_listener",
+      "display_name": "ALB Listener",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::ALB::LoadBalancer",
       "class": "network.load_balancer",
       "display_name": "Application Load Balancer",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::ALB::ServerGroup",
+      "class": "network.target_group",
+      "display_name": "ALB Server Group",
       "scope_kinds": [
         "region"
       ]
@@ -10171,9 +10603,25 @@
       ]
     },
     {
+      "native_type": "ACS::NLB::Listener",
+      "class": "network.load_balancer_listener",
+      "display_name": "NLB Listener",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::NLB::LoadBalancer",
       "class": "network.load_balancer",
       "display_name": "Network Load Balancer",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::NLB::ServerGroup",
+      "class": "network.target_group",
+      "display_name": "NLB Server Group",
       "scope_kinds": [
         "region"
       ]
@@ -10387,9 +10835,41 @@
       ]
     },
     {
+      "native_type": "ACS::SLB::AccessControlList",
+      "class": "network.acl",
+      "display_name": "CLB Access Control List",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::SLB::CACertificate",
+      "class": "security.certificate",
+      "display_name": "CLB CA Certificate",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::SLB::LoadBalancer",
       "class": "network.load_balancer",
       "display_name": "Classic Load Balancer",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::SLB::ServerCertificate",
+      "class": "security.certificate",
+      "display_name": "CLB Server Certificate",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::SLB::VServerGroup",
+      "class": "network.target_group",
+      "display_name": "CLB Virtual Server Group",
       "scope_kinds": [
         "region"
       ]

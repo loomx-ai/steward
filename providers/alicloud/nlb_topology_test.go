@@ -101,3 +101,21 @@ func nlbManagedEIPAsset(nativeID, name string, serviceManaged any) asset.Asset {
 		}},
 	}
 }
+
+func TestALBListenerInventoryRecordsForwardedServerGroups(t *testing.T) {
+	t.Parallel()
+
+	// DefaultActions follows the official ALB ListListeners response.
+	items := enrichALBListenerServerGroups([]contracts.InventoryItem{{
+		NativeType: albListenerNativeType, NativeID: "lsn-a",
+		Raw: map[string]any{"DefaultActions": []any{map[string]any{
+			"Type": "ForwardGroup",
+			"ForwardGroupConfig": map[string]any{"ServerGroupTuples": []any{
+				map[string]any{"ServerGroupId": "sgp-b"}, map[string]any{"ServerGroupId": "sgp-a"},
+			}},
+		}}},
+	}})
+	if got := items[0].Normalized[NormalizedALBServerGroupIDsField]; !reflect.DeepEqual(got, []any{"sgp-a", "sgp-b"}) {
+		t.Fatalf("server groups = %#v", got)
+	}
+}

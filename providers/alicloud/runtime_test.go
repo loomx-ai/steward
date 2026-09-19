@@ -1936,7 +1936,7 @@ func TestRuntimeExposesInstanceAndModeledSubresourceKindsWithCatalogIcons(t *tes
 		t.Fatal("Alibaba Cloud runtime does not expose resource kind metadata")
 	}
 	kinds, revision := runtime.ResourceKinds()
-	if len(kinds) != 159 || revision == "" {
+	if len(kinds) != 167 || revision == "" {
 		t.Fatalf("resource kinds = %d revision = %q", len(kinds), revision)
 	}
 
@@ -1965,8 +1965,12 @@ func TestRuntimeExposesInstanceAndModeledSubresourceKindsWithCatalogIcons(t *tes
 		oss.BundleRevision != revision {
 		t.Fatalf("OSS resource kind = %+v revision = %q", oss, revision)
 	}
-	if _, found := findRuntimeResourceKind(kinds, "ACS::ALB::Listener"); found {
-		t.Fatal("ALB listener must not be exposed as an instance resource kind")
+	if _, found := findRuntimeResourceKind(kinds, "ACS::ResourceManager::Account"); found {
+		t.Fatal("an unmodeled subresource must not be exposed as a resource kind")
+	}
+	listener, found := findRuntimeResourceKind(kinds, "ACS::ALB::Listener")
+	if !found || listener.Icon == "" || !listener.Capabilities.Has(asset.CapabilityActionable) {
+		t.Fatalf("modeled ALB listener resource kind = %+v found=%t", listener, found)
 	}
 	attachment, found := findRuntimeResourceKind(
 		kinds,
@@ -2029,7 +2033,7 @@ func TestRuntimeSpecCoverageMatchesActionableResourceKinds(t *testing.T) {
 			)
 		}
 	}
-	if len(runtime.bundle.Specs) != 159 || productAPISpecs != 145 || actionableSpecs != 139 {
+	if len(runtime.bundle.Specs) != 167 || productAPISpecs != 153 || actionableSpecs != 147 {
 		t.Fatalf(
 			"specs=%d product-api=%d actionable=%d",
 			len(runtime.bundle.Specs),
