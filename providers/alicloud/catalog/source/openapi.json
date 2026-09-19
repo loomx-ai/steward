@@ -4040,6 +4040,48 @@
         "x-operation-call": {"product":"Config","version":"2020-09-07","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"config.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/ecd/desktops": {
+      "get": {
+        "operationId": "ECD.DescribeDesktops",
+        "x-operation-name": "DescribeDesktops",
+        "x-operation-call": {"product":"ecd","version":"2020-09-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ecd.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/ecd/desktops/{DesktopId}": {
+      "delete": {
+        "operationId": "ECD.DeleteDesktops",
+        "x-operation-name": "DeleteDesktops",
+        "x-operation-call": {"product":"ecd","version":"2020-09-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ecd.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/ecd/office-sites": {
+      "get": {
+        "operationId": "ECD.DescribeOfficeSites",
+        "x-operation-name": "DescribeOfficeSites",
+        "x-operation-call": {"product":"ecd","version":"2020-09-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ecd.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/ecd/office-sites/{OfficeSiteId}": {
+      "delete": {
+        "operationId": "ECD.DeleteOfficeSites",
+        "x-operation-name": "DeleteOfficeSites",
+        "x-operation-call": {"product":"ecd","version":"2020-09-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ecd.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/ecd/policy-groups": {
+      "get": {
+        "operationId": "ECD.DescribePolicyGroups",
+        "x-operation-name": "DescribePolicyGroups",
+        "x-operation-call": {"product":"ecd","version":"2020-09-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ecd.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/ecd/policy-groups/{PolicyGroupId}": {
+      "delete": {
+        "operationId": "ECD.DeletePolicyGroups",
+        "x-operation-name": "DeletePolicyGroups",
+        "x-operation-call": {"product":"ecd","version":"2020-09-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ecd.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/container-registry/instances": {
       "get": {
         "operationId": "CR.ListInstance",
@@ -4149,6 +4191,9 @@
     {"nativeType": "ACS::CR::Instance", "class": "container.registry", "displayName": "Container Registry Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::CR::Namespace", "class": "container.registry_namespace", "displayName": "Container Registry Namespace", "scopeKinds": ["region"]},
     {"nativeType": "ACS::CR::Repository", "class": "container.repository", "displayName": "Container Registry Repository", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::ECD::Desktop", "class": "compute.virtual_desktop", "displayName": "Elastic Desktop", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::ECD::OfficeSite", "class": "network.virtual_desktop_network", "displayName": "Elastic Desktop Office Network", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::ECD::PolicyGroup", "class": "security.policy", "displayName": "Elastic Desktop Policy", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ECS::Disk", "class": "storage.block", "displayName": "ECS Disk", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ECS::AutoSnapshotPolicy", "class": "storage.snapshot_policy", "displayName": "ECS Auto Snapshot Policy", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ECS::CapacityReservation", "class": "compute.capacity_reservation", "displayName": "ECS Capacity Reservation", "scopeKinds": ["region"]},

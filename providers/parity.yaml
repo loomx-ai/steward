@@ -611,6 +611,60 @@ resources:
   status: pending_verification
   notes: Rules are managed in cn-shanghai and ap-southeast-1. Batch delete results report each rule; a
     rule that a compliance pack created is removed with the pack.
+- alicloud: ACS::ECD::Desktop
+  spec: providers/alicloud/specs/ecd-desktop.yaml
+  class: compute.virtual_desktop
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    unimplemented_resources:
+    - workstations.googleapis.com/Workstation
+  azure:
+    unimplemented_resources:
+    - Microsoft.DesktopVirtualization/hostPools/sessionHosts
+  aws:
+    notes: Amazon WorkSpaces are not in the pinned AWS resource selection yet.
+  status: pending_verification
+  notes: Only pay-as-you-go desktops outside desktop pools are inventoried for cleanup; pooled desktops
+    are managed by their pool.
+- alicloud: ACS::ECD::OfficeSite
+  spec: providers/alicloud/specs/ecd-office-site.yaml
+  class: network.virtual_desktop_network
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    unimplemented_resources:
+    - workstations.googleapis.com/WorkstationCluster
+  azure:
+    unimplemented_resources:
+    - Microsoft.DesktopVirtualization/workspaces
+  aws:
+    notes: WorkSpaces directories are not in the pinned AWS resource selection yet.
+  status: pending_verification
+  notes: An office network can be deleted only after every desktop in it is released.
+- alicloud: ACS::ECD::PolicyGroup
+  spec: providers/alicloud/specs/ecd-policy-group.yaml
+  class: security.policy
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    unimplemented_resources:
+    - workstations.googleapis.com/WorkstationConfig
+  azure:
+    notes: Session host policies are properties of host pools.
+  aws:
+    notes: WorkSpaces policies are properties of directories.
+  status: pending_verification
+  notes: System policies and policies still attached to desktops are not deleted.
 - alicloud: ACS::ECS::AutoSnapshotPolicy
   spec: providers/alicloud/specs/auto-snapshot-policy.yaml
   class: storage.snapshot_policy

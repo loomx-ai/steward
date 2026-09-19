@@ -41756,6 +41756,996 @@
   },
   {
    "apis": {
+    "DeleteDesktops": {
+     "deprecated": false,
+     "error_codes": [
+      "ConvertQuotaExceed",
+      "InvalidChargeTypeForDelete.Unsupported"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "DesktopId",
+       "required": true,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResellerOwnerUid",
+       "required": false,
+       "type": "integer"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "high"
+    },
+    "DeleteOfficeSites": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "OfficeSiteId",
+       "required": true,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DeletePolicyGroups": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "PolicyGroupId",
+       "required": true,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DescribeDesktops": {
+     "deprecated": false,
+     "error_codes": [
+      "INTERNAL_ERROR",
+      "NOT_LOGIN"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "BusinessChannel",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ChargeType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DesktopGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DesktopId",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "DesktopName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DesktopStatus",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DesktopStatusList",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "DesktopType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DirectoryId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "EndUserId",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "ExcludedEndUserId",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "ExpiredTime",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "FillResourceGroup",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "FilterDesktopGroup",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "GpuInstanceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "GroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ImageId",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "IncludeAutoSnapshotPolicy",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "ManagementFlag",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "MultiResource",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "NetworkInterfaceIp",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "OfficeSiteId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "OfficeSiteName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "OnlyDesktopGroup",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "OsTypes",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PolicyGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ProtocolType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PublicIp",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "QosRuleId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "QueryFotaUpdate",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SnapshotPolicyId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SubPayType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "UserName",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Desktops",
+      "Desktops.AccountType",
+      "Desktops.AgentProviderList",
+      "Desktops.BindAmount",
+      "Desktops.BundleId",
+      "Desktops.BundleName",
+      "Desktops.ChargeType",
+      "Desktops.ConnectionStatus",
+      "Desktops.Cpu",
+      "Desktops.CreationTime",
+      "Desktops.DataDiskCategory",
+      "Desktops.DataDiskSize",
+      "Desktops.DesktopDurationList",
+      "Desktops.DesktopDurationList.OrderInstanceId",
+      "Desktops.DesktopDurationList.PackageCreationTime",
+      "Desktops.DesktopDurationList.PackageExpiredTime",
+      "Desktops.DesktopDurationList.PackageId",
+      "Desktops.DesktopDurationList.PackageStatus",
+      "Desktops.DesktopDurationList.PackageType",
+      "Desktops.DesktopDurationList.PackageUsedUpStrategy",
+      "Desktops.DesktopDurationList.PeriodEndTime",
+      "Desktops.DesktopDurationList.PeriodStartTime",
+      "Desktops.DesktopDurationList.PostPaidLimitFee",
+      "Desktops.DesktopDurationList.TotalDuration",
+      "Desktops.DesktopDurationList.UsedDuration",
+      "Desktops.DesktopGroupId",
+      "Desktops.DesktopId",
+      "Desktops.DesktopName",
+      "Desktops.DesktopStatus",
+      "Desktops.DesktopType",
+      "Desktops.DirectoryId",
+      "Desktops.DirectoryType",
+      "Desktops.Disks",
+      "Desktops.Disks.DiskCategory",
+      "Desktops.Disks.DiskId",
+      "Desktops.Disks.DiskSize",
+      "Desktops.Disks.DiskType",
+      "Desktops.Disks.PerformanceLevel",
+      "Desktops.DomainType",
+      "Desktops.DowngradeQuota",
+      "Desktops.DowngradedTimes",
+      "Desktops.EndUserIds",
+      "Desktops.EntraDomainName",
+      "Desktops.EnvId",
+      "Desktops.EnvType",
+      "Desktops.ExpiredTime",
+      "Desktops.FotaUpdate",
+      "Desktops.FotaUpdate.CurrentAppVersion",
+      "Desktops.FotaUpdate.NewAppVersion",
+      "Desktops.FotaUpdate.ReleaseNote",
+      "Desktops.FotaUpdate.ReleaseNoteEn",
+      "Desktops.FotaUpdate.ReleaseNoteJp",
+      "Desktops.FotaUpdate.Size",
+      "Desktops.GpuCategory",
+      "Desktops.GpuCount",
+      "Desktops.GpuDriverVersion",
+      "Desktops.GpuSpec",
+      "Desktops.HibernationBeta",
+      "Desktops.HibernationOptionsConfigured",
+      "Desktops.HostName",
+      "Desktops.ImageId",
+      "Desktops.ImageName",
+      "Desktops.IsLdap",
+      "Desktops.ManagementFlag",
+      "Desktops.ManagementFlags",
+      "Desktops.Memory",
+      "Desktops.NetworkInterfaceId",
+      "Desktops.NetworkInterfaceIp",
+      "Desktops.OfficeSiteId",
+      "Desktops.OfficeSiteName",
+      "Desktops.OfficeSiteType",
+      "Desktops.OfficeSiteVpcType",
+      "Desktops.OsType",
+      "Desktops.OsUpdate",
+      "Desktops.OsUpdate.CheckId",
+      "Desktops.OsUpdate.PackageCount",
+      "Desktops.OsUpdate.Packages",
+      "Desktops.OsUpdate.Packages.Description",
+      "Desktops.OsUpdate.Packages.Kb",
+      "Desktops.OsUpdate.Packages.Title",
+      "Desktops.Platform",
+      "Desktops.PolicyGroupId",
+      "Desktops.PolicyGroupIdList",
+      "Desktops.PolicyGroupName",
+      "Desktops.PolicyGroupNameList",
+      "Desktops.Progress",
+      "Desktops.ProtocolType",
+      "Desktops.ResourceGroups",
+      "Desktops.ResourceGroups.Id",
+      "Desktops.ResourceGroups.Name",
+      "Desktops.SerialNumber",
+      "Desktops.SessionType",
+      "Desktops.Sessions",
+      "Desktops.Sessions.EndUserId",
+      "Desktops.Sessions.EstablishmentTime",
+      "Desktops.Sessions.ExternalUserName",
+      "Desktops.SnapshotPolicyId",
+      "Desktops.SnapshotPolicyName",
+      "Desktops.StandardStartTime",
+      "Desktops.StartTime",
+      "Desktops.SubnetId",
+      "Desktops.SupportHibernation",
+      "Desktops.SystemDiskCategory",
+      "Desktops.SystemDiskSize",
+      "Desktops.Tags",
+      "Desktops.Tags.Key",
+      "Desktops.Tags.Value",
+      "Desktops.VolumeEncryptionEnabled",
+      "Desktops.VolumeEncryptionKey",
+      "Desktops.ZoneType",
+      "NextToken",
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "DescribeOfficeSites": {
+     "deprecated": false,
+     "error_codes": [
+      "InvalidDirectoryId.Missing"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AccountType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "OfficeSiteId",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "OfficeSiteType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SecurityProtection",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Status",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "VpcId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "NextToken",
+      "OfficeSites",
+      "OfficeSites.ADConnectors",
+      "OfficeSites.ADConnectors.ADConnectorAddress",
+      "OfficeSites.ADConnectors.ConnectorStatus",
+      "OfficeSites.ADConnectors.NetworkInterfaceId",
+      "OfficeSites.ADConnectors.Specification",
+      "OfficeSites.ADConnectors.TrustKey",
+      "OfficeSites.ADConnectors.VSwitchId",
+      "OfficeSites.AcceleratorId",
+      "OfficeSites.AccessAttribute",
+      "OfficeSites.AccountType",
+      "OfficeSites.AdHostname",
+      "OfficeSites.AuthorityHost",
+      "OfficeSites.BackupDCHostname",
+      "OfficeSites.BackupDns",
+      "OfficeSites.Bandwidth",
+      "OfficeSites.BasicInternetType",
+      "OfficeSites.CenAttachStatus",
+      "OfficeSites.CenId",
+      "OfficeSites.CidrBlock",
+      "OfficeSites.ClientId",
+      "OfficeSites.ClientSecret",
+      "OfficeSites.CloudBoxOfficeSite",
+      "OfficeSites.CreationTime",
+      "OfficeSites.CustomAccessPoint",
+      "OfficeSites.CustomDnsAddress",
+      "OfficeSites.CustomSecurityGroupId",
+      "OfficeSites.DesktopAccessType",
+      "OfficeSites.DesktopCount",
+      "OfficeSites.DesktopVpcEndpoint",
+      "OfficeSites.DnsAddress",
+      "OfficeSites.DnsUserName",
+      "OfficeSites.DomainName",
+      "OfficeSites.DomainPassword",
+      "OfficeSites.DomainUserName",
+      "OfficeSites.Eid",
+      "OfficeSites.EnableAdminAccess",
+      "OfficeSites.EnableCrossDesktopAccess",
+      "OfficeSites.EnableInternetAccess",
+      "OfficeSites.EnableServiceRoute",
+      "OfficeSites.EnvType",
+      "OfficeSites.FileSystemIds",
+      "OfficeSites.IsLdap",
+      "OfficeSites.LdapUrl",
+      "OfficeSites.Logs",
+      "OfficeSites.Logs.Level",
+      "OfficeSites.Logs.Message",
+      "OfficeSites.Logs.Step",
+      "OfficeSites.Logs.TimeStamp",
+      "OfficeSites.MfaEnabled",
+      "OfficeSites.Name",
+      "OfficeSites.NeedVerifyLoginRisk",
+      "OfficeSites.NeedVerifyZeroDevice",
+      "OfficeSites.NetworkPackageId",
+      "OfficeSites.NmVersion",
+      "OfficeSites.OfficeSiteId",
+      "OfficeSites.OfficeSiteType",
+      "OfficeSites.OuName",
+      "OfficeSites.ProtocolType",
+      "OfficeSites.RdsLicenseAddress",
+      "OfficeSites.RdsLicenseDomainName",
+      "OfficeSites.RdsLicenseStatus",
+      "OfficeSites.ResourceAmounts",
+      "OfficeSites.ResourceAmounts.amount",
+      "OfficeSites.ResourceAmounts.resourceType",
+      "OfficeSites.SecurityProtection",
+      "OfficeSites.SsoEnabled",
+      "OfficeSites.SsoType",
+      "OfficeSites.Status",
+      "OfficeSites.SubDnsAddress",
+      "OfficeSites.SubDomainName",
+      "OfficeSites.SubnetMode",
+      "OfficeSites.TenantId",
+      "OfficeSites.TotalEdsCount",
+      "OfficeSites.TotalEdsCountForGroup",
+      "OfficeSites.TotalResourceAmount",
+      "OfficeSites.TrustPassword",
+      "OfficeSites.VSwitchIds",
+      "OfficeSites.VpcId",
+      "OfficeSites.VpcType",
+      "OfficeSites.VplVersion",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "DescribePolicyGroups": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "BusinessChannel",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ExternalPolicyGroupIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PolicyGroupId",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Scope",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Count",
+      "DescribePolicyGroups",
+      "DescribePolicyGroups.AcademicProxy",
+      "DescribePolicyGroups.AdminAccess",
+      "DescribePolicyGroups.AdminKeyboardOnFullScreen",
+      "DescribePolicyGroups.AdminKeyboardOnWindows",
+      "DescribePolicyGroups.AppContentProtection",
+      "DescribePolicyGroups.AuthorizeAccessPolicyRules",
+      "DescribePolicyGroups.AuthorizeAccessPolicyRules.CidrIp",
+      "DescribePolicyGroups.AuthorizeAccessPolicyRules.Description",
+      "DescribePolicyGroups.AuthorizeSecurityPolicyRules",
+      "DescribePolicyGroups.AuthorizeSecurityPolicyRules.CidrIp",
+      "DescribePolicyGroups.AuthorizeSecurityPolicyRules.Description",
+      "DescribePolicyGroups.AuthorizeSecurityPolicyRules.IpProtocol",
+      "DescribePolicyGroups.AuthorizeSecurityPolicyRules.Policy",
+      "DescribePolicyGroups.AuthorizeSecurityPolicyRules.PortRange",
+      "DescribePolicyGroups.AuthorizeSecurityPolicyRules.Priority",
+      "DescribePolicyGroups.AuthorizeSecurityPolicyRules.Type",
+      "DescribePolicyGroups.AutoReconnect",
+      "DescribePolicyGroups.CameraRedirect",
+      "DescribePolicyGroups.ClientControlMenu",
+      "DescribePolicyGroups.ClientCreateSnapshot",
+      "DescribePolicyGroups.ClientHibernate",
+      "DescribePolicyGroups.ClientRestart",
+      "DescribePolicyGroups.ClientShutdown",
+      "DescribePolicyGroups.ClientTypes",
+      "DescribePolicyGroups.ClientTypes.ClientType",
+      "DescribePolicyGroups.ClientTypes.Status",
+      "DescribePolicyGroups.Clipboard",
+      "DescribePolicyGroups.ColorEnhancement",
+      "DescribePolicyGroups.CpdDriveClipboard",
+      "DescribePolicyGroups.CpuDownGradeDuration",
+      "DescribePolicyGroups.CpuOverload",
+      "DescribePolicyGroups.CpuProcessors",
+      "DescribePolicyGroups.CpuProtectedMode",
+      "DescribePolicyGroups.CpuRateLimit",
+      "DescribePolicyGroups.CpuSampleDuration",
+      "DescribePolicyGroups.CpuSingleRateLimit",
+      "DescribePolicyGroups.Description",
+      "DescribePolicyGroups.DesktopCount",
+      "DescribePolicyGroups.DesktopGroupCount",
+      "DescribePolicyGroups.DeviceConnectHint",
+      "DescribePolicyGroups.DeviceRedirects",
+      "DescribePolicyGroups.DeviceRedirects.DeviceType",
+      "DescribePolicyGroups.DeviceRedirects.RedirectType",
+      "DescribePolicyGroups.DeviceRules",
+      "DescribePolicyGroups.DeviceRules.DeviceName",
+      "DescribePolicyGroups.DeviceRules.DevicePid",
+      "DescribePolicyGroups.DeviceRules.DeviceType",
+      "DescribePolicyGroups.DeviceRules.DeviceVid",
+      "DescribePolicyGroups.DeviceRules.OptCommand",
+      "DescribePolicyGroups.DeviceRules.Platforms",
+      "DescribePolicyGroups.DeviceRules.RedirectType",
+      "DescribePolicyGroups.DiskOverload",
+      "DescribePolicyGroups.DisplayMode",
+      "DescribePolicyGroups.DomainList",
+      "DescribePolicyGroups.DomainResolveRule",
+      "DescribePolicyGroups.DomainResolveRule.Description",
+      "DescribePolicyGroups.DomainResolveRule.Domain",
+      "DescribePolicyGroups.DomainResolveRule.Policy",
+      "DescribePolicyGroups.DomainResolveRuleType",
+      "DescribePolicyGroups.EdsCount",
+      "DescribePolicyGroups.EndUserApplyAdminCoordinate",
+      "DescribePolicyGroups.EndUserCount",
+      "DescribePolicyGroups.EndUserGroupCoordinate",
+      "DescribePolicyGroups.ExternalDrive",
+      "DescribePolicyGroups.FileMigrate",
+      "DescribePolicyGroups.FileTransfer",
+      "DescribePolicyGroups.FileTransferAddress",
+      "DescribePolicyGroups.FileTransferInSize",
+      "DescribePolicyGroups.FileTransferInUnit",
+      "DescribePolicyGroups.FileTransferOutSize",
+      "DescribePolicyGroups.FileTransferOutUnit",
+      "DescribePolicyGroups.FileTransferSizeLimit",
+      "DescribePolicyGroups.FileTransferSpeed",
+      "DescribePolicyGroups.FileTransferSpeedLocation",
+      "DescribePolicyGroups.GpuAcceleration",
+      "DescribePolicyGroups.HoverConfigMsg",
+      "DescribePolicyGroups.HoverHibernate",
+      "DescribePolicyGroups.HoverRestart",
+      "DescribePolicyGroups.HoverShutdown",
+      "DescribePolicyGroups.Html5Access",
+      "DescribePolicyGroups.Html5FileTransfer",
+      "DescribePolicyGroups.InternetCommunicationProtocol",
+      "DescribePolicyGroups.InternetPrinter",
+      "DescribePolicyGroups.KeyboardControl",
+      "DescribePolicyGroups.LocalDrive",
+      "DescribePolicyGroups.MaxReconnectTime",
+      "DescribePolicyGroups.MemoryDownGradeDuration",
+      "DescribePolicyGroups.MemoryOverload",
+      "DescribePolicyGroups.MemoryProcessors",
+      "DescribePolicyGroups.MemoryProtectedMode",
+      "DescribePolicyGroups.MemoryRateLimit",
+      "DescribePolicyGroups.MemorySampleDuration",
+      "DescribePolicyGroups.MemorySingleRateLimit",
+      "DescribePolicyGroups.MobileRestart",
+      "DescribePolicyGroups.MobileSafeMenu",
+      "DescribePolicyGroups.MobileShutdown",
+      "DescribePolicyGroups.MobileWuyingKeeper",
+      "DescribePolicyGroups.MobileWyAssistant",
+      "DescribePolicyGroups.ModelLibrary",
+      "DescribePolicyGroups.MultiScreen",
+      "DescribePolicyGroups.Name",
+      "DescribePolicyGroups.NetRedirect",
+      "DescribePolicyGroups.NetRedirectRule",
+      "DescribePolicyGroups.NetRedirectRule.Domain",
+      "DescribePolicyGroups.NetRedirectRule.Policy",
+      "DescribePolicyGroups.NetRedirectRule.RuleType",
+      "DescribePolicyGroups.NetworkPrinter",
+      "DescribePolicyGroups.OrganizationCount",
+      "DescribePolicyGroups.PolicyGroupId",
+      "DescribePolicyGroups.PolicyGroupType",
+      "DescribePolicyGroups.PolicyStatus",
+      "DescribePolicyGroups.PortProxy",
+      "DescribePolicyGroups.PreemptLogin",
+      "DescribePolicyGroups.PreemptLoginUsers",
+      "DescribePolicyGroups.PrinterAlert",
+      "DescribePolicyGroups.PrinterAlertContent",
+      "DescribePolicyGroups.PrinterAlertTitle",
+      "DescribePolicyGroups.PrinterRedirection",
+      "DescribePolicyGroups.QualityEnhancement",
+      "DescribePolicyGroups.RecordContent",
+      "DescribePolicyGroups.RecordContentExpires",
+      "DescribePolicyGroups.RecordEventDuration",
+      "DescribePolicyGroups.RecordEventFileExts",
+      "DescribePolicyGroups.RecordEventFilePaths",
+      "DescribePolicyGroups.RecordEventLevels",
+      "DescribePolicyGroups.RecordEventLevels.EventLevel",
+      "DescribePolicyGroups.RecordEventLevels.EventType",
+      "DescribePolicyGroups.RecordEventRegisters",
+      "DescribePolicyGroups.Recording",
+      "DescribePolicyGroups.RecordingAudio",
+      "DescribePolicyGroups.RecordingDuration",
+      "DescribePolicyGroups.RecordingEndTime",
+      "DescribePolicyGroups.RecordingExpires",
+      "DescribePolicyGroups.RecordingFps",
+      "DescribePolicyGroups.RecordingStartTime",
+      "DescribePolicyGroups.RecordingUserNotify",
+      "DescribePolicyGroups.RecordingUserNotifyMessage",
+      "DescribePolicyGroups.RemoteCoordinate",
+      "DescribePolicyGroups.ResetDesktop",
+      "DescribePolicyGroups.ResolutionDpi",
+      "DescribePolicyGroups.ResolutionHeight",
+      "DescribePolicyGroups.ResolutionModel",
+      "DescribePolicyGroups.ResolutionWidth",
+      "DescribePolicyGroups.ResourceGroupCount",
+      "DescribePolicyGroups.ResourceRegionId",
+      "DescribePolicyGroups.SafeMenu",
+      "DescribePolicyGroups.Scope",
+      "DescribePolicyGroups.ScopeValue",
+      "DescribePolicyGroups.ScreenDisplayMode",
+      "DescribePolicyGroups.SmoothEnhancement",
+      "DescribePolicyGroups.StatusMonitor",
+      "DescribePolicyGroups.StreamingMode",
+      "DescribePolicyGroups.TargetFps",
+      "DescribePolicyGroups.ThreeScreen",
+      "DescribePolicyGroups.UsbRedirect",
+      "DescribePolicyGroups.UsbSupplyRedirectRule",
+      "DescribePolicyGroups.UsbSupplyRedirectRule.Description",
+      "DescribePolicyGroups.UsbSupplyRedirectRule.DeviceClass",
+      "DescribePolicyGroups.UsbSupplyRedirectRule.DeviceSubclass",
+      "DescribePolicyGroups.UsbSupplyRedirectRule.ProductId",
+      "DescribePolicyGroups.UsbSupplyRedirectRule.UsbRedirectType",
+      "DescribePolicyGroups.UsbSupplyRedirectRule.UsbRuleType",
+      "DescribePolicyGroups.UsbSupplyRedirectRule.VendorId",
+      "DescribePolicyGroups.UseTime",
+      "DescribePolicyGroups.VideoEncAvgKbps",
+      "DescribePolicyGroups.VideoEncMaxQP",
+      "DescribePolicyGroups.VideoEncMinQP",
+      "DescribePolicyGroups.VideoEncPeakKbps",
+      "DescribePolicyGroups.VideoEncPolicy",
+      "DescribePolicyGroups.VideoRedirect",
+      "DescribePolicyGroups.VisualQuality",
+      "DescribePolicyGroups.Watermark",
+      "DescribePolicyGroups.WatermarkAntiCam",
+      "DescribePolicyGroups.WatermarkColor",
+      "DescribePolicyGroups.WatermarkCustomText",
+      "DescribePolicyGroups.WatermarkDegree",
+      "DescribePolicyGroups.WatermarkFontSize",
+      "DescribePolicyGroups.WatermarkFontStyle",
+      "DescribePolicyGroups.WatermarkPower",
+      "DescribePolicyGroups.WatermarkRowAmount",
+      "DescribePolicyGroups.WatermarkSecurity",
+      "DescribePolicyGroups.WatermarkShadow",
+      "DescribePolicyGroups.WatermarkTransparency",
+      "DescribePolicyGroups.WatermarkTransparencyValue",
+      "DescribePolicyGroups.WatermarkType",
+      "DescribePolicyGroups.WuyingKeeper",
+      "DescribePolicyGroups.WyAssistant",
+      "NextToken",
+      "PageNumber",
+      "PageSize",
+      "RequestId"
+     ],
+     "risk_type": "none"
+    }
+   },
+   "endpoints": [
+    {
+     "endpoint": "ecd.ap-northeast-1.aliyuncs.com",
+     "region": "ap-northeast-1"
+    },
+    {
+     "endpoint": "ecd.ap-southeast-1.aliyuncs.com",
+     "region": "ap-southeast-1"
+    },
+    {
+     "endpoint": "ecd.ap-southeast-5.aliyuncs.com",
+     "region": "ap-southeast-5"
+    },
+    {
+     "endpoint": "ecd.ap-southeast-6.aliyuncs.com",
+     "region": "ap-southeast-6"
+    },
+    {
+     "endpoint": "ecd.ap-southeast-7.aliyuncs.com",
+     "region": "ap-southeast-7"
+    },
+    {
+     "endpoint": "ecd.cn-beijing.aliyuncs.com",
+     "region": "cn-beijing"
+    },
+    {
+     "endpoint": "ecd.cn-chengdu.aliyuncs.com",
+     "region": "cn-chengdu"
+    },
+    {
+     "endpoint": "ecd.cn-guangzhou.aliyuncs.com",
+     "region": "cn-guangzhou"
+    },
+    {
+     "endpoint": "ecd.cn-hangzhou.aliyuncs.com",
+     "region": "cn-hangzhou"
+    },
+    {
+     "endpoint": "ecd.cn-hangzhou-finance.aliyuncs.com",
+     "region": "cn-hangzhou-finance"
+    },
+    {
+     "endpoint": "ecd.cn-hongkong.aliyuncs.com",
+     "region": "cn-hongkong"
+    },
+    {
+     "endpoint": "ecd.cn-nanjing.aliyuncs.com",
+     "region": "cn-nanjing"
+    },
+    {
+     "endpoint": "ecd.cn-qingdao.aliyuncs.com",
+     "region": "cn-qingdao"
+    },
+    {
+     "endpoint": "ecd.cn-shanghai.aliyuncs.com",
+     "region": "cn-shanghai"
+    },
+    {
+     "endpoint": "ecd.cn-shanghai-finance-1.aliyuncs.com",
+     "region": "cn-shanghai-finance-1"
+    },
+    {
+     "endpoint": "ecd.cn-shenzhen.aliyuncs.com",
+     "region": "cn-shenzhen"
+    },
+    {
+     "endpoint": "ecd.cn-wulanchabu.aliyuncs.com",
+     "region": "cn-wulanchabu"
+    },
+    {
+     "endpoint": "ecd.cn-zhangjiakou.aliyuncs.com",
+     "region": "cn-zhangjiakou"
+    },
+    {
+     "endpoint": "ecd.eu-central-1.aliyuncs.com",
+     "region": "eu-central-1"
+    },
+    {
+     "endpoint": "ecd.eu-west-1.aliyuncs.com",
+     "region": "eu-west-1"
+    },
+    {
+     "endpoint": "ecd.me-central-1.aliyuncs.com",
+     "region": "me-central-1"
+    },
+    {
+     "endpoint": "ecd.me-east-1.aliyuncs.com",
+     "region": "me-east-1"
+    },
+    {
+     "endpoint": "ecd.us-east-1.aliyuncs.com",
+     "region": "us-east-1"
+    },
+    {
+     "endpoint": "ecd.us-west-1.aliyuncs.com",
+     "region": "us-west-1"
+    }
+   ],
+   "product": "ecd",
+   "source_sha256": "88e767329ce94f8c3b3cf8efe87fa835de052808af25d10879b7335687079f4f",
+   "source_uri": "https://api.aliyun.com/meta/v1/products/ecd/versions/2020-09-30/api-docs.json",
+   "style": "RPC",
+   "version": "2020-09-30"
+  },
+  {
+   "apis": {
     "DeleteCluster": {
      "deprecated": false,
      "error_codes": [],

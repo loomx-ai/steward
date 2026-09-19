@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECD::PolicyGroup
+  class: security.policy
+presentation:
+  consoleLinkTemplate: "https://ecd.console.aliyun.com/desktop/{regionId}/policies"
+  displayNames:
+    zh-CN: 无影云电脑策略
+    en-US: Elastic Desktop Policy
+  icon: shield
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ECD.DescribePolicyGroups
+    parameters:
+      RegionId: scope.location
+    itemsPath: DescribePolicyGroups
+    identityPath: PolicyGroupId
+    statePath: PolicyStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: Name
+  state: PolicyStatus
+  policyGroupType: PolicyGroupType
+  desktopCount: EdsCount
+actions:
+  delete:
+    operation: AlibabaCloud.ECD.DeletePolicyGroups
+    parameters:
+      RegionId: scope.location
+      PolicyGroupId.1: resource.nativeId
+    preconditions:
+      - path: PolicyGroupType
+        allowedValues: [CUSTOM]
+        reason: system desktop policies cannot be deleted
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ECD.DescribePolicyGroups
+      parameters:
+        RegionId: scope.location
+        PolicyGroupId.1: resource.nativeId
+      itemsPath: DescribePolicyGroups
+      identityPath: PolicyGroupId
+      statePath: PolicyStatus

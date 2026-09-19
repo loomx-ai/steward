@@ -11546,6 +11546,503 @@
    "RequestId": "AAA478A0-BEE6-1D42-BEB6-A9CFEAD6****",
    "TotalCount": 60
   },
+  "ecd@2020-09-30#DescribeDesktops": {
+   "Desktops": [
+    {
+     "AccountType": "SIMPLE",
+     "AgentProviderList": [
+      "Wuying"
+     ],
+     "BindAmount": 2,
+     "BundleId": "b-2g65ljy4291vl****",
+     "BundleName": "TemplateName",
+     "ChargeType": "PostPaid",
+     "ConnectionStatus": "Disconnected",
+     "Cpu": 2,
+     "CreationTime": "2020-11-06T08:28Z",
+     "DataDiskCategory": "cloud_auto",
+     "DataDiskSize": "80",
+     "DesktopDurationList": [
+      {
+       "OrderInstanceId": "ord-9c3d2e****",
+       "PackageCreationTime": "2024-01-15T08:00Z",
+       "PackageExpiredTime": "2024-07-15T08:00Z",
+       "PackageId": "cenbwp-4c2zaavbvh5f42****",
+       "PackageStatus": "Normal",
+       "PackageType": "duration",
+       "PackageUsedUpStrategy": "PostPaid",
+       "PeriodEndTime": "2024-02-01T00:00Z",
+       "PeriodStartTime": "2024-01-01T00:00Z",
+       "PostPaidLimitFee": 100,
+       "TotalDuration": 120,
+       "UsedDuration": 30
+      }
+     ],
+     "DesktopGroupId": "dg-2i8qxpv6t1a03****",
+     "DesktopId": "ecd-gx2x1dhsmucyy****",
+     "DesktopName": "DemoComputer01",
+     "DesktopStatus": "Running",
+     "DesktopType": "ecd.basic.large",
+     "DirectoryId": "cn-hangzhou+dir-363353****",
+     "DirectoryType": "SIMPLE",
+     "Disks": [
+      {
+       "DiskCategory": "cloud_auto",
+       "DiskId": "d-jedbpr4sl9l37****",
+       "DiskSize": 80,
+       "DiskType": "SYSTEM",
+       "PerformanceLevel": "PL0"
+      }
+     ],
+     "DomainType": "AD",
+     "DowngradeQuota": 3,
+     "DowngradedTimes": 0,
+     "EndUserIds": [
+      "alice"
+     ],
+     "EntraDomainName": "contoso.onmicrosoft.com",
+     "EnvId": "adifa****",
+     "EnvType": "Private",
+     "ExpiredTime": "2021-12-31T15:59Z",
+     "FotaUpdate": {
+      "CurrentAppVersion": "0.0.0-D-20220102.000000",
+      "NewAppVersion": "0.0.0-R-20220307.190736",
+      "ReleaseNote": "测试升级包03-07",
+      "ReleaseNoteEn": "What's new",
+      "ReleaseNoteJp": "リリースノート",
+      "Size": 108815097
+     },
+     "GpuCategory": 0,
+     "GpuCount": 1,
+     "GpuDriverVersion": "471.68",
+     "GpuSpec": "NVIDIA T4",
+     "HibernationBeta": true,
+     "HibernationOptionsConfigured": true,
+     "HostName": "testName",
+     "ImageId": "m-4zfb6zj728hhr****",
+     "ImageName": "Windows server 2019 Mainland",
+     "IsLdap": true,
+     "ManagementFlag": "NoFlag",
+     "ManagementFlags": [
+      "[\"NoFlag\"]"
+     ],
+     "Memory": 4096,
+     "NetworkInterfaceId": "123456",
+     "NetworkInterfaceIp": "192.168.XX.XX",
+     "OfficeSiteId": "cn-hangzhou+dir-363353****",
+     "OfficeSiteName": "default",
+     "OfficeSiteType": "SIMPLE",
+     "OfficeSiteVpcType": "basic",
+     "OsType": "Windows",
+     "OsUpdate": {
+      "CheckId": "ck-8f2a1b****",
+      "PackageCount": 3,
+      "Packages": [
+       {
+        "Description": "newDescription",
+        "Kb": "KB5032190",
+        "Title": "2021-适用于 Windows Server 2019 的 05 服务堆栈更新，适合基于 x64 的系统 (KB5003243)"
+       }
+      ]
+     },
+     "Platform": "Ubuntu",
+     "PolicyGroupId": "system-all-enabled-policy",
+     "PolicyGroupIdList": [
+      "pg-dasffjkdf*****"
+     ],
+     "PolicyGroupName": "All enabled policy",
+     "PolicyGroupNameList": [
+      "测试策略01"
+     ],
+     "Progress": "100%",
+     "ProtocolType": "ASP",
+     "ResourceGroups": [
+      {
+       "Id": "rg-4hsvzbbmqdzu3s****",
+       "Name": "资源组01"
+      }
+     ],
+     "SerialNumber": "96c530bc-6095-4014-8bbc-d461b8ac****",
+     "SessionType": "SINGLE_SESSION",
+     "Sessions": [
+      {
+       "EndUserId": "29615820929547****",
+       "EstablishmentTime": "2021-03-07T08:23Z",
+       "ExternalUserName": "Testname"
+      }
+     ],
+     "SnapshotPolicyId": "sp-gi007jgyc3kce****",
+     "SnapshotPolicyName": "testSnapshotName",
+     "StandardStartTime": "2025-01-27T02:20:10Z",
+     "StartTime": "2020-11-06T08:31Z",
+     "SubnetId": "vsw-dgea1*****",
+     "SupportHibernation": true,
+     "SystemDiskCategory": "cloud_auto",
+     "SystemDiskSize": 0,
+     "Tags": [
+      {
+       "Key": "TestKey",
+       "Value": "TestValue"
+      }
+     ],
+     "VolumeEncryptionEnabled": false,
+     "VolumeEncryptionKey": "08c33a6f-4e0a-4a1b-a3fa-7ddfa1d4****",
+     "ZoneType": "AvailabilityZone"
+    }
+   ],
+   "NextToken": "caeba0bbb2be03f84eb48b699f0a4883",
+   "PageNumber": 1,
+   "PageSize": 10,
+   "RequestId": "484256DA-D816-44D2-9D86-B6EE4D5BA78C",
+   "TotalCount": 1
+  },
+  "ecd@2020-09-30#DescribeOfficeSites": {
+   "NextToken": "caeba0bbb2be03f84eb48b699f0a4883",
+   "OfficeSites": [
+    {
+     "ADConnectors": [
+      {
+       "ADConnectorAddress": "172.24.*.*",
+       "ConnectorStatus": "RUNNING",
+       "NetworkInterfaceId": "eni-bp1i4wx78lgosrj6****",
+       "Specification": "1",
+       "TrustKey": "password123***",
+       "VSwitchId": "vsw-bp19ocz3erfx15uon****"
+      }
+     ],
+     "AcceleratorId": "ga-bp1astu3yrplkzoo2****",
+     "AccessAttribute": "Private",
+     "AccountType": "SIMPLE",
+     "AdHostname": "beijing-ad01",
+     "AuthorityHost": "https://login.microsoftonline.com",
+     "BackupDCHostname": "beijing-ad02",
+     "BackupDns": "172.24.XX.XX",
+     "Bandwidth": 10,
+     "BasicInternetType": "basic_plus",
+     "CenAttachStatus": "attached",
+     "CenId": "cen-3gwy16dojz1m65****",
+     "CidrBlock": "47.100.XX.XX",
+     "ClientId": "a2c8f7e4-1b3d-4c5e-9f0a-6d7b8c9e****",
+     "ClientSecret": "sct-9f3e2d1c****",
+     "CloudBoxOfficeSite": true,
+     "CreationTime": "2021-05-06T05:58Z",
+     "CustomAccessPoint": "gw-****.com",
+     "CustomDnsAddress": [
+      " [\"172.24.XX.XX\"]"
+     ],
+     "CustomSecurityGroupId": "sg-bp1ce64o4g9mdf5u****",
+     "DesktopAccessType": "INTERNET",
+     "DesktopCount": 1,
+     "DesktopVpcEndpoint": "http://ep-bp1s2vmbj55r5rzc****.epsrv-bp1pcfhpwvlpny01****.cn-hangzhou.privatelink.aliyuncs.com",
+     "DnsAddress": [
+      " [\"172.24.XX.XX\"]"
+     ],
+     "DnsUserName": "testDnsUserName\t",
+     "DomainName": "example.com",
+     "DomainPassword": "testPassword",
+     "DomainUserName": "Administrator",
+     "Eid": "e-1234abcd****",
+     "EnableAdminAccess": true,
+     "EnableCrossDesktopAccess": false,
+     "EnableInternetAccess": false,
+     "EnableServiceRoute": false,
+     "EnvType": "Private",
+     "FileSystemIds": [
+      "[\"05b534****\"]"
+     ],
+     "IsLdap": true,
+     "LdapUrl": "ldap://192.168.0.10:389",
+     "Logs": [
+      {
+       "Level": "INFO",
+       "Message": "code:success | message:Create Connector complete",
+       "Step": "CREATE_CONNECTOR",
+       "TimeStamp": "2021-05-12T09:42Z"
+      }
+     ],
+     "MfaEnabled": false,
+     "Name": "研发部办公网络",
+     "NeedVerifyLoginRisk": false,
+     "NeedVerifyZeroDevice": true,
+     "NetworkPackageId": "np-amtp8e8q1o9e4****",
+     "NmVersion": "NM",
+     "OfficeSiteId": "cn-hangzhou+dir-363353****",
+     "OfficeSiteType": "AD_CONNECTOR",
+     "OuName": "example.com/Domain Controllers",
+     "ProtocolType": "ASP",
+     "RdsLicenseAddress": "47.100.XX.XX",
+     "RdsLicenseDomainName": "example.com",
+     "RdsLicenseStatus": "2",
+     "ResourceAmounts": [
+      {
+       "amount": 1,
+       "resourceType": "desktop"
+      }
+     ],
+     "SecurityProtection": "SASE",
+     "SsoEnabled": false,
+     "SsoType": "SAML",
+     "Status": "REGISTERED",
+     "SubDnsAddress": [
+      " [\"172.24.XX.XX\"]"
+     ],
+     "SubDomainName": "testSubDnsUserName",
+     "SubnetMode": "0",
+     "TenantId": "72f988bf-86f1-41af-91ab-2d7cd011****",
+     "TotalEdsCount": 0,
+     "TotalEdsCountForGroup": 0,
+     "TotalResourceAmount": 1,
+     "TrustPassword": "To be hidden.",
+     "VSwitchIds": [
+      "vsw-bp19ocz3erfx15uon****"
+     ],
+     "VpcId": "vpc-uf6tz5k67puge5jn8****",
+     "VpcType": "Basic",
+     "VplVersion": "2.0.0"
+    }
+   ],
+   "RequestId": "1CBAFFAB-B697-4049-A9B1-67E1FC5F****",
+   "TotalCount": 20
+  },
+  "ecd@2020-09-30#DescribePolicyGroups": {
+   "Count": 40,
+   "DescribePolicyGroups": [
+    {
+     "AcademicProxy": "off",
+     "AdminAccess": "deny",
+     "AdminKeyboardOnFullScreen": "off",
+     "AdminKeyboardOnWindows": "off",
+     "AppContentProtection": "off",
+     "AuthorizeAccessPolicyRules": [
+      {
+       "CidrIp": "47.100.XX.XX/16",
+       "Description": "公司办公网段"
+      }
+     ],
+     "AuthorizeSecurityPolicyRules": [
+      {
+       "CidrIp": "47.100.XX.XX/16",
+       "Description": "允许访问内网研发环境",
+       "IpProtocol": "tcp",
+       "Policy": "accept",
+       "PortRange": "22/22",
+       "Priority": "1",
+       "Type": "inflow"
+      }
+     ],
+     "AutoReconnect": "off",
+     "CameraRedirect": "on",
+     "ClientControlMenu": "on",
+     "ClientCreateSnapshot": "off",
+     "ClientHibernate": "off",
+     "ClientRestart": "off",
+     "ClientShutdown": "off",
+     "ClientTypes": [
+      {
+       "ClientType": "windows",
+       "Status": "ON"
+      }
+     ],
+     "Clipboard": "off",
+     "ColorEnhancement": "off",
+     "CpdDriveClipboard": "off",
+     "CpuDownGradeDuration": 30,
+     "CpuOverload": "off",
+     "CpuProcessors": [
+      "chrome.exe"
+     ],
+     "CpuProtectedMode": "on",
+     "CpuRateLimit": 70,
+     "CpuSampleDuration": 10,
+     "CpuSingleRateLimit": 70,
+     "Description": "newDescription",
+     "DesktopCount": 1,
+     "DesktopGroupCount": 1,
+     "DeviceConnectHint": "off",
+     "DeviceRedirects": [
+      {
+       "DeviceType": "camera",
+       "RedirectType": "usbRedirect"
+      }
+     ],
+     "DeviceRules": [
+      {
+       "DeviceName": "sandisk",
+       "DevicePid": "0x55b1",
+       "DeviceType": "storage",
+       "DeviceVid": "0x0781",
+       "OptCommand": "2:0",
+       "Platforms": "Windows",
+       "RedirectType": "usbRedirect"
+      }
+     ],
+     "DiskOverload": "off",
+     "DisplayMode": "adminCustom",
+     "DomainList": "off",
+     "DomainResolveRule": [
+      {
+       "Description": "测试规则",
+       "Domain": "*.example.com",
+       "Policy": "allow"
+      }
+     ],
+     "DomainResolveRuleType": "on",
+     "EdsCount": 2,
+     "EndUserApplyAdminCoordinate": "on",
+     "EndUserCount": "3",
+     "EndUserGroupCoordinate": "on",
+     "ExternalDrive": "off",
+     "FileMigrate": "off",
+     "FileTransfer": "off",
+     "FileTransferAddress": "filetransfer.example.com",
+     "FileTransferInSize": 100,
+     "FileTransferInUnit": "MB",
+     "FileTransferOutSize": 100,
+     "FileTransferOutUnit": "MB",
+     "FileTransferSizeLimit": "off",
+     "FileTransferSpeed": "default",
+     "FileTransferSpeedLocation": "client",
+     "GpuAcceleration": "off",
+     "HoverConfigMsg": "off",
+     "HoverHibernate": "off",
+     "HoverRestart": "off",
+     "HoverShutdown": "off",
+     "Html5Access": "off",
+     "Html5FileTransfer": "off",
+     "InternetCommunicationProtocol": "BOTH",
+     "InternetPrinter": "off",
+     "KeyboardControl": "off",
+     "LocalDrive": "readwrite",
+     "MaxReconnectTime": 120,
+     "MemoryDownGradeDuration": 30,
+     "MemoryOverload": "off",
+     "MemoryProcessors": [
+      "notepad.exe"
+     ],
+     "MemoryProtectedMode": "on",
+     "MemoryRateLimit": 70,
+     "MemorySampleDuration": 30,
+     "MemorySingleRateLimit": 30,
+     "MobileRestart": "off",
+     "MobileSafeMenu": "off",
+     "MobileShutdown": "off",
+     "MobileWuyingKeeper": "off",
+     "MobileWyAssistant": "off",
+     "ModelLibrary": "off",
+     "MultiScreen": "off",
+     "Name": "testPolicyGroupName",
+     "NetRedirect": "off",
+     "NetRedirectRule": [
+      {
+       "Domain": "*.example.com",
+       "Policy": "allow",
+       "RuleType": "domain"
+      }
+     ],
+     "NetworkPrinter": "off",
+     "OrganizationCount": "2",
+     "PolicyGroupId": "pg-gx2x1dhsmthe9****",
+     "PolicyGroupType": "SYSTEM",
+     "PolicyStatus": "AVAILABLE",
+     "PortProxy": "off",
+     "PreemptLogin": "off",
+     "PreemptLoginUsers": [
+      "Alice"
+     ],
+     "PrinterAlert": "off",
+     "PrinterAlertContent": "Print Content",
+     "PrinterAlertTitle": "Print Title",
+     "PrinterRedirection": "on",
+     "QualityEnhancement": "off",
+     "RecordContent": "off",
+     "RecordContentExpires": 30,
+     "RecordEventDuration": 10,
+     "RecordEventFileExts": [
+      ".docx"
+     ],
+     "RecordEventFilePaths": [
+      "d:/data"
+     ],
+     "RecordEventLevels": [
+      {
+       "EventLevel": "HIGH",
+       "EventType": "StartApplication"
+      }
+     ],
+     "RecordEventRegisters": [
+      "计算机\\HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\USBSTOR"
+     ],
+     "Recording": "OFF",
+     "RecordingAudio": "on",
+     "RecordingDuration": 10,
+     "RecordingEndTime": "08:59:00",
+     "RecordingExpires": 15,
+     "RecordingFps": 5,
+     "RecordingStartTime": "08:00:00",
+     "RecordingUserNotify": "off",
+     "RecordingUserNotifyMessage": "您的云电脑正在被录屏",
+     "RemoteCoordinate": "fullControl",
+     "ResetDesktop": "off",
+     "ResolutionDpi": 96,
+     "ResolutionHeight": 1280,
+     "ResolutionModel": "adaptive",
+     "ResolutionWidth": 720,
+     "ResourceGroupCount": 1,
+     "ResourceRegionId": "center",
+     "SafeMenu": "off",
+     "Scope": "GLOBAL",
+     "ScopeValue": [
+      "47.100.XX.XX/24"
+     ],
+     "ScreenDisplayMode": "auto",
+     "SmoothEnhancement": "off",
+     "StatusMonitor": "on",
+     "StreamingMode": "smooth",
+     "TargetFps": 30,
+     "ThreeScreen": "off",
+     "UsbRedirect": "on",
+     "UsbSupplyRedirectRule": [
+      {
+       "Description": "测试规则",
+       "DeviceClass": "0Eh",
+       "DeviceSubclass": "xxh",
+       "ProductId": "08**",
+       "UsbRedirectType": 1,
+       "UsbRuleType": 1,
+       "VendorId": "04**"
+      }
+     ],
+     "UseTime": "off",
+     "VideoEncAvgKbps": 1000,
+     "VideoEncMaxQP": 20,
+     "VideoEncMinQP": 20,
+     "VideoEncPeakKbps": 1000,
+     "VideoEncPolicy": "qualityFirst",
+     "VideoRedirect": "off",
+     "VisualQuality": "medium",
+     "Watermark": "on",
+     "WatermarkAntiCam": "off",
+     "WatermarkColor": 0,
+     "WatermarkCustomText": "custom-watermark",
+     "WatermarkDegree": -10,
+     "WatermarkFontSize": 10,
+     "WatermarkFontStyle": "plain",
+     "WatermarkPower": "medium",
+     "WatermarkRowAmount": 5,
+     "WatermarkSecurity": "on",
+     "WatermarkShadow": "off",
+     "WatermarkTransparency": "LIGHT",
+     "WatermarkTransparencyValue": 10,
+     "WatermarkType": "EndUserId",
+     "WuyingKeeper": "off",
+     "WyAssistant": "on"
+    }
+   ],
+   "NextToken": "caeba0bbb2be03f84eb48b699f0a****",
+   "PageNumber": 1,
+   "PageSize": 20,
+   "RequestId": "473469C7-AA6F-4DC5-B3DB-A3DC0DE3****"
+  },
   "eflo-controller@2022-12-15#DescribeCluster": {
    "ClusterDescription": "Test cluster",
    "ClusterId": "i116913051662373010974",

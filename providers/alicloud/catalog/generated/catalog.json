@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "30d7114df5cc2e07ce9f05096736597a7aa60c740df5d4cdcf2a5d955985e9d8",
+    "checksum": "fe0a52c0eec7a4a488843ace766a31b38489e1ace67e5aa4100010b6fde7f0de",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "b649d7c560283a2c7b6c1d65e15d7e2a050b0b6cde874a5a73560b173e8962b3",
+  "content_checksum": "8563a92a388161132bb0b39497d0a4fdf2fabf2c03a8c45638dd035079719f74",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -4731,6 +4731,126 @@
         "method": "POST",
         "path": "/",
         "endpoint": "ebs.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ECD.DeleteDesktops",
+      "name": "DeleteDesktops",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/ecd/desktops/{DesktopId}",
+      "destructive": true,
+      "call": {
+        "product": "ecd",
+        "version": "2020-09-30",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ecd.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ECD.DeleteOfficeSites",
+      "name": "DeleteOfficeSites",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/ecd/office-sites/{OfficeSiteId}",
+      "destructive": true,
+      "call": {
+        "product": "ecd",
+        "version": "2020-09-30",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ecd.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ECD.DeletePolicyGroups",
+      "name": "DeletePolicyGroups",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/ecd/policy-groups/{PolicyGroupId}",
+      "destructive": true,
+      "call": {
+        "product": "ecd",
+        "version": "2020-09-30",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ecd.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ECD.DescribeDesktops",
+      "name": "DescribeDesktops",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/ecd/desktops",
+      "destructive": false,
+      "call": {
+        "product": "ecd",
+        "version": "2020-09-30",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ecd.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ECD.DescribeOfficeSites",
+      "name": "DescribeOfficeSites",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/ecd/office-sites",
+      "destructive": false,
+      "call": {
+        "product": "ecd",
+        "version": "2020-09-30",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ecd.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ECD.DescribePolicyGroups",
+      "name": "DescribePolicyGroups",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/ecd/policy-groups",
+      "destructive": false,
+      "call": {
+        "product": "ecd",
+        "version": "2020-09-30",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ecd.{region}.aliyuncs.com",
         "request_body_type": "formData",
         "body_type": "json",
         "parameter_position": "query"
@@ -11395,6 +11515,30 @@
       "native_type": "ACS::EBS::DiskReplicaPair",
       "class": "storage.replica_pair",
       "display_name": "Disk Replica Pair",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::ECD::Desktop",
+      "class": "compute.virtual_desktop",
+      "display_name": "Elastic Desktop",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::ECD::OfficeSite",
+      "class": "network.virtual_desktop_network",
+      "display_name": "Elastic Desktop Office Network",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::ECD::PolicyGroup",
+      "class": "security.policy",
+      "display_name": "Elastic Desktop Policy",
       "scope_kinds": [
         "region"
       ]

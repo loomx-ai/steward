@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECD::Desktop
+  class: compute.virtual_desktop
+presentation:
+  consoleLinkTemplate: "https://ecd.console.aliyun.com/desktop/{regionId}/desktops/{nativeId}"
+  displayNames:
+    zh-CN: 无影云电脑
+    en-US: Elastic Desktop
+  icon: compute
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ECD.DescribeDesktops
+    parameters:
+      RegionId: scope.location
+      FilterDesktopGroup: true
+    itemsPath: Desktops
+    identityPath: DesktopId
+    statePath: DesktopStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: DesktopName
+  state: DesktopStatus
+  createdAt: CreationTime
+  chargeType: ChargeType
+  officeSiteId: OfficeSiteId
+  policyGroupId: PolicyGroupId
+  imageId: ImageId
+  desktopType: DesktopType
+  networkInterfaceId: NetworkInterfaceId
+  managementFlag: ManagementFlag
+relationships:
+  - type: member_of
+    targetType: ACS::ECD::OfficeSite
+    targetIdPath: officeSiteId
+  - type: uses
+    targetType: ACS::ECD::PolicyGroup
+    targetIdPath: policyGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.ECD.DeleteDesktops
+    parameters:
+      RegionId: scope.location
+      DesktopId.1: resource.nativeId
+    preconditions:
+      - path: ChargeType
+        allowedValues: [PostPaid]
+        reason: subscription desktops are released when they expire and cannot be deleted through the product API
+    idempotency: readback
+    waiter: absent
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.ECD.DescribeDesktops
+      parameters:
+        RegionId: scope.location
+        DesktopId.1: resource.nativeId
+      itemsPath: Desktops
+      identityPath: DesktopId
+      statePath: DesktopStatus

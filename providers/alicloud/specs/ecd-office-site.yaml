@@ -1,0 +1,61 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECD::OfficeSite
+  class: network.virtual_desktop_network
+presentation:
+  consoleLinkTemplate: "https://ecd.console.aliyun.com/desktop/{regionId}/officeSites/{nativeId}"
+  displayNames:
+    zh-CN: 无影办公网络
+    en-US: Elastic Desktop Office Network
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ECD.DescribeOfficeSites
+    parameters:
+      RegionId: scope.location
+    itemsPath: OfficeSites
+    identityPath: OfficeSiteId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: Name
+  state: Status
+  createdAt: CreationTime
+  vpcId: VpcId
+  cidrBlock: CidrBlock
+  officeSiteType: OfficeSiteType
+  cenId: CenId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::CEN::CenInstance
+    targetIdPath: cenId
+actions:
+  delete:
+    operation: AlibabaCloud.ECD.DeleteOfficeSites
+    parameters:
+      RegionId: scope.location
+      OfficeSiteId.1: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.ECD.DescribeOfficeSites
+      parameters:
+        RegionId: scope.location
+        OfficeSiteId.1: resource.nativeId
+      itemsPath: OfficeSites
+      identityPath: OfficeSiteId
+      statePath: Status

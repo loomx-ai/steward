@@ -1936,7 +1936,7 @@ func TestRuntimeExposesInstanceAndModeledSubresourceKindsWithCatalogIcons(t *tes
 		t.Fatal("Alibaba Cloud runtime does not expose resource kind metadata")
 	}
 	kinds, revision := runtime.ResourceKinds()
-	if len(kinds) != 193 || revision == "" {
+	if len(kinds) != 196 || revision == "" {
 		t.Fatalf("resource kinds = %d revision = %q", len(kinds), revision)
 	}
 
@@ -2033,7 +2033,7 @@ func TestRuntimeSpecCoverageMatchesActionableResourceKinds(t *testing.T) {
 			)
 		}
 	}
-	if len(runtime.bundle.Specs) != 193 || productAPISpecs != 179 || actionableSpecs != 169 {
+	if len(runtime.bundle.Specs) != 196 || productAPISpecs != 182 || actionableSpecs != 172 {
 		t.Fatalf(
 			"specs=%d product-api=%d actionable=%d",
 			len(runtime.bundle.Specs),
