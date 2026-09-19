@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "3137df9e2114c371891cdce94d333d82285909b314e3a5d65cca88e01aff47ef",
+    "checksum": "30d7114df5cc2e07ce9f05096736597a7aa60c740df5d4cdcf2a5d955985e9d8",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "9d69725fc52dc6e917324688b012060fded8580eb4b38062d5f8856dbbec1be6",
+  "content_checksum": "b649d7c560283a2c7b6c1d65e15d7e2a050b0b6cde874a5a73560b173e8962b3",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -2479,6 +2479,107 @@
         "method": "POST",
         "path": "/",
         "endpoint": "sgw.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.Config.DeleteCompliancePacks",
+      "name": "DeleteCompliancePacks",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/config/compliance-packs/{CompliancePackId}",
+      "destructive": true,
+      "call": {
+        "product": "Config",
+        "version": "2020-09-07",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "config.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.Config.DeleteConfigRules",
+      "name": "DeleteConfigRules",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/config/rules/{ConfigRuleId}",
+      "destructive": true,
+      "call": {
+        "product": "Config",
+        "version": "2020-09-07",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "config.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.Config.ListAggregators",
+      "name": "ListAggregators",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/config/aggregators",
+      "destructive": false,
+      "call": {
+        "product": "Config",
+        "version": "2020-09-07",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "config.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.Config.ListCompliancePacks",
+      "name": "ListCompliancePacks",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/config/compliance-packs",
+      "destructive": false,
+      "call": {
+        "product": "Config",
+        "version": "2020-09-07",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "config.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.Config.ListConfigRules",
+      "name": "ListConfigRules",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/config/rules",
+      "destructive": false,
+      "call": {
+        "product": "Config",
+        "version": "2020-09-07",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "config.{region}.aliyuncs.com",
         "request_body_type": "formData",
         "body_type": "json",
         "parameter_position": "query"
@@ -11134,6 +11235,30 @@
       "native_type": "ACS::CloudStorageGateway::Gateway",
       "class": "storage.gateway",
       "display_name": "Cloud Storage Gateway",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::Config::Aggregator",
+      "class": "governance.aggregator",
+      "display_name": "Cloud Config Aggregator",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::Config::CompliancePack",
+      "class": "governance.policy_set",
+      "display_name": "Cloud Config Compliance Pack",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::Config::Rule",
+      "class": "governance.policy_rule",
+      "display_name": "Cloud Config Rule",
       "scope_kinds": [
         "region"
       ]

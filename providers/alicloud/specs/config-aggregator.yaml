@@ -1,0 +1,36 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Config::Aggregator
+  class: governance.aggregator
+presentation:
+  consoleLinkTemplate: "https://config.console.aliyun.com/aggregator/{nativeId}"
+  displayNames:
+    zh-CN: 配置审计账号组
+    en-US: Cloud Config Aggregator
+  icon: shield
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Config.ListAggregators
+    itemsPath: AggregatorsResult.Aggregators
+    identityPath: AggregatorId
+    statePath: AggregatorStatus
+    supportedRegions:
+      - cn-shanghai
+      - ap-southeast-1
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: AggregatorsResult.NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: AggregatorName
+  state: AggregatorStatus
+  aggregatorType: AggregatorType
+  accountCount: AggregatorAccountCount
+  folderId: FolderId

@@ -2703,6 +2703,95 @@
    "requestId": "264C3E89-XXXX-XXXX-XXXX-CE9C2196C7DC",
    "totalCount": 66
   },
+  "Config@2020-09-07#ListAggregators": {
+   "AggregatorsResult": {
+    "Aggregators": [
+     {
+      "AccountId": 0,
+      "AggregatorAccountCount": 2,
+      "AggregatorCreateTimestamp": 1623036305000,
+      "AggregatorId": "ca-88ea626622af0055****",
+      "AggregatorName": "Test_Group",
+      "AggregatorStatus": 1,
+      "AggregatorType": "CUSTOM",
+      "Description": "测试组",
+      "FolderId": "fd-AAMJnCA***",
+      "Tags": [
+       {
+        "TagKey": "key-1",
+        "TagValue": "value-1"
+       }
+      ]
+     }
+    ],
+    "NextToken": "TGlzdFJlc291cmNlU2hhcmVzJjE1MTI2NjY4NzY5MTAzOTEmMiZORnI4NDhVeEtrUT0"
+   },
+   "RequestId": "20C8526D-12C5-4336-BC72-EBD5D1BA732F"
+  },
+  "Config@2020-09-07#ListCompliancePacks": {
+   "CompliancePacksResult": {
+    "CompliancePacks": [
+     {
+      "AccountId": 0,
+      "CompliancePackId": "cp-fdc8626622af00f9****",
+      "CompliancePackName": "BestPracticesForResourceStability",
+      "CompliancePackTemplateId": "ct-484cff4e06a30062****",
+      "CreateTimestamp": 1621325046000,
+      "Description": "Check the stability of Alibaba Cloud resources based on the high-availability infrastructure, capacity protection, change management, monitoring management, backup management, and fault isolation. This helps you identify issues at the earliest opportunity and improve stability and the efficiency of O&M.",
+      "RiskLevel": 1,
+      "Status": "ACTIVE",
+      "Tags": [
+       {
+        "TagKey": "key-1",
+        "TagValue": "value-1"
+       }
+      ]
+     }
+    ],
+    "PageNumber": 1,
+    "PageSize": 10,
+    "TotalCount": 1
+   },
+   "RequestId": "6EC7AED1-172F-42AE-9C12-295BC2ADB751"
+  },
+  "Config@2020-09-07#ListConfigRules": {
+   "ConfigRules": {
+    "ConfigRuleList": [
+     {
+      "AccountId": 0,
+      "AutomationType": "OOS",
+      "Compliance": {
+       "ComplianceType": "COMPLIANT",
+       "Count": 2
+      },
+      "ConfigRuleArn": "acs:config::100931896542****:rule/cr-fdc8626622af00f9****",
+      "ConfigRuleId": "cr-fdc8626622af00f9****",
+      "ConfigRuleName": "The name of the rule.",
+      "ConfigRuleState": "ACTIVE",
+      "CreateBy": {
+       "CompliancePackId": "cp-fdc8626622af00f9****",
+       "CompliancePackName": "The name of the compliance package."
+      },
+      "CreateDate": "2025-09-19T15:51:00",
+      "Description": "The description of the rule.",
+      "ResourceTypesScope": "ACS::EIP::EipAddress",
+      "RiskLevel": 1,
+      "SourceIdentifier": "eip-bandwidth-limit",
+      "SourceOwner": "ALIYUN",
+      "Tags": [
+       {
+        "Key": "env",
+        "Value": "prod"
+       }
+      ]
+     }
+    ],
+    "PageNumber": 1,
+    "PageSize": 10,
+    "TotalCount": 1
+   },
+   "RequestId": "AC3A7E12-72E6-5CC9-A5C1-D8D8919829A7"
+  },
   "Dbs@2019-03-06#DescribeBackupPlanList": {
    "ErrCode": "InvalidParameterValid",
    "ErrMessage": "The specified parameter %s value is not valid.     ",

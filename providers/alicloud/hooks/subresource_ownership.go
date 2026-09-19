@@ -45,6 +45,9 @@ var ownedSubresources = map[string]ownedSubresource{
 	"ACS::VPN::SslVpnClientCert":   {parentType: "ACS::VPN::SslVpnServer", parentField: "sslVpnServerId", source: "vpc:DescribeSslVpnClientCerts"},
 	"ACS::VPN::IpsecServer":        {parentType: "ACS::VPN::VpnGateway", parentField: "vpnGatewayId", source: "vpc:ListIpsecServers"},
 	"ACS::CR::Namespace":           {parentType: "ACS::CR::Instance", parentField: "instanceId", source: "cr:ListNamespace"},
+	// DeleteCompliancePacks with DeleteRule removes the rules the pack
+	// created; those rules cannot be deleted on their own.
+	"ACS::Config::Rule": {parentType: "ACS::Config::CompliancePack", parentField: "compliancePackId", source: "config:ListConfigRules", delegated: true},
 	// DeleteProject removes every logstore, including service-created
 	// internal ones, and GetLogStore answers 404 once the project is gone.
 	"ACS::SLS::LogStore": {parentType: "ACS::SLS::Project", parentField: "project", source: "sls:ListLogStores", delegated: true},

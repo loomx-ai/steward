@@ -1,0 +1,56 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Config::CompliancePack
+  class: governance.policy_set
+presentation:
+  consoleLinkTemplate: "https://config.console.aliyun.com/compliance-package/{nativeId}"
+  displayNames:
+    zh-CN: 配置审计合规包
+    en-US: Cloud Config Compliance Pack
+  icon: shield
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Config.ListCompliancePacks
+    itemsPath: CompliancePacksResult.CompliancePacks
+    identityPath: CompliancePackId
+    statePath: Status
+    supportedRegions:
+      - cn-shanghai
+      - ap-southeast-1
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: CompliancePacksResult.TotalCount
+      maxPageSize: 100
+fields:
+  name: CompliancePackName
+  state: Status
+  riskLevel: RiskLevel
+  templateId: CompliancePackTemplateId
+actions:
+  delete:
+    operation: AlibabaCloud.Config.DeleteCompliancePacks
+    parameters:
+      CompliancePackIds: resource.nativeId
+      DeleteRule: true
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Config.ListCompliancePacks
+      parameters:
+        PageSize: 100
+      itemsPath: CompliancePacksResult.CompliancePacks
+      identityPath: CompliancePackId
+      statePath: Status
+      pagination:
+        type: page-number
+        pageParameter: PageNumber
+        pageSizeParameter: PageSize
+        totalPath: CompliancePacksResult.TotalCount
+        maxPageSize: 100

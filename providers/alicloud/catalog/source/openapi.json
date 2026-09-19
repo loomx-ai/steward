@@ -4005,6 +4005,41 @@
         "x-operation-call": {"product":"sae","version":"2019-05-06","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/pop/v1/paas/namespace","endpoint":"sae.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
       }
     },
+    "/config/rules": {
+      "get": {
+        "operationId": "Config.ListConfigRules",
+        "x-operation-name": "ListConfigRules",
+        "x-operation-call": {"product":"Config","version":"2020-09-07","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"config.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/config/rules/{ConfigRuleId}": {
+      "delete": {
+        "operationId": "Config.DeleteConfigRules",
+        "x-operation-name": "DeleteConfigRules",
+        "x-operation-call": {"product":"Config","version":"2020-09-07","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"config.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/config/compliance-packs": {
+      "get": {
+        "operationId": "Config.ListCompliancePacks",
+        "x-operation-name": "ListCompliancePacks",
+        "x-operation-call": {"product":"Config","version":"2020-09-07","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"config.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/config/compliance-packs/{CompliancePackId}": {
+      "delete": {
+        "operationId": "Config.DeleteCompliancePacks",
+        "x-operation-name": "DeleteCompliancePacks",
+        "x-operation-call": {"product":"Config","version":"2020-09-07","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"config.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/config/aggregators": {
+      "get": {
+        "operationId": "Config.ListAggregators",
+        "x-operation-name": "ListAggregators",
+        "x-operation-call": {"product":"Config","version":"2020-09-07","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"config.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/container-registry/instances": {
       "get": {
         "operationId": "CR.ListInstance",
@@ -4108,6 +4143,9 @@
     {"nativeType": "ACS::CMS::AlarmContactGroup", "class": "observability.alert_contact_group", "displayName": "CloudMonitor Alert Contact Group", "scopeKinds": ["global"]},
     {"nativeType": "ACS::CMS::MetricRule", "class": "observability.alert_rule", "displayName": "CloudMonitor Alert Rule", "scopeKinds": ["global"]},
     {"nativeType": "ACS::CMS::MonitorGroup", "class": "observability.monitoring_group", "displayName": "CloudMonitor Application Group", "scopeKinds": ["global"]},
+    {"nativeType": "ACS::Config::Aggregator", "class": "governance.aggregator", "displayName": "Cloud Config Aggregator", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::Config::CompliancePack", "class": "governance.policy_set", "displayName": "Cloud Config Compliance Pack", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::Config::Rule", "class": "governance.policy_rule", "displayName": "Cloud Config Rule", "scopeKinds": ["region"]},
     {"nativeType": "ACS::CR::Instance", "class": "container.registry", "displayName": "Container Registry Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::CR::Namespace", "class": "container.registry_namespace", "displayName": "Container Registry Namespace", "scopeKinds": ["region"]},
     {"nativeType": "ACS::CR::Repository", "class": "container.repository", "displayName": "Container Registry Repository", "scopeKinds": ["region"]},

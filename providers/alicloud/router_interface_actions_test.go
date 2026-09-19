@@ -2,6 +2,7 @@ package alicloud_test
 
 import (
 	"context"
+	"errors"
 	"reflect"
 	"testing"
 
@@ -242,5 +243,38 @@ func TestContactGroupReadbackTrustsOnlyACompleteListing(t *testing.T) {
 				t.Fatalf("readback = %+v, err = %v", readback, err)
 			}
 		})
+	}
+}
+
+func TestBatchDeleteReportsAFailedItem(t *testing.T) {
+	t.Parallel()
+
+	rule := contracts.InvocationResult{Data: map[string]any{"ConfigRules": map[string]any{
+		"TotalCount": 1, "ConfigRuleList": []any{map[string]any{"ConfigRuleId": "cr-a", "ConfigRuleName": "ecs-check", "ConfigRuleState": "ACTIVE"}},
+	}}}
+	provider := &invocationProvider{results: []contracts.InvocationResult{
+		rule,
+		{RequestID: "delete", Data: map[string]any{"OperateRuleResult": map[string]any{"OperateRuleItemList": []any{
+			map[string]any{"ConfigRuleId": "cr-a", "Success": false, "ErrorCode": "ConfigRuleCanNotDelete"},
+		}}}},
+	}}
+	hook, err := alicloud.NewActionHook(provider, "connection-a", "cn-shanghai", "ACS::Config::Rule")
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := contracts.ActionRequest{
+		Asset: asset.Asset{
+			Identity:   asset.Identity{Provider: asset.ProviderAliCloud, NativeType: "ACS::Config::Rule", NativeID: "cr-a"},
+			Normalized: map[string]any{"name": "ecs-check"},
+		},
+		Action: "delete", IdempotencyKey: "rule-step",
+	}
+	if _, err := hook.Preflight(context.Background(), request); err != nil {
+		t.Fatal(err)
+	}
+	_, err = hook.Execute(context.Background(), request)
+	var providerError *contracts.ProviderCallError
+	if !errors.As(err, &providerError) || providerError.Provider.Code != "ConfigRuleCanNotDelete" {
+		t.Fatalf("error = %v", err)
 	}
 }

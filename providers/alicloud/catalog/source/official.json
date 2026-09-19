@@ -8419,6 +8419,334 @@
   },
   {
    "apis": {
+    "DeleteCompliancePacks": {
+     "deprecated": false,
+     "error_codes": [
+      "AccountNotExisted",
+      "Invalid.CompliancePackIds.SizeExceed",
+      "NoPermission",
+      "ServiceUnavailable"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "formData",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "CompliancePackIds",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "DeleteRule",
+       "required": false,
+       "type": "boolean"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "OperateCompliancePacksResult",
+      "OperateCompliancePacksResult.OperateCompliancePacks",
+      "OperateCompliancePacksResult.OperateCompliancePacks.CompliancePackId",
+      "OperateCompliancePacksResult.OperateCompliancePacks.ErrorCode",
+      "OperateCompliancePacksResult.OperateCompliancePacks.Success",
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "DeleteConfigRules": {
+     "deprecated": false,
+     "error_codes": [
+      "AccountNotExisted",
+      "ConfigRuleCanNotDelete",
+      "Invalid.ConfigRuleIds.SizeExceed",
+      "NoPermission",
+      "ServiceUnavailable"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ConfigRuleIds",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "OperateRuleResult",
+      "OperateRuleResult.OperateRuleItemList",
+      "OperateRuleResult.OperateRuleItemList.ConfigRuleId",
+      "OperateRuleResult.OperateRuleItemList.ErrorCode",
+      "OperateRuleResult.OperateRuleItemList.Success",
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "ListAggregators": {
+     "deprecated": false,
+     "error_codes": [
+      "AccountNotExisted",
+      "NoPermission",
+      "ServiceUnavailable"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": true,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "AggregatorsResult",
+      "AggregatorsResult.Aggregators",
+      "AggregatorsResult.Aggregators.AccountId",
+      "AggregatorsResult.Aggregators.AggregatorAccountCount",
+      "AggregatorsResult.Aggregators.AggregatorCreateTimestamp",
+      "AggregatorsResult.Aggregators.AggregatorId",
+      "AggregatorsResult.Aggregators.AggregatorName",
+      "AggregatorsResult.Aggregators.AggregatorStatus",
+      "AggregatorsResult.Aggregators.AggregatorType",
+      "AggregatorsResult.Aggregators.Description",
+      "AggregatorsResult.Aggregators.FolderId",
+      "AggregatorsResult.Aggregators.Tags",
+      "AggregatorsResult.Aggregators.Tags.TagKey",
+      "AggregatorsResult.Aggregators.Tags.TagValue",
+      "AggregatorsResult.NextToken",
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "ListCompliancePacks": {
+     "deprecated": false,
+     "error_codes": [
+      "AccountNotExisted",
+      "NoPermission",
+      "ServiceUnavailable"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "RiskLevel",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "Status",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "CompliancePacksResult",
+      "CompliancePacksResult.CompliancePacks",
+      "CompliancePacksResult.CompliancePacks.AccountId",
+      "CompliancePacksResult.CompliancePacks.CompliancePackId",
+      "CompliancePacksResult.CompliancePacks.CompliancePackName",
+      "CompliancePacksResult.CompliancePacks.CompliancePackTemplateId",
+      "CompliancePacksResult.CompliancePacks.CreateTimestamp",
+      "CompliancePacksResult.CompliancePacks.Description",
+      "CompliancePacksResult.CompliancePacks.RiskLevel",
+      "CompliancePacksResult.CompliancePacks.Status",
+      "CompliancePacksResult.CompliancePacks.Tags",
+      "CompliancePacksResult.CompliancePacks.Tags.TagKey",
+      "CompliancePacksResult.CompliancePacks.Tags.TagValue",
+      "CompliancePacksResult.PageNumber",
+      "CompliancePacksResult.PageSize",
+      "CompliancePacksResult.TotalCount",
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "ListConfigRules": {
+     "deprecated": false,
+     "error_codes": [
+      "AccountNotExisted",
+      "Invalid.AggregatorId.Value",
+      "NoPermission",
+      "ServiceUnavailable"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "CompliancePackId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ComplianceType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ConfigRuleName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ConfigRuleState",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Keyword",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "ResourceTypes",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RiskLevel",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "SortBy",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "ConfigRules",
+      "ConfigRules.ConfigRuleList",
+      "ConfigRules.ConfigRuleList.AccountId",
+      "ConfigRules.ConfigRuleList.AutomationType",
+      "ConfigRules.ConfigRuleList.Compliance",
+      "ConfigRules.ConfigRuleList.Compliance.ComplianceType",
+      "ConfigRules.ConfigRuleList.Compliance.Count",
+      "ConfigRules.ConfigRuleList.ConfigRuleArn",
+      "ConfigRules.ConfigRuleList.ConfigRuleId",
+      "ConfigRules.ConfigRuleList.ConfigRuleName",
+      "ConfigRules.ConfigRuleList.ConfigRuleState",
+      "ConfigRules.ConfigRuleList.CreateBy",
+      "ConfigRules.ConfigRuleList.CreateBy.CompliancePackId",
+      "ConfigRules.ConfigRuleList.CreateBy.CompliancePackName",
+      "ConfigRules.ConfigRuleList.CreateDate",
+      "ConfigRules.ConfigRuleList.Description",
+      "ConfigRules.ConfigRuleList.ResourceTypesScope",
+      "ConfigRules.ConfigRuleList.RiskLevel",
+      "ConfigRules.ConfigRuleList.SourceIdentifier",
+      "ConfigRules.ConfigRuleList.SourceOwner",
+      "ConfigRules.ConfigRuleList.Tags",
+      "ConfigRules.ConfigRuleList.Tags.Key",
+      "ConfigRules.ConfigRuleList.Tags.Value",
+      "ConfigRules.PageNumber",
+      "ConfigRules.PageSize",
+      "ConfigRules.TotalCount",
+      "RequestId"
+     ],
+     "risk_type": "none"
+    }
+   },
+   "endpoints": [
+    {
+     "endpoint": "config.ap-southeast-1.aliyuncs.com",
+     "region": "ap-southeast-1"
+    },
+    {
+     "endpoint": "config.cn-shanghai.aliyuncs.com",
+     "region": "cn-shanghai"
+    }
+   ],
+   "product": "Config",
+   "source_sha256": "5d06bacace8e95a8007f31cb82d4308f58d948628d6f4e69d6bcf903b6cd8bbe",
+   "source_uri": "https://api.aliyun.com/meta/v1/products/Config/versions/2020-09-07/api-docs.json",
+   "style": "RPC",
+   "version": "2020-09-07"
+  },
+  {
+   "apis": {
     "DescribeBackupPlanList": {
      "deprecated": false,
      "error_codes": [

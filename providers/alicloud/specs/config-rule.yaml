@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Config::Rule
+  class: governance.policy_rule
+presentation:
+  consoleLinkTemplate: "https://config.console.aliyun.com/rules/{nativeId}"
+  displayNames:
+    zh-CN: 配置审计规则
+    en-US: Cloud Config Rule
+  icon: shield
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Config.ListConfigRules
+    itemsPath: ConfigRules.ConfigRuleList
+    identityPath: ConfigRuleId
+    statePath: ConfigRuleState
+    supportedRegions:
+      - cn-shanghai
+      - ap-southeast-1
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: ConfigRules.TotalCount
+      maxPageSize: 100
+fields:
+  name: ConfigRuleName
+  state: ConfigRuleState
+  riskLevel: RiskLevel
+  sourceOwner: SourceOwner
+  sourceIdentifier: SourceIdentifier
+  compliancePackId: CreateBy.CompliancePackId
+relationships:
+  - type: member_of
+    targetType: ACS::Config::CompliancePack
+    targetIdPath: compliancePackId
+actions:
+  delete:
+    operation: AlibabaCloud.Config.DeleteConfigRules
+    parameters:
+      ConfigRuleIds: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Config.ListConfigRules
+      parameters:
+        ConfigRuleName: resource.normalized.name
+        PageSize: 100
+      itemsPath: ConfigRules.ConfigRuleList
+      identityPath: ConfigRuleId
+      statePath: ConfigRuleState
+      pagination:
+        type: page-number
+        pageParameter: PageNumber
+        pageSizeParameter: PageSize
+        totalPath: ConfigRules.TotalCount
+        maxPageSize: 100

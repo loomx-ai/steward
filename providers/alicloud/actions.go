@@ -415,6 +415,9 @@ func (h *ResourceAction) Execute(ctx context.Context, request contracts.ActionRe
 		}
 		return contracts.ActionResult{}, err
 	}
+	if err := batchDeleteItemFailure(operation, result); err != nil {
+		return contracts.ActionResult{}, err
+	}
 	if h.nativeType == DataWorksResourceGroupNativeType &&
 		dataWorksResourceGroupAlreadyDeleted(result.Data) {
 		return contracts.ActionResult{}, &contracts.ProviderCallError{Provider: execution.ProviderError{
@@ -2808,6 +2811,47 @@ func (h *ResourceAction) listARMSEnvironmentFeatures(
 	}
 	sort.Slice(features, func(i, j int) bool { return features[i].name < features[j].name })
 	return features, result, true, nil
+}
+
+// batchDeleteItemResults names where batch delete APIs that answer 200 report
+// each item's own outcome.
+var batchDeleteItemResults = map[string]string{
+	"DeleteConfigRules":     "OperateRuleResult.OperateRuleItemList",
+	"DeleteCompliancePacks": "OperateCompliancePacksResult.OperateCompliancePacks",
+}
+
+// batchDeleteItemFailure turns a failed item of a successful batch response
+// into an error. An item that no longer exists is not a failure; the
+// readback confirms its absence.
+func batchDeleteItemFailure(operation string, result contracts.InvocationResult) error {
+	path, ok := batchDeleteItemResults[operation[strings.LastIndex(operation, ".")+1:]]
+	if !ok {
+		return nil
+	}
+	items, _ := productAPIListValue(valueAtPath(result.Data, path))
+	for _, raw := range items {
+		item, ok := productAPIResourceMap(raw)
+		if !ok {
+			continue
+		}
+		if success, present := item["Success"].(bool); !present || success {
+			continue
+		}
+		code := strings.TrimSpace(stringValue(item["ErrorCode"]))
+		if strings.Contains(strings.ToLower(code), "notexist") {
+			continue
+		}
+		if code == "" {
+			code = "BatchDeleteItemFailed"
+		}
+		return &contracts.ProviderCallError{Provider: execution.ProviderError{
+			Category: execution.ErrorProviderFailure, Code: code,
+			Message:   "the provider did not delete the resource",
+			RequestID: result.RequestID,
+			Summary:   map[string]any{"operation": operation, "item": item},
+		}}
+	}
+	return nil
 }
 
 func armsResponseError(operation string, result contracts.InvocationResult) error {

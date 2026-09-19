@@ -562,6 +562,55 @@ resources:
     resources:
     - AWS::ECR::Repository
   status: pending_verification
+- alicloud: ACS::Config::Aggregator
+  spec: providers/alicloud/specs/config-aggregator.yaml
+  class: governance.aggregator
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions: []
+  gcp:
+    notes: Cloud Asset Inventory feeds are not modeled yet.
+  azure:
+    notes: Azure Policy compliance is aggregated by management group scope, not a resource.
+  aws:
+    notes: AWS Config aggregators are not in the pinned AWS resource selection yet.
+  status: pending_verification
+  notes: Inventory only; GetAggregator reports a missing aggregator with the same code as a malformed ID,
+    so deletion could not be confirmed.
+- alicloud: ACS::Config::CompliancePack
+  spec: providers/alicloud/specs/config-compliance-pack.yaml
+  class: governance.policy_set
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: Security posture deployments are not modeled yet.
+  azure:
+    notes: Azure Policy initiative assignments are not modeled yet.
+  aws:
+    notes: AWS Config conformance packs are not in the pinned AWS resource selection yet.
+  status: pending_verification
+  notes: Deleting a pack also deletes the rules it created; each is then confirmed absent.
+- alicloud: ACS::Config::Rule
+  spec: providers/alicloud/specs/config-rule.yaml
+  class: governance.policy_rule
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: Organization policy constraints are not modeled yet.
+  azure:
+    notes: Azure Policy assignments are not modeled yet.
+  aws:
+    notes: AWS Config rules are not in the pinned AWS resource selection yet.
+  status: pending_verification
+  notes: Rules are managed in cn-shanghai and ap-southeast-1. Batch delete results report each rule; a
+    rule that a compliance pack created is removed with the pack.
 - alicloud: ACS::ECS::AutoSnapshotPolicy
   spec: providers/alicloud/specs/auto-snapshot-policy.yaml
   class: storage.snapshot_policy
