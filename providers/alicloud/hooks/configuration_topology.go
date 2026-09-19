@@ -122,30 +122,6 @@ var configurationRelationshipRules = []configurationRelationshipRule{
 		key: "ReplicationSourceVaultId", kind: graph.RelationshipCreatedFrom, crossScope: true,
 		evidence: "replication_source_vault",
 	},
-	{
-		sourceType: "ACS::ECS::Snapshot",
-		targetTypes: []string{
-			"ACS::KMS::Key",
-		},
-		key: "KMSKeyId", kind: graph.RelationshipUses, crossScope: true,
-		evidence: "snapshot_kms_key",
-	},
-	{
-		sourceType: "ACS::NAS::FileSystem",
-		targetTypes: []string{
-			"ACS::KMS::Key",
-		},
-		key: "KmsKeyId", kind: graph.RelationshipUses, crossScope: true,
-		evidence: "nas_kms_key",
-	},
-	{
-		sourceType: "ACS::OSS::Bucket",
-		targetTypes: []string{
-			"ACS::KMS::Key",
-		},
-		key: "KMSMasterKeyID", kind: graph.RelationshipUses, crossScope: true,
-		evidence: "oss_kms_key",
-	},
 }
 
 // ConfigurationTopology derives only reviewed relationships whose exact
@@ -210,6 +186,8 @@ func (*ConfigurationTopology) Contribute(
 				})
 			}
 		}
+		// Encryption keys are recognized for every resource type, not a fixed list.
+		result.Relationships = append(result.Relationships, contributeKMSReferences(source, ordered, seen)...)
 	}
 	return result, nil
 }
