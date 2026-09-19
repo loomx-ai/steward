@@ -1936,7 +1936,7 @@ func TestRuntimeExposesInstanceAndModeledSubresourceKindsWithCatalogIcons(t *tes
 		t.Fatal("Alibaba Cloud runtime does not expose resource kind metadata")
 	}
 	kinds, revision := runtime.ResourceKinds()
-	if len(kinds) != 200 || revision == "" {
+	if len(kinds) != 202 || revision == "" {
 		t.Fatalf("resource kinds = %d revision = %q", len(kinds), revision)
 	}
 
@@ -1965,7 +1965,7 @@ func TestRuntimeExposesInstanceAndModeledSubresourceKindsWithCatalogIcons(t *tes
 		oss.BundleRevision != revision {
 		t.Fatalf("OSS resource kind = %+v revision = %q", oss, revision)
 	}
-	if _, found := findRuntimeResourceKind(kinds, "ACS::WAFV3::DefenseResource"); found {
+	if _, found := findRuntimeResourceKind(kinds, "ACS::ResourceManager::Folder"); found {
 		t.Fatal("an unmodeled subresource must not be exposed as a resource kind")
 	}
 	listener, found := findRuntimeResourceKind(kinds, "ACS::ALB::Listener")
@@ -2033,7 +2033,7 @@ func TestRuntimeSpecCoverageMatchesActionableResourceKinds(t *testing.T) {
 			)
 		}
 	}
-	if len(runtime.bundle.Specs) != 200 || productAPISpecs != 186 || actionableSpecs != 176 {
+	if len(runtime.bundle.Specs) != 202 || productAPISpecs != 188 || actionableSpecs != 177 {
 		t.Fatalf(
 			"specs=%d product-api=%d actionable=%d",
 			len(runtime.bundle.Specs),
@@ -2226,6 +2226,8 @@ func TestUnsupportedInstanceResourceAuditIsExplicit(t *testing.T) {
 		"ACS::ResourceManager::Account": {},
 		// Deleting an aggregator is reported by an ambiguous invalid-ID code.
 		"ACS::Config::Aggregator": {},
+		// Protected objects synchronized from cloud products return with them.
+		"ACS::WAFV3::DefenseResource": {},
 	}
 	wantDirectoryOnly := map[string]struct{}{}
 	specTypes := make(map[string]struct{}, len(runtime.bundle.Specs))

@@ -87,3 +87,46 @@ func TestLogstoresAreListedByNameWithinTheirProject(t *testing.T) {
 		t.Fatalf("logstores = %+v", batch.Items)
 	}
 }
+
+func TestHTTPAPIsAreListedFromEveryVersionGroup(t *testing.T) {
+	t.Parallel()
+
+	// ListHttpApis nests versioned APIs under each API, per the official
+	// APIG 2024-03-27 metadata; a group without versions must not end paging.
+	runtime, factory := encryptionKeyRuntime(t, func(invocation contracts.Invocation) (contracts.InvocationResult, error) {
+		if invocation.Operation != "AlibabaCloud.APIG.ListHttpApis" {
+			return contracts.InvocationResult{}, errors.New("unexpected call " + invocation.Operation)
+		}
+		if invocation.Parameters["pageNumber"] == 2 || invocation.Parameters["pageNumber"] == "2" {
+			return contracts.InvocationResult{Data: map[string]any{"data": map[string]any{"totalSize": 3, "items": []any{
+				map[string]any{"name": "c", "versionedHttpApis": []any{map[string]any{"httpApiId": "api-3", "name": "c", "gatewayId": "gw-a"}}},
+			}}}}, nil
+		}
+		return contracts.InvocationResult{Data: map[string]any{"data": map[string]any{"totalSize": 3, "items": []any{
+			map[string]any{"name": "a", "versionedHttpApis": []any{map[string]any{"httpApiId": "api-1", "name": "a", "gatewayId": "gw-a"}}},
+			map[string]any{"name": "b"},
+		}}}}, nil
+	})
+	kind := runtime.resourceKindByNativeType["ACS::APIG::HttpApi"]
+	request := contracts.InventoryRequest{
+		ConnectionID: "connection-a", Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: "cn-hangzhou"},
+		Source: "product-api", ResourceKind: &kind, Limit: 2,
+	}
+	var ids []string
+	for page := 0; page < 5; page++ {
+		batch, err := runtime.List(context.Background(), request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, item := range batch.Items {
+			ids = append(ids, item.NativeID)
+		}
+		if batch.NextCursor == "" {
+			break
+		}
+		request.Cursor = batch.NextCursor
+	}
+	if len(ids) != 2 || ids[0] != "api-1" || ids[1] != "api-3" {
+		t.Fatalf("http APIs = %v, calls = %+v", ids, factory.calls)
+	}
+}

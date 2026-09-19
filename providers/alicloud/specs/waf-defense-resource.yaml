@@ -1,0 +1,40 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::WAFV3::DefenseResource
+  class: security.protected_resource
+presentation:
+  consoleLinkTemplate: "https://yundun.console.aliyun.com/?p=wafnew#/protectObject/{regionId}"
+  displayNames:
+    zh-CN: WAF 防护对象
+    en-US: WAF Protected Object
+  icon: shield
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.WAF.DescribeDefenseResources
+    parameters:
+      RegionId: scope.location
+    itemsPath: Resources
+    identityPath: InstanceId+Resource
+    statePath: ResourceStatus
+    supportedRegions:
+      - cn-hangzhou
+      - ap-southeast-1
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Resource
+  state: ResourceStatus
+  createdAt: GmtCreate
+  instanceId: InstanceId
+  product: Product
+  resourceOrigin: ResourceOrigin
+  resourceGroupId: ResourceManagerResourceGroupId

@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "12022c8c7001db86908b6af3b132f08dc547b1fec9a91f9f250a51c897e8ee9f",
+    "checksum": "9d9261e4bbd1776795150f696c7060b7e924e78bdaf22ed9e3263d1346271334",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "e16417c6b03235c7d9a440b66df33cbd3c72871e063e981b32a5a91a3c2fe731",
+  "content_checksum": "8494f56c06a51646fea357a2ab4af091d96da2fd038a44e2694b9a8c817821bc",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -305,6 +305,27 @@
       }
     },
     {
+      "id": "AlibabaCloud.APIG.DeleteHttpApi",
+      "name": "DeleteHttpApi",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/apig/http-apis/{httpApiId}",
+      "destructive": true,
+      "call": {
+        "product": "APIG",
+        "version": "2024-03-27",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/http-apis/{httpApiId}",
+        "endpoint": "apig.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "clientToken"
+      }
+    },
+    {
       "id": "AlibabaCloud.APIG.DeleteService",
       "name": "DeleteService",
       "service": "AlibabaCloud",
@@ -345,6 +366,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.APIG.GetHttpApi",
+      "name": "GetHttpApi",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/apig/http-apis/{httpApiId}",
+      "destructive": false,
+      "call": {
+        "product": "APIG",
+        "version": "2024-03-27",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/http-apis/{httpApiId}",
+        "endpoint": "apig.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.APIG.GetService",
       "name": "GetService",
       "service": "AlibabaCloud",
@@ -378,6 +419,26 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/v1/gateways",
+        "endpoint": "apig.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.APIG.ListHttpApis",
+      "name": "ListHttpApis",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/apig/http-apis",
+      "destructive": false,
+      "call": {
+        "product": "APIG",
+        "version": "2024-03-27",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/http-apis",
         "endpoint": "apig.{region}.aliyuncs.com",
         "request_body_type": "json",
         "body_type": "json",
@@ -11176,6 +11237,26 @@
         "parameter_position": "query",
         "idempotency_parameter": "ClientToken"
       }
+    },
+    {
+      "id": "AlibabaCloud.WAF.DescribeDefenseResources",
+      "name": "DescribeDefenseResources",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/waf/defense-resources",
+      "destructive": false,
+      "call": {
+        "product": "waf-openapi",
+        "version": "2021-10-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "wafopenapi.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
     }
   ],
   "resource_types": [
@@ -11239,6 +11320,14 @@
       "native_type": "ACS::APIG::Gateway",
       "class": "network.api_gateway",
       "display_name": "Cloud-native API Gateway",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::APIG::HttpApi",
+      "class": "network.api",
+      "display_name": "Cloud-native API Gateway HTTP API",
       "scope_kinds": [
         "region"
       ]
@@ -12783,6 +12872,14 @@
       "native_type": "ACS::VPN::VpnGateway",
       "class": "network.vpn_gateway",
       "display_name": "VPN Gateway",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::WAFV3::DefenseResource",
+      "class": "security.protected_resource",
+      "display_name": "WAF Protected Object",
       "scope_kinds": [
         "region"
       ]

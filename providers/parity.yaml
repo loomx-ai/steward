@@ -85,6 +85,26 @@ resources:
     - AWS::AmazonMQ::Broker
   status: pending_verification
   notes: Only pay-as-you-go instances are deleted; subscription instances are released when they expire.
+- alicloud: ACS::APIG::HttpApi
+  spec: providers/alicloud/specs/apig-http-api.yaml
+  class: network.api
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - apigateway.googleapis.com/Api
+  azure:
+    resources:
+    - Microsoft.ApiManagement/service/apis
+  aws:
+    resources:
+    - AWS::ApiGatewayV2::Api
+  status: pending_verification
+  notes: ListHttpApis nests each version under its API; every version is inventoried and deleted on its
+    own.
 - alicloud: ACS::APIG::Service
   spec: providers/alicloud/specs/apig-service.yaml
   class: network.api_backend
@@ -3924,6 +3944,21 @@ resources:
     resources:
     - AWS::EC2::Subnet
   status: pending_verification
+- alicloud: ACS::WAFV3::DefenseResource
+  spec: providers/alicloud/specs/waf-defense-resource.yaml
+  class: security.protected_resource
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions: []
+  gcp:
+    notes: Cloud Armor attaches policies to backend services; there is no protected-object resource.
+  azure:
+    notes: Web Application Firewall policies attach to gateways; there is no protected-object resource.
+  aws:
+    notes: AWS WAF web ACL associations are not modeled yet.
+  status: pending_verification
+  notes: Inventory only; protected objects synchronized from cloud products return with their product.
 evidence:
   azure_vnet_multicast: https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-faq
   gcp_identity_platform_sms_template: https://docs.cloud.google.com/identity-platform/docs/reference/rest/v2/Config

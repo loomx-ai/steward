@@ -281,6 +281,508 @@
    "message": "success",
    "requestId": "0F138FFC-6E2B-56C1-9BAB-A67462E339D1"
   },
+  "APIG@2024-03-27#GetHttpApi": {
+   "code": "Ok",
+   "data": {
+    "agentProtocols": [
+     "DashScope"
+    ],
+    "aiProtocols": [
+     "OpenAI/v1"
+    ],
+    "authConfig": {
+     "authMode": "NoAuth",
+     "authType": "Jwt"
+    },
+    "basePath": "/v1",
+    "deployCntMap": {
+     "key": {
+      "cnt": 10,
+      "deployedCnt": 3
+     }
+    },
+    "deployConfigs": [
+     {
+      "autoDeploy": true,
+      "backendScene": "SingleService",
+      "builtinRouteNames": [
+       "[\"chat\",\"completions\"]"
+      ],
+      "customDomainIds": [
+       "d-xxx"
+      ],
+      "customDomainInfos": [
+       {
+        "domainId": "d-cshee6dlhtgk******",
+        "name": "hello-server.com",
+        "protocol": "HTTP"
+       }
+      ],
+      "enableSystemModels": true,
+      "envDomainIds": [
+       "d-xxx"
+      ],
+      "envDomainInfos": [
+       {
+        "domainId": "d-env-xxx",
+        "name": "api.example.com",
+        "protocol": "HTTPS"
+       }
+      ],
+      "environmentId": "env-xxx",
+      "gatewayId": "gw-xx",
+      "gatewayInfo": {
+       "engineVersion": "2.0.7",
+       "gatewayEdition": "MultiTenantServerless",
+       "gatewayId": "gw-cq7og15lhtgi6qasrj60",
+       "name": "apitest-gw",
+       "vpcInfo": {
+        "name": "商品中心预发环境专有网络",
+        "vpcId": "vpc-uf664nyle5kh***"
+       }
+      },
+      "gatewayType": "API",
+      "mock": {
+       "enable": false,
+       "responseCode": 200,
+       "responseContent": "Mock测试"
+      },
+      "policyConfigs": [
+       {
+        "aiCacheConfig": {
+         "cacheKeyStrategy": "-",
+         "cacheMode": "exact",
+         "cacheTTL": 3600,
+         "embeddingConfig": {
+          "modelName": "text-embedding-v2",
+          "serviceId": "svc-xxx",
+          "timeout": 5000,
+          "type": "dashscope"
+         },
+         "pluginStatus": {
+          "errorLogs": [
+           {
+            "key": "[{\"timestamp\":\"2026-06-29T10:00:00Z\",\"message\":\"redis connection timeout\"}]"
+           }
+          ],
+          "pluginId": "pi-xxx",
+          "serviceHealthy": true
+         },
+         "redisConfig": {
+          "databaseNumber": 0,
+          "host": "r-xxx.redis.rds.aliyuncs.com",
+          "password": "pass",
+          "port": 6379,
+          "timeout": 5000,
+          "username": "user"
+         },
+         "vectorConfig": {
+          "apiKey": "sk-xxx",
+          "collectionId": "col-xxx",
+          "serviceHost": "vdb-xxx.dashvector.aliyuncs.com",
+          "threshold": 0.95,
+          "timeout": 5000,
+          "type": "dashvector"
+         }
+        },
+        "aiFallbackConfig": {
+         "onlyRedirectUpstreamCode": true,
+         "serviceConfigs": [
+          {
+           "name": "—",
+           "passThroughModelName": false,
+           "serviceId": "svc-bbb",
+           "targetModelName": "qwen-max"
+          }
+         ]
+        },
+        "aiNetworkSearchConfig": {
+         "defaultEnable": true,
+         "defaultLang": "zh-CN",
+         "needReference": true,
+         "referenceFormat": "参考来源:\\n%s",
+         "referenceLocation": "head",
+         "searchEngineConfig": {
+          "apiKey": "sk-xxx",
+          "contentMode": "summary",
+          "count": 5,
+          "endpoint": "https://cloud-iqs.aliyuncs.com",
+          "industry": "互联网",
+          "optionArgs": {
+           "key": "{\"market\":\"zh-CN\"}"
+          },
+          "start": 0,
+          "timeRange": "7d",
+          "timeoutMillisecond": 5000,
+          "type": "aliyunQuark"
+         },
+         "searchFrom": [
+          {
+           "apiKey": "sk-xxx",
+           "contentMode": "summary",
+           "count": 5,
+           "endpoint": "https://cloud-iqs.aliyuncs.com",
+           "industry": "互联网",
+           "optionArgs": {
+            "key": "{\"market\":\"zh-CN\"}"
+           },
+           "start": 0,
+           "timeRange": "7d",
+           "timeoutMillisecond": 5000,
+           "type": "aliyunQuark"
+          }
+         ],
+         "searchRewrite": {
+          "enable": true,
+          "maxCount": 3,
+          "modelName": "qwen-max",
+          "serviceId": "svc-xxx",
+          "timeoutMillisecond": 5000
+         }
+        },
+        "aiSecurityGuardConfig": {
+         "bufferLimit": 1000,
+         "checkRequest": true,
+         "checkRequestImage": false,
+         "checkResponse": true,
+         "checkResponseImage": false,
+         "consumerRequestCheckService": [
+          {
+           "matchType": "exact",
+           "modalityType": "Text",
+           "name": "consumer-a",
+           "requestCheckService": "query_security_check",
+           "requestImageCheckService": "img_query_guard"
+          }
+         ],
+         "consumerResponseCheckService": [
+          {
+           "matchType": "exact",
+           "modalityType": "Text",
+           "name": "consumer-a\n",
+           "responseCheckService": "query_security_check",
+           "responseImageCheckService": "img_query_guard\n"
+          }
+         ],
+         "consumerRiskLevel": [
+          {
+           "level": "high",
+           "matchType": "exact",
+           "name": "consumer-a",
+           "type": "ContentModeration"
+          }
+         ],
+         "pluginStatus": {
+          "errorLogs": [
+           {
+            "key": "[{\"timestamp\":\"2026-06-29T10:00:00Z\",\"message\":\"redis connection timeout\"}]"
+           }
+          ],
+          "pluginId": "pi-xxx",
+          "serviceHealthy": true
+         },
+         "requestCheckService": "query_security_check",
+         "requestImageCheckService": "img_query_guard",
+         "responseCheckService": "response_security_check",
+         "responseImageCheckService": "img_response_guard",
+         "riskAlertLevel": "high",
+         "riskConfig": [
+          {
+           "consumerRules": {
+            "matchType": "Exact",
+            "pattern": "consumer-a"
+           },
+           "level": "high",
+           "type": "ContentModeration"
+          }
+         ],
+         "serviceAddress": "https://green-cip-vpc.cn-shanghai.aliyuncs.com"
+        },
+        "aiStatisticsConfig": {
+         "logRequestContent": true,
+         "logResponseContent": true,
+         "pathFieldConfigs": [
+          {
+           "fieldPaths": {
+            "key": {
+             "category": "conversation",
+             "description": "用户输入的问题内容",
+             "fieldKey": "question",
+             "io": "request",
+             "jsonPath": "messages.#.content",
+             "name": "问题内容",
+             "recordEnabled": true,
+             "rule": "append",
+             "sensitive": false,
+             "source": "request_body"
+            }
+           },
+           "path": "/v1/chat/completions"
+          }
+         ]
+        },
+        "aiTokenRateLimitConfig": {
+         "enableGlobalRules": true,
+         "globalRules": [
+          {
+           "limitMode": "TokenPerMinute",
+           "limitType": "Consumer",
+           "limitValue": 1000,
+           "matchKey": "X-API-Key",
+           "matchType": "Exact",
+           "matchValue": "consumer-a"
+          }
+         ],
+         "pluginStatus": {
+          "errorLogs": [
+           {
+            "key": "[{\"timestamp\":\"2026-06-29T10:00:00Z\",\"message\":\"redis connection timeout\"}]"
+           }
+          ],
+          "pluginId": "pi-xxx",
+          "serviceHealthy": true
+         },
+         "redisConfig": {
+          "databaseNumber": 0,
+          "host": "r-xxx.redis.rds.aliyuncs.com",
+          "password": "pass",
+          "port": 6379,
+          "timeout": 5000,
+          "username": "user"
+         },
+         "rules": [
+          {
+           "limitMode": "TokenPerMinute",
+           "limitType": "Consumer",
+           "limitValue": 1000,
+           "matchKey": "X-API-Key",
+           "matchType": "Exact",
+           "matchValue": "consumer-a"
+          }
+         ]
+        },
+        "aiToolSelectionConfig": {
+         "enableConditions": {
+          "toolCountThreshold": 10
+         },
+         "queryRewriting": {
+          "contextSelection": {
+           "type": "allMessages",
+           "value": 5
+          },
+          "enabled": true,
+          "fallbackStrategy": "skip",
+          "maxOutputTokens": 50,
+          "modelService": {
+           "modelName": "gte-rerank-v2",
+           "serviceId": "svc-xxx",
+           "timeoutMillisecond": 5000
+          },
+          "promptConfig": {
+           "customPrompt": "请将以下用户问题改写为...",
+           "type": "builtIn"
+          },
+          "triggerConditions": {
+           "messageCountThreshold": 1
+          }
+         },
+         "toolReranking": {
+          "fallbackStrategy": "skip",
+          "filteringMethod": "topN",
+          "modelService": {
+           "modelName": "gte-rerank-v2",
+           "serviceId": "svc-xxx\n",
+           "timeoutMillisecond": 5000
+          },
+          "scoreThreshold": 0.5,
+          "topKPercent": 50,
+          "topNCount": 5
+         }
+        },
+        "enable": false,
+        "policyReference": {
+         "policyAttachmentId": "pa-3c8ayyy",
+         "policyId": "pol-9f2exxx"
+        },
+        "semanticRouterConfig": {
+         "timeoutMillisecond": 2000
+        },
+        "type": "K8S"
+       }
+      ],
+      "restApiRouteMode": "ordinary",
+      "routeBackend": {
+       "enableSystemModels": true,
+       "scene": "Single",
+       "services": [
+        {
+         "groupName": "DEFAULT_GROUP",
+         "httpDubboTranscoder": {
+          "dubboServiceGroup": "DEV",
+          "dubboServiceName": "com.example.DemoService",
+          "dubboServiceVersion": "1.0.0",
+          "methodMapList": [
+           {
+            "dubboMethodName": "sayName",
+            "httpMethod": "ALL_GET",
+            "methodPath": "/mytestzbk/sayhello",
+            "paramMapsList": [
+             {
+              "extractKey": "name",
+              "extractKeySpec": "ALL_QUERY_PARAMETER",
+              "mappingType": "java.lang.String"
+             }
+            ],
+            "passThroughAllHeaders": "PASS_NOT",
+            "passThroughList": [
+             "[\"x-request-id\", \"x-tenant\"]"
+            ]
+           }
+          ]
+         },
+         "modelName": "qwen-plus",
+         "name": "item-service",
+         "namespace": "public",
+         "port": 0,
+         "protocol": "HTTP",
+         "serviceId": "service-cq2bmmdlhtgj***",
+         "sourceType": "MSE_NACOS",
+         "version": "v1",
+         "weight": 49
+        }
+       ]
+      },
+      "serviceConfigs": [
+       {
+        "capabilityTier": "standard",
+        "gatewayServiceId": "gw-svc-abc123",
+        "intentCode": "INQUIRY",
+        "match": {
+         "conditions": [
+          {
+           "key": "color",
+           "operator": "equal",
+           "type": "Query",
+           "value": "gray"
+          }
+         ],
+         "default": true
+        },
+        "modelName": "qwen-max",
+        "modelNamePattern": "qwen-*",
+        "multiServiceRouteStrategy": "ByWeight",
+        "name": "Qwen-Max-Service",
+        "observabilityRouteConfig": {
+         "mode": "LeastBusy",
+         "queueSize": 100,
+         "rateLimit": 0.8
+        },
+        "port": 80,
+        "protocol": "HTTP",
+        "serviceId": "svc-xxx",
+        "version": "V2",
+        "weight": 100
+       }
+      ],
+      "subDomains": [
+       {
+        "domainId": "d-csmn42um******",
+        "name": "test",
+        "networkType": "Intranet",
+        "protocol": "HTTP"
+       }
+      ],
+      "systemModelTiers": [
+       "economy"
+      ]
+     }
+    ],
+    "description": "测试专用API",
+    "enableAuth": true,
+    "environments": [
+     {
+      "alias": "test",
+      "backendScene": "SingleService",
+      "backendType": "Service",
+      "customDomains": [
+       {
+        "domainId": "d-xxx",
+        "name": "www.example.com",
+        "protocol": "HTTP"
+       }
+      ],
+      "deployStatus": "Deployed",
+      "environmentId": "env-xxx",
+      "gatewayInfo": {
+       "gatewayEdition": "MultiTenantServerless",
+       "gatewayId": "gw-xxx",
+       "name": "test"
+      },
+      "name": "test",
+      "serviceConfigs": [
+       {
+        "gatewayServiceId": "gs-xxx",
+        "match": {
+         "conditions": [
+          {
+           "key": "color",
+           "operator": "equal",
+           "type": "Query",
+           "value": "gray"
+          }
+         ],
+         "default": true
+        },
+        "name": "demo-service",
+        "port": "8080",
+        "protocol": "HTTP",
+        "serviceId": "svc-xxx",
+        "version": "v1",
+        "weight": 100
+       }
+      ],
+      "subDomains": [
+       {
+        "domainId": "d-xxx",
+        "name": "www.example.com",
+        "networkType": "Internet",
+        "protocol": "HTTP"
+       }
+      ]
+     }
+    ],
+    "gatewayId": "gw-cpv4sqdl****",
+    "httpApiId": "api-xxx",
+    "ingressInfo": {
+     "environmentInfo": {
+      "environmentId": "env-xxx"
+     },
+     "ingressClass": "mse",
+     "k8sClusterInfo": {
+      "clusterId": "ca435c77cba1547cca9311957bcxxxxxx"
+     },
+     "overrideIngressIp": true,
+     "sourceId": "src-xxx",
+     "watchNamespace": "default"
+    },
+    "modelCategory": "Text",
+    "name": "test",
+    "protocols": [
+     "HTTP"
+    ],
+    "resourceGroupId": "rg-xxx",
+    "type": "Rest",
+    "versionInfo": {
+     "enable": true,
+     "headerName": "my-version",
+     "queryName": "myVersion",
+     "scheme": "Query",
+     "version": "v1"
+    }
+   },
+   "message": "success",
+   "requestId": "8FA9BB94-915B-5299-A694-49FCC7F5DD00"
+  },
   "APIG@2024-03-27#GetService": {
    "code": "Ok",
    "data": {
@@ -508,6 +1010,523 @@
    },
    "message": "success",
    "requestId": "5B626361-070A-56A7-B127-ADAC8F3655DB"
+  },
+  "APIG@2024-03-27#ListHttpApis": {
+   "code": "Ok",
+   "data": {
+    "items": [
+     {
+      "GatewayId": "gw-xx",
+      "name": "test-api",
+      "type": "Http",
+      "versionEnabled": true,
+      "versionedHttpApis": [
+       {
+        "agentProtocols": [
+         "DashScope"
+        ],
+        "aiProtocols": [
+         "OpenAI/v1"
+        ],
+        "authConfig": {
+         "authMode": "NoAuth",
+         "authType": "Jwt"
+        },
+        "basePath": "/v1",
+        "deployCntMap": {
+         "key": {
+          "cnt": 10,
+          "deployedCnt": 3
+         }
+        },
+        "deployConfigs": [
+         {
+          "autoDeploy": true,
+          "backendScene": "SingleService",
+          "builtinRouteNames": [
+           "[\"chat\",\"completions\"]"
+          ],
+          "customDomainIds": [
+           "d-xxx"
+          ],
+          "customDomainInfos": [
+           {
+            "domainId": "d-cshee6dlhtgk******",
+            "name": "hello-server.com",
+            "protocol": "HTTP"
+           }
+          ],
+          "enableSystemModels": true,
+          "envDomainIds": [
+           "d-xxx"
+          ],
+          "envDomainInfos": [
+           {
+            "domainId": "d-env-xxx",
+            "name": "api.example.com",
+            "protocol": "HTTPS"
+           }
+          ],
+          "environmentId": "env-xxx",
+          "gatewayId": "gw-xx",
+          "gatewayInfo": {
+           "engineVersion": "2.0.7",
+           "gatewayEdition": "MultiTenantServerless",
+           "gatewayId": "gw-cq7og15lhtgi6qasrj60",
+           "name": "apitest-gw",
+           "vpcInfo": {
+            "name": "商品中心预发环境专有网络",
+            "vpcId": "vpc-uf664nyle5kh***"
+           }
+          },
+          "gatewayType": "API",
+          "mock": {
+           "enable": false,
+           "responseCode": 200,
+           "responseContent": "Mock测试"
+          },
+          "policyConfigs": [
+           {
+            "aiCacheConfig": {
+             "cacheKeyStrategy": "-",
+             "cacheMode": "exact",
+             "cacheTTL": 3600,
+             "embeddingConfig": {
+              "modelName": "text-embedding-v2",
+              "serviceId": "svc-xxx",
+              "timeout": 5000,
+              "type": "dashscope"
+             },
+             "pluginStatus": {
+              "errorLogs": [
+               {
+                "key": "[{\"timestamp\":\"2026-06-29T10:00:00Z\",\"message\":\"redis connection timeout\"}]"
+               }
+              ],
+              "pluginId": "pi-xxx",
+              "serviceHealthy": true
+             },
+             "redisConfig": {
+              "databaseNumber": 0,
+              "host": "r-xxx.redis.rds.aliyuncs.com",
+              "password": "pass",
+              "port": 6379,
+              "timeout": 5000,
+              "username": "user"
+             },
+             "vectorConfig": {
+              "apiKey": "sk-xxx",
+              "collectionId": "col-xxx",
+              "serviceHost": "vdb-xxx.dashvector.aliyuncs.com",
+              "threshold": 0.95,
+              "timeout": 5000,
+              "type": "dashvector"
+             }
+            },
+            "aiFallbackConfig": {
+             "onlyRedirectUpstreamCode": true,
+             "serviceConfigs": [
+              {
+               "name": "—",
+               "passThroughModelName": false,
+               "serviceId": "svc-bbb",
+               "targetModelName": "qwen-max"
+              }
+             ]
+            },
+            "aiNetworkSearchConfig": {
+             "defaultEnable": true,
+             "defaultLang": "zh-CN",
+             "needReference": true,
+             "referenceFormat": "参考来源:\\n%s",
+             "referenceLocation": "head",
+             "searchEngineConfig": {
+              "apiKey": "sk-xxx",
+              "contentMode": "summary",
+              "count": 5,
+              "endpoint": "https://cloud-iqs.aliyuncs.com",
+              "industry": "互联网",
+              "optionArgs": {
+               "key": "{\"market\":\"zh-CN\"}"
+              },
+              "start": 0,
+              "timeRange": "7d",
+              "timeoutMillisecond": 5000,
+              "type": "aliyunQuark"
+             },
+             "searchFrom": [
+              {
+               "apiKey": "sk-xxx",
+               "contentMode": "summary",
+               "count": 5,
+               "endpoint": "https://cloud-iqs.aliyuncs.com",
+               "industry": "互联网",
+               "optionArgs": {
+                "key": "{\"market\":\"zh-CN\"}"
+               },
+               "start": 0,
+               "timeRange": "7d",
+               "timeoutMillisecond": 5000,
+               "type": "aliyunQuark"
+              }
+             ],
+             "searchRewrite": {
+              "enable": true,
+              "maxCount": 3,
+              "modelName": "qwen-max",
+              "serviceId": "svc-xxx",
+              "timeoutMillisecond": 5000
+             }
+            },
+            "aiSecurityGuardConfig": {
+             "bufferLimit": 1000,
+             "checkRequest": true,
+             "checkRequestImage": false,
+             "checkResponse": true,
+             "checkResponseImage": false,
+             "consumerRequestCheckService": [
+              {
+               "matchType": "exact",
+               "modalityType": "Text",
+               "name": "consumer-a",
+               "requestCheckService": "query_security_check",
+               "requestImageCheckService": "img_query_guard"
+              }
+             ],
+             "consumerResponseCheckService": [
+              {
+               "matchType": "exact",
+               "modalityType": "Text",
+               "name": "consumer-a\n",
+               "responseCheckService": "query_security_check",
+               "responseImageCheckService": "img_query_guard\n"
+              }
+             ],
+             "consumerRiskLevel": [
+              {
+               "level": "high",
+               "matchType": "exact",
+               "name": "consumer-a",
+               "type": "ContentModeration"
+              }
+             ],
+             "pluginStatus": {
+              "errorLogs": [
+               {
+                "key": "[{\"timestamp\":\"2026-06-29T10:00:00Z\",\"message\":\"redis connection timeout\"}]"
+               }
+              ],
+              "pluginId": "pi-xxx",
+              "serviceHealthy": true
+             },
+             "requestCheckService": "query_security_check",
+             "requestImageCheckService": "img_query_guard",
+             "responseCheckService": "response_security_check",
+             "responseImageCheckService": "img_response_guard",
+             "riskAlertLevel": "high",
+             "riskConfig": [
+              {
+               "consumerRules": {
+                "matchType": "Exact",
+                "pattern": "consumer-a"
+               },
+               "level": "high",
+               "type": "ContentModeration"
+              }
+             ],
+             "serviceAddress": "https://green-cip-vpc.cn-shanghai.aliyuncs.com"
+            },
+            "aiStatisticsConfig": {
+             "logRequestContent": true,
+             "logResponseContent": true,
+             "pathFieldConfigs": [
+              {
+               "fieldPaths": {
+                "key": {
+                 "category": "conversation",
+                 "description": "用户输入的问题内容",
+                 "fieldKey": "question",
+                 "io": "request",
+                 "jsonPath": "messages.#.content",
+                 "name": "问题内容",
+                 "recordEnabled": true,
+                 "rule": "append",
+                 "sensitive": false,
+                 "source": "request_body"
+                }
+               },
+               "path": "/v1/chat/completions"
+              }
+             ]
+            },
+            "aiTokenRateLimitConfig": {
+             "enableGlobalRules": true,
+             "globalRules": [
+              {
+               "limitMode": "TokenPerMinute",
+               "limitType": "Consumer",
+               "limitValue": 1000,
+               "matchKey": "X-API-Key",
+               "matchType": "Exact",
+               "matchValue": "consumer-a"
+              }
+             ],
+             "pluginStatus": {
+              "errorLogs": [
+               {
+                "key": "[{\"timestamp\":\"2026-06-29T10:00:00Z\",\"message\":\"redis connection timeout\"}]"
+               }
+              ],
+              "pluginId": "pi-xxx",
+              "serviceHealthy": true
+             },
+             "redisConfig": {
+              "databaseNumber": 0,
+              "host": "r-xxx.redis.rds.aliyuncs.com",
+              "password": "pass",
+              "port": 6379,
+              "timeout": 5000,
+              "username": "user"
+             },
+             "rules": [
+              {
+               "limitMode": "TokenPerMinute",
+               "limitType": "Consumer",
+               "limitValue": 1000,
+               "matchKey": "X-API-Key",
+               "matchType": "Exact",
+               "matchValue": "consumer-a"
+              }
+             ]
+            },
+            "aiToolSelectionConfig": {
+             "enableConditions": {
+              "toolCountThreshold": 10
+             },
+             "queryRewriting": {
+              "contextSelection": {
+               "type": "allMessages",
+               "value": 5
+              },
+              "enabled": true,
+              "fallbackStrategy": "skip",
+              "maxOutputTokens": 50,
+              "modelService": {
+               "modelName": "gte-rerank-v2",
+               "serviceId": "svc-xxx",
+               "timeoutMillisecond": 5000
+              },
+              "promptConfig": {
+               "customPrompt": "请将以下用户问题改写为...",
+               "type": "builtIn"
+              },
+              "triggerConditions": {
+               "messageCountThreshold": 1
+              }
+             },
+             "toolReranking": {
+              "fallbackStrategy": "skip",
+              "filteringMethod": "topN",
+              "modelService": {
+               "modelName": "gte-rerank-v2",
+               "serviceId": "svc-xxx\n",
+               "timeoutMillisecond": 5000
+              },
+              "scoreThreshold": 0.5,
+              "topKPercent": 50,
+              "topNCount": 5
+             }
+            },
+            "enable": false,
+            "policyReference": {
+             "policyAttachmentId": "pa-3c8ayyy",
+             "policyId": "pol-9f2exxx"
+            },
+            "semanticRouterConfig": {
+             "timeoutMillisecond": 2000
+            },
+            "type": "K8S"
+           }
+          ],
+          "restApiRouteMode": "ordinary",
+          "routeBackend": {
+           "enableSystemModels": true,
+           "scene": "Single",
+           "services": [
+            {
+             "groupName": "DEFAULT_GROUP",
+             "httpDubboTranscoder": {
+              "dubboServiceGroup": "DEV",
+              "dubboServiceName": "com.example.DemoService",
+              "dubboServiceVersion": "1.0.0",
+              "methodMapList": [
+               {
+                "dubboMethodName": "sayName",
+                "httpMethod": "ALL_GET",
+                "methodPath": "/mytestzbk/sayhello",
+                "paramMapsList": [
+                 {
+                  "extractKey": "name",
+                  "extractKeySpec": "ALL_QUERY_PARAMETER",
+                  "mappingType": "java.lang.String"
+                 }
+                ],
+                "passThroughAllHeaders": "PASS_NOT",
+                "passThroughList": [
+                 "[\"x-request-id\", \"x-tenant\"]"
+                ]
+               }
+              ]
+             },
+             "modelName": "qwen-plus",
+             "name": "item-service",
+             "namespace": "public",
+             "port": 0,
+             "protocol": "HTTP",
+             "serviceId": "service-cq2bmmdlhtgj***",
+             "sourceType": "MSE_NACOS",
+             "version": "v1",
+             "weight": 49
+            }
+           ]
+          },
+          "serviceConfigs": [
+           {
+            "capabilityTier": "standard",
+            "gatewayServiceId": "gw-svc-abc123",
+            "intentCode": "INQUIRY",
+            "match": {
+             "conditions": [
+              {
+               "key": "color",
+               "operator": "equal",
+               "type": "Query",
+               "value": "gray"
+              }
+             ],
+             "default": true
+            },
+            "modelName": "qwen-max",
+            "modelNamePattern": "qwen-*",
+            "multiServiceRouteStrategy": "ByWeight",
+            "name": "Qwen-Max-Service",
+            "observabilityRouteConfig": {
+             "mode": "LeastBusy",
+             "queueSize": 100,
+             "rateLimit": 0.8
+            },
+            "port": 80,
+            "protocol": "HTTP",
+            "serviceId": "svc-xxx",
+            "version": "V2",
+            "weight": 100
+           }
+          ],
+          "subDomains": [
+           {
+            "domainId": "d-csmn42um******",
+            "name": "test",
+            "networkType": "Intranet",
+            "protocol": "HTTP"
+           }
+          ],
+          "systemModelTiers": [
+           "economy"
+          ]
+         }
+        ],
+        "description": "测试专用API",
+        "enableAuth": true,
+        "environments": [
+         {
+          "alias": "test",
+          "backendScene": "SingleService",
+          "backendType": "Service",
+          "customDomains": [
+           {
+            "domainId": "d-xxx",
+            "name": "www.example.com",
+            "protocol": "HTTP"
+           }
+          ],
+          "deployStatus": "Deployed",
+          "environmentId": "env-xxx",
+          "gatewayInfo": {
+           "gatewayEdition": "MultiTenantServerless",
+           "gatewayId": "gw-xxx",
+           "name": "test"
+          },
+          "name": "test",
+          "serviceConfigs": [
+           {
+            "gatewayServiceId": "gs-xxx",
+            "match": {
+             "conditions": [
+              {
+               "key": "color",
+               "operator": "equal",
+               "type": "Query",
+               "value": "gray"
+              }
+             ],
+             "default": true
+            },
+            "name": "demo-service",
+            "port": "8080",
+            "protocol": "HTTP",
+            "serviceId": "svc-xxx",
+            "version": "v1",
+            "weight": 100
+           }
+          ],
+          "subDomains": [
+           {
+            "domainId": "d-xxx",
+            "name": "www.example.com",
+            "networkType": "Internet",
+            "protocol": "HTTP"
+           }
+          ]
+         }
+        ],
+        "gatewayId": "gw-cpv4sqdl****",
+        "httpApiId": "api-xxx",
+        "ingressInfo": {
+         "environmentInfo": {
+          "environmentId": "env-xxx"
+         },
+         "ingressClass": "mse",
+         "k8sClusterInfo": {
+          "clusterId": "ca435c77cba1547cca9311957bcxxxxxx"
+         },
+         "overrideIngressIp": true,
+         "sourceId": "src-xxx",
+         "watchNamespace": "default"
+        },
+        "modelCategory": "Text",
+        "name": "test",
+        "protocols": [
+         "HTTP"
+        ],
+        "resourceGroupId": "rg-xxx",
+        "type": "Rest",
+        "versionInfo": {
+         "enable": true,
+         "headerName": "my-version",
+         "queryName": "myVersion",
+         "scheme": "Query",
+         "version": "v1"
+        }
+       }
+      ]
+     }
+    ],
+    "pageNumber": 1,
+    "pageSize": 10,
+    "totalSize": 10
+   },
+   "message": "success",
+   "requestId": "585657D2-1C20-5B8A-AF17-D727C6490BE4"
   },
   "APIG@2024-03-27#ListServices": {
    "code": "Ok",
@@ -14749,6 +15768,43 @@
    "PageSize": 20,
    "RequestId": "E4EBD2BF-5EB0-4476-****-9D94E1B15267",
    "TotalCount": 2
+  },
+  "waf-openapi@2021-10-01#DescribeDefenseResources": {
+   "RequestId": "618F2626-DB27-5187-8C6C-4E61A491****",
+   "Resources": [
+    {
+     "AcwCookieStatus": 1,
+     "AcwSecureStatus": 0,
+     "AcwV3SecureStatus": 0,
+     "CustomHeaders": [
+      "afbfbajf"
+     ],
+     "Description": "test",
+     "Detail": {
+      "domain": "eou.eleme.cn",
+      "uri": "/"
+     },
+     "GmtCreate": 1652149203187,
+     "GmtModified": 1665633032000,
+     "InstanceId": "waf_v2_public_cn-k*****",
+     "OwnerUserId": "135*********46",
+     "Pattern": "domain",
+     "Product": "alb",
+     "Resource": "alb-rencs***",
+     "ResourceGroup": "test",
+     "ResourceManagerResourceGroupId": "rg-acfm***q",
+     "ResourceOrigin": "custom",
+     "ResourceStatus": "active",
+     "ResponseHeaders": [
+      {
+       "Key": "Header-Key",
+       "Value": "Header-Value"
+      }
+     ],
+     "XffStatus": 1
+    }
+   ],
+   "TotalCount": 73
   }
  },
  "source": "https://api.aliyun.com/meta/v1 responseDemo"

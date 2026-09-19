@@ -584,8 +584,9 @@ func validateProductAPI(
 	if strings.TrimSpace(api.ItemsPath) == "" || strings.TrimSpace(api.IdentityPath) == "" {
 		return fmt.Errorf("%s requires items and identity paths", usage)
 	}
-	if strings.Contains(api.ItemsPath, "*") && (providerCatalog.Provider != asset.ProviderGCP || usage != "discovery list") {
-		return fmt.Errorf("%s wildcard list paths are only supported by GCP product discovery", usage)
+	wildcardProvider := providerCatalog.Provider == asset.ProviderGCP || providerCatalog.Provider == asset.ProviderAliCloud
+	if strings.Contains(api.ItemsPath, "*") && (!wildcardProvider || usage != "discovery list") {
+		return fmt.Errorf("%s wildcard list paths are only supported by GCP and Alibaba Cloud product discovery", usage)
 	}
 	if err := validateParameterExpressions(
 		api.Parameters,

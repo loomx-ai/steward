@@ -1,0 +1,49 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::APIG::HttpApi
+  class: network.api
+presentation:
+  consoleLinkTemplate: "https://apigw.console.aliyun.com/#/{regionId}/api-manage/api-http/{nativeId}/router"
+  displayNames:
+    zh-CN: 云原生 API 网关 HTTP API
+    en-US: Cloud-native API Gateway HTTP API
+  icon: gateway
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.APIG.ListHttpApis
+    itemsPath: data.items.*.versionedHttpApis
+    identityPath: httpApiId
+    pagination:
+      type: page-number
+      pageParameter: pageNumber
+      pageSizeParameter: pageSize
+      totalPath: data.totalSize
+      maxPageSize: 100
+fields:
+  name: name
+  apiType: type
+  basePath: basePath
+  gatewayId: gatewayId
+  resourceGroupId: resourceGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::APIG::Gateway
+    targetIdPath: gatewayId
+actions:
+  delete:
+    operation: AlibabaCloud.APIG.DeleteHttpApi
+    parameters:
+      httpApiId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.APIG.GetHttpApi
+      parameters:
+        httpApiId: resource.nativeId
+      itemsPath: data
+      identityPath: httpApiId

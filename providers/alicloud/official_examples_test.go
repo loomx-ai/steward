@@ -72,7 +72,8 @@ func officialResponsePaths(t *testing.T) (map[string][]string, map[string]any) {
 }
 
 func joinResponsePath(itemsPath, field string) string {
-	itemsPath = strings.TrimSpace(itemsPath)
+	// Arrays are transparent in response paths, so a * segment adds nothing.
+	itemsPath = strings.ReplaceAll(strings.TrimSpace(itemsPath), ".*", "")
 	if itemsPath == "" || itemsPath == "$" {
 		return field
 	}

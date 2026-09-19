@@ -2121,6 +2121,25 @@
         "x-operation-call": {"product":"APIG","version":"2024-03-27","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/v1/services/{serviceId}","endpoint":"apig.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
       }
     },
+    "/apig/http-apis": {
+      "get": {
+        "operationId": "APIG.ListHttpApis",
+        "x-operation-name": "ListHttpApis",
+        "x-operation-call": {"product":"APIG","version":"2024-03-27","style":"ROA","protocol":"HTTPS","method":"GET","path":"/v1/http-apis","endpoint":"apig.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/apig/http-apis/{httpApiId}": {
+      "get": {
+        "operationId": "APIG.GetHttpApi",
+        "x-operation-name": "GetHttpApi",
+        "x-operation-call": {"product":"APIG","version":"2024-03-27","style":"ROA","protocol":"HTTPS","method":"GET","path":"/v1/http-apis/{httpApiId}","endpoint":"apig.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      },
+      "delete": {
+        "operationId": "APIG.DeleteHttpApi",
+        "x-operation-name": "DeleteHttpApi",
+        "x-operation-call": {"product":"APIG","version":"2024-03-27","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/v1/http-apis/{httpApiId}","endpoint":"apig.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query","idempotency_parameter":"clientToken"}
+      }
+    },
     "/apig/gateways": {
       "get": {
         "operationId": "APIG.ListGateways",
@@ -4165,6 +4184,13 @@
         "x-operation-call": {"product":"Emr","version":"2021-03-20","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"emr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/waf/defense-resources": {
+      "get": {
+        "operationId": "WAF.DescribeDefenseResources",
+        "x-operation-name": "DescribeDefenseResources",
+        "x-operation-call": {"product":"waf-openapi","version":"2021-10-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"wafopenapi.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/container-registry/instances": {
       "get": {
         "operationId": "CR.ListInstance",
@@ -4227,6 +4253,7 @@
     {"nativeType": "ACS::AliKafka::Topic", "class": "messaging.topic", "displayName": "Kafka Topic", "scopeKinds": ["region"]},
     {"nativeType": "ACS::AMQP::Instance", "class": "messaging.broker", "displayName": "ApsaraMQ for RabbitMQ Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::APIG::Gateway", "class": "network.api_gateway", "displayName": "Cloud-native API Gateway", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::APIG::HttpApi", "class": "network.api", "displayName": "Cloud-native API Gateway HTTP API", "scopeKinds": ["region"]},
     {"nativeType": "ACS::APIG::Service", "class": "network.api_backend", "displayName": "Cloud-native API Gateway Service", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ApiGateway::Api", "class": "network.api", "displayName": "API Gateway API", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ApiGateway::App", "class": "api.application", "displayName": "API Gateway App", "scopeKinds": ["region"]},
@@ -4416,6 +4443,7 @@
     {"nativeType": "ACS::VPN::SslVpnServer", "class": "network.vpn_server", "displayName": "SSL-VPN Server", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VPN::VpnConnection", "class": "network.vpn_connection", "displayName": "IPsec-VPN Connection", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VPN::VpnGateway", "class": "network.vpn_gateway", "displayName": "VPN Gateway", "scopeKinds": ["region"]},
-    {"nativeType": "ACS::VOD::Domain", "class": "media.vod_domain", "displayName": "ApsaraVideo VOD Domain", "scopeKinds": ["global"]}
+    {"nativeType": "ACS::VOD::Domain", "class": "media.vod_domain", "displayName": "ApsaraVideo VOD Domain", "scopeKinds": ["global"]},
+    {"nativeType": "ACS::WAFV3::DefenseResource", "class": "security.protected_resource", "displayName": "WAF Protected Object", "scopeKinds": ["region"]}
   ]
 }

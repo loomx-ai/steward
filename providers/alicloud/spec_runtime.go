@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -261,7 +262,15 @@ func (r *Runtime) invokeProductAPIPage(
 			api.ItemsPath,
 		)
 	}
-	next, err := nextSpecCursor(result.Data, api.Pagination, page, pageSize, len(rawItems))
+	// A page holds the top-level records a * segment expands, which may carry
+	// no nested records at all; paging must count those records.
+	pageItems := len(rawItems)
+	if prefix, _, nested := strings.Cut(api.ItemsPath, ".*"); nested {
+		if records, ok := productAPIListValue(valueAtPath(result.Data, prefix)); ok {
+			pageItems = len(records)
+		}
+	}
+	next, err := nextSpecCursor(result.Data, api.Pagination, page, pageSize, pageItems)
 	if err != nil {
 		return productAPIPage{}, err
 	}
@@ -853,7 +862,11 @@ func valueAtPath(value any, path string) any {
 		return value
 	}
 	current := value
-	for _, segment := range strings.Split(path, ".") {
+	segments := strings.Split(path, ".")
+	for index, segment := range segments {
+		if segment == "*" {
+			return valueAtEveryChild(current, strings.Join(segments[index+1:], "."))
+		}
 		next, ok := valueAtPathSegment(current, segment)
 		if !ok {
 			return nil
@@ -861,6 +874,44 @@ func valueAtPath(value any, path string) any {
 		current = next
 	}
 	return current
+}
+
+// valueAtEveryChild reads the rest of a path under every element of a list,
+// or every value of a map, and flattens lists into one list. A list API that
+// nests records under groups, as APIG ListHttpApis nests versioned APIs,
+// names its items path with a * segment.
+func valueAtEveryChild(value any, rest string) any {
+	var children []any
+	if list, ok := productAPIListValue(value); ok {
+		children = list
+	} else if object, ok := value.(map[string]any); ok {
+		keys := make([]string, 0, len(object))
+		for key := range object {
+			keys = append(keys, key)
+		}
+		sort.Strings(keys)
+		for _, key := range keys {
+			children = append(children, object[key])
+		}
+	} else {
+		return nil
+	}
+	result := make([]any, 0, len(children))
+	for _, child := range children {
+		found := child
+		if rest != "" {
+			found = valueAtPath(child, rest)
+		}
+		if found == nil {
+			continue
+		}
+		if list, ok := found.([]any); ok {
+			result = append(result, list...)
+		} else {
+			result = append(result, found)
+		}
+	}
+	return result
 }
 
 func valueAtPathSegment(value any, segment string) (any, bool) {

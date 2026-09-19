@@ -368,3 +368,20 @@ func TestRecordIdentityJoinsParentScopedPaths(t *testing.T) {
 		}
 	}
 }
+
+func TestValueAtPathFlattensWildcardSegments(t *testing.T) {
+	t.Parallel()
+
+	data := map[string]any{"data": map[string]any{"items": []any{
+		map[string]any{"name": "a", "versionedHttpApis": []any{map[string]any{"httpApiId": "api-1"}, map[string]any{"httpApiId": "api-2"}}},
+		map[string]any{"name": "b", "versionedHttpApis": []any{map[string]any{"httpApiId": "api-3"}}},
+		map[string]any{"name": "c"},
+	}}}
+	got, ok := valueAtPath(data, "data.items.*.versionedHttpApis").([]any)
+	if !ok || len(got) != 3 || recordIdentity(got[2], "httpApiId") != "api-3" {
+		t.Fatalf("flattened = %#v", got)
+	}
+	if names, _ := valueAtPath(data, "data.items.*.name").([]any); len(names) != 3 {
+		t.Fatalf("names = %#v", names)
+	}
+}
