@@ -955,3 +955,28 @@ type capturedJobLog struct {
 	message string
 	payload map[string]any
 }
+
+func TestMissingResourceCodesAreNotFound(t *testing.T) {
+	t.Parallel()
+
+	for code, notFound := range map[string]bool{
+		"InstanceNotExist":         true,
+		"ContactNotExists":         true,
+		"EventBusNotExist":         true,
+		"ServiceNotExist":          false,
+		"ProductNotExists":         false,
+		"AccountNotExisted":        false,
+		"InvalidRegionId.NotExist": false,
+		"UserNotExist":             false,
+		"InstanceNotExistOrBusy":   false,
+	} {
+		err := alicloud.NormalizeError(&alicloud.APIError{Code: code, Message: "failed", StatusCode: 400})
+		var providerError *contracts.ProviderCallError
+		if !errors.As(err, &providerError) {
+			t.Fatalf("%s: %v", code, err)
+		}
+		if (providerError.Provider.Category == execution.ErrorNotFound) != notFound {
+			t.Errorf("%s category = %s", code, providerError.Provider.Category)
+		}
+	}
+}

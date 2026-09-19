@@ -470,6 +470,22 @@ func (e *APIError) Error() string {
 	return e.Code + ": " + e.Message
 }
 
+// missingResourceCode reports the ...NotExist(s) codes many Alibaba Cloud
+// products use for a missing resource, such as InstanceNotExist or
+// ContactNotExists. Codes about the account, service, product, region or
+// user are excluded: they describe the caller, never the resource.
+func missingResourceCode(code string) bool {
+	if !strings.HasSuffix(code, "notexist") && !strings.HasSuffix(code, "notexists") {
+		return false
+	}
+	for _, subject := range []string{"account", "service", "product", "region", "user"} {
+		if strings.Contains(code, subject) {
+			return false
+		}
+	}
+	return true
+}
+
 func NormalizeError(err error) error {
 	if err == nil {
 		return nil
@@ -539,6 +555,7 @@ func NormalizeError(err error) error {
 		case (code == "704203" && strings.Contains(message, "resource group status is deleted")) ||
 			code == "odps-0420061" ||
 			apiError.StatusCode == 404 || strings.Contains(code, "notfound") || strings.Contains(code, "not_found") ||
+			missingResourceCode(code) ||
 			(apiError.StatusCode == http.StatusBadRequest &&
 				(strings.Contains(message, "does not exist") || strings.Contains(message, "不存在"))):
 			providerError.Category = execution.ErrorNotFound
