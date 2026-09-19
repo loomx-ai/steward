@@ -61,6 +61,10 @@ initialization, embedded HTML/JavaScript, version reporting, and server status/s
 
 ## Publish a version
 
+Write the release notes in `release-notes/v<version>.md` and commit them
+before tagging. The publish job uses that file as the release body; without
+it, GitHub only generates a list of merged pull requests.
+
 Choose an unused SemVer tag, such as `v1.2.3` or `v1.2.3-rc.1`, on the reviewed
 commit and push that tag. A tag push runs the full reusable test workflow,
 builds all platforms, and publishes only after both succeed:

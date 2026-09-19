@@ -177,6 +177,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: release-notes
       - uses: actions/download-artifact@v7
         with:
           name: release
@@ -189,4 +192,6 @@ jobs:
         run: |
           options=()
           if [[ "$VERSION" == *-* ]]; then options+=(--prerelease --latest=false); fi
-          gh release create "v$VERSION" dist/* --verify-tag --title "Steward v$VERSION" --generate-notes "${options[@]}"
+          notes="release-notes/v$VERSION.md"
+          if [[ -f "$notes" ]]; then options+=(--notes-file "$notes"); else options+=(--generate-notes); fi
+          gh release create "v$VERSION" dist/* --verify-tag --title "Steward v$VERSION" "${options[@]}"
