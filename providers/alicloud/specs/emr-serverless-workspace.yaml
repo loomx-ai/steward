@@ -31,7 +31,6 @@ fields:
   name: workspaceName
   state: workspaceStatus
   createdAt: createTime
-  expireTime: expireTime
   paymentType: paymentType
   regionId: regionId
   resourceGroupId: resourceGroupId

@@ -2327,7 +2327,7 @@ func TestSpecActionsConditionallyDisableDeletionProtectionBeforeDelete(t *testin
 			nativeID: "dds-a", readOperation: "AlibabaCloud.MongoDB.DescribeDBInstanceAttribute",
 			disableOperation: "AlibabaCloud.MongoDB.ModifyDBInstanceAttribute",
 			readData: map[string]any{"DBInstances": map[string]any{
-				"DBInstanceAttribute": []any{map[string]any{
+				"DBInstance": []any{map[string]any{
 					"DBInstanceId": "dds-a", "DBInstanceStatus": "Running",
 					"DBInstanceReleaseProtection": true,
 				}},
@@ -2389,6 +2389,7 @@ func TestSpecActionsConditionallyDisableDeletionProtectionBeforeDelete(t *testin
 							Provider: asset.ProviderAliCloud, NativeType: test.nativeType,
 							NativeID: test.nativeID,
 						},
+						Normalized: map[string]any{"creator": "1234567890123456"},
 					},
 					Action: "delete", IdempotencyKey: "step-protected",
 				})
@@ -2449,6 +2450,7 @@ func TestSpecActionsConditionallyDisableDeletionProtectionBeforeDelete(t *testin
 							Provider: asset.ProviderAliCloud, NativeType: test.nativeType,
 							NativeID: test.nativeID,
 						},
+						Normalized: map[string]any{"creator": "1234567890123456"},
 					},
 					Action: "delete", IdempotencyKey: "step-unprotected",
 				})
@@ -2514,6 +2516,7 @@ func TestKMSKeyActionCapturesScheduledDeletionTimeFromReadback(t *testing.T) {
 				NativeType: alicloud.KMSKeyNativeType,
 				NativeID:   "key-a",
 			},
+			Normalized: map[string]any{"creator": "1234567890123456"},
 		},
 		Action: "delete", IdempotencyKey: "step-a",
 	}
@@ -2568,6 +2571,7 @@ func TestKMSKeyActionTreatsPendingDeletionAsAlreadyScheduled(t *testing.T) {
 				NativeType: alicloud.KMSKeyNativeType,
 				NativeID:   "key-a",
 			},
+			Normalized: map[string]any{"creator": "1234567890123456"},
 		},
 		Action: "delete", IdempotencyKey: "step-a",
 	})
@@ -3897,4 +3901,46 @@ func (c *failingACKClient) DescribeClusterNodes(context.Context, string) ([]alic
 func (c *failingACKClient) DeleteCluster(context.Context, alicloud.DeleteClusterRequest) (alicloud.DeleteClusterResponse, error) {
 	c.deleteCalls++
 	return alicloud.DeleteClusterResponse{}, c.err
+}
+
+func TestKMSKeyActionReadsAnUnrecordedCreatorBeforeDelete(t *testing.T) {
+	t.Parallel()
+
+	for _, test := range []struct {
+		name, creator, code string
+		category            execution.ErrorCategory
+	}{
+		{name: "service key", creator: "Rds", code: "CleanupUnsupported.ServiceManagedKMSKey", category: execution.ErrorUnsupported},
+		{name: "unreadable creator", code: "CleanupBlocked.KMSKeyCreatorUnknown", category: execution.ErrorProtected},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			metadata := map[string]any{"KeyId": "key-a", "KeyState": "Enabled", "DeletionProtection": "Disabled"}
+			if test.creator != "" {
+				metadata["Creator"] = test.creator
+			}
+			provider := &invocationProvider{results: []contracts.InvocationResult{
+				{RequestID: "describe-request", Data: map[string]any{"KeyMetadata": metadata}},
+				{RequestID: "must-not-be-used"},
+			}}
+			hook, err := alicloud.NewActionHook(provider, "connection-a", "cn-hangzhou", alicloud.KMSKeyNativeType)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = hook.Execute(context.Background(), contracts.ActionRequest{
+				Asset: asset.Asset{ID: "asset-a", Identity: asset.Identity{
+					Provider: asset.ProviderAliCloud, NativeType: alicloud.KMSKeyNativeType, NativeID: "key-a",
+				}},
+				Action: "delete", IdempotencyKey: "step-a",
+			})
+			var providerError *contracts.ProviderCallError
+			if !errors.As(err, &providerError) || providerError.Provider.Code != test.code ||
+				providerError.Provider.Category != test.category {
+				t.Fatalf("error = %v", err)
+			}
+			if len(provider.invocations) != 1 || provider.invocations[0].Operation != "AlibabaCloud.KMS.DescribeKey" {
+				t.Fatalf("invocations = %+v", provider.invocations)
+			}
+		})
+	}
 }

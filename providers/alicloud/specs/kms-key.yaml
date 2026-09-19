@@ -24,6 +24,13 @@ discovery:
       pageSizeParameter: PageSize
       totalPath: TotalCount
       maxPageSize: 100
+  enrich:
+    operation: AlibabaCloud.KMS.DescribeKey
+    parameters:
+      KeyId: resources.nativeId
+    itemsPath: KeyMetadata
+    identityPath: KeyId
+    maxBatchSize: 1
 fields:
   name: KeyId
   creator: Creator

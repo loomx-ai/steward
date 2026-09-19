@@ -42,7 +42,6 @@ fields:
   applicationType: ApplicationType
   dbClusterId: DBClusterId
   polarFSInstanceId: PolarFSInstanceId
-  resourceGroupId: ResourceGroupId
   vpcId: VPCId
   vSwitchId: VSwitchId
   zoneId: ZoneId

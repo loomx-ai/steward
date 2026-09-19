@@ -73,7 +73,7 @@ discovery:
       maxPageSize: 100
   detail:
     operation: DescribeClusterDetail
-    itemsPath: Cluster
+    itemsPath: $
     identityPath: cluster_id
 fields:
   name: name

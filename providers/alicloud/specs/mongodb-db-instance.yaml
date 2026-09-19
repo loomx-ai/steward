@@ -56,7 +56,7 @@ actions:
         operation: AlibabaCloud.MongoDB.DescribeDBInstanceAttribute
         parameters:
           DBInstanceId: resource.nativeId
-        itemsPath: DBInstances.DBInstanceAttribute
+        itemsPath: DBInstances.DBInstance
         identityPath: DBInstanceId
         statePath: DBInstanceStatus
       path: DBInstanceReleaseProtection

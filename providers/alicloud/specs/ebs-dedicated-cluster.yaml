@@ -35,5 +35,5 @@ fields:
   regionId: RegionId
   zoneId: ZoneId
   resourceGroupId: ResourceGroupId
-  totalCapacity: TotalCapacity
-  availableCapacity: AvailableCapacity
+  totalCapacity: DedicatedBlockStorageClusterCapacity.TotalCapacity
+  availableCapacity: DedicatedBlockStorageClusterCapacity.AvailableCapacity

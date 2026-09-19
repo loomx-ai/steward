@@ -25,7 +25,7 @@ discovery:
       totalPath: TotalItems
       maxPageSize: 100
 fields:
-  name: InstanceName
+  name: Config.InstanceName
   createdAt: CreateTime
   expireTime: ExpireTime
   paymentType: PaymentType

@@ -232,6 +232,11 @@ func (h *ResourceAction) Execute(ctx context.Context, request contracts.ActionRe
 	if err := h.unsupportedCleanupError(request.Asset); err != nil {
 		return contracts.ActionResult{}, err
 	}
+	if h.nativeType == KMSKeyNativeType {
+		if err := h.verifyKMSKeyCreator(ctx, request); err != nil {
+			return contracts.ActionResult{}, err
+		}
+	}
 	if h.nativeType == SLSProjectNativeType {
 		return h.deleteSLSProject(ctx, request)
 	}
@@ -3067,6 +3072,31 @@ func nonEmptyNormalizedCollection(value any) bool {
 	default:
 		return false
 	}
+}
+
+// verifyKMSKeyCreator reads the key's creator live when the inventory did not
+// record it. A key created by a cloud service must not be scheduled for
+// deletion, and a key whose creator cannot be read is not assumed to be the
+// account's own.
+func (h *ResourceAction) verifyKMSKeyCreator(ctx context.Context, request contracts.ActionRequest) error {
+	if creator, _ := serviceManagedKMSCreator(request.Asset.Normalized); creator != "" {
+		return nil
+	}
+	readback, result, resource, err := h.readbackDetails(ctx, request)
+	if err != nil || !readback.Exists {
+		return err
+	}
+	live := request.Asset
+	live.Normalized = map[string]any{"Creator": stringValue(resource["Creator"])}
+	if creator, _ := serviceManagedKMSCreator(live.Normalized); creator == "" {
+		return &contracts.ProviderCallError{Provider: execution.ProviderError{
+			Category:  execution.ErrorProtected,
+			Code:      "CleanupBlocked.KMSKeyCreatorUnknown",
+			Message:   "the KMS key's creator could not be read, so it cannot be confirmed that the account owns the key",
+			RequestID: result.RequestID,
+		}}
+	}
+	return h.unsupportedCleanupError(live)
 }
 
 func serviceManagedKMSCreator(normalized map[string]any) (string, bool) {

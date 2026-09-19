@@ -49,6 +49,7 @@ var topologyEnrichers = map[string]func(
 	dtsInstanceNativeType:        enrichDTSInventoryTopology,
 	ossBucketNativeType:          enrichOSSBucketProperties,
 	polarDBApplicationNativeType: enrichPolarDBApplicationTopology,
+	KMSKeyNativeType:             enrichKMSKeyMetadata,
 }
 
 func (r *Runtime) topologyDetailDefinitions() []topologyDetailDefinition {
@@ -392,6 +393,24 @@ func enrichDiskTopology(items []contracts.InventoryItem, details map[string]map[
 		copyTopologyString(normalized, "zone_id", detail["ZoneId"])
 		copyTopologyString(normalized, "disk_type", detail["Type"])
 		copyTopologyValue(normalized, "delete_with_instance", detail["DeleteWithInstance"])
+		return normalized
+	})
+}
+
+// enrichKMSKeyMetadata records who created a key and whether it can be
+// deleted. ListKeys returns only key IDs; a key created by a cloud service is
+// reported by DescribeKey's Creator and must not be scheduled for deletion.
+func enrichKMSKeyMetadata(items []contracts.InventoryItem, details map[string]map[string]any) []contracts.InventoryItem {
+	return enrichTopologyItems(items, KMSKeyNativeType, details, func(detail map[string]any) map[string]any {
+		normalized := make(map[string]any, 8)
+		copyTopologyString(normalized, "creator", detail["Creator"])
+		copyTopologyString(normalized, "state", detail["KeyState"])
+		copyTopologyString(normalized, "createdAt", detail["CreationDate"])
+		copyTopologyString(normalized, "DeletionProtection", detail["DeletionProtection"])
+		copyTopologyString(normalized, "keyUsage", detail["KeyUsage"])
+		copyTopologyString(normalized, "keySpec", detail["KeySpec"])
+		copyTopologyString(normalized, "protectionLevel", detail["ProtectionLevel"])
+		copyTopologyString(normalized, "description", detail["Description"])
 		return normalized
 	})
 }
