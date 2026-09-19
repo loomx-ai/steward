@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CMS::MonitorGroup
+  class: observability.monitoring_group
+presentation:
+  consoleLinkTemplate: "https://cms.console.aliyun.com/#/groupDetail/all/{nativeId}/dashboard"
+  displayNames:
+    zh-CN: 云监控应用分组
+    en-US: CloudMonitor Application Group
+  icon: application
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.CMS.DescribeMonitorGroups
+    itemsPath: Resources.Resource
+    identityPath: GroupId
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: Total
+      maxPageSize: 100
+fields:
+  name: GroupName
+  createdAt: GmtCreate
+  groupType: Type
+  serviceId: ServiceId
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.CMS.DeleteMonitorGroup
+    parameters:
+      GroupId: resource.nativeId
+    preconditions:
+      - path: Type
+        allowedValues: [custom]
+        reason: application groups synchronized from another service, tags or resource groups are recreated by their source
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CMS.DescribeMonitorGroups
+      parameters:
+        GroupId: resource.nativeId
+        PageSize: 1
+      itemsPath: Resources.Resource
+      identityPath: GroupId

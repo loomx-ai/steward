@@ -2398,6 +2398,222 @@
    "RequestId": "9EC1DB0F-EE53-5D36-B5DA-71CB******",
    "Success": true
   },
+  "Cms@2019-01-01#DescribeContactGroupList": {
+   "Code": "200",
+   "ContactGroupList": {
+    "ContactGroup": [
+     {
+      "Contacts": {
+       "Contact": [
+        "135xxxx8066"
+       ]
+      },
+      "CreateTime": 0,
+      "Describe": "Devops-运维组",
+      "EnableSubscribed": false,
+      "EnabledWeeklyReport": false,
+      "Name": "name",
+      "UpdateTime": 0
+     }
+    ]
+   },
+   "ContactGroups": {
+    "ContactGroup": [
+     "云账号报警联系人"
+    ]
+   },
+   "Message": "success",
+   "RequestId": "916EE694-03C2-47B6-85EE-5054E3C168D3",
+   "Success": true,
+   "Total": 22
+  },
+  "Cms@2019-01-01#DescribeContactList": {
+   "Code": "200",
+   "Contacts": {
+    "Contact": [
+     {
+      "Channels": {
+       "AliIM": "Alice",
+       "DingWebHook": "https://oapi.dingtalk.com/robot/send?access_token=9bf44f8189597d07dfdd7a123455ffc112****",
+       "Mail": "Alice@example.com",
+       "SMS": "1333333****"
+      },
+      "ChannelsState": {
+       "AliIM": "OK",
+       "DingWebHook": "OK",
+       "Mail": "PENDING",
+       "SMS": "OK"
+      },
+      "ContactGroups": {
+       "ContactGroup": [
+        "{ \"ContactGroup\": [ \t\"ECS_Group\", \"Jim\" ] }"
+       ]
+      },
+      "CreateTime": 1552356159000,
+      "Desc": "ECS",
+      "Lang": "zh-cn",
+      "Name": "Alice",
+      "UpdateTime": 1552356159000
+     }
+    ]
+   },
+   "Message": "The Request is not authorization.",
+   "RequestId": "06D5ECC2-B9BE-42A4-8FA3-1A610FB08B83",
+   "Success": true,
+   "Total": 15
+  },
+  "Cms@2019-01-01#DescribeMetricRuleList": {
+   "Alarms": {
+    "Alarm": [
+     {
+      "AlertState": "OK",
+      "CompositeExpression": {
+       "ExpressionList": {
+        "ExpressionList": [
+         {
+          "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+          "MetricName": "cpu_total",
+          "Period": 60,
+          "Statistics": "$Maximum",
+          "Threshold": "90"
+         }
+        ]
+       },
+       "ExpressionListJoin": "||",
+       "ExpressionRaw": "$Average > ($instanceId == 'i-io8kfvcpp7x5****'? 80: 50)",
+       "Level": "CRITICAL",
+       "Times": 3
+      },
+      "ContactGroups": "ECS_Alarm",
+      "Dimensions": "[{\"instanceId\":\"i-2ze2d6j5uhg20x47****\"}]",
+      "EffectiveInterval": "05:31-23:59",
+      "EnableState": true,
+      "Escalations": {
+       "Critical": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "PreCondition": "$Average>80",
+        "Statistics": "Average",
+        "Threshold": "90",
+        "Times": 3
+       },
+       "Info": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "PreCondition": "$Average>80",
+        "Statistics": "Average",
+        "Threshold": "90",
+        "Times": 3
+       },
+       "Warn": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "PreCondition": "$Average>80",
+        "Statistics": "Average",
+        "Threshold": "90",
+        "Times": 3
+       }
+      },
+      "GmtCreate": 1760432061000,
+      "GmtUpdate": "1760432061000",
+      "GroupId": "7301****",
+      "GroupName": "ECS_Group",
+      "Labels": {
+       "Labels": [
+        {
+         "Key": "cmsRuleKey",
+         "Value": "cmsRuleValue"
+        }
+       ]
+      },
+      "MailSubject": "\"${serviceType}-${metricName}-${levelDescription} notification(${dimensions})\"",
+      "MetricName": "cpu_total",
+      "Namespace": "acs_ecs_dashboard",
+      "NoDataPolicy": "KEEP_LAST_STATE",
+      "NoEffectiveInterval": "00:00-05:30",
+      "Period": "60",
+      "ProductCategory": "slb",
+      "Prometheus": {
+       "Annotations": {
+        "Annotations": [
+         {
+          "Key": "summary",
+          "Value": "{{ $labels.instance }} CPU usage above 10% {current value: {{ humanizePercentage $value }} }"
+         }
+        ]
+       },
+       "Level": "CRITICAL",
+       "PromQL": "CpuUsage{instanceId=\"xxxx\"}[1m]>90",
+       "Times": 3
+      },
+      "Resources": "[{\\\"instanceId\\\":\\\"i-2ze2d6j5uhg20x47****\\\"}]",
+      "RuleId": "applyTemplate344cfd42-0f32-4fd6-805a-88d7908a****",
+      "RuleName": "Rule_01",
+      "SendOK": true,
+      "SilenceTime": 86400,
+      "SourceType": "METRIC",
+      "Webhook": "https://www.aliyun.com"
+     }
+    ]
+   },
+   "Code": 200,
+   "Message": "The specified resource is not found.",
+   "RequestId": "386C6712-335F-5054-930A-CC92B851ECBA",
+   "Success": true,
+   "Total": "1"
+  },
+  "Cms@2019-01-01#DescribeMonitorGroups": {
+   "Code": 200,
+   "Message": "The specified resource is not found.",
+   "PageNumber": 1,
+   "PageSize": 30,
+   "RequestId": "F02B299A-D374-4595-9F55-7534D604F132",
+   "Resources": {
+    "Resource": [
+     {
+      "BindUrl": "https://aliyun.com",
+      "ContactGroups": {
+       "ContactGroup": [
+        {
+         "Name": "CloudMonitor"
+        }
+       ]
+      },
+      "DynamicTagRuleId": "6b882d9a-5117-42e2-9d0c-4749a0c6****",
+      "GmtCreate": 1603181891000,
+      "GmtModified": 1603181891000,
+      "GroupFounderTagKey": "GroupKey1",
+      "GroupFounderTagValue": "GroupValue1",
+      "GroupId": 12345,
+      "GroupName": "test123",
+      "ResourceGroupId": "rg-aek2hopjh*******",
+      "ServiceId": "49****",
+      "Tags": {
+       "Tag": [
+        {
+         "Key": "tagKey1",
+         "Value": "tagValue1"
+        }
+       ]
+      },
+      "TemplateIds": {
+       "TemplateId": [
+        "92****"
+       ]
+      },
+      "TemplateInfos": {
+       "TemplateInfo": [
+        {
+         "EffectTime": 1603181891000,
+         "TemplateId": "123***",
+         "Ver": "0"
+        }
+       ]
+      },
+      "Type": "custom"
+     }
+    ]
+   },
+   "Success": true,
+   "Total": 10
+  },
   "Cms@2024-03-30#GetPrometheusInstance": {
    "prometheusInstance": {
     "accessType": "readOnly",

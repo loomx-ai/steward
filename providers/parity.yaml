@@ -456,6 +456,77 @@ resources:
   status: pending_verification
   notes: Uptime checks are only one monitoring component. Trace application discovery is still a separate
     gap to assess.
+- alicloud: ACS::CMS::AlarmContact
+  spec: providers/alicloud/specs/cms-alarm-contact.yaml
+  class: observability.alert_contact
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - monitoring.googleapis.com/NotificationChannel
+  azure:
+    notes: Alert recipients are receivers inside Microsoft.Insights/actionGroups, not separate resources.
+  aws:
+    notes: CloudWatch alarm recipients are SNS subscriptions, which are not modeled yet.
+  status: pending_verification
+- alicloud: ACS::CMS::AlarmContactGroup
+  spec: providers/alicloud/specs/cms-alarm-contact-group.yaml
+  class: observability.alert_contact_group
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    notes: Alert policies list notification channels directly; there is no channel group.
+  azure:
+    resources:
+    - Microsoft.Insights/actionGroups
+  aws:
+    resources:
+    - AWS::SNS::Topic
+  status: pending_verification
+  notes: DescribeContactGroupList has no name filter, so a readback proves absence only when one
+    response holds every contact group.
+- alicloud: ACS::CMS::MetricRule
+  spec: providers/alicloud/specs/cms-metric-rule.yaml
+  class: observability.alert_rule
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - monitoring.googleapis.com/AlertPolicy
+  azure:
+    resources:
+    - Microsoft.Insights/metricAlerts
+  aws:
+    resources:
+    - AWS::CloudWatch::Alarm
+  status: pending_verification
+- alicloud: ACS::CMS::MonitorGroup
+  spec: providers/alicloud/specs/cms-monitor-group.yaml
+  class: observability.monitoring_group
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - monitoring.googleapis.com/Group
+  azure:
+    notes: Azure Monitor scopes alerts to resource groups and subscriptions; there is no monitoring group.
+  aws:
+    notes: AWS Resource Groups are not modeled yet.
+  status: pending_verification
+  notes: Only custom application groups are deleted; groups synchronized from another service, tags or
+    resource groups are recreated by their source.
 - alicloud: ACS::CR::Namespace
   spec: providers/alicloud/specs/cr-namespace.yaml
   class: container.registry_namespace

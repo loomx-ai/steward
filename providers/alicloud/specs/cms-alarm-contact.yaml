@@ -1,0 +1,51 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CMS::AlarmContact
+  class: observability.alert_contact
+presentation:
+  consoleLinkTemplate: "https://cms.console.aliyun.com/#/alarmContact"
+  displayNames:
+    zh-CN: 云监控报警联系人
+    en-US: CloudMonitor Alert Contact
+  icon: user
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.CMS.DescribeContactList
+    itemsPath: Contacts.Contact
+    identityPath: Name
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: Total
+      maxPageSize: 100
+fields:
+  name: Name
+  createdAt: CreateTime
+  updatedAt: UpdateTime
+  description: Desc
+actions:
+  delete:
+    operation: AlibabaCloud.CMS.DeleteContact
+    parameters:
+      ContactName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CMS.DescribeContactList
+      parameters:
+        ContactName: resource.nativeId
+        PageSize: 100
+      itemsPath: Contacts.Contact
+      identityPath: Name
+      pagination:
+        type: page-number
+        pageParameter: PageNumber
+        pageSizeParameter: PageSize
+        totalPath: Total
+        maxPageSize: 100

@@ -199,3 +199,48 @@ func TestRepositoryActionFinishesWhenTheRegistryReportsItDeleted(t *testing.T) {
 		t.Fatalf("read invocation=%+v", read)
 	}
 }
+
+func TestContactGroupReadbackTrustsOnlyACompleteListing(t *testing.T) {
+	t.Parallel()
+
+	groups := func(total int, names ...string) contracts.InvocationResult {
+		items := make([]any, 0, len(names))
+		for _, name := range names {
+			items = append(items, map[string]any{"Name": name})
+		}
+		return contracts.InvocationResult{Data: map[string]any{"Total": total, "ContactGroupList": map[string]any{"ContactGroup": items}}}
+	}
+	request := contracts.ActionRequest{
+		Asset:  asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAliCloud, NativeType: "ACS::CMS::AlarmContactGroup", NativeID: "ops"}},
+		Action: "delete", IdempotencyKey: "contact-group-step",
+	}
+	for _, test := range []struct {
+		name   string
+		result contracts.InvocationResult
+		absent bool
+		fails  bool
+	}{
+		{name: "present", result: groups(2, "default", "ops")},
+		{name: "complete listing without the group", result: groups(1, "default"), absent: true},
+		{name: "one page of a longer listing", result: groups(250, "default"), fails: true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			provider := &invocationProvider{results: []contracts.InvocationResult{test.result}}
+			hook, err := alicloud.NewActionHook(provider, "connection-a", "cn-hangzhou", "ACS::CMS::AlarmContactGroup")
+			if err != nil {
+				t.Fatal(err)
+			}
+			readback, err := hook.Readback(context.Background(), request)
+			if test.fails {
+				if err == nil {
+					t.Fatalf("readback = %+v, want an incomplete listing to fail", readback)
+				}
+				return
+			}
+			if err != nil || readback.Exists == test.absent {
+				t.Fatalf("readback = %+v, err = %v", readback, err)
+			}
+		})
+	}
+}

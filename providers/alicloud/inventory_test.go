@@ -928,7 +928,7 @@ func TestEmbeddedCatalogAndStrictSpecsCompile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load Alibaba Cloud provider bundle: %v", err)
 	}
-	if bundle.Provider != asset.ProviderAliCloud || len(bundle.Specs) != 184 || len(bundle.Hash) != 64 {
+	if bundle.Provider != asset.ProviderAliCloud || len(bundle.Specs) != 188 || len(bundle.Hash) != 64 {
 		t.Fatalf("compiled bundle=%+v", bundle)
 	}
 }

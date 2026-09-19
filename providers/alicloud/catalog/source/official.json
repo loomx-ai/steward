@@ -7310,6 +7310,738 @@
   },
   {
    "apis": {
+    "DeleteContact": {
+     "deprecated": false,
+     "error_codes": [
+      "ContactNotExists",
+      "InternalError",
+      "InvalidAuthorization",
+      "InvalidParameterValue"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ContactName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Message",
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": "none"
+    },
+    "DeleteContactGroup": {
+     "deprecated": false,
+     "error_codes": [
+      "ContactNotExists",
+      "InternalError",
+      "InvalidAuthorization",
+      "InvalidParameterValue"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ContactGroupName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Message",
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": "none"
+    },
+    "DeleteMetricRules": {
+     "deprecated": false,
+     "error_codes": [
+      "AccessDeniedException",
+      "AccessForbidden",
+      "InternalError",
+      "InternetServerError",
+      "LimitExceeded",
+      "ParameterInvalid",
+      "ResourceNotFound",
+      "ThrottlingException"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "Id",
+       "required": true,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Message",
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": "none"
+    },
+    "DeleteMonitorGroup": {
+     "deprecated": false,
+     "error_codes": [
+      "%s",
+      "AccessDeniedException",
+      "AccessForbidden",
+      "InternalError",
+      "InvalidClientTokenId",
+      "InvalidQueryParameter",
+      "LimitExceeded",
+      "ResourceConflict",
+      "ResourceNotFound",
+      "Throttli∂ngException"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "GroupId",
+       "required": true,
+       "type": "integer"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Group",
+      "Group.ContactGroups",
+      "Group.ContactGroups.ContactGroup",
+      "Group.ContactGroups.ContactGroup.Name",
+      "Group.GroupName",
+      "Message",
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": "high"
+    },
+    "DescribeContactGroupList": {
+     "deprecated": false,
+     "error_codes": [
+      "InternalError",
+      "InvalidAuthorization",
+      "InvalidParameter",
+      "ResourceNotFound"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "ContactGroupList",
+      "ContactGroupList.ContactGroup",
+      "ContactGroupList.ContactGroup.Contacts",
+      "ContactGroupList.ContactGroup.Contacts.Contact",
+      "ContactGroupList.ContactGroup.CreateTime",
+      "ContactGroupList.ContactGroup.Describe",
+      "ContactGroupList.ContactGroup.EnableSubscribed",
+      "ContactGroupList.ContactGroup.EnabledWeeklyReport",
+      "ContactGroupList.ContactGroup.Name",
+      "ContactGroupList.ContactGroup.UpdateTime",
+      "ContactGroups",
+      "ContactGroups.ContactGroup",
+      "Message",
+      "RequestId",
+      "Success",
+      "Total"
+     ],
+     "risk_type": "none"
+    },
+    "DescribeContactList": {
+     "deprecated": false,
+     "error_codes": [
+      "InternalError",
+      "InvalidAuthorization",
+      "InvalidParameter",
+      "ResourceNotFound"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ChanelType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ChanelValue",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ContactName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Contacts",
+      "Contacts.Contact",
+      "Contacts.Contact.Channels",
+      "Contacts.Contact.Channels.AliIM",
+      "Contacts.Contact.Channels.DingWebHook",
+      "Contacts.Contact.Channels.Mail",
+      "Contacts.Contact.Channels.SMS",
+      "Contacts.Contact.ChannelsState",
+      "Contacts.Contact.ChannelsState.AliIM",
+      "Contacts.Contact.ChannelsState.DingWebHook",
+      "Contacts.Contact.ChannelsState.Mail",
+      "Contacts.Contact.ChannelsState.SMS",
+      "Contacts.Contact.ContactGroups",
+      "Contacts.Contact.ContactGroups.ContactGroup",
+      "Contacts.Contact.CreateTime",
+      "Contacts.Contact.Desc",
+      "Contacts.Contact.Lang",
+      "Contacts.Contact.Name",
+      "Contacts.Contact.UpdateTime",
+      "Message",
+      "RequestId",
+      "Success",
+      "Total"
+     ],
+     "risk_type": "none"
+    },
+    "DescribeMetricRuleList": {
+     "deprecated": false,
+     "error_codes": [
+      "InternalError",
+      "InvalidAuthorization",
+      "InvalidParameter",
+      "ResourceNotFound"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AlertState",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Dimensions",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "EnableState",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "GroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MetricName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Namespace",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Page",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "RuleIds",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RuleName",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Alarms",
+      "Alarms.Alarm",
+      "Alarms.Alarm.AlertState",
+      "Alarms.Alarm.CompositeExpression",
+      "Alarms.Alarm.CompositeExpression.ExpressionList",
+      "Alarms.Alarm.CompositeExpression.ExpressionList.ExpressionList",
+      "Alarms.Alarm.CompositeExpression.ExpressionList.ExpressionList.ComparisonOperator",
+      "Alarms.Alarm.CompositeExpression.ExpressionList.ExpressionList.MetricName",
+      "Alarms.Alarm.CompositeExpression.ExpressionList.ExpressionList.Period",
+      "Alarms.Alarm.CompositeExpression.ExpressionList.ExpressionList.Statistics",
+      "Alarms.Alarm.CompositeExpression.ExpressionList.ExpressionList.Threshold",
+      "Alarms.Alarm.CompositeExpression.ExpressionListJoin",
+      "Alarms.Alarm.CompositeExpression.ExpressionRaw",
+      "Alarms.Alarm.CompositeExpression.Level",
+      "Alarms.Alarm.CompositeExpression.Times",
+      "Alarms.Alarm.ContactGroups",
+      "Alarms.Alarm.Dimensions",
+      "Alarms.Alarm.EffectiveInterval",
+      "Alarms.Alarm.EnableState",
+      "Alarms.Alarm.Escalations",
+      "Alarms.Alarm.Escalations.Critical",
+      "Alarms.Alarm.Escalations.Critical.ComparisonOperator",
+      "Alarms.Alarm.Escalations.Critical.PreCondition",
+      "Alarms.Alarm.Escalations.Critical.Statistics",
+      "Alarms.Alarm.Escalations.Critical.Threshold",
+      "Alarms.Alarm.Escalations.Critical.Times",
+      "Alarms.Alarm.Escalations.Info",
+      "Alarms.Alarm.Escalations.Info.ComparisonOperator",
+      "Alarms.Alarm.Escalations.Info.PreCondition",
+      "Alarms.Alarm.Escalations.Info.Statistics",
+      "Alarms.Alarm.Escalations.Info.Threshold",
+      "Alarms.Alarm.Escalations.Info.Times",
+      "Alarms.Alarm.Escalations.Warn",
+      "Alarms.Alarm.Escalations.Warn.ComparisonOperator",
+      "Alarms.Alarm.Escalations.Warn.PreCondition",
+      "Alarms.Alarm.Escalations.Warn.Statistics",
+      "Alarms.Alarm.Escalations.Warn.Threshold",
+      "Alarms.Alarm.Escalations.Warn.Times",
+      "Alarms.Alarm.GmtCreate",
+      "Alarms.Alarm.GmtUpdate",
+      "Alarms.Alarm.GroupId",
+      "Alarms.Alarm.GroupName",
+      "Alarms.Alarm.Labels",
+      "Alarms.Alarm.Labels.Labels",
+      "Alarms.Alarm.Labels.Labels.Key",
+      "Alarms.Alarm.Labels.Labels.Value",
+      "Alarms.Alarm.MailSubject",
+      "Alarms.Alarm.MetricName",
+      "Alarms.Alarm.Namespace",
+      "Alarms.Alarm.NoDataPolicy",
+      "Alarms.Alarm.NoEffectiveInterval",
+      "Alarms.Alarm.Period",
+      "Alarms.Alarm.ProductCategory",
+      "Alarms.Alarm.Prometheus",
+      "Alarms.Alarm.Prometheus.Annotations",
+      "Alarms.Alarm.Prometheus.Annotations.Annotations",
+      "Alarms.Alarm.Prometheus.Annotations.Annotations.Key",
+      "Alarms.Alarm.Prometheus.Annotations.Annotations.Value",
+      "Alarms.Alarm.Prometheus.Level",
+      "Alarms.Alarm.Prometheus.PromQL",
+      "Alarms.Alarm.Prometheus.Times",
+      "Alarms.Alarm.Resources",
+      "Alarms.Alarm.RuleId",
+      "Alarms.Alarm.RuleName",
+      "Alarms.Alarm.SendOK",
+      "Alarms.Alarm.SilenceTime",
+      "Alarms.Alarm.SourceType",
+      "Alarms.Alarm.Webhook",
+      "Code",
+      "Message",
+      "RequestId",
+      "Success",
+      "Total"
+     ],
+     "risk_type": "none"
+    },
+    "DescribeMonitorGroups": {
+     "deprecated": false,
+     "error_codes": [
+      "%s",
+      "AccessDeniedException",
+      "AccessForbidden",
+      "InternalError",
+      "LimitExceeded",
+      "ParameterInvalid",
+      "ResourceNotFound",
+      "Throttli∂ngException"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "DynamicTagRuleId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "GroupFounderTagKey",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "GroupFounderTagValue",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "GroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "GroupName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "IncludeTemplateHistory",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "InstanceId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Keyword",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "SelectContactGroups",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "Type",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Types",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Message",
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "Resources",
+      "Resources.Resource",
+      "Resources.Resource.BindUrl",
+      "Resources.Resource.ContactGroups",
+      "Resources.Resource.ContactGroups.ContactGroup",
+      "Resources.Resource.ContactGroups.ContactGroup.Name",
+      "Resources.Resource.DynamicTagRuleId",
+      "Resources.Resource.GmtCreate",
+      "Resources.Resource.GmtModified",
+      "Resources.Resource.GroupFounderTagKey",
+      "Resources.Resource.GroupFounderTagValue",
+      "Resources.Resource.GroupId",
+      "Resources.Resource.GroupName",
+      "Resources.Resource.ResourceGroupId",
+      "Resources.Resource.ServiceId",
+      "Resources.Resource.Tags",
+      "Resources.Resource.Tags.Tag",
+      "Resources.Resource.Tags.Tag.Key",
+      "Resources.Resource.Tags.Tag.Value",
+      "Resources.Resource.TemplateIds",
+      "Resources.Resource.TemplateIds.TemplateId",
+      "Resources.Resource.TemplateInfos",
+      "Resources.Resource.TemplateInfos.TemplateInfo",
+      "Resources.Resource.TemplateInfos.TemplateInfo.EffectTime",
+      "Resources.Resource.TemplateInfos.TemplateInfo.TemplateId",
+      "Resources.Resource.TemplateInfos.TemplateInfo.Ver",
+      "Resources.Resource.Type",
+      "Success",
+      "Total"
+     ],
+     "risk_type": "none"
+    }
+   },
+   "endpoints": [
+    {
+     "endpoint": "metrics.ap-northeast-1.aliyuncs.com",
+     "region": "ap-northeast-1"
+    },
+    {
+     "endpoint": "metrics.ap-northeast-2.aliyuncs.com",
+     "region": "ap-northeast-2"
+    },
+    {
+     "endpoint": "metrics.ap-south-1.aliyuncs.com",
+     "region": "ap-south-1"
+    },
+    {
+     "endpoint": "metrics.ap-southeast-1.aliyuncs.com",
+     "region": "ap-southeast-1"
+    },
+    {
+     "endpoint": "metrics.ap-southeast-3.aliyuncs.com",
+     "region": "ap-southeast-3"
+    },
+    {
+     "endpoint": "metrics.ap-southeast-5.aliyuncs.com",
+     "region": "ap-southeast-5"
+    },
+    {
+     "endpoint": "metrics.ap-southeast-6.aliyuncs.com",
+     "region": "ap-southeast-6"
+    },
+    {
+     "endpoint": "metrics.ap-southeast-7.aliyuncs.com",
+     "region": "ap-southeast-7"
+    },
+    {
+     "endpoint": "metrics.ap-southeast-8.aliyuncs.com",
+     "region": "ap-southeast-8"
+    },
+    {
+     "endpoint": "metrics.cn-beijing.aliyuncs.com",
+     "region": "cn-beijing"
+    },
+    {
+     "endpoint": "metrics.cn-beijing-finance-1.aliyuncs.com",
+     "region": "cn-beijing-finance-1"
+    },
+    {
+     "endpoint": "metrics.cn-chengdu.aliyuncs.com",
+     "region": "cn-chengdu"
+    },
+    {
+     "endpoint": "metrics.cn-fuzhou.aliyuncs.com",
+     "region": "cn-fuzhou"
+    },
+    {
+     "endpoint": "metrics.cn-guangzhou.aliyuncs.com",
+     "region": "cn-guangzhou"
+    },
+    {
+     "endpoint": "metrics.cn-hangzhou.aliyuncs.com",
+     "region": "cn-hangzhou"
+    },
+    {
+     "endpoint": "metrics.cn-hangzhou-finance.aliyuncs.com",
+     "region": "cn-hangzhou-finance"
+    },
+    {
+     "endpoint": "metrics.cn-heyuan.aliyuncs.com",
+     "region": "cn-heyuan"
+    },
+    {
+     "endpoint": "metrics.cn-heyuan-acdr-1.aliyuncs.com",
+     "region": "cn-heyuan-acdr-1"
+    },
+    {
+     "endpoint": "metrics.cn-hongkong.aliyuncs.com",
+     "region": "cn-hongkong"
+    },
+    {
+     "endpoint": "metrics.cn-huhehaote.aliyuncs.com",
+     "region": "cn-huhehaote"
+    },
+    {
+     "endpoint": "metrics.cn-nanjing.aliyuncs.com",
+     "region": "cn-nanjing"
+    },
+    {
+     "endpoint": "metrics.cn-north-2-gov-1.aliyuncs.com",
+     "region": "cn-north-2-gov-1"
+    },
+    {
+     "endpoint": "metrics.cn-qingdao.aliyuncs.com",
+     "region": "cn-qingdao"
+    },
+    {
+     "endpoint": "metrics.cn-shanghai.aliyuncs.com",
+     "region": "cn-shanghai"
+    },
+    {
+     "endpoint": "metrics.cn-shanghai-finance-1.aliyuncs.com",
+     "region": "cn-shanghai-finance-1"
+    },
+    {
+     "endpoint": "metrics.cn-shenzhen.aliyuncs.com",
+     "region": "cn-shenzhen"
+    },
+    {
+     "endpoint": "metrics.cn-shenzhen-finance-1.aliyuncs.com",
+     "region": "cn-shenzhen-finance-1"
+    },
+    {
+     "endpoint": "metrics.cn-wuhan-lr.aliyuncs.com",
+     "region": "cn-wuhan-lr"
+    },
+    {
+     "endpoint": "metrics.cn-wulanchabu.aliyuncs.com",
+     "region": "cn-wulanchabu"
+    },
+    {
+     "endpoint": "metrics.cn-wulanchabu-gic-1.aliyuncs.com",
+     "region": "cn-wulanchabu-gic-1"
+    },
+    {
+     "endpoint": "metrics.cn-zhangjiakou.aliyuncs.com",
+     "region": "cn-zhangjiakou"
+    },
+    {
+     "endpoint": "metrics.cn-zhengzhou-jva.aliyuncs.com",
+     "region": "cn-zhengzhou-jva"
+    },
+    {
+     "endpoint": "metrics.cn-zhongwei.aliyuncs.com",
+     "region": "cn-zhongwei"
+    },
+    {
+     "endpoint": "metrics.eu-central-1.aliyuncs.com",
+     "region": "eu-central-1"
+    },
+    {
+     "endpoint": "metrics.eu-west-1.aliyuncs.com",
+     "region": "eu-west-1"
+    },
+    {
+     "endpoint": "metrics.eu-west-2.aliyuncs.com",
+     "region": "eu-west-2"
+    },
+    {
+     "endpoint": "metrics.me-central-1.aliyuncs.com",
+     "region": "me-central-1"
+    },
+    {
+     "endpoint": "metrics.me-east-1.aliyuncs.com",
+     "region": "me-east-1"
+    },
+    {
+     "endpoint": "metrics.na-south-1.aliyuncs.com",
+     "region": "na-south-1"
+    },
+    {
+     "endpoint": "metrics.us-east-1.aliyuncs.com",
+     "region": "us-east-1"
+    },
+    {
+     "endpoint": "metrics.us-southeast-1.aliyuncs.com",
+     "region": "us-southeast-1"
+    },
+    {
+     "endpoint": "metrics.us-west-1.aliyuncs.com",
+     "region": "us-west-1"
+    }
+   ],
+   "product": "Cms",
+   "source_sha256": "23cd90542bf92fcb50f38659617ab1e6a816457b857108ce2645e9bfdfa3e757",
+   "source_uri": "https://api.aliyun.com/meta/v1/products/Cms/versions/2019-01-01/api-docs.json",
+   "style": "RPC",
+   "version": "2019-01-01"
+  },
+  {
+   "apis": {
     "DeletePrometheusInstance": {
      "deprecated": false,
      "error_codes": [],

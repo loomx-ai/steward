@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "08c06e9422be5852be197c5cebbc208f8e88229c395a5f46e5aadc458d8aaca5",
+    "checksum": "53eecbae5cfc90213696565c5a73e4f77a1f311d168db737d8a3fff90a86fc9e",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "dcd998b0e4b64004cbcb4cbcb7ffec76db0bdaf13b8686580ce20cd7686a8c42",
+  "content_checksum": "9ed31b2a50db400cf244fb2da55854bd045e19dfc4c55841866137df70a0576f",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -1891,6 +1891,166 @@
         "method": "POST",
         "path": "/",
         "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CMS.DeleteContact",
+      "name": "DeleteContact",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cms/contacts/{ContactName}",
+      "destructive": true,
+      "call": {
+        "product": "Cms",
+        "version": "2019-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "metrics.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CMS.DeleteContactGroup",
+      "name": "DeleteContactGroup",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cms/contact-groups/{ContactGroupName}",
+      "destructive": true,
+      "call": {
+        "product": "Cms",
+        "version": "2019-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "metrics.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CMS.DeleteMetricRules",
+      "name": "DeleteMetricRules",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cms/metric-rules/{RuleId}",
+      "destructive": true,
+      "call": {
+        "product": "Cms",
+        "version": "2019-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "metrics.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CMS.DeleteMonitorGroup",
+      "name": "DeleteMonitorGroup",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cms/monitor-groups/{GroupId}",
+      "destructive": true,
+      "call": {
+        "product": "Cms",
+        "version": "2019-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "metrics.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CMS.DescribeContactGroupList",
+      "name": "DescribeContactGroupList",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/cms/contact-groups",
+      "destructive": false,
+      "call": {
+        "product": "Cms",
+        "version": "2019-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "metrics.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CMS.DescribeContactList",
+      "name": "DescribeContactList",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/cms/contacts",
+      "destructive": false,
+      "call": {
+        "product": "Cms",
+        "version": "2019-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "metrics.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CMS.DescribeMetricRuleList",
+      "name": "DescribeMetricRuleList",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/cms/metric-rules",
+      "destructive": false,
+      "call": {
+        "product": "Cms",
+        "version": "2019-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "metrics.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CMS.DescribeMonitorGroups",
+      "name": "DescribeMonitorGroups",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/cms/monitor-groups",
+      "destructive": false,
+      "call": {
+        "product": "Cms",
+        "version": "2019-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "metrics.{region}.aliyuncs.com",
         "request_body_type": "formData",
         "body_type": "json",
         "parameter_position": "query"
@@ -10760,6 +10920,38 @@
       "display_name": "CEN VPN Attachment",
       "scope_kinds": [
         "region"
+      ]
+    },
+    {
+      "native_type": "ACS::CMS::AlarmContact",
+      "class": "observability.alert_contact",
+      "display_name": "CloudMonitor Alert Contact",
+      "scope_kinds": [
+        "global"
+      ]
+    },
+    {
+      "native_type": "ACS::CMS::AlarmContactGroup",
+      "class": "observability.alert_contact_group",
+      "display_name": "CloudMonitor Alert Contact Group",
+      "scope_kinds": [
+        "global"
+      ]
+    },
+    {
+      "native_type": "ACS::CMS::MetricRule",
+      "class": "observability.alert_rule",
+      "display_name": "CloudMonitor Alert Rule",
+      "scope_kinds": [
+        "global"
+      ]
+    },
+    {
+      "native_type": "ACS::CMS::MonitorGroup",
+      "class": "observability.monitoring_group",
+      "display_name": "CloudMonitor Application Group",
+      "scope_kinds": [
+        "global"
       ]
     },
     {

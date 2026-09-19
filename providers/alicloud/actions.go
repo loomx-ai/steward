@@ -3981,6 +3981,10 @@ func (h *ResourceAction) readDetails(
 		read.IdentityPath,
 		readbackIdentity(request.Asset),
 	)
+	if errors.Is(err, errReadbackNoMatch) && completeReadbackListing(result.Data, read) {
+		// The response holds every record and none is this resource.
+		return contracts.ReadbackResult{Exists: false, State: "absent", Data: result.Data}, result, nil, nil
+	}
 	if err != nil {
 		return contracts.ReadbackResult{}, result, nil, err
 	}
@@ -4164,12 +4168,28 @@ func readbackResource(
 		}
 	}
 	if foundResource {
-		return nil, false, fmt.Errorf(
-			"Alibaba Cloud readback returned resources but none matched native ID %q",
-			wantID,
-		)
+		return nil, false, fmt.Errorf("%w %q", errReadbackNoMatch, wantID)
 	}
 	return nil, false, nil
+}
+
+// errReadbackNoMatch reports a readback list that holds other resources but
+// not the requested one. On its own it proves nothing: the list may be one
+// page, or a filter may match loosely.
+var errReadbackNoMatch = errors.New("Alibaba Cloud readback returned resources but none matched native ID")
+
+// completeReadbackListing reports whether a readback that declares a total
+// returned every record in one response, so a missing resource is absent.
+func completeReadbackListing(data map[string]any, read spec.ProductAPISpec) bool {
+	if read.Pagination == nil || strings.TrimSpace(read.Pagination.TotalPath) == "" {
+		return false
+	}
+	total, ok := integerValue(valueAtPath(data, read.Pagination.TotalPath))
+	if !ok {
+		return false
+	}
+	items, ok := productAPIListValue(valueAtPath(data, read.ItemsPath))
+	return ok && total >= 0 && total <= len(items)
 }
 
 func validateReadbackIdentity(

@@ -3911,6 +3911,62 @@
         "x-operation-call": {"product":"cr","version":"2018-12-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/cms/monitor-groups": {
+      "get": {
+        "operationId": "CMS.DescribeMonitorGroups",
+        "x-operation-name": "DescribeMonitorGroups",
+        "x-operation-call": {"product":"Cms","version":"2019-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"metrics.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/cms/monitor-groups/{GroupId}": {
+      "delete": {
+        "operationId": "CMS.DeleteMonitorGroup",
+        "x-operation-name": "DeleteMonitorGroup",
+        "x-operation-call": {"product":"Cms","version":"2019-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"metrics.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/cms/contacts": {
+      "get": {
+        "operationId": "CMS.DescribeContactList",
+        "x-operation-name": "DescribeContactList",
+        "x-operation-call": {"product":"Cms","version":"2019-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"metrics.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/cms/contacts/{ContactName}": {
+      "delete": {
+        "operationId": "CMS.DeleteContact",
+        "x-operation-name": "DeleteContact",
+        "x-operation-call": {"product":"Cms","version":"2019-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"metrics.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/cms/contact-groups": {
+      "get": {
+        "operationId": "CMS.DescribeContactGroupList",
+        "x-operation-name": "DescribeContactGroupList",
+        "x-operation-call": {"product":"Cms","version":"2019-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"metrics.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/cms/contact-groups/{ContactGroupName}": {
+      "delete": {
+        "operationId": "CMS.DeleteContactGroup",
+        "x-operation-name": "DeleteContactGroup",
+        "x-operation-call": {"product":"Cms","version":"2019-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"metrics.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/cms/metric-rules": {
+      "get": {
+        "operationId": "CMS.DescribeMetricRuleList",
+        "x-operation-name": "DescribeMetricRuleList",
+        "x-operation-call": {"product":"Cms","version":"2019-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"metrics.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/cms/metric-rules/{RuleId}": {
+      "delete": {
+        "operationId": "CMS.DeleteMetricRules",
+        "x-operation-name": "DeleteMetricRules",
+        "x-operation-call": {"product":"Cms","version":"2019-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"metrics.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/container-registry/instances": {
       "get": {
         "operationId": "CR.ListInstance",
@@ -4010,6 +4066,10 @@
     {"nativeType": "ACS::CloudSSO::Group", "class": "identity.group", "displayName": "Cloud SSO Group", "scopeKinds": ["global"]},
     {"nativeType": "ACS::CloudStorageGateway::Gateway", "class": "storage.gateway", "displayName": "Cloud Storage Gateway", "scopeKinds": ["region"]},
     {"nativeType": "ACS::CloudFirewall::Instance", "class": "security.firewall", "displayName": "Cloud Firewall Instance", "scopeKinds": ["global"]},
+    {"nativeType": "ACS::CMS::AlarmContact", "class": "observability.alert_contact", "displayName": "CloudMonitor Alert Contact", "scopeKinds": ["global"]},
+    {"nativeType": "ACS::CMS::AlarmContactGroup", "class": "observability.alert_contact_group", "displayName": "CloudMonitor Alert Contact Group", "scopeKinds": ["global"]},
+    {"nativeType": "ACS::CMS::MetricRule", "class": "observability.alert_rule", "displayName": "CloudMonitor Alert Rule", "scopeKinds": ["global"]},
+    {"nativeType": "ACS::CMS::MonitorGroup", "class": "observability.monitoring_group", "displayName": "CloudMonitor Application Group", "scopeKinds": ["global"]},
     {"nativeType": "ACS::CR::Instance", "class": "container.registry", "displayName": "Container Registry Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::CR::Namespace", "class": "container.registry_namespace", "displayName": "Container Registry Namespace", "scopeKinds": ["region"]},
     {"nativeType": "ACS::CR::Repository", "class": "container.repository", "displayName": "Container Registry Repository", "scopeKinds": ["region"]},
