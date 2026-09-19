@@ -850,6 +850,19 @@ func TestRuntimeScopesNetworkProductInventoryAndUsesListTopologyFields(t *testin
 		!reflect.DeepEqual(gatewayEndpointBatch.Items[0].Normalized["associatedRouteTableIds"], []any{"vtb-a"}) {
 		t.Fatalf("VPC gateway endpoint inventory invocation=%+v batch=%+v", factory.invocation, gatewayEndpointBatch)
 	}
+	// Regions without gateway endpoints omit Endpoints entirely and report only the zero total.
+	factory.invokeResult = contracts.InvocationResult{Data: map[string]any{
+		"MaxResults": 0, "RequestId": "request-empty", "TotalCount": 0,
+	}}
+	emptyGatewayEndpointBatch, err := runtime.List(context.Background(), contracts.InventoryRequest{
+		ConnectionID: "connection-a", Scope: scope, ResourceKind: &gatewayEndpointKind, Limit: 100,
+		NetworkTarget: &asset.ScanTarget{
+			Kind: asset.ScanTargetVPC, RegionID: "cn-hangzhou", NativeID: "vpc-bp1x56m37b4rwa2fzmnap",
+		},
+	})
+	if err != nil || len(emptyGatewayEndpointBatch.Items) != 0 {
+		t.Fatalf("empty VPC gateway endpoint inventory batch=%+v err=%v", emptyGatewayEndpointBatch, err)
+	}
 }
 
 func TestRuntimeProjectsResourceCenterConfigurationIntoVSwitchRelationship(t *testing.T) {

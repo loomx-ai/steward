@@ -27,6 +27,7 @@ discovery:
       tokenPath: NextToken
       pageSizeParameter: MaxResults
       maxPageSize: 100
+      totalPath: TotalCount
 fields:
   name: EndpointName
   state: EndpointStatus
