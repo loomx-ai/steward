@@ -31,6 +31,7 @@ Steward 结合资源中心与各云产品的查询 API 获取数据。按实际�
 | 地域和网络目录 | `vpc:DescribeRegions`、`vpc:DescribeVpcs`、`vpc:DescribeVSwitches` | 用于地域发现和 VPC、交换机选择。 |
 | ECS 盘点 | `ecs:DescribeInstances` 等所选资源类型的读取权限 | 实例、磁盘、网卡等分别使用对应产品 API。 |
 | 数据库加密密钥 | `rds:DescribeDBInstanceTDE`、`rds:DescribeDBInstanceEncryptionKey`、`polardb:DescribeDBClusterTDE`、`kvstore:DescribeInstanceTDEStatus`、`kvstore:DescribeEncryptionKey` | 识别 RDS、PolarDB、Redis 使用的 KMS 密钥。缺少这些权限时对应类型扫描失败，删除 KMS 密钥会因扫描不完整而被阻止。 |
+| RAM 成员与授权 | `ram:ListUsersForGroup`、`ram:ListEntitiesForPolicy` | 识别用户组成员和自定义策略的授权对象，用于保护连接自身的用户组和策略。 |
 | 其他云产品 | 对应产品的 List、Get、Describe 权限 | 随扫描的资源类型增加，不存在覆盖所有产品的固定最小权限清单。 |
 
 上表用于核对常见权限，不是一份完整的跨产品授权策略。资源中心的两项权限可对照 [SearchResources](https://www.alibabacloud.com/help/en/resource-management/resource-center/developer-reference/api-resourcecenter-2022-12-01-searchresources) 和 [BatchGetResourceConfigurations](https://www.alibabacloud.com/help/en/resource-management/resource-center/developer-reference/api-resourcecenter-2022-12-01-batchgetresourceconfigurations) 的 RAM 授权表。

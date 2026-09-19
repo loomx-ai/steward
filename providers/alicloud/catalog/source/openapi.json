@@ -2462,6 +2462,13 @@
         "x-operation-call": {"product":"Ram","version":"2015-05-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ram.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/ram/groups/{GroupName}/users": {
+      "get": {
+        "operationId": "RAM.ListUsersForGroup",
+        "x-operation-name": "ListUsersForGroup",
+        "x-operation-call": {"product":"Ram","version":"2015-05-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ram.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/ram/policies": {
       "get": {
         "operationId": "RAM.ListPolicies",
@@ -2478,6 +2485,13 @@
       "delete": {
         "operationId": "RAM.DeletePolicy",
         "x-operation-name": "DeletePolicy",
+        "x-operation-call": {"product":"Ram","version":"2015-05-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ram.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/ram/policies/{PolicyName}/entities": {
+      "get": {
+        "operationId": "RAM.ListEntitiesForPolicy",
+        "x-operation-name": "ListEntitiesForPolicy",
         "x-operation-call": {"product":"Ram","version":"2015-05-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ram.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },

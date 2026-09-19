@@ -39,13 +39,9 @@ func connectionIdentityProtections(connections []asset.CloudConnection, assets [
 			}
 		}
 		switch connection.Provider {
-		case asset.ProviderAWS, asset.ProviderAliCloud:
+		case asset.ProviderAWS:
 			kind, name := callerPrincipal(principal)
-			userType, roleType, groupType, policyType := "AWS::IAM::User", "AWS::IAM::Role", "AWS::IAM::Group", "AWS::IAM::ManagedPolicy"
-			if connection.Provider == asset.ProviderAliCloud {
-				userType, roleType, groupType, policyType = "ACS::RAM::User", "ACS::RAM::Role", "ACS::RAM::Group", "ACS::RAM::Policy"
-			}
-			identityType := map[string]string{"user": userType, "role": roleType}[kind]
+			identityType := map[string]string{"user": "AWS::IAM::User", "role": "AWS::IAM::Role"}[kind]
 			if identityType == "" {
 				continue
 			}
@@ -58,11 +54,11 @@ func connectionIdentityProtections(connections []asset.CloudConnection, assets [
 				policies := normalizedStrings(identity.Normalized["ManagedPolicyArns"])
 				for _, value := range members {
 					switch value.Identity.NativeType {
-					case groupType:
+					case "AWS::IAM::Group":
 						if slices.ContainsFunc(groups, func(group string) bool { return strings.EqualFold(group, value.Identity.NativeID) }) {
 							protect(value, connection, "user group")
 						}
-					case policyType:
+					case "AWS::IAM::ManagedPolicy":
 						if slices.Contains(policies, value.Identity.NativeID) {
 							protect(value, connection, "attached policy")
 						}
@@ -73,6 +69,8 @@ func connectionIdentityProtections(connections []asset.CloudConnection, assets [
 					}
 				}
 			}
+		case asset.ProviderAliCloud:
+			protectRAMPrincipal(members, connection, principal, protect)
 		case asset.ProviderGCP:
 			account := "/serviceaccounts/" + strings.ToLower(principal)
 			for _, value := range members {
@@ -91,6 +89,53 @@ func connectionIdentityProtections(connections []asset.CloudConnection, assets [
 		}
 	}
 	return result
+}
+
+// protectRAMPrincipal protects a RAM user or role, the groups the user
+// belongs to and the custom policies attached to the principal directly or
+// through those groups. Alibaba Cloud records membership on the group
+// (Users) and attachments on the policy (AttachedUsers, AttachedGroups,
+// AttachedRoles), so the lookup runs from those resources and does not need
+// the principal itself to be in the inventory.
+func protectRAMPrincipal(members []asset.Asset, connection asset.CloudConnection, principal string, protect func(asset.Asset, asset.CloudConnection, string)) {
+	kind, name := callerPrincipal(principal)
+	identityType := map[string]string{"user": "ACS::RAM::User", "role": "ACS::RAM::Role"}[kind]
+	if identityType == "" {
+		return
+	}
+	for _, identity := range members {
+		if identity.Identity.NativeType == identityType && strings.EqualFold(identity.Identity.NativeID, name) {
+			protect(identity, connection, kind)
+		}
+	}
+	named := func(values any, want string) bool {
+		return slices.ContainsFunc(normalizedStrings(values), func(value string) bool { return strings.EqualFold(value, want) })
+	}
+	var groups []string
+	if kind == "user" {
+		for _, value := range members {
+			if value.Identity.NativeType == "ACS::RAM::Group" && named(value.Normalized["Users"], name) {
+				protect(value, connection, "user group")
+				groups = append(groups, value.Identity.NativeID)
+			}
+		}
+	}
+	principalField := map[string]string{"user": "AttachedUsers", "role": "AttachedRoles"}[kind]
+	for _, value := range members {
+		if value.Identity.NativeType != "ACS::RAM::Policy" {
+			continue
+		}
+		if named(value.Normalized[principalField], name) {
+			protect(value, connection, "attached policy")
+			continue
+		}
+		for _, group := range groups {
+			if named(value.Normalized["AttachedGroups"], group) {
+				protect(value, connection, "group policy")
+				break
+			}
+		}
+	}
 }
 
 // callerPrincipal reads an STS or RAM caller ARN: a user, or the role behind

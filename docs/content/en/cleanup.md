@@ -24,7 +24,7 @@ When a provider reports an unverified cleanup dependency, the task is blocked. I
 
 Some dependencies block the task even when you selected the target directly: a network, key or identity (for example an AWS KMS key or IAM role, a Google Cloud KMS key or service account, or an Azure managed identity) that an unselected resource still uses. Add the dependent resource to the task, or keep the target. Deleting such a key or identity also requires a complete scan of every active region and global scope of the connection, because an unscanned resource could still use it.
 
-The identity a connection itself uses is always protected: the AWS IAM user or role behind the connection, with its groups, attached managed policies and instance profile; the Alibaba Cloud RAM user or role; the Google Cloud service account and its keys; and Azure role assignments to the connection's service principal. Deleting them would revoke Steward's access in the middle of cleanup.
+The identity a connection itself uses is always protected: the AWS IAM user or role behind the connection, with its groups, attached managed policies and instance profile; the Alibaba Cloud RAM user or role, the groups the user belongs to and the custom policies attached to either directly or through those groups; the Google Cloud service account and its keys; and Azure role assignments to the connection's service principal. Deleting them would revoke Steward's access in the middle of cleanup.
 
 If a selected controller cannot be cleaned up, its dependent child deletion steps are blocked too. To clean up supported children independently, select those children without the controller and review the new task.
 

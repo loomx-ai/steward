@@ -17133,6 +17133,31 @@
      "path": "",
      "risk_type": "none"
     },
+    "ListEntitiesForPolicy": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "PolicyName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PolicyType",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "risk_type": "none"
+    },
     "ListGroups": {
      "deprecated": false,
      "error_codes": [],
@@ -17250,6 +17275,37 @@
      ],
      "path": "",
      "risk_type": "none"
+    },
+    "ListUsersForGroup": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "GroupName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Marker",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MaxItems",
+       "required": false,
+       "type": "integer"
+      }
+     ],
+     "path": "",
+     "risk_type": ""
     }
    },
    "endpoints": [

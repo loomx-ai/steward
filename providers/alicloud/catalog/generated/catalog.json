@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "be887d538976a030a0b38a8a7abf85c937a64e3bfc260af1a88fd67563bb8acf",
+    "checksum": "6ec686b960d24362f14324fb8a81dc707ff3f19e609fac1405dbbb531d9ec749",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "e56fb2c0964b949dd8c5c9505736c08b774a0041204c070dbdf64ff094bde6b4",
+  "content_checksum": "a15cfc1fe9e289afea2231691122313cce33492686a5f5c7ed4f57f0eb375c7a",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -7765,6 +7765,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.RAM.ListEntitiesForPolicy",
+      "name": "ListEntitiesForPolicy",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/ram/policies/{PolicyName}/entities",
+      "destructive": false,
+      "call": {
+        "product": "Ram",
+        "version": "2015-05-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ram.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.RAM.ListGroups",
       "name": "ListGroups",
       "service": "AlibabaCloud",
@@ -7830,6 +7850,26 @@
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/ram/users",
+      "destructive": false,
+      "call": {
+        "product": "Ram",
+        "version": "2015-05-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ram.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.RAM.ListUsersForGroup",
+      "name": "ListUsersForGroup",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/ram/groups/{GroupName}/users",
       "destructive": false,
       "call": {
         "product": "Ram",

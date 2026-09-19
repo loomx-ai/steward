@@ -99,6 +99,10 @@ func (r *Runtime) EnrichInventoryBatch(
 	if err != nil {
 		return nil, err
 	}
+	enriched, err = r.enrichRAMTopology(ctx, request, enriched)
+	if err != nil {
+		return nil, err
+	}
 	resourceCenter := strings.TrimSpace(request.Source) == "resource-center"
 	if !resourceCenter {
 		for index := range enriched {

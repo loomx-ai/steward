@@ -35,7 +35,21 @@ func TestConnectionIdentityProtections(t *testing.T) {
 		}, nil},
 		{"alicloud ram role", asset.ProviderAliCloud, "acs:ram::1234567890:assumed-role/steward-role/session", []asset.Asset{
 			identityAsset("role", asset.ProviderAliCloud, "ACS::RAM::Role", "steward-role", nil),
-		}, []asset.AssetID{"role"}},
+			identityAsset("role-policy", asset.ProviderAliCloud, "ACS::RAM::Policy", "steward-role-access", map[string]any{"AttachedRoles": []any{"Steward-Role"}}),
+			identityAsset("user-policy", asset.ProviderAliCloud, "ACS::RAM::Policy", "steward-user-access", map[string]any{"AttachedUsers": []any{"steward-role"}}),
+			identityAsset("group", asset.ProviderAliCloud, "ACS::RAM::Group", "cleaners", map[string]any{"Users": []any{"steward-role"}}),
+		}, []asset.AssetID{"role", "role-policy"}},
+		{"alicloud ram user", asset.ProviderAliCloud, "acs:ram::1234567890:user/steward", []asset.Asset{
+			identityAsset("user", asset.ProviderAliCloud, "ACS::RAM::User", "steward", nil),
+			identityAsset("group", asset.ProviderAliCloud, "ACS::RAM::Group", "cleaners", map[string]any{"Users": []any{"alice", "Steward"}}),
+			identityAsset("other-group", asset.ProviderAliCloud, "ACS::RAM::Group", "auditors", map[string]any{"Users": []any{"alice"}}),
+			identityAsset("direct", asset.ProviderAliCloud, "ACS::RAM::Policy", "steward-access", map[string]any{"AttachedUsers": []any{"steward"}}),
+			identityAsset("via-group", asset.ProviderAliCloud, "ACS::RAM::Policy", "cleaner-access", map[string]any{"AttachedGroups": []any{"cleaners"}}),
+			identityAsset("unrelated", asset.ProviderAliCloud, "ACS::RAM::Policy", "audit-access", map[string]any{"AttachedGroups": []any{"auditors"}, "AttachedRoles": []any{"steward"}}),
+		}, []asset.AssetID{"direct", "group", "user", "via-group"}},
+		{"alicloud ram user outside the inventory", asset.ProviderAliCloud, "acs:ram::1234567890:user/steward", []asset.Asset{
+			identityAsset("group", asset.ProviderAliCloud, "ACS::RAM::Group", "cleaners", map[string]any{"Users": []any{"steward"}}),
+		}, []asset.AssetID{"group"}},
 		{"gcp service account", asset.ProviderGCP, "Steward@project.iam.gserviceaccount.com", []asset.Asset{
 			identityAsset("sa", asset.ProviderGCP, "iam.googleapis.com/ServiceAccount", "//iam.googleapis.com/projects/project/serviceAccounts/steward@project.iam.gserviceaccount.com", nil),
 			identityAsset("key", asset.ProviderGCP, "iam.googleapis.com/ServiceAccountKey", "//iam.googleapis.com/projects/project/serviceAccounts/steward@project.iam.gserviceaccount.com/keys/abc", nil),
