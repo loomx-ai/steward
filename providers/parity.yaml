@@ -68,6 +68,23 @@ resources:
   status: pending_verification
   notes: Server groups managed by an ALB Ingress controller report ConfigManagedEnabled and are not
     deleted directly.
+- alicloud: ACS::AMQP::Instance
+  spec: providers/alicloud/specs/amqp-instance.yaml
+  class: messaging.broker
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: Google Cloud has no managed RabbitMQ broker.
+  azure:
+    notes: Azure has no managed RabbitMQ broker.
+  aws:
+    resources:
+    - AWS::AmazonMQ::Broker
+  status: pending_verification
+  notes: Only pay-as-you-go instances are deleted; subscription instances are released when they expire.
 - alicloud: ACS::APIG::Service
   spec: providers/alicloud/specs/apig-service.yaml
   class: network.api_backend
@@ -1216,6 +1233,43 @@ resources:
     notes: Lingjun nodes have no direct counterpart.
   status: pending_verification
   notes: Inventory only; removing a node shrinks its cluster.
+- alicloud: ACS::EventBridge::EventBus
+  spec: providers/alicloud/specs/eventbridge-event-bus.yaml
+  class: messaging.event_bus
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    unimplemented_resources:
+    - eventarc.googleapis.com/MessageBus
+  azure:
+    unimplemented_resources:
+    - Microsoft.EventGrid/topics
+  aws:
+    resources:
+    - AWS::Events::EventBus
+  status: pending_verification
+- alicloud: ACS::EventBridge::Rule
+  spec: providers/alicloud/specs/eventbridge-rule.yaml
+  class: messaging.event_rule
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    unimplemented_resources:
+    - eventarc.googleapis.com/Trigger
+  azure:
+    unimplemented_resources:
+    - Microsoft.EventGrid/topics/eventSubscriptions
+  aws:
+    resources:
+    - AWS::Events::Rule
+  status: pending_verification
 - alicloud: ACS::NLB::Listener
   spec: providers/alicloud/specs/nlb-listener.yaml
   class: network.load_balancer_listener

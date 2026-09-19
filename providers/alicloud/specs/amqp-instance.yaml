@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::AMQP::Instance
+  class: messaging.broker
+presentation:
+  consoleLinkTemplate: "https://amqp.console.aliyun.com/region/{regionId}/instance/{nativeId}/detail"
+  displayNames:
+    zh-CN: 消息队列 RabbitMQ 版实例
+    en-US: ApsaraMQ for RabbitMQ Instance
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.AMQP.ListInstances
+    itemsPath: Data.Instances
+    identityPath: InstanceId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: Data.NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: InstanceName
+  state: Status
+  createdAt: OrderCreateTime
+  expireTime: ExpireTime
+  instanceType: InstanceType
+  orderType: OrderType
+  vpcId: VpcId
+  securityGroupId: SecurityGroupId
+  kmsKeyId: KmsKeyId
+  resourceGroupId: ResourceGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.AMQP.DeleteInstance
+    parameters:
+      InstanceId: resource.nativeId
+    preconditions:
+      - path: OrderType
+        allowedValues: [POST_PAID]
+        reason: subscription instances are released when they expire and cannot be deleted through the product API
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.AMQP.GetInstance
+      parameters:
+        InstanceId: resource.nativeId
+      itemsPath: Data
+      identityPath: InstanceId
+      statePath: Status

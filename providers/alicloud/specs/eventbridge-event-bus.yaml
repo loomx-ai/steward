@@ -1,0 +1,44 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::EventBridge::EventBus
+  class: messaging.event_bus
+presentation:
+  consoleLinkTemplate: "https://eventbridge.console.aliyun.com/{regionId}/event-buses/{nativeId}/event-rules"
+  displayNames:
+    zh-CN: 事件总线
+    en-US: Event Bus
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.EventBridge.ListEventBuses
+    itemsPath: Data.EventBuses
+    identityPath: EventBusName
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: Data.NextToken
+      pageSizeParameter: Limit
+      maxPageSize: 100
+fields:
+  name: EventBusName
+  createdAt: CreateTimestamp
+  arn: EventBusARN
+  description: Description
+actions:
+  delete:
+    operation: AlibabaCloud.EventBridge.DeleteEventBus
+    parameters:
+      EventBusName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.EventBridge.GetEventBus
+      parameters:
+        EventBusName: resource.nativeId
+      itemsPath: Data
+      identityPath: EventBusName

@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::EventBridge::Rule
+  class: messaging.event_rule
+presentation:
+  consoleLinkTemplate: "https://eventbridge.console.aliyun.com/{regionId}/event-buses/{parentId}/event-rules"
+  displayNames:
+    zh-CN: 事件规则
+    en-US: Event Rule
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    operation: AlibabaCloud.EventBridge.ListEventBuses
+    itemsPath: Data.EventBuses
+    identityPath: EventBusName
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: Data.NextToken
+      pageSizeParameter: Limit
+      maxPageSize: 100
+  list:
+    operation: AlibabaCloud.EventBridge.ListRules
+    parameters:
+      EventBusName: parent.nativeId
+    itemsPath: Data.Rules
+    identityPath: EventBusName+RuleName
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: Data.NextToken
+      pageSizeParameter: Limit
+      maxPageSize: 100
+fields:
+  name: RuleName
+  ruleName: RuleName
+  state: Status
+  createdAt: CreatedTimestamp
+  eventBusName: _parent.nativeId
+  arn: RuleARN
+relationships:
+  - type: member_of
+    targetType: ACS::EventBridge::EventBus
+    targetIdPath: eventBusName
+actions:
+  delete:
+    operation: AlibabaCloud.EventBridge.DeleteRule
+    parameters:
+      EventBusName: resource.normalized.eventBusName
+      RuleName: resource.normalized.ruleName
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.EventBridge.GetRule
+      parameters:
+        EventBusName: resource.normalized.eventBusName
+        RuleName: resource.normalized.ruleName
+      itemsPath: Data
+      identityPath: EventBusName+RuleName
+      statePath: Status

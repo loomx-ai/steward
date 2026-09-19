@@ -10601,6 +10601,95 @@
    },
    "Total": 1
   },
+  "amqp-open@2019-12-12#GetInstance": {
+   "Data": {
+    "AutoRenewInstance": false,
+    "ClassicEndpoint": "amqp-cn-st21x7kv****.not-support\n",
+    "Edition": "shared",
+    "EncryptedInstance": true,
+    "ExpireTime": 1651507200000,
+    "InstanceId": "amqp-cn-*********",
+    "InstanceName": "yunQi-instance",
+    "InstanceType": "enterprise",
+    "KmsKeyId": "key-hzz6566e86byam3lg5rw4",
+    "ListenerMode": "tcp_and_ssl",
+    "MaxConnections": 1500,
+    "MaxEipTps": 1000,
+    "MaxQueue": 1000,
+    "MaxTps": 1000,
+    "MaxVhost": 50,
+    "OrderCreateTime": 1651507200000,
+    "OrderType": "PRE_PAID",
+    "PrivateEndpoint": "amqp-cn-st21x7kv****.mq-amqp.cn-hangzhou-a.aliyuncs.com\n",
+    "ProvisionedCapacity": 2000,
+    "PublicEndpoint": "xxx.cn-hangzhou.xxx.net.mq.amqp.aliyuncs.com",
+    "ResourceGroupId": "rg-acfm2vn6jkayvfy",
+    "SecurityGroupId": "sg-xxx",
+    "ServerlessSwitch": true,
+    "Status": "SERVING",
+    "StorageSize": 200,
+    "SupportEIP": true,
+    "SupportTracing": true,
+    "Tags": [
+     {
+      "Key": "tagKey",
+      "Value": "tagValue"
+     }
+    ],
+    "TracingStorageTime": 15,
+    "VpcId": "vpc-xxx",
+    "VswitchIds": [
+     "vsw-xxx"
+    ]
+   },
+   "RequestId": "92385FD2-624A-48C9-8FB5-753F2AFA***"
+  },
+  "amqp-open@2019-12-12#ListInstances": {
+   "Data": {
+    "Instances": [
+     {
+      "AutoRenewInstance": false,
+      "ClassicEndpoint": "amqp-cn-st21x7kv****.not-support",
+      "Edition": "shared",
+      "EncryptedInstance": false,
+      "ExpireTime": 1651507200000,
+      "InstanceId": "amqp-cn-st21x7kv****",
+      "InstanceName": "amqp-cn-st21x7kv****",
+      "InstanceType": "professional",
+      "KmsKeyId": "key-bjj66c2a893vmhawtq5fd",
+      "ListenerMode": "tcp_and_ssl",
+      "MaxEipTps": 24832,
+      "MaxQueue": 50,
+      "MaxTps": 5000,
+      "MaxVhost": 50,
+      "OrderCreateTime": 1572441939000,
+      "OrderType": "PRE_PAID",
+      "PrivateEndpoint": "amqp-cn-st21x7kv****.mq-amqp.cn-hangzhou-a.aliyuncs.com",
+      "ProvisionedCapacity": 2000,
+      "PublicEndpoint": "amqp-cn-st21x7kv****.mq-amqp.cn-hangzhou-a.aliyuncs.com",
+      "ResourceGroupId": "rg-aek3axfj2w4czrq",
+      "SecurityGroupId": "sg-xxx",
+      "ServerlessSwitch": true,
+      "Status": "SERVING",
+      "StorageSize": 200,
+      "SupportEIP": true,
+      "Tags": [
+       {
+        "Key": "region",
+        "Value": "hangzhou"
+       }
+      ],
+      "VpcId": "vpc-xxx",
+      "VswitchIds": [
+       "vsw-xxx"
+      ]
+     }
+    ],
+    "MaxResults": 1,
+    "NextToken": "caebacccb2be03f84eb48b699f0a****"
+   },
+   "RequestId": "CCBB1225-C392-480E-8C7F-D09AB2CD2***"
+  },
   "cas@2020-04-07#GetUserCertificateDetail": {
    "Algorithm": "RSA",
    "BuyInAliyun": true,
@@ -12616,6 +12705,117 @@
      "workspaceStatus": "STARTING,RUNNING,TERMINATED"
     }
    ]
+  },
+  "eventbridge@2020-04-01#GetEventBus": {
+   "Code": "Success",
+   "Data": {
+    "CreateTimestamp": 1641781825000,
+    "Description": "demo",
+    "EventBusARN": "acs:eventbridge:cn-hangzhou:123456789098****:eventbus/MyEventBus",
+    "EventBusName": "MyEventBus"
+   },
+   "Message": "EventBusNotExist",
+   "RequestId": "d5bfc188-4452-4ba7-b73a-a9005e522439",
+   "Success": true
+  },
+  "eventbridge@2020-04-01#GetRule": {
+   "Code": "Success",
+   "Data": {
+    "CreatedTimestamp": 1607071602000,
+    "Description": "test",
+    "EventBusName": "Housekeeping-Bus",
+    "FilterPattern": "{\\\"source\\\":[\\\"acs.oss\\\"],\\\"type\\\":[\\\"oss:BucketQueried:GetBucketStat\\\"]}",
+    "RuleARN": "acs:eventbridge:cn-hangzhou:123456789098****:eventbus/default/rule/myRule3",
+    "RuleName": "ramrolechange-fc",
+    "Status": "ENABLE",
+    "Targets": [
+     {
+      "ConcurrentConfig": {
+       "Concurrency": 2
+      },
+      "DeadLetterQueue": {
+       "Arn": "acs:eventbridge:cn-hangzhou:164901546557****:eventbus/my-event-bus/eventsource/myRocketMQ.source",
+       "Network": "",
+       "SecurityGroupId": "",
+       "VSwitchIds": "",
+       "VpcId": ""
+      },
+      "DetailMap": {
+       "test": "test",
+       "test2": 1
+      },
+      "Endpoint": "acs:mns:cn-hangzhou:123456789098****:queues/myqueue",
+      "ErrorsTolerance": "ALL",
+      "Id": "Mlm123456JHd2RsRoKw\n",
+      "ParamList": [
+       {
+        "Form": "TEMPLATE",
+        "ResourceKey": "body",
+        "Template": "The value of ${key} is ${value}!",
+        "Value": "{\\\"key\\\"=\\\"value\\\"}"
+       }
+      ],
+      "PushRetryStrategy": "BACKOFF_RETRY",
+      "PushSelector": "PARAM_TRANSFORMER",
+      "Type": "acs.mns.queue"
+     }
+    ]
+   },
+   "Message": "The event rule not existed!",
+   "RequestId": "2BC1857D-E633-5E79-B2C2-43EF5F7730D8",
+   "Success": true
+  },
+  "eventbridge@2020-04-01#ListEventBuses": {
+   "Code": "200",
+   "Data": {
+    "EventBuses": [
+     {
+      "CreateTimestamp": 1607071602000,
+      "Description": "bus_description",
+      "EventBusARN": "acs:eventbridge:cn-hangzhou:12345678909****:eventbus/default",
+      "EventBusName": "default"
+     }
+    ],
+    "NextToken": "10",
+    "Total": 2
+   },
+   "Message": "InvalidArgument",
+   "RequestId": "D1DCF64A-3F2C-5323-ADCB-3F4DF30F****",
+   "Success": true
+  },
+  "eventbridge@2020-04-01#ListRules": {
+   "Code": "Success",
+   "Data": {
+    "NextToken": "1000",
+    "Rules": [
+     {
+      "CreatedTimestamp": 1607071602000,
+      "Description": "demo",
+      "DetailMap": {
+       "test": "test",
+       "test2": 1
+      },
+      "EventBusName": "demo",
+      "FilterPattern": "{\\\"source\\\":[\\\"acs.oss\\\"],\\\"type\\\":[\\\"oss:BucketQueried:GetBucketStat\\\"]}\n",
+      "RuleARN": "acs:eventbridge:cn-hangzhou:123456789098****:eventbus/default/rule/myRule3",
+      "RuleName": "tf-testacc-rule",
+      "Status": "ENABLE",
+      "Targets": [
+       {
+        "Endpoint": "acs:mns:cn-hangzhou:123456789098****:queues/myqueue",
+        "ErrorsTolerance": "ALL",
+        "Id": "Mlm123456JHd2Rs****",
+        "PushSelector": "PARAM_TRANSFORMER",
+        "Type": "acs.mns.queue\n"
+       }
+      ]
+     }
+    ],
+    "Total": 6
+   },
+   "Message": "Specified parameter Limit is not valid.",
+   "RequestId": "C7043799-F4DA-5290-9249-97C35987****",
+   "Success": true
   },
   "foasconsole@2021-10-28#DescribeInstances": {
    "Instances": [

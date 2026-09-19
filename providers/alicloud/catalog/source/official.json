@@ -37378,6 +37378,262 @@
   },
   {
    "apis": {
+    "DeleteInstance": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "InstanceId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "AccessDeniedDetail",
+      "Code",
+      "Data",
+      "Message",
+      "RequestId",
+      "StatusCode",
+      "Success"
+     ],
+     "risk_type": "high"
+    },
+    "GetInstance": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "InstanceId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Data",
+      "Data.AutoRenewInstance",
+      "Data.ClassicEndpoint",
+      "Data.Edition",
+      "Data.EncryptedInstance",
+      "Data.ExpireTime",
+      "Data.InstanceId",
+      "Data.InstanceName",
+      "Data.InstanceType",
+      "Data.KmsKeyId",
+      "Data.ListenerMode",
+      "Data.MaxConnections",
+      "Data.MaxEipTps",
+      "Data.MaxQueue",
+      "Data.MaxTps",
+      "Data.MaxVhost",
+      "Data.OrderCreateTime",
+      "Data.OrderType",
+      "Data.PrivateEndpoint",
+      "Data.ProvisionedCapacity",
+      "Data.PublicEndpoint",
+      "Data.ResourceGroupId",
+      "Data.SecurityGroupId",
+      "Data.ServerlessSwitch",
+      "Data.Status",
+      "Data.StorageSize",
+      "Data.SupportEIP",
+      "Data.SupportTracing",
+      "Data.Tags",
+      "Data.Tags.Key",
+      "Data.Tags.Value",
+      "Data.TracingStorageTime",
+      "Data.VpcId",
+      "Data.VswitchIds",
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "ListInstances": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": true,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Data",
+      "Data.Instances",
+      "Data.Instances.AutoRenewInstance",
+      "Data.Instances.ClassicEndpoint",
+      "Data.Instances.Edition",
+      "Data.Instances.EncryptedInstance",
+      "Data.Instances.ExpireTime",
+      "Data.Instances.InstanceId",
+      "Data.Instances.InstanceName",
+      "Data.Instances.InstanceType",
+      "Data.Instances.KmsKeyId",
+      "Data.Instances.ListenerMode",
+      "Data.Instances.MaxEipTps",
+      "Data.Instances.MaxQueue",
+      "Data.Instances.MaxTps",
+      "Data.Instances.MaxVhost",
+      "Data.Instances.OrderCreateTime",
+      "Data.Instances.OrderType",
+      "Data.Instances.PrivateEndpoint",
+      "Data.Instances.ProvisionedCapacity",
+      "Data.Instances.PublicEndpoint",
+      "Data.Instances.ResourceGroupId",
+      "Data.Instances.SecurityGroupId",
+      "Data.Instances.ServerlessSwitch",
+      "Data.Instances.Status",
+      "Data.Instances.StorageSize",
+      "Data.Instances.SupportEIP",
+      "Data.Instances.Tags",
+      "Data.Instances.Tags.Key",
+      "Data.Instances.Tags.Value",
+      "Data.Instances.VpcId",
+      "Data.Instances.VswitchIds",
+      "Data.MaxResults",
+      "Data.NextToken",
+      "RequestId"
+     ],
+     "risk_type": "none"
+    }
+   },
+   "endpoints": [
+    {
+     "endpoint": "amqp-open.ap-northeast-1.aliyuncs.com",
+     "region": "ap-northeast-1"
+    },
+    {
+     "endpoint": "amqp-open.ap-southeast-1.aliyuncs.com",
+     "region": "ap-southeast-1"
+    },
+    {
+     "endpoint": "amqp-open.ap-southeast-3.aliyuncs.com",
+     "region": "ap-southeast-3"
+    },
+    {
+     "endpoint": "amqp-open.ap-southeast-5.aliyuncs.com",
+     "region": "ap-southeast-5"
+    },
+    {
+     "endpoint": "amqp-open.ap-southeast-6.aliyuncs.com",
+     "region": "ap-southeast-6"
+    },
+    {
+     "endpoint": "amqp-open.ap-southeast-7.aliyuncs.com",
+     "region": "ap-southeast-7"
+    },
+    {
+     "endpoint": "amqp-open.cn-beijing.aliyuncs.com",
+     "region": "cn-beijing"
+    },
+    {
+     "endpoint": "amqp-open.cn-beijing-finance-1.aliyuncs.com",
+     "region": "cn-beijing-finance-1"
+    },
+    {
+     "endpoint": "amqp-open.cn-chengdu.aliyuncs.com",
+     "region": "cn-chengdu"
+    },
+    {
+     "endpoint": "amqp-open.cn-guangzhou.aliyuncs.com",
+     "region": "cn-guangzhou"
+    },
+    {
+     "endpoint": "amqp-open.cn-hangzhou.aliyuncs.com",
+     "region": "cn-hangzhou"
+    },
+    {
+     "endpoint": "amqp-open.cn-hongkong.aliyuncs.com",
+     "region": "cn-hongkong"
+    },
+    {
+     "endpoint": "amqp-open.cn-huhehaote.aliyuncs.com",
+     "region": "cn-huhehaote"
+    },
+    {
+     "endpoint": "amqp-open.cn-qingdao.aliyuncs.com",
+     "region": "cn-qingdao"
+    },
+    {
+     "endpoint": "amqp-open.cn-shanghai.aliyuncs.com",
+     "region": "cn-shanghai"
+    },
+    {
+     "endpoint": "amqp-open.cn-shanghai-finance-1.aliyuncs.com",
+     "region": "cn-shanghai-finance-1"
+    },
+    {
+     "endpoint": "amqp-open.cn-shenzhen.aliyuncs.com",
+     "region": "cn-shenzhen"
+    },
+    {
+     "endpoint": "amqp-open.cn-wulanchabu.aliyuncs.com",
+     "region": "cn-wulanchabu"
+    },
+    {
+     "endpoint": "amqp-open.cn-zhangjiakou.aliyuncs.com",
+     "region": "cn-zhangjiakou"
+    },
+    {
+     "endpoint": "amqp-open.cn-zhengzhou-jva.aliyuncs.com",
+     "region": "cn-zhengzhou-jva"
+    },
+    {
+     "endpoint": "amqp-open.eu-central-1.aliyuncs.com",
+     "region": "eu-central-1"
+    },
+    {
+     "endpoint": "amqp-open.me-central-1.aliyuncs.com",
+     "region": "me-central-1"
+    },
+    {
+     "endpoint": "amqp-open.us-east-1.aliyuncs.com",
+     "region": "us-east-1"
+    },
+    {
+     "endpoint": "amqp-open.us-west-1.aliyuncs.com",
+     "region": "us-west-1"
+    }
+   ],
+   "product": "amqp-open",
+   "source_sha256": "f75435d8b59f48ddb0ed61e85c9a51b8c763363d1adcf9b1b79b7698ebcd7a20",
+   "source_uri": "https://api.aliyun.com/meta/v1/products/amqp-open/versions/2019-12-12/api-docs.json",
+   "style": "RPC",
+   "version": "2019-12-12"
+  },
+  {
+   "apis": {
     "DeleteUserCertificate": {
      "deprecated": false,
      "error_codes": [],
@@ -43846,6 +44102,385 @@
    "source_uri": "https://api.aliyun.com/meta/v1/products/emr-serverless-spark/versions/2023-08-08/api-docs.json",
    "style": "ROA",
    "version": "2023-08-08"
+  },
+  {
+   "apis": {
+    "DeleteEventBus": {
+     "deprecated": false,
+     "error_codes": [
+      "ServiceNotEnable"
+     ],
+     "methods": [
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "EventBusName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Data",
+      "Message",
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": ""
+    },
+    "DeleteRule": {
+     "deprecated": false,
+     "error_codes": [
+      "ServiceNotEnable"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "EventBusName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RuleName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Message",
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": ""
+    },
+    "GetEventBus": {
+     "deprecated": false,
+     "error_codes": [
+      "ServiceNotEnable"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "EventBusName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Data",
+      "Data.CreateTimestamp",
+      "Data.Description",
+      "Data.EventBusARN",
+      "Data.EventBusName",
+      "Message",
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": ""
+    },
+    "GetRule": {
+     "deprecated": false,
+     "error_codes": [
+      "ServiceNotEnable"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "EventBusName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RuleName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Data",
+      "Data.CreatedTimestamp",
+      "Data.Description",
+      "Data.EventBusName",
+      "Data.FilterPattern",
+      "Data.RuleARN",
+      "Data.RuleName",
+      "Data.Status",
+      "Data.Targets",
+      "Data.Targets.ConcurrentConfig",
+      "Data.Targets.ConcurrentConfig.Concurrency",
+      "Data.Targets.DeadLetterQueue",
+      "Data.Targets.DeadLetterQueue.Arn",
+      "Data.Targets.DeadLetterQueue.Network",
+      "Data.Targets.DeadLetterQueue.SecurityGroupId",
+      "Data.Targets.DeadLetterQueue.VSwitchIds",
+      "Data.Targets.DeadLetterQueue.VpcId",
+      "Data.Targets.DetailMap",
+      "Data.Targets.Endpoint",
+      "Data.Targets.ErrorsTolerance",
+      "Data.Targets.Id",
+      "Data.Targets.ParamList",
+      "Data.Targets.ParamList.Form",
+      "Data.Targets.ParamList.ResourceKey",
+      "Data.Targets.ParamList.Template",
+      "Data.Targets.ParamList.Value",
+      "Data.Targets.PushRetryStrategy",
+      "Data.Targets.PushSelector",
+      "Data.Targets.Type",
+      "Message",
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": "none"
+    },
+    "ListEventBuses": {
+     "deprecated": false,
+     "error_codes": [
+      "ServiceNotEnable"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "Limit",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NamePrefix",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Data",
+      "Data.EventBuses",
+      "Data.EventBuses.CreateTimestamp",
+      "Data.EventBuses.Description",
+      "Data.EventBuses.EventBusARN",
+      "Data.EventBuses.EventBusName",
+      "Data.NextToken",
+      "Data.Total",
+      "Message",
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": ""
+    },
+    "ListRules": {
+     "deprecated": false,
+     "error_codes": [
+      "ServiceNotEnable"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "EventBusName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Limit",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RuleNamePrefix",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "Data",
+      "Data.NextToken",
+      "Data.Rules",
+      "Data.Rules.CreatedTimestamp",
+      "Data.Rules.Description",
+      "Data.Rules.DetailMap",
+      "Data.Rules.EventBusName",
+      "Data.Rules.FilterPattern",
+      "Data.Rules.RuleARN",
+      "Data.Rules.RuleName",
+      "Data.Rules.Status",
+      "Data.Rules.Targets",
+      "Data.Rules.Targets.Endpoint",
+      "Data.Rules.Targets.ErrorsTolerance",
+      "Data.Rules.Targets.Id",
+      "Data.Rules.Targets.PushSelector",
+      "Data.Rules.Targets.Type",
+      "Data.Total",
+      "Message",
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": ""
+    }
+   },
+   "endpoints": [
+    {
+     "endpoint": "eventbridge-console.ap-northeast-1.aliyuncs.com",
+     "region": "ap-northeast-1"
+    },
+    {
+     "endpoint": "eventbridge-console.ap-northeast-2.aliyuncs.com",
+     "region": "ap-northeast-2"
+    },
+    {
+     "endpoint": "eventbridge-console.ap-southeast-1.aliyuncs.com",
+     "region": "ap-southeast-1"
+    },
+    {
+     "endpoint": "eventbridge-console.ap-southeast-3.aliyuncs.com",
+     "region": "ap-southeast-3"
+    },
+    {
+     "endpoint": "eventbridge-console.ap-southeast-5.aliyuncs.com",
+     "region": "ap-southeast-5"
+    },
+    {
+     "endpoint": "eventbridge-console.ap-southeast-6.aliyuncs.com",
+     "region": "ap-southeast-6"
+    },
+    {
+     "endpoint": "eventbridge-console.ap-southeast-7.aliyuncs.com",
+     "region": "ap-southeast-7"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-beijing.aliyuncs.com",
+     "region": "cn-beijing"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-beijing-finance-1.aliyuncs.com",
+     "region": "cn-beijing-finance-1"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-chengdu.aliyuncs.com",
+     "region": "cn-chengdu"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-guangzhou.aliyuncs.com",
+     "region": "cn-guangzhou"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-hangzhou.aliyuncs.com",
+     "region": "cn-hangzhou"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-heyuan.aliyuncs.com",
+     "region": "cn-heyuan"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-hongkong.aliyuncs.com",
+     "region": "cn-hongkong"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-huhehaote.aliyuncs.com",
+     "region": "cn-huhehaote"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-qingdao.aliyuncs.com",
+     "region": "cn-qingdao"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-shanghai.aliyuncs.com",
+     "region": "cn-shanghai"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-shanghai-finance-1.aliyuncs.com",
+     "region": "cn-shanghai-finance-1"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-shenzhen.aliyuncs.com",
+     "region": "cn-shenzhen"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-shenzhen-finance-1.aliyuncs.com",
+     "region": "cn-shenzhen-finance-1"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-wulanchabu.aliyuncs.com",
+     "region": "cn-wulanchabu"
+    },
+    {
+     "endpoint": "eventbridge-console.cn-zhangjiakou.aliyuncs.com",
+     "region": "cn-zhangjiakou"
+    },
+    {
+     "endpoint": "eventbridge-console.eu-central-1.aliyuncs.com",
+     "region": "eu-central-1"
+    },
+    {
+     "endpoint": "eventbridge-console.eu-west-1.aliyuncs.com",
+     "region": "eu-west-1"
+    },
+    {
+     "endpoint": "eventbridge-console.us-east-1.aliyuncs.com",
+     "region": "us-east-1"
+    },
+    {
+     "endpoint": "eventbridge-console.us-west-1.aliyuncs.com",
+     "region": "us-west-1"
+    }
+   ],
+   "product": "eventbridge",
+   "source_sha256": "35957eaa2f5eb262daae27198bd097984a32b4257123bceb1528c820fd070aa9",
+   "source_uri": "https://api.aliyun.com/meta/v1/products/eventbridge/versions/2020-04-01/api-docs.json",
+   "style": "RPC",
+   "version": "2020-04-01"
   },
   {
    "apis": {
