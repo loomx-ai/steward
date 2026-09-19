@@ -20,6 +20,12 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "providers/alicloud/catalog/source"
+EXAMPLES = ROOT / "providers/alicloud/fixtures/official-examples.json"
+# Read operations, by official operation type or name, keep their official
+# JSON response example as a fixture.
+READ_PREFIXES = ("List", "Describe", "Get", "Query")
+READ_TYPES = ("get", "list", "read")
+MAX_PATH_DEPTH = 8
 METADATA = "https://api.aliyun.com/meta/v1/products/{product}/versions/{version}/api-docs.json"
 
 
@@ -39,7 +45,38 @@ def selection(document):
     return {key: sorted(names) for key, names in sorted(result.items())}
 
 
-def prune_api(api):
+def response_paths(schema, components, prefix="", depth=0, seen=()):
+    """Dotted field paths of a response schema; array levels are transparent."""
+    result = set()
+    if not isinstance(schema, dict) or depth > MAX_PATH_DEPTH:
+        return result
+    reference = schema.get("$ref", "")
+    if reference:
+        name = reference.rsplit("/", 1)[-1]
+        if name in seen:
+            return result
+        return response_paths(components.get(name, {}), components, prefix, depth, seen + (name,))
+    if schema.get("items"):
+        result |= response_paths(schema["items"], components, prefix, depth + 1, seen)
+    for key, child in (schema.get("properties") or {}).items():
+        path = prefix + key
+        result.add(path)
+        result |= response_paths(child, components, path + ".", depth + 1, seen)
+    return result
+
+
+def json_example(api):
+    """The official JSON response example, or None when only XML is published."""
+    for demo in json.loads(api.get("responseDemo") or "[]"):
+        if demo.get("type") == "json":
+            try:
+                return json.loads(demo.get("example") or "")
+            except json.JSONDecodeError:
+                return None
+    return None
+
+
+def prune_api(api, components=None):
     """Keep the contract fields Steward verifies, dropping prose and examples."""
     parameters = []
     for parameter in api.get("parameters", []):
@@ -69,6 +106,9 @@ def prune_api(api):
         "risk_type": tags.get("riskType", ""),
         "parameters": sorted(parameters, key=lambda value: value["name"]),
         "error_codes": codes,
+        "response_paths": sorted(response_paths(
+            ((api.get("responses") or {}).get("200") or {}).get("schema") or {}, components or {},
+        )),
     }
 
 
@@ -89,6 +129,14 @@ def snapshot(product, version, names, raw):
          for entry in document.get("endpoints", []) if entry.get("regionId")),
         key=lambda value: value["region"],
     )
+    components = (document.get("components") or {}).get("schemas") or {}
+    examples = {}
+    for name in names:
+        tags = apis[name].get("systemTags") or {}
+        if name.startswith(READ_PREFIXES) or tags.get("operationType", apis[name].get("operationType")) in READ_TYPES:
+            example = json_example(apis[name])
+            if example is not None:
+                examples[name] = example
     return {
         "product": product,
         "version": version,
@@ -96,8 +144,8 @@ def snapshot(product, version, names, raw):
         "source_sha256": hashlib.sha256(raw).hexdigest(),
         "style": (document.get("info") or {}).get("style", ""),
         "endpoints": endpoints,
-        "apis": {name: prune_api(apis[name]) for name in names},
-    }
+        "apis": {name: prune_api(apis[name], components) for name in names},
+    }, examples
 
 
 def fetch(uri):
@@ -141,11 +189,22 @@ def main():
         # Report every discrepancy at once; an unofficial operation must be
         # fixed in the catalog rather than pinned.
         raise SystemExit("\n".join(str(error) for error in errors))
-    products = [product for product, _ in results]
+    products = [product for (product, _), _ in results]
     output = {"source": "https://api.aliyun.com/meta/v1", "products": products}
     (SOURCE / "official.json").write_text(json.dumps(output, indent=1, sort_keys=True, ensure_ascii=False) + "\n")
+    # Unchanged official response examples, keyed like the catalog tests.
+    examples = {
+        "source": "https://api.aliyun.com/meta/v1 responseDemo",
+        "examples": {
+            f"{product['product']}@{product['version']}#{name}": example
+            for (product, found), _ in results
+            for name, example in found.items()
+        },
+    }
+    EXAMPLES.write_text(json.dumps(examples, indent=1, sort_keys=True, ensure_ascii=False) + "\n")
     operations = sum(len(product["apis"]) for product in products)
-    print(f"Pinned {operations} operations from {len(products)} official product documents")
+    print(f"Pinned {operations} operations and {len(examples['examples'])} response examples "
+          f"from {len(products)} official product documents")
 
 
 if __name__ == "__main__":

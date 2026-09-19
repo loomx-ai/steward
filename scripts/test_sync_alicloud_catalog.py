@@ -21,15 +21,28 @@ DOCUMENT = {
             "errorCodes": {"403": [{"errorCode": "IncorrectDiskStatus", "errorMessage": "..."}]},
             "responses": {"200": {"schema": {"description": "dropped"}}},
         },
-        "DescribeDisks": {"methods": ["get"], "parameters": []},
+        "DescribeDisks": {
+            "methods": ["get"], "parameters": [],
+            "responses": {"200": {"schema": {"type": "object", "properties": {
+                "Disks": {"type": "object", "properties": {"Disk": {"type": "array", "items": {"$ref": "#/components/schemas/Disk"}}}},
+            }}}},
+            "responseDemo": json.dumps([
+                {"type": "xml", "example": "<Disks/>"},
+                {"type": "json", "example": json.dumps({"Disks": {"Disk": [{"DiskId": "d-a"}]}})},
+            ]),
+        },
     },
+    "components": {"schemas": {"Disk": {"type": "object", "properties": {
+        "DiskId": {"type": "string"}, "Parent": {"$ref": "#/components/schemas/Disk"},
+    }}}},
 }
 
 
 class SnapshotTest(unittest.TestCase):
     def test_keeps_only_selected_contract_fields(self):
         raw = json.dumps(DOCUMENT).encode()
-        result = sync.snapshot("Ecs", "2014-05-26", ["DeleteDisk"], raw)
+        result, examples = sync.snapshot("Ecs", "2014-05-26", ["DeleteDisk"], raw)
+        self.assertEqual(examples, {})
         self.assertEqual(result["source_sha256"], hashlib.sha256(raw).hexdigest())
         self.assertEqual(result["style"], "RPC")
         self.assertEqual(sorted(result["apis"]), ["DeleteDisk"])
@@ -39,7 +52,14 @@ class SnapshotTest(unittest.TestCase):
         self.assertEqual(api["parameters"], [{"name": "DiskId", "in": "query", "required": True, "type": "string"}])
         self.assertEqual(api["error_codes"], ["IncorrectDiskStatus"])
         self.assertNotIn("responses", api)
+        self.assertEqual(api["response_paths"], [])
         self.assertEqual(result["endpoints"], [{"region": "cn-hangzhou", "endpoint": "ecs.cn-hangzhou.aliyuncs.com"}])
+
+    def test_keeps_response_paths_and_json_examples_of_reads(self):
+        result, examples = sync.snapshot("Ecs", "2014-05-26", ["DescribeDisks"], json.dumps(DOCUMENT).encode())
+        # References resolve once; a recursive reference does not repeat.
+        self.assertEqual(result["apis"]["DescribeDisks"]["response_paths"], ["Disks", "Disks.Disk", "Disks.Disk.DiskId", "Disks.Disk.Parent"])
+        self.assertEqual(examples, {"DescribeDisks": {"Disks": {"Disk": [{"DiskId": "d-a"}]}}})
 
     def test_rejects_operations_missing_from_official_metadata(self):
         with self.assertRaises(sync.MissingOperations):
