@@ -18,6 +18,15 @@ func CloudRawPayload(value any) (map[string]any, error) {
 	return sanitizeRawLogMap(payload), nil
 }
 
+// RedactCloudSecrets drops credential and key material, such as VPN
+// pre-shared keys, from a raw provider record before it is stored.
+func RedactCloudSecrets(input map[string]any) map[string]any {
+	if input == nil {
+		return nil
+	}
+	return sanitizeRawLogMap(input)
+}
+
 func sanitizeRawLogMap(input map[string]any) map[string]any {
 	result := make(map[string]any, len(input))
 	for key, value := range input {
@@ -52,7 +61,7 @@ func forbiddenRawLogKey(key string) bool {
 		"oauthaccesstoken", "oauthrefreshtoken", "authorizationcode", "codeverifier",
 		"oidctoken", "clientassertion", "subjecttoken", "assertion",
 		"authorization", "signature", "cookie", "cookies", "credential",
-		"credentials", "password", "privatekey":
+		"credentials", "password", "privatekey", "psk", "presharedkey":
 		return true
 	default:
 		return false

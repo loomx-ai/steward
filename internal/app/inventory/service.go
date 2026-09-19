@@ -287,6 +287,7 @@ func (s *Service) projectItem(ctx context.Context, repository persistence.Invent
 	if err != nil {
 		return err
 	}
+	raw = contracts.RedactCloudSecrets(raw)
 	contentHash, err := observationHash(normalized, raw)
 	if err != nil {
 		return err

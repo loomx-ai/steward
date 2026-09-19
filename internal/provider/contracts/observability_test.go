@@ -87,3 +87,24 @@ func TestCloudObservabilityRedactsOAuthSecretsAtEveryMapDepth(t *testing.T) {
 		t.Fatalf("error summary = %#v", payload)
 	}
 }
+
+func TestRedactCloudSecretsDropsVPNPreSharedKeys(t *testing.T) {
+	raw := contracts.RedactCloudSecrets(map[string]any{
+		"IpsecServerId": "iss-a",
+		"Psk":           "psk-secret",
+		"IkeConfig":     map[string]any{"Psk": "nested-secret", "IkeVersion": "ikev2"},
+		"Tunnels":       []any{map[string]any{"PreSharedKey": "tunnel-secret"}},
+	})
+	encoded, err := json.Marshal(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, secret := range []string{"psk-secret", "nested-secret", "tunnel-secret"} {
+		if strings.Contains(string(encoded), secret) {
+			t.Fatalf("raw record kept %q: %s", secret, encoded)
+		}
+	}
+	if !strings.Contains(string(encoded), "iss-a") || !strings.Contains(string(encoded), "ikev2") {
+		t.Fatalf("raw record lost ordinary fields: %s", encoded)
+	}
+}
