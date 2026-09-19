@@ -63,7 +63,8 @@ func forbiddenRawLogKey(key string) bool {
 		"authorization", "signature", "cookie", "cookies", "credential",
 		"credentials", "password", "privatekey", "psk", "presharedkey":
 		return true
-	default:
-		return false
 	}
+	// Provider records name credentials by role, as ECD office sites return
+	// TrustPassword and DomainPassword.
+	return strings.HasSuffix(normalized, "password") || strings.HasSuffix(normalized, "privatekey")
 }

@@ -94,17 +94,18 @@ func TestRedactCloudSecretsDropsVPNPreSharedKeys(t *testing.T) {
 		"Psk":           "psk-secret",
 		"IkeConfig":     map[string]any{"Psk": "nested-secret", "IkeVersion": "ikev2"},
 		"Tunnels":       []any{map[string]any{"PreSharedKey": "tunnel-secret"}},
+		"OfficeSite":    map[string]any{"TrustPassword": "trust-secret", "Domain_Password": "domain-secret", "PasswordPolicy": "strong"},
 	})
 	encoded, err := json.Marshal(raw)
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, secret := range []string{"psk-secret", "nested-secret", "tunnel-secret"} {
+	for _, secret := range []string{"psk-secret", "nested-secret", "tunnel-secret", "trust-secret", "domain-secret"} {
 		if strings.Contains(string(encoded), secret) {
 			t.Fatalf("raw record kept %q: %s", secret, encoded)
 		}
 	}
-	if !strings.Contains(string(encoded), "iss-a") || !strings.Contains(string(encoded), "ikev2") {
+	if !strings.Contains(string(encoded), "iss-a") || !strings.Contains(string(encoded), "ikev2") || !strings.Contains(string(encoded), "strong") {
 		t.Fatalf("raw record lost ordinary fields: %s", encoded)
 	}
 }
