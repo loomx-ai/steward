@@ -23,12 +23,16 @@ func TestOwnedSubresourcesAreDeletedBeforeTheirParent(t *testing.T) {
 		{"ACS::AliKafka::Instance", "ACS::AliKafka::ConsumerGroup", "alikafka-a/orders", "alikafka:GetConsumerList"},
 		{"ACS::RocketMQ::Instance", "ACS::RocketMQ::Topic", "rmq-a/orders", "rocketmq:ListTopics"},
 		{"ACS::RocketMQ::Instance", "ACS::RocketMQ::ConsumerGroup", "rmq-a/GID_orders", "rocketmq:ListConsumerGroups"},
+		{"ACS::CR::Instance", "ACS::CR::Namespace", "crn-a", "cr:ListNamespace"},
+		{"ACS::VPN::VpnGateway", "ACS::VPN::SslVpnServer", "vss-a", "vpc:DescribeSslVpnServers"},
+		{"ACS::VPN::SslVpnServer", "ACS::VPN::SslVpnClientCert", "vsc-a", "vpc:DescribeSslVpnClientCerts"},
+		{"ACS::VPN::VpnGateway", "ACS::VPN::IpsecServer", "iss-a", "vpc:ListIpsecServers"},
 	} {
 		t.Run(test.childType, func(t *testing.T) {
 			t.Parallel()
 			parent := nasAsset("parent", test.parentType, "lb-a", nil)
-			child := nasAsset("child", test.childType, test.childID, map[string]any{"loadBalancerId": "lb-a", "instanceId": "lb-a"})
-			other := nasAsset("other", test.childType, "other", map[string]any{"loadBalancerId": "lb-unscanned", "instanceId": "lb-unscanned"})
+			child := nasAsset("child", test.childType, test.childID, map[string]any{"loadBalancerId": "lb-a", "instanceId": "lb-a", "vpnGatewayId": "lb-a", "sslVpnServerId": "lb-a"})
+			other := nasAsset("other", test.childType, "other", map[string]any{"loadBalancerId": "lb-unscanned", "instanceId": "lb-unscanned", "vpnGatewayId": "lb-unscanned", "sslVpnServerId": "lb-unscanned"})
 			contribution, err := hooks.NewSubresourceOwnership().Contribute(context.Background(), "scope-hangzhou", []asset.Asset{child, other, parent})
 			if err != nil {
 				t.Fatal(err)
@@ -56,5 +60,57 @@ func TestOwnedSubresourcesAreDeletedBeforeTheirParent(t *testing.T) {
 				t.Fatalf("order: child=%+v parent=%+v", childStep, parentStep)
 			}
 		})
+	}
+}
+
+func TestRepositoriesBelongToTheNamespaceTheyName(t *testing.T) {
+	t.Parallel()
+
+	namespace := nasAsset("namespace", "ACS::CR::Namespace", "crn-a", map[string]any{"instanceId": "cri-a", "namespaceName": "apps"})
+	sameName := nasAsset("same-name", "ACS::CR::Namespace", "crn-b", map[string]any{"instanceId": "cri-b", "namespaceName": "apps"})
+	repository := nasAsset("repository", "ACS::CR::Repository", "crr-a", map[string]any{"instanceId": "cri-a", "namespaceName": "apps"})
+	contribution, err := hooks.NewSubresourceOwnership().Contribute(context.Background(), "scope-hangzhou", []asset.Asset{repository, sameName, namespace})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(contribution.Bindings) != 1 || contribution.Bindings[0].ControllerAssetID != namespace.ID ||
+		len(contribution.Relationships) != 1 || contribution.Relationships[0].TargetAssetID != namespace.ID ||
+		contribution.Relationships[0].Type != graph.RelationshipMemberOf {
+		t.Fatalf("contribution = %+v", contribution)
+	}
+}
+
+func TestLogstoresAreDeletedWithTheirProject(t *testing.T) {
+	t.Parallel()
+
+	project := nasAsset("project", "ACS::SLS::Project", "app-logs", nil)
+	logstore := nasAsset("logstore", "ACS::SLS::LogStore", "app-logs/internal-operation_log", map[string]any{"project": "app-logs"})
+	contribution, err := hooks.NewSubresourceOwnership().Contribute(context.Background(), "scope-hangzhou", []asset.Asset{logstore, project})
+	if err != nil || len(contribution.Bindings) != 1 {
+		t.Fatalf("contribution = %+v, err = %v", contribution, err)
+	}
+	binding := contribution.Bindings[0]
+	if binding.CleanupPolicy != graph.CleanupDelegate || !binding.DirectCleanupAllowed || binding.Evidence["delete_by_default"] != true {
+		t.Fatalf("binding = %+v", binding)
+	}
+	revision := plan.RevisionBinding{InventoryRevision: "i", GraphRevision: "g", SpecBundleRevision: "b", SpecHash: "s"}
+	withProject, err := plan.Solve(plan.Input{
+		CleanupTaskID: "cleanup", ResolvedAssetIDs: []asset.AssetID{project.ID},
+		Assets: []asset.Asset{project, logstore}, LifecycleBindings: contribution.Bindings, Revision: revision,
+	})
+	if err != nil || len(withProject.Blockers) != 0 || len(withProject.ImpactItems) != 1 ||
+		withProject.ImpactItems[0].Expected != plan.ExpectedDelegatedDelete {
+		t.Fatalf("project plan = %+v, err = %v", withProject, err)
+	}
+	verify := requireCleanupStepForAsset(t, withProject.Steps, logstore.ID)
+	if verify.Action != "verify_managed_absent" {
+		t.Fatalf("logstore step = %+v", verify)
+	}
+	alone, err := plan.Solve(plan.Input{
+		CleanupTaskID: "cleanup", ResolvedAssetIDs: []asset.AssetID{logstore.ID},
+		Assets: []asset.Asset{project, logstore}, LifecycleBindings: contribution.Bindings, Revision: revision,
+	})
+	if err != nil || len(alone.Blockers) != 0 || len(alone.Steps) != 1 || alone.Steps[0].Action != "delete" {
+		t.Fatalf("logstore plan = %+v, err = %v", alone, err)
 	}
 }

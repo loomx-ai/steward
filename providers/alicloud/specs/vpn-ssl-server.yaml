@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPN::SslVpnServer
+  class: network.vpn_server
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpn/{regionId}/sslservers"
+  displayNames:
+    zh-CN: SSL 服务端
+    en-US: SSL-VPN Server
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeSslVpnServers
+    parameters:
+      RegionId: scope.location
+    itemsPath: SslVpnServers.SslVpnServer
+    identityPath: SslVpnServerId
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  createdAt: CreateTime
+  vpnGatewayId: VpnGatewayId
+  localSubnet: LocalSubnet
+  clientIpPool: ClientIpPool
+  protocol: Proto
+  port: Port
+  resourceGroupId: ResourceGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::VPN::VpnGateway
+    targetIdPath: vpnGatewayId
+actions:
+  delete:
+    operation: DeleteSslVpnServer
+    parameters:
+      RegionId: scope.location
+      SslVpnServerId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: DescribeSslVpnServers
+      parameters:
+        RegionId: scope.location
+        SslVpnServerId: resource.nativeId
+        PageSize: 1
+      itemsPath: SslVpnServers.SslVpnServer
+      identityPath: SslVpnServerId

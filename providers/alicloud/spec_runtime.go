@@ -353,7 +353,7 @@ func inventoryItemsFromProductAPI(
 	list := compiled.Definition.Discovery.List
 	items := make([]contracts.InventoryItem, 0, len(rawItems))
 	for index, raw := range rawItems {
-		resource, ok := productAPIResourceMap(raw)
+		resource, ok := productAPIListRecord(raw)
 		if !ok {
 			return nil, fmt.Errorf(
 				"Alibaba Cloud operation %q item %d has type %T",
@@ -411,6 +411,19 @@ func productAPIResourceMatchesRegion(resource map[string]any, region string) boo
 	resourceRegion := firstString(resource, "RegionId", "RegionID", "regionId", "region_id")
 	return strings.TrimSpace(resourceRegion) == "" ||
 		strings.EqualFold(strings.TrimSpace(resourceRegion), strings.TrimSpace(region))
+}
+
+// productAPIListRecord reads one list item. Some list APIs return only names,
+// as SLS ListLogStores does; such a scalar becomes a record whose _item field
+// holds the name.
+func productAPIListRecord(value any) (map[string]any, bool) {
+	if name, ok := value.(string); ok {
+		if strings.TrimSpace(name) == "" {
+			return nil, false
+		}
+		return map[string]any{"_item": name}, true
+	}
+	return productAPIResourceMap(value)
 }
 
 func productAPIResourceMap(value any) (map[string]any, bool) {

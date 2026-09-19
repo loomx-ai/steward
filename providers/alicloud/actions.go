@@ -25,6 +25,7 @@ const (
 	ROSStackGroupNativeType    = "ACS::ROS::StackGroup"
 	PrometheusNativeType       = "ACS::ARMS::Prometheus"
 	KMSKeyNativeType           = "ACS::KMS::Key"
+	SLSLogStoreNativeType      = "ACS::SLS::LogStore"
 	SLSProjectNativeType       = "ACS::SLS::Project"
 	NASFileSystemNativeType    = "ACS::NAS::FileSystem"
 	ECSImageNativeType         = "ACS::ECS::Image"
@@ -4009,6 +4010,13 @@ func classifyReadbackResponseEnvelope(operation string, data map[string]any) (bo
 }
 
 func readbackIdentity(value asset.Asset) string {
+	// A logstore is unique within its project; GetLogStore answers with the
+	// logstore name alone.
+	if value.Identity.NativeType == SLSLogStoreNativeType {
+		if name := strings.TrimSpace(stringValue(value.Normalized["logstoreName"])); name != "" {
+			return name
+		}
+	}
 	if value.Identity.NativeType == CENChildInstanceAttachmentNativeType {
 		if childInstanceID := strings.TrimSpace(
 			stringValue(value.Normalized["childInstanceId"]),

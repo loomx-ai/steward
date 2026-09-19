@@ -55,3 +55,35 @@ func TestKafkaTopicsAreIdentifiedWithinTheirInstance(t *testing.T) {
 		t.Fatalf("native IDs = %v, calls = %+v", ids, factory.calls)
 	}
 }
+
+func TestLogstoresAreListedByNameWithinTheirProject(t *testing.T) {
+	t.Parallel()
+
+	// ListLogStores returns bare names, per the official Sls 2020-12-30 metadata.
+	runtime, _ := encryptionKeyRuntime(t, func(invocation contracts.Invocation) (contracts.InvocationResult, error) {
+		switch invocation.Operation {
+		case "AlibabaCloud.SLS.ListProject":
+			return contracts.InvocationResult{Data: map[string]any{"total": 1, "count": 1, "projects": []any{
+				map[string]any{"projectName": "app-logs", "status": "Normal"},
+			}}}, nil
+		case "AlibabaCloud.SLS.ListLogStores":
+			if invocation.Parameters["project"] != "app-logs" {
+				return contracts.InvocationResult{}, errors.New("unexpected project")
+			}
+			return contracts.InvocationResult{Data: map[string]any{"total": 2, "count": 2, "logstores": []any{"access", "internal-operation_log"}}}, nil
+		}
+		return contracts.InvocationResult{}, errors.New("unexpected call " + invocation.Operation)
+	})
+	kind := runtime.resourceKindByNativeType[SLSLogStoreNativeType]
+	batch, err := runtime.List(context.Background(), contracts.InventoryRequest{
+		ConnectionID: "connection-a", Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: "cn-hangzhou"},
+		Source: "product-api", ResourceKind: &kind, Limit: 100,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(batch.Items) != 2 || batch.Items[0].NativeID != "app-logs/access" ||
+		batch.Items[0].Normalized["logstoreName"] != "access" || batch.Items[0].Normalized["project"] != "app-logs" {
+		t.Fatalf("logstores = %+v", batch.Items)
+	}
+}

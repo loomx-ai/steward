@@ -452,6 +452,25 @@
         "x-operation-call": {"product":"Eci","version":"2018-08-08","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"eci.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
       }
     },
+    "/sls/projects/{project}/logstores": {
+      "get": {
+        "operationId": "SLS.ListLogStores",
+        "x-operation-name": "ListLogStores",
+        "x-operation-call": {"product":"Sls","version":"2020-12-30","style":"ROA","protocol":"HTTPS","method":"GET","path":"/logstores","endpoint":"{project}.{region}.log.aliyuncs.com","endpoint_parameters":["project"],"request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/sls/projects/{project}/logstores/{logstore}": {
+      "get": {
+        "operationId": "SLS.GetLogStore",
+        "x-operation-name": "GetLogStore",
+        "x-operation-call": {"product":"Sls","version":"2020-12-30","style":"ROA","protocol":"HTTPS","method":"GET","path":"/logstores/{logstore}","endpoint":"{project}.{region}.log.aliyuncs.com","endpoint_parameters":["project"],"request_body_type":"json","body_type":"json","parameter_position":"query"}
+      },
+      "delete": {
+        "operationId": "SLS.DeleteLogStore",
+        "x-operation-name": "DeleteLogStore",
+        "x-operation-call": {"product":"Sls","version":"2020-12-30","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/logstores/{logstore}","endpoint":"{project}.{region}.log.aliyuncs.com","endpoint_parameters":["project"],"request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/sls/projects": {
       "get": {
         "operationId": "SLS.ListProject",
@@ -1767,6 +1786,48 @@
       "delete": {
         "operationId": "DeleteVpnConnection",
         "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/vpc/ssl-vpn-servers": {
+      "get": {
+        "operationId": "DescribeSslVpnServers",
+        "x-operation-name": "DescribeSslVpnServers",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/vpc/ssl-vpn-servers/{SslVpnServerId}": {
+      "delete": {
+        "operationId": "DeleteSslVpnServer",
+        "x-operation-name": "DeleteSslVpnServer",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/vpc/ssl-vpn-client-certs": {
+      "get": {
+        "operationId": "DescribeSslVpnClientCerts",
+        "x-operation-name": "DescribeSslVpnClientCerts",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/vpc/ssl-vpn-client-certs/{SslVpnClientCertId}": {
+      "delete": {
+        "operationId": "DeleteSslVpnClientCert",
+        "x-operation-name": "DeleteSslVpnClientCert",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/vpc/ipsec-servers": {
+      "get": {
+        "operationId": "ListIpsecServers",
+        "x-operation-name": "ListIpsecServers",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/vpc/ipsec-servers/{IpsecServerId}": {
+      "delete": {
+        "operationId": "DeleteIpsecServer",
+        "x-operation-name": "DeleteIpsecServer",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
       }
     },
     "/vpc/vpn-gateways": {
@@ -3768,6 +3829,34 @@
         "x-operation-call": {"product":"Yundun-bastionhost","version":"2019-12-09","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"bastionhost.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/container-registry/instances/{InstanceId}/namespaces": {
+      "get": {
+        "operationId": "CR.ListNamespace",
+        "x-operation-name": "ListNamespace",
+        "x-operation-call": {"product":"cr","version":"2018-12-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/container-registry/instances/{InstanceId}/namespaces/{NamespaceName}": {
+      "delete": {
+        "operationId": "CR.DeleteNamespace",
+        "x-operation-name": "DeleteNamespace",
+        "x-operation-call": {"product":"cr","version":"2018-12-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/container-registry/instances/{InstanceId}/repositories": {
+      "get": {
+        "operationId": "CR.ListRepository",
+        "x-operation-name": "ListRepository",
+        "x-operation-call": {"product":"cr","version":"2018-12-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/container-registry/instances/{InstanceId}/repositories/{RepoId}": {
+      "delete": {
+        "operationId": "CR.DeleteRepository",
+        "x-operation-name": "DeleteRepository",
+        "x-operation-call": {"product":"cr","version":"2018-12-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/container-registry/instances": {
       "get": {
         "operationId": "CR.ListInstance",
@@ -3865,6 +3954,8 @@
     {"nativeType": "ACS::CloudStorageGateway::Gateway", "class": "storage.gateway", "displayName": "Cloud Storage Gateway", "scopeKinds": ["region"]},
     {"nativeType": "ACS::CloudFirewall::Instance", "class": "security.firewall", "displayName": "Cloud Firewall Instance", "scopeKinds": ["global"]},
     {"nativeType": "ACS::CR::Instance", "class": "container.registry", "displayName": "Container Registry Instance", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::CR::Namespace", "class": "container.registry_namespace", "displayName": "Container Registry Namespace", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::CR::Repository", "class": "container.repository", "displayName": "Container Registry Repository", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ECS::Disk", "class": "storage.block", "displayName": "ECS Disk", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ECS::AutoSnapshotPolicy", "class": "storage.snapshot_policy", "displayName": "ECS Auto Snapshot Policy", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ECS::CapacityReservation", "class": "compute.capacity_reservation", "displayName": "ECS Capacity Reservation", "scopeKinds": ["region"]},
@@ -3971,6 +4062,7 @@
     {"nativeType": "ACS::SLB::CACertificate", "class": "security.certificate", "displayName": "CLB CA Certificate", "scopeKinds": ["region"]},
     {"nativeType": "ACS::SLB::ServerCertificate", "class": "security.certificate", "displayName": "CLB Server Certificate", "scopeKinds": ["region"]},
     {"nativeType": "ACS::SLB::VServerGroup", "class": "network.target_group", "displayName": "CLB Virtual Server Group", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::SLS::LogStore", "class": "observability.log_store", "displayName": "Logstore", "scopeKinds": ["region"]},
     {"nativeType": "ACS::SLS::Project", "class": "observability.logs", "displayName": "Simple Log Service Project", "scopeKinds": ["region"]},
     {"nativeType": "ACS::SMS::Template", "class": "messaging.sms_template", "displayName": "SMS Template", "scopeKinds": ["global"]},
     {"nativeType": "ACS::SSLCertificatesService::Certificate", "class": "security.certificate", "displayName": "SSL Certificate", "scopeKinds": ["global"]},
@@ -3990,6 +4082,9 @@
     {"nativeType": "ACS::VPC::VPC", "class": "network.vpc", "displayName": "VPC", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VPC::VSwitch", "class": "network.subnet", "displayName": "VSwitch", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VPN::CustomerGateway", "class": "network.customer_gateway", "displayName": "Customer Gateway", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::VPN::IpsecServer", "class": "network.vpn_server", "displayName": "IPsec Server", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::VPN::SslVpnClientCert", "class": "security.certificate", "displayName": "SSL-VPN Client Certificate", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::VPN::SslVpnServer", "class": "network.vpn_server", "displayName": "SSL-VPN Server", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VPN::VpnConnection", "class": "network.vpn_connection", "displayName": "IPsec-VPN Connection", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VPN::VpnGateway", "class": "network.vpn_gateway", "displayName": "VPN Gateway", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VOD::Domain", "class": "media.vod_domain", "displayName": "ApsaraVideo VOD Domain", "scopeKinds": ["global"]}

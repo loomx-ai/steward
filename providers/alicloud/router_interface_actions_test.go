@@ -99,7 +99,7 @@ func TestKafkaTopicActionDeletesByInstanceAndName(t *testing.T) {
 	}
 	request := contracts.ActionRequest{
 		Asset: asset.Asset{
-			Identity: asset.Identity{Provider: asset.ProviderAliCloud, NativeType: "ACS::AliKafka::Topic", NativeID: "alikafka-a/orders"},
+			Identity:   asset.Identity{Provider: asset.ProviderAliCloud, NativeType: "ACS::AliKafka::Topic", NativeID: "alikafka-a/orders"},
 			Normalized: map[string]any{"instanceId": "alikafka-a", "topic": "orders"},
 		},
 		Action: "delete", IdempotencyKey: "kafka-topic-step",
@@ -118,5 +118,84 @@ func TestKafkaTopicActionDeletesByInstanceAndName(t *testing.T) {
 	if deleted.Operation != "AlibabaCloud.AliKafka.DeleteTopic" || deleted.Parameters["InstanceId"] != "alikafka-a" ||
 		deleted.Parameters["Topic"] != "orders" || deleted.Parameters["RegionId"] != "cn-hangzhou" {
 		t.Fatalf("delete invocation=%+v", deleted)
+	}
+}
+
+func TestLogstoreActionReadsBackByNameWithinTheProject(t *testing.T) {
+	t.Parallel()
+
+	provider := &invocationProvider{
+		results: []contracts.InvocationResult{
+			{RequestID: "preflight", Data: map[string]any{"logstoreName": "access", "ttl": 30}},
+			{RequestID: "delete"},
+			{},
+		},
+		errors: []error{nil, nil, alicloud.NormalizeError(&alicloud.APIError{Code: "LogStoreNotExist", Message: "logstore access does not exist", StatusCode: 404})},
+	}
+	hook, err := alicloud.NewActionHook(provider, "connection-a", "cn-hangzhou", alicloud.SLSLogStoreNativeType)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := contracts.ActionRequest{
+		Asset: asset.Asset{
+			Identity:   asset.Identity{Provider: asset.ProviderAliCloud, NativeType: alicloud.SLSLogStoreNativeType, NativeID: "app-logs/access"},
+			Normalized: map[string]any{"project": "app-logs", "logstoreName": "access"},
+		},
+		Action: "delete", IdempotencyKey: "logstore-step",
+	}
+	if preflight, err := hook.Preflight(context.Background(), request); err != nil || !preflight.Allowed {
+		t.Fatalf("preflight=%+v err=%v", preflight, err)
+	}
+	result, err := hook.Execute(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if wait, err := hook.Wait(context.Background(), request, result); err != nil || !wait.Done {
+		t.Fatalf("wait=%+v err=%v", wait, err)
+	}
+	deleted := provider.invocations[1]
+	if deleted.Parameters["project"] != "app-logs" || deleted.Parameters["logstore"] != "access" {
+		t.Fatalf("delete invocation=%+v", deleted)
+	}
+}
+
+func TestRepositoryActionFinishesWhenTheRegistryReportsItDeleted(t *testing.T) {
+	t.Parallel()
+
+	repository := func(requestID, status string) contracts.InvocationResult {
+		return contracts.InvocationResult{RequestID: requestID, Data: map[string]any{"Repositories": []any{
+			map[string]any{"RepoId": "crr-a", "RepoName": "web", "RepoNamespaceName": "apps", "RepoStatus": status},
+		}}}
+	}
+	provider := &invocationProvider{results: []contracts.InvocationResult{
+		repository("preflight", "NORMAL"), {RequestID: "delete"}, repository("deleting", "DELETING"), repository("deleted", "DELETED"),
+	}}
+	hook, err := alicloud.NewActionHook(provider, "connection-a", "cn-hangzhou", "ACS::CR::Repository")
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := contracts.ActionRequest{
+		Asset: asset.Asset{
+			Identity:   asset.Identity{Provider: asset.ProviderAliCloud, NativeType: "ACS::CR::Repository", NativeID: "crr-a"},
+			Normalized: map[string]any{"instanceId": "cri-a", "namespaceName": "apps", "repoName": "web"},
+		},
+		Action: "delete", IdempotencyKey: "repository-step",
+	}
+	if preflight, err := hook.Preflight(context.Background(), request); err != nil || !preflight.Allowed {
+		t.Fatalf("preflight=%+v err=%v", preflight, err)
+	}
+	result, err := hook.Execute(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if wait, err := hook.Wait(context.Background(), request, result); err != nil || wait.Done {
+		t.Fatalf("deleting wait=%+v err=%v", wait, err)
+	}
+	if wait, err := hook.Wait(context.Background(), request, result); err != nil || !wait.Done {
+		t.Fatalf("deleted wait=%+v err=%v", wait, err)
+	}
+	read := provider.invocations[2]
+	if read.Parameters["RepoStatus"] != "ALL" || read.Parameters["RepoName"] != "web" || read.Parameters["RepoNamespaceName"] != "apps" {
+		t.Fatalf("read invocation=%+v", read)
 	}
 }

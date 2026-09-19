@@ -1,0 +1,61 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SLS::LogStore
+  class: observability.log_store
+presentation:
+  consoleLinkTemplate: "https://sls.console.aliyun.com/lognext/project/{parentId}/overview"
+  displayNames:
+    zh-CN: 日志库
+    en-US: Logstore
+  icon: storage
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    operation: AlibabaCloud.SLS.ListProject
+    itemsPath: projects
+    identityPath: projectName
+    pagination:
+      type: offset
+      offsetParameter: offset
+      pageSizeParameter: size
+      totalPath: total
+      maxPageSize: 100
+  list:
+    operation: AlibabaCloud.SLS.ListLogStores
+    parameters:
+      project: parent.nativeId
+    itemsPath: logstores
+    identityPath: _parent.nativeId+_item
+    pagination:
+      type: offset
+      offsetParameter: offset
+      pageSizeParameter: size
+      totalPath: total
+      maxPageSize: 500
+fields:
+  name: _item
+  logstoreName: _item
+  project: _parent.nativeId
+relationships:
+  - type: member_of
+    targetType: ACS::SLS::Project
+    targetIdPath: project
+actions:
+  delete:
+    operation: AlibabaCloud.SLS.DeleteLogStore
+    parameters:
+      project: resource.normalized.project
+      logstore: resource.normalized.logstoreName
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.SLS.GetLogStore
+      parameters:
+        project: resource.normalized.project
+        logstore: resource.normalized.logstoreName
+      itemsPath: $
+      identityPath: logstoreName

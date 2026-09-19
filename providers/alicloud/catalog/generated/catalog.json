@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "db2bcb86eebeb2570d3c542b9e5f7afb62e941fb8ae694db9e5071dca7713657",
+    "checksum": "701f830a01bf1ea458cb6866feafe20d83e08d41f4fe92a038852eed0a9d56f9",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "5e264adf12d87da10707cdd838bc129beeebe7b40dff1086fcd173baba0480d3",
+  "content_checksum": "19dc1c278e04427cf0dd48e81b344dbc43b39427dd389de5a81da16a09185bfc",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -1777,11 +1777,91 @@
       }
     },
     {
+      "id": "AlibabaCloud.CR.DeleteNamespace",
+      "name": "DeleteNamespace",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/container-registry/instances/{InstanceId}/namespaces/{NamespaceName}",
+      "destructive": true,
+      "call": {
+        "product": "cr",
+        "version": "2018-12-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cr.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CR.DeleteRepository",
+      "name": "DeleteRepository",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/container-registry/instances/{InstanceId}/repositories/{RepoId}",
+      "destructive": true,
+      "call": {
+        "product": "cr",
+        "version": "2018-12-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cr.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.CR.ListInstance",
       "name": "ListInstance",
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/container-registry/instances",
+      "destructive": false,
+      "call": {
+        "product": "cr",
+        "version": "2018-12-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cr.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CR.ListNamespace",
+      "name": "ListNamespace",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/container-registry/instances/{InstanceId}/namespaces",
+      "destructive": false,
+      "call": {
+        "product": "cr",
+        "version": "2018-12-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cr.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CR.ListRepository",
+      "name": "ListRepository",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/container-registry/instances/{InstanceId}/repositories",
       "destructive": false,
       "call": {
         "product": "cr",
@@ -2904,6 +2984,27 @@
       }
     },
     {
+      "id": "AlibabaCloud.DeleteIpsecServer",
+      "name": "DeleteIpsecServer",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/vpc/ipsec-servers/{IpsecServerId}",
+      "destructive": true,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
       "id": "AlibabaCloud.DeleteIpv4Gateway",
       "name": "DeleteIpv4Gateway",
       "service": "AlibabaCloud",
@@ -3162,6 +3263,48 @@
         "request_body_type": "formData",
         "body_type": "json",
         "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.DeleteSslVpnClientCert",
+      "name": "DeleteSslVpnClientCert",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/vpc/ssl-vpn-client-certs/{SslVpnClientCertId}",
+      "destructive": true,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.DeleteSslVpnServer",
+      "name": "DeleteSslVpnServer",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/vpc/ssl-vpn-servers/{SslVpnServerId}",
+      "destructive": true,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
       }
     },
     {
@@ -3831,6 +3974,46 @@
           "cn-hangzhou-finance": "ecs.aliyuncs.com",
           "cn-north-2-gov-1": "ecs.aliyuncs.com"
         },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.DescribeSslVpnClientCerts",
+      "name": "DescribeSslVpnClientCerts",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/vpc/ssl-vpn-client-certs",
+      "destructive": false,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.DescribeSslVpnServers",
+      "name": "DescribeSslVpnServers",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/vpc/ssl-vpn-servers",
+      "destructive": false,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
         "request_body_type": "formData",
         "body_type": "json",
         "parameter_position": "query"
@@ -5663,6 +5846,26 @@
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/vpc/dhcp-options-sets",
+      "destructive": false,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ListIpsecServers",
+      "name": "ListIpsecServers",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/vpc/ipsec-servers",
       "destructive": false,
       "call": {
         "product": "Vpc",
@@ -9510,6 +9713,29 @@
       }
     },
     {
+      "id": "AlibabaCloud.SLS.DeleteLogStore",
+      "name": "DeleteLogStore",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/sls/projects/{project}/logstores/{logstore}",
+      "destructive": true,
+      "call": {
+        "product": "Sls",
+        "version": "2020-12-30",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/logstores/{logstore}",
+        "endpoint": "{project}.{region}.log.aliyuncs.com",
+        "endpoint_parameters": [
+          "project"
+        ],
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.SLS.DeleteProject",
       "name": "DeleteProject",
       "service": "AlibabaCloud",
@@ -9533,6 +9759,29 @@
       }
     },
     {
+      "id": "AlibabaCloud.SLS.GetLogStore",
+      "name": "GetLogStore",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/sls/projects/{project}/logstores/{logstore}",
+      "destructive": false,
+      "call": {
+        "product": "Sls",
+        "version": "2020-12-30",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/logstores/{logstore}",
+        "endpoint": "{project}.{region}.log.aliyuncs.com",
+        "endpoint_parameters": [
+          "project"
+        ],
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.SLS.GetProject",
       "name": "GetProject",
       "service": "AlibabaCloud",
@@ -9546,6 +9795,29 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/",
+        "endpoint": "{project}.{region}.log.aliyuncs.com",
+        "endpoint_parameters": [
+          "project"
+        ],
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.SLS.ListLogStores",
+      "name": "ListLogStores",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/sls/projects/{project}/logstores",
+      "destructive": false,
+      "call": {
+        "product": "Sls",
+        "version": "2020-12-30",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/logstores",
         "endpoint": "{project}.{region}.log.aliyuncs.com",
         "endpoint_parameters": [
           "project"
@@ -10310,6 +10582,22 @@
       "native_type": "ACS::CR::Instance",
       "class": "container.registry",
       "display_name": "Container Registry Instance",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::CR::Namespace",
+      "class": "container.registry_namespace",
+      "display_name": "Container Registry Namespace",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::CR::Repository",
+      "class": "container.repository",
+      "display_name": "Container Registry Repository",
       "scope_kinds": [
         "region"
       ]
@@ -11203,6 +11491,14 @@
       ]
     },
     {
+      "native_type": "ACS::SLS::LogStore",
+      "class": "observability.log_store",
+      "display_name": "Logstore",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::SLS::Project",
       "class": "observability.logs",
       "display_name": "Simple Log Service Project",
@@ -11358,6 +11654,30 @@
       "native_type": "ACS::VPN::CustomerGateway",
       "class": "network.customer_gateway",
       "display_name": "Customer Gateway",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::VPN::IpsecServer",
+      "class": "network.vpn_server",
+      "display_name": "IPsec Server",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::VPN::SslVpnClientCert",
+      "class": "security.certificate",
+      "display_name": "SSL-VPN Client Certificate",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::VPN::SslVpnServer",
+      "class": "network.vpn_server",
+      "display_name": "SSL-VPN Server",
       "scope_kinds": [
         "region"
       ]

@@ -173,7 +173,10 @@ func TestSpecResponsePathsMatchOfficialMetadata(t *testing.T) {
 			paths := responsePaths[key]
 			required := []string{joinResponsePath(block.itemsPath, "")}
 			for _, part := range strings.Split(block.identityPath, "+") {
-				required = append(required, joinResponsePath(block.itemsPath, strings.TrimSpace(part)))
+				// _parent and _item are added by inventory, not returned.
+				if part = strings.TrimSpace(part); !strings.HasPrefix(part, "_") {
+					required = append(required, joinResponsePath(block.itemsPath, part))
+				}
 			}
 			for _, required := range required {
 				if required != "" && !slices.Contains(paths, required) {
@@ -201,7 +204,10 @@ func TestSpecResponsePathsMatchOfficialMetadata(t *testing.T) {
 				continue
 			}
 			for index, item := range items {
-				record, ok := productAPIResourceMap(item)
+				record, ok := productAPIListRecord(item)
+				if ok {
+					record["_parent"] = map[string]any{"nativeId": "parent"}
+				}
 				if !ok || recordIdentity(record, block.identityPath) == "" {
 					t.Errorf("%s%s: record %d of the official %s example has no identity at %q", path, block.location, index, key, block.identityPath)
 				}

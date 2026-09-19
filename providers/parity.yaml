@@ -404,6 +404,41 @@ resources:
   status: pending_verification
   notes: Uptime checks are only one monitoring component. Trace application discovery is still a separate
     gap to assess.
+- alicloud: ACS::CR::Namespace
+  spec: providers/alicloud/specs/cr-namespace.yaml
+  class: container.registry_namespace
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    notes: Artifact Registry repositories are project-scoped; there is no namespace resource.
+  azure:
+    notes: Container Registry namespaces are repository path prefixes inside Microsoft.ContainerRegistry/registries.
+  aws:
+    notes: Amazon ECR namespaces are repository name prefixes, not resources.
+  status: pending_verification
+  notes: Deleting a namespace deletes its repositories and images; the plan deletes each repository first.
+- alicloud: ACS::CR::Repository
+  spec: providers/alicloud/specs/cr-repository.yaml
+  class: container.repository
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - artifactregistry.googleapis.com/Repository
+  azure:
+    notes: Container Registry repositories are data-plane objects inside Microsoft.ContainerRegistry/registries.
+  aws:
+    resources:
+    - AWS::ECR::Repository
+  status: pending_verification
 - alicloud: ACS::ECS::AutoSnapshotPolicy
   spec: providers/alicloud/specs/auto-snapshot-policy.yaml
   class: storage.snapshot_policy
@@ -1117,6 +1152,26 @@ resources:
     resources:
     - AWS::ElasticLoadBalancingV2::TargetGroup
   status: pending_verification
+- alicloud: ACS::SLS::LogStore
+  spec: providers/alicloud/specs/sls-logstore.yaml
+  class: observability.log_store
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - logging.googleapis.com/LogBucket
+  azure:
+    notes: Log Analytics tables are properties of Microsoft.OperationalInsights/workspaces.
+  aws:
+    resources:
+    - AWS::Logs::LogGroup
+  status: pending_verification
+  notes: Deleting a project deletes its logstores, including service-created internal logstores; each
+    is then confirmed absent.
 - alicloud: ACS::VPN::CustomerGateway
   spec: providers/alicloud/specs/customer-gateway.yaml
   class: network.customer_gateway
@@ -3399,6 +3454,51 @@ resources:
   aws:
     resources:
     - AWS::EC2::VPC
+  status: pending_verification
+- alicloud: ACS::VPN::IpsecServer
+  spec: providers/alicloud/specs/vpn-ipsec-server.yaml
+  class: network.vpn_server
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: Cloud VPN has no client-to-site server resource.
+  azure:
+    notes: Point-to-site IPsec settings are properties of Microsoft.Network/virtualNetworkGateways.
+  aws:
+    notes: AWS Client VPN endpoints are not modeled yet.
+  status: pending_verification
+- alicloud: ACS::VPN::SslVpnClientCert
+  spec: providers/alicloud/specs/vpn-ssl-client-cert.yaml
+  class: security.certificate
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: Cloud VPN has no client certificate resource.
+  azure:
+    notes: Point-to-site client root certificates are properties of Microsoft.Network/virtualNetworkGateways.
+  aws:
+    notes: AWS Client VPN endpoints are not modeled yet.
+  status: pending_verification
+- alicloud: ACS::VPN::SslVpnServer
+  spec: providers/alicloud/specs/vpn-ssl-server.yaml
+  class: network.vpn_server
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: Cloud VPN has no client-to-site server resource.
+  azure:
+    notes: Point-to-site configuration is a property of Microsoft.Network/virtualNetworkGateways.
+  aws:
+    notes: AWS Client VPN endpoints are not modeled yet.
   status: pending_verification
 - alicloud: ACS::VPN::VpnConnection
   spec: providers/alicloud/specs/vpn-connection.yaml

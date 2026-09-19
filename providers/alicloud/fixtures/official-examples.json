@@ -8231,6 +8231,50 @@
     ]
    }
   },
+  "Sls@2020-12-30#GetLogStore": {
+   "appendMeta": false,
+   "autoSplit": true,
+   "createTime": 1453949705,
+   "enableModify": true,
+   "enable_tracking": false,
+   "encrypt_conf": {
+    "enable": true,
+    "encrypt_type": "default",
+    "user_cmk_info": {
+     "arn": "acs:ram::13234:role/logsource",
+     "cmk_key_id": "f5136b95-2420-ab31-xxxxxxxxx",
+     "region_id": "cn-hangzhou"
+    }
+   },
+   "hot_ttl": 60,
+   "infrequentAccessTTL": 30,
+   "lastModifyTime": 1524155379,
+   "logstoreName": "my-logstore",
+   "maxSplitShard": 6,
+   "mode": "standard",
+   "processorId": "",
+   "productType": "aliyun",
+   "resourceGroupId": "",
+   "shardCount": 2,
+   "shardingPolicy": {
+    "enabled": true,
+    "queryActiveTime": 1764659409,
+    "shardGroup": {
+     "groupCount": 8,
+     "keys": [
+      "userId"
+     ]
+    },
+    "shardHash": {
+     "keys": [
+      "instanceId"
+     ],
+     "maxHashCount": 2
+    }
+   },
+   "telemetryType": "Metrics",
+   "ttl": 1
+  },
   "Sls@2020-12-30#GetProject": {
    "createTime": "2021-07-07 14:08:09",
    "dataRedundancyType": "LRS",
@@ -8247,6 +8291,13 @@
    "region": "cn-hangzhou",
    "resourceGroupId": "rg-acf******sq",
    "status": "Normal"
+  },
+  "Sls@2020-12-30#ListLogStores": {
+   "count": 2,
+   "logstores": [
+    "test-1,test-2"
+   ],
+   "total": 2
   },
   "Sls@2020-12-30#ListProject": {
    "count": 2,
@@ -8815,6 +8866,59 @@
    },
    "TotalCount": 1
   },
+  "Vpc@2016-04-28#DescribeSslVpnClientCerts": {
+   "PageNumber": 1,
+   "PageSize": 10,
+   "RequestId": "5BE01CD7-5A50-472D-AC14-CA181C5C03BE",
+   "SslVpnClientCertKeys": {
+    "SslVpnClientCertKey": [
+     {
+      "CreateTime": 1492747187000,
+      "EndTime": 1494966335000,
+      "Name": "cert1",
+      "RegionId": "cn-hangzhou",
+      "ResourceGroupId": "rg-acfmzs372yg****",
+      "SslVpnClientCertId": "vsc-bp1n8wcf134yl0osr****",
+      "SslVpnServerId": "vss-bp18q7hzj6largv4v****",
+      "Status": "normal"
+     }
+    ]
+   },
+   "TotalCount": 1
+  },
+  "Vpc@2016-04-28#DescribeSslVpnServers": {
+   "PageNumber": 1,
+   "PageSize": 10,
+   "RequestId": "D350187B-EA41-4577-950B-95434C8302E1",
+   "SslVpnServers": {
+    "SslVpnServer": [
+     {
+      "Cipher": "AES-128-CBC",
+      "ClientIpPool": "10.10.1.0/24",
+      "Compress": false,
+      "Connections": 0,
+      "CreateTime": 1613800884000,
+      "DnsServers": "",
+      "EnableMultiFactorAuth": true,
+      "IDaaSApplicationId": "app_my6g4qmvnwxzj2f****",
+      "IDaaSInstanceId": "idaas-cn-hangzhou-****",
+      "IDaaSInstanceVersion": "EIAM 2.0",
+      "IDaaSRegionId": "cn-hangzhou",
+      "InternetIp": "47.5.XX.XX",
+      "LocalSubnet": "192.168.0.0/24",
+      "MaxConnections": 5,
+      "Name": "test",
+      "Port": 1194,
+      "Proto": "UDP",
+      "RegionId": "cn-hangzhou",
+      "ResourceGroupId": "rg-acfmzs372yg****",
+      "SslVpnServerId": "vss-bp15j3du13gq1dgey****",
+      "VpnGatewayId": "vpn-bp1on0xae9d771ggi****"
+     }
+    ]
+   },
+   "TotalCount": 1
+  },
   "Vpc@2016-04-28#DescribeVSwitches": {
    "PageNumber": 1,
    "PageSize": 10,
@@ -9222,6 +9326,48 @@
    "NextToken": "FFmyTO70tTpLG6I3FmYAXGKPd********",
    "RequestId": "0ED8D006-F706-4D23-88ED-E11ED28DCAC0",
    "TotalCount": "10"
+  },
+  "Vpc@2016-04-28#ListIpsecServers": {
+   "IpsecServers": [
+    {
+     "ClientIpPool": "10.0.0.0/24",
+     "CreationTime": "2018-12-03T10:11:55Z",
+     "EffectImmediately": false,
+     "IDaaSInstanceId": "idaas-cn-hangzhou-****",
+     "IkeConfig": {
+      "IkeAuthAlg": "sha1",
+      "IkeEncAlg": "aes",
+      "IkeLifetime": 86400,
+      "IkeMode": "main",
+      "IkePfs": "group2",
+      "IkeVersion": "ikev2",
+      "LocalId": "116.64.XX.XX",
+      "RemoteId": "139.67.XX.XX"
+     },
+     "InternetIp": "47.22.XX.XX",
+     "IpsecConfig": {
+      "IpsecAuthAlg": "sha1",
+      "IpsecEncAlg": "aes",
+      "IpsecLifetime": 86400,
+      "IpsecPfs": "group2"
+     },
+     "IpsecServerId": "iss-bp1bo3xuvcxo7ixll****",
+     "IpsecServerName": "test",
+     "LocalSubnet": "192.168.0.0/16,172.17.0.0/16",
+     "MaxConnections": 5,
+     "MultiFactorAuthEnabled": true,
+     "OnlineClientCount": 1,
+     "Psk": "pgw6dy7d****",
+     "PskEnabled": true,
+     "RegionId": "cn-hangzhou",
+     "ResourceGroupId": "rg-acfmzs372yg****",
+     "VpnGatewayId": "vpn-bp1q8bgx4xnkm2ogj****"
+    }
+   ],
+   "MaxResults": 1,
+   "NextToken": "caeba0bbb2be03f84eb48b699f0a****",
+   "RequestId": "54B48E3D-DF70-471B-AA93-08E683A1B457",
+   "TotalCount": 10
   },
   "Vpc@2016-04-28#ListNatIps": {
    "NatIps": [
@@ -10067,6 +10213,58 @@
    "PageSize": 30,
    "RequestId": "A2A9BA68-B264-4953-9154-CE61B1C03BA6",
    "TotalCount": 12121
+  },
+  "cr@2018-12-01#ListNamespace": {
+   "Code": "success",
+   "IsSuccess": true,
+   "Namespaces": [
+    {
+     "AutoCreateRepo": true,
+     "DefaultRepoConfiguration": {
+      "ArtifactBuildRuleParameters": {
+       "ImageIndexOnly": true
+      },
+      "RepoType": "",
+      "TagImmutability": true
+     },
+     "DefaultRepoType": "PUBLIC",
+     "InstanceId": "cri-94klsruryslx****",
+     "NamespaceId": "crn-tiw8t3f8i5lt****",
+     "NamespaceName": "test",
+     "NamespaceStatus": "NORMAL",
+     "ResourceGroupId": "rg-acfm4n5kzyf2fbi"
+    }
+   ],
+   "PageNo": 1,
+   "PageSize": 30,
+   "RequestId": "B7E5FCA5-55ED-451C-9649-0BB2B93387D0",
+   "TotalCount": "1"
+  },
+  "cr@2018-12-01#ListRepository": {
+   "Code": "success",
+   "IsSuccess": true,
+   "MaxResults": 30,
+   "NextToken": "*****V3MpHK1AP0pfERHZN5pu6lESTRpd5hnHNnmKOP/+w9F",
+   "PageNo": 1,
+   "PageSize": 30,
+   "Repositories": [
+    {
+     "CreateTime": 1564153576000,
+     "InstanceId": "cri-kmsiwlxxdcv****",
+     "ModifiedTime": 1564153576000,
+     "RepoBuildType": "MANUAL",
+     "RepoId": "crr-03cuozrsqhkw****",
+     "RepoName": "test",
+     "RepoNamespaceName": "test",
+     "RepoStatus": "NORMAL",
+     "RepoType": "PRIVATE",
+     "ResourceGroupId": "rg-acfm4n5kzyfxxxx\n",
+     "Summary": "test OK",
+     "TagImmutability": true
+    }
+   ],
+   "RequestId": "5241C090-DA69-4B0F-8E3F-2F24FDE1110E",
+   "TotalCount": "1"
   },
   "datahub@2024-06-20#GetProject": {
    "Comment": "test_comment",

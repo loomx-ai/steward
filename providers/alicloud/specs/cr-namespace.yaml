@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CR::Namespace
+  class: container.registry_namespace
+presentation:
+  consoleLinkTemplate: "https://cr.console.aliyun.com/{regionId}/instance/{parentId}/namespace/list"
+  displayNames:
+    zh-CN: 容器镜像命名空间
+    en-US: Container Registry Namespace
+  icon: container
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    operation: AlibabaCloud.CR.ListInstance
+    itemsPath: Instances
+    identityPath: InstanceId
+    pagination:
+      type: page-number
+      pageParameter: PageNo
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+  list:
+    operation: AlibabaCloud.CR.ListNamespace
+    parameters:
+      InstanceId: parent.nativeId
+    itemsPath: Namespaces
+    identityPath: NamespaceId
+    statePath: NamespaceStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNo
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: NamespaceName
+  namespaceName: NamespaceName
+  state: NamespaceStatus
+  instanceId: _parent.nativeId
+  defaultRepoType: DefaultRepoType
+  autoCreateRepo: AutoCreateRepo
+  resourceGroupId: ResourceGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::CR::Instance
+    targetIdPath: instanceId
+actions:
+  delete:
+    operation: AlibabaCloud.CR.DeleteNamespace
+    parameters:
+      InstanceId: resource.normalized.instanceId
+      NamespaceName: resource.normalized.namespaceName
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CR.ListNamespace
+      parameters:
+        InstanceId: resource.normalized.instanceId
+        NamespaceName: resource.normalized.namespaceName
+        PageNo: 1
+        PageSize: 100
+      itemsPath: Namespaces
+      identityPath: NamespaceId
+      statePath: NamespaceStatus

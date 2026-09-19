@@ -27449,6 +27449,31 @@
   },
   {
    "apis": {
+    "DeleteLogStore": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "delete"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "path",
+       "name": "logstore",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "host",
+       "name": "project",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "/logstores/{logstore}",
+     "response_paths": [],
+     "risk_type": ""
+    },
     "DeleteProject": {
      "deprecated": false,
      "error_codes": [],
@@ -27473,6 +27498,65 @@
      "path": "/",
      "response_paths": [],
      "risk_type": "none"
+    },
+    "GetLogStore": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "path",
+       "name": "logstore",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "host",
+       "name": "project",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "/logstores/{logstore}",
+     "response_paths": [
+      "appendMeta",
+      "autoSplit",
+      "createTime",
+      "enableModify",
+      "enable_tracking",
+      "encrypt_conf",
+      "encrypt_conf.enable",
+      "encrypt_conf.encrypt_type",
+      "encrypt_conf.user_cmk_info",
+      "encrypt_conf.user_cmk_info.arn",
+      "encrypt_conf.user_cmk_info.cmk_key_id",
+      "encrypt_conf.user_cmk_info.region_id",
+      "hot_ttl",
+      "infrequentAccessTTL",
+      "lastModifyTime",
+      "logstoreName",
+      "maxSplitShard",
+      "mode",
+      "processorId",
+      "productType",
+      "resourceGroupId",
+      "shardCount",
+      "shardingPolicy",
+      "shardingPolicy.enabled",
+      "shardingPolicy.queryActiveTime",
+      "shardingPolicy.shardGroup",
+      "shardingPolicy.shardGroup.groupCount",
+      "shardingPolicy.shardGroup.keys",
+      "shardingPolicy.shardHash",
+      "shardingPolicy.shardHash.keys",
+      "shardingPolicy.shardHash.maxHashCount",
+      "telemetryType",
+      "ttl"
+     ],
+     "risk_type": ""
     },
     "GetProject": {
      "deprecated": false,
@@ -27512,6 +27596,59 @@
       "status"
      ],
      "risk_type": "none"
+    },
+    "ListLogStores": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "logstoreName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "mode",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "offset",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "host",
+       "name": "project",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "size",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "telemetryType",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/logstores",
+     "response_paths": [
+      "count",
+      "logstores",
+      "total"
+     ],
+     "risk_type": ""
     },
     "ListProject": {
      "deprecated": false,
@@ -28103,6 +28240,51 @@
      ],
      "risk_type": "none"
     },
+    "DeleteIpsecServer": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden",
+      "InvalidIpsecServerId.NotFound",
+      "OperationConflict",
+      "VpnGateway.Configuring"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "IpsecServerId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
     "DeleteIpv4Gateway": {
      "deprecated": false,
      "error_codes": [
@@ -28535,6 +28717,87 @@
       "RequestId"
      ],
      "risk_type": "high"
+    },
+    "DeleteSslVpnClientCert": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbbiden.SubUser",
+      "Forbidden",
+      "InvalidRegionId.NotFound",
+      "InvalidSslVpnClientCertId.NotFound",
+      "VpnGateway.Configuring"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SslVpnClientCertId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "DeleteSslVpnServer": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbbiden.SubUser",
+      "Forbidden",
+      "InvalidRegionId.NotFound",
+      "InvalidSslVpnServerId.NotFound",
+      "VpnGateway.Configuring",
+      "VpnGateway.FinancialLocked"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SslVpnServerId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
     },
     "DeleteVSwitch": {
      "deprecated": false,
@@ -30287,6 +30550,169 @@
      ],
      "risk_type": "none"
     },
+    "DescribeSslVpnClientCerts": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbbiden.SubUser",
+      "Forbidden",
+      "InvalidRegionId.NotFound"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "Name",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SslVpnClientCertId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SslVpnServerId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "SslVpnClientCertKeys",
+      "SslVpnClientCertKeys.SslVpnClientCertKey",
+      "SslVpnClientCertKeys.SslVpnClientCertKey.CreateTime",
+      "SslVpnClientCertKeys.SslVpnClientCertKey.EndTime",
+      "SslVpnClientCertKeys.SslVpnClientCertKey.Name",
+      "SslVpnClientCertKeys.SslVpnClientCertKey.RegionId",
+      "SslVpnClientCertKeys.SslVpnClientCertKey.ResourceGroupId",
+      "SslVpnClientCertKeys.SslVpnClientCertKey.SslVpnClientCertId",
+      "SslVpnClientCertKeys.SslVpnClientCertKey.SslVpnServerId",
+      "SslVpnClientCertKeys.SslVpnClientCertKey.Status",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "DescribeSslVpnServers": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbbiden.SubUser",
+      "Forbidden",
+      "InvalidRegionId.NotFound"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "Name",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SslVpnServerId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "VpnGatewayId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "SslVpnServers",
+      "SslVpnServers.SslVpnServer",
+      "SslVpnServers.SslVpnServer.Cipher",
+      "SslVpnServers.SslVpnServer.ClientIpPool",
+      "SslVpnServers.SslVpnServer.Compress",
+      "SslVpnServers.SslVpnServer.Connections",
+      "SslVpnServers.SslVpnServer.CreateTime",
+      "SslVpnServers.SslVpnServer.DnsServers",
+      "SslVpnServers.SslVpnServer.EnableMultiFactorAuth",
+      "SslVpnServers.SslVpnServer.IDaaSApplicationId",
+      "SslVpnServers.SslVpnServer.IDaaSInstanceId",
+      "SslVpnServers.SslVpnServer.IDaaSInstanceVersion",
+      "SslVpnServers.SslVpnServer.IDaaSRegionId",
+      "SslVpnServers.SslVpnServer.InternetIp",
+      "SslVpnServers.SslVpnServer.LocalSubnet",
+      "SslVpnServers.SslVpnServer.MaxConnections",
+      "SslVpnServers.SslVpnServer.Name",
+      "SslVpnServers.SslVpnServer.Port",
+      "SslVpnServers.SslVpnServer.Proto",
+      "SslVpnServers.SslVpnServer.RegionId",
+      "SslVpnServers.SslVpnServer.ResourceGroupId",
+      "SslVpnServers.SslVpnServer.SslVpnServerId",
+      "SslVpnServers.SslVpnServer.VpnGatewayId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
     "DescribeVSwitches": {
      "deprecated": false,
      "error_codes": [
@@ -31199,6 +31625,101 @@
       "DhcpOptionsSets.Tags",
       "DhcpOptionsSets.Tags.Key",
       "DhcpOptionsSets.Tags.Value",
+      "NextToken",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "ListIpsecServers": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden",
+      "IllegalParam.NextToken"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "IpsecServerId",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "IpsecServerName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "VpnGatewayId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "IpsecServers",
+      "IpsecServers.ClientIpPool",
+      "IpsecServers.CreationTime",
+      "IpsecServers.EffectImmediately",
+      "IpsecServers.IDaaSInstanceId",
+      "IpsecServers.IkeConfig",
+      "IpsecServers.IkeConfig.IkeAuthAlg",
+      "IpsecServers.IkeConfig.IkeEncAlg",
+      "IpsecServers.IkeConfig.IkeLifetime",
+      "IpsecServers.IkeConfig.IkeMode",
+      "IpsecServers.IkeConfig.IkePfs",
+      "IpsecServers.IkeConfig.IkeVersion",
+      "IpsecServers.IkeConfig.LocalId",
+      "IpsecServers.IkeConfig.RemoteId",
+      "IpsecServers.InternetIp",
+      "IpsecServers.IpsecConfig",
+      "IpsecServers.IpsecConfig.IpsecAuthAlg",
+      "IpsecServers.IpsecConfig.IpsecEncAlg",
+      "IpsecServers.IpsecConfig.IpsecLifetime",
+      "IpsecServers.IpsecConfig.IpsecPfs",
+      "IpsecServers.IpsecServerId",
+      "IpsecServers.IpsecServerName",
+      "IpsecServers.LocalSubnet",
+      "IpsecServers.MaxConnections",
+      "IpsecServers.MultiFactorAuthEnabled",
+      "IpsecServers.OnlineClientCount",
+      "IpsecServers.Psk",
+      "IpsecServers.PskEnabled",
+      "IpsecServers.RegionId",
+      "IpsecServers.ResourceGroupId",
+      "IpsecServers.VpnGatewayId",
+      "MaxResults",
       "NextToken",
       "RequestId",
       "TotalCount"
@@ -36385,6 +36906,84 @@
   },
   {
    "apis": {
+    "DeleteNamespace": {
+     "deprecated": false,
+     "error_codes": [
+      "NoPrivilege",
+      "SystemError"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "InstanceId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NamespaceName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "IsSuccess",
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DeleteRepository": {
+     "deprecated": false,
+     "error_codes": [
+      "NoPrivilege",
+      "SystemError"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "InstanceId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RepoId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RepoName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RepoNamespaceName",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "IsSuccess",
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
     "ListInstance": {
      "deprecated": false,
      "error_codes": [
@@ -36447,6 +37046,160 @@
       "IsSuccess",
       "PageNo",
       "PageSize",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "ListNamespace": {
+     "deprecated": false,
+     "error_codes": [
+      "NoPrivilege",
+      "SystemError"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "InstanceId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NamespaceName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NamespaceStatus",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNo",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "IsSuccess",
+      "Namespaces",
+      "Namespaces.AutoCreateRepo",
+      "Namespaces.DefaultRepoConfiguration",
+      "Namespaces.DefaultRepoConfiguration.ArtifactBuildRuleParameters",
+      "Namespaces.DefaultRepoConfiguration.ArtifactBuildRuleParameters.ImageIndexOnly",
+      "Namespaces.DefaultRepoConfiguration.RepoType",
+      "Namespaces.DefaultRepoConfiguration.TagImmutability",
+      "Namespaces.DefaultRepoType",
+      "Namespaces.InstanceId",
+      "Namespaces.NamespaceId",
+      "Namespaces.NamespaceName",
+      "Namespaces.NamespaceStatus",
+      "Namespaces.ResourceGroupId",
+      "PageNo",
+      "PageSize",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "ListRepository": {
+     "deprecated": false,
+     "error_codes": [
+      "NoPrivilege",
+      "SystemError"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "InstanceId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNo",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "RepoName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RepoNamespaceName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RepoStatus",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Code",
+      "IsSuccess",
+      "MaxResults",
+      "NextToken",
+      "PageNo",
+      "PageSize",
+      "Repositories",
+      "Repositories.CreateTime",
+      "Repositories.InstanceId",
+      "Repositories.ModifiedTime",
+      "Repositories.RepoBuildType",
+      "Repositories.RepoId",
+      "Repositories.RepoName",
+      "Repositories.RepoNamespaceName",
+      "Repositories.RepoStatus",
+      "Repositories.RepoType",
+      "Repositories.ResourceGroupId",
+      "Repositories.Summary",
+      "Repositories.TagImmutability",
       "RequestId",
       "TotalCount"
      ],

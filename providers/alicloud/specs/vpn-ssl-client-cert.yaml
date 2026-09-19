@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPN::SslVpnClientCert
+  class: security.certificate
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpn/{regionId}/sslclients"
+  displayNames:
+    zh-CN: SSL 客户端证书
+    en-US: SSL-VPN Client Certificate
+  icon: certificate
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeSslVpnClientCerts
+    parameters:
+      RegionId: scope.location
+    itemsPath: SslVpnClientCertKeys.SslVpnClientCertKey
+    identityPath: SslVpnClientCertId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  createdAt: CreateTime
+  expireTime: EndTime
+  sslVpnServerId: SslVpnServerId
+  resourceGroupId: ResourceGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::VPN::SslVpnServer
+    targetIdPath: sslVpnServerId
+actions:
+  delete:
+    operation: DeleteSslVpnClientCert
+    parameters:
+      RegionId: scope.location
+      SslVpnClientCertId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: DescribeSslVpnClientCerts
+      parameters:
+        RegionId: scope.location
+        SslVpnClientCertId: resource.nativeId
+        PageSize: 1
+      itemsPath: SslVpnClientCertKeys.SslVpnClientCertKey
+      identityPath: SslVpnClientCertId
+      statePath: Status
