@@ -15854,6 +15854,33 @@
      "path": "",
      "risk_type": "none"
     },
+    "DescribeEncryptionKey": {
+     "deprecated": false,
+     "error_codes": [
+      "InstanceType.NotSupport"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "EncryptionKey",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "InstanceId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "risk_type": ""
+    },
     "DescribeInstanceAttribute": {
      "deprecated": false,
      "error_codes": [],
@@ -15872,6 +15899,27 @@
      ],
      "path": "",
      "risk_type": "none"
+    },
+    "DescribeInstanceTDEStatus": {
+     "deprecated": false,
+     "error_codes": [
+      "InvalidInstanceId.NotFound"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "InstanceId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "risk_type": ""
     },
     "DescribeInstances": {
      "deprecated": false,
@@ -17396,6 +17444,194 @@
      ],
      "path": "",
      "risk_type": "none"
+    },
+    "DescribeDBInstanceEncryptionKey": {
+     "deprecated": false,
+     "error_codes": [
+      "Abs.InvalidAccount.NotFound",
+      "Api.NotSupport",
+      "BackupPolicyNotSupport",
+      "BasicInfoUncompleted",
+      "ByokInsnameAndRegionAllEmpty",
+      "CloudSSDNotSupport",
+      "ColdData.EngineVersionNotSupport",
+      "ColdData.MinorVersionNotSupport",
+      "Commodity.InvalidComponent",
+      "CommodityServiceCalling.Exception",
+      "ContainForbiddenLabelError",
+      "ExternalFailure",
+      "HostInfo.NotFound",
+      "IncorrectMinorVersion",
+      "IncorrectTargetClasscode",
+      "InsufficientAvailableQuota",
+      "InvalidBackupSet",
+      "InvalidClusterKms",
+      "InvalidConnectionString.Duplicate",
+      "InvalidDBInstanceEngineType.Format",
+      "InvalidDBInstanceId.NotFound",
+      "InvalidInstanceLevel.DiskType",
+      "InvalidInstanceLevel.Malformed",
+      "InvalidKmsKey",
+      "InvalidParam",
+      "InvalidReduceDiskSize",
+      "InvalidReleasedKeepPolicy.Format",
+      "InvalidUserOperatorPermission",
+      "InvalidVswitchId",
+      "InvalideStatus.Format",
+      "InvokeProxyFailure",
+      "KmsApiError",
+      "MirrorInsExists",
+      "NoActiveBYOK",
+      "NotInFlowController",
+      "OperationDenied.ZoneResource",
+      "OrdTCommodityQueryError",
+      "Order.ComboInstanceNotAllowOperate",
+      "Order.InstHasUnpaidOrder",
+      "Order.NoRealNameAuthentication",
+      "Order.PeriodInvalid",
+      "OrderStatus.UnPaid",
+      "Parameters.Invalid",
+      "Pay.InsufficientBalance",
+      "Pay.NoCreditCard",
+      "Price.CommoditySys",
+      "Price.PricingPlanResultNotFound",
+      "ProductInstanceReleased",
+      "RegionDissolvedEOM",
+      "RegionEndTimeDissolvedAustralia",
+      "RegionEndTimeDissolvedIndia",
+      "Request.NotFound",
+      "RequestMetaDataFailed",
+      "RequiredParam.NotFound",
+      "Risk.RiskControlRejection",
+      "SqlExecuteFailedOrTimeout",
+      "System.SaleValidateFailed",
+      "UnsupportedClassCode",
+      "VpcNetworkTypeNotSupport",
+      "noAvailablePaymentMethod",
+      "pay.noCreditCard"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "DBInstanceId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "EncryptionKey",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "TargetRegionId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "risk_type": ""
+    },
+    "DescribeDBInstanceTDE": {
+     "deprecated": false,
+     "error_codes": [
+      "%s",
+      "Abs.InvalidAccount.NotFound",
+      "Api.NotSupport",
+      "BackupPolicyNotSupport",
+      "BasicInfoUncompleted",
+      "CloudSSDNotSupport",
+      "ColdData.EngineVersionNotSupport",
+      "ColdData.MinorVersionNotSupport",
+      "Commodity.InvalidComponent",
+      "CommodityServiceCalling.Exception",
+      "ConcurrentLimit",
+      "Connect.Timeout",
+      "ContainForbiddenLabelError",
+      "DBSizeExceeded",
+      "DbossGeneralError",
+      "ExternalFailure",
+      "HostInfo.NotFound",
+      "IncorrectDBInstanceType",
+      "IncorrectEngineVersion",
+      "IncorrectMinorVersion",
+      "IncorrectTargetClasscode",
+      "InsufficientAvailableQuota",
+      "InvalidBackupSet",
+      "InvalidClusterKms",
+      "InvalidConnectionString.Duplicate",
+      "InvalidDBInstanceEngineType.Format",
+      "InvalidDBInstanceId.NotFound",
+      "InvalidDBName.NotFound",
+      "InvalidInstanceLevel.DiskType",
+      "InvalidInstanceLevel.Malformed",
+      "InvalidKmsKey",
+      "InvalidParam",
+      "InvalidReduceDiskSize",
+      "InvalidReleasedKeepPolicy.Format",
+      "InvalidUserOperatorPermission",
+      "InvalidVswitchId",
+      "InvalideStatus.Format",
+      "InvokeProxyFailure",
+      "KmsApiError",
+      "MirrorInsExists",
+      "NetworkOrSqlTimeoutError",
+      "NotInFlowController",
+      "OperationDenied.ZoneResource",
+      "OrdTCommodityQueryError",
+      "Order.ComboInstanceNotAllowOperate",
+      "Order.InstHasUnpaidOrder",
+      "Order.NoRealNameAuthentication",
+      "Order.PeriodInvalid",
+      "OrderStatus.UnPaid",
+      "Parameters.Invalid",
+      "Pay.InsufficientBalance",
+      "Pay.NoCreditCard",
+      "Price.CommoditySys",
+      "Price.PricingPlanResultNotFound",
+      "ProductInstanceReleased",
+      "RegionDissolvedEOM",
+      "RegionEndTimeDissolvedAustralia",
+      "RegionEndTimeDissolvedIndia",
+      "Request.NotFound",
+      "RequestMetaDataFailed",
+      "RequiredParam.NotFound",
+      "Risk.RiskControlRejection",
+      "SqlExcutionFailed",
+      "SqlExecuteFailedOrTimeout",
+      "System.SaleValidateFailed",
+      "UnsupportedClassCode",
+      "VpcNetworkTypeNotSupport",
+      "noAvailablePaymentMethod",
+      "pay.noCreditCard"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "DBInstanceId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "risk_type": ""
     },
     "DescribeDBInstances": {
      "deprecated": false,
@@ -30590,6 +30826,29 @@
        "name": "Tag",
        "required": false,
        "type": "array"
+      }
+     ],
+     "path": "",
+     "risk_type": "none"
+    },
+    "DescribeDBClusterTDE": {
+     "deprecated": false,
+     "error_codes": [
+      "InvalidDBCluster.NotFound",
+      "InvalidDBClusterId.Malformed",
+      "InvalidDBClusterId.NotFound"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "DBClusterId",
+       "required": true,
+       "type": "string"
       }
      ],
      "path": "",

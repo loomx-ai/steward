@@ -95,6 +95,10 @@ func (r *Runtime) EnrichInventoryBatch(
 		return nil, err
 	}
 	enriched = enrichNLBInventoryTopology(enriched)
+	enriched, err = r.enrichEncryptionKeys(ctx, request, enriched)
+	if err != nil {
+		return nil, err
+	}
 	resourceCenter := strings.TrimSpace(request.Source) == "resource-center"
 	if !resourceCenter {
 		for index := range enriched {

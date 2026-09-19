@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "984b13316487d2cfd59adfa57c98d623a881a5ebd52b1e4200269d7b39a67064",
+    "checksum": "be887d538976a030a0b38a8a7abf85c937a64e3bfc260af1a88fd67563bb8acf",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "c68319a322e6d932e761e3e5afe6c6aea9110dc0a75f737cbe8ce2b6d7028bb5",
+  "content_checksum": "e56fb2c0964b949dd8c5c9505736c08b774a0041204c070dbdf64ff094bde6b4",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -7211,6 +7211,35 @@
       }
     },
     {
+      "id": "AlibabaCloud.PolarDB.DescribeDBClusterTDE",
+      "name": "DescribeDBClusterTDE",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/polardb/clusters/{DBClusterId}/tde",
+      "destructive": false,
+      "call": {
+        "product": "polardb",
+        "version": "2017-08-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "polardb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-beijing": "polardb.aliyuncs.com",
+          "cn-beijing-finance-1": "polardb.aliyuncs.com",
+          "cn-hangzhou": "polardb.aliyuncs.com",
+          "cn-hangzhou-finance": "polardb.aliyuncs.com",
+          "cn-heyuan": "polardb.aliyuncs.com",
+          "cn-shanghai": "polardb.aliyuncs.com",
+          "cn-wulanchabu": "polardb.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.PolarDB.DescribeDBClusters",
       "name": "DescribeDBClusters",
       "service": "AlibabaCloud",
@@ -7843,6 +7872,60 @@
       }
     },
     {
+      "id": "AlibabaCloud.RDS.DescribeDBInstanceEncryptionKey",
+      "name": "DescribeDBInstanceEncryptionKey",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/rds/instances/{DBInstanceId}/encryption-key",
+      "destructive": false,
+      "call": {
+        "product": "Rds",
+        "version": "2014-08-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "rds.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-beijing-finance-1": "rds.aliyuncs.com",
+          "cn-hangzhou": "rds.aliyuncs.com",
+          "cn-hangzhou-finance": "rds.aliyuncs.com",
+          "cn-north-2-gov-1": "rds.aliyuncs.com",
+          "cn-shanghai-finance-1": "rds.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.RDS.DescribeDBInstanceTDE",
+      "name": "DescribeDBInstanceTDE",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/rds/instances/{DBInstanceId}/tde",
+      "destructive": false,
+      "call": {
+        "product": "Rds",
+        "version": "2014-08-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "rds.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-beijing-finance-1": "rds.aliyuncs.com",
+          "cn-hangzhou": "rds.aliyuncs.com",
+          "cn-hangzhou-finance": "rds.aliyuncs.com",
+          "cn-north-2-gov-1": "rds.aliyuncs.com",
+          "cn-shanghai-finance-1": "rds.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.RDS.DescribeDBInstances",
       "name": "DescribeDBInstances",
       "service": "AlibabaCloud",
@@ -8207,11 +8290,65 @@
       }
     },
     {
+      "id": "AlibabaCloud.Redis.DescribeEncryptionKey",
+      "name": "DescribeEncryptionKey",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/redis/instances/{InstanceId}/encryption-key",
+      "destructive": false,
+      "call": {
+        "product": "R-kvstore",
+        "version": "2015-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "r-kvstore.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "r-kvstore.aliyuncs.com",
+          "cn-hangzhou-finance": "r-kvstore.aliyuncs.com",
+          "cn-heyuan": "r-kvstore.aliyuncs.com",
+          "cn-shanghai": "r-kvstore.aliyuncs.com",
+          "cn-wulanchabu": "r-kvstore.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.Redis.DescribeInstanceAttribute",
       "name": "DescribeInstanceAttribute",
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/redis/instances/{InstanceId}",
+      "destructive": false,
+      "call": {
+        "product": "R-kvstore",
+        "version": "2015-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "r-kvstore.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou": "r-kvstore.aliyuncs.com",
+          "cn-hangzhou-finance": "r-kvstore.aliyuncs.com",
+          "cn-heyuan": "r-kvstore.aliyuncs.com",
+          "cn-shanghai": "r-kvstore.aliyuncs.com",
+          "cn-wulanchabu": "r-kvstore.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.Redis.DescribeInstanceTDEStatus",
+      "name": "DescribeInstanceTDEStatus",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/redis/instances/{InstanceId}/tde",
       "destructive": false,
       "call": {
         "product": "R-kvstore",

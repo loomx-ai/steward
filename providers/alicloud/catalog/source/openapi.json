@@ -133,6 +133,20 @@
     "/resources": {
       "get": {"operationId": "SearchResources"}
     },
+    "/rds/instances/{DBInstanceId}/tde": {
+      "get": {
+        "operationId": "RDS.DescribeDBInstanceTDE",
+        "x-operation-name": "DescribeDBInstanceTDE",
+        "x-operation-call": {"product":"Rds","version":"2014-08-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"rds.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/rds/instances/{DBInstanceId}/encryption-key": {
+      "get": {
+        "operationId": "RDS.DescribeDBInstanceEncryptionKey",
+        "x-operation-name": "DescribeDBInstanceEncryptionKey",
+        "x-operation-call": {"product":"Rds","version":"2014-08-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"rds.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/rds/instances": {
       "get": {
         "operationId": "RDS.DescribeDBInstances",
@@ -174,6 +188,20 @@
         "x-operation-call": {"product":"R-kvstore","version":"2015-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"r-kvstore.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/redis/instances/{InstanceId}/tde": {
+      "get": {
+        "operationId": "Redis.DescribeInstanceTDEStatus",
+        "x-operation-name": "DescribeInstanceTDEStatus",
+        "x-operation-call": {"product":"R-kvstore","version":"2015-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"r-kvstore.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/redis/instances/{InstanceId}/encryption-key": {
+      "get": {
+        "operationId": "Redis.DescribeEncryptionKey",
+        "x-operation-name": "DescribeEncryptionKey",
+        "x-operation-call": {"product":"R-kvstore","version":"2015-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"r-kvstore.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/redis/instances/{InstanceId}/deletion-protection": {
       "put": {
         "operationId": "Redis.ModifyInstanceAttribute",
@@ -193,6 +221,13 @@
       "delete": {
         "operationId": "PolarDB.DeleteDBCluster",
         "x-operation-name": "DeleteDBCluster",
+        "x-operation-call": {"product":"polardb","version":"2017-08-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"polardb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/polardb/clusters/{DBClusterId}/tde": {
+      "get": {
+        "operationId": "PolarDB.DescribeDBClusterTDE",
+        "x-operation-name": "DescribeDBClusterTDE",
         "x-operation-call": {"product":"polardb","version":"2017-08-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"polardb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },

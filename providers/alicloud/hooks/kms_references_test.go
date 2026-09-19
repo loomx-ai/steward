@@ -16,6 +16,8 @@ func TestConfigurationTopologyLinksEncryptedResourcesToKMSKeys(t *testing.T) {
 
 	mns := configurationTopologyAsset("queue", "ACS::MessageService::Queue", "orders", "cn-hangzhou", nil)
 	mns.Normalized["KmsKeyId"] = "key-hz1"
+	rds := configurationTopologyAsset("rds", "ACS::RDS::DBInstance", "rm-a", "cn-hangzhou", nil)
+	rds.Normalized["TDEEncryptionKey"] = "key-hz1"
 	assets := []asset.Asset{
 		configurationTopologyAsset("key", "ACS::KMS::Key", "key-hz1", "cn-hangzhou", nil),
 		configurationTopologyAsset("key-sh", "ACS::KMS::Key", "key-sh1", "cn-shanghai", nil),
@@ -25,6 +27,7 @@ func TestConfigurationTopologyLinksEncryptedResourcesToKMSKeys(t *testing.T) {
 			"ServerSideEncryptionRule": map[string]any{"SSEAlgorithm": "KMS", "KMSMasterKeyID": "key-hz1"},
 		}),
 		mns,
+		rds,
 		configurationTopologyAsset("vault", "ACS::HBR::Vault", "v-a", "cn-shanghai", map[string]any{"KmsKeyId": "acs:kms:cn-shanghai:1234567890:key/key-sh1"}),
 		configurationTopologyAsset("unscanned", "ACS::ECS::Disk", "d-b", "cn-hangzhou", map[string]any{"KMSKeyId": "key-unknown"}),
 		configurationTopologyAsset("plain", "ACS::ECS::Disk", "d-c", "cn-hangzhou", map[string]any{"Encrypted": false, "KMSKeyId": ""}),
@@ -43,7 +46,7 @@ func TestConfigurationTopologyLinksEncryptedResourcesToKMSKeys(t *testing.T) {
 		}
 		got[relationship.SourceAssetID] = relationship.TargetAssetID
 	}
-	want := map[asset.AssetID]asset.AssetID{"disk": "key", "mongo": "key", "bucket": "key", "queue": "key", "vault": "key-sh"}
+	want := map[asset.AssetID]asset.AssetID{"disk": "key", "mongo": "key", "bucket": "key", "queue": "key", "rds": "key", "vault": "key-sh"}
 	if len(got) != len(want) {
 		t.Fatalf("KMS relationships = %v", got)
 	}

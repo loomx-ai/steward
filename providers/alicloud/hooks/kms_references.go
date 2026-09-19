@@ -15,12 +15,14 @@ const kmsKeyNativeType = "ACS::KMS::Key"
 // the official API metadata: KMSKeyId (ECS disks, snapshots and automatic
 // snapshot policies, NAS), KmsKeyId (MNS, Kafka, HBR), EncryptionKey
 // (MongoDB, HBase, RDS, PolarDB, Redis), EncryptKeyId (ENS) and KMSMasterKeyID
-// (OSS server-side encryption).
+// (OSS server-side encryption). TDEEncryptionKey is where inventory records the
+// transparent data encryption key of RDS, PolarDB and Redis.
 var kmsReferenceFields = map[string]bool{
-	"kmskeyid":       true,
-	"encryptionkey":  true,
-	"encryptkeyid":   true,
-	"kmsmasterkeyid": true,
+	"kmskeyid":         true,
+	"encryptionkey":    true,
+	"encryptkeyid":     true,
+	"kmsmasterkeyid":   true,
+	"tdeencryptionkey": true,
 }
 
 // kmsKeyIdentifier accepts a key ID or a KMS key ARN

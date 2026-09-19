@@ -30,6 +30,7 @@ Steward combines Resource Center with service-specific queries. Grant RAM read p
 | Resource configurations | `resourcecenter:GetResourceConfiguration` | Authorizes `BatchGetResourceConfigurations`; the permission and API names differ. |
 | Region and network selection | `vpc:DescribeRegions`, `vpc:DescribeVpcs`, `vpc:DescribeVSwitches` | Discover regions, VPCs, and vSwitches. |
 | ECS inventory | `ecs:DescribeInstances` and reads for other selected types | Instances, disks, and interfaces use their corresponding service APIs. |
+| Database encryption keys | `rds:DescribeDBInstanceTDE`, `rds:DescribeDBInstanceEncryptionKey`, `polardb:DescribeDBClusterTDE`, `kvstore:DescribeInstanceTDEStatus`, `kvstore:DescribeEncryptionKey` | Identify the KMS keys that RDS, PolarDB and Redis use. Without them the scan of those types fails, and deleting a KMS key stays blocked until a complete scan. |
 | Other services | The service's List, Get, and Describe permissions | Additional types require additional reads; there is no fixed minimum policy for every service. |
 
 This table identifies common permissions, rather than a complete policy. Check the RAM authorization tables for [SearchResources](https://www.alibabacloud.com/help/en/resource-management/resource-center/developer-reference/api-resourcecenter-2022-12-01-searchresources) and [BatchGetResourceConfigurations](https://www.alibabacloud.com/help/en/resource-management/resource-center/developer-reference/api-resourcecenter-2022-12-01-batchgetresourceconfigurations).
