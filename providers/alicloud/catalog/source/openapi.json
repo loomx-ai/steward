@@ -1735,23 +1735,6 @@
         }
       }
     },
-    "/clusters": {
-      "get": {
-        "operationId": "DescribeClusters",
-        "x-operation-call": {
-          "product": "CS",
-          "version": "2015-12-15",
-          "style": "ROA",
-          "protocol": "HTTPS",
-          "method": "GET",
-          "path": "/clusters",
-          "endpoint": "cs.{region}.aliyuncs.com",
-          "request_body_type": "json",
-          "body_type": "json",
-          "parameter_position": "query"
-        }
-      }
-    },
     "/regions/{region_id}/clusters": {
       "get": {
         "operationId": "DescribeClustersForRegion",
@@ -2316,19 +2299,19 @@
       "get": {
         "operationId": "EHPC.ListClusters",
         "x-operation-name": "ListClusters",
-        "x-operation-call": {"product":"EHPC","version":"2018-04-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ehpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+        "x-operation-call": {"product":"EHPC","version":"2018-04-12","style":"RPC","protocol":"HTTPS","method":"GET","path":"/","endpoint":"ehpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
     "/ehpc/clusters/{ClusterId}": {
       "get": {
         "operationId": "EHPC.DescribeCluster",
         "x-operation-name": "DescribeCluster",
-        "x-operation-call": {"product":"EHPC","version":"2018-04-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ehpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+        "x-operation-call": {"product":"EHPC","version":"2018-04-12","style":"RPC","protocol":"HTTPS","method":"GET","path":"/","endpoint":"ehpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       },
       "delete": {
         "operationId": "EHPC.DeleteCluster",
         "x-operation-name": "DeleteCluster",
-        "x-operation-call": {"product":"EHPC","version":"2018-04-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ehpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+        "x-operation-call": {"product":"EHPC","version":"2018-04-12","style":"RPC","protocol":"HTTPS","method":"GET","path":"/","endpoint":"ehpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
     "/dataworks/projects": {
@@ -2354,7 +2337,7 @@
       "get": {
         "operationId": "DataWorks.ListResourceGroups",
         "x-operation-name": "ListResourceGroups",
-        "x-operation-call": {"product":"dataworks-public","version":"2024-05-18","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"dataworks.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+        "x-operation-call": {"product":"dataworks-public","version":"2024-05-18","style":"RPC","protocol":"HTTPS","method":"GET","path":"/","endpoint":"dataworks.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
     "/dataworks/resource-groups/{Id}": {
@@ -2380,7 +2363,7 @@
       "get": {
         "operationId": "DataWorks.ListNetworks",
         "x-operation-name": "ListNetworks",
-        "x-operation-call": {"product":"dataworks-public","version":"2024-05-18","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"dataworks.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+        "x-operation-call": {"product":"dataworks-public","version":"2024-05-18","style":"RPC","protocol":"HTTPS","method":"GET","path":"/","endpoint":"dataworks.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
     "/eipanycast/addresses": {
@@ -2744,14 +2727,14 @@
       "get": {
         "operationId": "ESA.ListSites",
         "x-operation-name": "ListSites",
-        "x-operation-call": {"product":"ESA","version":"2024-09-10","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"esa.cn-hangzhou.aliyuncs.com","site_endpoints":{"cn":"esa.cn-hangzhou.aliyuncs.com","intl":"esa.ap-southeast-1.aliyuncs.com"},"request_body_type":"formData","body_type":"json","parameter_position":"query"}
+        "x-operation-call": {"product":"ESA","version":"2024-09-10","style":"RPC","protocol":"HTTPS","method":"GET","path":"/","endpoint":"esa.cn-hangzhou.aliyuncs.com","site_endpoints":{"cn":"esa.cn-hangzhou.aliyuncs.com","intl":"esa.ap-southeast-1.aliyuncs.com"},"request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
     "/esa/sites/{SiteId}": {
       "get": {
         "operationId": "ESA.GetSite",
         "x-operation-name": "GetSite",
-        "x-operation-call": {"product":"ESA","version":"2024-09-10","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"esa.cn-hangzhou.aliyuncs.com","site_endpoints":{"cn":"esa.cn-hangzhou.aliyuncs.com","intl":"esa.ap-southeast-1.aliyuncs.com"},"request_body_type":"formData","body_type":"json","parameter_position":"query"}
+        "x-operation-call": {"product":"ESA","version":"2024-09-10","style":"RPC","protocol":"HTTPS","method":"GET","path":"/","endpoint":"esa.cn-hangzhou.aliyuncs.com","site_endpoints":{"cn":"esa.cn-hangzhou.aliyuncs.com","intl":"esa.ap-southeast-1.aliyuncs.com"},"request_body_type":"formData","body_type":"json","parameter_position":"query"}
       },
       "delete": {
         "operationId": "ESA.DeleteSite",
@@ -3360,7 +3343,7 @@
       "get": {
         "operationId": "RealtimeCompute.DescribeInstances",
         "x-operation-name": "DescribeInstances",
-        "x-operation-call": {"product":"foasconsole","version":"2021-10-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"foasconsole.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+        "x-operation-call": {"product":"foasconsole","version":"2021-10-28","style":"RPC","protocol":"HTTPS","method":"GET","path":"/","endpoint":"foasconsole.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
     "/realtime-compute/instances/{InstanceId}": {

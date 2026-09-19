@@ -10,7 +10,7 @@ import (
 	"github.com/loomx-ai/steward/providers/alicloud"
 )
 
-func TestRouterInterfaceActionForceDeletesRoutesBeforeVPC(t *testing.T) {
+func TestRouterInterfaceActionDeletesAndConfirmsAbsence(t *testing.T) {
 	t.Parallel()
 
 	resource := func(requestID string) contracts.InvocationResult {
@@ -70,7 +70,7 @@ func TestRouterInterfaceActionForceDeletesRoutesBeforeVPC(t *testing.T) {
 	deleted := provider.invocations[1]
 	if deleted.Parameters["RegionId"] != "cn-hangzhou" ||
 		deleted.Parameters["RouterInterfaceId"] != "ri-bp1kbigq0y1gw1qerdswm" ||
-		deleted.Parameters["Force"] != true {
+		deleted.Parameters["Force"] != nil {
 		t.Fatalf("router interface delete invocation=%+v", deleted)
 	}
 	read := provider.invocations[2]

@@ -56,7 +56,6 @@ actions:
     parameters:
       RegionId: scope.location
       RouterInterfaceId: resource.nativeId
-      Force: true
     idempotency: provider_token
     waiter: absent
     read:

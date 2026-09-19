@@ -48,7 +48,7 @@ actions:
       operation: AlibabaCloud.CEN.ListTransitRouterRouteTables
       parameters:
         TransitRouterId: resource.normalized.transitRouterId
-        TransitRouterRouteTableId: resource.nativeId
+        TransitRouterRouteTableIds.1: resource.nativeId
         MaxResults: 1
       itemsPath: TransitRouterRouteTables
       identityPath: TransitRouterRouteTableId

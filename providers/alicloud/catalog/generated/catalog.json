@@ -3,11 +3,11 @@
   "provider": "alicloud",
   "source": {
     "format": "openapi",
-    "uri": "providers/alicloud/catalog/source/openapi.json",
-    "checksum": "755c7f6228176f1ee4457a06eaf1e408793b488d28934ac20f4eedd0bb9abeeb",
+    "uri": "catalog/source/openapi.json",
+    "checksum": "984b13316487d2cfd59adfa57c98d623a881a5ebd52b1e4200269d7b39a67064",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "73d4d9734ae1ebba44130ede1c9177bc49444a1933b3c9bbd002519f65c3dfb3",
+  "content_checksum": "c68319a322e6d932e761e3e5afe6c6aea9110dc0a75f737cbe8ce2b6d7028bb5",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -2343,7 +2343,7 @@
         "version": "2024-05-18",
         "style": "RPC",
         "protocol": "HTTPS",
-        "method": "POST",
+        "method": "GET",
         "path": "/",
         "endpoint": "dataworks.{region}.aliyuncs.com",
         "endpoint_overrides": {
@@ -2418,7 +2418,7 @@
         "version": "2024-05-18",
         "style": "RPC",
         "protocol": "HTTPS",
-        "method": "POST",
+        "method": "GET",
         "path": "/",
         "endpoint": "dataworks.{region}.aliyuncs.com",
         "endpoint_overrides": {
@@ -3216,26 +3216,6 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/clusters/{ClusterId}/resources",
-        "endpoint": "cs.{region}.aliyuncs.com",
-        "request_body_type": "json",
-        "body_type": "json",
-        "parameter_position": "query"
-      }
-    },
-    {
-      "id": "AlibabaCloud.DescribeClusters",
-      "name": "DescribeClusters",
-      "service": "AlibabaCloud",
-      "method": "GET",
-      "path": "/clusters",
-      "destructive": false,
-      "call": {
-        "product": "CS",
-        "version": "2015-12-15",
-        "style": "ROA",
-        "protocol": "HTTPS",
-        "method": "GET",
-        "path": "/clusters",
         "endpoint": "cs.{region}.aliyuncs.com",
         "request_body_type": "json",
         "body_type": "json",
@@ -4168,7 +4148,7 @@
         "version": "2018-04-12",
         "style": "RPC",
         "protocol": "HTTPS",
-        "method": "POST",
+        "method": "GET",
         "path": "/",
         "endpoint": "ehpc.{region}.aliyuncs.com",
         "request_body_type": "formData",
@@ -4188,7 +4168,7 @@
         "version": "2018-04-12",
         "style": "RPC",
         "protocol": "HTTPS",
-        "method": "POST",
+        "method": "GET",
         "path": "/",
         "endpoint": "ehpc.{region}.aliyuncs.com",
         "request_body_type": "formData",
@@ -4208,7 +4188,7 @@
         "version": "2018-04-12",
         "style": "RPC",
         "protocol": "HTTPS",
-        "method": "POST",
+        "method": "GET",
         "path": "/",
         "endpoint": "ehpc.{region}.aliyuncs.com",
         "request_body_type": "formData",
@@ -4348,7 +4328,7 @@
         "version": "2024-09-10",
         "style": "RPC",
         "protocol": "HTTPS",
-        "method": "POST",
+        "method": "GET",
         "path": "/",
         "endpoint": "esa.cn-hangzhou.aliyuncs.com",
         "site_endpoints": {
@@ -4372,7 +4352,7 @@
         "version": "2024-09-10",
         "style": "RPC",
         "protocol": "HTTPS",
-        "method": "POST",
+        "method": "GET",
         "path": "/",
         "endpoint": "esa.cn-hangzhou.aliyuncs.com",
         "site_endpoints": {
@@ -8191,7 +8171,7 @@
         "version": "2021-10-28",
         "style": "RPC",
         "protocol": "HTTPS",
-        "method": "POST",
+        "method": "GET",
         "path": "/",
         "endpoint": "foasconsole.{region}.aliyuncs.com",
         "request_body_type": "formData",

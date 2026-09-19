@@ -1,0 +1,53 @@
+{
+ "exceptions": [
+  {
+   "product": "Oss",
+   "version": "2019-05-17",
+   "operation": "DeleteMultipleObjects",
+   "reason": "OSS batch object deletion is part of the OSS REST API but absent from the OSS OpenAPI metadata document.",
+   "evidence": "https://github.com/aliyun/alibabacloud-oss-go-sdk-v2/blob/2614e2cfdc3618f204cee8bb247f9359e8e509aa/oss/api_op_object.go"
+  },
+  {
+   "product": "Oss",
+   "version": "2019-05-17",
+   "operation": "PostDataLakeStorageAdminOperation",
+   "reason": "OSS-HDFS administration uses the separate oss-dls endpoint, which the OSS OpenAPI metadata does not describe.",
+   "evidence": "https://github.com/aliyun/alibabacloud-gateway/blob/03baae37a8fbc4d1ebd50f768e105d5cd0a5f801/alibabacloud-gateway-oss/main.tea"
+  },
+  {
+   "product": "gdb",
+   "version": "2019-09-03",
+   "operation": "DeleteDBInstance",
+   "reason": "Graph Database is no longer published in the API metadata portal; its official SDK still defines this operation.",
+   "evidence": "https://github.com/alibabacloud-go/gdb-20190903/blob/afa9fafbda536799ebc724e5e9a463fbd3279e4b/client/client.go"
+  },
+  {
+   "product": "gdb",
+   "version": "2019-09-03",
+   "operation": "DescribeDBInstanceAttribute",
+   "reason": "Graph Database is no longer published in the API metadata portal; its official SDK still defines this operation.",
+   "evidence": "https://github.com/alibabacloud-go/gdb-20190903/blob/afa9fafbda536799ebc724e5e9a463fbd3279e4b/client/client.go"
+  },
+  {
+   "product": "gdb",
+   "version": "2019-09-03",
+   "operation": "DescribeDBInstances",
+   "reason": "Graph Database is no longer published in the API metadata portal; its official SDK still defines this operation.",
+   "evidence": "https://github.com/alibabacloud-go/gdb-20190903/blob/afa9fafbda536799ebc724e5e9a463fbd3279e4b/client/client.go"
+  },
+  {
+   "product": "scdn",
+   "version": "2017-11-15",
+   "operation": "DeleteScdnDomain",
+   "reason": "Secure CDN is no longer published in the API metadata portal; its official SDK still defines this operation.",
+   "evidence": "https://github.com/alibabacloud-go/scdn-20171115/blob/000f8d0bb26bad0e0687553c0f2ea65b8a4206d7/client/client.go"
+  },
+  {
+   "product": "scdn",
+   "version": "2017-11-15",
+   "operation": "DescribeScdnUserDomains",
+   "reason": "Secure CDN is no longer published in the API metadata portal; its official SDK still defines this operation.",
+   "evidence": "https://github.com/alibabacloud-go/scdn-20171115/blob/000f8d0bb26bad0e0687553c0f2ea65b8a4206d7/client/client.go"
+  }
+ ]
+}

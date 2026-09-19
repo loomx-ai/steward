@@ -22,6 +22,7 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/spec"
 )
 
+//go:generate go run ../../cmd/cataloggen -provider alicloud -format openapi -source catalog/source/openapi.json -output catalog/generated/catalog.json
 //go:embed catalog/generated/catalog.json specs/*.yaml resourcecenter/resources.json
 var providerFiles embed.FS
 

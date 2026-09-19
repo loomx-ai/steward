@@ -855,17 +855,6 @@ func (c *sdkACK) ModifyClusterDeletionProtection(
 
 func (c *sdkACK) Invoke(ctx context.Context, invocation contracts.Invocation) (contracts.InvocationResult, error) {
 	clusterID, err := requiredParameter(invocation.Parameters, "ClusterId", "cluster_id", "id")
-	if invocation.Operation == "AlibabaCloud.DescribeClusters" {
-		body, headers, callErr := callROA(ctx, c.caller, "DescribeClusters", containerServiceAPIDate, "GET", "/clusters", queryParameters(invocation.Parameters), nil)
-		if callErr != nil {
-			return contracts.InvocationResult{}, callErr
-		}
-		data, mapErr := bodyMap(body)
-		if mapErr != nil {
-			return contracts.InvocationResult{}, mapErr
-		}
-		return contracts.InvocationResult{RequestID: requestIDFrom(containerServiceProductCode, body, headers), Data: data}, nil
-	}
 	if err != nil {
 		return contracts.InvocationResult{}, err
 	}
