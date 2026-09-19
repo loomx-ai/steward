@@ -1,0 +1,39 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ResourceManager::Account
+  class: identity.member_account
+presentation:
+  consoleLinkTemplate: "https://resourcemanager.console.aliyun.com/resource-directory/accounts/{nativeId}"
+  displayNames:
+    zh-CN: 资源目录成员
+    en-US: Resource Directory Member
+  icon: user
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ResourceManager.ListAccounts
+    itemsPath: Accounts.Account
+    identityPath: AccountId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: DisplayName
+  state: Status
+  createdAt: JoinTime
+  accountType: Type
+  joinMethod: JoinMethod
+  folderId: FolderId
+  resourceDirectoryId: ResourceDirectoryId
+relationships:
+  - type: member_of
+    targetType: ACS::ResourceManager::ResourceDirectory
+    targetIdPath: resourceDirectoryId

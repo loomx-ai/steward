@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "701f830a01bf1ea458cb6866feafe20d83e08d41f4fe92a038852eed0a9d56f9",
+    "checksum": "08c06e9422be5852be197c5cebbc208f8e88229c395a5f46e5aadc458d8aaca5",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "19dc1c278e04427cf0dd48e81b344dbc43b39427dd389de5a81da16a09185bfc",
+  "content_checksum": "dcd998b0e4b64004cbcb4cbcb7ffec76db0bdaf13b8686580ce20cd7686a8c42",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -245,6 +245,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.APIG.DeleteService",
+      "name": "DeleteService",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/apig/services/{serviceId}",
+      "destructive": true,
+      "call": {
+        "product": "APIG",
+        "version": "2024-03-27",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/services/{serviceId}",
+        "endpoint": "apig.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.APIG.GetGateway",
       "name": "GetGateway",
       "service": "AlibabaCloud",
@@ -265,6 +285,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.APIG.GetService",
+      "name": "GetService",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/apig/services/{serviceId}",
+      "destructive": false,
+      "call": {
+        "product": "APIG",
+        "version": "2024-03-27",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/services/{serviceId}",
+        "endpoint": "apig.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.APIG.ListGateways",
       "name": "ListGateways",
       "service": "AlibabaCloud",
@@ -278,6 +318,26 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/v1/gateways",
+        "endpoint": "apig.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.APIG.ListServices",
+      "name": "ListServices",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/apig/services",
+      "destructive": false,
+      "call": {
+        "product": "APIG",
+        "version": "2024-03-27",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/services",
         "endpoint": "apig.{region}.aliyuncs.com",
         "request_body_type": "json",
         "body_type": "json",
@@ -893,12 +953,72 @@
       }
     },
     {
+      "id": "AlibabaCloud.ApiGateway.DeleteApp",
+      "name": "DeleteApp",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/api-gateway/apps/{AppId}",
+      "destructive": true,
+      "call": {
+        "product": "CloudAPI",
+        "version": "2016-07-14",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "apigateway.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.ApiGateway.DeleteInstance",
       "name": "DeleteInstance",
       "service": "AlibabaCloud",
       "method": "DELETE",
       "path": "/api-gateway/instances/{InstanceId}",
       "destructive": true,
+      "call": {
+        "product": "CloudAPI",
+        "version": "2016-07-14",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "apigateway.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ApiGateway.DescribeApis",
+      "name": "DescribeApis",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/api-gateway/apis",
+      "destructive": false,
+      "call": {
+        "product": "CloudAPI",
+        "version": "2016-07-14",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "apigateway.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ApiGateway.DescribeAppAttributes",
+      "name": "DescribeAppAttributes",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/api-gateway/apps",
+      "destructive": false,
       "call": {
         "product": "CloudAPI",
         "version": "2016-07-14",
@@ -4843,6 +4963,26 @@
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/eflo/clusters/{ClusterId}",
+      "destructive": false,
+      "call": {
+        "product": "eflo-controller",
+        "version": "2022-12-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "eflo-controller.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.Eflo.ListClusterNodes",
+      "name": "ListClusterNodes",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/eflo/clusters/{ClusterId}/nodes",
       "destructive": false,
       "call": {
         "product": "eflo-controller",
@@ -9133,6 +9273,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.ResourceManager.ListAccounts",
+      "name": "ListAccounts",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/resource-manager/accounts",
+      "destructive": false,
+      "call": {
+        "product": "ResourceManager",
+        "version": "2020-03-31",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "resourcemanager.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.RocketMQ.DeleteConsumerGroup",
       "name": "DeleteConsumerGroup",
       "service": "AlibabaCloud",
@@ -10315,6 +10475,14 @@
       ]
     },
     {
+      "native_type": "ACS::APIG::Service",
+      "class": "network.api_backend",
+      "display_name": "Cloud-native API Gateway Service",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::ARMS::Environment",
       "class": "observability.monitoring_environment",
       "display_name": "ARMS VPC Environment",
@@ -10408,6 +10576,22 @@
       "display_name": "GTM Instance",
       "scope_kinds": [
         "global"
+      ]
+    },
+    {
+      "native_type": "ACS::ApiGateway::Api",
+      "class": "network.api",
+      "display_name": "API Gateway API",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::ApiGateway::App",
+      "class": "api.application",
+      "display_name": "API Gateway App",
+      "scope_kinds": [
+        "region"
       ]
     },
     {
@@ -10931,6 +11115,14 @@
       ]
     },
     {
+      "native_type": "ACS::Eflo::Node",
+      "class": "compute.node",
+      "display_name": "Lingjun Node",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::Ehpc::Cluster",
       "class": "compute.hpc_cluster",
       "display_name": "E-HPC Cluster",
@@ -11400,6 +11592,14 @@
       "display_name": "Redis Instance",
       "scope_kinds": [
         "region"
+      ]
+    },
+    {
+      "native_type": "ACS::ResourceManager::Account",
+      "class": "identity.member_account",
+      "display_name": "Resource Directory Member",
+      "scope_kinds": [
+        "global"
       ]
     },
     {

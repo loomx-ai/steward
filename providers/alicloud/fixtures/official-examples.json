@@ -281,6 +281,148 @@
    "message": "success",
    "requestId": "0F138FFC-6E2B-56C1-9BAB-A67462E339D1"
   },
+  "APIG@2024-03-27#GetService": {
+   "code": "Ok",
+   "data": {
+    "addresses": [
+     "127.0.0.1:8080"
+    ],
+    "agentServiceConfig": {
+     "address": "https://dashscope.aliyuncs.com/api/v1",
+     "customConfig": {
+      "apiKey": "app-xxx\n",
+      "apiKeyGenerateMode": "Reference"
+     },
+     "dashScopeConfig": {
+      "appCredentials": [
+       {
+        "apiKey": "sk-xxx",
+        "appId": "app-xxx"
+       }
+      ]
+     },
+     "difyConfig": {
+      "apiKey": "app-xxx",
+      "botType": "chatflow"
+     },
+     "enableHealthCheck": true,
+     "enableOutlierDetection": true,
+     "protocols": [
+      "DashScope"
+     ],
+     "provider": "qwen"
+    },
+    "aiServiceConfig": {
+     "ApiKeyGenerateMode": "Custom",
+     "address": "https://dashscope.aliyun.com",
+     "apiKeys": [
+      "sk-xxx"
+     ],
+     "bedrockServiceConfig": {
+      "awsAccessKey": "AKIAIOSFODNN7EXAMPLE",
+      "awsRegion": "us-east-1",
+      "awsSecretKey": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+     },
+     "compatibleProtocols": [
+      "\"openai\", \"anthropic\""
+     ],
+     "defaultModelName": "gpt-4",
+     "enableHealthCheck": true,
+     "enableOutlierDetection": true,
+     "paiEASServiceConfig": {
+      "endpointType": "\"public\"，\"private\"",
+      "serviceId": "svc-cvaeb0um1hkqp79k72v0",
+      "serviceName": "auto-ai-service",
+      "workspaceId": "cb89d4de30042df4459442589664e00d"
+     },
+     "protocols": [
+      "OpenAI/v1"
+     ],
+     "provider": "qwen\nmoonshot\nbaichuan\nyi\nzhipuai\n360ai\nhunyuan\nstepfun\nspark\nopenai\nclaude\nanthropic\ndoubao\nminimax\ngemini\nazure\ndeepseek\ncustom\npai-eas\nbedrock\nvertex",
+     "vertexServiceConfig": {
+      "geminiSafetySetting": {
+       "key": "{\"BLOCK_NONE\": \"true\"}"
+      },
+      "vertexAuthKey": "{\\\"type\\\":\\\"service_account\\\",\\\"project_id\\\":\\\"my-project\\\",\\\"private_key\\\":\\\"-----BEGIN PRIVATE KEY-----...\\\",\\\"client_email\\\":\\\"xxx@xxx.iam.gserviceaccount.com\\\",\\\"token_uri\\\":\\\"https://oauth2.googleapis.com/token\\\"}",
+      "vertexAuthServiceName": "google-oauth2",
+      "vertexProjectId": "my-project",
+      "vertexRegion": "us-central1",
+      "vertexTokenRefreshAhead": 300
+     }
+    },
+    "createTimestamp": 1725617840096,
+    "dnsServers": [
+     "8.8.8.8"
+    ],
+    "expressType": "StartExecution",
+    "gatewayId": "gw-xxxx",
+    "groupName": "publich",
+    "healthCheck": {
+     "enable": true,
+     "healthyThreshold": 2,
+     "httpHost": "example.com",
+     "httpPath": "/health",
+     "interval": 10,
+     "protocol": "TCP",
+     "timeout": 5,
+     "unhealthyThreshold": 3
+    },
+    "healthStatus": "Healthy",
+    "healthyPanicThreshold": 1,
+    "labelDetails": [
+     {
+      "key": "version",
+      "values": [
+       "[\"v1.0.0\", \"v2.0.0\"]"
+      ]
+     }
+    ],
+    "modelProviderId": "mp-xxxx",
+    "name": "user-service",
+    "namespace": "PUBLIC",
+    "outlierDetection": {
+     "baseEjectionTime": 30,
+     "enable": false,
+     "failurePercentageMinimumHosts": 1,
+     "failurePercentageThreshold": 80,
+     "interval": 30
+    },
+    "outlierEndpoints": [
+     "[\"10.0.0.2:8080\"]"
+    ],
+    "ports": [
+     {
+      "name": "user-service",
+      "port": 8080,
+      "protocol": "TCP"
+     }
+    ],
+    "protocol": "HTTP",
+    "qualifier": "LATEST",
+    "resourceGroupId": "rg-xxx",
+    "runtimeDetailErrorCode": "RuntimeEndpointTimeout",
+    "runtimeDetailStatus": "Available",
+    "serviceId": "svc-cr6pk4tlhtgm***",
+    "sourceType": "MSE_NACOS",
+    "unhealthyEndpoints": [
+     "192.168.1.12:8080"
+    ],
+    "updateTimestamp": 1725868548440,
+    "versions": [
+     {
+      "labels": [
+       {
+        "key": "version",
+        "value": "v1"
+       }
+      ],
+      "name": "v1"
+     }
+    ]
+   },
+   "message": "success",
+   "requestId": "8FA9BB94-915B-5299-A694-49FCC7F5DD00"
+  },
   "APIG@2024-03-27#ListGateways": {
    "code": "Ok",
    "data": {
@@ -366,6 +508,155 @@
    },
    "message": "success",
    "requestId": "5B626361-070A-56A7-B127-ADAC8F3655DB"
+  },
+  "APIG@2024-03-27#ListServices": {
+   "code": "Ok",
+   "data": {
+    "items": [
+     {
+      "addresses": [
+       "127.0.0.1:8080"
+      ],
+      "agentServiceConfig": {
+       "address": "https://dashscope.aliyuncs.com/api/v1",
+       "customConfig": {
+        "apiKey": "app-xxx\n",
+        "apiKeyGenerateMode": "Reference"
+       },
+       "dashScopeConfig": {
+        "appCredentials": [
+         {
+          "apiKey": "sk-xxx",
+          "appId": "app-xxx"
+         }
+        ]
+       },
+       "difyConfig": {
+        "apiKey": "app-xxx",
+        "botType": "chatflow"
+       },
+       "enableHealthCheck": true,
+       "enableOutlierDetection": true,
+       "protocols": [
+        "DashScope"
+       ],
+       "provider": "qwen"
+      },
+      "aiServiceConfig": {
+       "ApiKeyGenerateMode": "Custom",
+       "address": "https://dashscope.aliyun.com",
+       "apiKeys": [
+        "sk-xxx"
+       ],
+       "bedrockServiceConfig": {
+        "awsAccessKey": "AKIAIOSFODNN7EXAMPLE",
+        "awsRegion": "us-east-1",
+        "awsSecretKey": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+       },
+       "compatibleProtocols": [
+        "\"openai\", \"anthropic\""
+       ],
+       "defaultModelName": "gpt-4",
+       "enableHealthCheck": true,
+       "enableOutlierDetection": true,
+       "paiEASServiceConfig": {
+        "endpointType": "\"public\"，\"private\"",
+        "serviceId": "svc-cvaeb0um1hkqp79k72v0",
+        "serviceName": "auto-ai-service",
+        "workspaceId": "cb89d4de30042df4459442589664e00d"
+       },
+       "protocols": [
+        "OpenAI/v1"
+       ],
+       "provider": "qwen\nmoonshot\nbaichuan\nyi\nzhipuai\n360ai\nhunyuan\nstepfun\nspark\nopenai\nclaude\nanthropic\ndoubao\nminimax\ngemini\nazure\ndeepseek\ncustom\npai-eas\nbedrock\nvertex",
+       "vertexServiceConfig": {
+        "geminiSafetySetting": {
+         "key": "{\"BLOCK_NONE\": \"true\"}"
+        },
+        "vertexAuthKey": "{\\\"type\\\":\\\"service_account\\\",\\\"project_id\\\":\\\"my-project\\\",\\\"private_key\\\":\\\"-----BEGIN PRIVATE KEY-----...\\\",\\\"client_email\\\":\\\"xxx@xxx.iam.gserviceaccount.com\\\",\\\"token_uri\\\":\\\"https://oauth2.googleapis.com/token\\\"}",
+        "vertexAuthServiceName": "google-oauth2",
+        "vertexProjectId": "my-project",
+        "vertexRegion": "us-central1",
+        "vertexTokenRefreshAhead": 300
+       }
+      },
+      "createTimestamp": 1725617840096,
+      "dnsServers": [
+       "8.8.8.8"
+      ],
+      "expressType": "StartExecution",
+      "gatewayId": "gw-xxxx",
+      "groupName": "publich",
+      "healthCheck": {
+       "enable": true,
+       "healthyThreshold": 2,
+       "httpHost": "example.com",
+       "httpPath": "/health",
+       "interval": 10,
+       "protocol": "TCP",
+       "timeout": 5,
+       "unhealthyThreshold": 3
+      },
+      "healthStatus": "Healthy",
+      "healthyPanicThreshold": 1,
+      "labelDetails": [
+       {
+        "key": "version",
+        "values": [
+         "[\"v1.0.0\", \"v2.0.0\"]"
+        ]
+       }
+      ],
+      "modelProviderId": "mp-xxxx",
+      "name": "user-service",
+      "namespace": "PUBLIC",
+      "outlierDetection": {
+       "baseEjectionTime": 30,
+       "enable": false,
+       "failurePercentageMinimumHosts": 1,
+       "failurePercentageThreshold": 80,
+       "interval": 30
+      },
+      "outlierEndpoints": [
+       "[\"10.0.0.2:8080\"]"
+      ],
+      "ports": [
+       {
+        "name": "user-service",
+        "port": 8080,
+        "protocol": "TCP"
+       }
+      ],
+      "protocol": "HTTP",
+      "qualifier": "LATEST",
+      "resourceGroupId": "rg-xxx",
+      "runtimeDetailErrorCode": "RuntimeEndpointTimeout",
+      "runtimeDetailStatus": "Available",
+      "serviceId": "svc-cr6pk4tlhtgm***",
+      "sourceType": "MSE_NACOS",
+      "unhealthyEndpoints": [
+       "192.168.1.12:8080"
+      ],
+      "updateTimestamp": 1725868548440,
+      "versions": [
+       {
+        "labels": [
+         {
+          "key": "version",
+          "value": "v1"
+         }
+        ],
+        "name": "v1"
+       }
+      ]
+     }
+    ],
+    "pageNumber": 1,
+    "pageSize": 10,
+    "totalSize": 18
+   },
+   "message": "success",
+   "requestId": "585657D2-1C20-5B8A-AF17-D727C6490BE4"
   },
   "ARMS@2019-08-08#DescribeEnvironment": {
    "Code": 200,
@@ -1923,6 +2214,73 @@
    "PageSize": 20,
    "RequestId": "BDA62CE4-3477-439A-B52E-D2D7C829D7C1",
    "TotalCount": 2
+  },
+  "CloudAPI@2016-07-14#DescribeApis": {
+   "ApiSummarys": {
+    "ApiSummary": [
+     {
+      "ApiId": "5af418828f0344a3b588c0cc1331a3bc",
+      "ApiMethod": "GET",
+      "ApiName": "Create object",
+      "ApiPath": "/sqb/",
+      "CreatedTime": "2016-05-20T18:18:25Z",
+      "DeployedInfos": {
+       "DeployedInfo": [
+        {
+         "DeployedStatus": "DEPLOYED",
+         "EffectiveVersion": "20220103170737313",
+         "StageName": "RELEASE"
+        }
+       ]
+      },
+      "Description": "Create object API",
+      "GroupId": "1084f9034c744137901057206b39d2b6",
+      "GroupName": "myGroup2",
+      "ModifiedTime": "2016-07-23T08:28:48Z",
+      "RegionId": "cn-qingdao",
+      "TagList": {
+       "Tag": [
+        {
+         "TagKey": "tagKey",
+         "TagValue": "tagValue"
+        }
+       ]
+      },
+      "Visibility": "PUBLIC"
+     }
+    ]
+   },
+   "PageNumber": 3,
+   "PageSize": 15,
+   "RequestId": "CEF72CEB-54B6-4AE8-B225-F876FF7BZ002",
+   "TotalCount": 32
+  },
+  "CloudAPI@2016-07-14#DescribeAppAttributes": {
+   "Apps": {
+    "AppAttribute": [
+     {
+      "AppId": 20112314518278,
+      "AppName": "CreateApptest",
+      "CreatedTime": "2016-07-31T04:10:19Z",
+      "Description": "App test",
+      "Disabled": true,
+      "Extend": "110461946884",
+      "ModifiedTime": "2016-07-31T04:10:19Z",
+      "Tags": {
+       "TagInfo": [
+        {
+         "Key": "appid",
+         "Value": "123"
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "PageNumber": 1,
+   "PageSize": 10,
+   "RequestId": "8883AC74-259D-4C0B-99FC-0B7F9A588B2F",
+   "TotalCount": 1
   },
   "CloudAPI@2016-07-14#DescribeInstances": {
    "Instances": {
@@ -7469,6 +7827,36 @@
     "RootFolderId": "r-Zo****"
    }
   },
+  "ResourceManager@2020-03-31#ListAccounts": {
+   "Accounts": {
+    "Account": [
+     {
+      "AccountId": "181761095690****",
+      "DisplayName": "test",
+      "FolderId": "fd-QRzuim****",
+      "JoinMethod": "created",
+      "JoinTime": "2021-01-18T08:01:50.522Z",
+      "ModifyTime": "2021-01-18T08:04:37.668Z",
+      "ResourceDirectoryId": "rd-3G****",
+      "ResourceDirectoryPath": "rd-3G****/r-Wm****/fd-QRzuim****/181761095690****",
+      "Status": "CreateSuccess",
+      "Tags": {
+       "Tag": [
+        {
+         "Key": "tag_key",
+         "Value": "tag_value"
+        }
+       ]
+      },
+      "Type": "ResourceAccount"
+     }
+    ]
+   },
+   "PageNumber": 1,
+   "PageSize": 5,
+   "RequestId": "7B8A4E7D-6CFF-471D-84DF-195A7A241ECB",
+   "TotalCount": 2
+  },
   "RocketMQ@2022-08-01#GetConsumerGroup": {
    "code": "InvalidConsumerGroupId",
    "data": {
@@ -10881,6 +11269,48 @@
    "UpdateTime": "2022-08-23T06:36:17.000Z",
    "VSwitchId": "vsw-0jlwrfecgcbflyosvo242",
    "VpcId": "vpc-0jlkqysom5dmcviymep3f"
+  },
+  "eflo-controller@2022-12-15#ListClusterNodes": {
+   "NextToken": "AAAAAXW/ZB9TBvH+0ZK0phtCibQgQmu1RbqplAI6Velo2OKR",
+   "Nodes": [
+    {
+     "CommodityCode": "bccluster_eflocomputing_public_cn（表示灵骏中国站包年包月）、bccluster_eflocomputing_public_intl（表示灵骏国际站包年包月） ",
+     "CreateTime": "2026-02-02T11:27:07",
+     "ExpiredTime": "2026-03-03T00:00:00",
+     "FileSystemMountEnabled": true,
+     "Hostname": "72432f80-273e-11ed-b57a-acde48001122",
+     "HpnZone": "A1",
+     "HyperNodeId": "e01-cn-2r42tmj4z02",
+     "ImageId": "i190297201669099844192",
+     "ImageName": "Alinux3_x86_gu8xf_P_Host_D3_C7E3_550.127_Legacy_N_241230",
+     "MachineType": "cn-wulanchabu-b11",
+     "Networks": [
+      {
+       "BondName": "bond0",
+       "Ip": "192.168.22.2",
+       "SubnetId": "subnet-fwekrvg9",
+       "VpdId": "vpd-eoiy88ju"
+      }
+     ],
+     "NodeGroupId": "ng-e9b74f4d450cf18d",
+     "NodeGroupName": "emr_master",
+     "NodeId": "e01-cn-2r42tmj4z02",
+     "NodeType": "standard",
+     "OperatingState": "Extending",
+     "Sn": "sn_tOuUk",
+     "Tags": [
+      {
+       "Key": "alarm_xdc",
+       "Value": "true"
+      }
+     ],
+     "TaskId": "i-skkdsdl83ksxxs3",
+     "VSwitchId": "vsw-0jlohur7nhbxd1ttyq8p8",
+     "VpcId": "vpc-f8zcet5mwerafyqlrhyoi",
+     "ZoneId": "cn-hangzhou-b"
+    }
+   ],
+   "RequestId": "2BA76272-6608-5AEC-BBA8-B6F0D3D14CDB"
   },
   "eflo-controller@2022-12-15#ListClusters": {
    "Clusters": [

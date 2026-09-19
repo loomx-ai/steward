@@ -68,6 +68,22 @@ resources:
   status: pending_verification
   notes: Server groups managed by an ALB Ingress controller report ConfigManagedEnabled and are not
     deleted directly.
+- alicloud: ACS::APIG::Service
+  spec: providers/alicloud/specs/apig-service.yaml
+  class: network.api_backend
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: API Gateway backends are addresses inside apigateway.googleapis.com/ApiConfig, not resources.
+  azure:
+    resources:
+    - Microsoft.ApiManagement/service/backends
+  aws:
+    notes: API Gateway integrations are properties of the API, not standalone resources.
+  status: pending_verification
 - alicloud: ACS::AckOne::Cluster
   spec: providers/alicloud/specs/ack-one-cluster.yaml
   class: container.fleet
@@ -274,6 +290,42 @@ resources:
     - AWS::MSK::Cluster
     - AWS::MSK::ServerlessCluster
   status: pending_verification
+- alicloud: ACS::ApiGateway::Api
+  spec: providers/alicloud/specs/api-gateway-api.yaml
+  class: network.api
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions: []
+  gcp:
+    resources:
+    - apigateway.googleapis.com/Api
+  azure:
+    resources:
+    - Microsoft.ApiManagement/service/apis
+  aws:
+    resources:
+    - AWS::ApiGateway::RestApi
+  status: pending_verification
+  notes: Inventory only. A deployed API must be abolished in every stage before DeleteApi accepts it;
+    that preparation is not implemented yet.
+- alicloud: ACS::ApiGateway::App
+  spec: providers/alicloud/specs/api-gateway-app.yaml
+  class: api.application
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: API consumers authenticate with API keys and service accounts; there is no app resource.
+  azure:
+    resources:
+    - Microsoft.ApiManagement/service/products
+  aws:
+    notes: API Gateway usage plans and API keys are not modeled yet.
+  status: pending_verification
+  notes: Deleting an app also removes its API authorizations; neither can be restored.
 - alicloud: ACS::ApiGateway::Instance
   spec: providers/alicloud/specs/api-gateway-instance.yaml
   class: network.api_gateway
@@ -974,6 +1026,22 @@ resources:
     resources:
     - AWS::ECR::Repository
   status: pending_verification
+- alicloud: ACS::Eflo::Node
+  spec: providers/alicloud/specs/eflo-node.yaml
+  class: compute.node
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions: []
+    parent_discovery: true
+  gcp:
+    notes: Lingjun nodes have no direct counterpart; GPU capacity is part of compute instances.
+  azure:
+    notes: Lingjun nodes have no direct counterpart.
+  aws:
+    notes: Lingjun nodes have no direct counterpart.
+  status: pending_verification
+  notes: Inventory only; removing a node shrinks its cluster.
 - alicloud: ACS::NLB::Listener
   spec: providers/alicloud/specs/nlb-listener.yaml
   class: network.load_balancer_listener
@@ -1045,6 +1113,22 @@ resources:
     resources:
     - AWS::SNS::Topic
   status: pending_verification
+- alicloud: ACS::ResourceManager::Account
+  spec: providers/alicloud/specs/resource-manager-account.yaml
+  class: identity.member_account
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions: []
+  gcp:
+    notes: Projects under an organization are modeled as scopes, not member accounts.
+  azure:
+    notes: Subscriptions under management groups are modeled as scopes, not member accounts.
+  aws:
+    resources:
+    - AWS::Organizations::Account
+  status: pending_verification
+  notes: Inventory only; removing a member account cannot be undone.
 - alicloud: ACS::RocketMQ::ConsumerGroup
   spec: providers/alicloud/specs/rocketmq-consumer-group.yaml
   class: messaging.consumer_group

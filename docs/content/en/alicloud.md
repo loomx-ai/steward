@@ -50,7 +50,7 @@ A successful connection check establishes the cloud identity. Run a scan to veri
 
 ## Resource coverage and relationships
 
-Steward identifies 187 Alibaba Cloud resource types, 159 of which have a native cleanup action; other types that Resource Center returns appear as a read-only inventory. Every product API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
+Steward identifies 187 Alibaba Cloud resource types, 161 of which have a native cleanup action; other types that Resource Center returns appear as a read-only inventory. Every product API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
 
 Common types include ECS instances, disks, and interfaces; VPCs, vSwitches, security groups, NAT gateways, and EIPs; load balancers; RDS, Redis, and PolarDB; and storage, container, and orchestration resources. Discoverability depends on supported types, selected regions, and the current identity's permissions.
 

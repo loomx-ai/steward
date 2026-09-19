@@ -1,0 +1,60 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Eflo::Node
+  class: compute.node
+presentation:
+  consoleLinkTemplate: "https://eflo.console.aliyun.com/{regionId}/clusters/{parentId}"
+  displayNames:
+    zh-CN: 灵骏节点
+    en-US: Lingjun Node
+  icon: compute
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    operation: AlibabaCloud.Eflo.ListClusters
+    itemsPath: Clusters
+    identityPath: ClusterId
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  list:
+    operation: AlibabaCloud.Eflo.ListClusterNodes
+    parameters:
+      ClusterId: parent.nativeId
+    itemsPath: Nodes
+    identityPath: NodeId
+    statePath: OperatingState
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: Hostname
+  state: OperatingState
+  createdAt: CreateTime
+  expireTime: ExpiredTime
+  clusterId: _parent.nativeId
+  nodeGroupId: NodeGroupId
+  machineType: MachineType
+  zoneId: ZoneId
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::Eflo::Cluster
+    targetIdPath: clusterId
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId

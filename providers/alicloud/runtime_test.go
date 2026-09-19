@@ -1936,7 +1936,7 @@ func TestRuntimeExposesInstanceAndModeledSubresourceKindsWithCatalogIcons(t *tes
 		t.Fatal("Alibaba Cloud runtime does not expose resource kind metadata")
 	}
 	kinds, revision := runtime.ResourceKinds()
-	if len(kinds) != 179 || revision == "" {
+	if len(kinds) != 184 || revision == "" {
 		t.Fatalf("resource kinds = %d revision = %q", len(kinds), revision)
 	}
 
@@ -1965,7 +1965,7 @@ func TestRuntimeExposesInstanceAndModeledSubresourceKindsWithCatalogIcons(t *tes
 		oss.BundleRevision != revision {
 		t.Fatalf("OSS resource kind = %+v revision = %q", oss, revision)
 	}
-	if _, found := findRuntimeResourceKind(kinds, "ACS::ResourceManager::Account"); found {
+	if _, found := findRuntimeResourceKind(kinds, "ACS::WAFV3::DefenseResource"); found {
 		t.Fatal("an unmodeled subresource must not be exposed as a resource kind")
 	}
 	listener, found := findRuntimeResourceKind(kinds, "ACS::ALB::Listener")
@@ -2033,7 +2033,7 @@ func TestRuntimeSpecCoverageMatchesActionableResourceKinds(t *testing.T) {
 			)
 		}
 	}
-	if len(runtime.bundle.Specs) != 179 || productAPISpecs != 165 || actionableSpecs != 159 {
+	if len(runtime.bundle.Specs) != 184 || productAPISpecs != 170 || actionableSpecs != 161 {
 		t.Fatalf(
 			"specs=%d product-api=%d actionable=%d",
 			len(runtime.bundle.Specs),
@@ -2218,6 +2218,12 @@ func TestUnsupportedInstanceResourceAuditIsExplicit(t *testing.T) {
 		"ACS::SDDP::Instance":                     {},
 		"ACS::SWAS::Instance":                     {},
 		"ACS::ThreatDetection::Instance":          {},
+		// Deployed APIs must be abolished in every stage before deletion.
+		"ACS::ApiGateway::Api": {},
+		// Removing a node shrinks its cluster; removing a member account
+		// cannot be undone.
+		"ACS::Eflo::Node":               {},
+		"ACS::ResourceManager::Account": {},
 	}
 	wantDirectoryOnly := map[string]struct{}{}
 	specTypes := make(map[string]struct{}, len(runtime.bundle.Specs))

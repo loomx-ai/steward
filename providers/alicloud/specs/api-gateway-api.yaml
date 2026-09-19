@@ -1,0 +1,35 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ApiGateway::Api
+  class: network.api
+presentation:
+  consoleLinkTemplate: "https://apigateway.console.aliyun.com/#/{regionId}/apis/list"
+  displayNames:
+    zh-CN: API 网关 API
+    en-US: API Gateway API
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ApiGateway.DescribeApis
+    itemsPath: ApiSummarys.ApiSummary
+    identityPath: ApiId
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: ApiName
+  createdAt: CreatedTime
+  updatedAt: ModifiedTime
+  groupId: GroupId
+  groupName: GroupName
+  apiPath: ApiPath
+  apiMethod: ApiMethod
+  visibility: Visibility

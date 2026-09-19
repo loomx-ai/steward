@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::APIG::Service
+  class: network.api_backend
+presentation:
+  consoleLinkTemplate: "https://apigw.console.aliyun.com/#/{regionId}/gateway/{parentId}/service"
+  displayNames:
+    zh-CN: 云原生 API 网关服务
+    en-US: Cloud-native API Gateway Service
+  icon: gateway
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.APIG.ListServices
+    itemsPath: data.items
+    identityPath: serviceId
+    statePath: healthStatus
+    pagination:
+      type: page-number
+      pageParameter: pageNumber
+      pageSizeParameter: pageSize
+      totalPath: data.totalSize
+      maxPageSize: 100
+fields:
+  name: name
+  state: healthStatus
+  createdAt: createTimestamp
+  gatewayId: gatewayId
+  sourceType: sourceType
+  namespace: namespace
+  protocol: protocol
+  resourceGroupId: resourceGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::APIG::Gateway
+    targetIdPath: gatewayId
+actions:
+  delete:
+    operation: AlibabaCloud.APIG.DeleteService
+    parameters:
+      serviceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.APIG.GetService
+      parameters:
+        serviceId: resource.nativeId
+      itemsPath: data
+      identityPath: serviceId
+      statePath: healthStatus

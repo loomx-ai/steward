@@ -2102,6 +2102,25 @@
         }
       }
     },
+    "/apig/services": {
+      "get": {
+        "operationId": "APIG.ListServices",
+        "x-operation-name": "ListServices",
+        "x-operation-call": {"product":"APIG","version":"2024-03-27","style":"ROA","protocol":"HTTPS","method":"GET","path":"/v1/services","endpoint":"apig.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/apig/services/{serviceId}": {
+      "get": {
+        "operationId": "APIG.GetService",
+        "x-operation-name": "GetService",
+        "x-operation-call": {"product":"APIG","version":"2024-03-27","style":"ROA","protocol":"HTTPS","method":"GET","path":"/v1/services/{serviceId}","endpoint":"apig.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      },
+      "delete": {
+        "operationId": "APIG.DeleteService",
+        "x-operation-name": "DeleteService",
+        "x-operation-call": {"product":"APIG","version":"2024-03-27","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/v1/services/{serviceId}","endpoint":"apig.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/apig/gateways": {
       "get": {
         "operationId": "APIG.ListGateways",
@@ -2359,6 +2378,13 @@
           "body_type": "json",
           "parameter_position": "query"
         }
+      }
+    },
+    "/eflo/clusters/{ClusterId}/nodes": {
+      "get": {
+        "operationId": "Eflo.ListClusterNodes",
+        "x-operation-name": "ListClusterNodes",
+        "x-operation-call": {"product":"eflo-controller","version":"2022-12-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"eflo-controller.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
     "/eflo/clusters": {
@@ -3115,6 +3141,13 @@
         "x-operation-call": {"product":"Dts","version":"2020-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"dts.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/resource-manager/accounts": {
+      "get": {
+        "operationId": "ResourceManager.ListAccounts",
+        "x-operation-name": "ListAccounts",
+        "x-operation-call": {"product":"ResourceManager","version":"2020-03-31","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"resourcemanager.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/resource-manager/resource-directory": {
       "get": {
         "operationId": "ResourceManager.GetResourceDirectory",
@@ -3592,6 +3625,27 @@
         "x-operation-call": {"product":"hbr","version":"2017-09-08","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"hbr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/api-gateway/apis": {
+      "get": {
+        "operationId": "ApiGateway.DescribeApis",
+        "x-operation-name": "DescribeApis",
+        "x-operation-call": {"product":"CloudAPI","version":"2016-07-14","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"apigateway.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/api-gateway/apps": {
+      "get": {
+        "operationId": "ApiGateway.DescribeAppAttributes",
+        "x-operation-name": "DescribeAppAttributes",
+        "x-operation-call": {"product":"CloudAPI","version":"2016-07-14","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"apigateway.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/api-gateway/apps/{AppId}": {
+      "delete": {
+        "operationId": "ApiGateway.DeleteApp",
+        "x-operation-name": "DeleteApp",
+        "x-operation-call": {"product":"CloudAPI","version":"2016-07-14","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"apigateway.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/api-gateway/instances": {
       "get": {
         "operationId": "ApiGateway.DescribeInstances",
@@ -3918,6 +3972,9 @@
     {"nativeType": "ACS::AliKafka::ConsumerGroup", "class": "messaging.consumer_group", "displayName": "Kafka Consumer Group", "scopeKinds": ["region"]},
     {"nativeType": "ACS::AliKafka::Topic", "class": "messaging.topic", "displayName": "Kafka Topic", "scopeKinds": ["region"]},
     {"nativeType": "ACS::APIG::Gateway", "class": "network.api_gateway", "displayName": "Cloud-native API Gateway", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::APIG::Service", "class": "network.api_backend", "displayName": "Cloud-native API Gateway Service", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::ApiGateway::Api", "class": "network.api", "displayName": "API Gateway API", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::ApiGateway::App", "class": "api.application", "displayName": "API Gateway App", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ApiGateway::Instance", "class": "network.api_gateway", "displayName": "API Gateway Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::BPStudio::Application", "class": "application.architecture", "displayName": "CADT Application", "scopeKinds": ["global"]},
     {"nativeType": "ACS::Bastionhost::Instance", "class": "security.bastion_host", "displayName": "Bastionhost Instance", "scopeKinds": ["region"]},
@@ -3967,6 +4024,7 @@
     {"nativeType": "ACS::ECS::NetworkInterface", "class": "network.interface", "displayName": "ECS Network Interface", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ECS::SecurityGroup", "class": "network.security_group", "displayName": "ECS Security Group", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ECS::Snapshot", "class": "storage.snapshot", "displayName": "ECS Snapshot", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::Eflo::Node", "class": "compute.node", "displayName": "Lingjun Node", "scopeKinds": ["region"]},
     {"nativeType": "ACS::EIP::EipAddress", "class": "network.public_ip", "displayName": "Elastic IP Address", "scopeKinds": ["region"]},
     {"nativeType": "ACS::Eipanycast::AnycastEipAddress", "class": "network.public_ip", "displayName": "Anycast EIP Address", "scopeKinds": ["global"]},
     {"nativeType": "ACS::ECI::ContainerGroup", "class": "compute.container_group", "displayName": "Elastic Container Instance", "scopeKinds": ["region"]},
@@ -4045,6 +4103,7 @@
     {"nativeType": "ACS::RAM::Policy", "class": "identity.policy", "displayName": "RAM Policy", "scopeKinds": ["global"]},
     {"nativeType": "ACS::RAM::Role", "class": "identity.role", "displayName": "RAM Role", "scopeKinds": ["global"]},
     {"nativeType": "ACS::RAM::User", "class": "identity.user", "displayName": "RAM User", "scopeKinds": ["global"]},
+    {"nativeType": "ACS::ResourceManager::Account", "class": "identity.member_account", "displayName": "Resource Directory Member", "scopeKinds": ["global"]},
     {"nativeType": "ACS::RocketMQ::ConsumerGroup", "class": "messaging.consumer_group", "displayName": "RocketMQ 5.0 Consumer Group", "scopeKinds": ["region"]},
     {"nativeType": "ACS::RocketMQ::Topic", "class": "messaging.topic", "displayName": "RocketMQ 5.0 Topic", "scopeKinds": ["region"]},
     {"nativeType": "ACS::RTC::Application", "class": "media.rtc_application", "displayName": "RTC Application", "scopeKinds": ["global"]},

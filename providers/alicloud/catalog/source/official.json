@@ -739,6 +739,29 @@
      ],
      "risk_type": "high"
     },
+    "DeleteService": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "delete"
+     ],
+     "operation_type": "none",
+     "parameters": [
+      {
+       "in": "path",
+       "name": "serviceId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/v1/services/{serviceId}",
+     "response_paths": [
+      "code",
+      "message",
+      "requestId"
+     ],
+     "risk_type": "high"
+    },
     "GetGateway": {
      "deprecated": false,
      "error_codes": [],
@@ -815,6 +838,120 @@
       "data.zones.vSwitch.name",
       "data.zones.vSwitch.vSwitchId",
       "data.zones.zoneId",
+      "message",
+      "requestId"
+     ],
+     "risk_type": "none"
+    },
+    "GetService": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "none",
+     "parameters": [
+      {
+       "in": "path",
+       "name": "serviceId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/v1/services/{serviceId}",
+     "response_paths": [
+      "code",
+      "data",
+      "data.addresses",
+      "data.agentServiceConfig",
+      "data.agentServiceConfig.address",
+      "data.agentServiceConfig.customConfig",
+      "data.agentServiceConfig.customConfig.apiKey",
+      "data.agentServiceConfig.customConfig.apiKeyGenerateMode",
+      "data.agentServiceConfig.dashScopeConfig",
+      "data.agentServiceConfig.dashScopeConfig.appCredentials",
+      "data.agentServiceConfig.dashScopeConfig.appCredentials.apiKey",
+      "data.agentServiceConfig.dashScopeConfig.appCredentials.appId",
+      "data.agentServiceConfig.difyConfig",
+      "data.agentServiceConfig.difyConfig.apiKey",
+      "data.agentServiceConfig.difyConfig.botType",
+      "data.agentServiceConfig.enableHealthCheck",
+      "data.agentServiceConfig.enableOutlierDetection",
+      "data.agentServiceConfig.protocols",
+      "data.agentServiceConfig.provider",
+      "data.aiServiceConfig",
+      "data.aiServiceConfig.ApiKeyGenerateMode",
+      "data.aiServiceConfig.address",
+      "data.aiServiceConfig.apiKeys",
+      "data.aiServiceConfig.bedrockServiceConfig",
+      "data.aiServiceConfig.bedrockServiceConfig.awsAccessKey",
+      "data.aiServiceConfig.bedrockServiceConfig.awsRegion",
+      "data.aiServiceConfig.bedrockServiceConfig.awsSecretKey",
+      "data.aiServiceConfig.compatibleProtocols",
+      "data.aiServiceConfig.defaultModelName",
+      "data.aiServiceConfig.enableHealthCheck",
+      "data.aiServiceConfig.enableOutlierDetection",
+      "data.aiServiceConfig.paiEASServiceConfig",
+      "data.aiServiceConfig.paiEASServiceConfig.endpointType",
+      "data.aiServiceConfig.paiEASServiceConfig.serviceId",
+      "data.aiServiceConfig.paiEASServiceConfig.serviceName",
+      "data.aiServiceConfig.paiEASServiceConfig.workspaceId",
+      "data.aiServiceConfig.protocols",
+      "data.aiServiceConfig.provider",
+      "data.aiServiceConfig.vertexServiceConfig",
+      "data.aiServiceConfig.vertexServiceConfig.geminiSafetySetting",
+      "data.aiServiceConfig.vertexServiceConfig.vertexAuthKey",
+      "data.aiServiceConfig.vertexServiceConfig.vertexAuthServiceName",
+      "data.aiServiceConfig.vertexServiceConfig.vertexProjectId",
+      "data.aiServiceConfig.vertexServiceConfig.vertexRegion",
+      "data.aiServiceConfig.vertexServiceConfig.vertexTokenRefreshAhead",
+      "data.createTimestamp",
+      "data.dnsServers",
+      "data.expressType",
+      "data.gatewayId",
+      "data.groupName",
+      "data.healthCheck",
+      "data.healthCheck.enable",
+      "data.healthCheck.healthyThreshold",
+      "data.healthCheck.httpHost",
+      "data.healthCheck.httpPath",
+      "data.healthCheck.interval",
+      "data.healthCheck.protocol",
+      "data.healthCheck.timeout",
+      "data.healthCheck.unhealthyThreshold",
+      "data.healthStatus",
+      "data.healthyPanicThreshold",
+      "data.labelDetails",
+      "data.labelDetails.key",
+      "data.labelDetails.values",
+      "data.modelProviderId",
+      "data.name",
+      "data.namespace",
+      "data.outlierDetection",
+      "data.outlierDetection.baseEjectionTime",
+      "data.outlierDetection.enable",
+      "data.outlierDetection.failurePercentageMinimumHosts",
+      "data.outlierDetection.failurePercentageThreshold",
+      "data.outlierDetection.interval",
+      "data.outlierEndpoints",
+      "data.ports",
+      "data.ports.name",
+      "data.ports.port",
+      "data.ports.protocol",
+      "data.protocol",
+      "data.qualifier",
+      "data.resourceGroupId",
+      "data.runtimeDetailErrorCode",
+      "data.runtimeDetailStatus",
+      "data.serviceId",
+      "data.sourceType",
+      "data.unhealthyEndpoints",
+      "data.updateTimestamp",
+      "data.versions",
+      "data.versions.labels",
+      "data.versions.labels.key",
+      "data.versions.labels.value",
+      "data.versions.name",
       "message",
       "requestId"
      ],
@@ -937,6 +1074,160 @@
       "data.items.zones.vSwitch",
       "data.items.zones.vSwitch.vSwitchId",
       "data.items.zones.zoneId",
+      "data.pageNumber",
+      "data.pageSize",
+      "data.totalSize",
+      "message",
+      "requestId"
+     ],
+     "risk_type": "none"
+    },
+    "ListServices": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "none",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "gatewayId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "name",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "pageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "pageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "resourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "sourceType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "sourceTypes",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/v1/services",
+     "response_paths": [
+      "code",
+      "data",
+      "data.items",
+      "data.items.addresses",
+      "data.items.agentServiceConfig",
+      "data.items.agentServiceConfig.address",
+      "data.items.agentServiceConfig.customConfig",
+      "data.items.agentServiceConfig.customConfig.apiKey",
+      "data.items.agentServiceConfig.customConfig.apiKeyGenerateMode",
+      "data.items.agentServiceConfig.dashScopeConfig",
+      "data.items.agentServiceConfig.dashScopeConfig.appCredentials",
+      "data.items.agentServiceConfig.dashScopeConfig.appCredentials.apiKey",
+      "data.items.agentServiceConfig.dashScopeConfig.appCredentials.appId",
+      "data.items.agentServiceConfig.difyConfig",
+      "data.items.agentServiceConfig.difyConfig.apiKey",
+      "data.items.agentServiceConfig.difyConfig.botType",
+      "data.items.agentServiceConfig.enableHealthCheck",
+      "data.items.agentServiceConfig.enableOutlierDetection",
+      "data.items.agentServiceConfig.protocols",
+      "data.items.agentServiceConfig.provider",
+      "data.items.aiServiceConfig",
+      "data.items.aiServiceConfig.ApiKeyGenerateMode",
+      "data.items.aiServiceConfig.address",
+      "data.items.aiServiceConfig.apiKeys",
+      "data.items.aiServiceConfig.bedrockServiceConfig",
+      "data.items.aiServiceConfig.bedrockServiceConfig.awsAccessKey",
+      "data.items.aiServiceConfig.bedrockServiceConfig.awsRegion",
+      "data.items.aiServiceConfig.bedrockServiceConfig.awsSecretKey",
+      "data.items.aiServiceConfig.compatibleProtocols",
+      "data.items.aiServiceConfig.defaultModelName",
+      "data.items.aiServiceConfig.enableHealthCheck",
+      "data.items.aiServiceConfig.enableOutlierDetection",
+      "data.items.aiServiceConfig.paiEASServiceConfig",
+      "data.items.aiServiceConfig.paiEASServiceConfig.endpointType",
+      "data.items.aiServiceConfig.paiEASServiceConfig.serviceId",
+      "data.items.aiServiceConfig.paiEASServiceConfig.serviceName",
+      "data.items.aiServiceConfig.paiEASServiceConfig.workspaceId",
+      "data.items.aiServiceConfig.protocols",
+      "data.items.aiServiceConfig.provider",
+      "data.items.aiServiceConfig.vertexServiceConfig",
+      "data.items.aiServiceConfig.vertexServiceConfig.geminiSafetySetting",
+      "data.items.aiServiceConfig.vertexServiceConfig.vertexAuthKey",
+      "data.items.aiServiceConfig.vertexServiceConfig.vertexAuthServiceName",
+      "data.items.aiServiceConfig.vertexServiceConfig.vertexProjectId",
+      "data.items.aiServiceConfig.vertexServiceConfig.vertexRegion",
+      "data.items.aiServiceConfig.vertexServiceConfig.vertexTokenRefreshAhead",
+      "data.items.createTimestamp",
+      "data.items.dnsServers",
+      "data.items.expressType",
+      "data.items.gatewayId",
+      "data.items.groupName",
+      "data.items.healthCheck",
+      "data.items.healthCheck.enable",
+      "data.items.healthCheck.healthyThreshold",
+      "data.items.healthCheck.httpHost",
+      "data.items.healthCheck.httpPath",
+      "data.items.healthCheck.interval",
+      "data.items.healthCheck.protocol",
+      "data.items.healthCheck.timeout",
+      "data.items.healthCheck.unhealthyThreshold",
+      "data.items.healthStatus",
+      "data.items.healthyPanicThreshold",
+      "data.items.labelDetails",
+      "data.items.labelDetails.key",
+      "data.items.labelDetails.values",
+      "data.items.modelProviderId",
+      "data.items.name",
+      "data.items.namespace",
+      "data.items.outlierDetection",
+      "data.items.outlierDetection.baseEjectionTime",
+      "data.items.outlierDetection.enable",
+      "data.items.outlierDetection.failurePercentageMinimumHosts",
+      "data.items.outlierDetection.failurePercentageThreshold",
+      "data.items.outlierDetection.interval",
+      "data.items.outlierEndpoints",
+      "data.items.ports",
+      "data.items.ports.name",
+      "data.items.ports.port",
+      "data.items.ports.protocol",
+      "data.items.protocol",
+      "data.items.qualifier",
+      "data.items.resourceGroupId",
+      "data.items.runtimeDetailErrorCode",
+      "data.items.runtimeDetailStatus",
+      "data.items.serviceId",
+      "data.items.sourceType",
+      "data.items.unhealthyEndpoints",
+      "data.items.updateTimestamp",
+      "data.items.versions",
+      "data.items.versions.labels",
+      "data.items.versions.labels.key",
+      "data.items.versions.labels.value",
+      "data.items.versions.name",
       "data.pageNumber",
       "data.pageSize",
       "data.totalSize",
@@ -6289,6 +6580,34 @@
   },
   {
    "apis": {
+    "DeleteApp": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AppId",
+       "required": true,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
     "DeleteInstance": {
      "deprecated": false,
      "error_codes": [],
@@ -6316,6 +6635,217 @@
       "RequestId"
      ],
      "risk_type": ""
+    },
+    "DescribeApis": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ApiId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ApiMethod",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ApiName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ApiPath",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "CatalogId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "EnableTagAuth",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "GroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "StageName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "UnDeployed",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "Visibility",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "ApiSummarys",
+      "ApiSummarys.ApiSummary",
+      "ApiSummarys.ApiSummary.ApiId",
+      "ApiSummarys.ApiSummary.ApiMethod",
+      "ApiSummarys.ApiSummary.ApiName",
+      "ApiSummarys.ApiSummary.ApiPath",
+      "ApiSummarys.ApiSummary.CreatedTime",
+      "ApiSummarys.ApiSummary.DeployedInfos",
+      "ApiSummarys.ApiSummary.DeployedInfos.DeployedInfo",
+      "ApiSummarys.ApiSummary.DeployedInfos.DeployedInfo.DeployedStatus",
+      "ApiSummarys.ApiSummary.DeployedInfos.DeployedInfo.EffectiveVersion",
+      "ApiSummarys.ApiSummary.DeployedInfos.DeployedInfo.StageName",
+      "ApiSummarys.ApiSummary.Description",
+      "ApiSummarys.ApiSummary.GroupId",
+      "ApiSummarys.ApiSummary.GroupName",
+      "ApiSummarys.ApiSummary.ModifiedTime",
+      "ApiSummarys.ApiSummary.RegionId",
+      "ApiSummarys.ApiSummary.TagList",
+      "ApiSummarys.ApiSummary.TagList.Tag",
+      "ApiSummarys.ApiSummary.TagList.Tag.TagKey",
+      "ApiSummarys.ApiSummary.TagList.Tag.TagValue",
+      "ApiSummarys.ApiSummary.Visibility",
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": ""
+    },
+    "DescribeAppAttributes": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AppCode",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "AppId",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "AppKey",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "AppName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "EnableTagAuth",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "Extend",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "Sort",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Apps",
+      "Apps.AppAttribute",
+      "Apps.AppAttribute.AppId",
+      "Apps.AppAttribute.AppName",
+      "Apps.AppAttribute.CreatedTime",
+      "Apps.AppAttribute.Description",
+      "Apps.AppAttribute.Disabled",
+      "Apps.AppAttribute.Extend",
+      "Apps.AppAttribute.ModifiedTime",
+      "Apps.AppAttribute.Tags",
+      "Apps.AppAttribute.Tags.TagInfo",
+      "Apps.AppAttribute.Tags.TagInfo.Key",
+      "Apps.AppAttribute.Tags.TagInfo.Value",
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
     },
     "DescribeInstances": {
      "deprecated": false,
@@ -25066,6 +25596,67 @@
       "ResourceDirectory.RootFolderId"
      ],
      "risk_type": "none"
+    },
+    "ListAccounts": {
+     "deprecated": false,
+     "error_codes": [
+      "EntityNotExists.ResourceDirectory"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "IncludeTags",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Accounts",
+      "Accounts.Account",
+      "Accounts.Account.AccountId",
+      "Accounts.Account.DisplayName",
+      "Accounts.Account.FolderId",
+      "Accounts.Account.JoinMethod",
+      "Accounts.Account.JoinTime",
+      "Accounts.Account.ModifyTime",
+      "Accounts.Account.ResourceDirectoryId",
+      "Accounts.Account.ResourceDirectoryPath",
+      "Accounts.Account.Status",
+      "Accounts.Account.Tags",
+      "Accounts.Account.Tags.Tag",
+      "Accounts.Account.Tags.Tag.Key",
+      "Accounts.Account.Tags.Tag.Value",
+      "Accounts.Account.Type",
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": ""
     }
    },
    "endpoints": [
@@ -40166,6 +40757,93 @@
       "UpdateTime",
       "VSwitchId",
       "VpcId"
+     ],
+     "risk_type": "none"
+    },
+    "ListClusterNodes": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "formData",
+       "name": "ClusterId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "formData",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "NodeGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "OperatingStates",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "formData",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tags",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "NextToken",
+      "Nodes",
+      "Nodes.CommodityCode",
+      "Nodes.CreateTime",
+      "Nodes.ExpiredTime",
+      "Nodes.FileSystemMountEnabled",
+      "Nodes.Hostname",
+      "Nodes.HpnZone",
+      "Nodes.HyperNodeId",
+      "Nodes.ImageId",
+      "Nodes.ImageName",
+      "Nodes.MachineType",
+      "Nodes.Networks",
+      "Nodes.Networks.BondName",
+      "Nodes.Networks.Ip",
+      "Nodes.Networks.SubnetId",
+      "Nodes.Networks.VpdId",
+      "Nodes.NodeGroupId",
+      "Nodes.NodeGroupName",
+      "Nodes.NodeId",
+      "Nodes.NodeType",
+      "Nodes.OperatingState",
+      "Nodes.Sn",
+      "Nodes.Tags",
+      "Nodes.Tags.Key",
+      "Nodes.Tags.Value",
+      "Nodes.TaskId",
+      "Nodes.VSwitchId",
+      "Nodes.VpcId",
+      "Nodes.ZoneId",
+      "RequestId"
      ],
      "risk_type": "none"
     },

@@ -1,0 +1,45 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ApiGateway::App
+  class: api.application
+presentation:
+  consoleLinkTemplate: "https://apigateway.console.aliyun.com/#/{regionId}/apps/detail/{nativeId}"
+  displayNames:
+    zh-CN: API 网关应用
+    en-US: API Gateway App
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ApiGateway.DescribeAppAttributes
+    itemsPath: Apps.AppAttribute
+    identityPath: AppId
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: AppName
+  createdAt: CreatedTime
+  updatedAt: ModifiedTime
+  disabled: Disabled
+  description: Description
+actions:
+  delete:
+    operation: AlibabaCloud.ApiGateway.DeleteApp
+    parameters:
+      AppId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ApiGateway.DescribeAppAttributes
+      parameters:
+        AppId: resource.nativeId
+      itemsPath: Apps.AppAttribute
+      identityPath: AppId
