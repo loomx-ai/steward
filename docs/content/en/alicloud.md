@@ -52,7 +52,7 @@ A successful connection check establishes the cloud identity. Run a scan to veri
 
 Steward identifies 203 Alibaba Cloud resource types, 177 of which have a native cleanup action; other types that Resource Center returns appear as a read-only inventory. Every product API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
 
-Common types include ECS instances, disks, and interfaces; VPCs, vSwitches, security groups, NAT gateways, and EIPs; load balancers; RDS, Redis, and PolarDB; and storage, container, and orchestration resources. Discoverability depends on supported types, selected regions, and the current identity's permissions.
+Common types include ECS instances, disks, and interfaces; VPCs, vSwitches, security groups, NAT gateways, and EIPs; ALB, NLB, and CLB instances with their listeners and server groups; RDS, Redis, and PolarDB; Kafka, RocketMQ, and RabbitMQ with their topics and consumer groups; OSS, Simple Log Service, and Container Registry; and CloudMonitor, Cloud Config, SAE, EMR, Elastic Desktop Service, and EventBridge. Discoverability depends on supported types, selected regions, and the current identity's permissions.
 
 Use **Resource panorama** to navigate regions, VPCs, and vSwitches, and resource details to inspect relationships. A single regional view is insufficient to establish whether a cross-region connection or global resource remains in use. Scan the relevant regions and dependencies before reviewing cleanup.
 

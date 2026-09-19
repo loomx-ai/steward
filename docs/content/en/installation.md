@@ -3,7 +3,7 @@ title: "Install Steward"
 description: "Install with a package manager or download the executable for your operating system."
 navTitle: "Installation"
 release:
-  version: "0.2.0"
+  version: "0.2.1"
   index: "https://loomx-ai.github.io/packages/steward/releases.json"
 ---
 
@@ -23,19 +23,19 @@ brew install loomx-ai/tap/steward
 
 <div class="docs-downloads">
 <div class="docs-download">
-<strong>Apple Silicon</strong><p>v<span data-release-version>0.2.0</span> · ARM64</p>
-<a class="docs-download-button" data-release-asset="steward_{version}_darwin_arm64" href="https://github.com/loomx-ai/steward/releases/download/v0.2.0/steward_0.2.0_darwin_arm64" aria-label="Download Steward macos arm64"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg><span>Download</span></a>
+<strong>Apple Silicon</strong><p>v<span data-release-version>0.2.1</span> · ARM64</p>
+<a class="docs-download-button" data-release-asset="steward_{version}_darwin_arm64" href="https://github.com/loomx-ai/steward/releases/download/v0.2.1/steward_0.2.1_darwin_arm64" aria-label="Download Steward macos arm64"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg><span>Download</span></a>
 </div>
 <div class="docs-download">
-<strong>Intel</strong><p>v<span data-release-version>0.2.0</span> · AMD64</p>
-<a class="docs-download-button" data-release-asset="steward_{version}_darwin_amd64" href="https://github.com/loomx-ai/steward/releases/download/v0.2.0/steward_0.2.0_darwin_amd64" aria-label="Download Steward macos amd64"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg><span>Download</span></a>
+<strong>Intel</strong><p>v<span data-release-version>0.2.1</span> · AMD64</p>
+<a class="docs-download-button" data-release-asset="steward_{version}_darwin_amd64" href="https://github.com/loomx-ai/steward/releases/download/v0.2.1/steward_0.2.1_darwin_amd64" aria-label="Download Steward macos amd64"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg><span>Download</span></a>
 </div>
 </div>
 
 In your downloads directory, use the file for your architecture:
 
 <pre><code>sudo install -d /usr/local/bin
-sudo install -m 755 steward_<span data-release-version>0.2.0</span>_darwin_arm64 /usr/local/bin/steward</code></pre>
+sudo install -m 755 steward_<span data-release-version>0.2.1</span>_darwin_arm64 /usr/local/bin/steward</code></pre>
 
 ## Windows
 
@@ -50,8 +50,8 @@ scoop install loomx-ai/steward
 
 <div class="docs-downloads">
 <div class="docs-download">
-<strong>AMD64</strong><p>v<span data-release-version>0.2.0</span> · x86-64</p>
-<a class="docs-download-button" data-release-asset="steward_{version}_windows_amd64.exe" href="https://github.com/loomx-ai/steward/releases/download/v0.2.0/steward_0.2.0_windows_amd64.exe" aria-label="Download Steward windows amd64"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg><span>Download .exe</span></a>
+<strong>AMD64</strong><p>v<span data-release-version>0.2.1</span> · x86-64</p>
+<a class="docs-download-button" data-release-asset="steward_{version}_windows_amd64.exe" href="https://github.com/loomx-ai/steward/releases/download/v0.2.1/steward_0.2.1_windows_amd64.exe" aria-label="Download Steward windows amd64"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg><span>Download .exe</span></a>
 </div>
 </div>
 
@@ -98,19 +98,19 @@ brew install loomx-ai/tap/steward
 
 <div class="docs-downloads">
 <div class="docs-download">
-<strong>AMD64</strong><p>v<span data-release-version>0.2.0</span> · x86-64</p>
-<a class="docs-download-button" data-release-asset="steward_{version}_linux_amd64" href="https://github.com/loomx-ai/steward/releases/download/v0.2.0/steward_0.2.0_linux_amd64" aria-label="Download Steward linux amd64"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg><span>Download</span></a>
+<strong>AMD64</strong><p>v<span data-release-version>0.2.1</span> · x86-64</p>
+<a class="docs-download-button" data-release-asset="steward_{version}_linux_amd64" href="https://github.com/loomx-ai/steward/releases/download/v0.2.1/steward_0.2.1_linux_amd64" aria-label="Download Steward linux amd64"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg><span>Download</span></a>
 </div>
 <div class="docs-download">
-<strong>ARM64</strong><p>v<span data-release-version>0.2.0</span> · aarch64</p>
-<a class="docs-download-button" data-release-asset="steward_{version}_linux_arm64" href="https://github.com/loomx-ai/steward/releases/download/v0.2.0/steward_0.2.0_linux_arm64" aria-label="Download Steward linux arm64"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg><span>Download</span></a>
+<strong>ARM64</strong><p>v<span data-release-version>0.2.1</span> · aarch64</p>
+<a class="docs-download-button" data-release-asset="steward_{version}_linux_arm64" href="https://github.com/loomx-ai/steward/releases/download/v0.2.1/steward_0.2.1_linux_arm64" aria-label="Download Steward linux arm64"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg><span>Download</span></a>
 </div>
 </div>
 
 In your downloads directory, use the file for your architecture:
 
 <pre><code>sudo install -d /usr/local/bin
-sudo install -m 755 steward_<span data-release-version>0.2.0</span>_linux_amd64 /usr/local/bin/steward</code></pre>
+sudo install -m 755 steward_<span data-release-version>0.2.1</span>_linux_amd64 /usr/local/bin/steward</code></pre>
 
 <span id="update"></span>
 
