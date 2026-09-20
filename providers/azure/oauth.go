@@ -73,9 +73,11 @@ func newOAuthDriver(httpClient *http.Client, authority, arm string) *oauthDriver
 
 func (d *oauthDriver) Provider() asset.Provider { return asset.ProviderAzure }
 
-// The Azure CLI's public client registers loopback redirects without a fixed
-// path, and Entra ID matches the whole URI, so the listener answers at its root.
-func (d *oauthDriver) CallbackPath() string { return "/" }
+// The Azure CLI's public client is registered for "http://localhost" exactly.
+// Entra ID lets only the port vary, so anything else — the 127.0.0.1 literal or
+// a trailing path — is refused with AADSTS50011. MSAL advertises the same name
+// while listening on the IPv4 loopback.
+func (d *oauthDriver) Callback() oauth.Callback { return oauth.Callback{Host: "localhost"} }
 
 func (d *oauthDriver) Authorize(
 	_ context.Context,

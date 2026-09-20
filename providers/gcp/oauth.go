@@ -76,7 +76,7 @@ func (d *oauthDriver) Provider() asset.Provider { return asset.ProviderGCP }
 
 // Google matches a loopback redirect on everything but the port, so the
 // authorization returns to the listener's root.
-func (d *oauthDriver) CallbackPath() string { return "/" }
+func (d *oauthDriver) Callback() oauth.Callback { return oauth.Callback{Path: "/"} }
 
 func (d *oauthDriver) Authorize(
 	_ context.Context,

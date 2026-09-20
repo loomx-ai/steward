@@ -43,14 +43,28 @@ type Session interface {
 	Credential(ctx context.Context, targetID string) (contracts.Credential, error)
 }
 
+// Callback is the loopback redirect a provider sends the browser back to.
+// The clouds do not agree on how much of a loopback URI has to match what
+// their client is registered for, so its shape is the driver's to state:
+// Entra ID matches the host and the path exactly and lets only the port vary,
+// while Google and Alibaba Cloud accept a path.
+type Callback struct {
+	// Host is advertised in the redirect URI: "localhost" or "127.0.0.1",
+	// defaulting to "127.0.0.1". The listener always binds 127.0.0.1 whichever
+	// name is advertised, exactly as MSAL does — a browser that resolves
+	// "localhost" to ::1 first still reaches it, because it falls back to the
+	// IPv4 address.
+	Host string
+	// Path is advertised as given. Empty advertises no path at all, which is
+	// what the Azure CLI's client is registered for.
+	Path string
+}
+
 // Driver is the cloud-specific half of a browser authorization.
 type Driver interface {
 	Provider() asset.Provider
-	// CallbackPath is the loopback path the provider will redirect to. Every
-	// cloud matches the redirect URI it was given against what its client is
-	// allowed to use, and they do not agree on how much of the URI has to
-	// match, so the path is the driver's to state rather than the manager's.
-	CallbackPath() string
+	// Callback is the loopback redirect this provider will accept.
+	Callback() Callback
 	// Authorize validates the operator-supplied parameters and builds the
 	// authorization request. A driver that registers a client dynamically does
 	// it here, so a registration failure never opens a browser window.

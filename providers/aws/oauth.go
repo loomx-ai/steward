@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -12,6 +13,8 @@ import (
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	awssso "github.com/aws/aws-sdk-go-v2/service/sso"
 	awsssooidc "github.com/aws/aws-sdk-go-v2/service/ssooidc"
+	ssooidctypes "github.com/aws/aws-sdk-go-v2/service/ssooidc/types"
+	"github.com/aws/smithy-go"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/credential/oauth"
@@ -97,7 +100,7 @@ func (d *oauthDriver) Provider() asset.Provider { return asset.ProviderAWS }
 
 // The client is registered with this redirect URI moments before the browser
 // opens, so the path is Steward's own choice. It matches the AWS CLI's.
-func (d *oauthDriver) CallbackPath() string { return "/oauth/callback" }
+func (d *oauthDriver) Callback() oauth.Callback { return oauth.Callback{Path: "/oauth/callback"} }
 
 func (d *oauthDriver) Authorize(
 	ctx context.Context,
@@ -131,9 +134,12 @@ func (d *oauthDriver) Authorize(
 		IssuerUrl:    awssdk.String(startURL),
 	})
 	if err != nil {
+		// The directory's own reason is the only thing that separates a typo in
+		// the start URL from one in the region, so it is carried through rather
+		// than discarded.
 		return oauth.Authorization{}, oauth.FlowError(
 			"oauth_client_registration_failed",
-			"IAM Identity Center refused to register a client for this start URL and region",
+			"IAM Identity Center refused to register a client for this start URL and region: "+registrationReason(err),
 		)
 	}
 	authorizationURL, err := d.authorizationURL(registration, region, request)
@@ -302,4 +308,23 @@ func (s *oauthSession) Credential(ctx context.Context, targetID string) (contrac
 		values[key] = value
 	}
 	return contracts.Credential{Type: asset.CredentialAWSOAuth, Values: values}, nil
+}
+
+// registrationReason reduces a registration failure to the directory's own
+// error code. The full SDK error carries request identifiers and endpoints that
+// do not help the operator fix a mistyped start URL.
+func registrationReason(err error) string {
+	var invalidMetadata *ssooidctypes.InvalidClientMetadataException
+	if errors.As(err, &invalidMetadata) {
+		return "the start URL does not name a usable Identity Center instance"
+	}
+	var invalidRequest *ssooidctypes.InvalidRequestException
+	if errors.As(err, &invalidRequest) {
+		return "the registration request was rejected as invalid"
+	}
+	var apiErr smithy.APIError
+	if errors.As(err, &apiErr) {
+		return apiErr.ErrorCode()
+	}
+	return "the directory could not be reached"
 }

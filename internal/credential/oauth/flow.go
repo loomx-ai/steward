@@ -127,11 +127,17 @@ func (m *FlowManager) Start(
 	}
 	challengeBytes := sha256.Sum256([]byte(verifier))
 	port := listener.Addr().(*net.TCPAddr).Port
-	callbackPath := m.driver.CallbackPath()
-	if !strings.HasPrefix(callbackPath, "/") {
-		callbackPath = "/" + callbackPath
+	callback := m.driver.Callback()
+	host := strings.TrimSpace(callback.Host)
+	if host == "" {
+		host = "127.0.0.1"
 	}
-	redirectURI := "http://127.0.0.1:" + strconv.Itoa(port) + callbackPath
+	redirectURI := "http://" + host + ":" + strconv.Itoa(port) + callback.Path
+	// A redirect URI with no path still arrives as a request for "/".
+	servePath := callback.Path
+	if !strings.HasPrefix(servePath, "/") {
+		servePath = "/" + servePath
+	}
 	authorization, err := m.driver.Authorize(ctx, params, Request{
 		RedirectURI:   redirectURI,
 		State:         state,
@@ -162,7 +168,7 @@ func (m *FlowManager) Start(
 		listener:         listener,
 	}
 	mux := http.NewServeMux()
-	mux.HandleFunc(callbackPath, func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc(servePath, func(response http.ResponseWriter, request *http.Request) {
 		m.handleCallback(current.id, response, request)
 	})
 	current.server = &http.Server{Handler: mux, ReadHeaderTimeout: 5 * time.Second}

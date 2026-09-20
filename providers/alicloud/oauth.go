@@ -32,7 +32,7 @@ func NewOAuthDriver() oauth.Driver {
 func (d *oauthDriver) Provider() asset.Provider { return asset.ProviderAliCloud }
 
 // The Alibaba Cloud CLI's registered client redirects to this path.
-func (d *oauthDriver) CallbackPath() string { return "/cli/callback" }
+func (d *oauthDriver) Callback() oauth.Callback { return oauth.Callback{Path: "/cli/callback"} }
 
 func (d *oauthDriver) Authorize(
 	_ context.Context,

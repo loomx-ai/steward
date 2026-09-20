@@ -111,7 +111,8 @@ func writeOAuthFlowError(response http.ResponseWriter, err error) {
 		status = http.StatusGone
 	case "oauth_flow_failed":
 		status = http.StatusUnprocessableEntity
-	case "oauth_target_invalid", "oauth_target_mismatch":
+	case "oauth_target_invalid", "oauth_target_mismatch", "oauth_client_registration_failed":
+		// Well formed, but naming something the cloud cannot use.
 		status = http.StatusUnprocessableEntity
 	case "oauth_flow_unavailable", "oauth_loopback_unavailable", "oauth_loopback_failed", "oauth_targets_unavailable":
 		status = http.StatusServiceUnavailable

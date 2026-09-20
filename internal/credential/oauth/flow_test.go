@@ -31,6 +31,7 @@ type driverStub struct {
 	code          string
 	authorizeErr  error
 	exchangeErr   error
+	callback      Callback
 	targets       []contracts.OAuthTarget
 	targetsErr    error
 	credentialErr error
@@ -38,7 +39,12 @@ type driverStub struct {
 
 func (d *driverStub) Provider() asset.Provider { return asset.ProviderAliCloud }
 
-func (d *driverStub) CallbackPath() string { return "/cli/callback" }
+func (d *driverStub) Callback() Callback {
+	if d.callback == (Callback{}) {
+		return Callback{Path: "/cli/callback"}
+	}
+	return d.callback
+}
 
 func (d *driverStub) Authorize(
 	_ context.Context,
@@ -428,4 +434,38 @@ func flowErrorCode(err error) string {
 		return flowErr.Code
 	}
 	return ""
+}
+
+// Entra ID's CLI client is registered for "http://localhost" exactly: the
+// 127.0.0.1 literal and any trailing path are refused. The advertised name has
+// to follow the driver while the listener stays on the IPv4 loopback.
+func TestFlowAdvertisesTheDriversCallbackAndStillServesTheRequest(t *testing.T) {
+	ports := freeLoopbackPorts(t, 1)
+	driver := &driverStub{callback: Callback{Host: "localhost"}}
+	manager := NewFlowManager(driver, WithFlowPorts(ports))
+	defer manager.Close(context.Background())
+
+	started, err := manager.Start(context.Background(), "admin", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	redirectURI, state, _ := driver.request()
+	want := fmt.Sprintf("http://localhost:%d", ports[0])
+	if redirectURI != want {
+		t.Fatalf("redirect URI = %q, want %q", redirectURI, want)
+	}
+
+	// The browser turns a path-less redirect into a request for "/".
+	response, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d/?state=%s&code=code", ports[0], url.QueryEscape(state)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		t.Fatalf("callback status = %d", response.StatusCode)
+	}
+	view, err := manager.Get(context.Background(), "admin", started.ID)
+	if err != nil || view.Status != contracts.OAuthFlowAuthorized {
+		t.Fatalf("flow = %#v, err = %v", view, err)
+	}
 }
