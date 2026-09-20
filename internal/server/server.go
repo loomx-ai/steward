@@ -144,6 +144,7 @@ func Run(ctx context.Context, config Config) error {
 			alicloud.NewOAuthDriver(),
 			gcp.NewOAuthDriver(),
 			azure.NewOAuthDriver(),
+			provideraws.NewOAuthDriver(),
 		} {
 			manager := oauth.NewFlowManager(driver)
 			provider := driver.Provider()

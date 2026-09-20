@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/credential/oauth"
 	"github.com/loomx-ai/steward/internal/provider/catalog"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 	"github.com/loomx-ai/steward/internal/provider/spec"
@@ -40,6 +41,7 @@ type providerRegion struct {
 
 type Runtime struct {
 	credentials contracts.CredentialSource
+	oauth       *oauth.Materializer
 	factory     clientFactory
 	catalog     catalog.Catalog
 	bundle      spec.Bundle
@@ -61,7 +63,21 @@ func newRuntime(credentials contracts.CredentialSource, factory clientFactory) (
 	if err != nil {
 		return nil, err
 	}
-	return &Runtime{credentials: credentials, factory: factory, catalog: providerCatalog, bundle: bundle}, nil
+	runtime := &Runtime{credentials: credentials, factory: factory, catalog: providerCatalog, bundle: bundle}
+	updater, _ := credentials.(contracts.CredentialUpdater)
+	driver, _ := NewOAuthDriver().(*oauthDriver)
+	runtime.oauth = oauth.NewMaterializer(oauthLabel, &oauthRefresher{driver: driver}, credentials, updater, time.Now)
+	return runtime, nil
+}
+
+// materialize renews a stored IAM Identity Center sign-in and hands back the
+// ordinary session credential the rest of the provider works with. Every other
+// credential type passes through unchanged.
+func (r *Runtime) materialize(ctx context.Context, credential contracts.Credential) (contracts.Credential, error) {
+	if r.oauth == nil {
+		return credential, nil
+	}
+	return r.oauth.Materialize(ctx, credential)
 }
 
 func (r *Runtime) Provider() asset.Provider { return asset.ProviderAWS }
@@ -77,10 +93,22 @@ func (r *Runtime) CredentialSchemas() []contracts.CredentialSchema {
 			contracts.CredentialField{Key: "session_token", LabelKey: "credentials.sessionToken", InputType: "password", Secret: true, Required: true},
 			contracts.CredentialField{Key: "expires_at", LabelKey: "credentials.expiresAt", InputType: "datetime-local", Required: true},
 		)},
+		// Unlike the other clouds, AWS needs to know which directory to sign in
+		// to before the browser can open, so these two are asked for up front.
+		// The account and role are chosen afterwards, from what the sign-in
+		// turns out to reach.
+		{Type: asset.CredentialAWSOAuth, LabelKey: "credentials.awsOAuth", Flow: "browser_oauth", Fields: []contracts.CredentialField{
+			{Key: startURLKey, LabelKey: "credentials.ssoStartUrl", InputType: "text", Required: true},
+			{Key: ssoRegionKey, LabelKey: "credentials.ssoRegion", InputType: "text", Required: true},
+		}},
 	}
 }
 
 func (r *Runtime) ValidateConnection(ctx context.Context, credential contracts.Credential) (contracts.ConnectionIdentity, error) {
+	credential, err := r.materialize(ctx, credential)
+	if err != nil {
+		return contracts.ConnectionIdentity{}, err
+	}
 	if credential.Type != asset.CredentialAWSAccessKey && credential.Type != asset.CredentialAWSSession && credential.Type != asset.CredentialOIDC {
 		return contracts.ConnectionIdentity{}, contracts.NewCredentialValidationError(
 			"credential_type_unsupported",
@@ -451,7 +479,7 @@ func (r *Runtime) resolveCredential(ctx context.Context, connectionID asset.Conn
 	if len(credential.Values) == 0 {
 		return contracts.Credential{}, fmt.Errorf("AWS credential is empty")
 	}
-	return credential, nil
+	return r.materialize(ctx, credential)
 }
 
 func loadCatalog() (catalog.Catalog, error) {

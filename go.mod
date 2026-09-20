@@ -35,6 +35,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/resourceexplorer2 v1.27.3
 	github.com/aws/aws-sdk-go-v2/service/route53domains v1.44.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.113.1
+	github.com/aws/aws-sdk-go-v2/service/sso v1.33.3
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.38.3
 	github.com/aws/aws-sdk-go-v2/service/storagegateway v1.52.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.45.3
 	github.com/aws/smithy-go v1.28.1
@@ -81,8 +83,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.14.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.20.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/signin v1.5.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.33.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.38.3 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
