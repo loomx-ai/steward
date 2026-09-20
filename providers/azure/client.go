@@ -112,6 +112,9 @@ func validResponseType(nativeType, reported string) bool {
 }
 
 func newClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {
+	if credential.Type == asset.CredentialAzureOAuth {
+		return oauthClient(credential, transport)
+	}
 	subscription := strings.ToLower(strings.TrimSpace(credential.Values["subscription_id"]))
 	tenant := strings.ToLower(strings.TrimSpace(credential.Values["tenant_id"]))
 	application := strings.ToLower(strings.TrimSpace(credential.Values["client_id"]))
@@ -616,4 +619,66 @@ func parseID(value string) (string, string, error) {
 		kind += "/" + parts[i]
 	}
 	return id, kind, nil
+}
+
+// oauthClient builds a client from a stored browser authorization. The
+// materializer has already renewed the per-audience access tokens, so each
+// audience gets a fixed token here; an audience this identity cannot reach
+// carries no token and fails only when that data plane is actually read.
+func oauthClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {
+	values := credential.Values
+	subscription := strings.ToLower(strings.TrimSpace(values["subscription_id"]))
+	tenant := strings.ToLower(strings.TrimSpace(values["tenant_id"]))
+	principal := strings.ToLower(strings.TrimSpace(values["principal_id"]))
+	if !uuidPattern.MatchString(subscription) || !uuidPattern.MatchString(tenant) || !uuidPattern.MatchString(principal) ||
+		strings.TrimSpace(values[oauthTokenKey("arm")]) == "" ||
+		(credential.ExpiresAt != nil && !credential.ExpiresAt.After(time.Now())) {
+		return nil, contracts.NewCredentialValidationError(
+			"credential_fields_invalid",
+			"A completed Azure browser authorization and a subscription are required.",
+			nil,
+		)
+	}
+	observer := &principalObserver{base: transport}
+	fingerprint := subscription + "\x00" + tenant + "\x00" + principal
+	makeHTTP := func(audience oauthAudience) *http.Client {
+		base := transport
+		if audience.key == "arm" {
+			base = observer
+		}
+		token := strings.TrimSpace(values[oauthTokenKey(audience.key)])
+		if token == "" {
+			return &http.Client{Transport: unavailableAudience(audience.scope), Timeout: 60 * time.Second, CheckRedirect: noRedirect}
+		}
+		source := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token, TokenType: "Bearer"})
+		return &http.Client{
+			Transport: &oauth2.Transport{Base: base, Source: source},
+			Timeout:   60 * time.Second, CheckRedirect: noRedirect,
+		}
+	}
+	clients := map[string]*http.Client{}
+	for _, audience := range oauthAudiences {
+		clients[audience.key] = makeHTTP(audience)
+		fingerprint += "\x00" + values[oauthTokenKey(audience.key)]
+	}
+	return &client{
+		subscription: subscription, tenant: tenant, application: principal,
+		fingerprint:       sha256.Sum256([]byte(fingerprint)),
+		http:              clients["arm"],
+		storageHTTP:       clients["storage"],
+		batchHTTP:         clients["batch"],
+		communicationHTTP: clients["communication"],
+		keyVaultHTTP:      clients["vault"],
+		graphHTTP:         clients["graph"],
+		principal:         observer,
+	}, nil
+}
+
+// unavailableAudience answers every request with the reason the audience is
+// missing, so one unreachable data plane reads as that data plane failing
+// rather than as an empty or a broken connection.
+type unavailableAudience string
+
+func (a unavailableAudience) RoundTrip(*http.Request) (*http.Response, error) {
+	return nil, fmt.Errorf("the Azure browser authorization did not grant access to %s", string(a))
 }

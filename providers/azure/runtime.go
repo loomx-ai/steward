@@ -8,14 +8,17 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/credential/oauth"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 	"github.com/loomx-ai/steward/internal/provider/spec"
 )
 
 type Runtime struct {
 	credentials    contracts.CredentialSource
+	oauth          *oauth.Materializer
 	transport      http.RoundTripper
 	bundle         spec.Bundle
 	mu             sync.Mutex
@@ -31,7 +34,20 @@ func NewRuntime(credentials contracts.CredentialSource) (*Runtime, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Runtime{credentials: credentials, transport: http.DefaultTransport, bundle: bundle, clients: map[asset.ConnectionID]*client{}}, nil
+	runtime := &Runtime{credentials: credentials, transport: http.DefaultTransport, bundle: bundle, clients: map[asset.ConnectionID]*client{}}
+	updater, _ := credentials.(contracts.CredentialUpdater)
+	driver, _ := NewOAuthDriver().(*oauthDriver)
+	runtime.oauth = oauth.NewMaterializer(oauthLabel, &oauthRefresher{driver: driver}, credentials, updater, time.Now)
+	return runtime, nil
+}
+
+// materialize renews a stored browser authorization before a client is built
+// from it. Every other credential type passes through unchanged.
+func (r *Runtime) materialize(ctx context.Context, credential contracts.Credential) (contracts.Credential, error) {
+	if r.oauth == nil {
+		return credential, nil
+	}
+	return r.oauth.Materialize(ctx, credential)
 }
 func (r *Runtime) Provider() asset.Provider { return asset.ProviderAzure }
 func (r *Runtime) Bundle() spec.Bundle {
@@ -41,12 +57,17 @@ func (r *Runtime) Bundle() spec.Bundle {
 	return cloned
 }
 func (r *Runtime) CredentialSchemas() []contracts.CredentialSchema {
-	return []contracts.CredentialSchema{{Type: asset.CredentialAzureServicePrincipal, LabelKey: "credentials.azureServicePrincipal", Fields: []contracts.CredentialField{
-		{Key: "subscription_id", LabelKey: "credentials.subscriptionId", InputType: "text", Required: true},
-		{Key: "tenant_id", LabelKey: "credentials.tenantId", InputType: "text", Required: true},
-		{Key: "client_id", LabelKey: "credentials.clientId", InputType: "text", Required: true},
-		{Key: "client_secret", LabelKey: "credentials.clientSecret", InputType: "password", Required: true, Secret: true},
-	}}}
+	return []contracts.CredentialSchema{
+		{Type: asset.CredentialAzureServicePrincipal, LabelKey: "credentials.azureServicePrincipal", Fields: []contracts.CredentialField{
+			{Key: "subscription_id", LabelKey: "credentials.subscriptionId", InputType: "text", Required: true},
+			{Key: "tenant_id", LabelKey: "credentials.tenantId", InputType: "text", Required: true},
+			{Key: "client_id", LabelKey: "credentials.clientId", InputType: "text", Required: true},
+			{Key: "client_secret", LabelKey: "credentials.clientSecret", InputType: "password", Required: true, Secret: true},
+		}},
+		// The tenant and subscription are not fields here: a browser
+		// authorization lists the subscriptions the signed-in identity reaches.
+		{Type: asset.CredentialAzureOAuth, LabelKey: "credentials.azureOAuth", Flow: "browser_oauth", Fields: []contracts.CredentialField{}},
+	}
 }
 func (r *Runtime) InventorySources() []contracts.InventorySource {
 	return []contracts.InventorySource{
@@ -92,7 +113,11 @@ func (c *client) subscriptionIdentity(ctx context.Context) (map[string]any, erro
 	return res.data, nil
 }
 func (r *Runtime) ValidateConnection(ctx context.Context, credential contracts.Credential) (contracts.ConnectionIdentity, error) {
-	c, err := newClient(credential, r.transport)
+	materialized, err := r.materialize(ctx, credential)
+	if err != nil {
+		return contracts.ConnectionIdentity{}, err
+	}
+	c, err := newClient(materialized, r.transport)
 	if err != nil {
 		return contracts.ConnectionIdentity{}, err
 	}
@@ -118,7 +143,11 @@ func (r *Runtime) resolve(ctx context.Context, id asset.ConnectionID) (*client, 
 	if err != nil {
 		return nil, err
 	}
-	candidate, err := newClient(credential, r.transport)
+	materialized, err := r.materialize(ctx, credential)
+	if err != nil {
+		return nil, err
+	}
+	candidate, err := newClient(materialized, r.transport)
 	if err != nil {
 		return nil, err
 	}
