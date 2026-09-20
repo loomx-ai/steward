@@ -12,14 +12,32 @@ Use a dedicated cloud identity. Start with read permissions for inventory; add d
 
 | Provider | Credential options |
 | --- | --- |
-| [AWS](./aws.md) | Access Key ID + Secret Access Key<br>Session credentials: also supply a Session Token and expiration time. |
-| [Alibaba Cloud](./alicloud.md) | AccessKey ID + AccessKey Secret<br>STS: also supply a Security Token and expiration time. |
-| [Google Cloud (GCP)](./gcp.md) | Project ID + service account JSON key. |
-| [Microsoft Azure](./azure.md) | Subscription ID + Tenant ID + Application (client) ID + Client secret. |
+| [AWS](./aws.md) | Access Key ID + Secret Access Key<br>Session credentials: also supply a Session Token and expiration time.<br>Browser sign-in through IAM Identity Center. |
+| [Alibaba Cloud](./alicloud.md) | AccessKey ID + AccessKey Secret<br>STS: also supply a Security Token and expiration time.<br>Browser sign-in. |
+| [Google Cloud (GCP)](./gcp.md) | Project ID + service account JSON key.<br>Browser sign-in. |
+| [Microsoft Azure](./azure.md) | Subscription ID + Tenant ID + Application (client) ID + Client secret.<br>Browser sign-in. |
 
 When the server is configured for workload identity, all four clouds offer [OIDC connections](./oidc.md), exchanging trusted workload identities for temporary credentials without uploading long-lived cloud keys.
 
-Alibaba Cloud also supports browser authorization when the login option is available. Choose the China or International site to match your account.
+<span id="browser"></span>
+
+### Sign in with your browser
+
+Every cloud can be connected by signing in through the browser instead of uploading a key. Steward opens the cloud's own sign-in page, receives the authorization on a loopback address, and stores only the resulting tokens.
+
+What each cloud asks for differs:
+
+-   **Alibaba Cloud** — choose the China or International site to match your account. Nothing else is asked for.
+-   **Google Cloud** — after signing in, pick one of the projects your account can reach.
+-   **Microsoft Azure** — after signing in, pick one of the subscriptions your account can reach. The tenant comes with it.
+-   **AWS** — supply your IAM Identity Center start URL and its region before signing in, because they decide which directory to sign in to. Afterwards, pick one of the accounts and roles you are assigned. AWS has no account-wide browser sign-in, so this path needs IAM Identity Center; use an access key or OIDC otherwise.
+
+Two limits are worth knowing before you choose this path:
+
+-   **The browser and the Steward server must run on the same machine.** The cloud redirects the authorization to `127.0.0.1`, which is the machine running your browser. A Steward server on a remote host cannot receive it. Use an access key or [OIDC](./oidc.md) for remote deployments. Browser sign-in is not offered by Steward Cloud for the same reason.
+-   **The connection acts as you, not as a service identity.** It reads exactly what your own account can read. A resource type your account cannot see will be missing from the inventory, and a directory or data-plane permission you lack will be reported as that source failing. A service account, service principal or access key is the better choice for an unattended, stable scope.
+
+A browser sign-in is renewed automatically while it stays valid. If it is revoked, or if the AWS client registration reaches its ninety-day expiry, the connection reports that authorization is required again — use **Replace credential** and sign in once more.
 
 Successful validation confirms the identity, not permission to call every resource API. Resolve permission errors reported by the scan.
 

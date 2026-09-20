@@ -12,14 +12,32 @@ navTitle: "连接云账号"
 
 | 云厂商 | 可用凭证 |
 | --- | --- |
-| [阿里云](./alicloud.md) | AccessKey ID + AccessKey Secret<br>STS：另填 Security Token 和到期时间。 |
-| [AWS](./aws.md) | Access Key ID + Secret Access Key<br>临时凭证：另填 Session Token 和到期时间。 |
-| [Google Cloud（GCP）](./gcp.md) | 项目 ID + 服务账号 JSON 密钥。 |
-| [Microsoft Azure](./azure.md) | 订阅 ID + 租户 ID + 应用（客户端）ID + 客户端密钥。 |
+| [阿里云](./alicloud.md) | AccessKey ID + AccessKey Secret<br>STS：另填 Security Token 和到期时间。<br>浏览器登录。 |
+| [AWS](./aws.md) | Access Key ID + Secret Access Key<br>临时凭证：另填 Session Token 和到期时间。<br>通过 IAM Identity Center 浏览器登录。 |
+| [Google Cloud（GCP）](./gcp.md) | 项目 ID + 服务账号 JSON 密钥。<br>浏览器登录。 |
+| [Microsoft Azure](./azure.md) | 订阅 ID + 租户 ID + 应用（客户端）ID + 客户端密钥。<br>浏览器登录。 |
 
 服务器配置工作负载身份后，四个云均可选择 [OIDC 云连接](./oidc.md)，通过信任关系自动获取临时凭证，无需上传长期云密钥。
 
-阿里云还支持浏览器授权登录；入口可用时，按授权页提示完成连接。中国站与国际站应选择与账号一致的站点。
+<span id="browser"></span>
+
+### 用浏览器登录
+
+四个云都可以用浏览器登录来建立连接，不必上传密钥。Steward 会打开云厂商自己的登录页，在回环地址上接收授权，只保存换回来的令牌。
+
+各云需要填写的内容不同：
+
+-   **阿里云** —— 选择与账号一致的中国站或国际站，此外无需填写。
+-   **Google Cloud** —— 登录后，从账号可访问的项目中选择一个。
+-   **Microsoft Azure** —— 登录后，从账号可访问的订阅中选择一个，租户随之确定。
+-   **AWS** —— 登录前需先填写 IAM Identity Center 的起始 URL 和所在区域，它们决定登录哪个目录；登录后再从已分配的账号和角色中选择一组。AWS 没有账号级的浏览器登录，这条路径依赖 IAM Identity Center；没有启用时请改用 Access Key 或 OIDC。
+
+选择这条路径前有两处限制需要了解：
+
+-   **浏览器和 Steward 服务器必须在同一台机器上。** 云厂商会把授权重定向到 `127.0.0.1`，那是运行浏览器的机器；部署在远程主机上的 Steward 服务器收不到回调。远程部署请使用 Access Key 或 [OIDC](./oidc.md)。Steward Cloud 出于同样原因不提供浏览器登录。
+-   **连接以你本人的身份运行，而不是服务身份。** 它能读到的内容与你的账号完全一致：账号看不到的资源类型不会出现在盘点结果中，缺少的目录或数据面权限会表现为对应数据源失败。需要长期稳定、无人值守的权限范围时，服务账号、服务主体或 Access Key 更合适。
+
+浏览器登录在有效期内会自动续期。如果授权被撤销，或 AWS 的客户端注册到了九十天期限，连接会提示需要重新授权——用「替换凭证」重新登录一次即可。
 
 验证通过只代表身份有效，不代表所有资源 API 都已授权。扫描中的权限错误需要逐项处理。
 

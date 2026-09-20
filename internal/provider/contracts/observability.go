@@ -58,10 +58,15 @@ func forbiddenRawLogKey(key string) bool {
 	switch normalized {
 	case "accesskeyid", "accesskey" + "secret", "secretaccesskey", "sessiontoken",
 		"securitytoken", "accesstoken", "identitytoken", "webidentitytoken",
-		"oauthaccesstoken", "oauthrefreshtoken", "authorizationcode", "codeverifier",
+		"oauthaccesstoken", "oauthrefreshtoken", "refreshtoken", "authorizationcode", "codeverifier",
 		"oidctoken", "clientassertion", "subjecttoken", "assertion",
+		"clientsecret", "ssoclientsecret", "serviceaccountjson",
 		"authorization", "signature", "cookie", "cookies", "credential",
 		"credentials", "password", "privatekey", "psk", "presharedkey":
+		return true
+	}
+	// Azure issues one bearer token per audience, stored as oauth_token_<audience>.
+	if strings.HasPrefix(normalized, "oauthtoken") {
 		return true
 	}
 	// Provider records name credentials by role, as ECD office sites return

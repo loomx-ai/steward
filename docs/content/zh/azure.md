@@ -15,6 +15,8 @@ navTitle: "Microsoft Azure"
 
 清理 Blob 容器还需要数据平面读取权限，例如 **Storage Blob Data Reader**，并能通过网络访问账户的公有 Blob 端点。Steward 分别申请 ARM 和 Storage 访问令牌，不会使用机器已有的 Azure CLI 凭据、托管身份或存储账户密钥。
 
+订阅也可以用[浏览器登录](./connections.md#browser)接入，不必创建服务主体：Steward 引导你在浏览器中登录，并列出账号可访问的订阅。这样的连接以你本人的身份运行，并为每个 audience 分别申请令牌，因此账号无法访问的数据平面（例如 Key Vault 或 Microsoft Graph）只会表现为对应数据源失败，其余盘点照常进行。需要长期稳定、无人值守的权限范围时，服务主体仍然更合适。
+
 Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访问令牌。除了所选账户资源的 ARM 权限，还需要相应的 Batch 数据权限；清理可使用 **Azure Batch Data Contributor** 角色。存储及密钥 URL 引用需要订阅级 Storage/Key Vault 列表权限与匹配资源的读取权限。用户订阅模式的节点还需要读取其 VM、磁盘和网络资源的 Compute/Network 权限。参见 [Batch 身份验证](https://learn.microsoft.com/en-us/azure/batch/batch-aad-auth)与 [Batch 角色](https://learn.microsoft.com/en-us/azure/batch/batch-role-based-access-control)。
 
 Communication Services 的电话号码、预留号码和房间使用独立的 Microsoft Entra 令牌，作用域为 `https://communication.azure.com/.default`。服务主体需要原生数据读取权限（包括房间参与者列表），清理时还需相应的删除权限。ARM 权限须覆盖通信与邮件资源、子资源、资源组和管理锁的列表及读取；清理还需要各所选资源的原生 DELETE 与操作状态读取权限。Steward 从已验证归属的 ARM 账户获取数据端点，不使用账户密钥。参见 [Communication Services 身份验证](https://learn.microsoft.com/en-us/rest/api/communication/authentication)。

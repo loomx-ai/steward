@@ -57,8 +57,16 @@ func TestCloudObservabilityRedactsOAuthSecretsAtEveryMapDepth(t *testing.T) {
 		"authorization code":  "authorization-code-secret",
 		"CodeVerifier":        "code-verifier-secret",
 		"error_message":       "safe summary",
+		// Every cloud's browser authorization stores material under its own
+		// names, and all of them have to stay out of provider logs.
+		"refresh_token":     "plain-refresh-secret",
+		"sso_client_secret": "sso-client-secret",
+		"client_secret":     "service-principal-secret",
+		"oauth_token_arm":   "azure-arm-secret",
+		"oauth_token_vault": "azure-vault-secret",
 		"nested": map[string]any{
-			"access_key_secret": "access-key-secret",
+			"access_key_secret":    "access-key-secret",
+			"service_account_json": "google-private-key-secret",
 			"items": []any{
 				map[string]any{"security_token": "security-token-secret"},
 			},
@@ -78,6 +86,12 @@ func TestCloudObservabilityRedactsOAuthSecretsAtEveryMapDepth(t *testing.T) {
 		"code-verifier-secret",
 		"access-key-secret",
 		"security-token-secret",
+		"plain-refresh-secret",
+		"sso-client-secret",
+		"service-principal-secret",
+		"azure-arm-secret",
+		"azure-vault-secret",
+		"google-private-key-secret",
 	} {
 		if strings.Contains(string(encoded), secret) {
 			t.Fatalf("observability payload retained %q: %s", secret, encoded)

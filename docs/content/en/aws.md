@@ -14,8 +14,11 @@ Choose **AWS** in **Settings → Cloud connections → Add connection**.
 | --- | --- | --- |
 | Access key | Access Key ID and Secret Access Key | Access keys for a dedicated IAM identity. |
 | Temporary credentials | Access Key ID, Secret Access Key, Session Token, and expiration | A complete credential set from an authorized session. |
+| IAM Identity Center | Start URL and region, then an account and role | [Browser sign-in](./connections.md#browser), renewed automatically. |
 
 Connections use the supplied credentials. They do not automatically load local AWS profiles, SSO sessions, or instance roles, and do not provide automatic AssumeRole refresh. Use **Replace credential** after temporary credentials expire, keeping the original cloud identity.
+
+IAM Identity Center sign-in runs its own authorization rather than reading the AWS CLI's cached session: Steward registers a public client with your directory, signs you in through the browser, and exchanges the result for the selected role's temporary credentials, refreshing them as they expire. The connection reads what that role allows. The client registration expires after about ninety days, after which the connection asks to be authorized again. The browser and the Steward server must be on the same machine.
 
 The current integration targets the commercial AWS partition. Identity partitions and endpoints for AWS China and GovCloud are not yet adapted.
 

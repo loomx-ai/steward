@@ -17,7 +17,7 @@ Steward 会验证项目访问权限和资源盘点权限。连接验证成功不
 
 如需管理 Cloud Identity 身份组，请填写可选的**组目录**，例如 `customers/C01234567` 或 `identitysources/source-1`，并启用 Cloud Identity API。服务账号还需要对应目录的组管理权限；项目权限本身不足以授权。Google 支持[无需全域委派的服务账号 Groups Admin 配置](https://docs.cloud.google.com/identity/docs/how-to/setup)。扫描时包含全局范围；更换目录或失去可见性不会把旧观测误标为已删除。
 
-Steward 支持标准 Google Cloud 端点的服务账号 JSON 密钥，不会使用机器上已有的 `gcloud` 凭据或元数据服务凭据。参阅 Google 的[服务账号密钥管理建议](https://docs.cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys)和[Cloud Asset Inventory 列表权限](https://docs.cloud.google.com/asset-inventory/docs/reference/rest/v1/assets/list)。
+Steward 支持标准 Google Cloud 端点的服务账号 JSON 密钥，也支持[浏览器登录](./connections.md#browser)——授权你本人的 Google 账号后，从它能访问的项目中选择一个。浏览器登录走的是 Steward 自己发起的授权，而不是读取机器上已有的凭据：Steward 不会使用已有的 `gcloud` 凭据或元数据服务凭据。这样建立的连接只能读到你账号能读的内容，需要长期稳定、无人值守的权限范围时，服务账号仍然更合适。参阅 Google 的[服务账号密钥管理建议](https://docs.cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys)和[Cloud Asset Inventory 列表权限](https://docs.cloud.google.com/asset-inventory/docs/reference/rest/v1/assets/list)。
 
 管理层级防火墙策略时，还需在连接中填写可选的**防火墙范围**，例如 `organizations/123` 或 `folders/456`。该设置明确纳入对应组织或文件夹及其下级文件夹中的防火墙策略；项目访问权限不会自动启用此范围。服务账号需具备该层级的 Resource Manager 读取权限和原生防火墙策略权限，扫描时需包含全局范围。移除或修改此设置不会把历史策略记录判为已删除，旧清理计划也需重新审查。
 

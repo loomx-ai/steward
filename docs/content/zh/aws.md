@@ -14,8 +14,11 @@ Steward 使用当前连接的凭证访问一个 AWS 账号。每个已支持的�
 | --- | --- | --- |
 | Access Key | Access Key ID、Secret Access Key | 为专用 IAM 身份配置的访问密钥。 |
 | 临时凭证 | Access Key ID、Secret Access Key、Session Token、到期时间 | 从已授权会话获得的完整临时凭证。 |
+| IAM Identity Center | 起始 URL 和区域，登录后再选账号和角色 | [浏览器登录](./connections.md#browser)，自动续期。 |
 
 当前连接使用显式填写的凭证，不自动读取本机 AWS profile、SSO 会话或实例角色，也不提供自动 AssumeRole 刷新。临时凭证过期后，使用「替换凭证」更新；新凭证应保持原来的云身份。
+
+IAM Identity Center 登录走的是 Steward 自己发起的授权，而不是读取 AWS CLI 缓存的会话：Steward 会向你的目录注册一个公共客户端，引导你在浏览器中登录，再把结果换成所选角色的临时凭证，并在到期时自动刷新。连接的可见范围就是该角色的权限。客户端注册约九十天后过期，届时连接会提示重新授权。浏览器与 Steward 服务器必须在同一台机器上。
 
 当前实现面向 AWS 商业分区。中国区和 GovCloud 的身份分区与端点尚未适配，不应按普通商业区连接使用。
 
