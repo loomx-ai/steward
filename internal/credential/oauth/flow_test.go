@@ -38,6 +38,8 @@ type driverStub struct {
 
 func (d *driverStub) Provider() asset.Provider { return asset.ProviderAliCloud }
 
+func (d *driverStub) CallbackPath() string { return "/cli/callback" }
+
 func (d *driverStub) Authorize(
 	_ context.Context,
 	params map[string]string,

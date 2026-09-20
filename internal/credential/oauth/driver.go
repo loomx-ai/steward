@@ -46,6 +46,11 @@ type Session interface {
 // Driver is the cloud-specific half of a browser authorization.
 type Driver interface {
 	Provider() asset.Provider
+	// CallbackPath is the loopback path the provider will redirect to. Every
+	// cloud matches the redirect URI it was given against what its client is
+	// allowed to use, and they do not agree on how much of the URI has to
+	// match, so the path is the driver's to state rather than the manager's.
+	CallbackPath() string
 	// Authorize validates the operator-supplied parameters and builds the
 	// authorization request. A driver that registers a client dynamically does
 	// it here, so a registration failure never opens a browser window.

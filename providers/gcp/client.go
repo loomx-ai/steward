@@ -21,6 +21,7 @@ import (
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/credential/oauth"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 	"github.com/loomx-ai/steward/internal/workloadidentity"
 	"golang.org/x/oauth2"
@@ -59,7 +60,13 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 		}
 		return &client{project: v["project_id"], email: v["service_account_email"], firewallParent: v["firewall_policy_parent"], identityParent: v["identity_group_parent"], fingerprint: sha256.Sum256([]byte(credential.Dynamic.Key)), http: &http.Client{Transport: &workloadidentity.Transport{Base: transport, Credential: credential.Dynamic}, Timeout: 60 * time.Second, CheckRedirect: noRedirect}}, nil
 	}
-	if credential.Type != asset.CredentialGCPServiceAccount || (credential.ExpiresAt != nil && !credential.ExpiresAt.After(time.Now())) {
+	if credential.ExpiresAt != nil && !credential.ExpiresAt.After(time.Now()) {
+		return invalid()
+	}
+	if credential.Type == asset.CredentialGCPOAuth {
+		return oauthClient(credential, transport)
+	}
+	if credential.Type != asset.CredentialGCPServiceAccount {
 		return invalid()
 	}
 	raw := credential.Values["service_account_json"]
@@ -112,8 +119,57 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	// token endpoint, credential file, executable, impersonation URL, or universe.
 	config := jwt.Config{Email: key.Email, PrivateKey: []byte(key.PrivateKey), PrivateKeyID: key.PrivateKeyID, TokenURL: tokenURL, Scopes: []string{"https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/userinfo.email"}}
 	return &client{project: project, email: key.Email, firewallParent: firewallParent, identityParent: identityParent, fingerprint: sha256.Sum256([]byte(project + "\x00" + raw + "\x00" + firewallParent + "\x00" + identityParent)), http: &http.Client{
-		Transport: &tokenTransport{base: transport, config: config}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
+		Transport: &tokenTransport{base: transport, source: config.TokenSource}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
 	}}, nil
+}
+
+// oauthClient builds a client for a browser authorization. Google does not
+// rotate an installed application's refresh token, so nothing has to be written
+// back: the token source exchanges it for a fresh access token whenever the
+// cached one expires, exactly as the service account path does.
+func oauthClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {
+	invalid := func() (*client, error) {
+		return nil, contracts.NewCredentialValidationError(
+			"credential_fields_invalid",
+			"A Google Cloud browser authorization and project ID are required.",
+			nil,
+		)
+	}
+	values := credential.Values
+	refreshToken := strings.TrimSpace(values[oauth.RefreshTokenKey])
+	project := strings.TrimSpace(values["project_id"])
+	email := strings.TrimSpace(values["principal_email"])
+	if refreshToken == "" || len(refreshToken) > 8<<10 ||
+		!projectPattern.MatchString(project) || strings.Count(email, "@") != 1 {
+		return invalid()
+	}
+	firewallParent := strings.TrimSpace(values["firewall_policy_parent"])
+	if firewallParent != "" && !firewallContainerName(firewallParent) {
+		return nil, contracts.NewCredentialValidationError("credential_fields_invalid", "Firewall policy scope must be organizations/ID or folders/ID.", nil)
+	}
+	identityParent := strings.TrimSpace(values["identity_group_parent"])
+	if identityParent != "" && !identityParentValid(identityParent) {
+		return nil, contracts.NewCredentialValidationError("credential_fields_invalid", "Identity group scope must be customers/CUSTOMER_ID or identitysources/ID.", nil)
+	}
+	config := oauth2.Config{
+		ClientID:     oauthClientID,
+		ClientSecret: oauthClientSecret,
+		Endpoint:     oauth2.Endpoint{TokenURL: tokenURL, AuthStyle: oauth2.AuthStyleInParams},
+		Scopes:       oauthScopes,
+	}
+	source := func(ctx context.Context) oauth2.TokenSource {
+		return config.TokenSource(ctx, &oauth2.Token{RefreshToken: refreshToken})
+	}
+	return &client{
+		project:        project,
+		email:          email,
+		firewallParent: firewallParent,
+		identityParent: identityParent,
+		fingerprint:    sha256.Sum256([]byte(project + "\x00" + email + "\x00" + refreshToken + "\x00" + firewallParent + "\x00" + identityParent)),
+		http: &http.Client{
+			Transport: &tokenTransport{base: transport, source: source}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
+		},
+	}, nil
 }
 
 func noRedirect(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
@@ -122,7 +178,7 @@ func noRedirect(*http.Request, []*http.Request) error { return http.ErrUseLastRe
 // cached client must never retain the context of its initial validation request.
 type tokenTransport struct {
 	base   http.RoundTripper
-	config jwt.Config
+	source func(context.Context) oauth2.TokenSource
 	mu     sync.Mutex
 	token  *oauth2.Token
 }
@@ -147,12 +203,12 @@ func (t *tokenTransport) accessToken(ctx context.Context) (*oauth2.Token, error)
 	if !token.Valid() {
 		ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
-		// jwt.TokenSource currently calls Client.PostForm without a context.
+		// The oauth2 token sources call Client.PostForm without a context.
 		// Bind the actual exchange request at the transport boundary as well.
 		httpClient := &http.Client{Transport: contextTransport{context: ctx, base: t.base}, CheckRedirect: noRedirect}
 		ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
 		var err error
-		token, err = t.config.TokenSource(ctx).Token()
+		token, err = t.source(ctx).Token()
 		if err != nil {
 			return nil, err
 		}

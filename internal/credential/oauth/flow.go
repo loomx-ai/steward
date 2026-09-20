@@ -22,7 +22,6 @@ const (
 	loopbackPortStart = 12345
 	loopbackPortEnd   = 12349
 	flowTTL           = 5 * time.Minute
-	callbackPath      = "/cli/callback"
 )
 
 type flow struct {
@@ -128,6 +127,10 @@ func (m *FlowManager) Start(
 	}
 	challengeBytes := sha256.Sum256([]byte(verifier))
 	port := listener.Addr().(*net.TCPAddr).Port
+	callbackPath := m.driver.CallbackPath()
+	if !strings.HasPrefix(callbackPath, "/") {
+		callbackPath = "/" + callbackPath
+	}
 	redirectURI := "http://127.0.0.1:" + strconv.Itoa(port) + callbackPath
 	authorization, err := m.driver.Authorize(ctx, params, Request{
 		RedirectURI:   redirectURI,

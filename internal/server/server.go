@@ -142,6 +142,7 @@ func Run(ctx context.Context, config Config) error {
 	if authMode != "cloud" {
 		for _, driver := range []oauth.Driver{
 			alicloud.NewOAuthDriver(),
+			gcp.NewOAuthDriver(),
 		} {
 			manager := oauth.NewFlowManager(driver)
 			provider := driver.Provider()

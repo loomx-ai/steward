@@ -41,12 +41,20 @@ func (r *Runtime) Bundle() spec.Bundle {
 	return cloned
 }
 func (r *Runtime) CredentialSchemas() []contracts.CredentialSchema {
-	return []contracts.CredentialSchema{{Type: asset.CredentialGCPServiceAccount, LabelKey: "credentials.gcpServiceAccount", Fields: []contracts.CredentialField{
-		{Key: "project_id", LabelKey: "credentials.projectId", InputType: "text", Required: true},
-		{Key: "service_account_json", LabelKey: "credentials.serviceAccountJson", InputType: "textarea", Required: true, Secret: true},
-		{Key: "identity_group_parent", LabelKey: "credentials.identityGroupParent", InputType: "text"},
-		{Key: "firewall_policy_parent", LabelKey: "credentials.firewallPolicyParent", InputType: "text"},
-	}}}
+	return []contracts.CredentialSchema{
+		{Type: asset.CredentialGCPServiceAccount, LabelKey: "credentials.gcpServiceAccount", Fields: []contracts.CredentialField{
+			{Key: "project_id", LabelKey: "credentials.projectId", InputType: "text", Required: true},
+			{Key: "service_account_json", LabelKey: "credentials.serviceAccountJson", InputType: "textarea", Required: true, Secret: true},
+			{Key: "identity_group_parent", LabelKey: "credentials.identityGroupParent", InputType: "text"},
+			{Key: "firewall_policy_parent", LabelKey: "credentials.firewallPolicyParent", InputType: "text"},
+		}},
+		// The project is not a field here: a browser authorization lists the
+		// projects the signed-in identity reaches and the operator picks one.
+		{Type: asset.CredentialGCPOAuth, LabelKey: "credentials.gcpOAuth", Flow: "browser_oauth", Fields: []contracts.CredentialField{
+			{Key: "identity_group_parent", LabelKey: "credentials.identityGroupParent", InputType: "text"},
+			{Key: "firewall_policy_parent", LabelKey: "credentials.firewallPolicyParent", InputType: "text"},
+		}},
+	}
 }
 func (r *Runtime) InventorySources() []contracts.InventorySource {
 	return []contracts.InventorySource{
