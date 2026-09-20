@@ -21,6 +21,37 @@ navTitle: "配置参考"
 
 当 `LC_ALL`、`LC_MESSAGES` 或 `LANG` 为中文语言环境时，命令行显示中文，否则显示英文。
 
+## 版本检查
+
+Steward 会向 `checkpoint.loomx.ai` 询问是否有新版本、以及当前版本是否涉及安全公告。
+`steward version` 会展示结果，任何命令都会展示安全公告，常驻服务每天再问一次。
+
+请求只携带四项内容，没有其它信息：
+
+| 内容 | 示例 |
+| --- | --- |
+| 当前版本 | `0.4.1` |
+| 操作系统 | `linux` |
+| 架构 | `amd64` |
+| 签名 | `4f0b…`，保存在 `~/.steward/checkpoint_signature` 的随机 UUID |
+
+签名用于把同一个安装只统计一次、并避免重复推送同一条公告。它是随机生成的，不包含
+任何与你、这台机器或网络相关的信息；删除该文件即可换一个新的。资源清单、云账号连接、
+凭证、扫描结果以及你执行了哪些命令，都不会上报。
+
+结果缓存在 `~/.steward/checkpoint_cache`，有效期一天——无论执行多少命令，一台机器
+每天最多访问该服务一次。请求 3 秒超时，失败时静默忽略，没有任何命令依赖它。
+
+| 变量 | 用途 / 默认值 |
+| --- | --- |
+| `STEWARD_CHECKPOINT_DISABLE` | 设为 `0` 以外的任意值即完全关闭检查 |
+| `DO_NOT_TRACK` | 同样生效 |
+| `STEWARD_CHECKPOINT_SIGNATURE_DISABLE` | 继续检查，但不发送签名 |
+| `STEWARD_CHECKPOINT_URL` | 服务地址；默认 `https://checkpoint.loomx.ai` |
+| `STEWARD_CHECKPOINT_TIMEOUT` | 请求超时，Go duration 格式；默认 `3s` |
+
+`steward update` 直接从 GitHub releases 下载，关闭检查后升级依然可用。
+
 
 
 [网络访问与认证配置 →](./deployment.md#network)

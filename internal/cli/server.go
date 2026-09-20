@@ -90,6 +90,7 @@ func newServerStartCommand(version string) *cobra.Command {
 			}
 			ctx, stop := signal.NotifyContext(cmd.Context(), os.Interrupt, syscall.SIGTERM)
 			defer stop()
+			watchReleases(ctx, version)
 			status := ServerStatus{
 				PID:       os.Getpid(),
 				Addr:      addr,

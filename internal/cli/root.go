@@ -13,6 +13,7 @@ func NewRootCommand(version string) *cobra.Command {
 	}
 	cmd.AddCommand(newServerCommand(version))
 	cmd.AddCommand(newUpdateCommand(version))
+	cmd.AddCommand(newVersionCommand(version))
 	localizeCobra(cmd)
 	return cmd
 }

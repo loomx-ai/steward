@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -10,7 +11,13 @@ import (
 var version = "dev"
 
 func main() {
-	if err := cli.NewRootCommand(version).Execute(); err != nil {
+	ctx := context.Background()
+	// Ask about newer releases and advisories while the command runs; the
+	// answer is only ever reported once the command is done.
+	cli.StartReleaseCheck(ctx, version)
+	err := cli.NewRootCommand(version).ExecuteContext(ctx)
+	cli.ReportSecurityAlerts(os.Stderr)
+	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

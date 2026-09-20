@@ -21,6 +21,42 @@ navTitle: "Configuration"
 
 The command line uses Chinese when `LC_ALL`, `LC_MESSAGES`, or `LANG` selects a Chinese locale, and English otherwise.
 
+## Release checks
+
+Steward asks `checkpoint.loomx.ai` whether a newer release exists and whether a
+security advisory applies to the running build. `steward version` reports the
+answer, any command reports an advisory, and a running server checks again once
+a day.
+
+The request carries four values and nothing else:
+
+| Value | Example |
+| --- | --- |
+| Running version | `0.4.1` |
+| Operating system | `linux` |
+| Architecture | `amd64` |
+| Signature | `4f0b…` a random UUID kept in `~/.steward/checkpoint_signature` |
+
+The signature counts one installation once and keeps an advisory from repeating.
+It is random: nothing about you, the machine, or the network goes into it.
+Delete the file to be issued a new one. Your inventory, connections, credentials,
+scan results, and the commands you run are never sent.
+
+The answer is cached in `~/.steward/checkpoint_cache` for a day, so a machine
+reaches the service at most once a day however many commands it runs. A check
+times out after three seconds and a failure is silent — no command depends on it.
+
+| Variable | Purpose / default |
+| --- | --- |
+| `STEWARD_CHECKPOINT_DISABLE` | Any value but `0` stops the check entirely |
+| `DO_NOT_TRACK` | Honoured the same way |
+| `STEWARD_CHECKPOINT_SIGNATURE_DISABLE` | Keep checking, but send no signature |
+| `STEWARD_CHECKPOINT_URL` | Endpoint to ask; `https://checkpoint.loomx.ai` |
+| `STEWARD_CHECKPOINT_TIMEOUT` | Request timeout as a Go duration; `3s` |
+
+`steward update` downloads from GitHub releases directly, so upgrading keeps
+working with checks switched off.
+
 
 
 [Network access and authentication →](./deployment.md#network)
