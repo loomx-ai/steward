@@ -97,6 +97,19 @@ var (
 	platformPattern  = regexp.MustCompile(`^[a-z0-9]{1,16}$`)
 )
 
+// normalizeVersion trims the leading v a tag carries and reports any build
+// this service cannot place on the release line — a `git describe` string from
+// a local build, or an empty ldflags stamp — as "dev". A version string is
+// never a reason to fail a check: an unrecognizable one is simply not a
+// release, which is what "dev" says.
+func normalizeVersion(version string) string {
+	version = strings.TrimPrefix(strings.TrimSpace(version), "v")
+	if !versionPattern.MatchString(version) {
+		return "dev"
+	}
+	return version
+}
+
 func (p Params) getenv(name string) string {
 	if p.Getenv != nil {
 		return p.Getenv(name)
@@ -155,9 +168,7 @@ func Check(ctx context.Context, params Params) (*Response, error) {
 	if !platformPattern.MatchString(params.OS) || !platformPattern.MatchString(params.Arch) {
 		return nil, fmt.Errorf("invalid platform %s_%s", params.OS, params.Arch)
 	}
-	if !versionPattern.MatchString(params.Version) {
-		return nil, fmt.Errorf("invalid version %q", params.Version)
-	}
+	params.Version = normalizeVersion(params.Version)
 
 	cachePath := params.path(CacheFileName)
 	if response := readCache(cachePath, params.Version, params.cacheDuration(), params.now()); response != nil {

@@ -261,6 +261,32 @@ func TestCheckWorksWithoutADataDirectory(t *testing.T) {
 	}
 }
 
+func TestCheckNormalizesTheVersionItReports(t *testing.T) {
+	tests := map[string]string{
+		"0.4.1":             "0.4.1",
+		"v0.4.1":            "0.4.1",
+		"1.0.0-rc.1":        "1.0.0-rc.1",
+		"dev":               "dev",
+		"v0.2.1-8-g9b930da": "0.2.1-8-g9b930da",
+		// A local `make build` with no tag in reach, and an unstamped build.
+		"9b930da": "dev",
+		"":        "dev",
+	}
+	for stamped, want := range tests {
+		t.Run(stamped, func(t *testing.T) {
+			server, queries, _ := answer(t, Response{Product: "steward"})
+			p := params(t, server.URL, nil)
+			p.Version = stamped
+			if _, err := Check(context.Background(), p); err != nil {
+				t.Fatalf("Check() with version %q: %v", stamped, err)
+			}
+			if got := (*queries)[0].Get("version"); got != want {
+				t.Errorf("reported version %q, want %q", got, want)
+			}
+		})
+	}
+}
+
 func TestStartAlwaysAnswers(t *testing.T) {
 	p := params(t, "https://checkpoint.invalid", nil)
 	p.Timeout = 50 * time.Millisecond
