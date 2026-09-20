@@ -270,6 +270,12 @@ export interface OAuthFlow {
   error_code?: string;
 }
 
+export interface OAuthTarget {
+  id: string;
+  name: string;
+  description?: string;
+}
+
 export interface CredentialSummary {
   type: string;
   expires_at?: string;

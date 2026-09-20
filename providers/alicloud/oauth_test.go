@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/credential/oauth"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -151,7 +152,7 @@ func (s *oauthCredentialStoreStub) updateCount() int {
 }
 
 func cloneTestOAuthCredential(value contracts.Credential) contracts.Credential {
-	value.Values = cloneOAuthValues(value.Values)
+	value.Values = oauth.CloneValues(value.Values)
 	return value
 }
 
@@ -162,14 +163,14 @@ func oauthCredentialFixture(now time.Time) contracts.Credential {
 		Site:         asset.ConnectionSiteINTL,
 		Version:      "version-original",
 		Values: map[string]string{
-			oauthSiteKey:              string(asset.ConnectionSiteINTL),
-			oauthAccessTokenKey:       "access-old",
-			oauthRefreshTokenKey:      "refresh-old",
-			oauthAccessTokenExpireKey: formatOAuthUnix(now.Add(time.Hour)),
-			"access_key_id":           "sts-old-id",
-			"access_key_secret":       "sts-old-secret",
-			"security_token":          "sts-old-token",
-			oauthSTSExpireKey:         formatOAuthUnix(now.Add(time.Hour)),
+			oauthSiteKey:               string(asset.ConnectionSiteINTL),
+			oauth.AccessTokenKey:       "access-old",
+			oauth.RefreshTokenKey:      "refresh-old",
+			oauth.AccessTokenExpireKey: oauth.FormatUnix(now.Add(time.Hour)),
+			"access_key_id":            "sts-old-id",
+			"access_key_secret":        "sts-old-secret",
+			"security_token":           "sts-old-token",
+			oauthSTSExpireKey:          oauth.FormatUnix(now.Add(time.Hour)),
 		},
 	}
 }
@@ -178,9 +179,9 @@ func TestOAuthMaterializerReusesValidSTSWithoutNetworkOrPersistence(t *testing.T
 	now := time.Date(2026, 7, 27, 16, 0, 0, 0, time.UTC)
 	api := &oauthAPIStub{}
 	updater := &credentialUpdaterStub{err: errors.New("updater must not be called")}
-	materializer := newOAuthMaterializer(api, &credentialSourceStub{}, updater, func() time.Time { return now })
+	materializer := oauth.NewMaterializer(oauthLabel, &oauthRefresher{api: api}, &credentialSourceStub{}, updater, func() time.Time { return now })
 
-	got, err := materializer.materialize(context.Background(), oauthCredentialFixture(now))
+	got, err := materializer.Materialize(context.Background(), oauthCredentialFixture(now))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -207,8 +208,8 @@ func TestOAuthMaterializerRefreshesTokensAndSTSWithRotation(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			expected := oauthCredentialFixture(now)
-			expected.Values[oauthAccessTokenExpireKey] = formatOAuthUnix(now.Add(-time.Minute))
-			expected.Values[oauthSTSExpireKey] = formatOAuthUnix(now.Add(-time.Minute))
+			expected.Values[oauth.AccessTokenExpireKey] = oauth.FormatUnix(now.Add(-time.Minute))
+			expected.Values[oauthSTSExpireKey] = oauth.FormatUnix(now.Add(-time.Minute))
 			api := &oauthAPIStub{
 				refresh: oauthTokens{
 					AccessToken: "access-new", RefreshToken: test.rotated, ExpiresAt: now.Add(30 * time.Minute),
@@ -219,9 +220,9 @@ func TestOAuthMaterializerRefreshesTokensAndSTSWithRotation(t *testing.T) {
 				},
 			}
 			updater := &credentialUpdaterStub{}
-			materializer := newOAuthMaterializer(api, &credentialSourceStub{value: expected}, updater, func() time.Time { return now })
+			materializer := oauth.NewMaterializer(oauthLabel, &oauthRefresher{api: api}, &credentialSourceStub{value: expected}, updater, func() time.Time { return now })
 
-			got, err := materializer.materialize(context.Background(), expected)
+			got, err := materializer.Materialize(context.Background(), expected)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -230,8 +231,8 @@ func TestOAuthMaterializerRefreshesTokensAndSTSWithRotation(t *testing.T) {
 			}
 			if updater.replacement.Type != asset.CredentialAliCloudOAuth ||
 				updater.replacement.ExpiresAt != nil ||
-				updater.replacement.Values[oauthRefreshTokenKey] != test.wantRefreshToken ||
-				updater.replacement.Values[oauthAccessTokenKey] != "access-new" ||
+				updater.replacement.Values[oauth.RefreshTokenKey] != test.wantRefreshToken ||
+				updater.replacement.Values[oauth.AccessTokenKey] != "access-new" ||
 				updater.replacement.Values["access_key_id"] != "sts-new-id" {
 				t.Fatalf("persisted replacement = %#v", updater.replacement)
 			}
@@ -248,14 +249,14 @@ func TestOAuthMaterializerRefreshesTokensAndSTSWithRotation(t *testing.T) {
 func TestOAuthMaterializerExchangesSTSWithoutRefreshingValidAccessToken(t *testing.T) {
 	now := time.Date(2026, 7, 27, 16, 0, 0, 0, time.UTC)
 	expected := oauthCredentialFixture(now)
-	expected.Values[oauthSTSExpireKey] = formatOAuthUnix(now.Add(-time.Minute))
+	expected.Values[oauthSTSExpireKey] = oauth.FormatUnix(now.Add(-time.Minute))
 	api := &oauthAPIStub{exchange: oauthSTS{
 		AccessKeyID: "sts-new-id", AccessKeySecret: "sts-new-secret", SecurityToken: "sts-new-token",
 		ExpiresAt: now.Add(15 * time.Minute),
 	}}
-	materializer := newOAuthMaterializer(api, &credentialSourceStub{value: expected}, &credentialUpdaterStub{}, func() time.Time { return now })
+	materializer := oauth.NewMaterializer(oauthLabel, &oauthRefresher{api: api}, &credentialSourceStub{value: expected}, &credentialUpdaterStub{}, func() time.Time { return now })
 
-	if _, err := materializer.materialize(context.Background(), expected); err != nil {
+	if _, err := materializer.Materialize(context.Background(), expected); err != nil {
 		t.Fatal(err)
 	}
 	if len(api.calls) != 1 || api.calls[0] != "exchange:access-old" {
@@ -266,7 +267,7 @@ func TestOAuthMaterializerExchangesSTSWithoutRefreshingValidAccessToken(t *testi
 func TestOAuthMaterializerReusesConcurrentWinnerAndRejectsUserReplacement(t *testing.T) {
 	now := time.Date(2026, 7, 27, 16, 0, 0, 0, time.UTC)
 	expected := oauthCredentialFixture(now)
-	expected.Values[oauthSTSExpireKey] = formatOAuthUnix(now.Add(-time.Minute))
+	expected.Values[oauthSTSExpireKey] = oauth.FormatUnix(now.Add(-time.Minute))
 	api := &oauthAPIStub{exchange: oauthSTS{
 		AccessKeyID: "loser-id", AccessKeySecret: "loser-secret", SecurityToken: "loser-token",
 		ExpiresAt: now.Add(15 * time.Minute),
@@ -276,8 +277,8 @@ func TestOAuthMaterializerReusesConcurrentWinnerAndRejectsUserReplacement(t *tes
 	winner.Version = "version-winner"
 	winner.Values["access_key_id"] = "winner-id"
 	source := &credentialSourceStub{value: winner}
-	materializer := newOAuthMaterializer(api, source, &credentialUpdaterStub{err: persistence.ErrConflict}, func() time.Time { return now })
-	got, err := materializer.materialize(context.Background(), expected)
+	materializer := oauth.NewMaterializer(oauthLabel, &oauthRefresher{api: api}, source, &credentialUpdaterStub{err: persistence.ErrConflict}, func() time.Time { return now })
+	got, err := materializer.Materialize(context.Background(), expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -291,7 +292,7 @@ func TestOAuthMaterializerReusesConcurrentWinnerAndRejectsUserReplacement(t *tes
 			"access_key_id": "user-id", "access_key_secret": "user-secret",
 		},
 	}
-	if _, err := materializer.materialize(context.Background(), expected); credentialValidationCode(err) != "credential_refresh_conflict" {
+	if _, err := materializer.Materialize(context.Background(), expected); credentialValidationCode(err) != "credential_refresh_conflict" {
 		t.Fatalf("user replacement error = %v", err)
 	}
 }
@@ -314,9 +315,9 @@ func TestOAuthMaterializerRequiresMatchingSiteAndReauthenticationToken(t *testin
 		{
 			name: "missing refresh token",
 			mutate: func(value contracts.Credential) contracts.Credential {
-				value.Values[oauthAccessTokenExpireKey] = formatOAuthUnix(now.Add(-time.Minute))
-				value.Values[oauthSTSExpireKey] = formatOAuthUnix(now.Add(-time.Minute))
-				delete(value.Values, oauthRefreshTokenKey)
+				value.Values[oauth.AccessTokenExpireKey] = oauth.FormatUnix(now.Add(-time.Minute))
+				value.Values[oauthSTSExpireKey] = oauth.FormatUnix(now.Add(-time.Minute))
+				delete(value.Values, oauth.RefreshTokenKey)
 				return value
 			},
 			wantCode: "oauth_reauthentication_required",
@@ -324,8 +325,8 @@ func TestOAuthMaterializerRequiresMatchingSiteAndReauthenticationToken(t *testin
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			value := test.mutate(oauthCredentialFixture(now))
-			materializer := newOAuthMaterializer(&oauthAPIStub{}, &credentialSourceStub{value: value}, &credentialUpdaterStub{}, func() time.Time { return now })
-			if _, err := materializer.materialize(context.Background(), value); credentialValidationCode(err) != test.wantCode {
+			materializer := oauth.NewMaterializer(oauthLabel, &oauthRefresher{api: &oauthAPIStub{}}, &credentialSourceStub{value: value}, &credentialUpdaterStub{}, func() time.Time { return now })
+			if _, err := materializer.Materialize(context.Background(), value); credentialValidationCode(err) != test.wantCode {
 				t.Fatalf("materialize() error = %v, want %q", err, test.wantCode)
 			}
 		})
@@ -335,8 +336,8 @@ func TestOAuthMaterializerRequiresMatchingSiteAndReauthenticationToken(t *testin
 func TestOAuthMaterializerRefreshesBeforeExpiryAndSerializesConnection(t *testing.T) {
 	now := time.Date(2026, 8, 4, 16, 20, 0, 0, time.UTC)
 	expected := oauthCredentialFixture(now)
-	expected.Values[oauthAccessTokenExpireKey] = formatOAuthUnix(now.Add(4 * time.Minute))
-	expected.Values[oauthSTSExpireKey] = formatOAuthUnix(now.Add(4 * time.Minute))
+	expected.Values[oauth.AccessTokenExpireKey] = oauth.FormatUnix(now.Add(4 * time.Minute))
+	expected.Values[oauthSTSExpireKey] = oauth.FormatUnix(now.Add(4 * time.Minute))
 	refreshSeen := make(chan struct{}, 1)
 	refreshWait := make(chan struct{})
 	api := &oauthAPIStub{
@@ -352,7 +353,7 @@ func TestOAuthMaterializerRefreshesBeforeExpiryAndSerializesConnection(t *testin
 		refreshWait: refreshWait,
 	}
 	store := &oauthCredentialStoreStub{value: cloneTestOAuthCredential(expected)}
-	materializer := newOAuthMaterializer(api, store, store, func() time.Time { return now })
+	materializer := oauth.NewMaterializer(oauthLabel, &oauthRefresher{api: api}, store, store, func() time.Time { return now })
 
 	const callers = 8
 	results := make(chan contracts.Credential, callers)
@@ -362,7 +363,7 @@ func TestOAuthMaterializerRefreshesBeforeExpiryAndSerializesConnection(t *testin
 	for range callers {
 		go func() {
 			defer wait.Done()
-			result, err := materializer.materialize(context.Background(), cloneTestOAuthCredential(expected))
+			result, err := materializer.Materialize(context.Background(), cloneTestOAuthCredential(expected))
 			results <- result
 			errs <- err
 		}()
@@ -401,22 +402,23 @@ func TestOAuthMaterializerRefreshesBeforeExpiryAndSerializesConnection(t *testin
 func TestOAuthMaterializerUsesPersistedWinnerWhenRotatedTokenRefreshFails(t *testing.T) {
 	now := time.Date(2026, 8, 4, 16, 20, 0, 0, time.UTC)
 	expected := oauthCredentialFixture(now)
-	expected.Values[oauthAccessTokenExpireKey] = formatOAuthUnix(now.Add(-time.Minute))
-	expected.Values[oauthSTSExpireKey] = formatOAuthUnix(now.Add(-time.Minute))
+	expected.Values[oauth.AccessTokenExpireKey] = oauth.FormatUnix(now.Add(-time.Minute))
+	expected.Values[oauthSTSExpireKey] = oauth.FormatUnix(now.Add(-time.Minute))
 	winner := oauthCredentialFixture(now)
 	winner.Version = "version-winner"
 	winner.Values["access_key_id"] = "winner-id"
 	source := &credentialSequenceSourceStub{
 		values: []contracts.Credential{expected, winner},
 	}
-	materializer := newOAuthMaterializer(
-		&oauthAPIStub{refreshErr: errors.New("rotated refresh token is no longer valid")},
+	materializer := oauth.NewMaterializer(
+		oauthLabel,
+		&oauthRefresher{api: &oauthAPIStub{refreshErr: errors.New("rotated refresh token is no longer valid")}},
 		source,
 		&credentialUpdaterStub{},
 		func() time.Time { return now },
 	)
 
-	got, err := materializer.materialize(context.Background(), expected)
+	got, err := materializer.Materialize(context.Background(), expected)
 	if err != nil {
 		t.Fatal(err)
 	}

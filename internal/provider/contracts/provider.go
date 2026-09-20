@@ -62,10 +62,37 @@ type OAuthFlowView struct {
 	ErrorCode        string          `json:"error_code,omitempty"`
 }
 
+// OAuthTarget is one cloud scope an authorized identity can be connected to:
+// an Alibaba Cloud site, a Google Cloud project, an Azure subscription, or an
+// AWS account and role. Providers whose authorization already names exactly one
+// scope return no targets at all.
+type OAuthTarget struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+}
+
+// OAuthFlowService drives one provider's browser authorization. Start takes the
+// parameters the provider's CredentialSchema declared as fields, which are
+// collected before the browser opens because a provider may need them to build
+// the authorization request. Targets is only readable once the flow is
+// authorized, and Consume seals the chosen target into a stored credential.
+//
+// Consume compares every key in expect against the credential it produced, so
+// replacing an existing connection's credential cannot silently rebind that
+// connection to a different cloud scope.
 type OAuthFlowService interface {
-	Start(context.Context, string, asset.ConnectionSite) (OAuthFlowView, error)
-	Get(context.Context, string, string) (OAuthFlowView, error)
-	Consume(context.Context, string, string, asset.ConnectionSite, func(Credential) error) error
+	Start(ctx context.Context, subject string, params map[string]string) (OAuthFlowView, error)
+	Get(ctx context.Context, subject string, id string) (OAuthFlowView, error)
+	Targets(ctx context.Context, subject string, id string) ([]OAuthTarget, error)
+	Consume(
+		ctx context.Context,
+		subject string,
+		id string,
+		targetID string,
+		expect map[string]string,
+		consume func(Credential) error,
+	) error
 }
 
 type OAuthFlowError struct {
@@ -184,6 +211,10 @@ type CredentialField struct {
 	Required  bool   `json:"required"`
 }
 
+// CredentialSchema describes one way to authenticate a connection. For a
+// "browser_oauth" flow the fields are collected before the browser opens and
+// are passed to OAuthFlowService.Start; everything the authorization itself
+// determines arrives later as an OAuthTarget instead of as a field.
 type CredentialSchema struct {
 	Type     asset.CredentialType `json:"type"`
 	LabelKey string               `json:"label_key"`

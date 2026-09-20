@@ -17,6 +17,7 @@ import (
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/credential/oauth"
 	"github.com/loomx-ai/steward/internal/provider/catalog"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 	"github.com/loomx-ai/steward/internal/provider/spec"
@@ -45,7 +46,7 @@ type providerRegion struct {
 type Runtime struct {
 	credentials              contracts.CredentialSource
 	factory                  clientFactory
-	oauth                    *oauthMaterializer
+	oauth                    *oauth.Materializer
 	oauthAPI                 oauthAPI
 	oauthNow                 func() time.Time
 	catalog                  catalog.Catalog
@@ -123,7 +124,13 @@ func newRuntime(credentials contracts.CredentialSource, factory clientFactory, o
 		runtime.oauthAPI = newOAuthClient(&http.Client{Timeout: 30 * time.Second}, runtime.oauthNow)
 	}
 	updater, _ := credentials.(contracts.CredentialUpdater)
-	runtime.oauth = newOAuthMaterializer(runtime.oauthAPI, credentials, updater, runtime.oauthNow)
+	runtime.oauth = oauth.NewMaterializer(
+		oauthLabel,
+		&oauthRefresher{api: runtime.oauthAPI},
+		credentials,
+		updater,
+		runtime.oauthNow,
+	)
 	return runtime, nil
 }
 
@@ -500,9 +507,13 @@ func (r *Runtime) materializeCredential(ctx context.Context, credential contract
 		return credential, nil
 	}
 	if r.oauth == nil {
-		return contracts.Credential{}, oauthRefreshUnavailable(nil)
+		return contracts.Credential{}, contracts.NewCredentialValidationError(
+			"credential_refresh_unavailable",
+			"The Alibaba Cloud OAuth credential could not be refreshed.",
+			nil,
+		)
 	}
-	return r.oauth.materialize(ctx, credential)
+	return r.oauth.Materialize(ctx, credential)
 }
 
 func LoadBundle() (spec.Bundle, error) {

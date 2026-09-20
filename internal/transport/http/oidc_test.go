@@ -65,7 +65,7 @@ func TestProvidersHideBrowserOAuthWithoutFlowService(t *testing.T) {
 	for _, enabled := range []bool{false, true} {
 		deps := Dependencies{Authenticator: auth, Providers: oauthProviders{}}
 		if enabled {
-			deps.OAuthFlows = oauthFlowsStub{}
+			deps.OAuthFlows = map[asset.Provider]contracts.OAuthFlowService{asset.ProviderAliCloud: oauthFlowsStub{}}
 		}
 		req := httptest.NewRequest("GET", "/api/providers", nil)
 		req.Header.Set("Authorization", "Bearer viewer")

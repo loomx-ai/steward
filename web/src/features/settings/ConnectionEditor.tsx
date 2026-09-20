@@ -264,22 +264,34 @@ function CreateConnectionForm({
       )}
       <CredentialTypeSelect schemas={schemas} value={type} onChange={setType} />
       {browserOAuth ? (
-        <OAuthCredentialAuthorization
-          key={`${provider}:${site}:${type}`}
-          site={site}
-          disabled={busy || !name.trim() || !site}
-          onAuthorized={async (flowID) =>
-            await onSubmit({
-              name: name.trim(),
-              provider,
-              site,
-              credential: {
-                type: schema.type,
-                values: { flow_id: flowID },
-              },
-            })
-          }
-        />
+        <>
+          <CredentialFields
+            schema={schema}
+            values={values}
+            onChange={setValues}
+          />
+          <OAuthCredentialAuthorization
+            provider={provider}
+            params={oauthStartParams(schema, site, values)}
+            disabled={
+              busy ||
+              !name.trim() ||
+              (sites.length > 0 && !site) ||
+              !oauthFieldsComplete(schema, values)
+            }
+            onAuthorized={async (flowID, targetID) =>
+              await onSubmit({
+                name: name.trim(),
+                provider,
+                ...(sites.length > 0 ? { site } : {}),
+                credential: {
+                  type: schema.type,
+                  values: oauthSelection(flowID, targetID),
+                },
+              })
+            }
+          />
+        </>
       ) : (
         <CredentialFields
           schema={schema}
@@ -390,17 +402,24 @@ function CredentialForm({
       )}
       <CredentialTypeSelect schemas={schemas} value={type} onChange={setType} />
       {browserOAuth ? (
-        <OAuthCredentialAuthorization
-          key={`${connection.id}:${connection.site}:${type}`}
-          site={connection.site ?? ""}
-          disabled={busy || !connection.site}
-          onAuthorized={async (flowID) =>
-            await onSubmit(connection.id, {
-              type: schema.type,
-              values: { flow_id: flowID },
-            })
-          }
-        />
+        <>
+          <CredentialFields
+            schema={schema}
+            values={values}
+            onChange={setValues}
+          />
+          <OAuthCredentialAuthorization
+            provider={connection.provider}
+            params={oauthStartParams(schema, connection.site ?? "", values)}
+            disabled={busy || !oauthFieldsComplete(schema, values)}
+            onAuthorized={async (flowID, targetID) =>
+              await onSubmit(connection.id, {
+                type: schema.type,
+                values: oauthSelection(flowID, targetID),
+              })
+            }
+          />
+        </>
       ) : (
         <>
           <CredentialFields
@@ -553,4 +572,39 @@ export function providerName(provider: string) {
       azure: "Microsoft Azure",
     }[provider] ?? provider
   );
+}
+
+// A browser authorization collects the provider's declared fields before the
+// browser opens, because a provider may need them to build the authorization
+// request at all. Everything the authorization itself determines arrives later
+// as a target, never as a field.
+function oauthStartParams(
+  schema: CredentialSchema | undefined,
+  site: string,
+  values: Record<string, string>,
+): Record<string, string> {
+  const params: Record<string, string> = site ? { site } : {};
+  for (const field of schema?.fields ?? []) {
+    const value = values[field.key]?.trim();
+    if (value) params[field.key] = value;
+  }
+  return params;
+}
+
+function oauthFieldsComplete(
+  schema: CredentialSchema | undefined,
+  values: Record<string, string>,
+): boolean {
+  return (schema?.fields ?? []).every(
+    (field) => !field.required || !!values[field.key]?.trim(),
+  );
+}
+
+function oauthSelection(
+  flowID: string,
+  targetID: string,
+): Record<string, string> {
+  return targetID
+    ? { flow_id: flowID, target_id: targetID }
+    : { flow_id: flowID };
 }

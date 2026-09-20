@@ -6,13 +6,18 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { getAliCloudOAuthFlow, startAliCloudOAuthFlow } from "@/api/client";
+import {
+  getOAuthFlow,
+  listOAuthFlowTargets,
+  startOAuthFlow,
+} from "@/api/client";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { OAuthCredentialAuthorization } from "./OAuthCredentialAuthorization";
 
 vi.mock("@/api/client", () => ({
-  getAliCloudOAuthFlow: vi.fn(),
-  startAliCloudOAuthFlow: vi.fn(),
+  getOAuthFlow: vi.fn(),
+  listOAuthFlowTargets: vi.fn(),
+  startOAuthFlow: vi.fn(),
 }));
 
 const pendingFlow = {
@@ -25,9 +30,16 @@ const pendingFlow = {
 
 beforeEach(() => {
   localStorage.setItem("steward.locale", "en-US");
+  // Radix Select scrolls the active option into view, which jsdom does not
+  // implement.
+  Object.defineProperties(Element.prototype, {
+    scrollIntoView: { configurable: true, value: vi.fn() },
+  });
   vi.useFakeTimers();
-  vi.mocked(startAliCloudOAuthFlow).mockReset().mockResolvedValue(pendingFlow);
-  vi.mocked(getAliCloudOAuthFlow).mockReset();
+  vi.mocked(startOAuthFlow).mockReset().mockResolvedValue(pendingFlow);
+  vi.mocked(getOAuthFlow).mockReset();
+  // Alibaba Cloud authorizes exactly one site, so it offers no target choice.
+  vi.mocked(listOAuthFlowTargets).mockReset().mockResolvedValue([]);
 });
 
 afterEach(() => {
@@ -39,7 +51,7 @@ it("opens Alibaba Cloud authorization and emits an authorized flow exactly once"
   const popup = {};
   const open = vi.fn(() => popup);
   vi.stubGlobal("open", open);
-  vi.mocked(getAliCloudOAuthFlow)
+  vi.mocked(getOAuthFlow)
     .mockResolvedValueOnce({ ...pendingFlow })
     .mockResolvedValueOnce({
       id: pendingFlow.id,
@@ -50,7 +62,8 @@ it("opens Alibaba Cloud authorization and emits an authorized flow exactly once"
   render(
     <LocaleProvider>
       <OAuthCredentialAuthorization
-        site="intl"
+        provider="alicloud"
+        params={{ site: "intl" }}
         disabled={false}
         onAuthorized={onAuthorized}
       />
@@ -58,26 +71,24 @@ it("opens Alibaba Cloud authorization and emits an authorized flow exactly once"
   );
 
   fireEvent.click(
-    screen.getByRole("button", { name: "Log in to Alibaba Cloud" }),
+    screen.getByRole("button", { name: "Sign in with your browser" }),
   );
   await act(async () => {
     await Promise.resolve();
     await Promise.resolve();
   });
-  expect(startAliCloudOAuthFlow).toHaveBeenCalledWith("intl");
+  expect(startOAuthFlow).toHaveBeenCalledWith("alicloud", { site: "intl" });
   expect(open).toHaveBeenCalledWith(
     pendingFlow.authorization_url,
     "_blank",
     "noopener,noreferrer",
   );
-  expect(
-    screen.getByText("Waiting for Alibaba Cloud authorization…"),
-  ).toBeVisible();
+  expect(screen.getByText("Waiting for browser authorization…")).toBeVisible();
 
   await act(async () => {
     await vi.runOnlyPendingTimersAsync();
   });
-  expect(getAliCloudOAuthFlow).toHaveBeenCalledTimes(1);
+  expect(getOAuthFlow).toHaveBeenCalledTimes(1);
   expect(onAuthorized).not.toHaveBeenCalled();
 
   await act(async () => {
@@ -85,15 +96,13 @@ it("opens Alibaba Cloud authorization and emits an authorized flow exactly once"
     await Promise.resolve();
   });
   expect(onAuthorized).toHaveBeenCalledTimes(1);
-  expect(onAuthorized).toHaveBeenCalledWith("oauth-flow-a");
-  expect(
-    screen.getByText("Alibaba Cloud authorization completed."),
-  ).toBeVisible();
+  expect(onAuthorized).toHaveBeenCalledWith("oauth-flow-a", "");
+  expect(screen.getByText("Authorization completed.")).toBeVisible();
 
   await act(async () => {
     await vi.advanceTimersByTimeAsync(2_000);
   });
-  expect(getAliCloudOAuthFlow).toHaveBeenCalledTimes(2);
+  expect(getOAuthFlow).toHaveBeenCalledTimes(2);
   expect(onAuthorized).toHaveBeenCalledTimes(1);
 });
 
@@ -102,11 +111,12 @@ it("shows a fallback authorization link when the popup is blocked", async () => 
     "open",
     vi.fn(() => null),
   );
-  vi.mocked(getAliCloudOAuthFlow).mockResolvedValue(pendingFlow);
+  vi.mocked(getOAuthFlow).mockResolvedValue(pendingFlow);
   render(
     <LocaleProvider>
       <OAuthCredentialAuthorization
-        site="cn"
+        provider="alicloud"
+        params={{ site: "cn" }}
         disabled={false}
         onAuthorized={vi.fn()}
       />
@@ -114,7 +124,7 @@ it("shows a fallback authorization link when the popup is blocked", async () => 
   );
 
   fireEvent.click(
-    screen.getByRole("button", { name: "Log in to Alibaba Cloud" }),
+    screen.getByRole("button", { name: "Sign in with your browser" }),
   );
   await act(async () => {
     await Promise.resolve();
@@ -128,12 +138,12 @@ it("shows a fallback authorization link when the popup is blocked", async () => 
   ).toHaveAttribute("rel", expect.stringContaining("noopener"));
 });
 
-it("stops polling on failure, site changes, and unmount without rendering secret fields", async () => {
+it("stops polling on failure, parameter changes, and unmount without rendering secret fields", async () => {
   vi.stubGlobal(
     "open",
     vi.fn(() => ({})),
   );
-  vi.mocked(getAliCloudOAuthFlow).mockResolvedValue({
+  vi.mocked(getOAuthFlow).mockResolvedValue({
     id: pendingFlow.id,
     status: "failed",
     expires_at: pendingFlow.expires_at,
@@ -142,14 +152,15 @@ it("stops polling on failure, site changes, and unmount without rendering secret
   const { rerender, unmount, container } = render(
     <LocaleProvider>
       <OAuthCredentialAuthorization
-        site="cn"
+        provider="alicloud"
+        params={{ site: "cn" }}
         disabled={false}
         onAuthorized={vi.fn()}
       />
     </LocaleProvider>,
   );
   fireEvent.click(
-    screen.getByRole("button", { name: "Log in to Alibaba Cloud" }),
+    screen.getByRole("button", { name: "Sign in with your browser" }),
   );
   await act(async () => {
     await Promise.resolve();
@@ -159,28 +170,27 @@ it("stops polling on failure, site changes, and unmount without rendering secret
     await vi.runOnlyPendingTimersAsync();
     await Promise.resolve();
   });
+  expect(screen.getByText("Authorization failed. Try again.")).toBeVisible();
   expect(
-    screen.getByText("Alibaba Cloud authorization failed. Try again."),
-  ).toBeVisible();
-  expect(
-    screen.getByRole("button", { name: "Log in to Alibaba Cloud" }),
+    screen.getByRole("button", { name: "Sign in with your browser" }),
   ).toBeEnabled();
   await act(async () => {
     await vi.advanceTimersByTimeAsync(1_000);
   });
-  expect(getAliCloudOAuthFlow).toHaveBeenCalledTimes(1);
+  expect(getOAuthFlow).toHaveBeenCalledTimes(1);
 
   rerender(
     <LocaleProvider>
       <OAuthCredentialAuthorization
-        site="intl"
+        provider="alicloud"
+        params={{ site: "intl" }}
         disabled={false}
         onAuthorized={vi.fn()}
       />
     </LocaleProvider>,
   );
   expect(
-    screen.queryByText("Alibaba Cloud authorization failed. Try again."),
+    screen.queryByText("Authorization failed. Try again."),
   ).not.toBeInTheDocument();
   expect(container.querySelectorAll("input")).toHaveLength(0);
   expect(container.textContent).not.toMatch(
@@ -190,7 +200,7 @@ it("stops polling on failure, site changes, and unmount without rendering secret
   await act(async () => {
     await vi.advanceTimersByTimeAsync(1_000);
   });
-  expect(getAliCloudOAuthFlow).toHaveBeenCalledTimes(1);
+  expect(getOAuthFlow).toHaveBeenCalledTimes(1);
 });
 
 it("retries connection persistence with the same authorized flow without logging in again", async () => {
@@ -198,7 +208,7 @@ it("retries connection persistence with the same authorized flow without logging
     "open",
     vi.fn(() => ({})),
   );
-  vi.mocked(startAliCloudOAuthFlow).mockResolvedValue({
+  vi.mocked(startOAuthFlow).mockResolvedValue({
     id: "oauth-retry",
     status: "authorized",
     expires_at: pendingFlow.expires_at,
@@ -207,7 +217,7 @@ it("retries connection persistence with the same authorized flow without logging
     .fn()
     .mockRejectedValueOnce(new Error("database unavailable"))
     .mockResolvedValueOnce(undefined);
-  vi.mocked(getAliCloudOAuthFlow).mockResolvedValue({
+  vi.mocked(getOAuthFlow).mockResolvedValue({
     id: "oauth-retry",
     status: "authorized",
     expires_at: pendingFlow.expires_at,
@@ -215,7 +225,8 @@ it("retries connection persistence with the same authorized flow without logging
   render(
     <LocaleProvider>
       <OAuthCredentialAuthorization
-        site="cn"
+        provider="alicloud"
+        params={{ site: "cn" }}
         disabled={false}
         onAuthorized={onAuthorized}
       />
@@ -223,15 +234,15 @@ it("retries connection persistence with the same authorized flow without logging
   );
 
   fireEvent.click(
-    screen.getByRole("button", { name: "Log in to Alibaba Cloud" }),
+    screen.getByRole("button", { name: "Sign in with your browser" }),
   );
   await act(async () => {
     await Promise.resolve();
     await Promise.resolve();
   });
   expect(onAuthorized).toHaveBeenCalledTimes(1);
-  expect(onAuthorized).toHaveBeenLastCalledWith("oauth-retry");
-  expect(startAliCloudOAuthFlow).toHaveBeenCalledTimes(1);
+  expect(onAuthorized).toHaveBeenLastCalledWith("oauth-retry", "");
+  expect(startOAuthFlow).toHaveBeenCalledTimes(1);
 
   fireEvent.click(
     screen.getByRole("button", { name: "Retry saving connection" }),
@@ -241,8 +252,8 @@ it("retries connection persistence with the same authorized flow without logging
     await Promise.resolve();
   });
   expect(onAuthorized).toHaveBeenCalledTimes(2);
-  expect(onAuthorized).toHaveBeenLastCalledWith("oauth-retry");
-  expect(startAliCloudOAuthFlow).toHaveBeenCalledTimes(1);
+  expect(onAuthorized).toHaveBeenLastCalledWith("oauth-retry", "");
+  expect(startOAuthFlow).toHaveBeenCalledTimes(1);
 });
 
 it.each(["expired", "consumed"] as const)(
@@ -252,14 +263,14 @@ it.each(["expired", "consumed"] as const)(
       "open",
       vi.fn(() => ({})),
     );
-    vi.mocked(startAliCloudOAuthFlow)
+    vi.mocked(startOAuthFlow)
       .mockResolvedValueOnce({
         id: "oauth-terminal",
         status: "authorized",
         expires_at: pendingFlow.expires_at,
       })
       .mockResolvedValueOnce(pendingFlow);
-    vi.mocked(getAliCloudOAuthFlow).mockResolvedValue({
+    vi.mocked(getOAuthFlow).mockResolvedValue({
       id: "oauth-terminal",
       status: terminalStatus,
       expires_at: pendingFlow.expires_at,
@@ -270,7 +281,8 @@ it.each(["expired", "consumed"] as const)(
     render(
       <LocaleProvider>
         <OAuthCredentialAuthorization
-          site="cn"
+          provider="alicloud"
+          params={{ site: "cn" }}
           disabled={false}
           onAuthorized={onAuthorized}
         />
@@ -278,16 +290,16 @@ it.each(["expired", "consumed"] as const)(
     );
 
     fireEvent.click(
-      screen.getByRole("button", { name: "Log in to Alibaba Cloud" }),
+      screen.getByRole("button", { name: "Sign in with your browser" }),
     );
     await act(async () => {
       await Promise.resolve();
       await Promise.resolve();
       await Promise.resolve();
     });
-    expect(getAliCloudOAuthFlow).toHaveBeenCalledWith("oauth-terminal");
+    expect(getOAuthFlow).toHaveBeenCalledWith("alicloud", "oauth-terminal");
     const login = screen.getByRole("button", {
-      name: "Log in to Alibaba Cloud",
+      name: "Sign in with your browser",
     });
     expect(login).toBeEnabled();
 
@@ -296,6 +308,63 @@ it.each(["expired", "consumed"] as const)(
       await Promise.resolve();
       await Promise.resolve();
     });
-    expect(startAliCloudOAuthFlow).toHaveBeenCalledTimes(2);
+    expect(startOAuthFlow).toHaveBeenCalledTimes(2);
   },
 );
+
+it("lets the operator pick a cloud scope when the authorization reaches several", async () => {
+  vi.stubGlobal(
+    "open",
+    vi.fn(() => ({})),
+  );
+  vi.mocked(startOAuthFlow).mockResolvedValue({
+    id: "oauth-scoped",
+    status: "authorized",
+    expires_at: pendingFlow.expires_at,
+  });
+  vi.mocked(listOAuthFlowTargets).mockResolvedValue([
+    { id: "sub-a", name: "Production", description: "tenant-a" },
+    { id: "sub-b", name: "Staging" },
+  ]);
+  const onAuthorized = vi.fn();
+  render(
+    <LocaleProvider>
+      <OAuthCredentialAuthorization
+        provider="azure"
+        params={{}}
+        disabled={false}
+        onAuthorized={onAuthorized}
+      />
+    </LocaleProvider>,
+  );
+
+  fireEvent.click(
+    screen.getByRole("button", { name: "Sign in with your browser" }),
+  );
+  await act(async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+  expect(listOAuthFlowTargets).toHaveBeenCalledWith("azure", "oauth-scoped");
+  // Nothing is submitted until the operator names a scope.
+  expect(onAuthorized).not.toHaveBeenCalled();
+  expect(screen.getByText("Connect to")).toBeVisible();
+  expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
+
+  fireEvent.click(screen.getByRole("combobox"));
+  await act(async () => {
+    await Promise.resolve();
+  });
+  fireEvent.click(screen.getByRole("option", { name: "Staging" }));
+  await act(async () => {
+    await Promise.resolve();
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+  await act(async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+  expect(onAuthorized).toHaveBeenCalledTimes(1);
+  expect(onAuthorized).toHaveBeenCalledWith("oauth-scoped", "sub-b");
+});

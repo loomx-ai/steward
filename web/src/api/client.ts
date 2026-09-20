@@ -23,6 +23,7 @@ import type {
   CreateScanInput,
   NetworkTargetPage,
   OAuthFlow,
+  OAuthTarget,
   ScanLogPage,
   ScanTask,
   Scope,
@@ -188,16 +189,28 @@ export function listProviders(): Promise<ProviderDescriptor[]> {
   return request<ProviderDescriptor[]>("/api/providers");
 }
 
-export function startAliCloudOAuthFlow(site: string): Promise<OAuthFlow> {
-  return request<OAuthFlow>("/api/providers/alicloud/oauth/flows", {
-    method: "POST",
-    body: JSON.stringify({ site }),
-  });
+export function startOAuthFlow(
+  provider: string,
+  params: Record<string, string>,
+): Promise<OAuthFlow> {
+  return request<OAuthFlow>(
+    `/api/providers/${encodeURIComponent(provider)}/oauth/flows`,
+    { method: "POST", body: JSON.stringify({ params }) },
+  );
 }
 
-export function getAliCloudOAuthFlow(id: string): Promise<OAuthFlow> {
+export function getOAuthFlow(provider: string, id: string): Promise<OAuthFlow> {
   return request<OAuthFlow>(
-    `/api/providers/alicloud/oauth/flows/${encodeURIComponent(id)}`,
+    `/api/providers/${encodeURIComponent(provider)}/oauth/flows/${encodeURIComponent(id)}`,
+  );
+}
+
+export function listOAuthFlowTargets(
+  provider: string,
+  id: string,
+): Promise<OAuthTarget[]> {
+  return request<OAuthTarget[]>(
+    `/api/providers/${encodeURIComponent(provider)}/oauth/flows/${encodeURIComponent(id)}/targets`,
   );
 }
 

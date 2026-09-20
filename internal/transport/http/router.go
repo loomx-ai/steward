@@ -56,7 +56,7 @@ type Dependencies struct {
 	Topology         *topologyapp.Service
 	Bundles          BundleCatalog
 	Providers        ProviderDirectory
-	OAuthFlows       contracts.OAuthFlowService
+	OAuthFlows       map[asset.Provider]contracts.OAuthFlowService
 	Authenticator    Authenticator
 	AuthMode         string
 	SSEPollInterval  time.Duration
@@ -77,8 +77,9 @@ func NewRouter(dependencies Dependencies) http.Handler {
 		router.Use(authenticate(dependencies.Authenticator))
 		router.Get("/providers", requireRole(RoleViewer, api.listProviders))
 		router.Get("/providers/catalog", requireRole(RoleViewer, api.listCatalog))
-		router.Post("/providers/alicloud/oauth/flows", requireRole(RoleAdmin, api.startAliCloudOAuthFlow))
-		router.Get("/providers/alicloud/oauth/flows/{id}", requireRole(RoleAdmin, api.getAliCloudOAuthFlow))
+		router.Post("/providers/{provider}/oauth/flows", requireRole(RoleAdmin, api.startOAuthFlow))
+		router.Get("/providers/{provider}/oauth/flows/{id}", requireRole(RoleAdmin, api.getOAuthFlow))
+		router.Get("/providers/{provider}/oauth/flows/{id}/targets", requireRole(RoleAdmin, api.listOAuthFlowTargets))
 		router.Get("/connections", requireRole(RoleViewer, api.listConnections))
 		router.Post("/connections", requireRole(RoleAdmin, api.createConnection))
 		router.Get("/connections/{id}/oidc", requireRole(RoleAdmin, api.connectionOIDCTrust))
@@ -163,16 +164,19 @@ func (a *API) listProviders(response http.ResponseWriter, _ *http.Request) {
 		return
 	}
 	descriptors := a.dependencies.Providers.ProviderDescriptors()
-	if a.dependencies.OAuthFlows == nil {
-		for index := range descriptors {
-			schemas := make([]contracts.CredentialSchema, 0, len(descriptors[index].CredentialSchemas))
-			for _, schema := range descriptors[index].CredentialSchemas {
-				if schema.Flow != "browser_oauth" {
-					schemas = append(schemas, schema)
-				}
-			}
-			descriptors[index].CredentialSchemas = schemas
+	// A browser authorization needs a loopback callback this server can
+	// receive. Offer it only for providers whose flow service is registered.
+	for index := range descriptors {
+		if _, ok := a.dependencies.OAuthFlows[descriptors[index].Provider]; ok {
+			continue
 		}
+		schemas := make([]contracts.CredentialSchema, 0, len(descriptors[index].CredentialSchemas))
+		for _, schema := range descriptors[index].CredentialSchemas {
+			if schema.Flow != "browser_oauth" {
+				schemas = append(schemas, schema)
+			}
+		}
+		descriptors[index].CredentialSchemas = schemas
 	}
 	if a.dependencies.WorkloadIdentity != nil {
 		for index := range descriptors {

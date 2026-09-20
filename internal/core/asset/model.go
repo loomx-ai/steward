@@ -68,14 +68,20 @@ const (
 type CredentialType string
 
 const (
-	CredentialOIDC                  CredentialType = "oidc"
+	CredentialOIDC CredentialType = "oidc"
+	// CredentialOAuth is the stored type every browser authorization produces,
+	// whichever cloud issued it.
+	CredentialOAuth                 CredentialType = "oauth"
 	CredentialAliCloudAccessKey     CredentialType = "access_key"
 	CredentialAliCloudSTS           CredentialType = "sts"
 	CredentialAliCloudOAuth         CredentialType = "oauth"
 	CredentialAWSAccessKey          CredentialType = "access_key"
 	CredentialAWSSession            CredentialType = "session"
+	CredentialAWSOAuth              CredentialType = "oauth"
 	CredentialGCPServiceAccount     CredentialType = "service_account"
+	CredentialGCPOAuth              CredentialType = "oauth"
 	CredentialAzureServicePrincipal CredentialType = "service_principal"
+	CredentialAzureOAuth            CredentialType = "oauth"
 )
 
 type CloudConnection struct {

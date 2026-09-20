@@ -18,25 +18,29 @@ import (
 )
 
 type testOAuthFlowService struct {
-	mu           sync.Mutex
-	startView    contracts.OAuthFlowView
-	getView      contracts.OAuthFlowView
-	credential   contracts.Credential
-	consumeErr   error
-	startSubject string
-	startSite    asset.ConnectionSite
-	getSubject   string
-	getID        string
-	consumeCount int
-	consumeSite  asset.ConnectionSite
-	consumeID    string
+	mu              sync.Mutex
+	startView       contracts.OAuthFlowView
+	getView         contracts.OAuthFlowView
+	targets         []contracts.OAuthTarget
+	credential      contracts.Credential
+	consumeErr      error
+	startSubject    string
+	startParams     map[string]string
+	getSubject      string
+	getID           string
+	targetsSubject  string
+	targetsID       string
+	consumeCount    int
+	consumeExpect   map[string]string
+	consumeTargetID string
+	consumeID       string
 }
 
-func (service *testOAuthFlowService) Start(_ context.Context, subject string, site asset.ConnectionSite) (contracts.OAuthFlowView, error) {
+func (service *testOAuthFlowService) Start(_ context.Context, subject string, params map[string]string) (contracts.OAuthFlowView, error) {
 	service.mu.Lock()
 	defer service.mu.Unlock()
 	service.startSubject = subject
-	service.startSite = site
+	service.startParams = params
 	return service.startView, nil
 }
 
@@ -48,17 +52,27 @@ func (service *testOAuthFlowService) Get(_ context.Context, subject, id string) 
 	return service.getView, nil
 }
 
+func (service *testOAuthFlowService) Targets(_ context.Context, subject, id string) ([]contracts.OAuthTarget, error) {
+	service.mu.Lock()
+	defer service.mu.Unlock()
+	service.targetsSubject = subject
+	service.targetsID = id
+	return service.targets, nil
+}
+
 func (service *testOAuthFlowService) Consume(
 	_ context.Context,
 	_ string,
 	id string,
-	site asset.ConnectionSite,
+	targetID string,
+	expect map[string]string,
 	consume func(contracts.Credential) error,
 ) error {
 	service.mu.Lock()
 	service.consumeCount++
 	service.consumeID = id
-	service.consumeSite = site
+	service.consumeTargetID = targetID
+	service.consumeExpect = expect
 	credential := service.credential
 	err := service.consumeErr
 	service.mu.Unlock()
@@ -66,6 +80,12 @@ func (service *testOAuthFlowService) Consume(
 		return err
 	}
 	return consume(credential)
+}
+
+// aliCloudOAuthFlows registers the stub for Alibaba Cloud only, so the tests
+// also cover a provider that has no browser authorization at all.
+func aliCloudOAuthFlows(flows contracts.OAuthFlowService) map[asset.Provider]contracts.OAuthFlowService {
+	return map[asset.Provider]contracts.OAuthFlowService{asset.ProviderAliCloud: flows}
 }
 
 func TestOAuthFlowRoutesRequireAdminAndReturnOnlyPublicState(t *testing.T) {
@@ -80,9 +100,9 @@ func TestOAuthFlowRoutesRequireAdminAndReturnOnlyPublicState(t *testing.T) {
 			ID: "oauth-flow-a", Status: contracts.OAuthFlowAuthorized, ExpiresAt: expiresAt,
 		},
 	}
-	_, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, flows)
+	_, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, aliCloudOAuthFlows(flows))
 
-	viewerRequest := httptest.NewRequest(http.MethodPost, "/api/providers/alicloud/oauth/flows", bytes.NewBufferString(`{"site":"intl"}`))
+	viewerRequest := httptest.NewRequest(http.MethodPost, "/api/providers/alicloud/oauth/flows", bytes.NewBufferString(`{"params":{"site":"intl"}}`))
 	viewerRequest.Header.Set("Authorization", "Bearer viewer-token")
 	viewerResponse := httptest.NewRecorder()
 	router.ServeHTTP(viewerResponse, viewerRequest)
@@ -90,7 +110,7 @@ func TestOAuthFlowRoutesRequireAdminAndReturnOnlyPublicState(t *testing.T) {
 		t.Fatalf("viewer status=%d body=%s", viewerResponse.Code, viewerResponse.Body.String())
 	}
 
-	startRequest := httptest.NewRequest(http.MethodPost, "/api/providers/alicloud/oauth/flows", bytes.NewBufferString(`{"site":"intl"}`))
+	startRequest := httptest.NewRequest(http.MethodPost, "/api/providers/alicloud/oauth/flows", bytes.NewBufferString(`{"params":{"site":"intl"}}`))
 	startRequest.Header.Set("Authorization", "Bearer admin-token")
 	startResponse := httptest.NewRecorder()
 	router.ServeHTTP(startResponse, startRequest)
@@ -100,8 +120,8 @@ func TestOAuthFlowRoutesRequireAdminAndReturnOnlyPublicState(t *testing.T) {
 		strings.Contains(startResponse.Body.String(), "access_token") {
 		t.Fatalf("start status=%d body=%s", startResponse.Code, startResponse.Body.String())
 	}
-	if flows.startSubject != "carol" || flows.startSite != asset.ConnectionSiteINTL {
-		t.Fatalf("start subject=%q site=%q", flows.startSubject, flows.startSite)
+	if flows.startSubject != "carol" || flows.startParams["site"] != string(asset.ConnectionSiteINTL) {
+		t.Fatalf("start subject=%q params=%v", flows.startSubject, flows.startParams)
 	}
 
 	getRequest := httptest.NewRequest(http.MethodGet, "/api/providers/alicloud/oauth/flows/oauth-flow-a", nil)
@@ -118,7 +138,7 @@ func TestOAuthFlowRoutesRequireAdminAndReturnOnlyPublicState(t *testing.T) {
 
 func TestOAuthConnectionCreationConsumesServerOwnedCredential(t *testing.T) {
 	flows := &testOAuthFlowService{credential: oauthCredentialForHTTPTest()}
-	repositories, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, flows)
+	repositories, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, aliCloudOAuthFlows(flows))
 	request := httptest.NewRequest(http.MethodPost, "/api/connections", bytes.NewBufferString(`{
 		"name":"oauth account","provider":"alicloud","site":"cn",
 		"credential":{"type":"oauth","values":{"flow_id":"oauth-flow-a"}}
@@ -129,8 +149,9 @@ func TestOAuthConnectionCreationConsumesServerOwnedCredential(t *testing.T) {
 	if response.Code != http.StatusCreated {
 		t.Fatalf("status=%d body=%s", response.Code, response.Body.String())
 	}
-	if flows.consumeCount != 1 || flows.consumeID != "oauth-flow-a" || flows.consumeSite != asset.ConnectionSiteCN {
-		t.Fatalf("consume count=%d id=%q site=%q", flows.consumeCount, flows.consumeID, flows.consumeSite)
+	if flows.consumeCount != 1 || flows.consumeID != "oauth-flow-a" ||
+		flows.consumeExpect["site"] != string(asset.ConnectionSiteCN) {
+		t.Fatalf("consume count=%d id=%q expect=%v", flows.consumeCount, flows.consumeID, flows.consumeExpect)
 	}
 	for _, secret := range []string{"oauth-flow-a", "access-token-secret", "refresh-token-secret", "sts-secret"} {
 		if strings.Contains(response.Body.String(), secret) {
@@ -154,11 +175,12 @@ func TestOAuthConnectionCreationConsumesServerOwnedCredential(t *testing.T) {
 
 func TestOAuthCredentialInputRejectsDirectSecretsAndDoesNotConsumeFlow(t *testing.T) {
 	flows := &testOAuthFlowService{credential: oauthCredentialForHTTPTest()}
-	_, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, flows)
+	_, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, aliCloudOAuthFlows(flows))
 	for _, body := range []string{
 		`{"name":"direct","provider":"alicloud","site":"cn","credential":{"type":"oauth","values":{"access_token":"secret"}}}`,
 		`{"name":"extra","provider":"alicloud","site":"cn","credential":{"type":"oauth","values":{"flow_id":"oauth-flow-a","refresh_token":"secret"}}}`,
-		`{"name":"wrong provider","provider":"aws","credential":{"type":"oauth","values":{"flow_id":"oauth-flow-a"}}}`,
+		`{"name":"no flow","provider":"alicloud","site":"cn","credential":{"type":"oauth","values":{"target_id":"only"}}}`,
+		`{"name":"selection on static","provider":"alicloud","site":"cn","credential":{"type":"access_key","values":{"access_key_id":"a","access_key_secret":"b","flow_id":"oauth-flow-a"}}}`,
 	} {
 		request := httptest.NewRequest(http.MethodPost, "/api/connections", bytes.NewBufferString(body))
 		request.Header.Set("Authorization", "Bearer admin-token")
@@ -168,14 +190,73 @@ func TestOAuthCredentialInputRejectsDirectSecretsAndDoesNotConsumeFlow(t *testin
 			t.Fatalf("status=%d body=%s", response.Code, response.Body.String())
 		}
 	}
+	// A provider with no registered flow service cannot be authorized at all,
+	// which is an availability answer rather than a malformed request.
+	unavailable := httptest.NewRequest(http.MethodPost, "/api/connections", bytes.NewBufferString(
+		`{"name":"wrong provider","provider":"aws","credential":{"type":"oauth","values":{"flow_id":"oauth-flow-a"}}}`,
+	))
+	unavailable.Header.Set("Authorization", "Bearer admin-token")
+	unavailableResponse := httptest.NewRecorder()
+	router.ServeHTTP(unavailableResponse, unavailable)
+	if unavailableResponse.Code != http.StatusServiceUnavailable ||
+		!strings.Contains(unavailableResponse.Body.String(), `"code":"oauth_flow_unavailable"`) {
+		t.Fatalf("status=%d body=%s", unavailableResponse.Code, unavailableResponse.Body.String())
+	}
 	if flows.consumeCount != 0 {
 		t.Fatalf("consume count=%d", flows.consumeCount)
 	}
 }
 
+func TestOAuthFlowTargetsAreAdminOnlyAndBindTheChosenScope(t *testing.T) {
+	flows := &testOAuthFlowService{
+		credential: oauthCredentialForHTTPTest(),
+		targets: []contracts.OAuthTarget{
+			{ID: "sub-a", Name: "Production", Description: "tenant-a"},
+			{ID: "sub-b", Name: "Staging"},
+		},
+	}
+	_, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, aliCloudOAuthFlows(flows))
+
+	viewer := httptest.NewRequest(http.MethodGet, "/api/providers/alicloud/oauth/flows/oauth-flow-a/targets", nil)
+	viewer.Header.Set("Authorization", "Bearer viewer-token")
+	viewerResponse := httptest.NewRecorder()
+	router.ServeHTTP(viewerResponse, viewer)
+	if viewerResponse.Code != http.StatusForbidden {
+		t.Fatalf("viewer status=%d body=%s", viewerResponse.Code, viewerResponse.Body.String())
+	}
+
+	request := httptest.NewRequest(http.MethodGet, "/api/providers/alicloud/oauth/flows/oauth-flow-a/targets", nil)
+	request.Header.Set("Authorization", "Bearer admin-token")
+	response := httptest.NewRecorder()
+	router.ServeHTTP(response, request)
+	if response.Code != http.StatusOK ||
+		!strings.Contains(response.Body.String(), `"id":"sub-a"`) ||
+		!strings.Contains(response.Body.String(), `"name":"Production"`) ||
+		response.Header().Get("Cache-Control") != "no-store" {
+		t.Fatalf("targets status=%d body=%s", response.Code, response.Body.String())
+	}
+	if flows.targetsSubject != "carol" || flows.targetsID != "oauth-flow-a" {
+		t.Fatalf("targets subject=%q id=%q", flows.targetsSubject, flows.targetsID)
+	}
+
+	create := httptest.NewRequest(http.MethodPost, "/api/connections", bytes.NewBufferString(`{
+		"name":"scoped","provider":"alicloud","site":"cn",
+		"credential":{"type":"oauth","values":{"flow_id":"oauth-flow-a","target_id":"sub-b"}}
+	}`))
+	create.Header.Set("Authorization", "Bearer admin-token")
+	createResponse := httptest.NewRecorder()
+	router.ServeHTTP(createResponse, create)
+	if createResponse.Code != http.StatusCreated {
+		t.Fatalf("create status=%d body=%s", createResponse.Code, createResponse.Body.String())
+	}
+	if flows.consumeTargetID != "sub-b" {
+		t.Fatalf("consume target=%q", flows.consumeTargetID)
+	}
+}
+
 func TestOAuthCredentialReplacementUsesExistingConnectionSite(t *testing.T) {
 	flows := &testOAuthFlowService{credential: oauthCredentialForHTTPTest()}
-	repositories, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, flows)
+	repositories, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, aliCloudOAuthFlows(flows))
 	connection, err := repositories.Connections().GetConnection(context.Background(), "connection-a")
 	if err != nil {
 		t.Fatal(err)
@@ -192,8 +273,8 @@ func TestOAuthCredentialReplacementUsesExistingConnectionSite(t *testing.T) {
 	if response.Code != http.StatusOK {
 		t.Fatalf("status=%d body=%s", response.Code, response.Body.String())
 	}
-	if flows.consumeCount != 1 || flows.consumeSite != asset.ConnectionSiteCN {
-		t.Fatalf("consume count=%d site=%q", flows.consumeCount, flows.consumeSite)
+	if flows.consumeCount != 1 || flows.consumeExpect["site"] != string(asset.ConnectionSiteCN) {
+		t.Fatalf("consume count=%d expect=%v", flows.consumeCount, flows.consumeExpect)
 	}
 }
 
@@ -202,7 +283,7 @@ func TestOAuthFlowErrorUsesStableAPIError(t *testing.T) {
 		credential: oauthCredentialForHTTPTest(),
 		consumeErr: &contracts.OAuthFlowError{Code: "oauth_flow_pending", Message: "OAuth flow is still pending"},
 	}
-	_, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, flows)
+	_, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, aliCloudOAuthFlows(flows))
 	request := httptest.NewRequest(http.MethodPost, "/api/connections", bytes.NewBufferString(`{
 		"name":"pending","provider":"alicloud","site":"cn",
 		"credential":{"type":"oauth","values":{"flow_id":"oauth-flow-a"}}
@@ -217,7 +298,7 @@ func TestOAuthFlowErrorUsesStableAPIError(t *testing.T) {
 
 func TestOAuthConnectionCreationFailureKeepsFlowRetryable(t *testing.T) {
 	flows := &testOAuthFlowService{credential: oauthCredentialForHTTPTest()}
-	_, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, flows)
+	_, router := terminalRouterWithOAuthFlows(t, testConnectionValidator{}, aliCloudOAuthFlows(flows))
 	flows.consumeErr = errors.New("temporary persistence failure")
 	failed := httptest.NewRequest(http.MethodPost, "/api/connections", bytes.NewBufferString(`{
 		"name":"retry","provider":"alicloud","site":"cn",

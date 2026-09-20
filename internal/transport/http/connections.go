@@ -74,18 +74,19 @@ func (a *API) createConnection(response http.ResponseWriter, request *http.Reque
 		return
 	}
 	principal, _ := principalFromContext(request.Context())
-	if input.Credential.Type == asset.CredentialAliCloudOAuth {
-		flowID, err := oauthFlowID(input.Provider, input.Credential)
+	if input.Credential.Type == asset.CredentialOAuth {
+		flowID, targetID, err := oauthFlowSelection(input.Credential)
 		if err != nil {
 			writeAPIError(response, http.StatusBadRequest, APIError{Code: "invalid_credential_fields", Message: err.Error()})
 			return
 		}
-		if a.dependencies.OAuthFlows == nil {
-			writeOAuthFlowError(response, &contracts.OAuthFlowError{Code: "oauth_flow_unavailable", Message: "Alibaba Cloud OAuth flow service is unavailable"})
+		flows, ok := a.dependencies.OAuthFlows[input.Provider]
+		if !ok || flows == nil {
+			writeOAuthFlowUnavailable(response)
 			return
 		}
 		var value connectionapp.View
-		err = a.dependencies.OAuthFlows.Consume(request.Context(), principal.Subject, flowID, input.Site, func(credential contracts.Credential) error {
+		err = flows.Consume(request.Context(), principal.Subject, flowID, targetID, oauthSiteExpectation(input.Site), func(credential contracts.Credential) error {
 			var createErr error
 			value, createErr = a.dependencies.Connections.Create(request.Context(), connectionapp.CreateRequest{
 				Name: input.Name, Provider: input.Provider, Site: input.Site, Credential: credential, Actor: principal.Subject,
@@ -99,8 +100,8 @@ func (a *API) createConnection(response http.ResponseWriter, request *http.Reque
 		writeJSON(response, http.StatusCreated, value)
 		return
 	}
-	if _, exists := input.Credential.Values["flow_id"]; exists {
-		writeAPIError(response, http.StatusBadRequest, APIError{Code: "invalid_credential_fields", Message: "OAuth flow ID is only valid for an OAuth credential"})
+	if err := rejectOAuthSelection(input.Credential); err != nil {
+		writeAPIError(response, http.StatusBadRequest, APIError{Code: "invalid_credential_fields", Message: err.Error()})
 		return
 	}
 	value, err := a.dependencies.Connections.Create(request.Context(), connectionapp.CreateRequest{
@@ -145,7 +146,7 @@ func (a *API) replaceConnectionCredential(response http.ResponseWriter, request 
 		return
 	}
 	principal, _ := principalFromContext(request.Context())
-	if input.Type == asset.CredentialAliCloudOAuth {
+	if input.Type == asset.CredentialOAuth {
 		connectionID := asset.ConnectionID(chi.URLParam(request, "id"))
 		connection, err := a.dependencies.Repositories.Connections().GetConnection(request.Context(), connectionID)
 		if err != nil || connection.Status == asset.ConnectionDeleted {
@@ -155,17 +156,18 @@ func (a *API) replaceConnectionCredential(response http.ResponseWriter, request 
 			writeConnectionError(response, err)
 			return
 		}
-		flowID, err := oauthFlowID(connection.Provider, input)
+		flowID, targetID, err := oauthFlowSelection(input)
 		if err != nil {
 			writeAPIError(response, http.StatusBadRequest, APIError{Code: "invalid_credential_fields", Message: err.Error()})
 			return
 		}
-		if a.dependencies.OAuthFlows == nil {
-			writeOAuthFlowError(response, &contracts.OAuthFlowError{Code: "oauth_flow_unavailable", Message: "Alibaba Cloud OAuth flow service is unavailable"})
+		flows, ok := a.dependencies.OAuthFlows[connection.Provider]
+		if !ok || flows == nil {
+			writeOAuthFlowUnavailable(response)
 			return
 		}
 		var value connectionapp.View
-		err = a.dependencies.OAuthFlows.Consume(request.Context(), principal.Subject, flowID, connection.Site, func(credential contracts.Credential) error {
+		err = flows.Consume(request.Context(), principal.Subject, flowID, targetID, oauthSiteExpectation(connection.Site), func(credential contracts.Credential) error {
 			var replaceErr error
 			value, replaceErr = a.dependencies.Connections.ReplaceCredential(request.Context(), connectionID, credential, principal.Subject)
 			return replaceErr
@@ -177,8 +179,8 @@ func (a *API) replaceConnectionCredential(response http.ResponseWriter, request 
 		writeJSON(response, http.StatusOK, value)
 		return
 	}
-	if _, exists := input.Values["flow_id"]; exists {
-		writeAPIError(response, http.StatusBadRequest, APIError{Code: "invalid_credential_fields", Message: "OAuth flow ID is only valid for an OAuth credential"})
+	if err := rejectOAuthSelection(input); err != nil {
+		writeAPIError(response, http.StatusBadRequest, APIError{Code: "invalid_credential_fields", Message: err.Error()})
 		return
 	}
 	value, err := a.dependencies.Connections.ReplaceCredential(request.Context(), asset.ConnectionID(chi.URLParam(request, "id")), input.contract(), principal.Subject)
@@ -189,18 +191,42 @@ func (a *API) replaceConnectionCredential(response http.ResponseWriter, request 
 	writeJSON(response, http.StatusOK, value)
 }
 
-func oauthFlowID(provider asset.Provider, input credentialInput) (string, error) {
-	if provider != asset.ProviderAliCloud {
-		return "", errors.New("OAuth credentials are only supported for Alibaba Cloud connections")
+// oauthFlowSelection reads the only two values an OAuth credential may carry.
+// Nothing else is accepted: token material belongs to the flow, never to a
+// request body.
+func oauthFlowSelection(input credentialInput) (string, string, error) {
+	if input.ExpiresAt != nil {
+		return "", "", errors.New("OAuth credential input must contain only a flow_id and an optional target_id")
 	}
-	if input.ExpiresAt != nil || len(input.Values) != 1 {
-		return "", errors.New("OAuth credential input must contain only a flow_id")
+	for key := range input.Values {
+		if key != "flow_id" && key != "target_id" {
+			return "", "", errors.New("OAuth credential input must contain only a flow_id and an optional target_id")
+		}
 	}
 	flowID := strings.TrimSpace(input.Values["flow_id"])
 	if flowID == "" {
-		return "", errors.New("OAuth credential flow_id is required")
+		return "", "", errors.New("OAuth credential flow_id is required")
 	}
-	return flowID, nil
+	return flowID, strings.TrimSpace(input.Values["target_id"]), nil
+}
+
+func rejectOAuthSelection(input credentialInput) error {
+	for _, key := range []string{"flow_id", "target_id"} {
+		if _, exists := input.Values[key]; exists {
+			return errors.New("OAuth flow selection is only valid for an OAuth credential")
+		}
+	}
+	return nil
+}
+
+// oauthSiteExpectation binds an authorization to the site the connection
+// claims. Providers without sites expect nothing, which the flow reads as no
+// constraint.
+func oauthSiteExpectation(site asset.ConnectionSite) map[string]string {
+	if site == "" {
+		return nil
+	}
+	return map[string]string{"site": string(site)}
 }
 
 func (a *API) validateConnection(response http.ResponseWriter, request *http.Request) {

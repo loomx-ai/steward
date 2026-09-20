@@ -11,6 +11,7 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/credential/oauth"
 	"github.com/loomx-ai/steward/internal/provider/catalog"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -152,8 +153,8 @@ func TestRuntimeRefreshesNearExpiryOAuthBeforeScanAndCleanupCalls(t *testing.T) 
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			expected := oauthCredentialFixture(now)
-			expected.Values[oauthAccessTokenExpireKey] = formatOAuthUnix(now.Add(4 * time.Minute))
-			expected.Values[oauthSTSExpireKey] = formatOAuthUnix(now.Add(4 * time.Minute))
+			expected.Values[oauth.AccessTokenExpireKey] = oauth.FormatUnix(now.Add(4 * time.Minute))
+			expected.Values[oauthSTSExpireKey] = oauth.FormatUnix(now.Add(4 * time.Minute))
 			store := &oauthCredentialStoreStub{value: cloneTestOAuthCredential(expected)}
 			api := &oauthAPIStub{
 				refresh: oauthTokens{

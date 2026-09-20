@@ -7,13 +7,14 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import {
   createConnection,
   deleteConnection,
-  getAliCloudOAuthFlow,
+  getOAuthFlow,
+  listOAuthFlowTargets,
   listConnectionRegions,
   listConnections,
   listProviders,
   renameConnection,
   replaceConnectionCredential,
-  startAliCloudOAuthFlow,
+  startOAuthFlow,
   validateConnection,
 } from "@/api/client";
 import type {
@@ -37,7 +38,8 @@ vi.mock("@/api/client", () => ({
   createConnection: vi.fn(),
   deleteConnection: vi.fn(),
   excludeConnectionRegion: vi.fn(),
-  getAliCloudOAuthFlow: vi.fn(),
+  getOAuthFlow: vi.fn(),
+  listOAuthFlowTargets: vi.fn(),
   listConnectionRegions: vi.fn().mockResolvedValue({ items: [] }),
   listConnections: vi.fn(),
   listProviders: vi.fn(),
@@ -45,7 +47,7 @@ vi.mock("@/api/client", () => ({
   renameConnection: vi.fn(),
   restoreConnectionRegion: vi.fn(),
   replaceConnectionCredential: vi.fn(),
-  startAliCloudOAuthFlow: vi.fn(),
+  startOAuthFlow: vi.fn(),
   updateConnectionRegion: vi.fn(),
   validateConnection: vi.fn(),
 }));
@@ -108,11 +110,12 @@ beforeEach(() => {
   });
   vi.mocked(createConnection).mockReset();
   vi.mocked(deleteConnection).mockReset();
-  vi.mocked(getAliCloudOAuthFlow).mockReset();
+  vi.mocked(getOAuthFlow).mockReset();
+  vi.mocked(listOAuthFlowTargets).mockReset().mockResolvedValue([]);
   vi.mocked(listConnectionRegions).mockReset().mockResolvedValue({ items: [] });
   vi.mocked(renameConnection).mockReset();
   vi.mocked(replaceConnectionCredential).mockReset();
-  vi.mocked(startAliCloudOAuthFlow).mockReset();
+  vi.mocked(startOAuthFlow).mockReset();
   vi.mocked(validateConnection).mockReset();
   vi.mocked(listConnections)
     .mockReset()
@@ -349,7 +352,7 @@ it("creates and replaces Alibaba Cloud OAuth credentials using only an authorize
       credential_schemas: [oauthSchema],
     },
   ];
-  vi.mocked(startAliCloudOAuthFlow)
+  vi.mocked(startOAuthFlow)
     .mockResolvedValueOnce({
       id: "oauth-create",
       status: "authorized",
@@ -386,7 +389,7 @@ it("creates and replaces Alibaba Cloud OAuth credentials using only an authorize
   ).not.toBeInTheDocument();
   expect(screen.queryAllByRole("textbox")).toHaveLength(1);
   await user.click(
-    screen.getByRole("button", { name: "Log in to Alibaba Cloud" }),
+    screen.getByRole("button", { name: "Sign in with your browser" }),
   );
   await waitFor(() =>
     expect(onCreate).toHaveBeenCalledWith({
@@ -413,7 +416,7 @@ it("creates and replaces Alibaba Cloud OAuth credentials using only an authorize
     </LocaleProvider>,
   );
   await user.click(
-    screen.getByRole("button", { name: "Log in to Alibaba Cloud" }),
+    screen.getByRole("button", { name: "Sign in with your browser" }),
   );
   await waitFor(() =>
     expect(onReplace).toHaveBeenCalledWith("connection-1", {
@@ -421,8 +424,10 @@ it("creates and replaces Alibaba Cloud OAuth credentials using only an authorize
       values: { flow_id: "oauth-replace" },
     }),
   );
-  expect(startAliCloudOAuthFlow).toHaveBeenNthCalledWith(1, "cn");
-  expect(startAliCloudOAuthFlow).toHaveBeenNthCalledWith(2, "intl");
+  expect(startOAuthFlow).toHaveBeenNthCalledWith(1, "alicloud", { site: "cn" });
+  expect(startOAuthFlow).toHaveBeenNthCalledWith(2, "alicloud", {
+    site: "intl",
+  });
   expect(document.body.textContent).not.toMatch(
     /access token|refresh token|access key secret|security token/i,
   );

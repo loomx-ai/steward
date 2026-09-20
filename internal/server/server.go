@@ -17,8 +17,10 @@ import (
 	"github.com/loomx-ai/steward/internal/app/inventory"
 	regionapp "github.com/loomx-ai/steward/internal/app/region"
 	topologyapp "github.com/loomx-ai/steward/internal/app/topology"
+	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/credential"
+	"github.com/loomx-ai/steward/internal/credential/oauth"
 	"github.com/loomx-ai/steward/internal/datadir"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/persistence/postgres"
@@ -136,17 +138,22 @@ func Run(ctx context.Context, config Config) error {
 		return err
 	}
 	// Browser OAuth completes on a loopback callback, which a hosted cloud server cannot receive.
-	var oauthFlows contracts.OAuthFlowService
+	oauthFlows := map[asset.Provider]contracts.OAuthFlowService{}
 	if authMode != "cloud" {
-		manager := alicloud.NewOAuthFlowManager()
-		defer func() {
-			closeCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
-			if err := manager.Close(closeCtx); err != nil {
-				slog.Error("Alibaba Cloud OAuth flow service did not close cleanly", "error", err)
-			}
-		}()
-		oauthFlows = manager
+		for _, driver := range []oauth.Driver{
+			alicloud.NewOAuthDriver(),
+		} {
+			manager := oauth.NewFlowManager(driver)
+			provider := driver.Provider()
+			defer func() {
+				closeCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				defer cancel()
+				if err := manager.Close(closeCtx); err != nil {
+					slog.Error("OAuth flow service did not close cleanly", "provider", provider, "error", err)
+				}
+			}()
+			oauthFlows[provider] = manager
+		}
 	}
 	apiHandler := httptransport.NewRouter(httptransport.Dependencies{
 		WorkloadIdentity: oidc,

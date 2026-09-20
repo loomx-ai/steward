@@ -1646,7 +1646,7 @@ func terminalRouterWithValidator(t *testing.T, validator connectionapp.Validator
 	return terminalRouterWithOAuthFlows(t, validator, nil)
 }
 
-func terminalRouterWithOAuthFlows(t *testing.T, validator connectionapp.Validator, oauthFlows contracts.OAuthFlowService) (persistence.Repositories, http.Handler) {
+func terminalRouterWithOAuthFlows(t *testing.T, validator connectionapp.Validator, oauthFlows map[asset.Provider]contracts.OAuthFlowService) (persistence.Repositories, http.Handler) {
 	t.Helper()
 	repositories, err := sqlite.Open(filepath.Join(t.TempDir(), "http.db"), filepath.Join("..", "..", "..", "migrations"))
 	if err != nil {

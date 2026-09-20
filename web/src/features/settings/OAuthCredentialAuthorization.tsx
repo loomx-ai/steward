@@ -1,55 +1,82 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { getAliCloudOAuthFlow, startAliCloudOAuthFlow } from "@/api/client";
-import type { OAuthFlow, OAuthFlowStatus } from "@/api/types";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  getOAuthFlow,
+  listOAuthFlowTargets,
+  startOAuthFlow,
+} from "@/api/client";
+import type { OAuthFlow, OAuthFlowStatus, OAuthTarget } from "@/api/types";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useLocale } from "@/i18n/LocaleProvider";
 
 const oauthPollInterval = 500;
 
 export function OAuthCredentialAuthorization({
-  site,
+  provider,
+  params,
   disabled,
   onAuthorized,
 }: {
-  site: string;
+  provider: string;
+  params: Record<string, string>;
   disabled: boolean;
-  onAuthorized: (flowID: string) => void | Promise<unknown>;
+  onAuthorized: (flowID: string, targetID: string) => void | Promise<unknown>;
 }) {
   const { t } = useLocale();
   const [flow, setFlow] = useState<OAuthFlow>();
   const [status, setStatus] = useState<OAuthFlowStatus | "idle" | "starting">(
     "idle",
   );
+  const [targets, setTargets] = useState<OAuthTarget[]>();
+  const [targetsFailed, setTargetsFailed] = useState(false);
+  const [selectedTarget, setSelectedTarget] = useState("");
   const [popupBlocked, setPopupBlocked] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submissionFailed, setSubmissionFailed] = useState(false);
   const generation = useRef(0);
-  const authorizedFlowID = useRef("");
+  const resolvedFlowID = useRef("");
+
+  // Re-authorizing is the only way to change what was authorized, so any change
+  // to the provider or to the parameters the flow was started with discards it.
+  const identity = useMemo(
+    () => `${provider}:${JSON.stringify(params)}`,
+    [provider, params],
+  );
 
   useEffect(() => {
     generation.current += 1;
-    authorizedFlowID.current = "";
+    resolvedFlowID.current = "";
     setFlow(undefined);
     setStatus("idle");
+    setTargets(undefined);
+    setTargetsFailed(false);
+    setSelectedTarget("");
     setPopupBlocked(false);
     setSubmitting(false);
     setSubmissionFailed(false);
     return () => {
       generation.current += 1;
     };
-  }, [site]);
+  }, [identity]);
 
   const submitAuthorized = useCallback(
-    async (flowID: string) => {
+    async (flowID: string, targetID: string) => {
       const currentGeneration = generation.current;
       setSubmitting(true);
       setSubmissionFailed(false);
       try {
-        await onAuthorized(flowID);
+        await onAuthorized(flowID, targetID);
       } catch {
         if (generation.current !== currentGeneration) return;
         try {
-          const latest = await getAliCloudOAuthFlow(flowID);
+          const latest = await getOAuthFlow(provider, flowID);
           if (generation.current !== currentGeneration) return;
           setFlow(latest);
           setStatus(latest.status);
@@ -66,7 +93,7 @@ export function OAuthCredentialAuthorization({
         }
       }
     },
-    [onAuthorized],
+    [onAuthorized, provider],
   );
 
   useEffect(() => {
@@ -74,7 +101,7 @@ export function OAuthCredentialAuthorization({
     const currentGeneration = generation.current;
     const timer = window.setTimeout(async () => {
       try {
-        const next = await getAliCloudOAuthFlow(flow.id);
+        const next = await getOAuthFlow(provider, flow.id);
         if (generation.current !== currentGeneration) return;
         setFlow(next);
         setStatus(next.status);
@@ -83,31 +110,51 @@ export function OAuthCredentialAuthorization({
       }
     }, oauthPollInterval);
     return () => window.clearTimeout(timer);
-  }, [flow, status]);
+  }, [flow, provider, status]);
 
+  // An authorization is resolved exactly once: either it names a single cloud
+  // scope and is submitted straight away, or its scopes are listed for the
+  // operator to choose from.
   useEffect(() => {
     if (
       status !== "authorized" ||
       !flow ||
-      authorizedFlowID.current === flow.id
+      resolvedFlowID.current === flow.id
     ) {
       return;
     }
-    authorizedFlowID.current = flow.id;
-    void submitAuthorized(flow.id);
-  }, [flow, status, submitAuthorized]);
+    resolvedFlowID.current = flow.id;
+    const currentGeneration = generation.current;
+    void (async () => {
+      let available: OAuthTarget[];
+      try {
+        available = await listOAuthFlowTargets(provider, flow.id);
+      } catch {
+        if (generation.current === currentGeneration) setTargetsFailed(true);
+        return;
+      }
+      if (generation.current !== currentGeneration) return;
+      setTargets(available);
+      if (available.length === 0) {
+        void submitAuthorized(flow.id, "");
+      }
+    })();
+  }, [flow, provider, status, submitAuthorized]);
 
   const start = async () => {
     const currentGeneration = generation.current + 1;
     generation.current = currentGeneration;
-    authorizedFlowID.current = "";
+    resolvedFlowID.current = "";
     setFlow(undefined);
     setStatus("starting");
+    setTargets(undefined);
+    setTargetsFailed(false);
+    setSelectedTarget("");
     setPopupBlocked(false);
     setSubmitting(false);
     setSubmissionFailed(false);
     try {
-      const next = await startAliCloudOAuthFlow(site);
+      const next = await startOAuthFlow(provider, params);
       if (generation.current !== currentGeneration) return;
       setFlow(next);
       setStatus(next.status);
@@ -125,8 +172,10 @@ export function OAuthCredentialAuthorization({
   };
 
   const pending = status === "starting" || status === "pending";
+  const choosing =
+    status === "authorized" && !!targets && targets.length > 0 && !submitting;
   const canRetrySubmission =
-    status === "authorized" && submissionFailed && !!flow;
+    status === "authorized" && submissionFailed && !!flow && !choosing;
   return (
     <div className="space-y-2">
       <Button
@@ -135,11 +184,11 @@ export function OAuthCredentialAuthorization({
           disabled ||
           pending ||
           submitting ||
-          (status === "authorized" && !canRetrySubmission)
+          (status === "authorized" && !canRetrySubmission && !choosing)
         }
         onClick={() => {
           if (canRetrySubmission && flow) {
-            void submitAuthorized(flow.id);
+            void submitAuthorized(flow.id, selectedTarget);
             return;
           }
           void start();
@@ -154,9 +203,49 @@ export function OAuthCredentialAuthorization({
           {t("connections.oauthPending")}
         </p>
       )}
-      {status === "authorized" && (
+      {choosing && flow && (
+        <div className="space-y-2">
+          <Label htmlFor="oauth-target">
+            {t("connections.oauthTargetLabel")}
+          </Label>
+          <Select value={selectedTarget} onValueChange={setSelectedTarget}>
+            <SelectTrigger id="oauth-target">
+              <SelectValue
+                placeholder={t("connections.oauthTargetPlaceholder")}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {targets?.map((target) => (
+                <SelectItem key={target.id} value={target.id}>
+                  {target.description
+                    ? `${target.name} · ${target.description}`
+                    : target.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            disabled={disabled || !selectedTarget}
+            onClick={() => void submitAuthorized(flow.id, selectedTarget)}
+          >
+            {t("connections.oauthTargetConfirm")}
+          </Button>
+          {submissionFailed && (
+            <p className="text-sm text-destructive">
+              {t("connections.oauthFailed")}
+            </p>
+          )}
+        </div>
+      )}
+      {status === "authorized" && !choosing && !targetsFailed && (
         <p className="text-sm text-muted-foreground">
           {t("connections.oauthAuthorized")}
+        </p>
+      )}
+      {targetsFailed && (
+        <p className="text-sm text-destructive">
+          {t("connections.oauthTargetsFailed")}
         </p>
       )}
       {(status === "failed" || status === "consumed") && (

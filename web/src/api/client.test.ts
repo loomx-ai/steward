@@ -15,7 +15,7 @@ import {
   findAssets,
   findAssetsByNativeIDs,
   getCleanupTaskLogs,
-  getAliCloudOAuthFlow,
+  getOAuthFlow,
   getJob,
   getTopology,
   listAssets,
@@ -23,7 +23,7 @@ import {
   listConnections,
   listProviderCatalog,
   listScans,
-  startAliCloudOAuthFlow,
+  startOAuthFlow,
 } from "./client";
 
 afterEach(() => {
@@ -475,8 +475,10 @@ it("starts and polls an Alibaba Cloud OAuth flow without client-side credential 
     );
   vi.stubGlobal("fetch", fetchMock);
 
-  await expect(startAliCloudOAuthFlow("intl")).resolves.toEqual(pending);
-  await expect(getAliCloudOAuthFlow("oauth-flow/a")).resolves.toEqual(
+  await expect(startOAuthFlow("alicloud", { site: "intl" })).resolves.toEqual(
+    pending,
+  );
+  await expect(getOAuthFlow("alicloud", "oauth-flow/a")).resolves.toEqual(
     authorized,
   );
 
@@ -485,7 +487,7 @@ it("starts and polls an Alibaba Cloud OAuth flow without client-side credential 
   );
   expect(
     JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit).body)),
-  ).toEqual({ site: "intl" });
+  ).toEqual({ params: { site: "intl" } });
   expect(fetchMock.mock.calls[1]?.[0]).toBe(
     "/api/providers/alicloud/oauth/flows/oauth-flow%2Fa",
   );
