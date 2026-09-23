@@ -54,6 +54,12 @@ times out after three seconds and a failure is silent — no command depends on 
 | `STEWARD_CHECKPOINT_URL` | Endpoint to ask; `https://checkpoint.loomx.ai` |
 | `STEWARD_CHECKPOINT_TIMEOUT` | Request timeout as a Go duration; `3s` |
 
+Checks are also off in continuous integration: when `CI` is set (GitHub Actions,
+GitLab, CircleCI, Travis, Buildkite, Bitbucket) or when `TF_BUILD`, `JENKINS_URL`,
+`TEAMCITY_VERSION` or `CODEBUILD_BUILD_ID` is. A CI job starts from a fresh home
+directory, so a check there would count a new installation on every run. A value
+of `0` or `false` does not count as CI.
+
 `steward update` downloads from GitHub releases directly, so upgrading keeps
 working with checks switched off.
 

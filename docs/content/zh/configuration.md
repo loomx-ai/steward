@@ -50,6 +50,11 @@ Steward 会向 `checkpoint.loomx.ai` 询问是否有新版本、以及当前版�
 | `STEWARD_CHECKPOINT_URL` | 服务地址；默认 `https://checkpoint.loomx.ai` |
 | `STEWARD_CHECKPOINT_TIMEOUT` | 请求超时，Go duration 格式；默认 `3s` |
 
+在持续集成环境里检查同样关闭：设置了 `CI`（GitHub Actions、GitLab、CircleCI、Travis、
+Buildkite、Bitbucket），或设置了 `TF_BUILD`、`JENKINS_URL`、`TEAMCITY_VERSION`、
+`CODEBUILD_BUILD_ID` 之一时即视为 CI。CI 任务每次都从全新的主目录启动，在这里检查会让
+每次运行都被算作一个新安装。值为 `0` 或 `false` 不算 CI。
+
 `steward update` 直接从 GitHub releases 下载，关闭检查后升级依然可用。
 
 

@@ -5,7 +5,8 @@
 // architecture, and a random signature that identifies the installation
 // without identifying its user. Nothing about the inventory, the configured
 // connections, or the command being run is sent. Set STEWARD_CHECKPOINT_DISABLE
-// or DO_NOT_TRACK to switch the request off entirely.
+// or DO_NOT_TRACK to switch the request off entirely; it is also off in
+// continuous integration.
 package checkpoint
 
 import (
@@ -124,12 +125,33 @@ func (p Params) now() time.Time {
 	return time.Now()
 }
 
-// Disabled reports whether the operator switched checking off. DO_NOT_TRACK is
-// the cross-vendor convention; STEWARD_CHECKPOINT_DISABLE is specific to
-// Steward. Either one set to a non-empty value other than "0" is enough.
+// Disabled reports whether checking is off: either the operator switched it off,
+// or the process runs in continuous integration. DO_NOT_TRACK is the
+// cross-vendor convention; STEWARD_CHECKPOINT_DISABLE is specific to Steward.
+// Either one set to a non-empty value other than "0" is enough.
 func Disabled(getenv func(string) string) bool {
 	for _, name := range []string{"STEWARD_CHECKPOINT_DISABLE", "DO_NOT_TRACK"} {
 		if value := strings.TrimSpace(getenv(name)); value != "" && value != "0" {
+			return true
+		}
+	}
+	return inCI(getenv)
+}
+
+// ciMarkers are set by CI services that do not export CI itself: Azure
+// Pipelines, Jenkins, TeamCity and AWS CodeBuild.
+var ciMarkers = []string{"TF_BUILD", "JENKINS_URL", "TEAMCITY_VERSION", "CODEBUILD_BUILD_ID"}
+
+// inCI reports whether the process runs in continuous integration. A CI job
+// starts from a fresh home directory, so a check there would register a new
+// installation on every run, and nobody reads an advisory in a build log. CI is
+// the de facto convention (GitHub Actions, GitLab, CircleCI, Travis, Buildkite,
+// Bitbucket). For every variable, "false" and "0" state that this is not CI.
+func inCI(getenv func(string) string) bool {
+	for _, name := range append([]string{"CI"}, ciMarkers...) {
+		switch strings.ToLower(strings.TrimSpace(getenv(name))) {
+		case "", "0", "false":
+		default:
 			return true
 		}
 	}

@@ -148,6 +148,49 @@ func TestCheckStopsWhenDisabled(t *testing.T) {
 	}
 }
 
+// A CI job starts from a fresh home directory, so a check there would register a
+// new installation on every run and never reach a person who could act on an
+// advisory.
+func TestCheckStopsInContinuousIntegration(t *testing.T) {
+	for name, value := range map[string]string{
+		"CI":                 "true", // GitHub Actions, GitLab, CircleCI, Travis, Buildkite, Bitbucket
+		"TF_BUILD":           "True", // Azure Pipelines
+		"JENKINS_URL":        "https://jenkins.example/",
+		"TEAMCITY_VERSION":   "2025.03",
+		"CODEBUILD_BUILD_ID": "project:1234",
+	} {
+		t.Run(name, func(t *testing.T) {
+			server, _, calls := answer(t, Response{Product: "steward"})
+			p := params(t, server.URL, map[string]string{name: value})
+			response, err := Check(context.Background(), p)
+			if err != nil || response != nil {
+				t.Fatalf("Check() = %v, %v; want no answer and no error", response, err)
+			}
+			if got := calls.Load(); got != 0 {
+				t.Errorf("service was asked %d times in CI", got)
+			}
+			if _, err := os.Stat(filepath.Join(p.Directory, SignatureFileName)); !os.IsNotExist(err) {
+				t.Error("a check in CI still created a signature")
+			}
+		})
+	}
+}
+
+func TestCheckRunsWhenCIIsExplicitlyOff(t *testing.T) {
+	for _, value := range []string{"false", "FALSE", "0", " "} {
+		t.Run(value, func(t *testing.T) {
+			server, _, calls := answer(t, Response{Product: "steward"})
+			p := params(t, server.URL, map[string]string{"CI": value})
+			if _, err := Check(context.Background(), p); err != nil {
+				t.Fatal(err)
+			}
+			if got := calls.Load(); got != 1 {
+				t.Errorf("service was asked %d times with CI=%q, want 1", got, value)
+			}
+		})
+	}
+}
+
 func TestCheckOmitsTheSignatureWhenItIsDisabled(t *testing.T) {
 	server, queries, _ := answer(t, Response{Product: "steward"})
 	p := params(t, server.URL, map[string]string{"STEWARD_CHECKPOINT_SIGNATURE_DISABLE": "1"})
