@@ -25,6 +25,9 @@ def main():
         shutil.copy2(source, binary)
         env = {key: value for key, value in os.environ.items() if not key.startswith("STEWARD_")}
         env["STEWARD_AUTH_MODE"] = "local"
+        # Every run gets a fresh HOME, so a release check here would register a new
+        # installation per smoke test and inflate the install counts.
+        env["STEWARD_CHECKPOINT_DISABLE"] = "1"
         # Data defaults to ~/.steward; keep it inside the temporary directory.
         home = Path(directory) / "home"
         home.mkdir()
