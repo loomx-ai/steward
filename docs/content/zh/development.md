@@ -4,6 +4,8 @@ description: "从源码构建 Steward，并在本地开发前端和 API。"
 navTitle: "源码与本地开发"
 ---
 
+本指南面向需要从源码构建或修改 Steward 代码的开发者。如果只是使用 Steward，请直接[安装发行版](./installation.md)。欢迎在 [GitHub](https://github.com/loomx-ai/steward) 上参与贡献。
+
 ## 准备环境
 
 需要 Git、Go 1.26+、Node.js 22+、npm、make 和 C 编译器。macOS 使用 Xcode Command Line Tools，Linux 使用 GCC，Windows 使用 MinGW-w64 和 Git Bash。

@@ -1,54 +1,80 @@
 ---
 title: "Amazon Web Services (AWS)"
-description: "Connect an AWS account, configure discovery permissions, and review resource, lifecycle, and CloudFormation cleanup effects."
+description: "Connect an AWS account, grant IAM permissions for inventory and cleanup, run a first scan, and check resource coverage, cleanup protections, and limits."
 navTitle: "AWS"
 ---
 
-Steward accesses one AWS account with the current connection's credentials. Each supported resource type has one authoritative discovery source: Cloud Control API for types with list, read, and delete handlers, or the service's own API for types Cloud Control does not fully support. Resource Explorer adds a broad index of other resources; it never removes resources observed by the authoritative sources.
+Use this page to connect one AWS account to Steward, grant the IAM permissions it needs, and understand what it can find and clean up.
+
+Steward reads one AWS account with the connection's credentials. Each supported resource type has one authoritative source: Cloud Control API for types with list, read, and delete handlers, or the service's own API for types Cloud Control does not fully support. Resource Explorer adds a broad index of other resources; it never removes resources found by the authoritative sources.
 
 ## Prepare credentials
 
-Choose **AWS** in **Settings → Cloud connections → Add connection**.
+Open the user menu → **Settings** → **Cloud connections** → **Add connection**, choose **AWS**, and pick a credential type:
 
-| Credential type | Required fields | Usage |
+| Credential type | Required fields | Use it for |
 | --- | --- | --- |
-| Access key | Access Key ID and Secret Access Key | Access keys for a dedicated IAM identity. |
-| Temporary credentials | Access Key ID, Secret Access Key, Session Token, and expiration | A complete credential set from an authorized session. |
-| IAM Identity Center | Start URL and region, then an account and role | [Browser sign-in](./connections.md#browser), renewed automatically. |
+| **AWS access key** | Access Key ID and Secret Access Key | A dedicated IAM identity. |
+| **AWS session credential** | Access Key ID, Secret Access Key, Session Token, and expiration | A complete temporary credential set from an authorized session. |
+| **IAM Identity Center** | Start URL and region; after sign-in, an account and role | [Browser sign-in](./connections.md#browser), renewed automatically. |
+| **OIDC workload identity** | Role ARN; optional write role ARN | Temporary credentials without stored keys, when the server is configured for [OIDC](./oidc.md). |
 
-Connections use the supplied credentials. They do not automatically load local AWS profiles, SSO sessions, or instance roles, and do not provide automatic AssumeRole refresh. Use **Replace credential** after temporary credentials expire, keeping the original cloud identity.
+- Steward uses only the credentials you enter. It does not load local AWS profiles, SSO sessions, or instance roles, and does not refresh credentials through AssumeRole.
+- When session credentials expire, use **Replace credential**. The new credentials must belong to the same cloud identity.
+- Steward supports the commercial AWS partition only. AWS China and GovCloud identities and endpoints are not supported yet.
 
-IAM Identity Center sign-in runs its own authorization rather than reading the AWS CLI's cached session: Steward registers a public client with your directory, signs you in through the browser, and exchanges the result for the selected role's temporary credentials, refreshing them as they expire. The connection reads what that role allows. The client registration expires after about ninety days, after which the connection asks to be authorized again. The browser and the Steward server must be on the same machine.
+**IAM Identity Center sign-in** runs Steward's own authorization instead of reading the AWS CLI's cached session. Steward registers a public client with your directory, signs you in through the browser, and exchanges the result for the selected role's temporary credentials, refreshing them as they expire. The connection can read whatever that role allows.
 
-The current integration targets the commercial AWS partition. Identity partitions and endpoints for AWS China and GovCloud are not yet adapted.
+- The client registration expires after about 90 days; the connection then asks you to authorize again.
+- The browser and the Steward server must run on the same machine.
 
-## Configure discovery permissions
+<span id="configure-discovery-permissions"></span>
 
-Connection validation identifies the account through STS `GetCallerIdentity`; region discovery uses EC2 `DescribeRegions`. A valid identity does not establish permission to read every resource.
+## Configure permissions
 
-| Purpose | IAM actions to check |
+Validating a connection calls STS `GetCallerIdentity` to identify the account. A valid identity does not mean Steward can read every resource: grant the read permissions below, then run a scan to confirm.
+
+### Read permissions for inventory
+
+| Purpose | IAM actions |
 | --- | --- |
-| Region and network selection | `ec2:DescribeRegions`, `ec2:DescribeVpcs`, `ec2:DescribeSubnets` |
-| Cloud Control inventory and details | `cloudformation:ListResources`, `cloudformation:GetResource`, and the service reads required by each resource type's handlers |
-| Attachment and membership facts | `ec2:DescribeInstances`, `ec2:DescribeNetworkInterfaces`, `ec2:DescribeVolumes`, `autoscaling:DescribeAutoScalingGroups`, `eks:DescribeNodegroup` |
+| Regions and network selection | `ec2:DescribeRegions`, `ec2:DescribeVpcs`, `ec2:DescribeSubnets` |
+| Cloud Control inventory and details | `cloudformation:ListResources`, `cloudformation:GetResource`, plus the service reads each resource type's handlers require |
+| Attachments and membership | `ec2:DescribeInstances`, `ec2:DescribeNetworkInterfaces`, `ec2:DescribeVolumes`, `autoscaling:DescribeAutoScalingGroups`, `eks:DescribeNodegroup` |
 | Service API inventory | `ec2:DescribeImages`, `ec2:DescribeSnapshots`, `es:ListDomainNames`, `es:DescribeDomains`, `rds:DescribeDBClusters`, `rds:DescribeDBInstances` (DocumentDB), `dms:DescribeReplicationInstances`, `fsx:DescribeFileSystems`, `storagegateway:ListGateways`, `storagegateway:DescribeGatewayInformation`, `route53domains:ListDomains`, `drs:DescribeSourceServers`, `mobiletargeting:ListTemplates`, `mobiletargeting:GetSmsTemplate` |
 | Organization tree | `organizations:ListRoots`, `organizations:ListOrganizationalUnitsForParent` |
-| Resource Explorer index | `resource-explorer-2:Search`; Steward calls `ListResources`, which uses the Search permission |
-| CloudFormation stack details and ownership | `cloudformation:DescribeStacks`, `cloudformation:ListStackResources`, `cloudformation:GetTemplate` |
+| Resource Explorer index | `resource-explorer-2:Search` (Steward calls `ListResources`, which uses this permission) |
+| CloudFormation stacks and ownership | `cloudformation:DescribeStacks`, `cloudformation:ListStackResources`, `cloudformation:GetTemplate` |
 
-Cloud Control actions use the `cloudformation:` IAM prefix. Its generic read actions do not replace the underlying EC2, S3, RDS, or other service permissions. Check the [resource operation and handler requirements](https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/resource-operations.html). Only grant the rows for services you use; a denied type fails its own scan item without affecting other types.
+- **Cloud Control needs two layers.** Its actions use the `cloudformation:` prefix, but those generic actions do not replace the underlying EC2, S3, RDS, or other service permissions. Check each type's [resource handler requirements](https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/resource-operations.html).
+- **Grant only what you use.** A denied type fails its own scan item without affecting other types.
+- **Resource Explorer** must return resources in the queried region. Steward uses that region's default view, so the view's filters limit what it sees. See [Resource Explorer setup](https://docs.aws.amazon.com/resource-explorer/latest/userguide/getting-started-setting-up.html) and [ListResources permissions](https://docs.aws.amazon.com/resource-explorer/latest/apireference/API_ListResources.html).
 
-Resource Explorer must return resources in the queried region. Steward uses that region's default view, so view filters affect visibility. See [Resource Explorer setup](https://docs.aws.amazon.com/resource-explorer/latest/userguide/getting-started-setting-up.html) and [ListResources permissions](https://docs.aws.amazon.com/resource-explorer/latest/apireference/API_ListResources.html).
+### Permissions for cleanup
+
+Read permissions do not allow cleanup. Add these only for the types you plan to delete:
+
+| Purpose | IAM actions |
+| --- | --- |
+| Delete through Cloud Control | `cloudformation:DeleteResource`, `cloudformation:GetResourceRequestStatus`, plus the target type's service delete and read permissions |
+| Delete through service APIs | The type's own delete action, such as `ec2:DeregisterImage`, `ec2:DeleteSnapshot`, `es:DeleteDomain`, `rds:DeleteDBCluster`, `dms:DeleteReplicationInstance`, `fsx:DeleteFileSystem`, `storagegateway:DeleteGateway`, `route53domains:DeleteDomain`, `drs:DeleteSourceServer`, `mobiletargeting:DeleteSmsTemplate` |
+| Keep volumes or interfaces when an instance is terminated | `ec2:ModifyInstanceAttribute`, `ec2:ModifyNetworkInterfaceAttribute` |
+| Turn off deletion protection | `cloudformation:UpdateResource` plus the service's modify permission, such as `rds:ModifyDBCluster` or `ec2:DisableImageDeregistrationProtection` |
+| Pre-deletion checks for KMS keys, Backup vaults, and S3 buckets | `kms:DescribeKey`, `backup:DescribeBackupVault`, `s3:ListBucketVersions` |
 
 ## Run your first scan
 
-1. Add and validate the connection, then confirm the AWS account identity. A useful example name is “AWS · Test”.
-2. Refresh regions. Automatic discovery includes enabled regions; enable additional regions in AWS before refreshing again.
-3. Start in a region containing a known resource, such as `us-east-1`, or select a known VPC.
-4. Run the scan and inspect failed items. The total resource count alone does not establish success.
-5. Search **Resources** for a known instance, bucket, or stack. Confirm its account, region, and identifier. Include the global scope for global resources such as IAM identities.
+Start small: one region with a resource you know, then expand.
 
-**Success check:** Expected resources are present under the correct account and region, with no unresolved permission or type failures. Continue to [resource relationships](./topology.md) or expand the scan scope.
+1. Add the connection (for example, name it “AWS · Test”). Steward validates it before saving; confirm that the account ID it shows is the one you expect.
+2. On the connection, open **Manage regions** → **Refresh from cloud API**. Steward lists the regions enabled in the account (through `ec2:DescribeRegions`). To scan another region, enable it in AWS first, then refresh again.
+3. Go to **Scans** → **Start scan**. Choose **Selected regions** and pick a region with known resources, such as `us-east-1`, or choose **Selected VPCs / vSwitches** and pick a known VPC or subnet. Add **Global** if you want IAM and other [global resources](#global-services).
+4. Open the scan and check for failed items. Fix permission errors, then select **Retry**.
+5. In **Resources**, search for a known instance, bucket, or stack, and check its account, region, and ID.
+
+**Result check:** the resources you expect appear under the right account and region, and the scan has no unresolved permission or type failures. A resource count alone does not prove the scan is complete. Next, [view relationships](./topology.md) or widen the scan scope.
+
+For a coverage record you can verify across regions and connections, follow [Inventory AWS resources across regions](./tutorials/aws-resource-inventory.md).
 
 ## Resource coverage
 
@@ -56,45 +82,94 @@ Resource Explorer must return resources in the queried region. Steward uses that
 | --- | --- |
 | Compute | EC2 instances, AMIs, launch templates, Dedicated Hosts, capacity reservations and fleets, Auto Scaling groups, Lightsail instances, key pairs, Instance Connect endpoints |
 | Containers and serverless | EKS clusters, managed node groups, Fargate profiles and add-ons; ECS clusters, services and task definitions; ECR repositories and pull-through cache rules; Lambda; App Runner |
-| Networking | VPCs, subnets, CIDR blocks, route tables, security groups, network ACLs, interfaces, Elastic IPs, Internet, egress-only, NAT and virtual private gateways, customer gateways, VPN connections, VPC peering, endpoints and endpoint services, flow logs, DHCP option sets |
+| Networking | VPCs, subnets, CIDR blocks, route tables, security groups, network ACLs, network interfaces, Elastic IPs, internet, egress-only, NAT and virtual private gateways, customer gateways, VPN connections, VPC peering, endpoints and endpoint services, flow logs, DHCP option sets |
 | Transit and hybrid networking | Transit gateways with route tables, VPC, peering and Connect attachments, multicast domains, associations, members and sources; Direct Connect connections, LAGs, gateways, associations and virtual interfaces; Cloud WAN global and core networks; Global Accelerator accelerators, listeners and endpoint groups |
 | Load balancing, edge, and DNS | Application, Network and Gateway Load Balancers with listeners and target groups, Classic Load Balancers, CloudFront distributions, WAF web ACLs, Shield Advanced protections, Route 53 hosted zones, health checks, Resolver rules and registered domains, API Gateway APIs and custom domains, VPC Lattice |
 | Storage and backup | S3 buckets, EBS volumes and snapshots, Data Lifecycle Manager policies, EFS file systems, mount targets and access points, FSx file systems, Storage Gateway, AWS Backup vaults, plans and selections, Elastic Disaster Recovery source servers |
 | Databases and analytics | RDS and Aurora, RDS Proxy, Aurora DSQL, DynamoDB, DocumentDB and DocumentDB Elastic, Neptune and Neptune Analytics, Keyspaces, ElastiCache, MemoryDB, Timestream, OpenSearch Service and Serverless, Redshift and Redshift Serverless, Glue databases, Athena workgroups, EMR Serverless, Kinesis, Managed Service for Apache Flink, DMS, MSK, Amazon MQ, DataZone, QuickSight dashboards and datasets |
-| Messaging and applications | SQS, SNS, EventBridge buses and rules, Step Functions, CodePipeline, Cloud Map namespaces and services, AppRegistry applications, Pinpoint SMS templates, IVS channels and stages, Kendra indexes, SageMaker endpoints, configurations, models and HyperPod clusters, AWS PCS and Batch compute environments |
+| Messaging and applications | SQS, SNS, EventBridge buses and rules, Step Functions, CodePipeline, Cloud Map namespaces and services, AppRegistry applications, Pinpoint SMS templates, IVS channels and stages, Kendra indexes, SageMaker endpoints, endpoint configurations, models and HyperPod clusters, AWS PCS and Batch compute environments |
 | Identity, security, and governance | IAM users, groups, roles, instance profiles and managed policies, IAM Identity Center instances and groups, Organizations, organizational units and member accounts, KMS keys and aliases, ACM certificates, GuardDuty, Security Hub, Macie, Network Firewall, IAM Access Analyzer, CloudTrail trails and event data stores |
 | Monitoring and orchestration | CloudWatch alarms, dashboards and log groups, Synthetics canaries, X-Ray groups, Observability Access Manager, Managed Grafana and Prometheus, CloudFormation stacks and StackSets |
 
-Child types are listed through their parent: EKS node groups, add-ons, and Fargate profiles through each cluster; load balancer listeners through each load balancer; EFS mount targets through each file system; multicast associations, members, and sources through each domain; Identity Center groups through each instance; and organizational units through the complete organization tree. A failure to read the parent fails the child's scan item instead of reporting an empty list.
+### Child resources
 
-Global services are read from their home region: IAM, CloudFront, Route 53, Organizations, and Shield Advanced from `us-east-1`; Global Accelerator and Cloud WAN from `us-west-2`. Include the global scope to scan them. CloudFront-scoped WAF web ACLs are listed in the `us-east-1` region scan.
+Some types are listed through their parent:
+
+| Child type | Listed through |
+| --- | --- |
+| EKS node groups, add-ons, Fargate profiles | Each cluster |
+| Load balancer listeners | Each load balancer |
+| EFS mount targets | Each file system |
+| Multicast associations, members, sources | Each multicast domain |
+| IAM Identity Center groups | Each instance |
+| Organizational units | The complete organization tree |
+
+If Steward cannot read the parent, the child's scan item fails instead of reporting an empty list.
+
+<span id="global-services"></span>
+
+### Global services
+
+Global services are read from their home region. Include **Global** in the scan scope to scan them.
+
+| Home region | Services |
+| --- | --- |
+| `us-east-1` | IAM, CloudFront, Route 53, Organizations, Shield Advanced |
+| `us-west-2` | Global Accelerator, Cloud WAN |
+
+CloudFront-scoped WAF web ACLs appear in the `us-east-1` region scan.
 
 ## Relationships and ownership
 
-Relationships come from the resource model, such as a resource's VPC, subnets, and security groups, and from attachment facts read from the service APIs:
+Steward builds relationships from the resource model (such as a resource's VPC, subnets, and security groups) and from attachment details read through the service APIs. These relationships decide what a cleanup task deletes, keeps, or blocks:
 
-- **Instance storage and interfaces:** an EBS volume or network interface with `DeleteOnTermination` is managed by its instance. Terminating the instance deletes it. Other attached volumes are deleted after the instance.
-- **Auto Scaling and EKS:** instances of an Auto Scaling group and the groups of an EKS managed node group are managed by their controller and can only be cleaned up through it.
-- **Service-managed interfaces:** interfaces created by NAT gateways, VPC endpoints, load balancers, EFS mount targets, or Lambda belong to that service. They cannot be deleted directly.
-- **Elastic IPs:** an address is released only after the NAT gateway or instance using it is gone.
-- **CloudFormation:** Steward reads stack resources and the processed template to identify ownership and `DeletionPolicy`. Resources with `Retain` or `RetainExceptOnCreate` use retention relationships; termination-protected stacks block deletion.
+| Relationship | What it means for cleanup |
+| --- | --- |
+| Instance storage and interfaces | An EBS volume or network interface with `DeleteOnTermination` is managed by its instance: terminating the instance deletes it. Other attached volumes are deleted after the instance. |
+| Auto Scaling and EKS | Instances in an Auto Scaling group, and the Auto Scaling groups of an EKS managed node group, are managed by their controller and can only be cleaned up through it. |
+| Service-managed interfaces | Interfaces created by NAT gateways, VPC endpoints, load balancers, EFS mount targets, or Lambda belong to that service and cannot be deleted directly. |
+| Elastic IPs | An address is released only after the NAT gateway or instance using it is gone. |
+| CloudFormation | Steward reads each stack's resources and processed template to find ownership and `DeletionPolicy`. Resources with `Retain` or `RetainExceptOnCreate` are treated as retained; a stack with termination protection blocks deletion. |
 
-## Review cleanup effects
+## Cleanup behavior and protections
 
-Cleanup requires `cloudformation:DeleteResource`, `cloudformation:GetResourceRequestStatus`, and the target type's service deletion and read permissions. Service API types use their own delete actions, such as `ec2:DeregisterImage`, `ec2:DeleteSnapshot`, `es:DeleteDomain`, `rds:DeleteDBCluster`, `dms:DeleteReplicationInstance`, `fsx:DeleteFileSystem`, `storagegateway:DeleteGateway`, `route53domains:DeleteDomain`, `drs:DeleteSourceServer`, and `mobiletargeting:DeleteSmsTemplate`.
+The cleanup task shows what each deletion removes and what it keeps. Steward waits for asynchronous operations and reads the result back; an accepted request does not count as a deletion. Read [Clean up resources](./cleanup.md) before you execute a task.
 
-The plan shows what each deletion removes and what it keeps:
+### Keep attached volumes and interfaces
 
-- **Retaining attachments:** to keep a volume or interface that its instance would delete, retain it in the plan. Before termination, Steward sets `DeleteOnTermination` to false, reads the change back, and after termination confirms that retained resources still exist and deleted ones are gone. This needs `ec2:ModifyInstanceAttribute` and `ec2:ModifyNetworkInterfaceAttribute`. If attachments changed after the plan was reviewed, execution stops.
-- **Deletion protection:** protection on EC2 instances, RDS and Aurora, DynamoDB, EKS clusters, load balancers, log groups, Neptune, Network Firewall, Aurora DSQL, CloudTrail event data stores, Auto Scaling groups, DocumentDB clusters, and AMIs is turned off before deletion, then read back. This needs `cloudformation:UpdateResource` and the service's modify permission, such as `rds:ModifyDBCluster` or `ec2:DisableImageDeregistrationProtection`.
-- **Preconditions:** Internet and virtual private gateways are detached from their VPC first. DocumentDB clusters must have no member instances, and Elastic Disaster Recovery source servers must be disconnected. AWS managed KMS keys cannot be deleted. A customer managed key that a scanned resource still references by key ID, key ARN, alias or alias ARN is deleted only after that resource; if the resource is not in the task, the plan is blocked. When a key policy grants unconditional key administration only to scanned IAM users or roles, without delegating to the account root, the task cannot delete all of them while the key remains. Backup vaults must hold no recovery points and must not be locked in compliance mode; S3 buckets must hold no object versions or delete markers, even when versioning is suspended; Steward does not empty buckets. A scan marks a non-empty bucket as protected so the plan shows it, and the bucket is checked again right before deletion; after emptying a bucket, scan again. These checks need `kms:DescribeKey`, `backup:DescribeBackupVault` and `s3:ListBucketVersions`.
-- **Service defaults:** DocumentDB clusters are deleted without a final snapshot. FSx file systems follow each type's default final-backup behavior. KMS keys enter their scheduled deletion window; a key already pending deletion is treated as deleted. Deleting a Route 53 domain registration cannot be undone and is only supported for some top-level domains.
+To keep a volume or interface that its instance would delete, retain it when you review the cleanup task. Before terminating the instance, Steward sets `DeleteOnTermination` to false and reads the change back. After termination, it confirms that retained resources still exist and deleted ones are gone. If attachments changed after you reviewed the task, execution stops.
 
-Nonempty buckets and repositories, other dependencies, and changing resource states can still prevent an operation. Steward waits for asynchronous operations and reads back the result. An accepted request is not proof of deletion. Read [Clean up resources](./cleanup.md) before executing a plan.
+### Deletion protection
+
+For these types, Steward turns deletion protection off before deletion, then reads it back:
+
+EC2 instances, AMIs, Auto Scaling groups, EKS clusters, load balancers, RDS and Aurora, DocumentDB clusters, Neptune, Aurora DSQL, DynamoDB, CloudWatch log groups, Network Firewall, CloudTrail event data stores.
+
+### Preconditions and blockers
+
+| Resource | Condition |
+| --- | --- |
+| Internet and virtual private gateways | Detached from their VPC first. |
+| DocumentDB clusters | Must have no member instances. |
+| Elastic Disaster Recovery source servers | Must be disconnected. |
+| KMS keys | AWS managed keys cannot be deleted. A customer managed key that a scanned resource still references (by key ID, key ARN, alias, or alias ARN) is deleted only after that resource; if the resource is not in the task, the task is blocked. If a key policy grants unconditional key administration only to scanned IAM users or roles, without delegating to the account root, the task cannot delete all of them while the key remains. |
+| Backup vaults | Must hold no recovery points and must not be locked in compliance mode. |
+| S3 buckets | Must hold no object versions or delete markers, even when versioning is suspended. Steward does not empty buckets. A scan marks a non-empty bucket as protected so it shows in the task, and the bucket is checked again right before deletion. After you empty a bucket, scan again. |
+
+Non-empty repositories, other dependencies, and resources changing state can still make an operation fail.
+
+### Service defaults
+
+| Resource | What deletion does |
+| --- | --- |
+| DocumentDB clusters | Deleted without a final snapshot. |
+| FSx file systems | Follow each file system type's default final-backup behavior. |
+| KMS keys | Enter their scheduled deletion window. A key already pending deletion counts as deleted. |
+| Route 53 registered domains | Deletion cannot be undone and is supported only for some top-level domains. |
 
 ## Differences from other clouds
 
-AWS has no equivalent for some resources available on other clouds. Steward does not substitute an unrelated resource for them:
+Some resources that exist on other clouds have no AWS equivalent. Steward does not substitute an unrelated resource for them:
 
 | Resource | AWS behavior |
 | --- | --- |
@@ -102,22 +177,25 @@ AWS has no equivalent for some resources available on other clouds. Steward does
 | Inter-region QoS and traffic marking policies | Transit Gateway and Cloud WAN have no QoS queue or DSCP marking policy resource. |
 | Route maps | Transit Gateway has no route-map object; Cloud WAN routing policy is part of the core network policy. |
 | Accelerator attachments | Amazon Elastic Inference was discontinued on April 15, 2024. |
-| Dedicated block storage clusters and cloud phones | No corresponding AWS service is available. |
+| Dedicated block storage clusters and cloud phones | No corresponding AWS service. |
 | Multi-cluster fleet control planes | EKS has no managed fleet controller resource. |
 
 ## Troubleshooting
 
 | Symptom | What to check |
 | --- | --- |
-| `ExpiredToken` or validation failure | Verify matching keys, the Session Token, expiration, and account partition; replace the complete credential set. |
-| A region is missing | Check region enablement and `ec2:DescribeRegions`. |
-| Resource Explorer is unauthorized or returns no resources | Check the regional default view, its filters, Search permission, and index state. |
-| Cloud Control returns `AccessDenied` | Check both the Cloud Control action and the resource handler's service permissions. |
-| A child type fails while its parent succeeds | Check the child's list permission; for organizational units, check that the account is the organization's management account. |
-| A type is unavailable in a region | Check AWS support for that type and region, and select the types you actually use. |
-| An instance cleanup stops with an attachment mismatch | Rescan and review the plan again; volumes or interfaces changed after review. |
-| A stack or resource cannot be deleted | Inspect termination protection, retention policy, dependencies, and operation errors before retrying. |
+| `ExpiredToken` or validation fails | Check that the keys match, the Session Token and expiration, and the account partition; replace the complete credential set. |
+| A region is missing | Check that the region is enabled in the account, and `ec2:DescribeRegions`. |
+| Resource Explorer is unauthorized or returns nothing | Check the region's default view and its filters, the Search permission, and the index state. |
+| Cloud Control returns `AccessDenied` | Check both the Cloud Control action and the service permissions the resource handler needs. |
+| A child type fails while its parent succeeds | Check the child's list permission. For organizational units, connect the organization's management account. |
+| A type is unavailable in a region | Check that AWS supports the type in that region, and scan only the types you use. |
+| A bucket shows as protected | It still holds object versions or delete markers. Empty it outside Steward, then scan again. |
+| Instance cleanup stops with an attachment mismatch | Volumes or interfaces changed after review. Rescan and review the task again. |
+| A stack or resource cannot be deleted | Check termination protection, retention policy, dependencies, and the operation error before retrying. |
 
-Next: [Scan resources](./scans.md) · [Query resources](./resources.md) · [Clean up resources](./cleanup.md)
+## Next steps
 
-For a coverage record you can verify across regions and connections, follow [Inventory AWS resources across regions](./tutorials/aws-resource-inventory.md).
+- [Scan resources](./scans.md)
+- [Query resources](./resources.md)
+- [Clean up resources](./cleanup.md)

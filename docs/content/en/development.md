@@ -4,9 +4,11 @@ description: "Build Steward from source and develop the frontend and API locally
 navTitle: "Source and local development"
 ---
 
+This guide is for building Steward from source and changing its code. To use Steward, [install a release](./installation.md) instead. Contributions are welcome through [GitHub](https://github.com/loomx-ai/steward).
+
 ## Prerequisites
 
-Requires Git, Go 1.26+, Node.js 22+, npm, make, and a C compiler. Use Xcode Command Line Tools on macOS, GCC on Linux, or MinGW-w64 and Git Bash on Windows.
+You need Git, Go 1.26+, Node.js 22+, npm, make, and a C compiler. Use Xcode Command Line Tools on macOS, GCC on Linux, or MinGW-w64 and Git Bash on Windows.
 
 <span id="source"></span>
 

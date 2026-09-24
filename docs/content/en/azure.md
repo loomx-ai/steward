@@ -1,531 +1,1066 @@
 ---
 title: "Microsoft Azure"
-description: "Connect an Azure subscription, discover resources, and review supported cleanup actions."
+description: "Connect an Azure subscription, grant the RBAC and data-plane permissions Steward needs, run the first inventory, and look up what cleanup does to each Azure service."
 navTitle: "Microsoft Azure"
 ---
 
+Use this page to connect an Azure subscription to Steward, grant the permissions it needs, and look up what Steward finds and what cleanup does to each Azure service. [Troubleshooting](#troubleshooting) is near the end.
+
+**What a connection covers.** Each Azure connection reads one subscription in the Azure public cloud. Sovereign clouds and Azure Stack endpoints are not supported. Regional resources appear in their Azure region. Resource groups and subscription-wide resources — such as RBAC role definitions and assignments, diagnostic settings, Communication and Email resources, registered domains and Cosmos DB accounts — appear under global scope.
+
+**How Steward reads Azure.**
+
+- **Azure Resource Manager (ARM)** gives a broad inventory of the subscription. For supported resource types, Steward also calls each product's own list and detail APIs. ARM resource types without native support appear as read-only inventory.
+- **Product data planes** are read through their own endpoints, each with a separate Microsoft Entra token: Storage, Batch, Communication Services, Key Vault, Microsoft Graph and Synapse. See [Data-plane and directory access](#data-plane-and-directory-access).
+- **Child resources are discovered explicitly.** Steward lists VNet subnets, Blob containers, SQL databases, scale-set instances, DNS records, Service Bus entities, Event Hubs consumer groups and other children itself instead of relying on the ARM resource list.
+- **Known resources are not dropped silently.** When a list omits a resource Steward saw before, Steward reads that resource by ID. A permission or pagination failure never counts as proof that a resource disappeared: the previous record stays until the resource's own read confirms it is gone.
+- **Private configuration stays private.** Secrets, scripts, connection details, message and notification content stay out of the public inventory and API logs. Each product section below names what it excludes.
+
 ## Connect a subscription
 
-Each Azure connection accesses one subscription using a Microsoft Entra service principal. This integration uses Azure public cloud; sovereign clouds and Azure Stack endpoints are not supported.
+Open the user menu → **Settings** → **Cloud connections** → **Add connection**, choose **Microsoft Azure**, and pick a credential type:
+
+| Credential type | Required fields | Use it for |
+| --- | --- | --- |
+| **Azure service principal** | **Subscription ID**, **Tenant ID**, **Application (client) ID** and **Client secret** | A dedicated identity with a stable, unattended scope. |
+| **OAuth** | Sign in through the browser, then pick one of your subscriptions | [Browser sign-in](./connections.md#browser) as your own account. |
+| **OIDC workload identity** | Subscription ID, Tenant ID and client ID; optional write client ID | Temporary credentials without a stored secret, when the server is configured for [OIDC](./oidc.md). |
+
+Steward uses only the credential you enter. It does not use ambient Azure CLI credentials, managed identities, storage account keys or Communication Services account keys.
+
+### Use a service principal
 
 1. Create an application registration and service principal in the subscription's tenant, then create a client secret. Record the **secret value**, not its ID.
-2. Assign **Reader** at the subscription scope for inventory, resource details, region discovery, and management-lock checks. A custom role needs equivalent read access, including `Microsoft.Resources/subscriptions/read`, subscription resources and resource groups, locations, resource-provider read operations, and `Microsoft.Authorization/locks/read`.
-3. Open **Settings → Cloud connections → Add connection**, select **Microsoft Azure**, and enter the **Subscription ID**, **Tenant ID**, **Application (client) ID**, and **Client secret**.
-4. Validate the connection, then refresh its regions. Add product deletion and operation-status permissions only for resources you intend to clean up. Successful connection validation does not prove that every resource-specific API is authorized.
+2. Assign roles on the subscription as described in [Permissions](#permissions). **Reader** is enough to start.
+3. Open **Settings** → **Cloud connections** → **Add connection**, select **Microsoft Azure** → **Azure service principal**, and enter the **Subscription ID**, **Tenant ID**, **Application (client) ID** and **Client secret**.
+4. Validate the connection, then refresh its regions.
 
-Blob container cleanup also requires data-plane read access, such as **Storage Blob Data Reader**, and network access to the account's public Blob endpoint. Steward requests separate ARM and Storage access tokens. It does not use ambient Azure CLI credentials, managed identities, or storage account keys.
+Result check: validation confirms the identity, not that every resource API is authorized. Run the [first inventory](#first-inventory) and fix any permission errors it reports.
 
-A subscription can also be connected by [browser sign-in](./connections.md#browser) instead of a service principal: Steward signs you in through the browser and lists the subscriptions your account reaches. Such a connection acts as your own account and obtains its own token per audience, so a data plane your account cannot reach — Key Vault or Microsoft Graph, for example — reports that source as failing while the rest of the inventory continues. A service principal remains the better choice for an unattended, stable scope.
+See Microsoft's [service principal authentication guide](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow).
 
-Batch jobs, schedules, tasks and nodes use the account's Batch endpoint and a separate Batch access token. Grant appropriate Batch data permissions, such as **Azure Batch Data Contributor** for cleanup, in addition to the ARM permissions for the selected account resources. URL-based storage and key references require subscription-wide Storage/Key Vault list access and reads of matching resources. User-subscription nodes also require Compute/Network reads for their VM, disks and network resources. See [Batch authentication](https://learn.microsoft.com/en-us/azure/batch/batch-aad-auth) and [Batch roles](https://learn.microsoft.com/en-us/azure/batch/batch-role-based-access-control).
+### Sign in with your browser
 
-Communication Services phone numbers, reservations and rooms use a separate Microsoft Entra token for `https://communication.azure.com/.default`. Grant the service principal native data read permissions, including room participant lists, and the corresponding deletion permissions for cleanup. ARM list/read access is also required for Communication and Email resources, their children, resource groups and locks; cleanup adds each selected resource's native DELETE and operation-status reads. Steward obtains the data endpoint from the owned ARM account and does not use account keys. See [Communication Services authentication](https://learn.microsoft.com/en-us/rest/api/communication/authentication).
+Choose **OAuth** to connect by [browser sign-in](./connections.md#browser) instead of a service principal. Steward signs you in through the browser and lists the subscriptions your account can reach; pick one, and the tenant comes with it.
 
-Credentials are encrypted using the deployment's credential-encryption key. Use **Replace credential** when rotating a secret; the subscription, tenant, and application must remain the same. See Microsoft's [service principal authentication guide](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow).
+The connection acts as your own account and requests a separate token for each audience (ARM, Microsoft Graph, Storage, Batch, Communication Services and Key Vault). A data plane your account cannot reach — Key Vault or Microsoft Graph, for example — is reported as that source failing while the rest of the inventory continues. For an unattended, stable scope, a service principal is the better choice.
+
+### Use OIDC workload identity
+
+When the Steward server is configured for workload identity, choose **OIDC workload identity**. Steward exchanges a short-lived workload token for Azure credentials, so no client secret is stored. In Azure, add a federated identity credential to the application that matches the issuer, subject and audience shown in the connection's **OIDC trust configuration**, and grant that service principal the same RBAC roles as above. The read identity is used for validation and scans; the optional write identity is used for cleanup. See [OIDC connections](./oidc.md) for the full setup.
+
+### Rotate credentials
+
+Credentials are encrypted with the deployment's credential-encryption key. When you rotate a client secret, use **Replace credential**. The subscription, tenant and application must stay the same.
+
+## Permissions
+
+Grant access in layers: base read access for inventory, deletion permissions only for what you plan to clean up, and separate data-plane or directory permissions for the products that need them.
+
+### Base access for inventory
+
+Assign **Reader** at the subscription scope. It covers inventory, resource details, region discovery and management-lock checks.
+
+A custom role needs equivalent read access, including:
+
+- `Microsoft.Resources/subscriptions/read`
+- read access to subscription resources and resource groups, locations and each resource provider's read operations
+- `Microsoft.Authorization/locks/read`
+
+Reader grants ARM read operations only. Some inventory calls use other actions — for example Azure NetApp Files network sibling sets need `Microsoft.NetApp/locations/queryNetworkSiblingSet/action`. Each product section under [Cleanup protections](#cleanup-protections) lists these extra permissions, and the reads a custom role must include.
+
+Management groups are read-only inventory and need `Microsoft.Management/managementGroups/read` on the groups to inventory.
+
+### Permissions for cleanup
+
+Add deletion permissions only for the resource types you intend to clean up. For each selected resource, cleanup needs:
+
+- the resource's native `delete` action;
+- read access to its asynchronous operation status;
+- the reads Steward uses to check dependencies before deleting: the resource, its parents, its resource group and management locks.
+
+Some checks read other resource types than the one you selected, even outside the selected resource group:
+
+- Every ARM resource cleanup reads the subscription's role-assignment and role-definition indexes (see [Azure RBAC](#azure-rbac)) and the six native alert-rule collections (see [Monitor alerts and budgets](#monitor-alerts-and-budgets)).
+- Deleting an AKS cluster, subnet or user-assigned managed identity reads the subscription's Kubernetes Fleet collections (see [Kubernetes Fleet Manager](#kubernetes-fleet-manager)).
+- Deleting an Application Insights component, Log Analytics workspace or data collection endpoint reads the subscription's Azure Monitor Private Link Scopes (see [Azure Monitor Private Link Scope](#azure-monitor-private-link-scope)).
+- Deleting a resource that Data Migration can target reads the subscription's migration indexes (see [Data Migration](#data-migration)).
+- Deleting a diagnostic-setting source, destination or ancestor reads diagnostic settings at each source scope (see [Diagnostic settings](#diagnostic-settings)).
+
+Some products need more than a `delete` action — for example to stop, cancel, unassign or unpair something first:
+
+| Product | Extra actions for cleanup |
+| --- | --- |
+| [Azure Batch](#azure-batch) | Batch data-plane permissions, such as **Azure Batch Data Contributor** |
+| [Kubernetes Fleet Manager](#kubernetes-fleet-manager) | Stop update runs; write and Apply Cluster Mesh profiles |
+| [Data Factory](#data-factory) | Preparation operations such as stopping triggers, CDC and runtimes, and canceling pipeline runs |
+| [Data Migration](#data-migration) | Task and migration Cancel, SQL `deleteNode` |
+| [Azure NetApp Files](#azure-netapp-files) | Volume update and latest-backup-status read for policy and vault cleanup |
+| [Communication Services](#communication-services) | Data-plane deletion permissions for phone numbers, reservations and rooms |
+
+Steward never deletes the role assignments that give the connection its own access; see [General protections](#general-protections).
+
+### Data-plane and directory access
+
+These products are read through their own endpoints with a separate token. Reader does not cover them.
+
+| Product | Token audience | What to grant |
+| --- | --- | --- |
+| Blob containers | `https://storage.azure.com/.default` | Data-plane read access, such as **Storage Blob Data Reader**, and network access to the account's public Blob endpoint. Blob cleanup currently requires the standard `ACCOUNT.blob.core.windows.net` endpoint. |
+| Azure Batch jobs, schedules, tasks and nodes | `https://batch.core.windows.net//.default` | Batch data permissions, such as **Azure Batch Data Contributor** for cleanup, in addition to ARM permissions for the selected account resources. See [Batch authentication](https://learn.microsoft.com/en-us/azure/batch/batch-aad-auth) and [Batch roles](https://learn.microsoft.com/en-us/azure/batch/batch-role-based-access-control). |
+| Communication Services phone numbers, reservations and rooms | `https://communication.azure.com/.default` | Native data read permissions, including room participant lists, and the corresponding deletion permissions for cleanup. Steward obtains the data endpoint from the owned ARM account. See [Communication Services authentication](https://learn.microsoft.com/en-us/rest/api/communication/authentication). |
+| Key Vault certificates | `https://vault.azure.net/.default` | Certificate list/get data-plane permission — the **Key Vault Reader** role, or an access policy with certificate **List** and **Get** — and network access to the vault. An unreadable vault fails the scan instead of appearing empty. |
+| Microsoft Entra users and groups | `https://graph.microsoft.com/.default` | Microsoft Graph application permissions `User.Read.All` and `GroupMember.Read.All` (or `Directory.Read.All`), with admin consent. |
+| Synapse Spark jobs and sessions, notebooks, Spark job definitions and pipelines | `https://dev.azuresynapse.net/.default` | Synapse data-plane list/read access; see [Azure Synapse Analytics](#azure-synapse-analytics). |
+
+### Product-specific permissions
+
+Each product section under [Cleanup protections](#cleanup-protections) lists the reads its inventory needs and the permissions each cleanup action adds. Grant a product's delete permissions only for the resources you select for cleanup.
 
 ## First inventory
 
 1. Select the new connection and confirm the subscription.
-2. Run **All active regions + global**. Steward uses native product lists and detail reads for supported resources, alongside the broad Azure Resource Manager inventory.
-3. Check scan coverage and errors. Permission or pagination failures do not establish that previously known resources disappeared.
-4. Open a regional VNet to inspect its subnets, NICs, VMs, and related resources. VM network placement is resolved through its NICs.
+2. Open **Scans** → **Start scan** and choose **All active regions + global**. Steward runs the native product lists and detail reads for supported resources alongside the broad ARM inventory.
+3. Check scan coverage and errors. A permission or pagination failure does not mean previously known resources disappeared; fix the permission and scan again.
+4. Open a regional VNet in **Resource Panorama** to inspect its subnets, NICs, VMs and related resources. A VM's network placement is resolved through its NICs.
 
-Native discovery includes child resources such as VNet subnets, Blob containers, SQL databases, scale-set instances, DNS records, Service Bus entities, and Event Hubs consumer groups. Resource groups appear in the global inventory; their Azure location describes the group's metadata location. Full ARM IDs distinguish subscriptions and resource groups. Cosmos DB requests preserve case-sensitive data-resource names; scans reject names that differ only in case when they collide in the inventory identity.
+What to expect:
+
+- Resource groups appear in the global inventory. Their Azure location is where the group's metadata is stored. Full ARM IDs distinguish subscriptions and resource groups.
+- Include global scope when you scan global alert rules and budgets.
+- Cosmos DB requests preserve case-sensitive data-resource names. A scan fails when two names differ only in case and collide in the inventory identity.
+
+**Scan selected networks.** Choose **Selected networks** to limit a scan to Azure virtual networks or Azure Local logical networks. The **Virtual / logical networks** list supports search by name or ARM ID, with pagination. Listing Local networks needs `Microsoft.AzureStackHCI/logicalNetworks/read`. Subnets configured inside a Local logical network are not separate selectable ARM resources. When you schedule the scan, Steward rereads the selected network and rejects a deleted or inaccessible target before the task is saved. Permission failures stay visible, and **Retry** keeps your selection.
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 491 resource types; 440 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 491 Azure resource types; 440 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
-| Compute | VMs and extensions, managed disks, snapshots, managed images, availability sets, dedicated hosts and capacity reservations | Supported, with attachment and ownership protections; host/reservation groups require their members to be deleted first |
-| VM scale sets | Uniform and Flexible sets, instances and extensions | Reviewed cascades for Uniform members; prerequisite VM deletion for Flexible sets |
-| Azure Batch | Accounts, pools, nodes, jobs, schedules, tasks, applications, package versions, private endpoint connections and network perimeter views | Reviewed prerequisites and cascades; exact-node removal requeues running tasks; perimeter views require account cleanup |
-| API Management | Services, workspaces, APIs and revisions, policies, products, subscriptions, portal content/configuration, credentials, notifications, associations, self-hosted gateway registrations and standalone workspace gateways | Reviewed cascades and ordered unlinks; fixed configurations require their controller; service deletion uses soft-delete retention |
-| Virtual networks | VNets, subnets, NICs, network security groups, route tables, public IPs, public IP prefixes, NAT gateways | Supported |
+| Compute | VMs and extensions, managed disks, snapshots, managed images, availability sets, dedicated hosts and capacity reservations | Supported, with [attachment and ownership protections](#general-protections); host and reservation groups require their members to be deleted first |
+| VM scale sets | Uniform and Flexible sets, instances and extensions | Uniform members are part of the set's reviewed deletion; Flexible sets require their VMs to be deleted first |
+| [Azure Batch](#azure-batch) | Accounts, pools, nodes, jobs, schedules, tasks, applications, package versions, private endpoint connections and network perimeter views | Reviewed prerequisites and cascades; removing an exact node requeues its running tasks; perimeter views go with account cleanup |
+| [API Management](#api-management) | Services, workspaces, APIs and revisions, policies, products, subscriptions, portal content/configuration, credentials, notifications, associations, self-hosted gateway registrations and standalone workspace gateways | Reviewed cascades and ordered unlinks; fixed configurations go with their controller; service deletion uses soft-delete retention |
+| Virtual networks | VNets, subnets, NICs, network security groups, route tables, public IPs, public IP prefixes, NAT gateways | Supported, with [network occupant checks](#general-protections) |
 | Load balancing | Load balancers and Application Gateways | Supported |
-| Storage | Storage accounts and Blob containers | Empty resources only |
-| SQL | Logical servers, databases and elastic pools | Server cleanup includes its reviewed databases and pools; standalone `master` deletion is prohibited |
+| Storage | Storage accounts and Blob containers | [Empty resources only](#general-protections) |
+| SQL | Logical servers, databases and elastic pools | Server cleanup includes its reviewed databases and pools; deleting `master` on its own is prohibited |
 | PostgreSQL / MySQL | Flexible servers | Supported |
-| Cosmos DB | Accounts and databases/containers for NoSQL, MongoDB, Cassandra, Gremlin and Table; roles, services, notebooks and private connections; managed Cassandra and Fleets | Reviewed children and shared dependencies precede parents; client encryption keys and built-in roles require their controller; Fleet unlinking preserves accounts |
-| Azure DocumentDB | MongoDB-compatible clusters and replicas, firewall rules, private endpoint connections and Microsoft Entra users | Reviewed replicas and children are deleted before their source/parent; deleting a replica preserves its source |
-| Azure Data Explorer | Kusto clusters, databases, follower attachments, data connections, principals, scripts and private connections; custom sandbox images | Reviewed children and follower attachments precede source deletion; read-only databases and active images require their controller |
-| Azure Synapse | Workspaces, Spark pools, SQL pools, Spark jobs and sessions, notebooks and Spark job definitions | Inventory with workspace, pool and default Data Lake references; cleanup is not yet implemented |
-| Data Factory | Factories, pipelines, datasets, dataflows, linked services, credentials, triggers, CDC, global parameters, integration runtimes/nodes and private connections | Reviewed factory cascades; runtime and work preparation; managed virtual networks require factory cleanup |
-| Data Migration | Classic services, projects, tasks/files and service tasks; SQL/Mongo migration services and migrations to SQL or Cosmos DB targets | Reviewed children and migration prerequisites; cancellation and runtime-node preparation before deletion |
-| Defender for Cloud | Subscription protection plans and supported resource-level plan states | Read-only service state, coverage, extensions and inheritance |
-| Azure Arc | Machines, extensions, Run Commands, license profiles and shared ESU licenses | Reviewed children precede ordinary machine-registration removal; shared ESU licenses require cleared assignments, and controller-managed machines require their controller |
-| Azure Local | VM instances, guest agents, identity metadata, NICs, disks, networks, storage paths and images | Native inventory; guest/VM and Arc-registration cleanup; independent disk/NIC cleanup with verified VM prerequisites; image cleanup without deleting deployed VMs; storage-path and logical-network cleanup after explicitly reviewed workloads |
-| Stream Analytics | Jobs, inputs, outputs, functions, transformations, clusters and cluster private endpoints | Job definitions follow the job; associated cluster jobs require explicit selection or prior removal |
-| Foundry / Cognitive Services | Accounts, deployments, projects, agents, connections, capability hosts, managed networks, content filters and commitment plans | Deployments and reviewed dependencies precede account soft deletion; no purge |
-| Azure AI Search | Services, private endpoint connections, shared private links and network perimeter configuration views | Reviewed links precede service deletion; perimeter views require their service |
-| Redis | Classic caches, access policies/assignments, firewall rules, replication links, patch schedules and private endpoint connections; Enterprise / Managed Redis clusters, databases, assignments and private endpoint connections | Reviewed child deletion precedes parents; classic replication unlinks first; healthy active replication verifies all members |
-| App Service | Web Apps / Function Apps, deployment slots, functions, certificates, hostname bindings and service plans | Apps/slots review owned child cascades; plans remain separate; certificates require unused TLS bindings |
-| Domain registration | Registered domains and ownership identifiers | Reviewed identifiers and app/slot hostname bindings precede delayed registration deletion; DNS hosting remains independent |
-| Communication Services | Communication accounts, SMTP usernames, phone numbers, reservations, rooms, Email resources, domains, sender usernames, suppression lists and addresses | Reviewed child prerequisites; account deletion releases its reviewed phone numbers; shared email-domain connections require explicit prior cleanup |
-| CDN and Front Door | Profiles, classic endpoints/origins/origin groups/domains; Front Door endpoints/routes/origin groups/origins/domains/rule sets/rules/security associations/certificate references | Profiles and owned child trees use reviewed cascades; shared references require ordered cleanup |
-| WAF | CDN and Front Door policies | Reviewed referring endpoint/security-association deletion precedes policy deletion; classic Front Door references still block cleanup |
-| Containers | Container registries, Container Apps, Container Instances groups and AKS | AKS cleanup reviews its node resource group and known nested or externally managed descendants |
-| Kubernetes Fleet Manager | Fleets, AKS and Arc members, managed namespaces, update runs, strategies, auto-upgrade profiles, Gates and cross-cluster networks | Reviewed native children are deleted before the Fleet; networks disconnect first, update runs remove their Gates, and verified Hub resources follow the Fleet |
-| DNS and private endpoints | Public/private zones and records, private DNS links, private endpoints and DNS zone groups | Reviewed controller cascades include verified managed NICs and external DNS records; DNS system records cannot be deleted independently |
-| Virtual WAN gateways | VPN/ExpressRoute gateways, connections, VPN NAT rules and links | Connection/NAT prerequisites are explicit; VPN links belong to their connection |
-| Service Bus | Namespaces, queues, topics, subscriptions, rules, authorization rules, recovery aliases, migration configurations and private endpoint connections | Native actions and reviewed namespace/entity cascades; migration cleanup aborts copying before deletion; paired recovery aliases use reviewed unpairing before deletion |
-| Event Hubs | Dedicated clusters, namespaces, event hubs, consumer groups, authorization rules, recovery aliases, schema/application groups and private endpoint connections | Cluster cleanup first deletes reviewed member namespaces; native namespace/event-hub cascades and paired-alias unpairing are supported |
+| [Cosmos DB](#cosmos-db) | Accounts and databases/containers for NoSQL, MongoDB, Cassandra, Gremlin and Table; roles, services, notebooks and private connections; managed Cassandra and Fleets | Reviewed children and shared dependencies precede parents; client encryption keys and built-in roles go with their controller; Fleet unlinking keeps the accounts |
+| [Azure DocumentDB](#azure-documentdb) | MongoDB-compatible clusters and replicas, firewall rules, private endpoint connections and Microsoft Entra users | Reviewed replicas and children are deleted before their source or parent; deleting a replica keeps its source |
+| [Azure Data Explorer](#azure-data-explorer) | Kusto clusters, databases, follower attachments, data connections, principals, scripts and private connections; custom sandbox images | Reviewed children and follower attachments precede source deletion; read-only databases and active images go with their controller |
+| [Azure Synapse](#azure-synapse-analytics) | Workspaces, Spark pools, SQL pools, Spark jobs and sessions, notebooks, Spark job definitions, pipelines, recoverable dropped SQL pools and restore points | Workspace cleanup with its pools, code artifacts and Spark work; independent SQL pool, Spark pool and user-defined restore-point cleanup; code artifacts and Spark work have no independent cleanup |
+| [Data Factory](#data-factory) | Factories, pipelines, datasets, dataflows, linked services, credentials, triggers, CDC, global parameters, integration runtimes/nodes and private connections | Reviewed factory cascades; runtimes and running work are prepared first; managed virtual networks go with the factory |
+| [Data Migration](#data-migration) | Classic services, projects, tasks/files and service tasks; SQL/Mongo migration services and migrations to SQL or Cosmos DB targets | Reviewed children and migration prerequisites; cancellation and runtime-node preparation before deletion |
+| [Defender for Cloud](#defender-for-cloud) | Subscription protection plans and supported resource-level plan states | Read-only service state, coverage, extensions and inheritance |
+| [Azure Arc](#azure-arc) | Machines, extensions, Run Commands, license profiles and shared ESU licenses | Reviewed children precede removal of ordinary machine registrations; shared ESU licenses require cleared assignments; controller-managed machines go with their controller |
+| [Azure Local](#azure-local) | VM instances, guest agents, identity metadata, NICs, disks, networks, storage paths and images | Guest, VM and Arc-registration cleanup; disk and NIC cleanup after VM references are verified; image cleanup without deleting deployed VMs; storage-path and logical-network cleanup after explicitly reviewed workloads |
+| [Stream Analytics](#stream-analytics) | Jobs, inputs, outputs, functions, transformations, clusters and cluster private endpoints | Job definitions follow the job; jobs in a cluster must be selected explicitly or removed from the cluster first |
+| [Foundry / Cognitive Services](#foundry-and-cognitive-services) | Accounts, deployments, projects, agents, connections, capability hosts, managed networks, content filters and commitment plans | Deployments and reviewed dependencies precede account soft deletion; no purge |
+| [Azure AI Search](#azure-ai-search) | Services, private endpoint connections, shared private links and network perimeter configuration views | Reviewed links precede service deletion; perimeter views go with their service |
+| [Redis](#redis) | Classic caches, access policies/assignments, firewall rules, replication links, patch schedules and private endpoint connections; Enterprise / Managed Redis clusters, databases, assignments and private endpoint connections | Reviewed children precede parents; classic replication is unlinked first; healthy active replication verifies all members |
+| [App Service](#app-service) | Web Apps / Function Apps, deployment slots, functions, certificates, hostname bindings and service plans | App and slot cleanup reviews owned children; plans stay separate; certificates must have no TLS bindings |
+| [Domain registration](#app-service-domains) | Registered domains and ownership identifiers | Reviewed identifiers and app/slot hostname bindings precede delayed registration deletion; DNS hosting stays independent |
+| [Communication Services](#communication-services) | Communication accounts, SMTP usernames, phone numbers, reservations, rooms, Email resources, domains, sender usernames, suppression lists and addresses | Reviewed child prerequisites; account deletion releases its reviewed phone numbers; shared email-domain connections require explicit prior cleanup |
+| [CDN and Front Door](#cdn-and-front-door) | Profiles, classic endpoints/origins/origin groups/domains; Front Door endpoints/routes/origin groups/origins/domains/rule sets/rules/security associations/certificate references | Profiles and owned child trees use reviewed cascades; shared references require ordered cleanup |
+| [WAF](#waf-policies) | CDN and Front Door policies | Referring endpoints and security associations are deleted first; classic Front Door references still block cleanup |
+| Containers | Container registries, Container Apps, [Container Instances](#container-instances) groups and AKS | AKS cleanup reviews its node resource group and known nested or externally managed descendants |
+| [Kubernetes Fleet Manager](#kubernetes-fleet-manager) | Fleets, AKS and Arc members, managed namespaces, update runs, strategies, auto-upgrade profiles, Gates and cross-cluster networks | Reviewed native children are deleted before the Fleet; networks disconnect first, update runs remove their Gates, and verified Hub resources follow the Fleet |
+| DNS and private endpoints | Public/private zones and records, private DNS links, private endpoints and DNS zone groups | Reviewed controller cascades include verified managed NICs and external DNS records; DNS system records cannot be deleted on their own |
+| Virtual WAN gateways | VPN/ExpressRoute gateways, connections, VPN NAT rules and links | Connection and NAT prerequisites are explicit; VPN links belong to their connection |
+| [Service Bus](#service-bus-and-event-hubs) | Namespaces, queues, topics, subscriptions, rules, authorization rules, recovery aliases, migration configurations and private endpoint connections | Native actions and reviewed namespace/entity cascades; migration cleanup aborts copying before deletion; paired recovery aliases are unpaired before deletion |
+| [Event Hubs](#service-bus-and-event-hubs) | Dedicated clusters, namespaces, event hubs, consumer groups, authorization rules, recovery aliases, schema/application groups and private endpoint connections | Cluster cleanup first deletes reviewed member namespaces; native namespace/event-hub cascades and paired-alias unpairing |
 | Operations and identity | Log Analytics workspaces and user-assigned managed identities | Supported |
-| Managed Grafana | Workspaces, managed private endpoints, private endpoint connections and integration fabrics | Reviewed child deletion precedes workspace deletion; each resource also has an independent native action |
-| Monitor workspace | Workspace and its default ingestion managed group | Reviews every group member, unlinks external associations first, and verifies group and known-resource absence |
-| Monitor data collection | Rules, endpoints and associations on monitored resources | Reviewed association deletion precedes rule/endpoint deletion; shared associations execute once |
-| Monitor private links | Global private link scopes, scoped-resource associations and private endpoint connections | Reviewed child deletion precedes scope deletion; linked workspaces/endpoints require association removal first |
-| Application Insights | Components, analytics items, exports, favorites, work-item configurations, API keys and profiler storage links | Independent child prerequisites, AMPLS unlinking and reviewed current managed-workspace group deletion |
-| Azure Monitor workbooks | Shared workbooks, private workbooks and workbook templates | Independent cleanup with full-content and revision checks; referenced storage and identities remain separate |
-| Azure Monitor alerts | Metric, activity-log, scheduled-query, smart-detector, Prometheus and processing rules; action groups and web tests | Independent cleanup; reviewed referencing rules must precede a shared Monitor destination |
-| Azure RBAC | Custom and built-in role definitions; subscription, resource-group and resource role assignments | Independent deletion for eligible custom roles and assignments; built-in/shared-scope roles and PIM-managed assignments remain protected |
-| Diagnostic settings | Resource and subscription settings, including separate Blob, File, Queue and Table service scopes | Independent deletion before a referenced source, destination or ancestor; destinations remain separate resources |
-| Budgets | Consumption and Cost Management budgets at subscription and resource-group scopes | Independent cleanup; notification action groups remain separate |
+| [Managed Grafana](#managed-grafana) | Workspaces, managed private endpoints, private endpoint connections and integration fabrics | Reviewed children are deleted before the workspace; each resource also has its own native action |
+| [Monitor workspace](#azure-monitor-workspace) | Workspace and its default ingestion managed group | Reviews every group member, unlinks external associations first, and verifies that the group and known resources are gone |
+| [Monitor data collection](#monitor-data-collection) | Rules, endpoints and associations on monitored resources | Reviewed associations are deleted before rules and endpoints; shared associations are deleted once |
+| [Monitor private links](#azure-monitor-private-link-scope) | Global private link scopes, scoped-resource associations and private endpoint connections | Reviewed children are deleted before the scope; linked workspaces and endpoints require association removal first |
+| [Application Insights](#application-insights) | Components, analytics items, exports, favorites, work-item configurations, API keys and profiler storage links | Independent child prerequisites, AMPLS unlinking and deletion of the reviewed current managed-workspace group |
+| [Azure Monitor workbooks](#workbooks) | Shared workbooks, private workbooks and workbook templates | Independent cleanup with full-content and revision checks; referenced storage and identities stay separate |
+| [Azure Monitor alerts](#monitor-alerts-and-budgets) | Metric, activity-log, scheduled-query, smart-detector, Prometheus and processing rules; action groups and web tests | Independent cleanup; reviewed referencing rules must precede a shared Monitor destination |
+| [Azure RBAC](#azure-rbac) | Custom and built-in role definitions; subscription, resource-group and resource role assignments | Independent deletion of eligible custom roles and assignments; built-in and shared-scope roles, PIM-managed assignments and the connection's own assignments stay protected |
+| [Diagnostic settings](#diagnostic-settings) | Resource and subscription settings, including separate Blob, File, Queue and Table service scopes | Deleted before a referenced source, destination or ancestor; destinations stay separate resources |
+| [Budgets](#monitor-alerts-and-budgets) | Consumption and Cost Management budgets at subscription and resource-group scopes | Independent cleanup; notification action groups stay separate |
 | Management groups | The tenant's visible management group directory, with parent groups | Read-only; requires `Microsoft.Management/managementGroups/read` on the groups to inventory |
 | Service Fabric and Storage Sync | Service Fabric clusters and Storage Sync services | Supported |
 | Machine Learning | Workspaces and managed online endpoints | Endpoint cleanup; workspaces are read-only parents |
 | Purview and managed applications | Microsoft Purview accounts and managed applications | Read-only: deleting them also deletes their managed resource group, which is not yet reviewed as a cascade |
 | Key Vault keys | Keys listed through the ARM Keys API | Read-only: key deletion is a data-plane soft delete not exposed by ARM |
-| Microsoft Entra users and groups | Users and groups read through Microsoft Graph with a separate `graph.microsoft.com` token, with direct group members | Read-only: directory objects affect the whole tenant. Requires the Microsoft Graph application permissions `User.Read.All` and `GroupMember.Read.All` (or `Directory.Read.All`) with admin consent; only display name, user principal name, account state, user type, group type flags and creation time are stored |
-| Key Vault certificates | Certificates read from each vault's data plane with a separate `vault.azure.net` token, with vault and managed-key references | Read-only: deletion also soft-deletes the managed key and secret. Requires certificate list/get data-plane permission (the Key Vault Reader role, or an access policy with certificate List and Get) and network access to the vault; an unreadable vault fails the scan instead of appearing empty |
+| Microsoft Entra users and groups | Users and groups read through Microsoft Graph, with direct group members | Read-only: directory objects affect the whole tenant. Requires [Graph permissions](#data-plane-and-directory-access). Only display name, user principal name, account state, user type, group type flags and creation time are stored |
+| Key Vault certificates | Certificates read from each vault's data plane, with vault and managed-key references | Read-only: deletion also soft-deletes the managed key and secret. Requires [certificate data-plane access](#data-plane-and-directory-access) |
 | Site Recovery | Replication protected items in Recovery Services vaults, with fabric, protection container and vault references | Read-only: disabling replication removes recovery-side replicas and is not yet reviewed; requires `Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems/read` |
-| Aggregate resources still awaiting lifecycle support | Resource groups, Key Vaults and Container Apps environments | Read-only |
+| Aggregate resources still awaiting lifecycle support | Resource groups, Key Vaults and Container Apps environments | Read-only: resource-group, Key Vault and Container Apps environment cleanup is not implemented |
 
-Service Bus/Event Hubs network rule sets, Event Hubs network perimeter configurations, recovery-alias authorization views, Uniform scale-set network resources and VPN connection links have no independent native delete action. The default namespace authorization rule, `RootManageSharedAccessKey`, also requires namespace deletion. These resources appear in the owning controller's reviewed deletion impacts. Retaining an intrinsic child blocks that controller's deletion. Resource-group, Key Vault and Container Apps environment cleanup remains unimplemented.
-
-Service Bus autoforwarding dependencies resolve to a queue or topic in the same namespace. Event Hubs Capture references its destination storage account and Blob container. Namespace deletion does not select those storage resources, user-assigned identities or the separate private endpoint for deletion. Inventory and action permissions must include every reviewed child's native read operation; a failed child list is not an empty namespace. See Microsoft's [autoforwarding](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding) and [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) documentation.
-
-Synapse uses native lists and detail reads. A list omission does not remove a known resource; only its own GET confirming absence can close its previous record. Default Data Lake storage remains a separate dependency. Native data-plane reads now support Spark jobs and sessions, notebooks and Spark job definitions with workspace ownership checks and a separate authentication audience. Code, job configuration and logs are omitted from returned data and diagnostics. These four data-plane object types are also registered as inventory assets with workspace and pool references. Scans validate native pagination and preserve known objects omitted from lists. The native API also supports Spark job/session cancellation, with protection checks and detail readback. Cancellation can leave a stopped historical record; it does not prove deletion. It requires Synapse data-plane cancellation permission plus ARM reads for the workspace, pool, resource group and locks. ARM asynchronous status/result reads also validate operation scope and keep operation completion separate from resource absence. These reads require access to the workspace operation endpoints. Reviewed cleanup is still in progress; these assets remain non-actionable.
+**Resources without their own delete action.** Service Bus and Event Hubs network rule sets, Event Hubs network perimeter configurations, recovery-alias authorization views, Uniform scale-set network resources and VPN connection links cannot be deleted on their own. The default namespace authorization rule, `RootManageSharedAccessKey`, also goes only with its namespace. These resources appear in their owning controller's reviewed deletion impacts, and keeping one of them blocks deletion of that controller.
 
 ## Cleanup protections
 
-Azure Arc inventory reads native machines and licenses, plus extensions, Run Commands and license profiles under each machine. Grant `Microsoft.HybridCompute/machines/read`, `Microsoft.HybridCompute/machines/extensions/read`, `Microsoft.HybridCompute/machines/runCommands/read`, `Microsoft.HybridCompute/machines/licenseProfiles/read` and `Microsoft.HybridCompute/licenses/read` for the selected types. Child scans require subscription-wide machine list/read access. Known resources and omitted parents are reread individually; incomplete or denied reads fail the scan. Scripts, extension settings, protected parameters and agent proxy settings stay out of public inventory and API logs.
+This section explains what Steward checks before it deletes an Azure resource, and what deleting it does. Start with the [general protections](#general-protections), which apply to every service, then find your service below.
 
-Arc extension, Run Command and license-profile cleanup requires the corresponding `Microsoft.HybridCompute/machines/extensions/delete`, `Microsoft.HybridCompute/machines/runCommands/delete` or `Microsoft.HybridCompute/machines/licenseProfiles/delete` permission, native child/machine reads, resource-group list/read, management-lock reads and the applicable Monitor, diagnostic settings, RBAC, Fleet and DMS dependency reads. Referencing rules must be reviewed and removed first. The driver verifies the machine registration, private child configuration, protected tags and ownership before deletion. It saves signed asynchronous progress across restarts and requires the child's own GET to return 404; parent disappearance and operation success alone do not complete cleanup.
+Before you run a task, review the [cleanup selection and results](./cleanup.md). Deleting a database, registry or storage resource can remove the data it contains. Azure permissions, retention settings, dependencies and concurrent changes can still prevent an action. See Microsoft's [management locks](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/lock-resources), [VM deletion settings](https://learn.microsoft.com/en-us/azure/virtual-machines/delete) and [asynchronous operation behavior](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations).
 
-The cleanup plan warns that deleting a running Run Command terminates its script, extension removal needs separate agent-side verification, and removing a license profile changes machine licensing while retaining shared licenses. Profile absence does not prove billing ended. Native DELETE has no conditional If-Match, so repeated checks cannot eliminate a change occurring between the final check and deletion. See [agent removal guidance](https://learn.microsoft.com/en-us/azure/azure-arc/servers/uninstall-agent). Tests cover native protocol replay and SQLite scan, graph, planning and restored execution; live agent removal remains unverified.
+| Area | Services |
+| --- | --- |
+| Compute and containers | [Azure Batch](#azure-batch), [Container Instances](#container-instances), [Kubernetes Fleet Manager](#kubernetes-fleet-manager), [App Service](#app-service), [App Service domains](#app-service-domains) |
+| Hybrid | [Azure Arc](#azure-arc), [Azure Local](#azure-local) |
+| Networking and delivery | [CDN and Front Door](#cdn-and-front-door), [WAF policies](#waf-policies) |
+| Storage | [Elastic SAN](#elastic-san), [Azure NetApp Files](#azure-netapp-files) |
+| Databases and analytics | [Cosmos DB](#cosmos-db), [Azure DocumentDB](#azure-documentdb), [Azure Data Explorer](#azure-data-explorer), [Redis](#redis), [Azure Synapse Analytics](#azure-synapse-analytics), [Data Factory](#data-factory), [Data Migration](#data-migration), [Stream Analytics](#stream-analytics) |
+| AI | [Foundry and Cognitive Services](#foundry-and-cognitive-services), [Azure AI Search](#azure-ai-search) |
+| Messaging and communication | [Service Bus and Event Hubs](#service-bus-and-event-hubs), [API Management](#api-management), [Communication Services](#communication-services) |
+| Monitoring | [Monitor alerts and budgets](#monitor-alerts-and-budgets), [Azure Monitor workspace](#azure-monitor-workspace), [Monitor data collection](#monitor-data-collection), [Azure Monitor Private Link Scope](#azure-monitor-private-link-scope), [Application Insights](#application-insights), [Workbooks](#workbooks), [Managed Grafana](#managed-grafana), [Diagnostic settings](#diagnostic-settings) |
+| Security and governance | [Azure RBAC](#azure-rbac), [Defender for Cloud](#defender-for-cloud) |
 
-Ordinary Arc machine registrations (no kind, AWS or GCP) support cleanup after reviewed extensions, Run Commands and license profiles are removed. Grant `Microsoft.HybridCompute/machines/delete` and read access to all three child collections, including when scanning machines alone. Missing child inventory requires reconciliation before planning; retaining a child blocks machine deletion. Known and reviewed children are individually reread even after the machine returns 404. The plan warns that removing cloud registration leaves the external host and local agent for separate removal. HCI registrations require verified Local VM context and the ordered lifecycle described below. Bare HCI hosts, VMware, SCVMM, AVS, EPS, unknown kinds and other registrations linked to a parent cluster remain protected. See [disconnect and Azure Local deletion guidance](https://learn.microsoft.com/en-us/azure/azure-arc/servers/azcmagent-disconnect).
+### General protections
 
-Shared Arc ESU license cleanup requires `Microsoft.HybridCompute/licenses/delete`, license reads, subscription-wide machine list/read and machine license-profile list/read, plus the group, lock and incoming-dependency reads above. Profiles using a license must be explicitly selected for cleanup or unlinked separately; deleting a profile or machine alone retains the shared license. The license's native assignment count must be present and zero before DELETE. Licenses can cover other subscriptions in the same tenant, so an empty local profile list is insufficient; external assignments must be cleared through their own subscription workflow. The plan warns that deletion removes the license entitlement and billing may continue for up to five calendar days. License 404 is checked alongside saved/reviewed profile references, and surviving assignments prevent completion. See [licensing scope](https://learn.microsoft.com/en-us/azure/azure-arc/servers/license-extended-security-updates) and [billing behavior](https://learn.microsoft.com/en-us/azure/azure-arc/servers/billing-extended-security-updates). Tests include Microsoft's original CLI DELETE response and restored SQLite execution; they do not verify actual billing termination.
+**Before deletion**
 
-Azure Local inventory reads VM instances, guest agents, guest identity metadata, NICs, disks, logical networks, storage paths and images through native APIs. Grant `Microsoft.HybridCompute/machines/read` for VM and guest discovery, plus the corresponding `Microsoft.AzureStackHCI/<resource-type>/read` permissions for each selected family (including `virtualMachineInstances/guestAgents/read` and `virtualMachineInstances/hybridIdentityMetadata/read`). Known resources are reread individually, and singleton `default` resources are checked even when their collection is empty or missing. Guest resources inherit the verified Arc machine region. Failed permissions, changing snapshots or malformed references fail the scan without closing existing assets. VM capacity/power, network addresses, disk/image metadata and storage capacity are public; credentials, SSH keys, proxy configuration and local paths remain private.
+- **Management locks:** Subscription, resource-group, resource and relevant descendant locks block deletion. Steward checks locks during inventory and again immediately before deletion, and never removes them.
+- **Protection tags:** A resource tagged `steward/protected` or `steward:protected` with the value `true`, `1`, `yes`, `on` or `protected` is protected from cleanup. Product sections refer to this as a protection tag.
+- **The connection's own access:** Role assignments to the principal the connection signs in as are always protected, because deleting them would revoke Steward's access in the middle of cleanup. If Steward cannot read the principal's object ID from its token, it protects every role assignment.
+- **Managed resources:** Provider-owned resources are cleaned up only through their supported owning controller, except members with an explicitly supported independent action. AKS deletion includes its reviewed node resource group; deleting arbitrary resources in a managed resource group remains prohibited.
+- **Network occupants:** Immediately before deletion:
+  - a subnet must have no IP configurations, private endpoints, service association or resource navigation links, application gateway IP configurations or IP configuration profiles;
+  - a network security group, route table or NAT gateway must have no associated subnets or network interfaces;
+  - a public IP address must not be attached to an IP configuration or NAT gateway.
 
-The scan dialog lists Azure virtual networks and Azure Local logical networks, with name/ARM ID search and pagination. Scheduling rereads the selected network; a deleted or inaccessible target is rejected before a task is saved. Grant `Microsoft.AzureStackHCI/logicalNetworks/read` to list Local networks. Subnets configured inside a Local logical network are not separate selectable ARM resources. Permission failures remain visible with a retry action that preserves the selection.
-
-Logical-network inventory uses `2025-06-01-preview` to read the native, read-only `networkType` discriminator. It reports `Workload`, `Infrastructure`, or `Unknown` when the field is missing or unrecognized. Names, tags and an empty NIC list do not establish the type. A denied or unsupported API response fails the scan without closing existing assets. Other Azure Local resource APIs remain pinned to `2024-01-01`. Cleanup requires a verified type and custom location; unknown values keep the network protected. Infrastructure-network removal requires the instance's VMs, NICs and workload networks to be removed first, and removes only the cloud projection; its on-premises network remains. See [Microsoft's logical-network guidance](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-logical-networks?view=azloc-2604) and [API change log](https://learn.microsoft.com/en-us/azure/templates/microsoft.azurestackhci/change-log/logicalnetworks).
-
-A logical-network scan follows NIC and VM references to guest resources and attached virtual disks. Disk membership requires native VM-instance and Arc-machine reads (`Microsoft.AzureStackHCI/virtualMachineInstances/read` and `Microsoft.HybridCompute/machines/read`). Saved attachment evidence is reread to recover known VM omissions; detaching a disk removes that VM from its network references. Storage paths and images remain independent references. Network membership grants no reverse dependency or deletion ownership.
-
-Standalone Azure Local guest-agent cleanup is supported after a verified HCI registration and VM configuration are scanned. Grant `Microsoft.AzureStackHCI/virtualMachineInstances/guestAgents/delete`, read access to the guest, VM instance and Arc machine, plus resource-group and management-lock reads. Cleanup rereads the reviewed configuration, checks protection and inherited locks, then persists the ARM operation for retry/restart. Completion requires the guest resource's own GET to return absence; an operation's success or a missing parent is insufficient. The plan warns that guest management can be interrupted while the VM, Arc registration and identity metadata remain. Guest-side agent removal is not verified by ARM resource deletion.
-
-Azure Local relationships distinguish references to machines, VM instances, NICs, disks, logical networks, storage paths, images and custom locations. Missing or cross-subscription targets remain unresolved; ordinary references do not grant deletion ownership. VM cleanup now removes reviewed guest/Arc prerequisites before the native VM DELETE. Selecting the associated Arc registration also schedules VM cleanup before native registration deletion, following the official CLI order. Selecting only the VM retains the registration. Associated NICs and data disks remain for separate cleanup. See [Azure Local VM management](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607). Tests cover native contracts, composed transport, network filtering and SQLite reconciliation; live controller and physical VM removal remain unverified.
-
-Defender for Cloud plans show the native Free/Standard tier, sub-plan, trial time, enablement time, extension status, inheritance and resource coverage. A Standard subscription plan does not mean every resource is covered: resource overrides may differ. Inventory reads subscription plans, VM/VMSS/Arc machine scopes, and the Containers plan on AKS and ACR. Grant subscription identity, native parent list/read and `Microsoft.Security/pricings/read` access across those scopes. Known plans are reread individually; parent or list disappearance alone does not prove plan absence.
-
-These are service-state records, matching the read-only Alibaba Cloud Security Center baseline. Steward does not change protection tiers or remove resource overrides. Extension parameters and operation messages stay out of public inventory and logs. The current evidence consists of official examples and protocol/SQLite worker tests; independent Defender emulation and live-cloud verification remain open. See [native plan state and inheritance](https://learn.microsoft.com/en-us/rest/api/defenderforcloud/pricings/list?view=rest-defenderforcloud-2024-01-01).
-
-Data Migration covers eight native resource kinds in the migration service's region. Classic service/project children have separate, reviewed deletion steps; running tasks are canceled first. A schema file requires prior cleanup of its consuming tasks. SQL/Mongo services require explicit selection and prior deletion of their target-scoped migrations. SQL migrations cancel before deletion; active Mongo migrations use the native force-delete operation. SQL service cleanup waits for running node jobs to finish, removes reviewed runtime registrations and verifies their absence. Source/target databases, backup storage, identities, networking and runtime machines remain separate resources.
-
-Deleting a referenced resource or its containing resource also checks for incoming migrations. This includes the SQL database identified by the native migration route. Referencing migrations must be explicitly selected and deleted first; an unindexed migration blocks cleanup. The check runs again during execution and resumed verification, including after the target disappears.
-
-Inventory and cleanup require complete native service/child and migration indexes, own-resource reads, SQL runtime monitoring, referenced SQL/Cosmos target reads, resource groups and management locks. Execution additionally needs the selected DELETE, task/migration Cancel, SQL `deleteNode` and regional operation-status permissions. Mongo uses independent target-scoped lists as well as service indexes; SQL discovery supplements service indexes with reads of previously known migrations. Unknown migrations omitted from all available indexes cannot be recovered.
-
-Independent target cleanup also requires these migration discovery permissions across the subscription. Unreadable indexes or changed recorded migration context prevent cleanup; the target's own read or list cannot establish that no migration references it.
-
-Configuration, target identity, groups, protection, locks, new migrations or changed runtime nodes can require a new review. Accepted operations and verification resume after worker restarts, with a 24-hour verification limit. Every recorded descendant and required consumer still needs its own absence check after the parent disappears. Migration inputs and connection details stay out of public inventory and logs. Native DELETE has no conditional version guard; masked fields limit change detection. Current evidence includes official API examples, CLI recordings and SQLite worker tests; independent DMS emulator and live-cloud acceptance remain open. See [ARM asynchronous-operation tracking](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations).
-
-Data Factory inventory covers 14 native resource kinds in the factory's region, including runtime node registrations and managed virtual networks. Inventory and cleanup need complete child and factory lists, own-resource reads, runtime status, trigger event-subscription status, pipeline-run queries/reads, debug-session queries, resource groups and locks. Cleanup adds the selected DELETE and preparation operations. Authored pipelines, connection values, run parameters and debug details stay out of public inventory and logs.
-
-Factory cleanup reviews all owned artifacts. Triggers and CDC stop first; event triggers also wait for event unsubscription. SSIS runtimes and their referring artifacts are separate prerequisites, and SSIS deletion waits for the runtime's own stopped state after asynchronous Stop completes. Managed virtual networks have no independent DELETE and follow the factory. Retaining an owned child blocks factory deletion. See Microsoft's [SSIS deletion sequence](https://learn.microsoft.com/en-us/azure/data-factory/manage-azure-ssis-integration-runtime) and [event unsubscription API](https://learn.microsoft.com/en-us/rest/api/datafactory/triggers/unsubscribe-from-events?view=rest-datafactory-2018-06-01).
-
-Factory cleanup cancels reviewed active pipeline runs individually and removes reviewed debug sessions. Pipeline-only cleanup cancels that pipeline's reviewed runs; other standalone artifacts wait for factory work to finish. Newly discovered work requires a fresh review. Shared self-hosted runtimes require explicit selection of referring runtime resources or their factories. Only after their own reads confirm absence can cleanup remove the reviewed factory's links; unresolved or foreign-subscription links block the host. Source data, external compute, identities, networks and self-hosted machines remain independent. Node deletion removes the registration. See [shared runtime management](https://learn.microsoft.com/en-us/azure/data-factory/create-shared-self-hosted-integration-runtime-powershell).
-
-Preparation and deletion checks resume after worker restarts, with up to 24 hours for verification. A receipt or missing parent never proves that recorded descendants or required consumers disappeared: each needs its own absence check. Changed configuration, incarnation, protection, locks or unreadable native context block progress. Queries cover service-visible work and reread known runs; they cannot establish inaccessible history. Returned masked secrets and artifacts without creation identifiers limit change detection, and native DELETE has no conditional version guard against concurrent external writes. This coverage has protocol, official recording and SQLite worker tests; live-cloud and independent Data Factory emulator acceptance remain open.
-
-Communication and Email resources appear in global inventory. Phone numbers, reservations and rooms retain their native account URLs, including case-sensitive room IDs. Scans verify complete account families twice, including room participants, and individually read previously known resources omitted from a list. Account or domain absence does not establish that its recorded descendants disappeared. Private SMTP, email-recipient, verification and participant details stay out of public inventory and API logs.
-
-Account cleanup first deletes reviewed SMTP usernames, reservations and rooms. Its native DELETE then releases the reviewed phone numbers; selecting a phone number alone uses its release API. Email cleanup orders addresses, suppression lists, sender usernames and domains before their parents. A connected domain requires explicit selection of the referring Communication account, or a prior unlink followed by a fresh scan. Reverse connection checks cover the connected subscription and recover known omitted accounts by GET; they do not establish the absence of connections from other subscriptions. See [connecting email domains](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/email/connect-email-communication-resource).
-
-A linked Notification Hub remains an independent reference and is not selected for deletion with its Communication account. Changes to this link invalidate the reviewed account configuration.
-
-Communication resource deletion is permanent and also removes associated application data. Chat/Identity data and Event Grid filters are not individually listed or reviewed as cleanup impacts by these ten resource rules. Microsoft distinguishes phone release from continued visibility through the billing cycle. Steward persists asynchronous polling and subsequent absence checks across restarts, allows up to 40 days for account/phone verification, and requires the resource and every recorded descendant's own GET to return 404. After operation completion, pending account/phone absence is rechecked hourly. This does not assert when charges end. Busy purchases, protected tags, locks, changed configuration or unreadable resources block cleanup. Native DELETE has no conditional version guard, so concurrent external writes remain possible. See [resource deletion](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/create-communication-resource) and [phone-number release](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/telephony/get-phone-number). SMS sending and template administration are not implemented by these resource rules.
-
-Azure RBAC role definitions and role assignments appear in global inventory. Discovery uses the connected subscription's native Authorization APIs, including narrower resource scopes; inherited tenant and management-group assignments are not managed by this connection. Grant `Microsoft.Authorization/roleDefinitions/read`, `Microsoft.Authorization/roleAssignments/read`, `Microsoft.Authorization/roleEligibilitySchedules/read` and `Microsoft.Authorization/roleAssignmentSchedules/read`, plus native reads for the referenced scopes, resource groups and management locks. Custom-role deletion requires `Microsoft.Authorization/roleDefinitions/delete` on every assignable scope; assignment deletion requires `Microsoft.Authorization/roleAssignments/delete` at its exact scope. See Microsoft's [custom-role deletion requirements](https://learn.microsoft.com/en-us/azure/role-based-access-control/custom-roles-rest#delete-a-custom-role).
-
-Select referring assignments before deleting a custom role. Scope resources and their ancestors likewise require the explicit prior deletion of referring assignments and custom-role definitions, including extensions in managed resource groups. All ARM graph and cleanup checks read the subscription's role-assignment and role-definition indexes; linked sources also require scope and PIM reads. New, unindexed or unreadable references block cleanup, including after target deletion. Protected tags, management locks, changed native configuration or scope identity, built-in roles, assignable scopes outside the connection and matching PIM schedules prevent independent deletion. Native DELETE 200/204 acknowledges the request; completion still requires the selected resource's own GET to return absence.
-
-Within the connected subscription, assignment `principalId` values also identify user-assigned managed identities and resources with system-assigned identities, even when the assignment belongs to another resource group. Their referring assignments require explicit prior deletion, including when an owning controller removes the identity-bearing resource. Microsoft notes that deleting a managed identity leaves its assignments behind; see [managed identity maintenance](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/managed-identity-best-practice-recommendations#maintenance).
-
-Rescan existing ARM assets before using principal dependencies. Steward verifies the saved principal and tenant GUIDs against native resource reads and retains that authenticated identity after the resource disappears. Changed, missing or unreadable identity evidence blocks the dependency check. User-assigned identity reads require `Microsoft.ManagedIdentity/userAssignedIdentities/read`; system identities use their resource’s native read operation. This mapping uses ARM APIs and does not require Microsoft Graph access. Application `clientId` values and attached shared identities do not establish ownership; deleting a resource that uses a shared identity preserves that identity and its assignments.
-
-RBAC permission expressions and authored configuration stay out of inventory and logs. Shared destinations and external Entra principals remain independent. PIM schedule deletion and tenant/management-group administration are not implemented. RBAC DELETE has no conditional version guard, so concurrent external edits remain possible after preflight.
-
-Diagnostic settings appear in global inventory. Discovery requires subscription resource-list access, native reads and child lists for discovered sources, resource-group and management-lock reads, and diagnostic-setting list/read access at each exact source scope. Cleanup also requires `Microsoft.Insights/diagnosticSettings/delete` for each selected setting. Source, destination and ancestor cleanup requires explicit selection of their referring settings first, including settings found inside a managed resource group. Deleting a setting stops its configured export; shared storage, Event Hubs and workspaces are separate resources. See Microsoft's [diagnostic settings guide](https://learn.microsoft.com/en-us/azure/azure-monitor/platform/diagnostic-settings).
-
-The subscription setting list does not enumerate every resource's settings. Steward supplements source discovery with native child APIs and previously saved setting IDs, so known settings can survive their source's deletion. Settings on an unknown source type appear protected until native source verification is supported. A never-seen orphan outside those sources has no supported subscription-wide index. A failed list or detail read blocks reconciliation or cleanup; source/group absence cannot prove a setting was removed. A successful scan closes a saved setting only after its own native GET confirms absence. Cleanup uses the same individual absence requirement. The native DELETE has no conditional version parameter, so preflight checks cannot eliminate a concurrent external edit.
-
-Monitor alerts, action groups, web tests and budgets support native discovery and independent deletion. Include global scope when scanning global rules and budgets. A retained alert rule or budget blocks cleanup of its referenced Action Group; selecting both orders the referencing resource first. Cleanup requires native list/read access for possible referring rules, and Action Group checks also enumerate both budget APIs across the subscription and its resource groups. Grant native delete permission only for the resources selected for cleanup. Private queries, receivers and notification content stay out of inventory and logs; configuration or permission changes require a fresh successful scan and plan.
-
-All ARM resource graph and cleanup checks now read the six native alert-rule collections across the subscription, including sources missing from inventory. Relevant receiver targets additionally require Action Group reads; Application Insights components require Web Test reads. Linked sources require resource-group reads. Failed or inconsistent dependency reads block cleanup even after target absence. Selecting a referencing Monitor resource and its destination creates ordered, independently reviewed deletion steps.
-
-Event Hub receiver resolution needs subscription-wide Event Hubs namespace list/read access. ITSM receivers similarly require Log Analytics workspace list/read access. Missing destinations remain matched against their reviewed ARM identity or authenticated workspace customer GUID after restart; foreign selectors cannot acquire local resources. Existing workspace inventory must be rescanned to record this identity proof. Function and non-global Runbook child references are recorded separately from their parent; global Runbook action names still require native webhook mapping. See Microsoft's [Action Group receiver contract](https://learn.microsoft.com/en-us/rest/api/monitor/action-groups/get?view=rest-monitor-2023-01-01).
-
-Managed-group cleanup checks incoming references to every reviewed ARM member being deleted. A verified same-group Monitor member can share its controller's cascade, including alerts or Web Tests that reference the controller itself; external sources still block it. Private configuration, group identity and receiver resolution are rechecked, including surviving known members after controller and group absence.
-
-Managed-group discovery supplements generic ARM lists with two complete native Monitor/budget observations. This requires reads for all eight Monitor collections and both budget APIs, including subscription and group budget lists. A member missing from inventory must be scanned before cleanup; new members, inconsistent configuration and unreadable collections block deletion. Newly discovered Monitor members receive the same individual final-absence checks as other reviewed resources.
-
-ARM cleanup recovery now authenticates the full reviewed request as well as the native operation receipt. Complete pending cleanup tasks before upgrading from a version without this check; older pending receipts cannot pass the new recovery validation. A fresh scan and plan are required for a new cleanup attempt.
-
-API Management cleanup reviews the selected service or workspace's API definitions, policies, content and configuration. Shared subscriptions, API revisions and referring resources use separate reviewed deletion steps. Removing an API/product/group/tag or notification association detaches that association; its referenced member remains unless separately selected. Built-in groups, the administrator user, the master subscription, email templates and fixed portal/notification/tenant configurations require their owning controller. Retaining a required resource blocks controller deletion. Publishing portal revisions and changing configurations block cleanup.
-
-Workspace cleanup first removes its reviewed standalone-gateway configuration connections. A shared gateway and its other workspace connections remain. Reads must cover the complete subscription gateway index, service workspace links, applicable child lists, GET/HEAD existence checks, ancestors and referenced targets, including other resource groups. Credential references also require native subscription lists and reads for matching Key Vaults and managed identities. Vault secret contents are not fetched; external policy URLs and policy expressions are never downloaded or executed. See [workspace gateways](https://learn.microsoft.com/en-us/azure/api-management/workspaces-overview).
-
-Azure retains a deleted API Management service for 48 hours. Steward offers no restore, purge or email-template reset; restoring a service does not undo earlier independent DELETE steps. Native resource and child absence are checked after asynchronous completion. Verification includes official schemas, CLI response replays and selected APIM paths in a pinned independent emulator; it does not establish a live Azure deployment test. See [soft-delete behavior](https://learn.microsoft.com/en-us/azure/api-management/soft-delete).
-
-Azure Batch cleanup reviews the complete account hierarchy. Pools, applications, private endpoint connections, jobs and schedules have ordered deletion steps; package versions precede their application. Native job/schedule cleanup includes reviewed tasks, and native pool cleanup includes reviewed nodes. Auto pools follow the job or schedule only when the actual lifetime settings and membership establish that ownership. Shared pools, packages and task dependencies require an explicit cleanup choice for their consumers.
-
-Standalone node removal uses the current pool ETag and requeues running tasks; historical task placement does not require deleting retained task records. User-subscription nodes review the documented Uniform VMSS instance, disks, extensions and network resources. Missing VM identity, shared/detached disks, retained or protected children and configuration drift block cleanup. The containing scale set remains independent. Multi-instance task cleanup terminates tasks, waits for all subtasks, and verifies their working directories after deletion; removing the primary task record alone is insufficient. Native Batch deletion ignores task data-retention periods. External storage, key vaults and identities remain independent references. File contents, storage keys and vault secret/key contents are never fetched to resolve those references. See [task deletion](https://learn.microsoft.com/en-us/rest/api/batchservice/tasks/delete-task?view=rest-batchservice-2025-06-01), [node removal](https://learn.microsoft.com/en-us/rest/api/batchservice/pools/remove-nodes?view=rest-batchservice-2025-06-01) and [application packages](https://learn.microsoft.com/en-us/azure/batch/batch-application-packages).
-
-Batch verification includes native schemas, composed HTTP scenarios, official CLI response replays, application graph checks and restart tests. It is not an independent Batch emulator or a live Azure deployment test.
-
-- **Cosmos DB:** Deleting accounts, databases, containers or tables removes their contained data. Plans review required children, role dependencies and Fleet associations first. Retaining a built-in role or client encryption key requires retaining its account or database. Fleet deletion unlinks accounts without deleting them; protected or locked accounts block unlinking. Throughput, backup migration, configuration and child membership are checked before deletion. Read permissions must cover the applicable API collections, throughput settings, ancestors and incoming Fleet associations across the subscription. Accounts appear globally; managed Cassandra data centers use their deployment region. No restore or purge is offered. See the [resource model](https://learn.microsoft.com/en-us/azure/cosmos-db/resource-model) and [MongoDB roles](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/role-based-access-control).
-
-- **Azure DocumentDB (formerly MongoDB vCore):** Cluster deletion removes its data. Replicas are independent clusters; the plan deletes reviewed replicas before their source, while deleting a replica preserves the source. Firewall rules, private endpoint connections and Microsoft Entra user registrations have separate deletion steps. Retaining or protecting a required resource blocks its parent. Removing a cluster registration does not remove its Entra identity or perform additional database-role cleanup. Read permissions must cover each cluster, its complete child/replica lists and all referenced replicas. Configuration changes and ongoing topology edits require a new scan or retry. Backup restore and purge are not offered. See [replication deletion](https://learn.microsoft.com/en-us/azure/documentdb/troubleshoot-replication) and [authentication](https://learn.microsoft.com/en-us/azure/documentdb/how-to-connect-role-based-access-control).
-
-- **Foundry / Cognitive Services:** Account cleanup first removes model deployments and reviewed dependencies, then soft-deletes the account. Purge is not offered. Capability-host deletion makes dependent agent state inaccessible; individual threads, files and orphaned storage data are not separately cleaned up. Connections include datastores; Key Vault connections wait for all other account/project connections. Required or active managed private-endpoint connections remain protected while their endpoint effects are unmodeled. Retaining a required child blocks its controller. Shared commitment plans and referenced storage remain separate resources. Managed-network cleanup includes its rules and verifies private-endpoint target protection; some derived rules require cleanup through their network. Legacy account-kind applicability, managed connection private-endpoint effects and external perimeter association lifecycles remain unfinished. See [recovery and billing behavior](https://learn.microsoft.com/en-us/azure/ai-services/recover-purge-resources).
-- **Azure Data Explorer (Kusto):** Plans delete reviewed database resources and other required children before their cluster. Deleting a followed source database or cluster first removes the reviewed attachments on follower clusters; the follower clusters remain. An attachment controls its local read-only database views, so retaining a view blocks detachment. Active custom images require cluster cleanup. Managed private endpoints check target configuration, locks and protection; external data sources remain separate. Read permissions must cover all child collections, ancestor resources, follower indexes and linked targets. Script deletion does not undo the commands it executed. Azure may soft-delete the cluster for 14 days, but restoring the cluster does not undo earlier database DELETE steps. Steward offers neither restore nor soft-delete opt-out. See [follower behavior](https://learn.microsoft.com/en-us/azure/data-explorer/follower), [scripts](https://learn.microsoft.com/en-us/azure/data-explorer/database-script) and [cluster deletion](https://learn.microsoft.com/en-us/azure/data-explorer/delete-cluster).
-- **Stream Analytics:** Deleting a job permanently removes its input/output definitions, functions and query; external data stores remain. Select the owning job to remove its transformation. Independent input/output/function deletion requires a Created, Stopped or Failed job. Cluster deletion first removes reviewed private endpoints. Associated jobs remain independent: select them explicitly for deletion, or stop and remove retained jobs from the cluster in Azure and rescan. Steward does not automatically stop, detach or delete unselected jobs. Read permissions must cover child collections, cluster job membership, parent resources and linked targets. Private endpoints check target configuration, locks and protection. See [job cleanup](https://learn.microsoft.com/en-us/azure/stream-analytics/stream-analytics-clean-up-your-job) and [removing jobs from clusters](https://learn.microsoft.com/en-us/azure/stream-analytics/manage-jobs-cluster).
-
-- **Azure AI Search:** Service deletion removes its search content. Private endpoint connections and shared links are reviewed and deleted first; retaining either, or a perimeter configuration view, blocks service deletion. Shared-link deletion also changes target connection metadata, so native target reads, inherited locks and protection must pass. Target data resources remain separate. Cosmos DB accounts have native target checks. Unmodeled targets, cross-subscription links and external perimeter association lifecycles remain unfinished. Read permission must cover all child collections and each linked target. See the [shared-link deletion behavior](https://learn.microsoft.com/en-us/azure/search/troubleshoot-shared-private-link-resources).
-- **Redis:** Cache/database deletion removes its data. Independent children must be deleted first; built-in classic policies require cache cleanup. Selecting either classic replica includes the shared primary-side unlink and any reciprocal view in review. Retaining a link view blocks unlinking. Reads must cover subscription-wide classic caches and linked peers, including other resource groups. Enterprise active replication checks all participants; later deletions may accept a smaller group only after departed members return 404. New or inconsistent membership, unhealthy links, changed configuration, locks and protected peers block cleanup. Degraded groups require separate recovery; Steward does not force-unlink them. Completion also checks surviving replicas no longer reference the deleted target. See [classic replication](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-how-to-geo-replication) and [active replication](https://learn.microsoft.com/en-us/azure/redis/how-to-active-geo-replication).
-- **Management locks:** Subscription, resource-group, resource, and relevant descendant locks block deletion. Steward checks locks during inventory and again immediately before deletion, and never removes them.
-- **Network occupants:** Immediately before deletion, a subnet must have no IP configurations, private endpoints, service association or resource navigation links, application gateway IP configurations or IP configuration profiles. A network security group, route table or NAT gateway must have no associated subnets or network interfaces, and a public IP address must not be attached to an IP configuration or NAT gateway. Occupants deleted earlier in the same task satisfy this check; a service association link must be removed by its owning service. A delegation alone does not block subnet deletion.
-- **Managed resources:** Provider-owned resources require their supported owning controller, except members with an explicitly supported independent action. AKS deletion includes its reviewed node resource group; arbitrary deletion of managed-group resources remains prohibited.
-- **VM attachments:** Plans show native auto-delete disks, NICs and public IPs. Supported retention changes use conditional native updates before deletion and survive worker restart. VM extensions remain part of the VM's deletion impacts. Uniform scale-set unmanaged VHD cleanup and disk detachment are not yet implemented.
-- **Storage:** A storage account must have no Blob containers, file shares, queues, or tables for its supported services. Blob containers must have no blobs, snapshots, versions, deleted entries, or uncommitted uploads. Legal holds and immutability policies block cleanup. Steward does not empty or purge data to make a resource deletable. Blob cleanup currently requires the standard `ACCOUNT.blob.core.windows.net` endpoint.
+  Occupants deleted earlier in the same task satisfy this check. A service association link must be removed by its owning service. A delegation alone does not block subnet deletion.
+- **Network interfaces with hosted workloads:** A NIC reporting a nonempty `hostedWorkloads` list is protected from direct cleanup and from VM cascades that would delete or rewrite it. Malformed workload metadata is also protected; a missing, null or empty list does not by itself mean a workload is attached. Cleanup rereads the interface, so a workload that appears after inventory blocks execution. This metadata never lets a controller delete the NIC; NetApp group ownership and automatic interface deletion still need their own reviewed lifecycle (see [Azure NetApp Files](#azure-netapp-files)).
 - **VNets and DNS zones:** Required subnets and private DNS links must be removed first. Selecting a VNet does not silently delete unselected subnets or links.
-- **Messaging:** Namespace, topic and subscription deletion can remove contained messages and configuration. Every modeled descendant must be reviewed and later confirmed absent. Individual entity deletion also checks current replication configuration, because deletion can propagate to a paired namespace. Deleting an entity while replication is active remains blocked; namespace cleanup first resolves its reviewed recovery or migration configuration.
-- **Dedicated Event Hubs clusters:** The native member list and each namespace’s `clusterArmId` must agree, including members in other resource groups. Selecting a cluster adds those namespaces and their reviewed descendants; retaining a member blocks cluster deletion. Cluster quota settings, membership, namespace creation identities, locks and protections are rechecked. Native namespace reads must confirm every prerequisite absent before the cluster DELETE, and again at completion after restart. Reads require cluster namespace-list and quota-configuration permissions, plus each namespace’s lifecycle permissions. Azure imposes a four-hour minimum cluster age; a known younger cluster is marked temporarily protected. See the native [namespace list](https://learn.microsoft.com/en-us/rest/api/eventhub/clusters/list-namespaces?view=rest-eventhub-2024-01-01) and [cluster deletion guidance](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-dedicated-cluster-create-portal#delete-a-dedicated-cluster).
-- **Geo-disaster recovery:** Cleanup of a paired primary alias waits for pending replication, calls native BreakPairing, verifies `PrimaryNotReplicating` with an empty partner, then deletes the alias. Both ARM alias views and their authorization views are reviewed and confirmed absent. Selecting either namespace includes this shared prerequisite once; the other namespace and its entities remain when not selected. Selecting only the secondary alias identifies the primary alias as its required controller. Retaining an alias view prevents pair cleanup. Both namespaces, resource groups, locks and protections are rechecked during persisted preparation and after restart. Bare partner names are resolved across the subscription, requiring native namespace-list permission and reads of the peer namespace and alias even outside the selected region. Steward does not perform failover. See Microsoft's [pairing and unpairing behavior](https://learn.microsoft.com/en-us/azure/event-hubs/configure-geo-disaster-recovery).
-- **Service Bus migration:** Cleanup waits for migration synchronization, aborts copying with the native Revert operation, verifies that the target association is cleared, then deletes the configuration. Cleanup of either namespace includes this configuration as a reviewed prerequisite; selecting both namespaces shares one configuration deletion. Cleaning only the source preserves the target and its entities, while cleaning only the target preserves the source and its entities. Source/target creation identity, configuration, permissions, locks and protections are rechecked; a migration being committed or an unknown state blocks cleanup. Persisted preparation phases support worker restart. Steward does not commit migrations. Detecting incoming migrations requires subscription-wide Service Bus namespace and migration-configuration reads, including namespaces outside the selected region. Missing inventory or unreadable native lists block the plan or action. See [Microsoft's migration behavior](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-migrate-standard-premium).
-- **Concurrent changes:** Native creation identifiers are rechecked before deletion. Reviewed service trees also verify generation, membership, locks and protections. A recreated resource or an unreviewed descendant requires a fresh scan and plan.
-- **App Service:** Deleting an app explicitly preserves its App Service plan. Select the plan separately when it should also be removed.
-- **Asynchronous operations:** Steward follows ARM operation-status headers and performs a fresh resource GET to confirm absence. Failed or canceled operations remain failures. Forced deletion and purge options are not enabled.
-- **Managed Grafana:** Workspace deletion requires native read/list/delete access to all three child collections. Child retention blocks workspace deletion. Steward checks native configuration and parent identity, deletes each child as a reviewed prerequisite, then confirms child and workspace absence. Linked data sources, AKS clusters and consumer private endpoints remain separate resources. SMTP passwords are excluded from inventory and logs. The API has no conditional deletion header, so configuration checks cannot prevent a simultaneous external write. See the native [workspace](https://learn.microsoft.com/en-us/rest/api/managed-grafana/grafana/delete?view=rest-managed-grafana-2025-08-01), [managed private endpoint](https://learn.microsoft.com/en-us/rest/api/managed-grafana/managed-private-endpoints/delete?view=rest-managed-grafana-2025-08-01) and [integration fabric](https://learn.microsoft.com/en-us/rest/api/managed-grafana/integration-fabrics/delete?view=rest-managed-grafana-2025-08-01) operations.
+- **VM attachments:** Plans show the disks, NICs and public IPs that Azure deletes with the VM. Supported retention changes are applied with conditional native updates before deletion and survive a worker restart. VM extensions are part of the VM's deletion impacts. Cleanup of Uniform scale-set unmanaged VHDs and disk detachment are not implemented yet.
+- **Storage accounts and Blob containers:** A storage account must have no Blob containers, file shares, queues or tables for its supported services. A Blob container must have no blobs, snapshots, versions, deleted entries or uncommitted uploads. Legal holds and immutability policies block cleanup. Steward does not empty or purge data to make a resource deletable. Blob cleanup currently requires the standard `ACCOUNT.blob.core.windows.net` endpoint and [data-plane access](#data-plane-and-directory-access).
+- **App Service plans:** Deleting an app keeps its App Service plan. Select the plan separately when it should also be removed.
 
-- **Monitor data collection:** Inventory requires rule/endpoint list and read access across the subscription, both reverse association lists, and association reads at their monitored resource scopes. A subscription-bound Resource Graph query supplements orphan discovery; native GET/ListByResource confirms each result. The query is eventually consistent and returns only readable resources, so complete subscription inventory requires read access throughout that subscription. Unlocated orphan links appear under global scope. Cleanup additionally needs the selected rule/endpoint delete permission and association delete permission at those scopes. Removing an association stops that collection link. Plans review every required unlink, share one step across both targets, and block retention of a required link. DCR deletion explicitly uses deleteAssociations=false; native reads confirm every prerequisite absent. Blob reference URL credentials are excluded from inventory and logs. Tenant-global monitored-object associations remain unsupported. See the native [association operations](https://learn.microsoft.com/en-us/rest/api/monitor/data-collection-rule-associations?view=rest-monitor-2024-03-11) and [DCR deletion](https://learn.microsoft.com/en-us/rest/api/monitor/data-collection-rules/delete?view=rest-monitor-2024-03-11).
+**References from other resources**
 
-Review the [cleanup selection and results](./cleanup.md). Database and registry deletion can remove their contained data. Azure permissions, retention settings, dependencies, and concurrent changes can still prevent an action. See Microsoft's [management locks](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/lock-resources), [VM deletion settings](https://learn.microsoft.com/en-us/azure/virtual-machines/delete), and [asynchronous operation behavior](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations).
+Deleting a resource is blocked while another resource still refers to it and that referrer is not in the task. Add the referrer to the task (it is deleted first), or remove the reference in Azure and scan again. These checks read the whole subscription:
 
-The expanded coverage has retained native HTTP protocol tests and unchanged official response fixtures. Grafana also replays Microsoft's recorded CLI deletion responses, including signed operation URLs and delayed completion; the earlier API version and synthetic final absence are documented in the evidence. This is not independent emulator or real-cloud validation by Steward.
+| Referrer | Blocks deleting | Details |
+| --- | --- | --- |
+| Role assignments and custom roles | The scope resource, its ancestors, and managed identities and resources with a system-assigned identity named in an assignment | [Azure RBAC](#azure-rbac) |
+| Diagnostic settings | Their source, destination or an ancestor | [Diagnostic settings](#diagnostic-settings) |
+| Alert rules and budgets | The Action Group or Monitor resource they reference | [Monitor alerts and budgets](#monitor-alerts-and-budgets) |
+| AMPLS associations | Application Insights components, Log Analytics workspaces and data collection endpoints | [Azure Monitor Private Link Scope](#azure-monitor-private-link-scope) |
+| Kubernetes Fleet members and configurations | AKS clusters, subnets and user-assigned identities | [Kubernetes Fleet Manager](#kubernetes-fleet-manager) |
+| Data Migration migrations | Their SQL or Cosmos DB target, or a resource containing it | [Data Migration](#data-migration) |
 
-Azure Monitor workspace deletion also removes its default ingestion managed resource group and all resources in it. The plan reviews that full impact, including unrecognized contained types, and blocks retention of a group member. Both native default-ingestion IDs and any managedBy value must agree. The workspace data has no soft-delete recovery. Private connections are frozen workspace configuration; their external network endpoints are not included in the managed group merely by being referenced. See [Microsoft’s workspace management guide](https://learn.microsoft.com/en-us/azure/azure-monitor/metrics/azure-monitor-workspace-manage).
+**During and after deletion**
 
-Container Instances groups use native inventory and deletion. Their containers and init containers share the group lifetime; external Azure Files shares remain independent. Subnets, managed identities and supplied Log Analytics resource IDs are references. Returned configuration, including sensitive values through a connection-keyed digest, must match the review; credential rotation requires a rescan. Commands, configuration values and credentials are removed from inventory and logs. HTTP 200 deletion responses still require native absence readback. See the [container-group deletion contract](https://learn.microsoft.com/en-us/rest/api/container-instances/container-groups/delete?view=rest-container-instances-2025-09-01).
+- **Concurrent changes:** Native creation identifiers are rechecked before deletion. Reviewed service trees also verify generation, membership, locks and protections. A recreated resource, an unreviewed descendant, or a change to reviewed configuration, protection or locks requires a fresh scan and plan. Many Azure DELETE APIs have no conditional (If-Match) version guard — including Azure Arc, Data Migration, Data Factory, Communication Services, Azure RBAC, diagnostic settings, Managed Grafana, AMPLS, workbooks and registered domains — so repeated checks cannot rule out a change made between the final check and the deletion.
+- **Asynchronous operations:** Steward follows ARM operation-status headers, then reads the resource again to confirm it is gone. Failed or canceled operations remain failures. Forced deletion and purge options are not enabled.
+- **Completion:** A step completes only when the resource's own read reports it absent (for example HTTP 404). An accepted DELETE, a successful or expired operation callback, a missing parent or a missing list entry is never enough. The same applies to every recorded descendant and required consumer after its parent disappears.
+- **Worker restarts:** Accepted operations and their progress are saved, so after a worker restart Steward resumes polling and verification. Service sections note where a restart never resends DELETE.
+- **Upgrading with pending tasks:** Cleanup recovery checks both the full reviewed request and the saved operation receipt. Finish pending cleanup tasks before upgrading from a version without this check: older pending receipts fail the new recovery check. A new cleanup attempt needs a fresh scan and plan.
 
-CDN and Front Door profiles use separate native child collections according to SKU. Cleanup reviews every contained resource and blocks retention of a cascade member. Independent domain, origin-group, rule-set and certificate-reference deletion includes the routes, rules or associations that must first be removed. A shared prerequisite is deleted once; deleting an entire profile can cover its internal references in the same reviewed cascade. External origins, Key Vault data, DNS zones and WAF policies remain independent. Active classic endpoint references block independent origin-group deletion until routing is updated or the endpoint is selected. Inventory and cleanup require native read/list access to the profile and relevant child collections, including referring routes and security associations. Signed async operations and final resource/child absence checks survive restart. See the native [profile deletion contract](https://learn.microsoft.com/en-us/rest/api/cdn/profiles/delete?view=rest-cdn-2025-04-15) and [rule-set cleanup guidance](https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-configure-rule-set).
+**Verification status**
 
-Batch-mode Front Door rules are shown inside their rule set and share its lifetime. Keep the entire rule set to retain those rules. Origin-group overrides in batch rules add the referring rule set to the required deletions; routes using that rule set must also be removed first. Classic-mode rules retain individual deletion, with a fresh parent rule-set check. See Microsoft’s [batch rule management guide](https://learn.microsoft.com/en-us/azure/frontdoor/rule-set-batch).
+Azure coverage is tested offline with native HTTP protocol tests and unchanged official Microsoft response fixtures. Managed Grafana and Monitor data collection also replay Microsoft's recorded CLI deletion responses, including signed operation URLs and delayed completion; the earlier recorded API version and the synthetic final absence response are documented with the test evidence. Unless a service section says otherwise, this is not independent emulator or live-cloud validation by Steward.
 
-WAF policy deletion includes its embedded rules. Any referring CDN endpoint or Front Door security association must be reviewed and deleted first; retaining it blocks policy deletion. Active classic Front Door frontend/routing references remain blockers until removed outside Steward. Inventory needs policy and referrer read access; cleanup also needs their delete permissions and operation-status access. Policy configuration, locks and all remaining associations are rechecked before deletion, and a successful response still requires final absence verification. See the [Front Door policy deletion contract](https://learn.microsoft.com/en-us/rest/api/frontdoorservice/webapplicationfirewall/policies/delete?view=rest-frontdoorservice-webapplicationfirewall-2025-11-01).
+### Azure Batch
 
-App Service cleanup includes reviewed deployment slots, functions, application certificates and hostname bindings. Retaining a child blocks app/slot deletion; default hostnames require their owning app or slot. App Service plans remain separate. Independent certificate deletion requires read access to all application/slot TLS states and hostname bindings; any matching certificate ID or thumbprint blocks it. Remove the relevant binding and rescan before deleting the certificate. Individual function deletion can be unavailable when code runs from a deployment package; Azure's error is preserved. Inventory and cleanup require native child read/list permissions plus the delete permissions for selected actions. See the [application deletion contract](https://learn.microsoft.com/en-us/rest/api/appservice/web-apps/delete?view=rest-appservice-2025-05-01) and [deployment package behavior](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package).
+**Inventory.** Accounts, pools, nodes, jobs, schedules, tasks, applications, package versions, private endpoint connections and network perimeter views. Jobs, schedules, tasks and nodes are read from the account's Batch endpoint with a separate Batch token.
 
-Registered domains and their ownership identifiers appear in global inventory. Discovery and cleanup require native domain/identifier list and read permissions, subscription-wide App Service lists, app/slot detail and hostname-binding reads, resource-group reads and management-lock reads. Grant domain, identifier and binding deletion permissions only for the reviewed steps. Selecting a domain schedules its ownership identifiers and associated app/slot hostname bindings first; applications, certificates, service plans and the DNS zone remain separate. Deleting a DNS zone with a registered-domain reference requires explicitly selecting that domain too, or changing its DNS hosting and rescanning.
+**Permissions.**
 
-Domain deletion releases its registration and can make the name available for purchase by someone else. Steward preserves Azure's purchase lock and uses `forceHardDeleteDomain=false`, retaining the native 24-hour deletion delay. The saved wait allows up to 48 hours and resumes after worker restarts. It waits for already-deleted, reviewed app bindings to leave the hostname index; unknown assignments still block deletion. A DELETE receipt or missing list row is insufficient: the domain and every known dependency must each be absent on their own readback. Contact details, transfer authorization and ownership-token values stay out of inventory and logs. Configuration changes require a new scan and plan. The domain DELETE contract has no If-Match condition, so the checks cannot prevent a simultaneous external change after preflight. See Microsoft's [domain management and cancellation guidance](https://learn.microsoft.com/en-us/azure/app-service/manage-custom-dns-buy-domain) and the pinned [DomainRegistration API contract](https://github.com/Azure/azure-rest-api-specs/blob/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json).
+- ARM permissions for the selected account resources.
+- Batch data permissions, such as **Azure Batch Data Contributor** for cleanup (see [Data-plane and directory access](#data-plane-and-directory-access)).
+- For URL-based storage and key references: subscription-wide Storage and Key Vault list access, and reads of the matching resources.
+- For user-subscription nodes: Compute and Network reads for their VM, disks and network resources.
 
-Azure Monitor Private Link Scope (AMPLS) cleanup reviews both native child collections and the private-link capability descriptions. Scoped-resource associations and private endpoint connections have their own deletion steps; retaining either blocks scope deletion. Linked Log Analytics workspaces, Application Insights components and consumer network endpoints remain independent. Configuration checks cover access modes and per-connection exclusions. The native DELETE APIs have no conditional header, leaving a read/delete concurrency window.
+**Cleanup.**
 
-Before deleting an Application Insights component, Log Analytics workspace or DCE, Steward reconciles the complete subscription AMPLS index, native association lists/reads and the target's reverse references. This requires read permission across those scopes, even outside the selected resource group. Missing inventory, unreadable lists and foreign-subscription backlinks block deletion; remove foreign links in their owning subscription and rescan. The same checks apply to DCEs in a Monitor workspace's managed group. Relative operation locations are validated, bound to the selected connection/resource and persisted; success still requires native resource and prerequisite absence. Verification uses pinned official examples and composed protocol tests; no AMPLS emulator or live-cloud run is claimed. See [AMPLS association requirements](https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/private-link-configure#connect-resources-to-the-ampls).
+- Cleanup reviews the complete account hierarchy. Pools, applications, private endpoint connections, jobs and schedules have ordered deletion steps; package versions are deleted before their application. Network perimeter views go with the account.
+- Deleting a job or schedule includes its reviewed tasks; deleting a pool includes its reviewed nodes.
+- An auto pool follows its job or schedule only when the actual lifetime settings and membership establish that ownership.
+- Shared pools, packages and task dependencies need an explicit cleanup choice for their consumers.
+- **Removing a single node** uses the pool's current ETag and requeues its running tasks. Tasks that ran on the node earlier do not require deleting the task records you keep.
+- **User-subscription nodes:** Cleanup reviews the documented Uniform VMSS instance, its disks, extensions and network resources. A missing VM identity, shared or detached disks, kept or protected children and configuration drift block cleanup. The containing scale set stays.
+- **Multi-instance tasks:** Cleanup terminates the task, waits for all subtasks, and verifies their working directories after deletion. Removing the primary task record alone is not enough.
 
-Application Insights inventory includes components, analytics/my-analytics items, continuous exports, favorites, work-item configurations, API keys, linked profiler storage and annotations. The eight child kinds support individual cleanup with component/group/lock protection and final native GET absence. Shared storage remains independent. Component deletion first removes its reviewed children and AMPLS associations, including associations targeting its current managed workspace.
+**Limits.**
 
-Shared/private workbooks and workbook templates support separate inventory and cleanup. Workbook discovery reads all four documented categories and custom categories found through ARM or saved IDs. Category omissions cannot close saved workbooks as absent; a successful scan closes only saved IDs whose own native GET confirms absence. Templates use complete resource-group enumeration. Scanning requires subscription resource/group lists, locks and native workbook LIST/GET permissions, including shared-workbook revision LIST/GET access. Full authored content and revision history remain private but are checked again before deletion; a change requires a new scan and plan. Provider errors, including an unavailable private-workbook API, fail the scan.
+- Batch's native deletion ignores task data-retention periods.
+- External storage, key vaults and identities stay independent references. Steward never fetches file contents, storage keys or vault secret and key contents to resolve them.
+- Verification covers native schemas, composed HTTP scenarios, official CLI response replays, application graph checks and restart tests. It is not an independent Batch emulator or a live Azure deployment test.
 
-Workbook deletion removes the active resource; it does not prove permanent erasure. Azure normally retains deleted workbooks for approximately 90 days. Bring-your-own-storage (BYOS) workbooks have no provider-managed version history or recycle-bin recovery; recovery can depend on storage soft deletion. Referenced source resources, storage accounts/containers and assigned identities are separate dependencies and are not selected by workbook cleanup. Native managed-group ownership can instead delegate a contained workbook to its controller, with the same content/history checks and individual final GET. Cleanup requires the selected native DELETE permission and has a read/delete concurrency window because the API has no conditional deletion header. See [workbook management](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-manage) and [BYOS behavior](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-bring-your-own-storage).
+See Microsoft's [task deletion](https://learn.microsoft.com/en-us/rest/api/batchservice/tasks/delete-task?view=rest-batchservice-2025-06-01), [node removal](https://learn.microsoft.com/en-us/rest/api/batchservice/pools/remove-nodes?view=rest-batchservice-2025-06-01) and [application packages](https://learn.microsoft.com/en-us/azure/batch/batch-application-packages).
 
-Annotation discovery uses a fixed window within Azure’s rolling 90-day limit. Each scan also rereads previously saved annotation IDs, including records outside that window. Window omissions never close older assets as absent. A successful scan closes a saved annotation only when its own native GET confirms absence, including after its component disappears. Component cleanup reviews recent and saved annotations as separate prerequisites; retaining an annotation blocks deletion. Read failures and ambiguous GET arrays block cleanup; an empty array is not treated as proof of absence. Steward cannot enumerate previously unseen history beyond the native window, and component deletion can remove that history. Inventory and cleanup need annotation LIST/GET access; selected annotations also need DELETE access. See the [native annotation API](https://learn.microsoft.com/en-us/python/api/azure-mgmt-applicationinsights/azure.mgmt.applicationinsights.v2015_05_01.operations.annotationsoperations?view=azure-python).
+### Container Instances
 
-Component scans also inspect the complete resource-group index and the current managed workspace's group members and AMPLS associations. These scans need resource-group, resource-list, member product-read and AMPLS read permissions, including the managed group outside the component's group. Ownership requires both the component's workspace reference and a matching group `managedBy`; names alone are insufficient. Shared workspaces and detached managed groups remain distinct. Failed or inconsistent reads fail the scan, and foreign references never authorize cross-subscription reads. Component deletion includes the reviewed current managed group and its known descendants. Completion requires component and group absence plus native GET absence for every known member. Locks or Azure policy can leave the group behind; Steward continues waiting and does not independently delete the workspace. Detached groups and shared workspaces are retained. Nested managed controllers with unmodeled external groups block cleanup; see [managed-workspace behavior](https://learn.microsoft.com/en-us/azure/azure-monitor/app/managed-workspaces).
+**Inventory.** Container groups, with native inventory and deletion. Subnets, managed identities and supplied Log Analytics resource IDs are recorded as references. Commands, configuration values and credentials are removed from inventory and logs.
 
-Component inventory also reads current billing features, daily caps, pricing plans, quota status and legacy proactive-detection settings. Grant read access to those component endpoints. Plan execution rechecks authored settings, including private notification recipients, before deleting the component; a change requires a fresh scan and plan. Quota and other read-only observations may change without invalidating the plan. Private recipients stay out of inventory and logs. These settings follow their component and have no independent cleanup action. Migrated smart-detection alert rules and their action groups are discovered and deleted independently; see the [migration guide](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-smart-detections-migration).
+**Cleanup.**
 
-Kubernetes Fleet inventory requires native `Microsoft.ContainerService/fleets/read` and reads of the seven child collections, plus resource-group and management-lock reads. Known identities are checked individually; an omitted or missing Fleet does not establish that a child disappeared. Proxy children use their Fleet's region, while managed namespaces retain their native location. Namespace annotations and placement expressions stay out of inventory and logs. Dynamic placement is displayed explicitly without claiming a verified member set. Most Fleet operations bind stable API `2026-06-01`; member reads and Cluster Mesh operations use `2026-06-02-preview` to observe applied network membership. Member references accept AKS and Arc-enabled Kubernetes clusters. Update runs retain a copied strategy; Gates refer to their owning run. See the [Fleet FAQ](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/faq).
+- Containers and init containers share the group's lifetime and are deleted with it. External Azure Files shares stay independent.
+- The configuration Azure returns must match the review, including sensitive values, which are compared through a connection-keyed digest. After a credential rotation, scan again.
+- An HTTP 200 deletion response still requires a native read confirming the group is gone.
 
-The native lifecycle graph records independent Fleet configuration cleanup and Gate ownership by the referenced update run. Deletion checks for AKS clusters, subnets and user-assigned identities also read the relevant Fleet collections in the connected subscription, including sources absent from the inventory. A live reference blocks deletion. Dynamic namespace placement conservatively requires namespace cleanup before removing any member in that Fleet. These checks require Fleet read permissions even when the selected target is a different resource type; they do not grant Fleet ownership of member clusters or shared networking.
+See the [container-group deletion contract](https://learn.microsoft.com/en-us/rest/api/container-instances/container-groups/delete?view=rest-container-instances-2025-09-01).
 
-Fleet members, managed namespaces, update runs, update strategies and auto-upgrade profiles support their native conditional delete operations. Cleanup requires the relevant child delete permission; running, pending or skipped update runs additionally require permission to stop the run. A run already stopping is observed without repeating Stop. Steward waits for a terminal run state before deletion and checks both the run and its reviewed Gates for absence. Polling and execution phases survive worker restart.
+### Kubernetes Fleet Manager
 
-Cluster Mesh cleanup disconnects the reviewed cross-cluster network before deleting its profile, which interrupts cross-cluster connectivity and service discovery. Inventory joins actual member `meshProperties` through unfiltered native lists and individual reads; matching labels alone do not establish attachment. Cleanup waits for any current Apply, sets an empty member selector without changing other authored settings, applies disconnection, then confirms that no members remain attached. It requires profile read/write/Apply/delete permissions and member reads. Protected or locked members, new attachments, configuration changes and unreadable residuals block progress. The profile’s own 404 and individual checks of known attachments establish completion. Members and their clusters remain intact; member cleanup explicitly requires the attached Mesh profile to be cleaned first. See [cross-cluster network deletion](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/howto-configure-use-cross-cluster-networking#delete-a-cross-cluster-network).
+**Inventory.**
 
-Fleet root scans verify Hub ownership using the managed resource group's `managedBy`, the Fleet and AKS API endpoints, and AKS's `nodeResourceGroup` with its reciprocal owner. Scans then enumerate both groups, expand native child resources and documented external descendants, and include Monitor resources omitted from the generic ARM list. This requires unfiltered resource-group/resource lists, native member reads and child lists, and the relevant subscription Monitor and DNS indexes. Missing or ambiguous ownership remains unverified; naming patterns never establish ownership. Saved, authenticated identities recover known list omissions through individual reads. Unknown omitted resource types and incomplete external ownership evidence prevent scan completion. RBAC assignments and diagnostic settings retain their independent cleanup requirements. Fleet root records retain Hub and member configurations only as private digests; individual resources keep their normal product inventory fields. The lifecycle graph delegates the verified Hub cluster, both groups and their owned descendants to the Fleet, with no second AKS or attachment controller. Missing inventory assets remain unresolved; changed proofs or native state prevent graph rebuild. Root cleanup is available for a verified Hub or a verified hubless Fleet. Selecting a Fleet includes separate, reviewed deletion steps for its native child configurations; their own GETs must confirm absence before the root DELETE. The root requires `Microsoft.ContainerService/fleets/delete` permission and verifies the exact Hub impact set, ownership, configuration, protection and locks. Only the Fleet DELETE is sent for the Hub cascade. After the Fleet disappears, both groups and every known typed descendant still require their own native 404, including external managed disks and DNS resources. Unknown contained types rely on their owning group's absence. Retention, an unverified Hub or unreadable residuals prevent completion; shared resources and enrolled member clusters remain independent. See the [Hub cluster overview](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-lifecycle).
+- Fleets, AKS and Arc-enabled Kubernetes members, managed namespaces, update runs, update strategies, auto-upgrade profiles, Gates and cross-cluster networks (Cluster Mesh profiles).
+- Proxy children use their Fleet's region; managed namespaces keep their native location.
+- Update runs keep a copy of their strategy; Gates refer to their owning run.
+- Dynamic namespace placement is shown explicitly, without claiming a verified member set. Namespace annotations and placement expressions stay out of inventory and logs.
+- Most Fleet operations use the stable API `2026-06-01`; member reads and Cluster Mesh operations use `2026-06-02-preview` to observe actual network membership.
+- An omitted or missing Fleet does not mean its children disappeared; known children are checked individually.
+- **Hub clusters:** A Fleet root scan verifies Hub ownership from the managed resource group's `managedBy`, the Fleet and AKS API endpoints, and the AKS `nodeResourceGroup` with its reciprocal owner. It then enumerates both groups, expands native children and documented external descendants, and includes Monitor resources omitted from the generic ARM list. Missing or ambiguous ownership stays unverified; naming patterns never establish ownership. Known resources omitted from lists are recovered by individual reads. An unknown omitted resource type or incomplete external ownership evidence prevents the scan from completing. The Fleet record keeps Hub and member configurations only as private digests; each resource keeps its normal product fields.
 
-Managed namespace cleanup preserves the reviewed `deletePolicy`: `Keep` removes ARM management and retains the Kubernetes namespaces; `Delete` removes the namespaces and their contents on the hub and member clusters. Both policies remove associated Azure RBAC assignments. Changing the policy or placement configuration requires a fresh scan and review. Removing a Fleet member only unregisters it; it does not delete the referenced AKS or Arc-enabled Kubernetes cluster. Arc clusters and their Kubernetes extensions are not Fleet-owned resources. Cross-subscription or missing cluster assets retain unresolved references. See the [documented member types](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/quickstart-create-fleet-and-members). See [managed namespace deletion](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/howto-managed-namespaces#delete-a-managed-fleet-namespace) and [update-run states](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-update-orchestration#update-run-states).
+**Permissions.**
 
-Azure Local VM cleanup requires `Microsoft.AzureStackHCI/virtualMachineInstances/delete`. VM discovery/review also reads both Local guest singleton resources, the referenced OS disk, and the Arc extension, Run Command and license-profile collections, even when scanning only VMs. Grant their native read permissions. Direct guest/Arc prerequisite steps require their own delete permissions; identity metadata and the OS disk are verified through their GET operations after the VM deletion. Resource-group protection and management locks are checked for the VM and every managed resource, including a disk in another resource group.
+| Task | Permissions |
+| --- | --- |
+| Inventory | `Microsoft.ContainerService/fleets/read`, reads of the seven child collections, resource-group and management-lock reads |
+| Hub scans | Unfiltered resource-group and resource lists, native member reads and child lists, and the relevant subscription Monitor and DNS indexes |
+| Deleting AKS clusters, subnets or user-assigned identities | Fleet read permissions, because these checks read the Fleet collections in the subscription, including Fleets missing from inventory |
+| Deleting members, namespaces, update runs, strategies or auto-upgrade profiles | The child's delete permission; update runs in `Running`, `Pending` or `Skipped` state also need permission to stop the run |
+| Deleting a Cluster Mesh profile | Profile read, write, Apply and delete; member reads |
+| Deleting the Fleet | `Microsoft.ContainerService/fleets/delete` |
 
-The system disk is included in the VM's deletion impact. A [corrected Microsoft support response](https://learn.microsoft.com/en-us/answers/questions/5758576/what-happen-with-associated-data-disk-with-azure-l) reports engineering confirmation that the OS disk is removed with the VM, while data disks remain. Retaining or protecting the OS disk, guest resource or Arc prerequisite blocks VM deletion. Native machine/VM reads check for other consumers of the OS disk before cleanup, including previously observed VMs omitted from the current parent index. Only VM and OS-disk/identity own absence completes the action; an operation callback alone cannot close the managed assets. If the native VM response has no registered OS-disk ID, there is no separate disk asset to verify; the VM deletion warning still describes loss of its OS disk.
+**Cleanup.**
 
-Cleanup warnings distinguish OS-disk removal, retained data disks/NICs and the separate Arc-registration step. Tests cover native SDK contracts, composed VM/Arc transports, protection, retention, reference changes and the registered SQLite scan/graph/plan/executor with process-restart recovery. Physical VM/disk removal, real callback compatibility and billing termination still need live verification. Logical networks have separate cleanup with explicitly reviewed prerequisites, as described below.
+- **Members, managed namespaces, update runs, update strategies and auto-upgrade profiles** use their native conditional delete operations.
+- **Update runs:** A running, pending or skipped run is stopped first; a run already stopping is not stopped again. Steward waits for a terminal state before deletion, then checks that the run and its reviewed Gates are gone. Gates are removed with their update run. Polling and execution phases survive a worker restart.
+- **Managed namespaces** keep the reviewed `deletePolicy`: `Keep` removes ARM management and keeps the Kubernetes namespaces; `Delete` removes the namespaces and their contents on the hub and member clusters. Both remove the associated Azure RBAC assignments. Changing the policy or placement configuration requires a fresh scan and review.
+- **Members:** Removing a member only unregisters it; the AKS or Arc-enabled Kubernetes cluster is not deleted. Arc clusters and their Kubernetes extensions are not Fleet-owned. Dynamic namespace placement conservatively requires namespace cleanup before removing any member of that Fleet. A member attached to a Cluster Mesh profile requires the profile to be cleaned up first. Cross-subscription or missing clusters stay unresolved references.
+- **Cluster Mesh (cross-cluster networks):** Cleanup disconnects the reviewed network before deleting its profile, which interrupts cross-cluster connectivity and service discovery. Attachment is read from the members' actual `meshProperties` through unfiltered native lists and individual reads; matching labels alone do not establish it. Cleanup waits for any current Apply, sets an empty member selector without changing other settings, applies the disconnection, then confirms that no members remain attached. Protected or locked members, new attachments, configuration changes and unreadable residual attachments block progress. The profile's own 404 plus individual checks of known attachments complete the step. Members and their clusters stay.
+- **Fleet:** Root cleanup is available for a Fleet with a verified Hub, or a verified hubless Fleet. Selecting a Fleet adds separate reviewed deletion steps for its native child configurations; each must be confirmed gone before the Fleet DELETE. Steward verifies the exact Hub impact set, ownership, configuration, protection and locks. The Hub cluster, both managed groups and their owned descendants belong to the Fleet (not to a second AKS or attachment controller), and only the Fleet DELETE is sent for them. After the Fleet disappears, both groups and every known typed descendant still need their own 404, including external managed disks and DNS resources; unknown contained types rely on their group being gone. A kept resource, an unverified Hub or unreadable residual resources prevent completion. Shared resources and enrolled member clusters stay independent.
+- **References from Fleets:** A live Fleet reference blocks deleting an AKS cluster, subnet or user-assigned identity. These checks never give a Fleet ownership of member clusters or shared networking.
+- RBAC assignments and diagnostic settings keep their own independent cleanup requirements.
 
-Azure Local registration cleanup requires `Microsoft.HybridCompute/machines/delete` after the VM's own cleanup completes. HCI machine scans also read the native VM instance, its two Local guest singletons and registered OS disk, plus the three Arc child collections. The signed VM context stays bound to the registration identity after the VM disappears, allowing a later scan to finish registration cleanup. Without previously verified VM context, an HCI host stays protected. Replaced registrations, unavailable reads, retained/protected VMs and surviving VM/guest/identity/OS-disk resources block deletion or completion. A missing parent or successful operation response cannot establish child absence. NICs and data disks remain separate resources.
+**Limits.** Resources missing from inventory stay unresolved references. A changed ownership proof or native state requires a new scan before cleanup.
 
-Azure Local disks and NICs support independent cleanup after all native VM references are removed. Grant `Microsoft.AzureStackHCI/virtualHardDisks/delete` or `Microsoft.AzureStackHCI/networkInterfaces/delete`, the corresponding resource read, subscription-wide Arc machine list/read and Local VM list/read, plus resource-group and management-lock reads. Scans retain verified VM identities to recover omitted parent indexes; internal recovery hints do not expand network membership. A VM still using the resource must be explicitly selected for prior deletion, or detached through its native management tools and rescanned. Selecting a disk or NIC alone never automatically selects a VM for deletion. OS disks remain managed impacts of their VM. Protection, changed configuration, unavailable reads and new consumers block cleanup. Completion requires the resource's own absence and cleared VM references after restart, synchronous 204 or DELETE 404. Deleting a disk can permanently remove data. See the native [disk delete](https://learn.microsoft.com/en-us/rest/api/stackhci/virtual-hard-disks/delete?view=rest-stackhci-2024-01-01) and [NIC delete](https://learn.microsoft.com/en-us/rest/api/stackhci/network-interfaces/delete?view=rest-stackhci-2024-01-01) contracts. Physical removal and billing results remain unverified.
+See the [Fleet FAQ](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/faq), [Hub cluster overview](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-lifecycle), [cross-cluster network deletion](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/howto-configure-use-cross-cluster-networking#delete-a-cross-cluster-network), [documented member types](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/quickstart-create-fleet-and-members), [managed namespace deletion](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/howto-managed-namespaces#delete-a-managed-fleet-namespace) and [update-run states](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-update-orchestration#update-run-states).
 
-Azure Local gallery and marketplace images support independent cleanup using `Microsoft.AzureStackHCI/galleryImages/delete` or `Microsoft.AzureStackHCI/marketplaceGalleryImages/delete`, with corresponding image reads plus resource-group and management-lock reads. Image-only scans and actions do not need VM or Arc-registration reads. Existing VMs keep their copies when the source image is deleted, as documented in the [Azure Local FAQ](https://learn.microsoft.com/en-us/azure/azure-local/manage/azure-arc-vms-faq). Selecting an image alone creates one cleanup step without VM prerequisites or managed impacts; when its VM is also selected, the existing reference orders VM cleanup first. Reviewed image configuration, ETags, protection and locks are checked before deletion. Original SDK contracts, synchronous/asynchronous responses, known-resource recovery and SQLite restart tests are retained. Completion requires the image's own absence, including after DELETE 404; physical image removal and production controller compatibility still need live verification.
+### App Service
 
-Azure Local storage paths support cleanup through `Microsoft.AzureStackHCI/storageContainers/delete`. Grant storage-path read access, subscription-wide native disk, gallery-image and marketplace-image list/read access, Arc machine and Local VM list/read access, and resource-group/management-lock reads. Native `containerId` and `vmConfigStoragePathId` references identify workloads on the path. Because these placement fields are optional, resources with no returned storage location are treated as possible consumers; reconcile their placement or explicitly review their cleanup first. Known disk/image IDs and VM scopes survive omitted indexes and later scans. Referencing or possibly referencing workloads must be explicitly selected for prior deletion or removed externally; selecting only the path never automatically selects them. An OS disk can satisfy this prerequisite through its already planned VM only when the native lifecycle declares and verifies its deletion. The frozen disk impact survives inventory closure and worker restart without an independent disk DELETE. Each resource's own absence is checked before path deletion and completion, including when the path already returns 404. The operation does not request volume deletion. See [Microsoft's storage-path removal sequence](https://learn.microsoft.com/en-us/azure/azure-local/manage/create-storage-path?view=azloc-2606) and the [native DELETE contract](https://learn.microsoft.com/en-us/rest/api/stackhci/storage-containers/delete?view=rest-stackhci-2024-01-01). Protocol and original SDK tests do not verify physical storage removal or production callbacks.
+**Inventory.** Web Apps and Function Apps, deployment slots, functions, certificates, hostname bindings and service plans.
 
-Azure Local logical-network cleanup uses `Microsoft.AzureStackHCI/logicalNetworks/delete` with `2025-06-01-preview`. Grant subscription-wide logical-network and NIC list/read access, `Microsoft.Kubernetes/connectedClusters/read` and `Microsoft.HybridContainerService/provisionedClusterInstances/read`, plus resource-group and management-lock reads. Infrastructure networks also require Arc machine and Local VM list/read access. Workload networks check NIC references and native AKS `vnetSubnetIds`; infrastructure networks check VMs, NICs, other logical networks and AKS instances sharing the verified custom location. Missing placement/reference fields are treated as possible use, so reconcile their evidence or remove the consumers first.
+**Permissions.** Native child read and list permissions, plus the delete permissions for the actions you select. Deleting a certificate also needs read access to every app's and slot's TLS state and hostname bindings.
 
-Consumers must be explicitly selected for prior cleanup or removed externally. Selecting a network never automatically selects its workloads. AKS provisioned instances are tracked as unresolved native dependencies and must be removed through native tools before this network workflow can proceed; this workflow does not implement AKS deletion. Known consumer IDs survive index omissions and Arc-parent disappearance. Native subnet `ipConfigurationReferences[].ID` is checked independently of the NIC index; stale references continue to block cleanup. Protection, configuration, locks and live dependencies are reread before DELETE and after the network itself returns 404. An accepted DELETE or a successful operation alone cannot close the asset. The preview SDK's `Location` polling contract is persisted and restored without replaying DELETE. Tests cover original SDK functions with stubs, composed protocols and SQLite restart recovery; physical behavior and production callbacks remain unverified.
+**Cleanup.**
 
-Elastic SAN inventory covers SANs, volume groups, volumes, snapshots and private endpoint connections. It uses the `2026-04-01-preview` API and separately reads active and soft-deleted volume/group lists. Retained resources remain visible with their native IDs; restoring a volume can change its ID while preserving its `volumeId`. An empty active list cannot prove permanent removal.
+- Deleting an app or slot includes its reviewed deployment slots, functions, application certificates and hostname bindings. Keeping a child blocks the app or slot deletion. Default hostnames go only with their app or slot.
+- App Service plans stay separate; select a plan explicitly to remove it.
+- A certificate cannot be deleted while any binding matches its certificate ID or thumbprint. Remove the binding and scan again before deleting the certificate.
+- Deleting an individual function can be unavailable when the app runs from a deployment package; Steward shows Azure's error unchanged.
 
-Public Elastic SAN reads validate resource identity, record shape and pagination before returning results. Foreign resources, malformed pages, nonterminal responses and unsafe continuation links fail the call. Native request IDs, case-insensitive ARM IDs and explicit active/retained selectors are preserved.
+See the [application deletion contract](https://learn.microsoft.com/en-us/rest/api/appservice/web-apps/delete?view=rest-appservice-2025-05-01) and [deployment package behavior](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package).
 
-SAN-level inventory also reads all volume, snapshot and private-connection collections under its active and retained groups. It stores a signed member boundary and recovers known children through their own reads when indexes omit them. Grant the child list/read permissions even when scanning only SANs. A retained group’s snapshot-list 404 is recorded as incomplete membership, while individually addressable known snapshots remain represented; denied reads and missing volume collections still fail the scan.
+### App Service domains
 
-After external SAN or group deletion, inventory still attempts both active and retained populations and reads each known resource individually. Missing child collections are tolerated only after their parent's own absence; live children keep their recorded region and network references. A retained resource that was only addressable through its retained index cannot be declared absent when that index becomes unavailable. Child-only scans leave unscanned parent records open and persist cleanup constraints when their native membership is stale or missing; rescan the full family to reconcile those parents. Changed SAN creation identity or writable configuration also requires a refreshed review before child cleanup.
+**Inventory.** Registered domains and their ownership identifiers, in global inventory. Contact details, transfer authorization and ownership-token values stay out of inventory and logs.
 
-The inventory source checks two complete snapshots, recovers known IDs omitted by indexes, and preserves observations when permissions or collections are incomplete. Children inherit the verified SAN region. If a parent is missing, only signed prior observations can supply historical region/network context, and child collections must still be readable. Parent, subnet, source-volume, private-endpoint and controller references contribute ordinary dependency edges; controller references do not grant deletion ownership.
+**Permissions.** Native domain and identifier list and read permissions, subscription-wide App Service lists, app and slot detail and hostname-binding reads, resource-group reads and management-lock reads. Grant domain, identifier and binding delete permissions only for the reviewed steps.
 
-Volume-group inventory also reads active/retained volumes, snapshots and SAN private endpoint connections. Grant list/read access to these children for complete membership verification. Verified groups show member counts; unresolved private-connection mappings remain explicit possible dependencies. Signed prior membership recovers known children omitted by lists. Retained groups preserve historical membership without presenting it as current counts, and a creating volume without a GUID leaves membership unverified. If a retained group’s snapshot list returns 404, all five resource kinds can still be scanned and their graph reconciled: discoverable volumes stay visible but protected, and known snapshots are checked individually. An own-resource 404 can reconcile a known snapshot; an unavailable list does not prove unknown snapshots absent. Incomplete volume membership is persisted as a cleanup constraint until a fresh scan verifies the collection. Known snapshots remain independently selectable. Denied reads and an active group’s missing snapshot list still fail the scan.
+**Cleanup.**
 
-Deletion is enabled for Elastic SAN snapshots with verified creation identity. It removes the selected restore point and leaves its source volume and parent resources intact. Protected tags, management locks, changed configuration and incomplete reads block deletion. Signed operation receipts survive restarts without replaying DELETE, and a successful or expired callback cannot close a snapshot without independently verifying its own absence. Missing parents alone are not proof of removal.
+- Selecting a domain first deletes its ownership identifiers and the associated app and slot hostname bindings. Apps, certificates, service plans and the DNS zone stay separate.
+- To delete a DNS zone that a registered domain refers to, select that domain too, or change the domain's DNS hosting and scan again.
+- Deleting a domain releases its registration; someone else can then buy the name. Steward keeps Azure's purchase lock and uses `forceHardDeleteDomain=false`, so Azure's 24-hour deletion delay applies. Steward waits up to 48 hours and resumes the wait after worker restarts.
+- Steward waits for already deleted, reviewed app bindings to leave the hostname index; unknown assignments still block deletion. The domain and every known dependency must each read as gone.
+- Configuration changes require a new scan and plan. The domain DELETE has no If-Match condition.
 
-Elastic SAN private endpoint connections also support direct deletion. Removing an approved connection can interrupt access to its mapped volume groups. The consumer's Network private endpoint, NICs, DNS records, SAN, groups, volumes and snapshots are independently managed and remain intact. Cleanup verifies the connection's creation identity, target, native volume-group IDs and configuration, then rereads the SAN and mapped groups for protection, state, region and locks. Grant `Microsoft.ElasticSan/elasticSans/privateEndpointConnections/delete` plus connection, SAN and volume-group reads, resource-group reads and management-lock list access. No Network-provider deletion permission is needed for this connection operation. Incomplete group mappings remain visible but cannot authorize deletion. Persisted Location operations finish only after the connection's own absence is verified; a disconnected state or missing parent alone is insufficient.
+See Microsoft's [domain management and cancellation guidance](https://learn.microsoft.com/en-us/azure/app-service/manage-custom-dns-buy-domain) and the pinned [DomainRegistration API contract](https://github.com/Azure/azure-rest-api-specs/blob/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json).
 
-Elastic SAN volume cleanup now plans associated snapshots as separate, reviewed prerequisite deletions. Retaining an associated snapshot blocks volume cleanup. Ordinary volume deletion follows the signed, reread volume-group retention policy and does not silently purge a retained copy. If the API omits the policy, the native default is left unchanged and the actual outcome is determined from both active and retained indexes plus the volume's own GET. A matching retained copy is reported by its native ID and `volumeId`, remains discoverable, and requires a separate selection for permanent deletion. Selecting an already retained volume binds `deleteType=permanent`. Restored or recreated identities, incomplete populations and live known snapshots block completion.
+### Azure Arc
 
-Volume cleanup requires volume and snapshot list/read access, snapshot delete permission for reviewed snapshots, `Microsoft.ElasticSan/elasticSans/volumegroups/volumes/delete`, SAN and volume-group reads, resource-group reads and management-lock list access. DELETE always sets snapshot deletion to false because snapshots have their own steps. Active iSCSI sessions are not forced by default; disconnect clients first. API callers may explicitly set the volume cleanup request option `force_delete: true`; the plan then displays the workload-interruption consequence. Force is rejected for retained-volume purge, and no host-side client command is executed. Signed receipts preserve the soft-delete or absence outcome and prevent repeated DELETE after restart.
+**Inventory.** Machines and shared ESU licenses, plus the extensions, Run Commands and license profiles under each machine. Known resources and parents omitted from lists are reread individually; incomplete or denied reads fail the scan. Scripts, extension settings, protected parameters and agent proxy settings stay out of public inventory and API logs.
 
-Active volume-group cleanup is enabled. Plans order active volume cleanup (including its snapshots) and any remaining group snapshots before the group DELETE. Private endpoint connections require separate selection and must disappear first; their consumer Network endpoints remain independent. Existing retained volumes are reviewed as retained and must still be present when cleanup completes. Groups containing retained volumes require a verified Enabled retention policy; separately purging a retained group is not yet supported. The group DELETE has no force or permanent-delete option, and this workflow does not disconnect host clients.
+**Permissions.**
 
-Grant `Microsoft.ElasticSan/elasticSans/volumegroups/delete`, volume/snapshot and private-connection list/read permissions, delete permissions for reviewed prerequisites, SAN and resource-group reads, and management-lock list access. Child creation/configuration, new members, protected resources, locks and changed retention prevent deletion. Two native group populations and own reads distinguish permanent absence from same-ID soft deletion. Signed outcomes survive restart; a retained group is rediscovered under the original ID. After a terminal group outcome, a missing snapshot collection falls back to every known snapshot's own read; volume populations must remain readable to verify retained identities. A stale group membership record requires a fresh group scan before group cleanup.
+| Task | Permissions |
+| --- | --- |
+| Inventory | `Microsoft.HybridCompute/machines/read`, `Microsoft.HybridCompute/machines/extensions/read`, `Microsoft.HybridCompute/machines/runCommands/read`, `Microsoft.HybridCompute/machines/licenseProfiles/read` and `Microsoft.HybridCompute/licenses/read` for the selected types. Child scans need subscription-wide machine list and read access. Machine scans need read access to all three child collections, even when you scan machines alone. |
+| Deleting an extension, Run Command or license profile | `Microsoft.HybridCompute/machines/extensions/delete`, `Microsoft.HybridCompute/machines/runCommands/delete` or `Microsoft.HybridCompute/machines/licenseProfiles/delete`; native child and machine reads; resource-group list and read; management-lock reads; and the applicable Monitor, diagnostic settings, RBAC, Fleet and Data Migration dependency reads |
+| Deleting a machine registration | `Microsoft.HybridCompute/machines/delete` and read access to the three child collections |
+| Deleting a shared ESU license | `Microsoft.HybridCompute/licenses/delete`, license reads, subscription-wide machine list and read, machine license-profile list and read, plus the resource-group, lock and incoming-dependency reads above |
 
-SAN deletion is available after a complete member review. Volume groups become prior cleanup steps; their volumes and snapshots keep their own ordering. Private endpoint connections must be selected independently. The SAN driver verifies all these resources have disappeared before calling `Microsoft.ElasticSan/elasticSans/delete`; it checks native collections and every known child's own read again after the SAN disappears. Parent or collection 404 alone cannot finish the task. Signed Location receipts survive restart without repeating DELETE.
+**Cleanup.**
 
-Grant SAN delete, group/volume/snapshot/private-connection list/read and reviewed child delete permissions, plus resource-group and management-lock reads. Resource recreation, writable configuration changes, protected tags, locks and newly discovered children prevent deletion. Native read-only capacity counters may change as children are removed. A stale SAN boundary blocks planning until a full family refresh.
+- **Extensions, Run Commands and license profiles:** Rules that refer to them must be reviewed and removed first. Steward verifies the machine registration, the child's private configuration, protection tags and ownership before deletion. The child's own GET must return 404; the machine disappearing or the operation succeeding is not enough. The plan warns that:
+  - deleting a running Run Command terminates its script;
+  - extension removal needs separate verification on the agent side;
+  - removing a license profile changes the machine's licensing while keeping shared licenses, and the profile's absence does not prove billing ended.
+- **Machine registrations:** Ordinary registrations (no kind, AWS or GCP) can be removed after their reviewed extensions, Run Commands and license profiles are deleted. If child inventory is missing, scan again before planning; keeping a child blocks machine deletion. Known and reviewed children are reread individually even after the machine returns 404. The plan warns that removing the cloud registration leaves the external host and local agent for separate removal.
+- **Protected registrations:** Bare HCI hosts, VMware, SCVMM, AVS, EPS, unknown kinds and other registrations linked to a parent cluster stay protected. Controller-managed machines go only with their controller. HCI registrations of Azure Local VMs need verified VM context and follow the [Azure Local](#azure-local) order.
+- **Shared ESU licenses:** Profiles that use a license must be selected for cleanup or unlinked separately; deleting a profile or machine alone keeps the shared license. The license's native assignment count must be present and zero before DELETE. A license can cover other subscriptions in the same tenant, so an empty local profile list is not enough; clear external assignments through their own subscription. The plan warns that deletion removes the license entitlement and that billing may continue for up to five calendar days. After the license returns 404, saved and reviewed profile references are still checked, and surviving assignments prevent completion.
 
-SANs with existing retained children or groups with Enabled retention remain protected: this path cannot promise their permanent removal. An unexpected retained result from a child step also stops SAN DELETE. Parent force/permanent options are not supported. Retained-group purge and SAN cleanup across retained boundaries remain unfinished. Original REST examples, preview soft-delete CLI recordings and stable `2025-09-01` snapshot recordings are tested offline, together with SQLite inventory and cleanup recovery. No live Elastic SAN or independent ARM emulator has been verified. See [Microsoft's deletion sequence](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-delete).
+**Limits.**
 
-Synapse Pipelines are available in inventory. Their static references to notebooks, Spark job definitions, other pipelines and Spark pools appear as dependencies, including references inside nested control activities. Discovery requires workspace and referenced-resource read access. Dynamic expressions remain unresolved; incomplete permissions or changing configuration prevent a successful scan. Pipeline and other code-artifact cleanup remains unavailable.
+- The native DELETE has no conditional If-Match.
+- Tests cover native protocol replay and the scan, graph, planning and restored execution paths. Live agent removal is unverified.
+- ESU license tests include Microsoft's original CLI DELETE response and restored execution; they do not verify that billing actually ends.
 
-Notebook and Spark job-definition discovery also reviews workspace Spark work and incoming Pipeline references. It needs list/read access to workspace Spark pools, jobs, sessions and Pipelines. These observations support later cleanup review; code-artifact deletion remains unavailable while active Pipeline coverage is incomplete.
+See Microsoft's [agent removal guidance](https://learn.microsoft.com/en-us/azure/azure-arc/servers/uninstall-agent), [disconnect and Azure Local deletion guidance](https://learn.microsoft.com/en-us/azure/azure-arc/servers/azcmagent-disconnect), [ESU licensing scope](https://learn.microsoft.com/en-us/azure/azure-arc/servers/license-extended-security-updates) and [ESU billing behavior](https://learn.microsoft.com/en-us/azure/azure-arc/servers/billing-extended-security-updates).
 
-Synapse workspace cleanup is available after a full scan of its SQL/Spark pools, code artifacts and Spark work records. Review the complete impact list: deletion removes SQL pools, compute engines, notebooks, job definitions, pipelines and workspace metadata, and interrupts workspace workloads. Linked Data Lake storage is retained. Retaining a workspace member blocks this operation; selecting a child alone does not select the workspace for deletion.
+### Azure Local
 
-Grant workspace delete permission, workspace and resource-group reads, management-lock list access, SQL/Spark pool list/read access, SQL replication-link list/read access, and Synapse data-plane list/read access for notebooks, job definitions, pipelines, batches and sessions. New members, changed configuration, protection or incomplete reads require a fresh review. Cleanup saves the native operation across restarts and independently confirms workspace and pool absence. A missing or expired operation callback alone is insufficient. Standalone code-artifact cleanup remains unavailable. See [Microsoft's workspace deletion scope](https://learn.microsoft.com/en-us/azure/synapse-analytics/quickstart-create-workspace-cli).
+**Inventory.**
 
-Workspace cleanup verifies removal of the live workspace and pools; it does not purge SQL backups or prove that all copies of SQL data are gone. Azure can retain recoverable SQL backups after workspace deletion. Recovery depends on available restore points and retention, and is not guaranteed by Steward. See [restoring from a deleted workspace](https://learn.microsoft.com/en-us/azure/synapse-analytics/backuprestore/restore-sql-pool-from-deleted-workspace).
+- VM instances, guest agents, guest identity metadata, NICs, disks, logical networks, storage paths and images, read through native APIs. Known resources are reread individually, and the singleton `default` resources are checked even when their collection is empty or missing. Guest resources inherit the verified Arc machine's region.
+- Failed permissions, snapshots that change during the scan or malformed references fail the scan without closing existing records.
+- Shown: VM capacity and power state, network addresses, disk and image metadata and storage capacity. Kept private: credentials, SSH keys, proxy configuration and local paths.
+- **Logical networks** are read with API version `2025-06-01-preview` to get the native, read-only `networkType`: `Workload`, `Infrastructure`, or `Unknown` when the field is missing or unrecognized. Names, tags and an empty NIC list do not establish the type. A denied or unsupported API response fails the scan without closing existing records. Other Azure Local resource APIs stay pinned to `2024-01-01`.
+- **Network scans** follow NIC and VM references to guest resources and attached virtual disks. Saved attachment evidence is reread to recover VMs omitted from a list; detaching a disk removes that VM from the network's references. Storage paths and images stay independent references. Network membership creates no reverse dependency or deletion ownership.
+- **Relationships** distinguish references to machines, VM instances, NICs, disks, logical networks, storage paths, images and custom locations. Missing or cross-subscription targets stay unresolved, and ordinary references never grant deletion ownership.
 
-Synapse dedicated SQL pools also support independent cleanup in Online or Paused state. Independently selecting an eligible SQL or Spark pool keeps its own cleanup step even after the complete workspace graph has been scanned; it does not select the workspace for deletion. The plan warns that the database is removed and queries and consumers lose access; the workspace, other pools and retained SQL backups are not deleted by this action. This is native pool deletion, not an assertion that every consumer is idle or that all backups have been purged.
+**Permissions.** Every cleanup below also needs resource-group and management-lock reads.
 
-Grant `Microsoft.Synapse/workspaces/sqlPools/delete`, pool/workspace/resource-group reads, replication-link list/read access and management-lock list access. Creation identity, configuration, parent context and protection are checked again before deletion. Existing replication links block both pool-only and workspace cleanup; omitted known links must be checked individually. Remove or resolve replication separately, then rescan. Signed receipts survive restarts, and a successful or expired callback cannot complete cleanup while the pool's own GET still reports it present.
+| Task | Permissions |
+| --- | --- |
+| Inventory | `Microsoft.HybridCompute/machines/read` for VM and guest discovery, plus the corresponding `Microsoft.AzureStackHCI/<resource-type>/read` for each selected family (including `virtualMachineInstances/guestAgents/read` and `virtualMachineInstances/hybridIdentityMetadata/read`). `Microsoft.AzureStackHCI/logicalNetworks/read` to list Local networks in the scan dialog. |
+| Disk membership in network scans | `Microsoft.AzureStackHCI/virtualMachineInstances/read` and `Microsoft.HybridCompute/machines/read` |
+| Deleting a VM | `Microsoft.AzureStackHCI/virtualMachineInstances/delete`. Discovery and review also read both Local guest singletons, the referenced OS disk, and the Arc extension, Run Command and license-profile collections, even when you scan only VMs. Direct guest and Arc prerequisite steps need their own delete permissions. |
+| Deleting a guest agent | `Microsoft.AzureStackHCI/virtualMachineInstances/guestAgents/delete`; read access to the guest, VM instance and Arc machine |
+| Deleting an Arc registration | `Microsoft.HybridCompute/machines/delete`. HCI machine scans also read the native VM instance, its two Local guest singletons, its registered OS disk and the three Arc child collections. |
+| Deleting a disk or NIC | `Microsoft.AzureStackHCI/virtualHardDisks/delete` or `Microsoft.AzureStackHCI/networkInterfaces/delete`; the resource's read; subscription-wide Arc machine and Local VM list and read |
+| Deleting an image | `Microsoft.AzureStackHCI/galleryImages/delete` or `Microsoft.AzureStackHCI/marketplaceGalleryImages/delete`; the image's read. Image-only scans and actions need no VM or Arc-registration reads. |
+| Deleting a storage path | `Microsoft.AzureStackHCI/storageContainers/delete`; storage-path read; subscription-wide list and read for disks, gallery images and marketplace images; Arc machine and Local VM list and read |
+| Deleting a logical network | `Microsoft.AzureStackHCI/logicalNetworks/delete` (with `2025-06-01-preview`); subscription-wide logical-network and NIC list and read; `Microsoft.Kubernetes/connectedClusters/read`; `Microsoft.HybridContainerService/provisionedClusterInstances/read`. Infrastructure networks also need Arc machine and Local VM list and read. |
 
-Synapse backup inventory now includes recoverable dropped SQL pools and SQL pool restore points. It records creation/deletion times, earliest restore time, restore-point type and label, and service-level metadata where Azure supplies them. The records remain separate from live pools. Their graph connections describe the workspace or pool used to query them, and do not authorize cascading deletion.
+Resource-group protection and management locks are checked for the VM and every managed resource, including a disk in another resource group.
 
-Grant workspace and SQL pool list/read access, plus `Microsoft.Synapse/workspaces/restorableDroppedSqlPools/read` and `Microsoft.Synapse/workspaces/sqlPools/restorePoints/read` for the selected backup kinds. Known records omitted by lists are checked individually. Missing parents or unavailable collections fail the scan and preserve existing observations: a deleted workspace may need to be recreated before retained backups can be queried. Only a backup's own absence under a readable parent can reconcile its record.
+**Cleanup.**
 
-User-defined restore points can be deleted independently when Azure supplies a DISCRETE type, a user-request label and a valid creation date. Protected or incomplete records remain unavailable for cleanup. Deleting a point removes that recovery option and retains the SQL pool, workspace and other backups. Steward saves the deletion receipt and verifies the point is absent with unchanged, readable parents. Backup restoration and complete retained lifecycle handling remain unfinished. Automatic restore points cannot be deleted by users. `DISCRETE` alone is not treated as proof that a point was user-created or may be removed. See [Azure backup retention](https://learn.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/backup-and-restore) and [recovery from a deleted workspace](https://learn.microsoft.com/en-us/azure/synapse-analytics/backuprestore/restore-sql-pool-from-deleted-workspace).
+- **VMs:** Cleanup removes the reviewed guest and Arc prerequisites, then sends the native VM DELETE. The OS disk is part of the VM's deletion impact: a [corrected Microsoft support response](https://learn.microsoft.com/en-us/answers/questions/5758576/what-happen-with-associated-data-disk-with-azure-l) reports engineering confirmation that the OS disk is removed with the VM, while data disks remain. Keeping or protecting the OS disk, a guest resource or an Arc prerequisite blocks VM deletion. Before cleanup, native machine and VM reads check for other consumers of the OS disk, including VMs seen earlier but omitted from the current parent list. The step completes only when the VM, the OS disk and the identity metadata each read as gone; identity metadata and the OS disk are verified through their own GET after the VM deletion. If the VM response has no registered OS-disk ID, there is no separate disk record to verify, and the deletion warning still describes losing the OS disk. Selecting only the VM keeps its Arc registration. Associated NICs and data disks stay for separate cleanup. Warnings distinguish OS-disk removal, kept data disks and NICs, and the separate Arc-registration step.
+- **Arc registrations of Local VMs:** Selecting the registration also schedules the VM cleanup first, then deletes the registration natively, following the official CLI order. Registration deletion runs after the VM's own cleanup completes. The verified VM context stays bound to the registration after the VM disappears, so a later scan can finish registration cleanup. An HCI host without previously verified VM context stays protected. A replaced registration, unavailable reads, kept or protected VMs and surviving VM, guest, identity or OS-disk resources block deletion or completion. NICs and data disks stay separate resources.
+- **Guest agents** can be cleaned up on their own after a verified HCI registration and VM configuration have been scanned. Cleanup rereads the reviewed configuration and checks protection and inherited locks. The plan warns that guest management can be interrupted while the VM, Arc registration and identity metadata remain. Deleting the ARM resource does not verify that the agent was removed inside the guest.
+- **Disks and NICs** can be cleaned up on their own after every native VM reference to them is removed. A VM still using the resource must be selected for prior deletion, or detached with native management tools and scanned again; selecting a disk or NIC never selects a VM for deletion. OS disks stay managed impacts of their VM. Scans keep verified VM identities to recover VMs omitted from lists, without adding them to network membership. Protection, changed configuration, unavailable reads and new consumers block cleanup. Completion requires the resource's own absence and cleared VM references — also after a restart, a synchronous 204 or a DELETE 404. Deleting a disk can permanently remove data.
+- **Gallery and marketplace images:** Existing VMs keep their copies when the source image is deleted, as documented in the [Azure Local FAQ](https://learn.microsoft.com/en-us/azure/azure-local/manage/azure-arc-vms-faq). Selecting only an image creates one cleanup step with no VM prerequisites or managed impacts; when a VM using it is also selected, the VM is cleaned up first. Reviewed image configuration, ETags, protection and locks are checked before deletion. Completion requires the image's own absence, including after a DELETE 404.
+- **Storage paths:** Native `containerId` and `vmConfigStoragePathId` references identify workloads on the path. Because these placement fields are optional, a resource that returns no storage location is treated as a possible consumer; reconcile its placement or explicitly review its cleanup first. Known disk and image IDs and VM scopes survive omissions from lists and later scans. Workloads that use or might use the path must be selected for prior deletion or removed outside Steward; selecting only the path never selects them. An OS disk can satisfy this prerequisite through its already planned VM only when the native lifecycle declares and verifies its deletion; that disk impact survives inventory changes and worker restarts without a separate disk DELETE. Each workload's own absence is checked before the path is deleted and at completion, even when the path already returns 404. The operation does not request volume deletion.
+- **Logical networks:** Cleanup requires a verified network type and custom location; an `Unknown` type keeps the network protected.
+  - Workload networks are checked for NIC references and native AKS `vnetSubnetIds`.
+  - Infrastructure networks are checked for VMs, NICs, other logical networks and AKS instances sharing the verified custom location. The instance's VMs, NICs and workload networks must be removed first. Deletion removes only the cloud projection; the on-premises network remains.
+  - Missing placement or reference fields count as possible use: reconcile their evidence or remove the consumers first. Consumers must be selected for prior cleanup or removed outside Steward; selecting a network never selects its workloads.
+  - AKS provisioned instances are tracked as unresolved native dependencies. Remove them with native tools before the network can be cleaned up; this workflow does not delete AKS.
+  - Known consumer IDs survive list omissions and the Arc parent disappearing. The native subnet `ipConfigurationReferences[].ID` is checked independently of the NIC list, and stale references keep blocking cleanup.
+  - Protection, configuration, locks and live dependencies are reread before DELETE and again after the network returns 404. The preview SDK's `Location` polling state is saved and restored without resending DELETE.
 
+**Limits.** These workflows are tested offline: native SDK contracts (with stubs where needed), composed VM, Arc and network transports, network filtering, protection, retention and reference changes, and scan, graph, plan and execution with process-restart recovery. Not yet verified live: the real controller and physical removal of VMs, disks, images, storage and networks; compatibility with real operation callbacks; and billing termination.
+
+See Microsoft's [Azure Local VM management](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607), [logical-network guidance](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-logical-networks?view=azloc-2604) and [logical-network API change log](https://learn.microsoft.com/en-us/azure/templates/microsoft.azurestackhci/change-log/logicalnetworks), [storage-path removal sequence](https://learn.microsoft.com/en-us/azure/azure-local/manage/create-storage-path?view=azloc-2606), and the native [disk delete](https://learn.microsoft.com/en-us/rest/api/stackhci/virtual-hard-disks/delete?view=rest-stackhci-2024-01-01), [NIC delete](https://learn.microsoft.com/en-us/rest/api/stackhci/network-interfaces/delete?view=rest-stackhci-2024-01-01) and [storage-path DELETE](https://learn.microsoft.com/en-us/rest/api/stackhci/storage-containers/delete?view=rest-stackhci-2024-01-01) contracts.
+
+### CDN and Front Door
+
+**Inventory.** CDN and Front Door profiles, read through separate native child collections according to SKU: classic endpoints, origins, origin groups and domains; Front Door endpoints, routes, origin groups, origins, domains, rule sets, rules, security associations and certificate references. Batch-mode Front Door rules are shown inside their rule set.
+
+**Permissions.** Native read and list access to the profile and the relevant child collections, including referring routes and security associations, plus delete permissions for the selected resources.
+
+**Cleanup.**
+
+- **Profiles:** Cleanup reviews every contained resource, and keeping a member of the cascade blocks it. Deleting an entire profile can remove its internal references in the same reviewed cascade.
+- **Domains, origin groups, rule sets and certificate references** deleted on their own bring along the routes, rules or associations that must be removed first. A prerequisite shared by several targets is deleted once.
+- An active classic endpoint that references an origin group blocks deleting the origin group until you update the routing or select the endpoint.
+- **Batch-mode rules** share their rule set's lifetime: to keep them, keep the entire rule set. An origin-group override in a batch rule adds the referring rule set to the required deletions, and routes using that rule set must be removed first. Classic-mode rules can still be deleted individually, with a fresh check of the parent rule set.
+- External origins, Key Vault data, DNS zones and WAF policies stay independent.
+- Signed asynchronous operations and the final checks that each resource and child is gone survive a restart.
+
+See the native [profile deletion contract](https://learn.microsoft.com/en-us/rest/api/cdn/profiles/delete?view=rest-cdn-2025-04-15), [rule-set cleanup guidance](https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-configure-rule-set) and Microsoft's [batch rule management guide](https://learn.microsoft.com/en-us/azure/frontdoor/rule-set-batch).
+
+### WAF policies
+
+**Inventory.** CDN and Front Door WAF policies and the endpoints or security associations that refer to them.
+
+**Permissions.** Policy and referrer read access for inventory; for cleanup, also their delete permissions and operation-status access.
+
+**Cleanup.**
+
+- Deleting a policy includes its embedded rules.
+- Any referring CDN endpoint or Front Door security association must be reviewed and deleted first; keeping it blocks policy deletion.
+- Active classic Front Door frontend or routing references keep blocking until you remove them outside Steward.
+- Policy configuration, locks and all remaining associations are rechecked before deletion.
+
+See the [Front Door policy deletion contract](https://learn.microsoft.com/en-us/rest/api/frontdoorservice/webapplicationfirewall/policies/delete?view=rest-frontdoorservice-webapplicationfirewall-2025-11-01).
+
+### Elastic SAN
+
+**Inventory.**
+
+- SANs, volume groups, volumes, snapshots and private endpoint connections, read with API version `2026-04-01-preview`. Steward reads the active and the soft-deleted (retained) volume and volume-group lists separately. Retained resources stay visible under their native IDs. Restoring a volume can change its ID while keeping its `volumeId`. An empty active list does not prove permanent removal.
+- Responses are checked for resource identity, record shape and pagination; foreign resources, malformed pages, nonterminal responses and unsafe continuation links fail the call.
+- A SAN scan also reads all volume, snapshot and private-connection collections under its active and retained groups, and recovers known children omitted from lists through their own reads. A group scan reads active and retained volumes, snapshots and the SAN's private endpoint connections.
+- Children inherit the verified SAN region. Parent, subnet, source-volume, private-endpoint and controller references appear as dependencies; controller references do not grant deletion ownership.
+- Verified groups show member counts. Private connections whose volume-group mapping cannot be resolved stay visible as possible dependencies. Retained groups keep their historical membership without showing it as current counts. A volume still being created without a GUID leaves membership unverified.
+- **When a list is unavailable:** If a retained group's snapshot list returns 404, membership is recorded as incomplete; the scan still completes, discoverable volumes stay visible but protected, and known snapshots are checked individually (a known snapshot's own 404 closes it, but an unavailable list does not prove unknown snapshots absent). Incomplete volume membership is saved as a cleanup constraint until a fresh scan reads the collection. Known snapshots stay selectable on their own. Denied reads, missing volume collections and a missing snapshot list on an active group fail the scan.
+- **After a SAN or group is deleted outside Steward,** inventory still reads both active and retained lists and each known resource. Missing child collections are accepted only after the parent's own absence; live children keep their recorded region and network references. A retained resource that was only reachable through the retained list cannot be declared absent when that list becomes unavailable. If a parent is missing, only previously verified records can supply its historical region and network context, and child collections must still be readable.
+- **Child-only scans** leave unscanned parent records open and save a cleanup constraint when native membership is stale or missing. Scan the full SAN family again to reconcile the parents. A changed SAN creation identity or writable configuration also requires a fresh review before child cleanup.
+
+**Permissions.** Grant child list and read access even when you scan only SANs or groups. Every cleanup also needs SAN reads, resource-group reads and management-lock list access.
+
+| Task | Permissions |
+| --- | --- |
+| Deleting a private endpoint connection | `Microsoft.ElasticSan/elasticSans/privateEndpointConnections/delete`; connection and volume-group reads. No Network-provider delete permission is needed. |
+| Deleting a volume | `Microsoft.ElasticSan/elasticSans/volumegroups/volumes/delete`; volume and snapshot list and read; snapshot delete permission for reviewed snapshots; volume-group reads |
+| Deleting a volume group | `Microsoft.ElasticSan/elasticSans/volumegroups/delete`; volume, snapshot and private-connection list and read; delete permissions for reviewed prerequisites |
+| Deleting a SAN | `Microsoft.ElasticSan/elasticSans/delete`; group, volume, snapshot and private-connection list and read; delete permissions for reviewed children |
+
+**Cleanup.**
+
+- **Snapshots** with a verified creation identity can be deleted. This removes the selected restore point and keeps its source volume and parents. Protection tags, locks, changed configuration and incomplete reads block deletion. Operation receipts survive restarts without resending DELETE.
+- **Private endpoint connections** can be deleted directly. Removing an approved connection can interrupt access to its mapped volume groups. The consumer's Network private endpoint, NICs, DNS records, and the SAN, groups, volumes and snapshots stay. Cleanup verifies the connection's creation identity, target, native volume-group IDs and configuration, then rereads the SAN and mapped groups for protection, state, region and locks. Connections with incomplete group mappings stay visible but cannot be deleted. A disconnected state is not proof of deletion.
+- **Volumes:** Associated snapshots are planned as separate, reviewed prerequisite deletions; keeping one blocks the volume cleanup. The volume DELETE always sets snapshot deletion to false, because snapshots have their own steps.
+  - Ordinary deletion follows the volume group's retention policy (reread and bound to the review) and never silently purges a retained copy. If the API omits the policy, the native default applies, and the outcome is read from the active and retained lists plus the volume's own GET.
+  - A retained copy is reported by its native ID and `volumeId`, stays discoverable, and needs a separate selection for permanent deletion. Selecting an already retained volume uses `deleteType=permanent`.
+  - Restored or recreated identities, incomplete lists and known snapshots that still exist block completion.
+  - Active iSCSI sessions are not forced by default: disconnect clients first. API callers can set the volume cleanup option `force_delete: true`; the plan then shows that workloads can be interrupted. Force is rejected for purging a retained volume, and no client command is run on hosts.
+  - Receipts record the soft-delete or absence outcome and prevent a repeated DELETE after restart.
+- **Active volume groups:** The plan deletes active volumes (with their snapshots) and any remaining group snapshots before the group DELETE. Private endpoint connections need a separate selection and must be gone first; their consumer Network endpoints stay independent. Existing retained volumes are reviewed as retained and must still be present when cleanup completes. A group containing retained volumes needs a verified Enabled retention policy. The group DELETE has no force or permanent-delete option, and this workflow does not disconnect host clients. Changed child identity or configuration, new members, protected resources, locks and a changed retention policy prevent deletion. Active and retained lists plus own reads distinguish permanent absence from a same-ID soft deletion; a retained group is rediscovered under its original ID. After the group reaches a final state, a missing snapshot collection falls back to each known snapshot's own read, while volume lists must stay readable to verify retained identities. Stale group membership requires a fresh group scan first.
+- **SANs** can be deleted after a complete member review. Volume groups become prior steps, and their volumes and snapshots keep their own order. Private endpoint connections must be selected separately. Steward verifies all of these are gone before calling `Microsoft.ElasticSan/elasticSans/delete`, then checks the native collections and every known child's own read again after the SAN disappears; a parent or collection 404 alone does not finish the task. Location receipts survive restarts without resending DELETE. Recreation, writable configuration changes, protection tags, locks and newly discovered children prevent deletion. Read-only capacity counters can change as children are removed without invalidating the review. A stale SAN membership record blocks planning until the full family is scanned again.
+
+**Limits.**
+
+- A SAN stays protected while it has retained children or a volume group with an Enabled retention policy: this path cannot promise their permanent removal. An unexpected retained result from a child step also stops the SAN DELETE.
+- Force and permanent options on parents are not supported. Purging retained groups and SAN cleanup across retained resources are not finished.
+- Original REST examples, preview soft-delete CLI recordings and stable `2025-09-01` snapshot recordings are tested offline, together with inventory and cleanup recovery. No live Elastic SAN or independent ARM emulator has been verified.
+
+See Microsoft's [Elastic SAN deletion sequence](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-delete).
 
 ### Azure NetApp Files
 
-Inventory includes accounts, capacity pools, volumes, snapshots, subvolumes,
-quota rules, volume groups, snapshot/backup policies, backup vaults and backups.
-It follows native parent APIs and verifies individual resources, including known
-resources missing from lists. Failed parent reads preserve existing records.
-Backup and subvolume locations come from their verified parents. Volume subnet
-and VNet links support network selection; backup-to-source links do not authorize
-cascading removal. AD credentials and private unknown fields are not displayed.
+**Inventory.**
 
-Eligible volumes support reviewed deletion, including their snapshots, subvolumes
-and quota rules. Stop applications and unmount the volume from all hosts first.
-Backup-vault backups, capacity pools and accounts are retained. Active replication,
-restores, clones, protection tags and locks prevent this cleanup. Changing the
-reviewed volume or its children requires a new plan. Execution resumes from saved
-acknowledgements and independently checks the volume and children for absence.
+- Accounts, capacity pools, volumes, snapshots, subvolumes, quota rules, volume groups, snapshot and backup policies, backup vaults and backups. Steward follows native parent APIs and reads individual resources, including known resources missing from lists. Failed parent reads keep existing records.
+- Backup and subvolume locations come from their verified parents. Volume subnet and VNet links support network selection; links from backups to their source volume do not authorize cascading removal. AD credentials and unrecognized private fields are not displayed.
+- **Policy assignments:** Backup-policy, snapshot-policy and backup-vault scans also read current volume assignments. A suspended policy or disabled enforcement still counts as an assignment. Historical policy IDs stored in backups do not establish current assignments. Incomplete native policy indexes stay unresolved. These dependencies do not authorize volume deletion.
+- **Backup vaults:** Scans record the vault's complete native backup membership independently of current volume assignments, including backups whose source volumes no longer exist. A known backup omitted from a list is read by ID; only its own absence removes it. Membership changes fail the scan. Missing or stale backup records require a refresh.
+- **Volume groups:** Scans read the group's embedded volume IDs and count, then read those volumes and the account's complete pool and volume indexes. A volume's current group name is checked against the group; when the group supplies a file-system UUID, it must match the volume's own read. Known members omitted from a list are read by ID; only a verified change of association or the volume's own absence removes membership. A group scan never deletes or closes the volume record itself. Missing graph records require a refresh.
+- **Network sibling sets:** For volumes that expose a network sibling-set ID, Steward runs the read-only native query that identifies volumes sharing primary mount IPs. It verifies the returned subnet and set identity, current volume IDs, UUIDs and configuration through repeated reads, and the reported IP must agree with the volume's mount targets when they are supplied. Missing optional mount targets do not replace the query's membership evidence.
+- **Group NIC correlation:** Group scans match NICs from complete subscription-wide NIC lists and individual interface reads. They combine the primary sibling-set IPs with every available mount target, then verify matching subnet and IP pairs, native interface GUIDs and linked workload IDs in two passes. Known interfaces omitted from the list are read individually. Missing mount metadata or interface matches, missing native GUIDs, unknown or shared workloads and interfaces in transition leave the correlation incomplete. Only canonical linked volume IDs are kept; arbitrary workload values and private NIC fields are excluded. Correlation does not prove exclusive group ownership or authorize deletion.
+- Unavailable or changing reads fail these scans and keep the previous records.
 
-Snapshots and backup-vault backups also support independent deletion. The plan
-warns that the selected recovery point is permanently lost; its source volume,
-other recovery points and parents remain. Deleting the final backup removes the
-reference point for future incremental backups. Backups remain eligible for review
-after their source volume is deleted.
+**Permissions.** Every cleanup also needs resource-group and management-lock reads.
 
-A known latest backup, including equal snapshot-time ties, is protected while a
-backup policy is assigned to the live source volume, even if policy enforcement
-is disabled. A newer backup must have completed successfully to establish that
-the selected backup is older. Missing optional chronology leaves the final
-restriction to Azure's native DELETE. Steward never forces deletion or changes
-the backup policy. Snapshot restore, clone and replication restrictions also remain
-subject to Azure's native checks. Grant snapshot or backup delete permission,
-resource/ancestor and management-lock reads; backup review also needs account-wide
-vault/backup lists and source-volume reads. Unavailable reads prevent cleanup.
-See [snapshot deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/snapshots-delete)
-and [backup deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-delete).
+| Task | Permissions |
+| --- | --- |
+| Policy and vault scans | Account capacity-pool and volume list and read; snapshot policies also need their associated-volume list permission |
+| Backup-vault scans | Backup list and read in each vault |
+| Volume-group scans | Group reads, account pool and volume list and read, and `Microsoft.Network/networkInterfaces/read` across the connection's subscription |
+| Volumes with a network sibling set | `Microsoft.NetApp/locations/queryNetworkSiblingSet/action` and reads of every returned volume |
+| Deleting snapshots or backups | Snapshot or backup delete; resource and ancestor reads. Backup review also needs account-wide vault and backup lists and source-volume reads. |
+| Deleting subvolumes or quota rules | Subvolume or quota-rule list, read and delete; volume, pool and account reads; active-replication list access |
+| Deleting a capacity pool | Capacity-pool delete plus the volume cleanup permissions; pool and volume list and read; account reads |
+| Deleting a snapshot policy | Volume update and snapshot-policy delete, plus the assignment-discovery reads |
+| Deleting a backup policy | Volume update, latest-backup-status read and backup-policy delete, plus the assignment-discovery reads |
+| Deleting a backup vault | Volume update, latest-backup-status read, backup-policy read, backup delete and vault delete, plus the complete discovery and protection reads |
 
-Subvolumes and volume quota rules support independent deletion on volumes without
-active replication. Subvolume deletion removes its data and can interrupt its
-applications; the parent volume, other subvolumes and recovery points remain.
-Quota-rule deletion changes the applicable user/group storage limits; other quota
-rules can still apply, and files are retained. Both default and individual user
-and group quota rules are supported, including failed rules requiring removal.
+**Cleanup.**
 
-Grant subvolume or quota-rule list/read/delete permissions, volume/pool/account
-and resource-group reads, management-lock reads and active-replication list access.
-Changing a reviewed path, quota configuration or parent requires a fresh plan.
-Disabled subvolume operations, restores, active clones, protection and incomplete
-reads prevent independent deletion. Known resources omitted by lists still receive
-individual reads. Azure has [deprecated its subvolume CLI commands](https://learn.microsoft.com/en-us/cli/azure/netappfiles/subvolume),
-while the selected 2025-12-01 REST version still exposes their deletion API.
+- **Volumes:** Eligible volumes can be deleted after review, including their snapshots, subvolumes and quota rules. Stop applications and unmount the volume from all hosts first. Backup-vault backups, capacity pools and accounts are kept. Active replication, restores, clones, protection tags and locks prevent cleanup. Changing the reviewed volume or its children requires a new plan. Execution resumes from saved acknowledgements and checks that the volume and children are gone.
+  - Mount targets are read-only volume properties; deleting a volume is not a substitute for removing a mount.
+  - For volumes in a network sibling set: a network migration or missing native UUID keeps the volume visible but prevents cleanup. Unavailable reads, new peers, changed state or live peers omitted from the query require a fresh review. During cleanup, a smaller set is accepted only after each removed reviewed peer returns 404, so earlier volume prerequisites can complete without silently dropping live peers. Scan existing volumes again to record this network review. Network IPs are not NIC resource IDs: verifying NIC ownership, protection and deletion effects is not finished.
+- **Snapshots and backup-vault backups** can be deleted on their own. The plan warns that the selected recovery point is permanently lost; its source volume, other recovery points and parents stay. Deleting the final backup removes the reference point for future incremental backups. Backups stay eligible after their source volume is deleted.
+  - The known latest backup, including ties on snapshot time, is protected while a backup policy is assigned to the live source volume, even if policy enforcement is disabled. A newer backup must have completed successfully to establish that the selected backup is older. When the optional chronology is missing, Azure's native DELETE enforces the final restriction.
+  - Steward never forces deletion or changes the backup policy. Snapshot restore, clone and replication restrictions also stay with Azure's native checks. Unavailable reads prevent cleanup.
+- **Subvolumes and quota rules** can be deleted on their own on volumes without active replication.
+  - Deleting a subvolume removes its data and can interrupt its applications; the parent volume, other subvolumes and recovery points stay.
+  - Deleting a quota rule changes the user or group storage limits; other quota rules can still apply, and files are kept. Default and individual user and group rules are supported, including failed rules that need removal. Quota changes on a replication source propagate to its destination.
+  - Changing a reviewed path, quota configuration or parent requires a fresh plan. Disabled subvolume operations, restores, active clones, protection and incomplete reads prevent deletion.
+  - Azure has [deprecated its subvolume CLI commands](https://learn.microsoft.com/en-us/cli/azure/netappfiles/subvolume), while the REST version Steward uses, `2025-12-01`, still exposes their deletion API.
+- **Capacity pools:** Cleanup deletes each reviewed volume, then the empty pool. Review the volumes and their snapshots, subvolumes and quota rules in the plan, and stop applications and unmount these volumes before execution. Keeping a volume blocks pool removal. The NetApp account and backup-vault backups are kept. Missing permissions, new volumes, changed writable configuration or changed native identities require a fresh review. Completion requires the pool's own absence under readable parents.
+- **Snapshot policies** can be deleted while keeping their assigned volumes. The plan lists those volumes and their existing snapshots, subvolumes and quota rules as kept. Execution removes the reviewed snapshot-policy assignment from each volume, confirms it is gone, then deletes the policy. Future snapshots scheduled by this policy stop; existing volume data, snapshots and vault backups stay. Selecting a volume still uses the volume workflow and does not select its snapshot policy. New consumers, another assigned policy, changed volume settings or identities, protection and unavailable parents prevent changes. A completed callback is not enough while the volume still shows the old assignment or the policy still exists.
+- **Backup policies** can be deleted while keeping their volumes and existing backups. Execution waits for backup transfer to be idle, suspends policy enforcement on each reviewed volume, confirms the suspension, waits for transfer completion again, then clears the volume's backup-policy assignment. The policy is deleted only after every reviewed assignment is gone. Future policy backups stop; backup vaults, existing backups, snapshots, subvolumes, quota rules and volume data stay. A fresh scan must capture the native policy UUID and the complete list of consumers. Unknown transfer states, unavailable reads, resumed enforcement, new consumers or changed identities or settings stop further changes.
+- **Backup vaults:** Cleanup stops scheduled backups on the reviewed volumes, removes their backup-policy assignments, and permanently deletes all reviewed backups in the vault. Only after those backups are confirmed gone are the vault assignments removed and the empty vault deleted. Volumes, their data, snapshots, subvolumes, quota rules and global backup policies stay. Removing the final backup also removes the reference point for future incremental backups. Keeping any vault backup blocks vault cleanup. New backups or consumers, changed identities or settings, protection, unknown transfer states and failed reads stop further changes; a backup that appears during cleanup requires a new review, even if scheduled backups have already stopped.
+- Each accepted update and deletion is saved for restart recovery, and a completed callback never replaces reading the resource itself.
+- **Volume groups** cannot be cleaned up yet. Azure requires all member volumes to be removed first and automatically removes related network interfaces when it deletes the group; those interface effects still need review. Groups stay protected until interface lifecycle effects are implemented.
 
-Quota changes on a replication source propagate to its destination. Cleanup of
-replicated child rules, replication termination, clone management and export-policy
-editing remain under implementation. See [quota-rule semantics](https://learn.microsoft.com/en-us/azure/azure-netapp-files/manage-default-individual-user-group-quotas)
-and [subvolume deletion](https://learn.microsoft.com/en-us/rest/api/netapp/subvolumes/delete?view=rest-netapp-2025-12-01). Mount targets are read-only
-volume properties; deleting a volume is not a substitute for removing a mount.
-See [NetApp permissions](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions)
-and [deleting volumes](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete).
+**Limits.**
 
-Capacity pool cleanup deletes each reviewed volume before deleting the empty pool.
-Review the volumes and their snapshots, subvolumes and quota rules in the plan;
-stop applications and unmount these volumes before execution. Keeping a volume
-blocks pool removal. The NetApp account and backup-vault backups are retained.
-Grant capacity-pool delete permission in addition to volume cleanup permissions,
-pool and volume list/read access, account/resource-group reads and management-lock
-reads. Missing permissions, new volumes, changed writable configuration or changed
-native identities require a fresh review. Restarting execution resumes saved native
-operations; completion requires the pool's own absence under readable parents.
-See [Azure storage hierarchy](https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-understand-storage-hierarchy).
+- Cleanup of replicated child rules, replication termination, clone management and export-policy editing are still being implemented.
+- The policy and vault workflows have offline contract, fault-injection and restart coverage. Live Azure acceptance of the volume PATCH that removes an assignment is unverified.
+- Snapshot policies and backup vaults expose no native UUID: an identical recreation with the same name and no creation metadata cannot be told apart.
+- Group reviews recorded by earlier versions (four fields) need a new scan.
 
-Backup-policy, snapshot-policy and backup-vault scans also inspect current volume
-assignments. Grant account capacity-pool and volume list/read access; snapshot
-policies additionally need their associated-volume list permission. A suspended
-policy or disabled enforcement still counts as an assignment. Historical policy
-IDs stored in backups do not establish current assignments. Unavailable reads
-fail the scan and preserve existing observations. Incomplete native policy indexes
-remain unresolved. Dependency observations do not authorize volume deletion.
+See Microsoft's [snapshot deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/snapshots-delete), [backup deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-delete), [quota-rule semantics](https://learn.microsoft.com/en-us/azure/azure-netapp-files/manage-default-individual-user-group-quotas), [subvolume deletion](https://learn.microsoft.com/en-us/rest/api/netapp/subvolumes/delete?view=rest-netapp-2025-12-01), [NetApp permissions](https://learn.microsoft.com/en-us/azure/azure-netapp-files/network-attached-storage-permissions), [deleting volumes](https://learn.microsoft.com/en-us/azure/azure-netapp-files/volume-delete), [storage hierarchy](https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-understand-storage-hierarchy), [snapshot-policy deletion requirements](https://learn.microsoft.com/en-us/azure/azure-netapp-files/snapshots-manage-policy#delete-a-snapshot-policy), [backup policy management](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-manage-policies), [vault management](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-vault-manage) and [application volume-group deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/application-volume-group-delete).
 
+### Cosmos DB
 
-Snapshot policies support cleanup with their assigned volumes retained. The plan
-lists those volumes and their existing snapshots, subvolumes and quota rules as
-retained impacts. Execution removes the reviewed snapshot-policy assignment from
-each volume, confirms that the assignment is gone, then deletes the policy. Future
-snapshots scheduled by this policy stop; existing volume data, snapshots and vault
-backups remain. Independently selecting a volume still uses its volume cleanup
-workflow and does not select the snapshot policy.
+**Inventory.** Accounts and databases/containers for NoSQL, MongoDB, Cassandra, Gremlin and Table; roles, services, notebooks and private connections; managed Cassandra and Fleets. Accounts appear under global scope; managed Cassandra data centers use their deployment region. Data-resource names are case-sensitive (see [First inventory](#first-inventory)).
 
-Grant volume update permission and snapshot-policy delete permission in addition
-to the assignment-discovery reads. New consumers, another assigned policy, changed
-volume settings, resource identities, protection or unavailable parents prevent
-mutation. Execution saves each update and deletion receipt across restarts. A
-completed callback is insufficient while the own volume read still shows the old
-assignment or the policy still exists. Snapshot policies expose no native UUID;
-identical same-name recreation without creation metadata cannot be distinguished.
-See [snapshot-policy deletion requirements](https://learn.microsoft.com/en-us/azure/azure-netapp-files/snapshots-manage-policy#delete-a-snapshot-policy).
+**Permissions.** Reads must cover the applicable API collections, throughput settings, ancestors and incoming Fleet associations across the subscription.
 
-Backup policies also support cleanup while retaining their volumes and existing
-backups. Execution waits for an idle backup transfer, suspends policy enforcement
-on each reviewed volume, confirms suspension, waits for transfer completion again,
-and separately clears that volume's backup-policy assignment. It deletes the
-policy only after every reviewed assignment is gone. Future policy backups stop;
-backup vaults, existing backups, snapshots, subvolumes, quota rules and volume data
-remain. Independent volume cleanup remains a separate selection.
+**Cleanup.**
 
-Grant volume update, latest-backup-status read and backup-policy delete permissions
-in addition to assignment discovery reads. A fresh scan must capture the native
-policy UUID and complete consumer index. Unknown transfer states, unavailable
-reads, resumed enforcement, new consumers or changed resource identities/settings
-prevent further mutation. Each accepted update is saved separately for restart
-recovery, and completed callbacks still require independent own-resource reads.
-See [backup policy management](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-manage-policies).
+- Deleting accounts, databases, containers or tables removes their data.
+- Plans review required children, role dependencies and Fleet associations first. Keeping a built-in role or client encryption key requires keeping its account or database.
+- Deleting a Fleet unlinks its accounts without deleting them; a protected or locked account blocks unlinking.
+- Throughput, backup migration, configuration and child membership are checked before deletion.
+- No restore or purge is offered.
 
-Backup-vault discovery also requires backup list/read access within each vault.
-It records the complete native backup membership independently of current volume
-assignments, including backups whose source volumes no longer exist. A previously
-observed backup omitted from a list is still read by ID; only its own absence can
-retire the association. Unavailable reads or membership changes fail the scan and
-preserve prior observations. Missing or stale backup graph records require a
-refresh.
+See the [resource model](https://learn.microsoft.com/en-us/azure/cosmos-db/resource-model) and [MongoDB roles](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/role-based-access-control).
 
-Backup-vault cleanup stops scheduled backups on reviewed volumes, separately
-removes their backup-policy assignments, and permanently deletes all reviewed
-backups in the vault. Only after those backups are independently confirmed absent
-are vault assignments removed and the empty vault deleted. Volumes, their data,
-snapshots, subvolumes, quota rules and global backup policies remain. Removing the
-final backup also removes the reference point for future incremental backups.
-Retaining any vault backup blocks vault cleanup.
+### Azure DocumentDB
 
-Grant volume update, latest-backup-status read, backup-policy read, backup delete
-and vault delete permissions in addition to the complete discovery and protection
-reads. Each accepted operation is saved for restart recovery; callback completion
-alone never proves unassignment or deletion. New backups or consumers, changed
-identities/settings, protection, unknown transfer states and failed reads prevent
-further mutation. A backup appearing during cleanup requires a new review, even
-if scheduled backups have already stopped. See [vault management](https://learn.microsoft.com/en-us/azure/azure-netapp-files/backup-vault-manage).
+Azure DocumentDB was formerly called MongoDB vCore.
 
-This workflow has offline contract, fault-injection and restart coverage. Live
-Azure acceptance of volume PATCH unassignment remains unverified. Backup vaults
-expose no native UUID; identical same-name recreation without creation metadata
-cannot be distinguished.
+**Inventory.** MongoDB-compatible clusters and replicas, firewall rules, private endpoint connections and Microsoft Entra user registrations.
 
-Volume-group discovery reviews the group's own embedded volume IDs and count,
-then independently reads those volumes and the account's complete pool/volume
-indexes. A volume's current group name is checked against the group membership;
-when the embedded response supplies a file-system UUID, it must match the own
-volume read. Previously observed omitted members remain read hints; only a
-verified change of association or own absence can retire their membership. A group
-scan never deletes or reconciles the volume record itself. Missing graph records
-require a refresh; unavailable or changing reads preserve prior observations.
-Grant account pool/volume list and read permissions in addition to group reads.
+**Permissions.** Reads must cover each cluster, its complete child and replica lists, and all referenced replicas.
 
-Volume-group cleanup remains unimplemented. Azure requires all member volumes to
-be removed first and automatically removes related network interfaces when deleting
-the group. Those interface effects still need review before cleanup can be enabled.
-See [application volume-group deletion](https://learn.microsoft.com/en-us/azure/azure-netapp-files/application-volume-group-delete).
+**Cleanup.**
 
-Volumes exposing a network sibling-set ID also require the native network
-sibling-set query permission (`Microsoft.NetApp/locations/queryNetworkSiblingSet/action`)
-and reads for every returned volume. The read-only POST query identifies volumes
-sharing primary mount IPs. Inventory verifies the returned subnet/set identity,
-current volume IDs, UUIDs and configuration through repeated own reads. When a
-volume supplies mount targets, the reported IP must agree. Optional absent mount
-targets do not replace the native query's membership evidence.
+- Deleting a cluster removes its data.
+- Replicas are independent clusters. The plan deletes reviewed replicas before their source; deleting a replica keeps the source.
+- Firewall rules, private endpoint connections and Microsoft Entra user registrations have separate deletion steps. Keeping or protecting a required resource blocks its parent.
+- Removing a user registration does not remove the Entra identity or clean up database roles.
+- Configuration changes and ongoing topology edits require a new scan or a retry.
+- Backup restore and purge are not offered.
 
-A network migration or missing native UUID keeps the volume visible but prevents
-cleanup. Unavailable reads, new peers, changed state or live omitted peers require
-a fresh review. During cleanup, a smaller set is accepted only after each removed
-reviewed peer independently returns 404; this allows earlier volume prerequisites
-to complete without silently dropping live peers. Existing volume observations
-must be refreshed to acquire the network review. Network IPs are not NIC resource
-IDs: NIC ownership, protection and deletion-effect verification remain unfinished.
+See [replication deletion](https://learn.microsoft.com/en-us/azure/documentdb/troubleshoot-replication) and [authentication](https://learn.microsoft.com/en-us/azure/documentdb/how-to-connect-role-based-access-control).
 
+### Azure Data Explorer
 
-Network interfaces reporting nonempty `hostedWorkloads` are protected from direct
-cleanup and from VM cascades that would delete or rewrite the interface. Malformed
-workload metadata is also protected; missing, null or empty arrays do not by
-themselves establish a workload attachment. Cleanup rereads the interface, so a
-workload appearing after inventory blocks execution. This metadata does not grant
-any controller permission to delete the NIC. NetApp group ownership and automatic
-interface deletion still require their own reviewed lifecycle implementation.
+**Inventory.** Kusto clusters, databases, follower attachments, data connections, principals, scripts and private connections, and custom sandbox images.
 
+**Permissions.** Reads must cover all child collections, ancestor resources, follower indexes and linked targets.
 
-Group inventory now records NIC correlations from complete subscription-wide NIC
-lists and independent interface reads. It combines the primary sibling-set IPs
-with every available volume mount target, then verifies matching subnet/IP pairs,
-native interface GUIDs and linked workload IDs in two passes. Grant
-`Microsoft.Network/networkInterfaces/read` across the connection subscription.
-Previously observed interfaces remain own-read hints when omitted by the list.
-Unavailable or changing reads fail the group scan and retain its prior review.
+**Cleanup.**
 
-Absent mount metadata or interface matches, missing native GUIDs, unknown/shared
-workloads and transitional interfaces leave the correlation incomplete. Only
-canonical linked volume IDs are retained; arbitrary workload values and private
-NIC fields are excluded. Correlation does not prove exclusive group ownership or
-authorize deletion. Groups remain protected while interface lifecycle effects are
-implemented. Existing four-field group reviews require a refreshed scan.
+- Plans delete reviewed database resources and other required children before their cluster.
+- Deleting a followed source database or cluster first removes the reviewed attachments on follower clusters; the follower clusters stay. An attachment controls its local read-only database views, so keeping a view blocks detachment.
+- Active custom images go only with cluster cleanup.
+- Managed private endpoints check target configuration, locks and protection. External data sources stay separate.
+- Deleting a script does not undo the commands it ran.
+- Azure may soft-delete the cluster for 14 days, but restoring the cluster does not undo earlier database DELETE steps. Steward offers neither restore nor a soft-delete opt-out.
+
+See [follower behavior](https://learn.microsoft.com/en-us/azure/data-explorer/follower), [scripts](https://learn.microsoft.com/en-us/azure/data-explorer/database-script) and [cluster deletion](https://learn.microsoft.com/en-us/azure/data-explorer/delete-cluster).
+
+### Redis
+
+**Inventory.** Classic caches with access policies and assignments, firewall rules, replication links, patch schedules and private endpoint connections; Enterprise and Managed Redis clusters, databases, assignments and private endpoint connections.
+
+**Permissions.** Reads must cover subscription-wide classic caches and linked peers, including peers in other resource groups.
+
+**Cleanup.**
+
+- Deleting a cache or database removes its data.
+- Independent children must be deleted first; built-in classic policies go only with cache cleanup.
+- **Classic replication:** Selecting either replica includes the shared primary-side unlink, and any reciprocal view, in the review. Keeping a link view blocks unlinking.
+- **Enterprise active replication:** Cleanup checks all participants. Later deletions accept a smaller group only after departed members return 404. Degraded groups need separate recovery; Steward does not force-unlink them.
+- New or inconsistent membership, unhealthy links, changed configuration, locks and protected peers block cleanup.
+- Completion also checks that surviving replicas no longer reference the deleted target.
+
+See [classic replication](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-how-to-geo-replication) and [active replication](https://learn.microsoft.com/en-us/azure/redis/how-to-active-geo-replication).
+
+### Azure Synapse Analytics
+
+**Inventory.**
+
+- Workspaces, Spark pools and dedicated SQL pools, read through native lists and detail reads. A resource omitted from a list is not removed; only its own GET confirming absence closes its record. Default Data Lake storage stays a separate dependency.
+- **Data-plane objects:** Spark jobs and sessions, notebooks and Spark job definitions are read from the workspace data plane, with workspace ownership checks and a [separate token](#data-plane-and-directory-access). They appear as inventory records with workspace and pool references. Scans check native pagination and keep known objects omitted from lists. Code, job configuration and logs are left out of returned data and diagnostics.
+- **Pipelines:** Static references from pipelines to notebooks, Spark job definitions, other pipelines and Spark pools appear as dependencies, including references inside nested control activities. Dynamic expressions stay unresolved. Incomplete permissions or configuration that changes during the scan prevent a successful scan.
+- Notebook and Spark job-definition discovery also reviews the workspace's Spark work and incoming pipeline references, for later cleanup review.
+- **Backups:** Recoverable dropped SQL pools and SQL pool restore points, with creation and deletion times, earliest restore time, restore-point type and label, and service-level metadata where Azure supplies them. They are kept separate from live pools. Their links show the workspace or pool used to query them and never authorize cascading deletion. Known records omitted by lists are checked individually. A missing parent or unavailable collection fails the scan and keeps existing records — a deleted workspace may need to be recreated before its retained backups can be queried. A backup record closes only when the backup's own read, under a readable parent, reports it absent.
+
+**Permissions.** Cleanup and cancellation also need resource-group reads and management-lock list access.
+
+| Task | Permissions |
+| --- | --- |
+| Pipelines | Workspace and referenced-resource reads |
+| Notebooks and Spark job definitions | List and read access to the workspace's Spark pools, jobs, sessions and pipelines |
+| Backups | Workspace and SQL pool list and read, plus `Microsoft.Synapse/workspaces/restorableDroppedSqlPools/read` and `Microsoft.Synapse/workspaces/sqlPools/restorePoints/read` for the selected backup kinds |
+| Deleting a workspace | Workspace delete; workspace reads; SQL and Spark pool list and read; SQL replication-link list and read; Synapse data-plane list and read for notebooks, job definitions, pipelines, batches and sessions |
+| Deleting a dedicated SQL pool | `Microsoft.Synapse/workspaces/sqlPools/delete`; pool and workspace reads; replication-link list and read |
+| Canceling Spark jobs and sessions | Synapse data-plane cancellation permission, ARM reads of the workspace and pool, and access to the workspace operation endpoints for asynchronous status and result reads |
+
+**Cleanup.**
+
+- **Workspaces** can be cleaned up after a full scan of their SQL and Spark pools, code artifacts and Spark work records. Review the complete impact list: deletion removes SQL pools, compute engines, notebooks, job definitions, pipelines and workspace metadata, and interrupts workspace workloads. Linked Data Lake storage is kept. Keeping a workspace member blocks the operation; selecting a child alone never selects the workspace. New members, changed configuration, protection or incomplete reads require a fresh review. The saved operation survives restarts, and cleanup confirms that the workspace and its pools are gone.
+- **Workspace deletion and backups:** Cleanup verifies that the live workspace and pools are removed. It does not purge SQL backups or prove that all copies of SQL data are gone: Azure can keep recoverable SQL backups after workspace deletion. Recovery depends on available restore points and retention, and Steward does not guarantee it.
+- **Dedicated SQL pools** in Online or Paused state can be cleaned up on their own. Selecting an eligible SQL or Spark pool keeps its own cleanup step even after the complete workspace has been scanned, and never selects the workspace. The plan warns that the database is removed and that queries and consumers lose access; the workspace, other pools and retained SQL backups are not deleted. This is native pool deletion, not a check that every consumer is idle or that all backups are purged. Creation identity, configuration, parent context and protection are checked again before deletion.
+- **Replication links** block both pool-only and workspace cleanup; known links omitted from a list are checked individually. Remove or resolve replication separately, then scan again.
+- **Spark pools** that Spark jobs or sessions still use can be removed only with their workspace.
+- **User-defined restore points** can be deleted on their own when Azure supplies a DISCRETE type, a user-request label and a valid creation date. Protected or incomplete records cannot be cleaned up. Deleting a point removes that recovery option and keeps the SQL pool, workspace and other backups. Steward saves the deletion receipt and verifies the point is gone with unchanged, readable parents. Automatic restore points cannot be deleted by users, and `DISCRETE` alone is not treated as proof that a point was user-created or can be removed.
+- Code artifacts (pipelines, notebooks, Spark job definitions) and Spark work have no independent cleanup while active pipeline coverage is incomplete; they are removed with their workspace.
+
+**Limits.**
+
+- Steward's native Synapse support includes canceling Spark jobs and sessions, with protection checks and a detail readback. Cancellation can leave a stopped historical record and does not prove deletion. Operation status and result reads validate the operation's scope and keep operation completion separate from resource absence.
+- Backup restore and complete handling of retained backups are not finished.
+
+See Microsoft's [workspace deletion scope](https://learn.microsoft.com/en-us/azure/synapse-analytics/quickstart-create-workspace-cli), [restoring from a deleted workspace](https://learn.microsoft.com/en-us/azure/synapse-analytics/backuprestore/restore-sql-pool-from-deleted-workspace) and [backup retention](https://learn.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/backup-and-restore).
+
+### Data Factory
+
+**Inventory.** 14 native resource kinds in the factory's region (see the [coverage table](#inventory-and-cleanup-coverage)), including runtime node registrations and managed virtual networks. Authored pipelines, connection values, run parameters and debug details stay out of public inventory and logs.
+
+**Permissions.** Inventory and cleanup need complete factory and child lists, each resource's own read, runtime status, trigger event-subscription status, pipeline-run queries and reads, debug-session queries, resource-group reads and management-lock reads. Cleanup adds the selected DELETE and preparation operations.
+
+**Cleanup.**
+
+- **Factories:** Cleanup reviews all owned artifacts. Keeping an owned child blocks factory deletion. Managed virtual networks have no independent DELETE and go with the factory.
+- **Triggers and CDC** are stopped first; event triggers also wait for event unsubscription.
+- **SSIS runtimes** and the artifacts that refer to them are separate prerequisites. After the asynchronous Stop completes, deletion waits until the runtime itself reports stopped.
+- **Running work:** Factory cleanup cancels reviewed active pipeline runs one by one and removes reviewed debug sessions. Pipeline-only cleanup cancels that pipeline's reviewed runs; other standalone artifacts wait for factory work to finish. Newly discovered work requires a fresh review.
+- **Shared self-hosted runtimes:** Select the referring runtime resources or their factories explicitly. Only after their own reads confirm they are gone does cleanup remove the reviewed factory's links; unresolved or foreign-subscription links block the host. Deleting a node removes its registration.
+- Source data, external compute, identities, networks and self-hosted machines stay independent.
+- Preparation and deletion checks resume after worker restarts, with up to 24 hours for verification. Changed configuration, incarnation, protection, locks or unreadable native context block progress.
+
+**Limits.**
+
+- Queries cover work the service can see and reread known runs; they cannot establish history that is not accessible.
+- Masked secrets returned by Azure and artifacts without creation identifiers limit change detection.
+- Verification covers protocol tests, official recordings and worker tests. Live-cloud and independent Data Factory emulator acceptance remain open.
+
+See Microsoft's [SSIS deletion sequence](https://learn.microsoft.com/en-us/azure/data-factory/manage-azure-ssis-integration-runtime), [event unsubscription API](https://learn.microsoft.com/en-us/rest/api/datafactory/triggers/unsubscribe-from-events?view=rest-datafactory-2018-06-01) and [shared runtime management](https://learn.microsoft.com/en-us/azure/data-factory/create-shared-self-hosted-integration-runtime-powershell).
+
+### Data Migration
+
+**Inventory.** Eight native resource kinds in the migration service's region: classic services, projects, tasks, files and service tasks; SQL and Mongo migration services and their migrations to SQL or Cosmos DB targets. Mongo discovery uses independent target-scoped lists as well as service indexes; SQL discovery supplements service indexes with reads of previously known migrations. Migration inputs and connection details stay out of public inventory and logs.
+
+**Permissions.**
+
+- Inventory and cleanup: complete native service, child and migration indexes; each resource's own read; SQL runtime monitoring; reads of referenced SQL and Cosmos DB targets; resource-group and management-lock reads.
+- Execution also needs the selected DELETE, task and migration Cancel, SQL `deleteNode` and regional operation-status permissions.
+- Deleting a resource that a migration can target needs the same migration discovery permissions across the subscription.
+
+**Cleanup.**
+
+- **Classic services and projects:** Children have separate, reviewed deletion steps; running tasks are canceled first. A schema file requires prior cleanup of the tasks that use it.
+- **SQL and Mongo services:** Select their target-scoped migrations explicitly and delete them first. SQL migrations are canceled before deletion; active Mongo migrations use the native force-delete operation. SQL service cleanup waits for running node jobs to finish, removes the reviewed runtime registrations and verifies they are gone.
+- **Migration targets:** Deleting a referenced resource, or a resource containing it, checks for incoming migrations — including the SQL database identified by the native migration route. Referencing migrations must be selected and deleted first, and a migration missing from inventory blocks cleanup. Unreadable indexes or changed migration context also block it; the target's own read or list cannot prove that no migration references it. The check runs again during execution and resumed verification, including after the target disappears.
+- Source and target databases, backup storage, identities, networking and runtime machines stay separate resources.
+- Changes to configuration, target identity, groups, protection or locks, new migrations or changed runtime nodes can require a new review. Accepted operations and verification resume after worker restarts, with a 24-hour verification limit.
+
+**Limits.**
+
+- Unknown migrations omitted from every available index cannot be recovered.
+- Masked fields limit change detection.
+- Current evidence includes official API examples, CLI recordings and worker tests. Independent DMS emulator and live-cloud acceptance remain open.
+
+See Microsoft's [ARM asynchronous-operation tracking](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations).
+
+### Stream Analytics
+
+**Inventory.** Jobs, inputs, outputs, functions, transformations, clusters and cluster private endpoints.
+
+**Permissions.** Reads must cover child collections, cluster job membership, parent resources and linked targets.
+
+**Cleanup.**
+
+- Deleting a job permanently removes its input and output definitions, functions and query; external data stores stay.
+- To remove a transformation, select its owning job.
+- Deleting an input, output or function on its own requires a job in the Created, Stopped or Failed state.
+- Cluster deletion first removes reviewed private endpoints. Private endpoints check target configuration, locks and protection.
+- Jobs in a cluster stay independent: select them explicitly for deletion, or stop the jobs you keep, remove them from the cluster in Azure, and scan again. Steward does not automatically stop, detach or delete unselected jobs.
+
+See [job cleanup](https://learn.microsoft.com/en-us/azure/stream-analytics/stream-analytics-clean-up-your-job) and [removing jobs from clusters](https://learn.microsoft.com/en-us/azure/stream-analytics/manage-jobs-cluster).
+
+### Foundry and Cognitive Services
+
+**Inventory.** Accounts, model deployments, projects, agents, connections (including datastores), capability hosts, managed networks, content filters and commitment plans.
+
+**Cleanup.**
+
+- Account cleanup first removes model deployments and reviewed dependencies, then soft-deletes the account. Purge is not offered.
+- Deleting a capability host makes dependent agent state inaccessible. Individual threads, files and orphaned storage data are not cleaned up separately.
+- Key Vault connections wait until all other account and project connections are deleted.
+- Connections that require or have active managed private endpoints stay protected while their endpoint effects are not modeled.
+- Keeping a required child blocks its controller. Shared commitment plans and referenced storage stay separate resources.
+- Managed-network cleanup includes its rules and verifies protection of private-endpoint targets; some derived rules can only be removed through their network.
+
+**Limits.** Applicability to legacy account kinds, the private-endpoint effects of managed connections, and the lifecycle of external network-perimeter associations are not finished.
+
+See [recovery and billing behavior](https://learn.microsoft.com/en-us/azure/ai-services/recover-purge-resources).
+
+### Azure AI Search
+
+**Inventory.** Services, private endpoint connections, shared private links and network perimeter configuration views.
+
+**Permissions.** Reads must cover all child collections and each linked target.
+
+**Cleanup.**
+
+- Deleting a service removes its search content.
+- Private endpoint connections and shared links are reviewed and deleted first. Keeping either, or a perimeter configuration view, blocks service deletion.
+- Deleting a shared link also changes the target's connection metadata, so native target reads, inherited locks and protection must pass. Target data resources stay separate. Cosmos DB accounts have native target checks.
+
+**Limits.** Unmodeled targets, cross-subscription links and the lifecycle of external perimeter associations are not finished.
+
+See the [shared-link deletion behavior](https://learn.microsoft.com/en-us/azure/search/troubleshoot-shared-private-link-resources).
+
+### Service Bus and Event Hubs
+
+**Inventory.**
+
+- Service Bus namespaces, queues, topics, subscriptions, rules, authorization rules, recovery aliases, migration configurations and private endpoint connections.
+- Event Hubs dedicated clusters, namespaces, event hubs, consumer groups, authorization rules, recovery aliases, schema and application groups and private endpoint connections.
+- Service Bus autoforwarding dependencies resolve to a queue or topic in the same namespace. Event Hubs Capture references its destination storage account and Blob container.
+- Network rule sets, Event Hubs network perimeter configurations, recovery-alias authorization views and the default `RootManageSharedAccessKey` rule have no delete action of their own and go with their namespace.
+
+**Permissions.**
+
+- Inventory and cleanup must include every reviewed child's native read operation. A failed child list is not treated as an empty namespace.
+- Dedicated clusters: the cluster's namespace-list and quota-configuration permissions, plus each namespace's lifecycle permissions.
+- Paired recovery aliases: native namespace-list permission and reads of the peer namespace and alias, even outside the selected region, because bare partner names are resolved across the subscription.
+- Service Bus migration: subscription-wide reads of Service Bus namespaces and migration configurations, including namespaces outside the selected region. Missing inventory or unreadable native lists block the plan or action.
+
+**Cleanup.**
+
+- **Namespaces and entities:** Deleting a namespace, topic or subscription can remove contained messages and configuration. Every modeled descendant is reviewed and later confirmed absent. Namespace deletion does not select Capture storage, user-assigned identities or the separate private endpoint.
+- **Entities with replication:** Deleting an individual entity also checks the current replication configuration, because deletion can propagate to a paired namespace. Deleting an entity while replication is active stays blocked; namespace cleanup first resolves its reviewed recovery or migration configuration.
+- **Dedicated Event Hubs clusters:** The native member list and each namespace's `clusterArmId` must agree, including members in other resource groups. Selecting a cluster adds those namespaces and their reviewed descendants; keeping a member blocks cluster deletion. Quota settings, membership, namespace creation identities, locks and protections are rechecked. Native namespace reads must confirm every prerequisite is gone before the cluster DELETE, and again at completion after a restart. Azure imposes a four-hour minimum cluster age: a known younger cluster is marked temporarily protected.
+- **Geo-disaster recovery (paired aliases):** Cleanup of a paired primary alias waits for pending replication, calls native BreakPairing, verifies `PrimaryNotReplicating` with an empty partner, then deletes the alias. Both ARM alias views and their authorization views are reviewed and confirmed absent. Selecting either namespace includes this shared prerequisite once; the other namespace and its entities stay when not selected. Selecting only the secondary alias identifies the primary alias as its required controller. Keeping an alias view prevents pair cleanup. Both namespaces, resource groups, locks and protections are rechecked during the saved preparation phases and after a restart. Steward does not perform failover.
+- **Service Bus migration:** Cleanup waits for migration synchronization, aborts copying with the native Revert operation, verifies that the target association is cleared, then deletes the configuration. Cleanup of either namespace includes this configuration as a reviewed prerequisite; selecting both namespaces deletes it once. Cleaning only the source keeps the target and its entities, and cleaning only the target keeps the source and its entities. Source and target creation identity, configuration, permissions, locks and protections are rechecked; a migration being committed or an unknown state blocks cleanup. Saved preparation phases survive a worker restart. Steward does not commit migrations.
+
+See Microsoft's [autoforwarding](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding), [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview), native [namespace list](https://learn.microsoft.com/en-us/rest/api/eventhub/clusters/list-namespaces?view=rest-eventhub-2024-01-01), [dedicated cluster deletion](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-dedicated-cluster-create-portal#delete-a-dedicated-cluster), [pairing and unpairing behavior](https://learn.microsoft.com/en-us/azure/event-hubs/configure-geo-disaster-recovery) and [migration behavior](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-migrate-standard-premium).
+
+### API Management
+
+**Inventory.** Services, workspaces, APIs and revisions, policies, products, subscriptions, portal content and configuration, credentials, notifications, associations, self-hosted gateway registrations and standalone workspace gateways. Vault secret contents are not fetched; external policy URLs and policy expressions are never downloaded or executed.
+
+**Permissions.** Reads must cover the complete subscription gateway index, service workspace links, applicable child lists, GET and HEAD existence checks, ancestors and referenced targets, including targets in other resource groups. Credential references also need native subscription lists and reads of the matching Key Vaults and managed identities.
+
+**Cleanup.**
+
+- Cleanup reviews the selected service's or workspace's API definitions, policies, content and configuration. Shared subscriptions, API revisions and referring resources use separate reviewed deletion steps.
+- Removing an API, product, group or tag association, or a notification association, detaches that association; the referenced member stays unless you select it too.
+- Built-in groups, the administrator user, the master subscription, email templates and fixed portal, notification and tenant configurations go only with their owning controller. Keeping a required resource blocks controller deletion.
+- A portal revision being published, or a configuration that changes, blocks cleanup.
+- **Workspaces:** Cleanup first removes the workspace's reviewed standalone-gateway configuration connections. A shared gateway and its other workspace connections stay.
+- **Services:** Azure keeps a deleted API Management service for 48 hours. Steward offers no restore, purge or email-template reset, and restoring a service does not undo earlier independent DELETE steps. Resource and child absence are checked after the asynchronous operation completes.
+
+**Limits.** Verification includes official schemas, CLI response replays and selected API Management paths in a pinned independent emulator. It is not a live Azure deployment test.
+
+See [workspace gateways](https://learn.microsoft.com/en-us/azure/api-management/workspaces-overview) and [soft-delete behavior](https://learn.microsoft.com/en-us/azure/api-management/soft-delete).
+
+### Communication Services
+
+**Inventory.** Communication accounts, SMTP usernames, phone numbers, reservations, rooms, Email resources, domains, sender usernames, suppression lists and addresses, all under global scope. Phone numbers, reservations and rooms keep their native account URLs, including case-sensitive room IDs. Scans verify complete account families twice, including room participants, and read previously known resources omitted from a list individually. An account or domain being gone does not prove its recorded descendants disappeared. Private SMTP, email-recipient, verification and participant details stay out of public inventory and API logs.
+
+**Permissions.**
+
+- Phone numbers, reservations and rooms use the Communication data plane: native data read permissions, including room participant lists, and the corresponding deletion permissions for cleanup (see [Data-plane and directory access](#data-plane-and-directory-access)).
+- ARM list and read access for Communication and Email resources, their children, resource groups and locks.
+- Cleanup adds each selected resource's native DELETE and operation-status reads.
+
+**Cleanup.**
+
+- **Accounts:** Cleanup first deletes reviewed SMTP usernames, reservations and rooms. The account's native DELETE then releases its reviewed phone numbers. Selecting a phone number on its own uses its release API.
+- **Email:** Addresses, suppression lists, sender usernames and domains are deleted before their parents. A domain connected to a Communication account requires selecting that account too, or unlinking it first and scanning again. Reverse connection checks cover the connected subscription and recover known omitted accounts by GET; they cannot rule out connections from other subscriptions.
+- A linked Notification Hub stays an independent reference and is not selected with its Communication account. Changing this link invalidates the reviewed account configuration.
+- Deleting a Communication resource is permanent and also removes associated application data. Chat and Identity data and Event Grid filters are not individually listed or reviewed as cleanup impacts of these ten resource types.
+- Microsoft distinguishes releasing a phone number from its continued visibility through the billing cycle. Steward waits up to 40 days to verify account and phone deletion, rechecks pending accounts and numbers hourly after the operation completes, and requires the resource and every recorded descendant to return 404 on their own read. This does not tell you when charges end.
+- Busy purchases, protection tags, locks, changed configuration or unreadable resources block cleanup.
+
+**Limits.** SMS sending and template administration are not part of these resource rules.
+
+See [connecting email domains](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/email/connect-email-communication-resource), [resource deletion](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/create-communication-resource) and [phone-number release](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/telephony/get-phone-number).
+
+### Monitor alerts and budgets
+
+**Inventory.** Metric, activity-log, scheduled-query, smart-detector, Prometheus and alert processing rules; action groups; web tests; and Consumption and Cost Management budgets at subscription and resource-group scopes. Include global scope when you scan global rules and budgets. Private queries, receivers and notification content stay out of inventory and logs.
+
+**Permissions.**
+
+- Native list and read access for rules that might refer to the target. Action Group checks also enumerate both budget APIs across the subscription and its resource groups.
+- Every ARM resource cleanup reads the six native alert-rule collections across the subscription, including rules whose source is missing from inventory. Relevant receiver targets also need Action Group reads; Application Insights components need Web Test reads; linked sources need resource-group reads.
+- Event Hub receivers need subscription-wide Event Hubs namespace list and read access; ITSM receivers need Log Analytics workspace list and read access.
+- Managed resource groups: reads of all eight Monitor collections and both budget APIs, including subscription and group budget lists.
+- Grant native delete permission only for the resources you select.
+
+**Cleanup.**
+
+- Alert rules, action groups, web tests and budgets can each be deleted on their own. Budget notification action groups stay separate.
+- A kept alert rule or budget blocks cleanup of the Action Group it references. Selecting both deletes the referencing resource first, in ordered, separately reviewed steps.
+- Failed or inconsistent dependency reads block cleanup, even after the target is gone.
+- **Receivers:** A missing destination is still matched after a restart through its reviewed ARM identity or the workspace's authenticated customer GUID; selectors from outside the subscription cannot claim local resources. Scan existing Log Analytics workspaces again to record this identity. Function and non-global Runbook references are recorded separately from their parent; global Runbook action names still need native webhook mapping.
+- **Monitor resources in managed resource groups:** Steward supplements the generic ARM list with two complete native Monitor and budget reads. A member missing from inventory must be scanned before cleanup, and new members, inconsistent configuration or unreadable collections block deletion. Cleanup checks incoming references to every reviewed member being deleted. A verified Monitor member of the same group can go with its controller's cascade, including alerts or web tests that reference the controller itself; references from outside the group still block it. Private configuration, group identity and receiver resolution are rechecked, including surviving known members after the controller and group are gone. Each member gets its own final absence check.
+- Configuration or permission changes require a fresh successful scan and plan.
+
+See Microsoft's [Action Group receiver contract](https://learn.microsoft.com/en-us/rest/api/monitor/action-groups/get?view=rest-monitor-2023-01-01).
+
+### Azure Monitor workspace
+
+**Inventory.** The workspace and its default ingestion managed resource group.
+
+**Cleanup.**
+
+- Deleting the workspace also removes its default ingestion managed resource group and every resource in it. The plan reviews that full impact, including contained types Steward does not recognize, and keeping a group member blocks deletion.
+- Both native default-ingestion IDs and any `managedBy` value must agree.
+- The workspace data has no soft-delete recovery.
+- Private connections are frozen workspace configuration; their external network endpoints are not part of the managed group just because they are referenced.
+- External associations are removed first, and cleanup verifies that the group and each known resource are gone. Data collection endpoints in the managed group get the same [AMPLS checks](#azure-monitor-private-link-scope).
+
+See Microsoft's [workspace management guide](https://learn.microsoft.com/en-us/azure/azure-monitor/metrics/azure-monitor-workspace-manage).
+
+### Monitor data collection
+
+**Inventory.** Data collection rules (DCRs), data collection endpoints (DCEs) and their associations on monitored resources. A subscription-bound Resource Graph query supplements discovery of orphaned associations, and native GET or ListByResource confirms each result. That query is eventually consistent and returns only resources you can read, so a complete inventory needs read access throughout the subscription. Orphaned associations without a location appear under global scope. Blob reference URL credentials stay out of inventory and logs.
+
+**Permissions.** Rule and endpoint list and read access across the subscription, both reverse association lists, and association reads at their monitored resource scopes. Cleanup also needs the selected rule or endpoint delete permission and association delete permission at those scopes.
+
+**Cleanup.**
+
+- Removing an association stops that collection link.
+- Plans review every required unlink, share one step when an association links both targets, and block if you keep a required link.
+- DCR deletion uses `deleteAssociations=false`; native reads confirm every prerequisite association is gone first.
+
+**Limits.** Tenant-global monitored-object associations are not supported.
+
+See the native [association operations](https://learn.microsoft.com/en-us/rest/api/monitor/data-collection-rule-associations?view=rest-monitor-2024-03-11) and [DCR deletion](https://learn.microsoft.com/en-us/rest/api/monitor/data-collection-rules/delete?view=rest-monitor-2024-03-11).
+
+### Azure Monitor Private Link Scope
+
+**Inventory.** Global Azure Monitor Private Link Scopes (AMPLS), their scoped-resource associations and private endpoint connections, and the private-link capability descriptions.
+
+**Permissions.** Read access to the complete subscription AMPLS index, native association lists and reads, and the target's reverse references — also outside the selected resource group.
+
+**Cleanup.**
+
+- **Scopes:** Scoped-resource associations and private endpoint connections have their own deletion steps; keeping either blocks scope deletion. Linked Log Analytics workspaces, Application Insights components and consumer network endpoints stay independent. Configuration checks cover access modes and per-connection exclusions.
+- **Linked resources:** Before deleting an Application Insights component, Log Analytics workspace or DCE, Steward reconciles the complete subscription AMPLS index, native association lists and reads, and the target's reverse references. Missing inventory, unreadable lists and backlinks from other subscriptions block deletion; remove those links in their own subscription and scan again. The same checks apply to DCEs in a Monitor workspace's managed group.
+- Relative operation locations are validated, bound to the selected connection and resource, and saved.
+
+**Limits.** Verification uses pinned official examples and composed protocol tests; no AMPLS emulator or live-cloud run.
+
+See [AMPLS association requirements](https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/private-link-configure#connect-resources-to-the-ampls).
+
+### Application Insights
+
+**Inventory.**
+
+- Components, analytics and my-analytics items, continuous exports, favorites, work-item configurations, API keys, linked profiler storage and annotations.
+- Component settings: current billing features, daily caps, pricing plans, quota status and legacy proactive-detection settings. These settings go with their component and have no cleanup of their own. Private notification recipients stay out of inventory and logs.
+- **Annotations** are discovered in a fixed window within Azure's rolling 90-day limit. Each scan also rereads previously saved annotation IDs, including records outside that window, so the window never closes older records. A saved annotation closes only when its own native GET confirms absence, including after its component disappears. Steward cannot list history it has never seen beyond the native window, and deleting the component can remove that history.
+- **Managed workspace:** Component scans also inspect the complete resource-group index and the current managed workspace's group members and AMPLS associations. Ownership requires both the component's workspace reference and a matching group `managedBy`; names alone are not enough. Shared workspaces and detached managed groups are kept distinct. Failed or inconsistent reads fail the scan, and references to other subscriptions never authorize reads there.
+
+**Permissions.**
+
+- Read access to the component endpoints for billing, daily cap, pricing, quota and proactive-detection settings.
+- Annotation LIST and GET; DELETE for selected annotations.
+- Resource-group, resource-list, member product-read and AMPLS read permissions, including the managed group outside the component's resource group.
+
+**Cleanup.**
+
+- **Child resources:** The eight child kinds can be deleted individually, with component, group and lock protection and a final native GET. Shared storage stays independent.
+- **Annotations:** Component cleanup reviews recent and saved annotations as separate prerequisites, and keeping an annotation blocks deletion. Read failures and ambiguous GET arrays block cleanup; an empty array is not treated as proof of absence.
+- **Components:** Deletion first removes the reviewed children and AMPLS associations, including associations targeting the current managed workspace. It includes the reviewed current managed group and its known descendants. Completion requires the component and the group to be gone, and a native GET absence for every known member. Locks or Azure Policy can leave the group behind; Steward keeps waiting and does not delete the workspace on its own. Detached groups and shared workspaces are kept. Nested managed controllers with unmodeled external groups block cleanup.
+- Before deleting the component, Steward rechecks its authored settings, including private notification recipients; a change requires a fresh scan and plan. Quota and other read-only values can change without invalidating the plan.
+- Migrated smart-detection alert rules and their action groups are discovered and deleted independently, like other [Monitor alerts](#monitor-alerts-and-budgets).
+
+See the [native annotation API](https://learn.microsoft.com/en-us/python/api/azure-mgmt-applicationinsights/azure.mgmt.applicationinsights.v2015_05_01.operations.annotationsoperations?view=azure-python), [managed-workspace behavior](https://learn.microsoft.com/en-us/azure/azure-monitor/app/managed-workspaces) and the [smart-detection migration guide](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-smart-detections-migration).
+
+### Workbooks
+
+**Inventory.** Shared workbooks, private workbooks and workbook templates. Workbook discovery reads all four documented categories, plus custom categories found through ARM or saved IDs. A category omission cannot close a saved workbook; a successful scan closes only saved IDs whose own native GET confirms absence. Templates use complete resource-group enumeration. Full authored content and revision history stay private. Provider errors, including an unavailable private-workbook API, fail the scan.
+
+**Permissions.** Subscription resource and resource-group lists, locks and native workbook LIST and GET permissions, including LIST and GET on shared-workbook revisions. Cleanup needs the selected native DELETE permission.
+
+**Cleanup.**
+
+- Content and revision history are checked again before deletion; a change requires a new scan and plan.
+- Deleting a workbook removes the active resource; it does not prove permanent erasure. Azure normally keeps deleted workbooks for about 90 days.
+- Bring-your-own-storage (BYOS) workbooks have no provider-managed version history or recycle-bin recovery; recovery can depend on storage soft deletion.
+- Referenced source resources, storage accounts and containers, and assigned identities are separate dependencies and are not selected by workbook cleanup.
+- A workbook inside a managed resource group can instead be deleted with its controller when native ownership is verified, with the same content and history checks and its own final GET.
+
+See [workbook management](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-manage) and [BYOS behavior](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-bring-your-own-storage).
+
+### Managed Grafana
+
+**Inventory.** Workspaces, managed private endpoints, private endpoint connections and integration fabrics. SMTP passwords stay out of inventory and logs.
+
+**Permissions.** Deleting a workspace needs native read, list and delete access to all three child collections.
+
+**Cleanup.**
+
+- Each child is deleted as a reviewed prerequisite, and keeping a child blocks workspace deletion. Each resource also has its own native action.
+- Steward checks native configuration and parent identity, then confirms that the children and the workspace are gone.
+- Linked data sources, AKS clusters and consumer private endpoints stay separate resources.
+
+See the native [workspace](https://learn.microsoft.com/en-us/rest/api/managed-grafana/grafana/delete?view=rest-managed-grafana-2025-08-01), [managed private endpoint](https://learn.microsoft.com/en-us/rest/api/managed-grafana/managed-private-endpoints/delete?view=rest-managed-grafana-2025-08-01) and [integration fabric](https://learn.microsoft.com/en-us/rest/api/managed-grafana/integration-fabrics/delete?view=rest-managed-grafana-2025-08-01) operations.
+
+### Diagnostic settings
+
+**Inventory.** Resource and subscription diagnostic settings, including the separate Blob, File, Queue and Table service scopes, in global inventory. The subscription setting list does not enumerate every resource's settings, so Steward also uses native child APIs and previously saved setting IDs; a known setting can survive its source's deletion. Settings on an unknown source type appear protected until native source verification is supported. A never-seen orphan outside those sources has no supported subscription-wide index. A saved setting closes only after its own native GET confirms absence; the source or group being gone is not proof.
+
+**Permissions.** Subscription resource-list access, native reads and child lists for discovered sources, resource-group and management-lock reads, and diagnostic-setting list and read access at each exact source scope. Cleanup also needs `Microsoft.Insights/diagnosticSettings/delete` for each selected setting.
+
+**Cleanup.**
+
+- Deleting a source, destination or ancestor requires selecting the settings that refer to it first, including settings inside a managed resource group.
+- Deleting a setting stops its configured export. Shared storage, Event Hubs and workspaces stay separate resources.
+- A failed list or detail read blocks cleanup.
+
+See Microsoft's [diagnostic settings guide](https://learn.microsoft.com/en-us/azure/azure-monitor/platform/diagnostic-settings).
+
+### Azure RBAC
+
+**Inventory.** Custom and built-in role definitions, and role assignments at subscription, resource-group and resource scopes, in global inventory. Discovery uses the connected subscription's native Authorization APIs, including narrower resource scopes. Assignments inherited from the tenant or management groups are not managed by this connection. Permission expressions and authored configuration stay out of inventory and logs.
+
+**Permissions.**
+
+- `Microsoft.Authorization/roleDefinitions/read`, `Microsoft.Authorization/roleAssignments/read`, `Microsoft.Authorization/roleEligibilitySchedules/read` and `Microsoft.Authorization/roleAssignmentSchedules/read`, plus native reads for the referenced scopes, resource groups and management locks.
+- Deleting a custom role: `Microsoft.Authorization/roleDefinitions/delete` on every assignable scope.
+- Deleting an assignment: `Microsoft.Authorization/roleAssignments/delete` at its exact scope.
+- User-assigned identity reads: `Microsoft.ManagedIdentity/userAssignedIdentities/read`. System-assigned identities use their resource's native read. This mapping uses ARM APIs and needs no Microsoft Graph access.
+
+**Cleanup.**
+
+- **Custom roles:** Select the assignments that refer to a role before deleting it.
+- **Scopes:** Deleting a scope resource or one of its ancestors requires deleting the assignments and custom-role definitions that refer to it first, including extensions in managed resource groups. Every ARM dependency and cleanup check reads the subscription's role-assignment and role-definition indexes; linked sources also need scope and PIM reads. New, unindexed or unreadable references block cleanup, also after the target is deleted.
+- **Managed identities:** Within the connected subscription, an assignment's `principalId` also identifies user-assigned managed identities and resources with system-assigned identities, even when the assignment is in another resource group. Delete those assignments first, including when an owning controller removes the identity-bearing resource. Microsoft notes that deleting a managed identity leaves its assignments behind.
+- Before using these principal dependencies, scan existing ARM resources again. Steward verifies the saved principal and tenant GUIDs against native resource reads and keeps that verified identity after the resource disappears. Changed, missing or unreadable identity evidence blocks the dependency check. Application `clientId` values and attached shared identities do not establish ownership: deleting a resource that uses a shared identity keeps the identity and its assignments.
+- **Protected from independent deletion:** built-in roles; roles with assignable scopes outside the connection; assignments with a matching PIM schedule; assignments to the connection's own principal ([General protections](#general-protections)); and resources with protection tags, management locks, or changed native configuration or scope identity.
+- A native DELETE 200 or 204 only acknowledges the request; completion still requires the resource's own GET to report it absent.
+- Shared destinations and external Entra principals stay independent.
+
+**Limits.** Deleting PIM schedules and administering tenant or management-group RBAC are not implemented.
+
+See Microsoft's [custom-role deletion requirements](https://learn.microsoft.com/en-us/azure/role-based-access-control/custom-roles-rest#delete-a-custom-role) and [managed identity maintenance](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/managed-identity-best-practice-recommendations#maintenance).
+
+### Defender for Cloud
+
+**Inventory.** Subscription protection plans, VM, VMSS and Arc machine scopes, and the Containers plan on AKS and ACR. Plans show the native Free or Standard tier, sub-plan, trial time, enablement time, extension status, inheritance and resource coverage. A Standard subscription plan does not mean every resource is covered: resource overrides can differ. Known plans are reread individually; a parent or list disappearing does not prove a plan is gone. Extension parameters and operation messages stay out of public inventory and logs.
+
+**Permissions.** Subscription identity, native parent list and read, and `Microsoft.Security/pricings/read` across those scopes.
+
+**Cleanup.** None. These are read-only service-state records, matching the read-only Alibaba Cloud Security Center baseline. Steward does not change protection tiers or remove resource overrides.
+
+**Limits.** Current evidence consists of official examples and protocol and worker tests; independent Defender emulation and live-cloud verification remain open.
+
+See [native plan state and inheritance](https://learn.microsoft.com/en-us/rest/api/defenderforcloud/pricings/list?view=rest-defenderforcloud-2024-01-01).
+
+## Troubleshooting
+
+| Symptom | What to check |
+| --- | --- |
+| Validation fails for a service principal | Check that you entered the client secret **value**, not its ID, and that the service principal was created in the subscription's tenant. Sovereign clouds and Azure Stack are not supported. After rotating a secret, use **Replace credential** with the same subscription, tenant and application. |
+| Validation succeeds, but scan items fail with permission errors | Validation confirms the identity only. Grant [Reader](#base-access-for-inventory) at the subscription, plus the product reads listed in the service's section under [Cleanup protections](#cleanup-protections). Scan again. |
+| A browser sign-in connection reports Key Vault, Microsoft Graph or another data plane as failing | Your own account cannot reach that data plane; the rest of the inventory continues. Grant your account access, or use a service principal with the [data-plane permissions](#data-plane-and-directory-access). |
+| Blob containers are missing or Blob cleanup fails | Grant a data-plane role such as **Storage Blob Data Reader**, and make sure Steward can reach the account's public Blob endpoint. Blob cleanup needs the standard `ACCOUNT.blob.core.windows.net` endpoint. |
+| Batch jobs, tasks or nodes are missing, or Batch cleanup fails | Grant Batch data permissions, such as **Azure Batch Data Contributor**, in addition to ARM permissions. See [Azure Batch](#azure-batch). |
+| Microsoft Entra users and groups are missing | Grant the Graph application permissions `User.Read.All` and `GroupMember.Read.All` (or `Directory.Read.All`) and give admin consent. |
+| The scan fails on a Key Vault | Steward could not read the vault's certificates. Grant **Key Vault Reader** or an access policy with certificate **List** and **Get**, and check network access to the vault. |
+| Management groups are missing | Grant `Microsoft.Management/managementGroups/read` on the groups to inventory. |
+| A resource you deleted in Azure still appears | When a list omits a resource or a read fails, Steward keeps the previous record until the resource's own read confirms it is gone. Fix any permission errors in the scan and scan again. |
+| A Cosmos DB scan fails | Two data-resource names that differ only in case collide in the inventory identity. |
+| An Azure Local logical network cannot be selected in the scan dialog | Grant `Microsoft.AzureStackHCI/logicalNetworks/read`. After fixing permissions, use **Retry**; your selection is kept. |
+| An Azure Local logical network shows the type `Unknown` and is protected | Steward could not read a recognized `networkType` with API version `2025-06-01-preview`. The network stays protected until its type and custom location are verified. |
+| NetApp volumes in a network sibling set fail to scan | Grant `Microsoft.NetApp/locations/queryNetworkSiblingSet/action` and reads of every returned volume. |
+| Cleanup is blocked by a management lock | Steward never removes locks. Remove the lock in Azure if the deletion is intended, then scan again. |
+| A resource shows as protected | Check for a `steward/protected` or `steward:protected` tag, a lock, a managed resource group, or a product-specific protection in the service's section. |
+| A role assignment cannot be cleaned up | It grants the connection its own access, belongs to a built-in role, has an assignable scope outside the connection, or matches a PIM schedule. See [Azure RBAC](#azure-rbac). |
+| A subnet, NSG, route table, NAT gateway or public IP cannot be deleted | Something still occupies it — see [network occupants](#general-protections). Add the occupant to the task, or remove it in Azure and scan again. A service association link must be removed by its owning service. |
+| A storage account or Blob container cannot be deleted | It is not empty, or a legal hold or immutability policy applies. Steward does not empty or purge data. |
+| The task is blocked by a role assignment, diagnostic setting, alert rule, AMPLS association, Fleet or migration that refers to the target | Add the referring resource to the task so it is deleted first, or remove the reference in Azure and scan again. See [References from other resources](#general-protections). |
+| The plan asks for a fresh scan | Reviewed configuration, protection, locks or membership changed, or the resource was recreated. Scan again and review the new task. |
+| Pending cleanup fails its recovery check after an upgrade | Receipts from a version without full-request checks cannot be recovered. Scan again and create a new cleanup task; next time, finish pending tasks before upgrading. |
+| A deletion stays in verification for a long time | Some services confirm deletion slowly: Communication accounts and phone numbers can take up to 40 days, domains up to 48 hours, and Data Factory and Data Migration verification up to 24 hours. A stuck managed group can also be held by a lock or Azure Policy. |
+| An Event Hubs dedicated cluster is temporarily protected | Azure requires clusters to be at least four hours old before deletion. Try again later. |
+| An Elastic SAN volume deletion fails with active iSCSI sessions | Disconnect the clients first. API callers can set `force_delete: true` on the volume cleanup request. |
+| Deleting a single function fails | The app runs from a deployment package, which can prevent deleting individual functions. The Azure error is shown unchanged. |
+| Container Instances cleanup asks for a new scan after a credential rotation | Sensitive values are compared with the review; scan again after rotating credentials. |
+| A service is shown as read-only | Cleanup for it is not implemented, for example resource groups, Key Vaults, Container Apps environments, Purview accounts and managed applications. See the [coverage table](#inventory-and-cleanup-coverage). |
+
+## Next steps
+
+- [Scan resources](./scans.md)
+- [Query resources](./resources.md)
+- [Clean up resources](./cleanup.md)
+- [OIDC connections](./oidc.md)

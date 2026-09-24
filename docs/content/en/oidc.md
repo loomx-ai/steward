@@ -1,14 +1,24 @@
 ---
 title: "OIDC cloud connections"
-description: "Exchange workload identities for temporary cloud credentials without uploading long-lived cloud keys."
+description: "Connect AWS, Alibaba Cloud, Google Cloud, or Azure with short-lived credentials from workload identity federation, so no long-lived cloud key is stored in Steward."
 navTitle: "OIDC connections"
 ---
 
-Steward uses OIDC workload identity federation: it signs a short-lived workload JWT, the cloud verifies an explicitly configured trust relationship, and returns temporary credentials. AWS, Alibaba Cloud, GCP, and Azure are supported. This is workload authentication, not browser sign-in.
+An OIDC connection lets Steward reach your cloud without storing a long-lived access key. Your cloud trusts Steward's server as an identity provider, and every scan or cleanup exchanges a short-lived token for temporary credentials. It works with AWS, Alibaba Cloud, Google Cloud, and Azure.
 
-## Operator setup
+How it works:
 
-Configure a stable issuer and an independent RSA signing key for each isolated workspace. Only server configuration can select the issuer and signing key; connection input cannot select token sources, executables, or exchange endpoints.
+1. The Steward server signs a JWT that identifies the connection and whether it is reading or deleting. The token is valid for five minutes.
+2. Your cloud checks the token against a trust relationship you configure: the issuer, audience, and exact subject.
+3. The cloud returns temporary credentials for the role or service identity you chose.
+
+This is workload authentication between servers. It is not the same as [browser sign-in](./connections.md#browser).
+
+The **OIDC workload identity** option appears in the connection form only after the server operator has configured it. In Steward Cloud, it appears only if LoomX has enabled it for your workspace.
+
+## Enable OIDC on the server
+
+This step is for whoever runs the Steward server. Give each isolated deployment a stable issuer URL and its own RSA signing key. Only server configuration controls the issuer and key; connection settings cannot choose token sources, executables, or exchange endpoints.
 
 ```sh
 umask 077
@@ -18,79 +28,69 @@ export STEWARD_OIDC_WORKSPACE_ID=production
 export STEWARD_OIDC_SIGNING_KEY_FILE=/absolute/path/oidc-signing.pem
 ```
 
-The signing file must be private (`0600`) and readable by the service process. The HTTPS issuer must not end with `/`. A path prefix is allowed if the reverse proxy preserves it. OIDC is hidden when unconfigured; partial or invalid configuration fails startup. Do not upload the issuer's signing key as a cloud credential.
+- The signing key file must be private (`0600`) and readable by the service process. Never upload it as a cloud credential.
+- The issuer must use HTTPS and must not end with `/`. It may include a path prefix if your reverse proxy preserves it.
+- Without these variables, OIDC stays hidden. Incomplete or invalid configuration stops the server from starting.
+- Keep test and production issuers and keys separate.
 
-Cloud identity services must be able to fetch these documents without a Steward session:
+Your cloud's identity service must be able to fetch these two documents without signing in to Steward:
 
 ```text
 <issuer>/.well-known/openid-configuration
 <issuer>/.well-known/jwks
 ```
 
-These endpoints only publish discovery and public keys. There is no public JWT minting API. Keep workspace APIs authenticated.
+They contain only discovery metadata and public keys; there is no public endpoint that issues tokens. Keep the rest of Steward's API behind authentication.
 
-### Steward Cloud
+## Create the connection
 
-The Cloud gateway exposes the two metadata documents under:
+1. Open the user menu → **Settings** → **Cloud connections** → **Add connection**, choose your cloud, and select **OIDC workload identity**.
+2. Enter the role or service identity Steward should use (see the table below). You can enter a role ARN before the role exists.
+3. Save the connection, then expand **OIDC trust configuration** on it. It shows the issuer, audience, and the exact read and write subjects to trust.
+4. In your cloud, configure the trust relationship using those values, and grant the identity its resource permissions.
+5. Back in Steward, validate the connection, then start a scan.
 
-```text
-https://<console-host>/oidc/workspaces/<workspace-id>/.well-known/openid-configuration
-https://<console-host>/oidc/workspaces/<workspace-id>/.well-known/jwks
-```
-
-Configure the isolated workspace process with:
-
-```text
-STEWARD_OIDC_ISSUER_URL=https://<console-host>/oidc/workspaces/<workspace-id>
-STEWARD_OIDC_WORKSPACE_ID=<workspace-id>
-STEWARD_OIDC_SIGNING_KEY_FILE=<absolute path to this workspace's signing key>
-```
-
-The gateway forwards only these public documents without cookies or service tokens. Workspaces must not share private keys. The existing provisioner does not automatically create signing keys or enable OIDC; operators enable it explicitly. For systemd DynamicUser services, a workspace-specific `LoadCredential` drop-in can provide the key; point the signing-file variable at the service's credentials directory. Keep test and production issuers and keys separate.
-
-## Connect and authorize
-
-1. Open Settings → Cloud connections → Add connection and select OIDC workload identity.
-2. Enter the intended cloud role or service identity. You may enter the intended role ARN before creating that role.
-3. Save, then expand **OIDC trust configuration** on the connection.
-4. Configure cloud trust using the displayed issuer, audience and exact read/write subjects, and grant resource permissions.
-5. Validate the connection, then scan.
-
-Subjects use the operator-configured workspace ID and the server-generated connection ID. Renaming a connection preserves its subject. Deleting and recreating it requires updating cloud trust. Do not wildcard other workspaces or connections.
+Subjects combine the server's workspace ID with a connection ID that Steward generates:
 
 ```text
 workspace:<workspace-id>:connection:<connection-id>:run_phase:read
 workspace:<workspace-id>:connection:<connection-id>:run_phase:write
 ```
 
-Validation, region discovery, inventory, and dependency analysis use `read`. Durable cleanup execution jobs use `write`. If the optional write identity is empty, both phases use the default identity, which must trust both subjects. Otherwise configure the default identity to trust the read subject and the write identity to trust the write subject.
+- **`read`** is used for validation, region discovery, scans, and dependency analysis. **`write`** is used only by cleanup execution.
+- **One identity or two.** If you leave the optional write identity empty, the default identity handles both phases and must trust both subjects. If you set a write identity, the default identity trusts the read subject and the write identity trusts the write subject.
+- **Renaming** a connection keeps its subjects. **Deleting and recreating** it creates new ones, so update the cloud trust.
+- Match subjects exactly. Do not use wildcards that would also match other workspaces or connections.
 
-Connection validation checks the read identity. It does not impersonate a cleanup job to test write privileges. Verify write trust and permissions against test resources before the first production cleanup.
+Validation checks only the read identity; it does not test cleanup permissions. Before your first real cleanup, run one against test resources to confirm the write trust and permissions.
 
-## Cloud configuration
+## Configure trust in your cloud
 
-| Cloud | Connection fields | Default audience | Cloud-side configuration |
+| Cloud | Connection fields | Default audience | What to configure in the cloud |
 | --- | --- | --- | --- |
-| AWS | Default Role ARN; optional Write Role ARN | `sts.amazonaws.com` | IAM OIDC Provider with this audience as its client ID; role trust permits `sts:AssumeRoleWithWebIdentity` and matches exact `aud` and `sub`. |
-| Alibaba Cloud | Default Role ARN, OIDC Provider ARN; optional Write Role ARN | `sts.aliyuncs.com` | RAM OIDC provider; role trust permits `sts:AssumeRoleWithOIDC` and constrains issuer, audience and subject. |
-| GCP | Resource project ID, Workload Provider resource name, default service account email; optional write service account | `steward.workload.identity` | Workload Identity Pool/Provider mapping `google.subject` to `assertion.sub`, with this allowed audience; grant the exact principal `roles/iam.workloadIdentityUser` on the service account, then grant that account resource permissions. |
-| Azure | Subscription ID, Tenant ID, default Client ID; optional Write Client ID | `api://AzureADTokenExchange` | Application/service principal with Federated Identity Credentials matching the issuer, subject and audience; subscription RBAC assignments. No Client Secret. |
+| AWS | Default Role ARN; optional Write Role ARN | `sts.amazonaws.com` | An IAM OIDC provider with this audience as its client ID. The role's trust policy allows `sts:AssumeRoleWithWebIdentity` and matches `aud` and `sub` exactly. |
+| Alibaba Cloud | Default Role ARN, OIDC Provider ARN; optional Write Role ARN | `sts.aliyuncs.com` | A RAM OIDC provider. The role's trust policy allows `sts:AssumeRoleWithOIDC` and constrains issuer, audience, and subject. |
+| Google Cloud | Resource project ID, Workload Provider resource name, default service account email; optional write service account | `steward.workload.identity` | A Workload Identity Pool and Provider that maps `google.subject` to `assertion.sub` and allows this audience. Grant the exact principal `roles/iam.workloadIdentityUser` on the service account, then grant that service account its resource permissions. |
+| Azure | Subscription ID, Tenant ID, default Client ID; optional Write Client ID | `api://AzureADTokenExchange` | An application or service principal with a federated identity credential matching the issuer, subject, and audience, plus RBAC role assignments on the subscription. No client secret is needed. |
 
-The GCP Workload Provider field is a resource name without a URL prefix:
+Account and project rules:
 
-```text
-projects/123456789/locations/global/workloadIdentityPools/steward/providers/production
-```
+- **AWS:** read and write roles must be in the same account.
+- **Alibaba Cloud:** the roles and the OIDC provider must be in the same account.
+- **Google Cloud:** the identity pool and the resource project can be different projects, and the write service account can come from another project; the connection's resource project stays fixed. Enter the Workload Provider as a resource name without a URL prefix:
 
-GCP first obtains a federated token, then uses IAM Credentials to impersonate the selected service account. Arbitrary credential JSON, executables and external token URLs are not accepted. Enable the required STS, IAM Credentials and Cloud Asset APIs. The identity pool and resource project may be different projects.
+  ```text
+  projects/123456789/locations/global/workloadIdentityPools/steward/providers/production
+  ```
 
-AWS read/write roles must belong to the same account. Alibaba Cloud roles and OIDC provider must belong to the same account. Azure authenticates both clients in the configured tenant against the same subscription. The GCP write service account may be from another project, while the target resource project remains fixed by the connection.
+  Steward first obtains a federated token, then uses IAM Credentials to impersonate the service account. Enable the STS, IAM Credentials, and Cloud Asset APIs. Arbitrary credential JSON, executables, and external token URLs are not accepted.
+- **Azure:** both clients authenticate in the configured tenant, against the same subscription.
 
-This implementation uses AWS commercial-partition STS, Azure public-cloud Entra/ARM and Google's `googleapis.com` universe. It does not add AWS China/GovCloud, Azure sovereign-cloud or other Google universe support.
+Supported cloud environments: the AWS commercial partition, Azure public cloud (Entra ID and ARM), and Google's `googleapis.com` universe. AWS China, AWS GovCloud, Azure sovereign clouds, and other Google universes are not supported.
 
 ### AWS trust policy example
 
-Replace the placeholders with the IAM provider ARN, issuer without `https://`, and subject from the connection. This example is for a read role. Use the write subject for the write role, or an array of both exact subjects when sharing one role.
+Replace the placeholders with your IAM OIDC provider ARN, the issuer without `https://`, and the subject shown on the connection. This example is for the read role; use the write subject for a write role, or an array of both exact subjects when one role serves both.
 
 ```json
 {
@@ -109,16 +109,16 @@ Replace the placeholders with the IAM provider ARN, issuer without `https://`, a
 }
 ```
 
-This establishes trust only. Attach a separate permission policy for resource reads, deletion and any related actions.
+The trust policy only lets Steward assume the role. Attach a separate permission policy for resource reads, deletion, and related actions.
 
-## Lifetime and rotation
+## Credential lifetime and key rotation
 
-- RS256 JWTs carry `kid`, `iss`, `aud`, `sub`, `iat`, `nbf`, `exp`, a random `jti`, and Steward workspace/connection/provider/phase/run claims. JWT lifetime is five minutes.
-- AWS/Alibaba STS and GCP impersonation request one-hour credentials. Azure uses the returned expiry. Temporary credentials are cached by configuration version, phase, run and audience, and refreshed before expiry.
-- Assertions and exchanged credentials stay in memory. Only encrypted connection configuration is persisted; no customer long-lived cloud key is required.
-- Disabling a connection or replacing its configuration stops further use of its old runtime cache. Already-issued cloud credentials may remain valid until cloud-side expiry; urgent revocation also requires changing cloud trust or permissions.
-- Changing the issuer or workspace ID changes trust and is not a routine key rotation.
-- A PEM bundle may contain **one current RSA private key** plus previous `PUBLIC KEY` PEM blocks. Restart after publishing the new private key with old public keys: new JWTs use the new `kid`, while JWKS retains old verification keys. Cloud services typically refresh keys on a new `kid`; verify the relying cloud's cache behavior with a test connection. Retain old public keys for at least the old JWT lifetime and the public-key cache window before removing them.
+- **Tokens.** JWTs are signed with RS256 and carry `kid`, `iss`, `aud`, `sub`, `iat`, `nbf`, `exp`, a random `jti`, and Steward workspace, connection, provider, phase, and run claims. Each is valid for five minutes.
+- **Temporary credentials.** AWS and Alibaba Cloud STS and Google Cloud impersonation request one-hour credentials; Azure uses the expiry it returns. Steward caches them per configuration version, phase, run, and audience, and refreshes them before they expire.
+- **Storage.** Tokens and temporary credentials stay in memory. Only the encrypted connection configuration is stored; no long-lived cloud key is needed.
+- **Revocation.** Disabling a connection or replacing its configuration stops Steward from using the cached credentials. Credentials the cloud already issued can stay valid until they expire, so for urgent revocation also change the cloud trust or permissions.
+- **Changing the issuer or workspace ID** changes the trust relationship. It is not a routine key rotation.
+- **Rotating the signing key.** The PEM file may contain **one current RSA private key** plus earlier `PUBLIC KEY` blocks. Publish the new private key together with the old public keys and restart: new tokens use the new `kid`, while the JWKS keeps the old keys for verification. Clouds usually refresh keys when they see a new `kid`; confirm this with a test connection first. Remove old public keys only after both the old token lifetime and the cloud's key cache window have passed.
 
 ## References
 

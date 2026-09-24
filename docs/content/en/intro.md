@@ -1,77 +1,78 @@
 ---
 title: "What is Steward?"
-description: "Understand how cloud connections, scans, resource relationships, and cleanup tasks fit together."
+description: "How Steward turns cloud connections and scans into an inventory, a relationship map, and reviewed cleanup tasks — and what each step can and cannot tell you."
 navTitle: "What is Steward?"
 ---
 
-Steward is a cloud resource inventory and cleanup tool. It brings existing resources into one interface so you can see what is running, how resources relate, and what a cleanup would affect. It supports AWS, Alibaba Cloud, Google Cloud (GCP), and Microsoft Azure. You can self-host it or sign up for Steward Cloud.
+Steward helps you answer three questions about your cloud accounts: what is running, what depends on what, and what a cleanup would affect. It works with AWS, Alibaba Cloud, Google Cloud (GCP), and Microsoft Azure. You can self-host it or sign up for Steward Cloud.
 
-Use it for three kinds of work:
+Teams typically use it to:
 
-- **Inventory existing resources:** Scan a selected scope and find resources by name, ID, and properties.
-- **Inspect shared dependencies:** Navigate from a network overview to resources and their discovered relationships.
-- **Review and execute cleanup:** Add targets to a task, inspect blockers and retained items, then confirm execution.
+- **Inventory existing resources** — scan the accounts and regions you choose, then find resources by name, ID, type, or property.
+- **Check shared dependencies** — start from a network overview and follow the relationships Steward found between resources.
+- **Clean up with a review step** — put resources into a cleanup task, resolve blockers, and only then confirm deletion.
 
-For your first session, read how it works below, then follow [First resource inventory](./tutorials/first-inventory.md) to inspect a resource you already have.
+New to Steward? Read this page, then follow [First resource inventory](./tutorials/first-inventory.md) with a resource you already have.
 
 ## How Steward works
 
-Steward reads existing resources through a cloud connection and organizes scan results into a searchable inventory and relationship views. Start by inspecting what is running, then create cleanup tasks for resources you have confirmed are no longer needed.
+Steward reads your resources through a **cloud connection**, records what each **scan** finds, and builds the inventory and relationship views from those records.
 
-<figure class="docs-figure"><a href="../../assets/scan-data-flow-en.svg" target="_blank" rel="noreferrer" aria-label="How scanning produces inventory and relationships (open full size)"><img src="../../assets/scan-data-flow-en.svg" alt="A scan reads cloud provider APIs within a selected scope and records resources. Inventory and relationship views use these scan results. Scan again after cloud-side changes." width="640" height="650"></a><figcaption>A scan records resources with observation timestamps. Inventory and relationship views show those scan results.</figcaption></figure>
+<figure class="docs-figure"><a href="../../assets/scan-data-flow-en.svg" target="_blank" rel="noreferrer" aria-label="How scanning produces inventory and relationships (open full size)"><img src="../../assets/scan-data-flow-en.svg" alt="A scan reads cloud provider APIs within a selected scope and records resources. Inventory and relationship views use these scan results. Scan again after cloud-side changes." width="640" height="650"></a><figcaption>A scan records resources with the time it saw them. Inventory and relationship views show those records.</figcaption></figure>
 
-Validating a connection, scanning resources, and executing cleanup are separate operations. Validation checks the cloud identity; scanning calls read APIs; confirming cleanup execution starts the corresponding cloud deletion requests.
+Three operations touch your cloud, and only the last one changes anything:
+
+| Operation | What it does |
+| --- | --- |
+| Validate a connection | Confirms which cloud identity the credentials belong to |
+| Scan | Calls read-only APIs within the scope you choose |
+| Confirm a cleanup task | Sends deletion requests for the reviewed resources |
 
 ## Connections and resource identity
 
-A **cloud connection** stores the configuration for accessing a cloud identity. Resources, scans, and cleanup tasks are organized by connection. After switching connections, confirm the account before interpreting the results.
+A **cloud connection** holds the credentials for one cloud identity — an AWS account, an Alibaba Cloud account, a Google Cloud project, or an Azure subscription. Resources, scans, and cleanup tasks all belong to a connection, so check which connection is selected before you read results.
 
-Names are convenient labels, but they can change or be reused. Identify a resource using its **cloud connection, region, resource type, and native cloud resource ID**. In the screenshots, `api-01` is a name and `i-demo-api01` is its native resource ID.
+Names can change or repeat, so Steward identifies a resource by four things:
 
-| Concept | Question it answers | Example |
+| Field | Question it answers | Example |
 | --- | --- | --- |
-| Cloud connection | Which identity and account are you using? | An AWS, Alibaba Cloud, Google Cloud, or Azure connection |
+| Cloud connection | Which account, and with which identity? | An AWS connection named "Production" |
 | Region | Where is the resource? | `ap-southeast-1` |
-| Resource type | What kind of resource is it? | An EC2 instance, VPC, or security group |
-| Native resource ID | Which specific resource is this? | `i-demo-api01` |
-| Scan scope | What does this scan actually inspect? | One region or a VPC within it |
+| Resource type | What kind of resource is it? | EC2 instance, VPC, security group |
+| Native resource ID | Which exact resource? | `i-demo-api01` |
 
-Global resources are included separately in the scan scope. Scanning a region does not also scan global resources or other regions. See [connection settings](./connections.md) and [scan scopes](./scans.md#scope) for these choices.
+In the screenshots, `api-01` is a name and `i-demo-api01` is the native resource ID.
 
-## Scan results and current cloud state
+## Reading scan results
 
-A **scan** reads cloud APIs within a selected scope and records discovered resources and their properties. A resource's last-seen time records when a scan observed it.
+Inventory shows what the last scan saw, not a live view of the cloud. Each resource has a **last seen** time: when a scan last observed it. If you change something in the cloud console after a scan, Steward shows the earlier state until you scan that scope again. Reloading the browser does not rescan.
 
-For example, suppose a scan finds an instance and you later change it in the cloud console. Steward may still show the earlier observation until you scan the relevant scope again. Refreshing the browser reloads existing records; it does not replace a scan.
+To know how complete an inventory is, check two things:
 
-Interpret scan results using both:
+- **Scope** — which regions, global resources, and resource types the scan included. Scanning a region does not include global resources (such as IAM identities) or other regions; select **Global** as well when you need them. See [scan scopes](./scans.md#scope).
+- **Outcome** — whether every scan item finished, or some failed because of permissions or API errors.
 
-- **Scope:** Which regions, global resources, and resource types did you select?
-- **Outcome:** Did those scan targets finish, and were there permission errors or failed targets?
-
-A successful scan of a small scope does not prove that the entire account has been inventoried. Zero results can also mean that the scope is wrong, permissions are missing, or a resource type was not covered. Inspect the task before concluding that no cloud resources exist.
+An empty or short result can mean the scope was wrong, a permission was missing, or a resource type isn't covered — not necessarily that nothing exists. Open the scan's details before drawing conclusions.
 
 ## Resource panorama and relationship lines
 
-**Resource panorama** helps you locate resources by account, region, and network structure. **Relationship lines** show associations recognized by the current rules, such as a load balancer routing to instances or an instance using a security group.
+**Resource panorama** lays out resources by account, region, and network (VPC and subnet), so you can find where something lives. **Relationship lines** add the connections Steward recognizes, such as a load balancer routing to instances or an instance using a security group.
 
-Sharing a VPC or subnet describes network placement. Assess specific dependencies using resource properties, relationship lines, and cleanup checks together. The absence of a line does not establish the absence of a dependency.
+<figure class="docs-figure"><a href="../../assets/topology-en.png" target="_blank" rel="noreferrer" aria-label="Steward organizes resources by their network placement (open full size)"><img src="../../assets/topology-en.png" alt="Steward's VPC panorama groups application instances and databases into different subnets" width="1440" height="960"></a><figcaption>Sample data: application instances and databases in separate subnets. Network grouping shows where resources are; relationship lines show how they connect.</figcaption></figure>
 
-<figure class="docs-figure"><a href="../../assets/topology-en.png" target="_blank" rel="noreferrer" aria-label="Steward organizes resources by their network placement (open full size)"><img src="../../assets/topology-en.png" alt="Steward's VPC panorama groups application instances and databases into different subnets" width="1440" height="960"></a><figcaption>Sample application instances and databases occupy different subnets. Network grouping locates resources; relationship lines explain further associations.</figcaption></figure>
+Sharing a VPC or subnet tells you where resources sit, not that one depends on another. Relationship lines come from scanned resources and the rules Steward supports, so a missing line does not prove that no dependency exists. [Resource relationships](./topology.md) explains how to navigate the panorama and focus on one resource.
 
-[Resource relationships](./topology.md) shows how to navigate through network scopes and then focus on one resource's connections.
+## From selection to deletion
 
-## Cleanup selection, tasks, and execution
+Cleanup narrows down in stages, and nothing is deleted until the third one:
 
-Cleanup narrows the scope through distinct stages:
-
-| Stage | What you review | Does cloud deletion start? |
+| Stage | What you check | Deletes anything? |
 | --- | --- | --- |
-| Cleanup selection | Which targets need further review | No |
-| Create a task | Resolved resources, blockers, warnings, and retained items | No |
-| Confirm execution | Whether the reviewed scope and impact match your intent | Yes |
-| Verify results | Completed, failed, and retained resources | Deletion requests may still be in progress |
+| Add to the resource list | Which resources you want to look at more closely | No |
+| Create a cleanup task | The exact resources it resolves to, plus blockers, warnings, and retained resources | No |
+| Confirm execution | That the reviewed scope matches your intent | Yes |
+| Check results | Which resources were deleted, failed, or kept | Requests may still be finishing |
 
-A task checks dependencies and supported deletion actions. Resolve blockers and read warnings, especially incomplete scan coverage. Once execution starts, pausing cannot revoke requests already sent or restore deleted resources.
+A task checks dependencies and whether each deletion is supported. Resolve blockers and read warnings — especially about incomplete scans. Once execution starts, pausing stops further requests but cannot recall requests already sent or restore deleted resources.
 
-Complete [your first resource inventory](./tutorials/first-inventory.md), then read the dependency example and execution steps in [Resource cleanup](./cleanup.md).
+[Resource cleanup](./cleanup.md) walks through a blocked cleanup and the execution steps.
