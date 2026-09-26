@@ -1,12 +1,13 @@
 # Provider parity implementation gaps
 
-Scope snapshot: 2026-09-17, updated after AWS joined the matrix and the Azure
-candidate and mapping-research backlog was worked through. This is a repository
-scope audit, not cloud feature acceptance.
+Scope snapshot: 2026-09-26, after the 2026-09-19 Alibaba Cloud expansion grew
+the baseline from 159 to 202 specifications. This is a repository scope audit,
+not cloud feature acceptance. Dated sections below keep the row count that held
+when they were written.
 
-The matrix covers all 159 Alibaba Cloud specifications for GCP, Azure and AWS.
+The matrix covers all 202 Alibaba Cloud specifications for GCP, Azure and AWS.
 The repository contains 205 GCP, 491 Azure and 194 AWS specifications; those
-counts do not prove equivalence. All 159 rows remain pending behavioral
+counts do not prove equivalence. All 202 rows remain pending behavioral
 verification.
 
 `go test ./providers` runs in CI. It detects invalid YAML, omitted or duplicated
@@ -21,18 +22,45 @@ check verifies matrix consistency only. AWS progress and evidence are tracked in
 | Measure | GCP | Azure | AWS |
 | --- | --- | --- | --- |
 | Explicit native specifications | 205 | 491 | 194 |
-| Baseline rows with at least one existing mapped specification | 156/159 | 157/159 | 149/159 |
-| Candidate types still without a specification | 0 | 0 | 0 |
-| Baseline rows affected by missing candidate specifications | 0 | 0 | 0 |
-| Empty mappings with a documented platform difference | 3 | 2 | 10 |
+| Baseline rows with at least one existing mapped specification | 177/202 | 172/202 | 169/202 |
+| Candidate types still without a specification | 7 | 5 | 0 |
+| Baseline rows affected by missing candidate specifications | 7 | 5 | 0 |
+| Empty mappings deferred as not yet modeled | 3 | 2 | 16 |
+| Empty mappings with a documented platform difference | 15 | 23 | 17 |
 
 These are registration/mapping measures, not functional completion percentages.
 A row can have both an implemented mapping and an absent candidate. None of the
-159 rows has a closed, requirement-by-requirement behavioral acceptance record.
+202 rows has a closed, requirement-by-requirement behavioral acceptance record.
+
+## Open mapping backlog
+
+Rows added with the 2026-09-19 Alibaba Cloud expansion left these mappings open.
+Candidates listed under `unimplemented_resources`:
+
+- GCP: `managedkafka.googleapis.com/ConsumerGroup`; `eventarc.googleapis.com/MessageBus`
+  and `Trigger`; `workstations.googleapis.com/Workstation`, `WorkstationCluster` and
+  `WorkstationConfig`; `certificatemanager.googleapis.com/TrustConfig`.
+- Azure: `Microsoft.EventGrid/topics` and `topics/eventSubscriptions`;
+  `Microsoft.DesktopVirtualization/hostPools/sessionHosts` and `workspaces`;
+  `Microsoft.HDInsight/clusters`.
+
+Empty mappings whose notes defer the work rather than record a platform
+difference:
+
+- GCP: Cloud Asset Inventory feeds, security posture deployments and organization
+  policy constraints (Cloud Config aggregator, compliance pack and rule).
+- Azure: Azure Policy assignments and initiative assignments (Cloud Config rule
+  and compliance pack).
+- AWS: Client VPN endpoints (three VPN rows), SNS subscriptions (two consumer
+  group rows and CloudMonitor contacts), AWS Config rules, conformance packs and
+  aggregators, WorkSpaces and their directories, EMR clusters, API Gateway usage
+  plans and API keys, Resource Groups, load balancer trust stores and WAF web ACL
+  associations.
 
 ## Azure read-only registrations
 
-Every Azure candidate type now has a specification. Purview accounts, managed
+Every Azure candidate type from the 159-row scope has a specification; the
+candidates added with the 2026-09-19 rows are listed above. Purview accounts, managed
 applications, Machine Learning workspaces, Key Vault keys and certificates,
 management groups, Site Recovery replication protected items and Microsoft Entra
 users and groups (Microsoft Graph) are registered read-only; their matrix notes record

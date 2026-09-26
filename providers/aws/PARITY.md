@@ -21,8 +21,9 @@ authoritative Cloud Control inventory could never succeed.
 | Measure | AWS |
 | --- | --- |
 | Explicit specifications | 194 (182 Cloud Control, 11 product API, 1 CloudFormation stack) |
-| Parity rows with an implemented mapping | 149/159 |
-| Rows with a documented platform difference instead of a mapping | 10 |
+| Parity rows with an implemented mapping | 169/202 |
+| Rows deferred as not yet modeled | 16 |
+| Rows with a documented platform difference instead of a mapping | 17 |
 | Candidate types without a specification | 0 |
 | Pinned official operations | 61 from 19 Smithy models |
 | Pinned CloudFormation resource schemas | 189 |
@@ -85,6 +86,8 @@ matrix, as for GCP and Azure.
 ## Remaining work
 
 - Behavioral acceptance per matrix row, including real-cloud evidence.
+- The 16 deferred rows listed in `providers/PARITY_GAPS.md` (Client VPN, SNS
+  subscriptions, AWS Config, WorkSpaces, EMR and others).
 - Cloud Control handler behavior for other individual types (for example ECR
   contents) is taken from the official handler contract and is not
   independently verified. KMS keys (AWS managed keys, scheduled deletion),
