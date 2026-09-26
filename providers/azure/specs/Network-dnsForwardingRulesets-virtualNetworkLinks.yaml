@@ -1,0 +1,65 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/dnsForwardingRulesets/virtualNetworkLinks
+  class: network.dns_vnet_link
+presentation:
+  displayNames:
+    en-US: DNS forwarding ruleset virtual network link
+    zh-CN: DNS 转发规则集虚拟网络链接
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.DnsResolverManagementClient.VirtualNetworkLinks_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      dnsForwardingRulesetName: parent.normalized.arm_parameters.dnsForwardingRulesetName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.DnsResolverManagementClient.VirtualNetworkLinks_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Network/dnsForwardingRulesets
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: member_of
+  targetType: Microsoft.Network/dnsForwardingRulesets
+  targetIdPath: refs_microsoft_network_dnsforwardingrulesets
+- type: uses
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.DnsResolverManagementClient.VirtualNetworkLinks_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.DnsResolverManagementClient.VirtualNetworkLinks_Get
+      itemsPath: $
+      identityPath: id

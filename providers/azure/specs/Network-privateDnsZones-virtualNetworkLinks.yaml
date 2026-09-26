@@ -14,7 +14,7 @@ scope:
 discovery:
   source: product-api
   list:
-    operation: Azure.Microsoft.Network.VirtualNetworkLinks_List
+    operation: Azure.Microsoft.Network.PrivateDnsManagementClient.VirtualNetworkLinks_List
     parameters:
       subscriptionId: scope.subscription
       resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
@@ -22,7 +22,7 @@ discovery:
     itemsPath: value
     identityPath: id
   detail:
-    operation: Azure.Microsoft.Network.VirtualNetworkLinks_Get
+    operation: Azure.Microsoft.Network.PrivateDnsManagementClient.VirtualNetworkLinks_Get
     itemsPath: $
     identityPath: id
   parent:
@@ -70,12 +70,12 @@ relationships:
   targetIdPath: refs_microsoft_network_virtualnetworks
 actions:
   delete:
-    operation: Azure.Microsoft.Network.VirtualNetworkLinks_Delete
+    operation: Azure.Microsoft.Network.PrivateDnsManagementClient.VirtualNetworkLinks_Delete
     idempotency: readback
     waiter: azure_operation
     readback: azure_absent
     read:
-      operation: Azure.Microsoft.Network.VirtualNetworkLinks_Get
+      operation: Azure.Microsoft.Network.PrivateDnsManagementClient.VirtualNetworkLinks_Get
       itemsPath: $
       identityPath: id
     parameters:

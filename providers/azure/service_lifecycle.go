@@ -37,6 +37,10 @@ const (
 	logAnalyticsTableCustomSuffix = "_CL"
 	lbType                        = "Microsoft.Network/loadBalancers"
 	lbBackendPoolType             = lbType + "/backendAddressPools"
+	dnsResolverType               = "Microsoft.Network/dnsResolvers"
+	dnsForwardingRulesetType      = "Microsoft.Network/dnsForwardingRulesets"
+	relayNamespaceType            = "Microsoft.Relay/namespaces"
+	notificationNamespaceType     = "Microsoft.NotificationHubs/namespaces"
 )
 
 // Native deletion semantics, not an inference from ARM path nesting.
@@ -124,6 +128,15 @@ var serviceCascadeRules = map[string][]string{
 	lbType: {lbBackendPoolType},
 	// Without force, a host pool is deleted only after its session hosts.
 	avdHostPoolType: {avdSessionHostType},
+	// A DNS resolver is deleted only after its endpoints, and a forwarding
+	// ruleset after its virtual network links; the ruleset delete removes its
+	// forwarding rules.
+	// https://learn.microsoft.com/azure/dns/dns-private-resolver-get-started-portal
+	dnsResolverType:          {dnsResolverType + "/inboundEndpoints", dnsResolverType + "/outboundEndpoints"},
+	dnsForwardingRulesetType: {dnsForwardingRulesetType + "/forwardingRules", dnsForwardingRulesetType + "/virtualNetworkLinks"},
+	// Namespace deletion removes the relays and notification hubs under it.
+	relayNamespaceType:        {relayNamespaceType + "/hybridConnections", relayNamespaceType + "/wcfRelays"},
+	notificationNamespaceType: {notificationNamespaceType + "/notificationHubs"},
 	networkWatcherType: {
 		"Microsoft.Network/networkWatchers/flowLogs",
 		"Microsoft.Network/networkWatchers/connectionMonitors",

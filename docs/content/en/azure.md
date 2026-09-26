@@ -134,7 +134,7 @@ What to expect:
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 503 Azure resource types; 452 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 522 Azure resource types; 470 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -176,6 +176,16 @@ Steward recognizes 503 Azure resource types; 452 have native cleanup actions, in
 | Event Grid | Custom topics, system topics, namespaces and topic event subscriptions | Deleting a topic deletes its event subscriptions; subscriptions can also be deleted on their own |
 | Azure Virtual Desktop | Host pools, session hosts, application groups and workspaces | Session hosts and the application groups of a host pool are deleted before the host pool; removing a session host keeps its virtual machine |
 | HDInsight | Clusters | Supported; storage accounts and the virtual network stay separate |
+| Logic Apps | Consumption workflows | Supported; run history and triggers go with the workflow |
+| Automation | Automation accounts | Supported; runbooks, schedules and jobs go with the account. Unlink the account from a Log Analytics workspace first if features still use it |
+| IoT Hub | IoT hubs | Supported; routing endpoints such as storage accounts and Event Hubs stay separate |
+| SignalR and Web PubSub | SignalR and Web PubSub services | Supported |
+| App Configuration | Configuration stores | Supported; a deleted store stays recoverable for its retention period and doesn't appear in the inventory, and purge protection keeps its name reserved until then |
+| Static Web Apps | Static web apps | Supported |
+| DNS Private Resolver | Resolvers, inbound and outbound endpoints, forwarding rulesets, forwarding rules and ruleset virtual network links | Endpoints are deleted before their resolver and virtual network links before their ruleset; forwarding rules go with the ruleset, and a ruleset is deleted before the outbound endpoints it uses |
+| Azure Relay | Namespaces, hybrid connections and WCF relays | Deleting a namespace deletes its relays; relays can also be deleted on their own |
+| Notification Hubs | Namespaces and notification hubs | Deleting a namespace deletes its notification hubs; hubs can also be deleted on their own |
+| Azure Databricks | Workspaces | Read-only: deleting a workspace also deletes its managed resource group, which is not yet reviewed as a cascade |
 | [Managed Grafana](#managed-grafana) | Workspaces, managed private endpoints, private endpoint connections and integration fabrics | Reviewed children are deleted before the workspace; each resource also has its own native action |
 | [Monitor workspace](#azure-monitor-workspace) | Workspace and its default ingestion managed group | Reviews every group member, unlinks external associations first, and verifies that the group and known resources are gone |
 | [Monitor data collection](#monitor-data-collection) | Rules, endpoints and associations on monitored resources | Reviewed associations are deleted before rules and endpoints; shared associations are deleted once |

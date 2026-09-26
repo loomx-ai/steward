@@ -732,6 +732,9 @@
         "SiteCertificates_GetSlot",
         "SiteCertificates_List",
         "SiteCertificates_ListSlot",
+        "StaticSites_DeleteStaticSite",
+        "StaticSites_GetStaticSite",
+        "StaticSites_List",
         "WebApps_Delete",
         "WebApps_DeleteFunction",
         "WebApps_DeleteHostNameBinding",
@@ -2795,6 +2798,109 @@
         "LoadBalancerBackendAddressPools_Get",
         "LoadBalancerBackendAddressPools_List"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/logic/resource-manager/Microsoft.Logic/Logic/stable/2019-05-01/logic.json",
+      "operations": [
+        "Workflows_Delete",
+        "Workflows_Get",
+        "Workflows_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/automation/resource-manager/Microsoft.Automation/Automation/stable/2024-10-23/openapi.json",
+      "operations": [
+        "AutomationAccount_Delete",
+        "AutomationAccount_Get",
+        "AutomationAccount_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/iothub/resource-manager/Microsoft.Devices/IoTHub/stable/2023-06-30/iothub.json",
+      "operations": [
+        "IotHubResource_Delete",
+        "IotHubResource_Get",
+        "IotHubResource_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/signalr/resource-manager/Microsoft.SignalRService/SignalRService/stable/2024-03-01/signalr.json",
+      "operations": [
+        "SignalR_Delete",
+        "SignalR_Get",
+        "SignalR_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/webpubsub/resource-manager/Microsoft.SignalRService/SignalRService/stable/2024-03-01/webpubsub.json",
+      "operations": [
+        "WebPubSub_Delete",
+        "WebPubSub_Get",
+        "WebPubSub_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/appconfiguration/resource-manager/Microsoft.AppConfiguration/AppConfiguration/stable/2024-06-01/appconfiguration.json",
+      "operations": [
+        "ConfigurationStores_Delete",
+        "ConfigurationStores_Get",
+        "ConfigurationStores_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/dnsresolver/resource-manager/Microsoft.Network/DnsResolver/stable/2025-05-01/openapi.json",
+      "operations": [
+        "DnsForwardingRulesets_Delete",
+        "DnsForwardingRulesets_Get",
+        "DnsForwardingRulesets_List",
+        "DnsResolvers_Delete",
+        "DnsResolvers_Get",
+        "DnsResolvers_List",
+        "ForwardingRules_Delete",
+        "ForwardingRules_Get",
+        "ForwardingRules_List",
+        "InboundEndpoints_Delete",
+        "InboundEndpoints_Get",
+        "InboundEndpoints_List",
+        "OutboundEndpoints_Delete",
+        "OutboundEndpoints_Get",
+        "OutboundEndpoints_List",
+        "VirtualNetworkLinks_Delete",
+        "VirtualNetworkLinks_Get",
+        "VirtualNetworkLinks_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/relay/resource-manager/Microsoft.Relay/Relay/stable/2026-01-01/relay.json",
+      "operations": [
+        "HybridConnections_Delete",
+        "HybridConnections_Get",
+        "HybridConnections_ListByNamespace",
+        "Namespaces_Delete",
+        "Namespaces_Get",
+        "Namespaces_List",
+        "WCFRelays_Delete",
+        "WCFRelays_Get",
+        "WCFRelays_ListByNamespace"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/notificationhubs/resource-manager/Microsoft.NotificationHubs/NotificationHubs/stable/2023-09-01/notificationhubs.json",
+      "operations": [
+        "Namespaces_Delete",
+        "Namespaces_Get",
+        "Namespaces_ListAll",
+        "NotificationHubs_Delete",
+        "NotificationHubs_Get",
+        "NotificationHubs_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/databricks/resource-manager/Microsoft.Databricks/Databricks/stable/2026-01-01/openapi.json",
+      "operations": [
+        "Workspaces_Get",
+        "Workspaces_ListBySubscription"
+      ]
     }
   ],
   "resource_types": [
@@ -4073,13 +4179,13 @@
       ],
       "collection": "virtualNetworkLinks",
       "read_operations": [
-        "Azure.Microsoft.Network.VirtualNetworkLinks_Get"
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.VirtualNetworkLinks_Get"
       ],
       "delete_operations": [
-        "Azure.Microsoft.Network.VirtualNetworkLinks_Delete"
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.VirtualNetworkLinks_Delete"
       ],
       "list_operations": [
-        "Azure.Microsoft.Network.VirtualNetworkLinks_List"
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.VirtualNetworkLinks_List"
       ]
     },
     {
@@ -12183,6 +12289,346 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Network.LoadBalancerBackendAddressPools_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Logic/workflows",
+      "class": "orchestration.workflow",
+      "display_name": "Logic App workflow",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "workflows",
+      "read_operations": [
+        "Azure.Microsoft.Logic.Workflows_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Logic.Workflows_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Logic.Workflows_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Automation/automationAccounts",
+      "class": "orchestration.automation_account",
+      "display_name": "Automation account",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "automationAccounts",
+      "read_operations": [
+        "Azure.Microsoft.Automation.AutomationAccount_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Automation.AutomationAccount_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Automation.AutomationAccount_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Devices/IotHubs",
+      "class": "iot.hub",
+      "display_name": "IoT hub",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "IotHubs",
+      "read_operations": [
+        "Azure.Microsoft.Devices.IotHubResource_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Devices.IotHubResource_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Devices.IotHubResource_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.SignalRService/signalR",
+      "class": "messaging.realtime",
+      "display_name": "SignalR service",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "signalR",
+      "read_operations": [
+        "Azure.Microsoft.SignalRService.SignalR_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.SignalRService.SignalR_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.SignalRService.SignalR_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.SignalRService/webPubSub",
+      "class": "messaging.realtime",
+      "display_name": "Web PubSub service",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "webPubSub",
+      "read_operations": [
+        "Azure.Microsoft.SignalRService.WebPubSub_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.SignalRService.WebPubSub_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.SignalRService.WebPubSub_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.AppConfiguration/configurationStores",
+      "class": "config.store",
+      "display_name": "App Configuration store",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "configurationStores",
+      "read_operations": [
+        "Azure.Microsoft.AppConfiguration.ConfigurationStores_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.AppConfiguration.ConfigurationStores_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.AppConfiguration.ConfigurationStores_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Web/staticSites",
+      "class": "web.static_site",
+      "display_name": "Static web app",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "staticSites",
+      "read_operations": [
+        "Azure.Microsoft.Web.StaticSites_GetStaticSite"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Web.StaticSites_DeleteStaticSite"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Web.StaticSites_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsResolvers",
+      "class": "network.dns_resolver",
+      "display_name": "DNS private resolver",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "dnsResolvers",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsResolvers_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsResolvers_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsResolvers_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsResolvers/inboundEndpoints",
+      "class": "network.dns_resolver_endpoint",
+      "display_name": "DNS resolver inbound endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "inboundEndpoints",
+      "read_operations": [
+        "Azure.Microsoft.Network.InboundEndpoints_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.InboundEndpoints_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.InboundEndpoints_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsResolvers/outboundEndpoints",
+      "class": "network.dns_resolver_endpoint",
+      "display_name": "DNS resolver outbound endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "outboundEndpoints",
+      "read_operations": [
+        "Azure.Microsoft.Network.OutboundEndpoints_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.OutboundEndpoints_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.OutboundEndpoints_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsForwardingRulesets",
+      "class": "network.dns_forwarding_ruleset",
+      "display_name": "DNS forwarding ruleset",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "dnsForwardingRulesets",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsForwardingRulesets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsForwardingRulesets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsForwardingRulesets_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsForwardingRulesets/forwardingRules",
+      "class": "network.dns_forwarding_rule",
+      "display_name": "DNS forwarding rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "forwardingRules",
+      "read_operations": [
+        "Azure.Microsoft.Network.ForwardingRules_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.ForwardingRules_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.ForwardingRules_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsForwardingRulesets/virtualNetworkLinks",
+      "class": "network.dns_vnet_link",
+      "display_name": "DNS forwarding ruleset virtual network link",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "virtualNetworkLinks",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsResolverManagementClient.VirtualNetworkLinks_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsResolverManagementClient.VirtualNetworkLinks_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsResolverManagementClient.VirtualNetworkLinks_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Relay/namespaces",
+      "class": "messaging.relay_namespace",
+      "display_name": "Relay namespace",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "namespaces",
+      "read_operations": [
+        "Azure.Microsoft.Relay.Namespaces_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Relay.Namespaces_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Relay.Namespaces_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Relay/namespaces/hybridConnections",
+      "class": "messaging.relay",
+      "display_name": "Relay hybrid connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "hybridConnections",
+      "read_operations": [
+        "Azure.Microsoft.Relay.HybridConnections_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Relay.HybridConnections_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Relay.HybridConnections_ListByNamespace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Relay/namespaces/wcfRelays",
+      "class": "messaging.relay",
+      "display_name": "WCF relay",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "wcfRelays",
+      "read_operations": [
+        "Azure.Microsoft.Relay.WCFRelays_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Relay.WCFRelays_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Relay.WCFRelays_ListByNamespace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NotificationHubs/namespaces",
+      "class": "messaging.notification_namespace",
+      "display_name": "Notification Hubs namespace",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "namespaces",
+      "read_operations": [
+        "Azure.Microsoft.NotificationHubs.Namespaces_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.NotificationHubs.Namespaces_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.NotificationHubs.Namespaces_ListAll"
+      ]
+    },
+    {
+      "native_type": "Microsoft.NotificationHubs/namespaces/notificationHubs",
+      "class": "messaging.notification_hub",
+      "display_name": "Notification hub",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "notificationHubs",
+      "read_operations": [
+        "Azure.Microsoft.NotificationHubs.NotificationHubs_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.NotificationHubs.NotificationHubs_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.NotificationHubs.NotificationHubs_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Databricks/workspaces",
+      "class": "analytics.databricks_workspace",
+      "display_name": "Azure Databricks workspace",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "workspaces",
+      "read_operations": [
+        "Azure.Microsoft.Databricks.Workspaces_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Databricks.Workspaces_ListBySubscription"
       ]
     }
   ]

@@ -391,7 +391,7 @@ func TestDiagnosticReferencesAndPrivateConfiguration(t *testing.T) {
 	props := object(raw["properties"])
 	before, _ := json.Marshal(raw)
 	refs, err := diagnosticReferences(id, raw)
-	if err != nil || !slices.Equal(refs["microsoft.logic/workflows"], []string{source}) || len(refs["Microsoft.Storage/storageAccounts"]) != 1 || len(refs["Microsoft.EventHub/namespaces/authorizationRules"]) != 1 || len(refs["Microsoft.EventHub/namespaces"]) != 1 || len(refs["Microsoft.EventHub/namespaces/eventhubs"]) != 0 || len(refs["microsoft.datadog/monitors"]) != 1 {
+	if err != nil || !slices.Equal(refs["Microsoft.Logic/workflows"], []string{source}) || len(refs["Microsoft.Storage/storageAccounts"]) != 1 || len(refs["Microsoft.EventHub/namespaces/authorizationRules"]) != 1 || len(refs["Microsoft.EventHub/namespaces"]) != 1 || len(refs["Microsoft.EventHub/namespaces/eventhubs"]) != 0 || len(refs["microsoft.datadog/monitors"]) != 1 {
 		t.Fatal("diagnostic source or shared destinations lost", refs, err)
 	}
 	baseline := diagnosticSnapshot(raw)

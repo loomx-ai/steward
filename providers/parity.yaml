@@ -3229,6 +3229,7 @@ resources:
   azure:
     resources:
     - Microsoft.Network/privateDnsZones
+    - Microsoft.Network/dnsForwardingRulesets
   aws:
     resources:
     - AWS::Route53::HostedZone

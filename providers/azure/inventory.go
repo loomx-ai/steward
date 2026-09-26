@@ -969,6 +969,9 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 		fields["applicationgroupreferences"] = true
 	case avdSessionHostType:
 		fields["resourceid"] = true
+	case dnsForwardingRulesetType:
+		// A ruleset forwards through the outbound endpoints it names.
+		fields["dnsresolveroutboundendpoints"] = true
 	case hdinsightClusterType:
 		// Storage accounts and the cluster's virtual network.
 		fields["resourceid"], fields["id"] = true, true

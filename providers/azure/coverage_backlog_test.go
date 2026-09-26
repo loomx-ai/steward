@@ -230,3 +230,147 @@ func TestLoadBalancerBackendPoolsAreListedAndProtectedWhileInUse(t *testing.T) {
 		t.Fatal("load balancer backend pool cascade is not registered")
 	}
 }
+
+// Subscription collections and API versions of the pinned batch E
+// specifications.
+func TestCommonProductKindsListNativeSubscriptionCollections(t *testing.T) {
+	for nativeType, version := range map[string]string{
+		"Microsoft.Logic/workflows":                      "2019-05-01",
+		"Microsoft.Automation/automationAccounts":        "2024-10-23",
+		"Microsoft.Devices/IotHubs":                      "2023-06-30",
+		"Microsoft.SignalRService/signalR":               "2024-03-01",
+		"Microsoft.SignalRService/webPubSub":             "2024-03-01",
+		"Microsoft.AppConfiguration/configurationStores": "2024-06-01",
+		"Microsoft.Web/staticSites":                      "2025-05-01",
+		dnsResolverType:                                  "2025-05-01",
+		dnsForwardingRulesetType:                         "2025-05-01",
+		relayNamespaceType:                               "2026-01-01",
+		notificationNamespaceType:                        "2023-09-01",
+		"Microsoft.Databricks/workspaces":                "2026-01-01",
+	} {
+		t.Run(nativeType, func(t *testing.T) {
+			root := "/subscriptions/" + testSubscription
+			collection := root + "/providers/" + strings.ToLower(nativeType)
+			item := nativeResource(nativeType, "sample", "eastus", map[string]any{"provisioningState": "Succeeded"})
+			listed := false
+			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				path := strings.ToLower(req.URL.Path)
+				switch {
+				case req.Method != "GET":
+					t.Fatalf("mutation during inventory %s %s", req.Method, req.URL)
+				case path == collection:
+					if req.URL.Query().Get("api-version") != version {
+						t.Fatalf("wrong API version %s", req.URL)
+					}
+					listed = true
+					return jsonResponse(200, map[string]any{"value": []any{item}}, nil), nil
+				case path == strings.ToLower(text(item["id"])):
+					return jsonResponse(200, item, nil), nil
+				case path == root+"/resourcegroups" || path == root+"/providers/microsoft.authorization/locks":
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+				}
+				t.Fatalf("unexpected request %s", req.URL)
+				return nil, nil
+			})
+			batch, err := r.List(context.Background(), productRequest(r, nativeType))
+			if err != nil || !listed || !batch.Complete || len(batch.Items) != 1 || batch.Items[0].NativeID != strings.ToLower(text(item["id"])) {
+				t.Fatalf("batch=%+v listed=%v err=%v", batch, listed, err)
+			}
+			if deletable := batch.Items[0].Actionable != nil && *batch.Items[0].Actionable; deletable == (nativeType == "Microsoft.Databricks/workspaces") {
+				t.Fatalf("actionable = %v", deletable)
+			}
+		})
+	}
+}
+
+func TestCommonProductKindsDeleteWithOperationAndFinalAbsence(t *testing.T) {
+	for _, kind := range []string{"Microsoft.Logic/workflows", "Microsoft.Automation/automationAccounts", "Microsoft.Devices/IotHubs", "Microsoft.SignalRService/signalR", "Microsoft.SignalRService/webPubSub", "Microsoft.AppConfiguration/configurationStores", "Microsoft.Web/staticSites", dnsResolverType, dnsForwardingRulesetType, relayNamespaceType, notificationNamespaceType} {
+		t.Run(kind, func(t *testing.T) {
+			value := actionAsset(kind, "sample")
+			id := value.Identity.NativeID
+			operation := apiURL("/subscriptions/"+testSubscription+"/providers/"+strings.Split(kind, "/")[0]+"/locations/eastus/operationResults/op-1", "2025-01-01")
+			deleted, deletes := false, 0
+			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				if response, handled := emptyMonitorIndexResponse(t, req); handled {
+					return response, nil
+				}
+				if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+					return response, nil
+				}
+				if strings.EqualFold(req.URL.String(), operation) {
+					deleted = true
+					return &http.Response{StatusCode: 204, Header: http.Header{}, Body: io.NopCloser(strings.NewReader(""))}, nil
+				}
+				path := strings.ToLower(req.URL.Path)
+				// Native child collections of the cascading kinds are empty.
+				if req.Method == "GET" && strings.HasPrefix(path, id+"/") && !strings.Contains(strings.TrimPrefix(path, id+"/"), "/") {
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+				}
+				switch path {
+				case id:
+					if req.Method == "DELETE" {
+						deletes++
+						return jsonResponse(202, map[string]any{}, http.Header{"Location": {operation}, "X-Ms-Request-Id": {"delete-request"}, "Retry-After": {"1"}}), nil
+					}
+					if deleted {
+						return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceNotFound"}}, nil), nil
+					}
+					raw := nativeResource(kind, "sample", "eastus", map[string]any{"provisioningState": "Succeeded"})
+					raw["id"] = id
+					return jsonResponse(200, raw, nil), nil
+				case "/subscriptions/" + testSubscription + "/resourcegroups/test":
+					return jsonResponse(200, map[string]any{"id": path}, nil), nil
+				case "/subscriptions/" + testSubscription + "/providers/microsoft.authorization/locks":
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+				}
+				t.Fatalf("unexpected %s %s", req.Method, req.URL)
+				return nil, nil
+			})
+			driver, err := r.ResolveAction(context.Background(), "connection", value)
+			if err != nil {
+				t.Fatal(err)
+			}
+			request := contracts.ActionRequest{Asset: value, Action: "delete", IdempotencyKey: "delete-key"}
+			result, err := driver.Execute(context.Background(), request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			done := false
+			for i := 0; i < 5 && !done; i++ {
+				wait, err := driver.Wait(context.Background(), request, result)
+				if err != nil {
+					t.Fatal(err)
+				}
+				done = wait.Done
+			}
+			readback, err := driver.Readback(context.Background(), request)
+			if !done || err != nil || readback.Exists || deletes != 1 {
+				t.Fatalf("done=%v readback=%+v deletes=%d err=%v", done, readback, deletes, err)
+			}
+		})
+	}
+}
+
+// A resolver's endpoints and a ruleset's virtual network links are deleted
+// first; forwarding rules, relays and notification hubs go with their parent.
+// A ruleset depends on the outbound endpoints it forwards through.
+func TestDNSResolverRelayAndNotificationHubRules(t *testing.T) {
+	for _, child := range []string{dnsResolverType + "/inboundEndpoints", dnsResolverType + "/outboundEndpoints"} {
+		if !servicePrerequisiteKind(dnsResolverType, child) {
+			t.Fatalf("%s is not a resolver prerequisite", child)
+		}
+	}
+	if !servicePrerequisiteKind(dnsForwardingRulesetType, dnsForwardingRulesetType+"/virtualNetworkLinks") || servicePrerequisiteKind(dnsForwardingRulesetType, dnsForwardingRulesetType+"/forwardingRules") {
+		t.Fatal("ruleset prerequisites are wrong")
+	}
+	for _, parent := range []string{dnsForwardingRulesetType, relayNamespaceType, notificationNamespaceType} {
+		if !HasServiceCascade(parent) {
+			t.Fatalf("%s cascade is not registered", parent)
+		}
+	}
+	endpoint := resourceID(dnsResolverType, "resolver") + "/outboundEndpoints/egress"
+	refs := references(dnsForwardingRulesetType, resourceID(dnsForwardingRulesetType, "rules"), map[string]any{"properties": map[string]any{"dnsResolverOutboundEndpoints": []any{map[string]any{"id": endpoint}}}})
+	if len(refs[dnsResolverType+"/outboundEndpoints"]) != 1 {
+		t.Fatalf("ruleset references = %v", refs)
+	}
+}

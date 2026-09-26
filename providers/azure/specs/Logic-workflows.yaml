@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Logic/workflows
+  class: orchestration.workflow
+presentation:
+  displayNames:
+    en-US: Logic App workflow
+    zh-CN: 逻辑应用工作流
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Logic.Workflows_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Logic.Workflows_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  workflowState:
+    path: state
+    type: string
+extensions:
+  hook: azure.resource
+relationships: []
+actions:
+  delete:
+    operation: Azure.Microsoft.Logic.Workflows_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Logic.Workflows_Get
+      itemsPath: $
+      identityPath: id

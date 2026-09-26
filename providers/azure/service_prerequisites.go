@@ -77,7 +77,9 @@ var servicePrerequisiteRules = map[string][]string{
 	expressGatewayType:      {expressConnectionType},
 	// HostPools_Delete removes session hosts only with force; Steward deletes
 	// each registration first without disconnecting user sessions.
-	avdHostPoolType: {avdSessionHostType},
+	avdHostPoolType:          {avdSessionHostType},
+	dnsResolverType:          {dnsResolverType + "/inboundEndpoints", dnsResolverType + "/outboundEndpoints"},
+	dnsForwardingRulesetType: {dnsForwardingRulesetType + "/virtualNetworkLinks"},
 }
 
 func servicePrerequisiteKind(parent, child string) bool {
