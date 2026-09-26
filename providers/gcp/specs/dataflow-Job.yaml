@@ -1,0 +1,53 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataflow.googleapis.com/Job
+  class: data.pipeline
+presentation:
+  displayNames:
+    en-US: Dataflow job
+    zh-CN: Dataflow 作业
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataflow.projects.locations.jobs.list
+    parameters:
+      projectId: scope.project
+      location: scope.location
+    itemsPath: jobs
+    identityPath: id
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataflow.projects.locations.jobs.get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  type:
+    path: type
+    type: string
+  currentState:
+    path: currentState
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+extensions:
+  hook: gcp.resource

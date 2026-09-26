@@ -159,6 +159,18 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Cloud Asset Inventory 订阅源 | 所连接项目的订阅源 | 支持 |
 | API 密钥 | 所连接项目的 API 密钥 | 支持；删除后 30 天内可恢复，这段时间内视为已删除 |
 | 组织策略 | 直接设置在所连接项目上的策略 | 支持；删除后恢复为从文件夹或组织继承的策略 |
+| 无服务器 VPC 访问 | 连接器 | 支持；使用连接器的 Cloud Run 服务、作业和 Cloud Run functions 会先于连接器删除 |
+| Cloud Composer | 环境 | 支持；删除环境会同时删除其 GKE 集群，该集群不能单独删除。环境的存储桶会保留 |
+| Workflows | 工作流 | 支持 |
+| Cloud Scheduler | 作业 | 支持 |
+| Cloud Build | 全局与地域构建触发器 | 支持 |
+| Cloud Deploy | 交付流水线、目标、自动化与发布 | 支持；删除流水线会同时删除其发布和自动化。发布只读 |
+| Vertex AI Workbench | 实例 | 支持；删除实例会同时删除其虚拟机，该虚拟机不能单独删除 |
+| Vertex AI | 索引端点、在线特征存储及特征视图、训练流水线 | 支持；删除在线特征存储会同时删除其特征视图 |
+| Certificate Authority Service | CA 池与证书颁发机构 | 支持 CA 池。证书颁发机构只读，仍包含证书颁发机构的池不能删除 |
+| Memorystore for Memcached | 实例 | 支持 |
+| NetApp Volumes | 存储池、卷与快照 | 支持；先删除卷的快照再删除卷，删除存储池时需同时选中其卷 |
+| Dataflow | 作业 | 只读；Dataflow 没有删除作业的方法 |
 | [Security Command Center](#security-command-center) | 服务设置、组织订阅、项目与组织计费元数据 | 只读 |
 
 资源盘点具有最终一致性。新建或删除的资源可能需要一段时间才会反映到 Cloud Asset Inventory 中，立即重扫也可能看到旧数据。清理不依赖盘点结果：Steward 直接查询产品 API、等待异步操作结束并确认资源已不存在。参阅 Google 的[资源类型与数据时效说明](https://docs.cloud.google.com/asset-inventory/docs/asset-types)。
@@ -192,6 +204,10 @@ Google VPC 可以跨地域。Steward 在各地域的网络视图中展示同一�
 - **Infrastructure Manager：** 不支持部分保留。见 [Infrastructure Manager](#infrastructure-manager)。
 - **Cloud Workstations：** 集群或配置要等其下的配置或工作站逐一删除后才会删除；Steward 不使用强制删除选项。
 - **Eventarc：** 带 `goog-managed-by` 标签的触发器（例如 Cloud Run functions 创建的触发器）受保护。
+- **Cloud Composer 与 Vertex AI Workbench：** Composer 环境的 GKE 集群和 Workbench 实例的虚拟机只能通过环境或实例删除。
+- **Vertex AI：** 仍部署有索引的索引端点、尚未结束的训练流水线，以及开启删除保护的 Workbench 实例受保护。Steward 不会取消部署、取消运行或关闭保护。
+- **NetApp Volumes：** 启用复制的卷受保护。存储池要在其卷删除后才会删除，这些卷需要明确选中。Steward 不使用卷的强制删除选项，会先逐一删除快照。
+- **Certificate Authority Service：** 证书颁发机构只读，因为删除前必须先停用，且删除后进入宽限期。仍包含证书颁发机构的 CA 池会被阻止删除。
 - **Discovery Engine：** 数据存储仍有关联应用时，必须先删除或解除所有关联应用。见 [Discovery Engine](#discovery-engine)。
 - **连接自身的身份：** 连接使用的服务账号及其密钥始终受保护。见[清理资源](./cleanup.md)。
 

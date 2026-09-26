@@ -1,0 +1,72 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: aiplatform.googleapis.com/FeatureView
+  class: ai.feature_view
+presentation:
+  displayNames:
+    en-US: Vertex AI feature view
+    zh-CN: Vertex AI 特征视图
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    nativeType: aiplatform.googleapis.com/FeatureOnlineStore
+    source: product-api
+  list:
+    operation: aiplatform.projects.locations.featureOnlineStores.featureViews.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: featureViews
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: aiplatform.projects.locations.featureOnlineStores.featureViews.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  etag:
+    path: etag
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  bigQuerySource:
+    path: bigQuerySource
+    type: object
+  featureRegistrySource:
+    path: featureRegistrySource
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: aiplatform.googleapis.com/FeatureOnlineStore
+  targetIdPath: refs_aiplatform_googleapis_com_FeatureOnlineStore
+actions:
+  delete:
+    operation: aiplatform.projects.locations.featureOnlineStores.featureViews.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: aiplatform.projects.locations.featureOnlineStores.featureViews.get
+      itemsPath: $
+      identityPath: name

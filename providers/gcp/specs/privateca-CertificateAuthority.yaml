@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: privateca.googleapis.com/CertificateAuthority
+  class: security.certificate_authority
+presentation:
+  displayNames:
+    en-US: Private certificate authority
+    zh-CN: 私有证书颁发机构
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    nativeType: privateca.googleapis.com/CaPool
+    source: product-api
+  list:
+    operation: privateca.projects.locations.caPools.certificateAuthorities.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: certificateAuthorities
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: privateca.projects.locations.caPools.certificateAuthorities.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  type:
+    path: type
+    type: string
+  tier:
+    path: tier
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  deleteTime:
+    path: deleteTime
+    type: string
+  expireTime:
+    path: expireTime
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: privateca.googleapis.com/CaPool
+  targetIdPath: refs_privateca_googleapis_com_CaPool

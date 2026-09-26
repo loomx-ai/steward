@@ -114,6 +114,26 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 		{"cloudasset.googleapis.com/Feed", "v1", p + "feeds/changes", p + "feeds", "feeds", "global", "", `{"assetTypes":["compute.googleapis.com/Instance"]}`},
 		{"apikeys.googleapis.com/Key", "v2", global + "keys/browser", global + "keys", "keys", "global", "operations/delete", `{"uid":"key-uid"}`},
 		{"orgpolicy.googleapis.com/Policy", "v2", p + "policies/compute.skipDefaultNetworkCreation", p + "policies", "policies", "global", "", `{"spec":{"rules":[{"enforce":true}]}}`},
+
+		{vpcConnectorType, "v1", regional + "connectors/serverless", regional + "connectors", "connectors", "us-central1", regional + "operations/delete", `{"network":"default"}`},
+		{composerEnvironmentType, "v1", regional + "environments/airflow", regional + "environments", "environments", "us-central1", regional + "operations/delete", `{"uuid":"environment-uid"}`},
+		{"workflows.googleapis.com/Workflow", "v1", regional + "workflows/flow", regional + "workflows", "workflows", "us-central1", regional + "operations/delete", `{}`},
+		{"cloudscheduler.googleapis.com/Job", "v1", regional + "jobs/nightly", regional + "jobs", "jobs", "us-central1", "", `{}`},
+		{"cloudbuild.googleapis.com/BuildTrigger", "v1", regional + "triggers/trigger-id", regional + "triggers", "triggers", "us-central1", "", `{"name":"deploy","id":"trigger-id","resourceName":"projects/sample-project/locations/us-central1/triggers/trigger-id"}`},
+		{"cloudbuild.googleapis.com/BuildTrigger", "v1", global + "triggers/trigger-id", global + "triggers", "triggers", "global", "", `{"name":"deploy","id":"trigger-id","resourceName":"projects/sample-project/locations/global/triggers/trigger-id"}`},
+		{deliveryPipelineType, "v1", regional + "deliveryPipelines/app", regional + "deliveryPipelines", "deliveryPipelines", "us-central1", regional + "operations/delete", `{"uid":"pipeline-uid"}`},
+		{"clouddeploy.googleapis.com/Target", "v1", regional + "targets/prod", regional + "targets", "targets", "us-central1", regional + "operations/delete", `{"uid":"target-uid"}`},
+		{"clouddeploy.googleapis.com/Automation", "v1", regional + "deliveryPipelines/app/automations/promote", regional + "deliveryPipelines/app/automations", "automations", "us-central1", regional + "operations/delete", `{"uid":"automation-uid"}`},
+		{workbenchInstanceType, "v2", p + "locations/us-central1-a/instances/notebook", p + "locations/-/instances", "instances", "us-central1", p + "locations/us-central1-a/operations/delete", `{}`},
+		{indexEndpointType, "v1", regional + "indexEndpoints/search", regional + "indexEndpoints", "indexEndpoints", "us-central1", regional + "operations/delete", `{}`},
+		{featureOnlineStoreType, "v1", regional + "featureOnlineStores/online", regional + "featureOnlineStores", "featureOnlineStores", "us-central1", regional + "operations/delete", `{}`},
+		{"aiplatform.googleapis.com/FeatureView", "v1", regional + "featureOnlineStores/online/featureViews/users", regional + "featureOnlineStores/online/featureViews", "featureViews", "us-central1", regional + "operations/delete", `{}`},
+		{trainingPipelineType, "v1", regional + "trainingPipelines/train", regional + "trainingPipelines", "trainingPipelines", "us-central1", regional + "operations/delete", `{"state":"PIPELINE_STATE_SUCCEEDED"}`},
+		{caPoolType, "v1", regional + "caPools/internal", regional + "caPools", "caPools", "us-central1", regional + "operations/delete", `{}`},
+		{"memcache.googleapis.com/Instance", "v1", regional + "instances/cache", regional + "instances", "instances", "us-central1", regional + "operations/delete", `{}`},
+		{netappStoragePoolType, "v1", regional + "storagePools/pool", regional + "storagePools", "storagePools", "us-central1", regional + "operations/delete", `{}`},
+		{netappVolumeType, "v1", regional + "volumes/data", regional + "volumes", "volumes", "us-central1", regional + "operations/delete", `{"storagePool":"pool"}`},
+		{"netapp.googleapis.com/Snapshot", "v1", regional + "volumes/data/snapshots/daily", regional + "volumes/data/snapshots", "snapshots", "us-central1", regional + "operations/delete", `{}`},
 	} {
 		t.Run(test.kind+"/"+test.region, func(t *testing.T) {
 			host := strings.Split(test.kind, "/")[0]
@@ -180,6 +200,9 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 						t.Fatal("duplicate delete")
 					}
 					deleted = true
+					if (test.kind == deliveryPipelineType || test.kind == featureOnlineStoreType) && r.URL.Query().Get("force") != "true" {
+						t.Fatal("reviewed native cascade omitted")
+					}
 					if test.kind == "alloydb.googleapis.com/Cluster" && r.URL.Query().Get("force") != "true" {
 						t.Fatal("reviewed native AlloyDB cascade omitted")
 					}
@@ -221,6 +244,15 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 					}
 					if test.kind == workstationConfigType {
 						childCollection = "workstations"
+					}
+					if test.kind == deliveryPipelineType && (r.URL.Path == targetPath+"/releases" || r.URL.Path == targetPath+"/automations") && r.Method == "GET" {
+						return apiResponse(r, 200, `{}`), nil
+					}
+					if test.kind == featureOnlineStoreType {
+						childCollection = "featureViews"
+					}
+					if test.kind == netappVolumeType {
+						childCollection = "snapshots"
 					}
 					if test.kind == "bigtableadmin.googleapis.com/Instance" && (r.URL.Path == targetPath+"/clusters" || r.URL.Path == targetPath+"/tables") && r.Method == "GET" {
 						return apiResponse(r, 200, `{}`), nil
@@ -303,6 +335,9 @@ func serviceParentFixture(host, path string) (string, bool) {
 		"backupdr.googleapis.com/v1/projects/sample-project/locations/us-central1/backupVaults/vault/dataSources":                 `{"dataSources":[{"name":"projects/sample-project/locations/us-central1/backupVaults/vault/dataSources/vm"}]}`,
 		"dataplex.googleapis.com/v1/projects/sample-project/locations/us-central1/lakes":                                          `{"lakes":[{"name":"projects/sample-project/locations/us-central1/lakes/data"}]}`,
 		"workstations.googleapis.com/v1/projects/sample-project/locations/us-central1/workstationClusters":                        `{"workstationClusters":[{"name":"projects/sample-project/locations/us-central1/workstationClusters/dev"}]}`,
+		"clouddeploy.googleapis.com/v1/projects/sample-project/locations/us-central1/deliveryPipelines":                           `{"deliveryPipelines":[{"name":"projects/sample-project/locations/us-central1/deliveryPipelines/app"}]}`,
+		"aiplatform.googleapis.com/v1/projects/sample-project/locations/us-central1/featureOnlineStores":                          `{"featureOnlineStores":[{"name":"projects/sample-project/locations/us-central1/featureOnlineStores/online"}]}`,
+		"netapp.googleapis.com/v1/projects/sample-project/locations/us-central1/volumes":                                          `{"volumes":[{"name":"projects/sample-project/locations/us-central1/volumes/data"}]}`,
 		"workstations.googleapis.com/v1/projects/sample-project/locations/us-central1/workstationClusters/dev/workstationConfigs": `{"workstationConfigs":[{"name":"projects/sample-project/locations/us-central1/workstationClusters/dev/workstationConfigs/std"}]}`,
 		"dataplex.googleapis.com/v1/projects/sample-project/locations/us-central1/lakes/data/zones":                               `{"zones":[{"name":"projects/sample-project/locations/us-central1/lakes/data/zones/raw"}]}`,
 

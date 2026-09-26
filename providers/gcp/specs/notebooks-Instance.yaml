@@ -2,22 +2,22 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: gcp
-  nativeType: run.googleapis.com/Job
-  class: compute.job
+  nativeType: notebooks.googleapis.com/Instance
+  class: ai.workbench_instance
 presentation:
   displayNames:
-    en-US: Cloud Run job
-    zh-CN: Cloud Run 作业
+    en-US: Vertex AI Workbench instance
+    zh-CN: Vertex AI Workbench 实例
   consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
 scope:
   kind: region
 discovery:
   source: product-api
   list:
-    operation: run.projects.locations.jobs.list
+    operation: notebooks.projects.locations.instances.list
     parameters:
-      parent: scope.locationParent
-    itemsPath: jobs
+      parent: scope.allLocationsParent
+    itemsPath: instances
     identityPath: name
     pagination:
       type: token
@@ -26,7 +26,7 @@ discovery:
       pageSizeParameter: pageSize
       maxPageSize: 100
   detail:
-    operation: run.projects.locations.jobs.get
+    operation: notebooks.projects.locations.instances.get
     itemsPath: $
     identityPath: name
 fields:
@@ -36,52 +36,43 @@ fields:
   projectId:
     path: project_id
     type: string
+  state:
+    path: state
+    type: string
+  creator:
+    path: creator
+    type: string
   labels:
     path: labels
     type: object
-  etag:
-    path: etag
-    type: string
   createTime:
     path: createTime
     type: string
-  uid:
-    path: uid
-    type: string
-  template:
-    path: template
+  gceSetup:
+    path: gceSetup
     type: object
-  executionCount:
-    path: executionCount
-    type: number
-  latestCreatedExecution:
-    path: latestCreatedExecution
-    type: object
-  launchStage:
-    path: launchStage
-    type: string
+  enableDeletionProtection:
+    path: enableDeletionProtection
+    type: boolean
 extensions:
   hook: gcp.resource
 relationships:
-- type: depends_on
+- type: member_of
   targetType: compute.googleapis.com/Network
   targetIdPath: refs_compute_googleapis_com_Network
-- type: depends_on
+- type: member_of
   targetType: compute.googleapis.com/Subnetwork
   targetIdPath: refs_compute_googleapis_com_Subnetwork
-- type: depends_on
+- type: uses
   targetType: iam.googleapis.com/ServiceAccount
   targetIdPath: refs_iam_googleapis_com_ServiceAccount
-- type: uses
-  targetType: vpcaccess.googleapis.com/Connector
-  targetIdPath: refs_vpcaccess_googleapis_com_Connector
 actions:
   delete:
-    operation: run.projects.locations.jobs.delete
+    operation: notebooks.projects.locations.instances.delete
     idempotency: readback
     waiter: gcp_operation
     readback: gcp_absent
     read:
-      operation: run.projects.locations.jobs.get
+      operation: notebooks.projects.locations.instances.get
       itemsPath: $
       identityPath: name

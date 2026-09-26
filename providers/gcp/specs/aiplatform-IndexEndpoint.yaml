@@ -2,22 +2,22 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: gcp
-  nativeType: run.googleapis.com/Job
-  class: compute.job
+  nativeType: aiplatform.googleapis.com/IndexEndpoint
+  class: ai.index_endpoint
 presentation:
   displayNames:
-    en-US: Cloud Run job
-    zh-CN: Cloud Run 作业
+    en-US: Vertex AI index endpoint
+    zh-CN: Vertex AI 索引端点
   consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
 scope:
   kind: region
 discovery:
   source: product-api
   list:
-    operation: run.projects.locations.jobs.list
+    operation: aiplatform.projects.locations.indexEndpoints.list
     parameters:
       parent: scope.locationParent
-    itemsPath: jobs
+    itemsPath: indexEndpoints
     identityPath: name
     pagination:
       type: token
@@ -26,7 +26,7 @@ discovery:
       pageSizeParameter: pageSize
       maxPageSize: 100
   detail:
-    operation: run.projects.locations.jobs.get
+    operation: aiplatform.projects.locations.indexEndpoints.get
     itemsPath: $
     identityPath: name
 fields:
@@ -36,52 +36,40 @@ fields:
   projectId:
     path: project_id
     type: string
-  labels:
-    path: labels
-    type: object
+  displayName:
+    path: displayName
+    type: string
   etag:
     path: etag
     type: string
+  labels:
+    path: labels
+    type: object
   createTime:
     path: createTime
     type: string
-  uid:
-    path: uid
+  deployedIndexes:
+    path: deployedIndexes
+    type: array
+  network:
+    path: network
     type: string
-  template:
-    path: template
-    type: object
-  executionCount:
-    path: executionCount
-    type: number
-  latestCreatedExecution:
-    path: latestCreatedExecution
-    type: object
-  launchStage:
-    path: launchStage
-    type: string
+  publicEndpointEnabled:
+    path: publicEndpointEnabled
+    type: boolean
 extensions:
   hook: gcp.resource
 relationships:
-- type: depends_on
+- type: member_of
   targetType: compute.googleapis.com/Network
   targetIdPath: refs_compute_googleapis_com_Network
-- type: depends_on
-  targetType: compute.googleapis.com/Subnetwork
-  targetIdPath: refs_compute_googleapis_com_Subnetwork
-- type: depends_on
-  targetType: iam.googleapis.com/ServiceAccount
-  targetIdPath: refs_iam_googleapis_com_ServiceAccount
-- type: uses
-  targetType: vpcaccess.googleapis.com/Connector
-  targetIdPath: refs_vpcaccess_googleapis_com_Connector
 actions:
   delete:
-    operation: run.projects.locations.jobs.delete
+    operation: aiplatform.projects.locations.indexEndpoints.delete
     idempotency: readback
     waiter: gcp_operation
     readback: gcp_absent
     read:
-      operation: run.projects.locations.jobs.get
+      operation: aiplatform.projects.locations.indexEndpoints.get
       itemsPath: $
       identityPath: name

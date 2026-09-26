@@ -631,6 +631,7 @@ func references(c *client, data map[string]any) map[string][]string {
 		"backupVault": "backupdr.googleapis.com/BackupVault", "backupPlan": "backupdr.googleapis.com/BackupPlan", "dataSource": "backupdr.googleapis.com/DataSource",
 		"firewallEndpoint": "networksecurity.googleapis.com/FirewallEndpoint", "hub": "networkconnectivity.googleapis.com/Hub", "vpcNetwork": "compute.googleapis.com/Network", "subnet": "compute.googleapis.com/Subnetwork", "vpnTunnel": "compute.googleapis.com/VpnTunnel",
 		"pubsubTopic": "pubsub.googleapis.com/Topic", "virtualMachine": instanceType, "messageBus": "eventarc.googleapis.com/MessageBus",
+		"connector": vpcConnectorType, "vpcConnector": vpcConnectorType, "topicName": "pubsub.googleapis.com/Topic",
 		"adminNetwork": "compute.googleapis.com/Network", "nccHub": "networkconnectivity.googleapis.com/Hub", "reservedInternalRange": "networkconnectivity.googleapis.com/InternalRange",
 		"multicastDomainGroup": "networkservices.googleapis.com/MulticastDomainGroup", "multicastDomain": "networkservices.googleapis.com/MulticastDomain", "multicastDomainActivation": "networkservices.googleapis.com/MulticastDomainActivation",
 		"multicastGroupRange": "networkservices.googleapis.com/MulticastGroupRange", "multicastGroupRangeActivation": "networkservices.googleapis.com/MulticastGroupRangeActivation",
@@ -794,6 +795,28 @@ func references(c *client, data map[string]any) map[string][]string {
 	if destination := text(data["destination"]); strings.Contains(destination, "/pipelines/") {
 		fields["eventarcPipeline"] = "eventarc.googleapis.com/Pipeline"
 		visit(destination, "eventarcPipeline")
+	}
+	// Cloud Composer keeps its DAGs in the bucket its gs:// prefix names; the
+	// bucket stays after the environment is deleted.
+	if prefix := text(object(data["config"])["dagGcsPrefix"]); strings.HasPrefix(prefix, "gs://") {
+		visit(strings.Split(strings.TrimPrefix(prefix, "gs://"), "/")[0], "bucketName")
+	}
+	// A Cloud Deploy stage names its target, and a NetApp volume its storage
+	// pool, by ID within the resource's own location.
+	name := text(data["name"])
+	if location, pipeline, ok := strings.Cut(name, "/deliveryPipelines/"); ok && strings.HasPrefix(name, "projects/") && !strings.Contains(pipeline, "/") {
+		fields["deployTarget"] = "clouddeploy.googleapis.com/Target"
+		for _, stage := range array(object(data["serialPipeline"])["stages"]) {
+			if id := text(object(stage)["targetId"]); id != "" && !strings.Contains(id, "/") {
+				visit(location+"/targets/"+id, "deployTarget")
+			}
+		}
+	}
+	if location, volume, ok := strings.Cut(name, "/volumes/"); ok && strings.HasPrefix(name, "projects/") && strings.Contains(location, "/locations/") && !strings.Contains(volume, "/") {
+		if pool := text(data["storagePool"]); pool != "" && !strings.Contains(pool, "/") {
+			fields["netappStoragePool"] = netappStoragePoolType
+			visit(location+"/storagePools/"+pool, "netappStoragePool")
+		}
 	}
 	// Sole-tenant placement and specific reservation affinity use native names
 	// instead of selfLinks. Resolve them within this VM's actual zone only.

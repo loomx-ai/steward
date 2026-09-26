@@ -2,22 +2,22 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: gcp
-  nativeType: run.googleapis.com/Job
-  class: compute.job
+  nativeType: netapp.googleapis.com/Volume
+  class: storage.file_system
 presentation:
   displayNames:
-    en-US: Cloud Run job
-    zh-CN: Cloud Run 作业
+    en-US: NetApp Volumes volume
+    zh-CN: NetApp Volumes 卷
   consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
 scope:
   kind: region
 discovery:
   source: product-api
   list:
-    operation: run.projects.locations.jobs.list
+    operation: netapp.projects.locations.volumes.list
     parameters:
       parent: scope.locationParent
-    itemsPath: jobs
+    itemsPath: volumes
     identityPath: name
     pagination:
       type: token
@@ -26,7 +26,7 @@ discovery:
       pageSizeParameter: pageSize
       maxPageSize: 100
   detail:
-    operation: run.projects.locations.jobs.get
+    operation: netapp.projects.locations.volumes.get
     itemsPath: $
     identityPath: name
 fields:
@@ -36,52 +36,49 @@ fields:
   projectId:
     path: project_id
     type: string
+  state:
+    path: state
+    type: string
   labels:
     path: labels
     type: object
-  etag:
-    path: etag
-    type: string
   createTime:
     path: createTime
     type: string
-  uid:
-    path: uid
+  storagePool:
+    path: storagePool
     type: string
-  template:
-    path: template
-    type: object
-  executionCount:
-    path: executionCount
-    type: number
-  latestCreatedExecution:
-    path: latestCreatedExecution
-    type: object
-  launchStage:
-    path: launchStage
+  network:
+    path: network
     type: string
+  capacityGib:
+    path: capacityGib
+    type: string
+  shareName:
+    path: shareName
+    type: string
+  protocols:
+    path: protocols
+    type: array
+  hasReplication:
+    path: hasReplication
+    type: boolean
 extensions:
   hook: gcp.resource
 relationships:
-- type: depends_on
+- type: member_of
+  targetType: netapp.googleapis.com/StoragePool
+  targetIdPath: refs_netapp_googleapis_com_StoragePool
+- type: member_of
   targetType: compute.googleapis.com/Network
   targetIdPath: refs_compute_googleapis_com_Network
-- type: depends_on
-  targetType: compute.googleapis.com/Subnetwork
-  targetIdPath: refs_compute_googleapis_com_Subnetwork
-- type: depends_on
-  targetType: iam.googleapis.com/ServiceAccount
-  targetIdPath: refs_iam_googleapis_com_ServiceAccount
-- type: uses
-  targetType: vpcaccess.googleapis.com/Connector
-  targetIdPath: refs_vpcaccess_googleapis_com_Connector
 actions:
   delete:
-    operation: run.projects.locations.jobs.delete
+    operation: netapp.projects.locations.volumes.delete
     idempotency: readback
     waiter: gcp_operation
     readback: gcp_absent
     read:
-      operation: run.projects.locations.jobs.get
+      operation: netapp.projects.locations.volumes.get
       itemsPath: $
       identityPath: name

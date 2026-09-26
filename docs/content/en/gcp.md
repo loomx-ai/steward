@@ -159,6 +159,18 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Cloud Asset Inventory feeds | Feeds of the connected project | Supported |
 | API Keys | API keys of the connected project | Supported; a deleted key can be restored for 30 days and counts as deleted |
 | Organization Policy | Policies set directly on the connected project | Supported; deletion restores the policy inherited from the folder or organization |
+| Serverless VPC Access | Connectors | Supported; Cloud Run services and jobs and Cloud Run functions that use a connector are deleted before it |
+| Cloud Composer | Environments | Supported; deleting an environment deletes its GKE cluster, which is protected from direct deletion. The environment bucket is kept |
+| Workflows | Workflows | Supported |
+| Cloud Scheduler | Jobs | Supported |
+| Cloud Build | Global and regional build triggers | Supported |
+| Cloud Deploy | Delivery pipelines, targets, automations and releases | Supported; a pipeline's releases and automations are deleted with it. Releases are read-only |
+| Vertex AI Workbench | Instances | Supported; deleting an instance deletes its VM, which is protected from direct deletion |
+| Vertex AI | Index endpoints, feature online stores and feature views, training pipelines | Supported; a feature online store's feature views are deleted with it |
+| Certificate Authority Service | CA pools and certificate authorities | CA pools supported. Certificate authorities are read-only, and a pool that still contains one can't be deleted |
+| Memorystore for Memcached | Instances | Supported |
+| NetApp Volumes | Storage pools, volumes and snapshots | Supported; a volume's snapshots are deleted before it, and a storage pool's volumes must be selected with it |
+| Dataflow | Jobs | Read-only; Dataflow has no job delete method |
 | [Security Command Center](#security-command-center) | Service settings, organization subscription, project and organization billing metadata | Read-only |
 
 Inventory is eventually consistent. Newly created or deleted resources can take time to show up in Cloud Asset Inventory, even after another scan. Cleanup doesn't rely on inventory: it checks the product API directly, waits for asynchronous operations and confirms the resource is gone. See Google's [asset type and freshness documentation](https://docs.cloud.google.com/asset-inventory/docs/asset-types).
@@ -192,6 +204,10 @@ Cleanup stops rather than working around a protection. The main protections are 
 - **Infrastructure Manager:** partial retention is rejected. See [Infrastructure Manager](#infrastructure-manager).
 - **Cloud Workstations:** a cluster or configuration is deleted only after its configurations or workstations, each through its own deletion; Steward doesn't use the force option.
 - **Eventarc:** triggers labeled `goog-managed-by`, such as those that Cloud Run functions create, are protected.
+- **Cloud Composer and Vertex AI Workbench:** the GKE cluster of a Composer environment and the VM of a Workbench instance are deleted only through the environment or instance.
+- **Vertex AI:** an index endpoint with deployed indexes, a training pipeline that hasn't finished and a Workbench instance with deletion protection are protected. Steward doesn't undeploy, cancel or turn off the protection.
+- **NetApp Volumes:** a volume with replication is protected. A storage pool is deleted only after its volumes, which you select explicitly. Steward doesn't use the volume force option; snapshots are deleted first, one by one.
+- **Certificate Authority Service:** certificate authorities are read-only, because deleting one requires disabling it first and starts a grace period. A CA pool that still contains a certificate authority is blocked.
 - **Discovery Engine:** a data store with linked apps can't be deleted until every linked app is deleted or unlinked. See [Discovery Engine](#discovery-engine).
 - **The connection's own identity:** the service account the connection uses, and its keys, are always protected. See [Clean up resources](./cleanup.md).
 

@@ -2,22 +2,22 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: gcp
-  nativeType: run.googleapis.com/Job
-  class: compute.job
+  nativeType: workflows.googleapis.com/Workflow
+  class: orchestration.workflow
 presentation:
   displayNames:
-    en-US: Cloud Run job
-    zh-CN: Cloud Run 作业
+    en-US: Workflow
+    zh-CN: 工作流
   consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
 scope:
   kind: region
 discovery:
   source: product-api
   list:
-    operation: run.projects.locations.jobs.list
+    operation: workflows.projects.locations.workflows.list
     parameters:
       parent: scope.locationParent
-    itemsPath: jobs
+    itemsPath: workflows
     identityPath: name
     pagination:
       type: token
@@ -26,7 +26,7 @@ discovery:
       pageSizeParameter: pageSize
       maxPageSize: 100
   detail:
-    operation: run.projects.locations.jobs.get
+    operation: workflows.projects.locations.workflows.get
     itemsPath: $
     identityPath: name
 fields:
@@ -36,52 +36,40 @@ fields:
   projectId:
     path: project_id
     type: string
+  state:
+    path: state
+    type: string
+  revisionId:
+    path: revisionId
+    type: string
   labels:
     path: labels
     type: object
-  etag:
-    path: etag
-    type: string
   createTime:
     path: createTime
     type: string
-  uid:
-    path: uid
+  serviceAccount:
+    path: serviceAccount
     type: string
-  template:
-    path: template
-    type: object
-  executionCount:
-    path: executionCount
-    type: number
-  latestCreatedExecution:
-    path: latestCreatedExecution
-    type: object
-  launchStage:
-    path: launchStage
+  cryptoKeyName:
+    path: cryptoKeyName
     type: string
 extensions:
   hook: gcp.resource
 relationships:
-- type: depends_on
-  targetType: compute.googleapis.com/Network
-  targetIdPath: refs_compute_googleapis_com_Network
-- type: depends_on
-  targetType: compute.googleapis.com/Subnetwork
-  targetIdPath: refs_compute_googleapis_com_Subnetwork
-- type: depends_on
+- type: uses
   targetType: iam.googleapis.com/ServiceAccount
   targetIdPath: refs_iam_googleapis_com_ServiceAccount
 - type: uses
-  targetType: vpcaccess.googleapis.com/Connector
-  targetIdPath: refs_vpcaccess_googleapis_com_Connector
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
 actions:
   delete:
-    operation: run.projects.locations.jobs.delete
+    operation: workflows.projects.locations.workflows.delete
     idempotency: readback
     waiter: gcp_operation
     readback: gcp_absent
     read:
-      operation: run.projects.locations.jobs.get
+      operation: workflows.projects.locations.workflows.get
       itemsPath: $
       identityPath: name

@@ -1,0 +1,72 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: clouddeploy.googleapis.com/DeliveryPipeline
+  class: devops.pipeline
+presentation:
+  displayNames:
+    en-US: Cloud Deploy delivery pipeline
+    zh-CN: Cloud Deploy 交付流水线
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: clouddeploy.projects.locations.deliveryPipelines.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: deliveryPipelines
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: clouddeploy.projects.locations.deliveryPipelines.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  uid:
+    path: uid
+    type: string
+  etag:
+    path: etag
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  suspended:
+    path: suspended
+    type: boolean
+  serialPipeline:
+    path: serialPipeline
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: uses
+  targetType: clouddeploy.googleapis.com/Target
+  targetIdPath: refs_clouddeploy_googleapis_com_Target
+actions:
+  delete:
+    operation: clouddeploy.projects.locations.deliveryPipelines.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: clouddeploy.projects.locations.deliveryPipelines.get
+      itemsPath: $
+      identityPath: name

@@ -2,22 +2,22 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: gcp
-  nativeType: run.googleapis.com/Job
-  class: compute.job
+  nativeType: composer.googleapis.com/Environment
+  class: orchestration.workflow_environment
 presentation:
   displayNames:
-    en-US: Cloud Run job
-    zh-CN: Cloud Run 作业
+    en-US: Cloud Composer environment
+    zh-CN: Cloud Composer 环境
   consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
 scope:
   kind: region
 discovery:
   source: product-api
   list:
-    operation: run.projects.locations.jobs.list
+    operation: composer.projects.locations.environments.list
     parameters:
       parent: scope.locationParent
-    itemsPath: jobs
+    itemsPath: environments
     identityPath: name
     pagination:
       type: token
@@ -26,7 +26,7 @@ discovery:
       pageSizeParameter: pageSize
       maxPageSize: 100
   detail:
-    operation: run.projects.locations.jobs.get
+    operation: composer.projects.locations.environments.get
     itemsPath: $
     identityPath: name
 fields:
@@ -36,52 +36,49 @@ fields:
   projectId:
     path: project_id
     type: string
+  state:
+    path: state
+    type: string
+  uuid:
+    path: uuid
+    type: string
   labels:
     path: labels
     type: object
-  etag:
-    path: etag
-    type: string
   createTime:
     path: createTime
     type: string
-  uid:
-    path: uid
-    type: string
-  template:
-    path: template
+  config:
+    path: config
     type: object
-  executionCount:
-    path: executionCount
-    type: number
-  latestCreatedExecution:
-    path: latestCreatedExecution
+  storageConfig:
+    path: storageConfig
     type: object
-  launchStage:
-    path: launchStage
-    type: string
 extensions:
   hook: gcp.resource
 relationships:
-- type: depends_on
+- type: member_of
   targetType: compute.googleapis.com/Network
   targetIdPath: refs_compute_googleapis_com_Network
-- type: depends_on
+- type: member_of
   targetType: compute.googleapis.com/Subnetwork
   targetIdPath: refs_compute_googleapis_com_Subnetwork
-- type: depends_on
+- type: uses
   targetType: iam.googleapis.com/ServiceAccount
   targetIdPath: refs_iam_googleapis_com_ServiceAccount
 - type: uses
-  targetType: vpcaccess.googleapis.com/Connector
-  targetIdPath: refs_vpcaccess_googleapis_com_Connector
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+- type: uses
+  targetType: storage.googleapis.com/Bucket
+  targetIdPath: refs_storage_googleapis_com_Bucket
 actions:
   delete:
-    operation: run.projects.locations.jobs.delete
+    operation: composer.projects.locations.environments.delete
     idempotency: readback
     waiter: gcp_operation
     readback: gcp_absent
     read:
-      operation: run.projects.locations.jobs.get
+      operation: composer.projects.locations.environments.get
       itemsPath: $
       identityPath: name

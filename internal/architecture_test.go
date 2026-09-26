@@ -507,6 +507,9 @@ func allowedLegacyQueryRejection(root, path, line, queryName string) bool {
 	case "internal/core/topology/key_test.go":
 		return queryName == parentQuery &&
 			trimmed == "if strings.Contains(string(encoded), `\""+parentQuery+"\"`) {"
+	case "providers/gcp/catalog/source/discovery.json":
+		// The pinned Cloud Build schema names a git fetch depth property.
+		return queryName == queryDepth && trimmed == `"`+queryDepth+`": {`
 	default:
 		return false
 	}

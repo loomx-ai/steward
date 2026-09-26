@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: aiplatform.googleapis.com/TrainingPipeline
+  class: ai.training_pipeline
+presentation:
+  displayNames:
+    en-US: Vertex AI training pipeline
+    zh-CN: Vertex AI 训练流水线
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: aiplatform.projects.locations.trainingPipelines.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: trainingPipelines
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: aiplatform.projects.locations.trainingPipelines.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  endTime:
+    path: endTime
+    type: string
+  trainingTaskDefinition:
+    path: trainingTaskDefinition
+    type: string
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: aiplatform.projects.locations.trainingPipelines.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: aiplatform.projects.locations.trainingPipelines.get
+      itemsPath: $
+      identityPath: name

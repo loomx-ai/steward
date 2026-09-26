@@ -482,3 +482,50 @@ func TestWorkstationChildrenAreDeletedBeforeTheirParents(t *testing.T) {
 		}
 	}
 }
+
+// A delivery pipeline's releases and automations are removed by its forced
+// delete, while a NetApp volume's snapshots are deleted before it.
+func TestDeployAndNetAppChildrenFollowTheirNativeCascade(t *testing.T) {
+	const pipelinePath = "projects/sample-project/locations/us-central1/deliveryPipelines/app"
+	const volumePath = "projects/sample-project/locations/us-central1/volumes/data"
+	gcpAsset := func(id, kind, host, name string) asset.Asset {
+		return asset.Asset{ID: asset.AssetID(id), Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", NativeType: kind, NativeID: "//" + host + "/" + name}, Normalized: map[string]any{"name": name}}
+	}
+	pipeline := gcpAsset("pipeline", deliveryPipelineType, "clouddeploy.googleapis.com", pipelinePath)
+	release := gcpAsset("release", "clouddeploy.googleapis.com/Release", "clouddeploy.googleapis.com", pipelinePath+"/releases/r1")
+	automation := gcpAsset("automation", "clouddeploy.googleapis.com/Automation", "clouddeploy.googleapis.com", pipelinePath+"/automations/promote")
+	volume := gcpAsset("volume", netappVolumeType, "netapp.googleapis.com", volumePath)
+	snapshot := gcpAsset("snapshot", "netapp.googleapis.com/Snapshot", "netapp.googleapis.com", volumePath+"/snapshots/daily")
+	bodies := map[string]any{
+		"/v1/" + pipelinePath:                          pipeline.Normalized,
+		"/v1/" + pipelinePath + "/releases":            map[string]any{"releases": []any{release.Normalized}},
+		"/v1/" + pipelinePath + "/releases/r1":         release.Normalized,
+		"/v1/" + pipelinePath + "/automations":         map[string]any{"automations": []any{automation.Normalized}},
+		"/v1/" + pipelinePath + "/automations/promote": automation.Normalized,
+		"/v1/" + volumePath:                            volume.Normalized,
+		"/v1/" + volumePath + "/snapshots":             map[string]any{"snapshots": []any{snapshot.Normalized}},
+		"/v1/" + volumePath + "/snapshots/daily":       snapshot.Normalized,
+	}
+	transport := func(r *http.Request) (*http.Response, error) {
+		body, ok := bodies[r.URL.Path]
+		if r.Method != "GET" || !ok {
+			t.Fatalf("unexpected request %s %s", r.Method, r.URL)
+		}
+		encoded, _ := json.Marshal(body)
+		return apiResponse(r, 200, string(encoded)), nil
+	}
+	c := &client{project: "sample-project", number: "123456", http: &http.Client{Transport: roundTripFunc(transport)}}
+	contribution, err := (&serviceCascades{client: c}).Contribute(context.Background(), "scope", []asset.Asset{pipeline, release, automation, volume, snapshot})
+	if err != nil || len(contribution.Bindings) != 3 {
+		t.Fatalf("contribution = %+v, %v", contribution, err)
+	}
+	for _, binding := range contribution.Bindings {
+		want := map[asset.AssetID]struct {
+			controller asset.AssetID
+			policy     graph.CleanupPolicy
+		}{"release": {"pipeline", graph.CleanupDelegate}, "automation": {"pipeline", graph.CleanupDelegate}, "snapshot": {"volume", graph.CleanupDirect}}[binding.ManagedAssetID]
+		if binding.ControllerAssetID != want.controller || binding.CleanupPolicy != want.policy {
+			t.Fatalf("binding = %+v", binding)
+		}
+	}
+}

@@ -1,0 +1,72 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: vpcaccess.googleapis.com/Connector
+  class: network.serverless_connector
+presentation:
+  displayNames:
+    en-US: Serverless VPC Access connector
+    zh-CN: 无服务器 VPC 访问连接器
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: vpcaccess.projects.locations.connectors.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: connectors
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: vpcaccess.projects.locations.connectors.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  network:
+    path: network
+    type: string
+  ipCidrRange:
+    path: ipCidrRange
+    type: string
+  subnet:
+    path: subnet
+    type: object
+  machineType:
+    path: machineType
+    type: string
+  connectedProjects:
+    path: connectedProjects
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: member_of
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+actions:
+  delete:
+    operation: vpcaccess.projects.locations.connectors.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: vpcaccess.projects.locations.connectors.get
+      itemsPath: $
+      identityPath: name

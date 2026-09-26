@@ -767,6 +767,24 @@ func protectionReason(nativeType string, data map[string]any) string {
 	if nativeType == eventarcTriggerType && text(object(data["labels"])["goog-managed-by"]) != "" {
 		return "trigger_managed_by_service"
 	}
+	// An index endpoint is deleted only after every deployed index is
+	// undeployed, which removes serving capacity outside this plan.
+	if nativeType == indexEndpointType && len(array(data["deployedIndexes"])) > 0 {
+		return "index_endpoint_has_deployed_indexes"
+	}
+	// A pipeline still running must be cancelled first; cancellation is not
+	// part of a delete plan.
+	if nativeType == trainingPipelineType && !slices.Contains([]string{"PIPELINE_STATE_SUCCEEDED", "PIPELINE_STATE_FAILED", "PIPELINE_STATE_CANCELLED"}, text(data["state"])) {
+		return "training_pipeline_not_finished"
+	}
+	if nativeType == workbenchInstanceType && data["enableDeletionProtection"] == true {
+		return "deletion_protection_enabled"
+	}
+	// A replicated volume is deleted only after its replication is stopped and
+	// deleted, which changes the destination volume too.
+	if nativeType == netappVolumeType && data["hasReplication"] == true {
+		return "volume_has_replication"
+	}
 	if nativeType == monitoredProjectType {
 		parts := strings.Split(text(data["name"]), "/")
 		if len(parts) >= 6 && parts[len(parts)-1] == parts[len(parts)-3] {

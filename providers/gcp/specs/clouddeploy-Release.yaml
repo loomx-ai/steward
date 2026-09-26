@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: clouddeploy.googleapis.com/Release
+  class: devops.release
+presentation:
+  displayNames:
+    en-US: Cloud Deploy release
+    zh-CN: Cloud Deploy 发布
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    nativeType: clouddeploy.googleapis.com/DeliveryPipeline
+    source: product-api
+  list:
+    operation: clouddeploy.projects.locations.deliveryPipelines.releases.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: releases
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: clouddeploy.projects.locations.deliveryPipelines.releases.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  uid:
+    path: uid
+    type: string
+  etag:
+    path: etag
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  renderState:
+    path: renderState
+    type: string
+  abandoned:
+    path: abandoned
+    type: boolean
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: clouddeploy.googleapis.com/DeliveryPipeline
+  targetIdPath: refs_clouddeploy_googleapis_com_DeliveryPipeline

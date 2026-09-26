@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: cloudbuild.googleapis.com/BuildTrigger
+  class: devops.build_trigger
+presentation:
+  displayNames:
+    en-US: Cloud Build trigger
+    zh-CN: Cloud Build 触发器
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: cloudbuild.projects.locations.triggers.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: triggers
+    identityPath: resourceName
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: cloudbuild.projects.locations.triggers.get
+    itemsPath: $
+    identityPath: resourceName
+fields:
+  name:
+    path: name
+    type: string
+  resourceName:
+    path: resourceName
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  id:
+    path: id
+    type: string
+  disabled:
+    path: disabled
+    type: boolean
+  createTime:
+    path: createTime
+    type: string
+  serviceAccount:
+    path: serviceAccount
+    type: string
+  pubsubConfig:
+    path: pubsubConfig
+    type: object
+  webhookConfig:
+    path: webhookConfig
+    type: object
+  github:
+    path: github
+    type: object
+  repositoryEventConfig:
+    path: repositoryEventConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: uses
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
+- type: uses
+  targetType: pubsub.googleapis.com/Topic
+  targetIdPath: refs_pubsub_googleapis_com_Topic
+actions:
+  delete:
+    operation: cloudbuild.projects.locations.triggers.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: cloudbuild.projects.locations.triggers.get
+      itemsPath: $
+      identityPath: resourceName

@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: netapp.googleapis.com/Snapshot
+  class: storage.snapshot
+presentation:
+  displayNames:
+    en-US: NetApp Volumes snapshot
+    zh-CN: NetApp Volumes 快照
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    nativeType: netapp.googleapis.com/Volume
+    source: product-api
+  list:
+    operation: netapp.projects.locations.volumes.snapshots.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: snapshots
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: netapp.projects.locations.volumes.snapshots.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  usedBytes:
+    path: usedBytes
+    type: number
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: netapp.googleapis.com/Volume
+  targetIdPath: refs_netapp_googleapis_com_Volume
+actions:
+  delete:
+    operation: netapp.projects.locations.volumes.snapshots.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: netapp.projects.locations.volumes.snapshots.get
+      itemsPath: $
+      identityPath: name

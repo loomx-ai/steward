@@ -2,22 +2,25 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: gcp
-  nativeType: run.googleapis.com/Job
-  class: compute.job
+  nativeType: clouddeploy.googleapis.com/Automation
+  class: devops.automation
 presentation:
   displayNames:
-    en-US: Cloud Run job
-    zh-CN: Cloud Run 作业
+    en-US: Cloud Deploy automation
+    zh-CN: Cloud Deploy 自动化
   consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
 scope:
   kind: region
 discovery:
   source: product-api
+  parent:
+    nativeType: clouddeploy.googleapis.com/DeliveryPipeline
+    source: product-api
   list:
-    operation: run.projects.locations.jobs.list
+    operation: clouddeploy.projects.locations.deliveryPipelines.automations.list
     parameters:
-      parent: scope.locationParent
-    itemsPath: jobs
+      parent: parent.nativeId
+    itemsPath: automations
     identityPath: name
     pagination:
       type: token
@@ -26,7 +29,7 @@ discovery:
       pageSizeParameter: pageSize
       maxPageSize: 100
   detail:
-    operation: run.projects.locations.jobs.get
+    operation: clouddeploy.projects.locations.deliveryPipelines.automations.get
     itemsPath: $
     identityPath: name
 fields:
@@ -36,52 +39,37 @@ fields:
   projectId:
     path: project_id
     type: string
-  labels:
-    path: labels
-    type: object
+  uid:
+    path: uid
+    type: string
   etag:
     path: etag
     type: string
   createTime:
     path: createTime
     type: string
-  uid:
-    path: uid
-    type: string
-  template:
-    path: template
-    type: object
-  executionCount:
-    path: executionCount
-    type: number
-  latestCreatedExecution:
-    path: latestCreatedExecution
-    type: object
-  launchStage:
-    path: launchStage
+  suspended:
+    path: suspended
+    type: boolean
+  serviceAccount:
+    path: serviceAccount
     type: string
 extensions:
   hook: gcp.resource
 relationships:
 - type: depends_on
-  targetType: compute.googleapis.com/Network
-  targetIdPath: refs_compute_googleapis_com_Network
-- type: depends_on
-  targetType: compute.googleapis.com/Subnetwork
-  targetIdPath: refs_compute_googleapis_com_Subnetwork
-- type: depends_on
+  targetType: clouddeploy.googleapis.com/DeliveryPipeline
+  targetIdPath: refs_clouddeploy_googleapis_com_DeliveryPipeline
+- type: uses
   targetType: iam.googleapis.com/ServiceAccount
   targetIdPath: refs_iam_googleapis_com_ServiceAccount
-- type: uses
-  targetType: vpcaccess.googleapis.com/Connector
-  targetIdPath: refs_vpcaccess_googleapis_com_Connector
 actions:
   delete:
-    operation: run.projects.locations.jobs.delete
+    operation: clouddeploy.projects.locations.deliveryPipelines.automations.delete
     idempotency: readback
     waiter: gcp_operation
     readback: gcp_absent
     read:
-      operation: run.projects.locations.jobs.get
+      operation: clouddeploy.projects.locations.deliveryPipelines.automations.get
       itemsPath: $
       identityPath: name

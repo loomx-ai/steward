@@ -95,6 +95,12 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 			break
 		}
 		for _, value := range assets {
+			if value.Identity.Provider == asset.ProviderGCP && gcp.HasServiceOwner(value.Identity.NativeType) {
+				contributors = append(contributors, gcp.NewServiceOwners())
+				break
+			}
+		}
+		for _, value := range assets {
 			if value.Identity.Provider == asset.ProviderGCP && value.Identity.NativeType == "compute.googleapis.com/RouterNat" {
 				contributors = append(contributors, gcp.NewCloudNatHubs())
 				break

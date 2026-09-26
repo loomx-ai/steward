@@ -587,12 +587,21 @@
         "aiplatform.projects.locations.endpoints.operations.get",
         "aiplatform.projects.locations.featureGroups.features.operations.get",
         "aiplatform.projects.locations.featureGroups.operations.get",
+        "aiplatform.projects.locations.featureOnlineStores.delete",
+        "aiplatform.projects.locations.featureOnlineStores.featureViews.delete",
+        "aiplatform.projects.locations.featureOnlineStores.featureViews.get",
+        "aiplatform.projects.locations.featureOnlineStores.featureViews.list",
         "aiplatform.projects.locations.featureOnlineStores.featureViews.operations.get",
+        "aiplatform.projects.locations.featureOnlineStores.get",
+        "aiplatform.projects.locations.featureOnlineStores.list",
         "aiplatform.projects.locations.featureOnlineStores.operations.get",
         "aiplatform.projects.locations.featurestores.entityTypes.features.operations.get",
         "aiplatform.projects.locations.featurestores.entityTypes.operations.get",
         "aiplatform.projects.locations.featurestores.operations.get",
         "aiplatform.projects.locations.hyperparameterTuningJobs.operations.get",
+        "aiplatform.projects.locations.indexEndpoints.delete",
+        "aiplatform.projects.locations.indexEndpoints.get",
+        "aiplatform.projects.locations.indexEndpoints.list",
         "aiplatform.projects.locations.indexEndpoints.operations.get",
         "aiplatform.projects.locations.indexes.operations.get",
         "aiplatform.projects.locations.list",
@@ -634,6 +643,9 @@
         "aiplatform.projects.locations.tensorboards.experiments.runs.operations.get",
         "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.get",
         "aiplatform.projects.locations.tensorboards.operations.get",
+        "aiplatform.projects.locations.trainingPipelines.delete",
+        "aiplatform.projects.locations.trainingPipelines.get",
+        "aiplatform.projects.locations.trainingPipelines.list",
         "aiplatform.projects.locations.trainingPipelines.operations.get",
         "aiplatform.projects.locations.tuningJobs.operations.get"
       ]
@@ -1150,6 +1162,117 @@
         "apikeys.projects.locations.keys.delete",
         "apikeys.projects.locations.keys.get",
         "apikeys.projects.locations.keys.list"
+      ]
+    },
+    {
+      "source_uri": "https://vpcaccess.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "vpcaccess.projects.locations.connectors.delete",
+        "vpcaccess.projects.locations.connectors.get",
+        "vpcaccess.projects.locations.connectors.list",
+        "vpcaccess.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://composer.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "composer.projects.locations.environments.delete",
+        "composer.projects.locations.environments.get",
+        "composer.projects.locations.environments.list",
+        "composer.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://workflows.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "workflows.projects.locations.operations.get",
+        "workflows.projects.locations.workflows.delete",
+        "workflows.projects.locations.workflows.get",
+        "workflows.projects.locations.workflows.list"
+      ]
+    },
+    {
+      "source_uri": "https://cloudscheduler.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "cloudscheduler.projects.locations.jobs.delete",
+        "cloudscheduler.projects.locations.jobs.get",
+        "cloudscheduler.projects.locations.jobs.list"
+      ]
+    },
+    {
+      "source_uri": "https://cloudbuild.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "cloudbuild.projects.locations.triggers.delete",
+        "cloudbuild.projects.locations.triggers.get",
+        "cloudbuild.projects.locations.triggers.list"
+      ]
+    },
+    {
+      "source_uri": "https://clouddeploy.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "clouddeploy.projects.locations.deliveryPipelines.automations.delete",
+        "clouddeploy.projects.locations.deliveryPipelines.automations.get",
+        "clouddeploy.projects.locations.deliveryPipelines.automations.list",
+        "clouddeploy.projects.locations.deliveryPipelines.delete",
+        "clouddeploy.projects.locations.deliveryPipelines.get",
+        "clouddeploy.projects.locations.deliveryPipelines.list",
+        "clouddeploy.projects.locations.deliveryPipelines.releases.get",
+        "clouddeploy.projects.locations.deliveryPipelines.releases.list",
+        "clouddeploy.projects.locations.operations.get",
+        "clouddeploy.projects.locations.targets.delete",
+        "clouddeploy.projects.locations.targets.get",
+        "clouddeploy.projects.locations.targets.list"
+      ]
+    },
+    {
+      "source_uri": "https://notebooks.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "notebooks.projects.locations.instances.delete",
+        "notebooks.projects.locations.instances.get",
+        "notebooks.projects.locations.instances.list",
+        "notebooks.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://privateca.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "privateca.projects.locations.caPools.certificateAuthorities.get",
+        "privateca.projects.locations.caPools.certificateAuthorities.list",
+        "privateca.projects.locations.caPools.delete",
+        "privateca.projects.locations.caPools.get",
+        "privateca.projects.locations.caPools.list",
+        "privateca.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://memcache.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "memcache.projects.locations.instances.delete",
+        "memcache.projects.locations.instances.get",
+        "memcache.projects.locations.instances.list",
+        "memcache.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://netapp.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "netapp.projects.locations.operations.get",
+        "netapp.projects.locations.storagePools.delete",
+        "netapp.projects.locations.storagePools.get",
+        "netapp.projects.locations.storagePools.list",
+        "netapp.projects.locations.volumes.delete",
+        "netapp.projects.locations.volumes.get",
+        "netapp.projects.locations.volumes.list",
+        "netapp.projects.locations.volumes.snapshots.delete",
+        "netapp.projects.locations.volumes.snapshots.get",
+        "netapp.projects.locations.volumes.snapshots.list"
+      ]
+    },
+    {
+      "source_uri": "https://dataflow.googleapis.com/$discovery/rest?version=v1b3",
+      "methods": [
+        "dataflow.projects.locations.jobs.get",
+        "dataflow.projects.locations.jobs.list"
       ]
     }
   ],
@@ -5072,6 +5195,379 @@
       ],
       "list_operations": [
         "apikeys.projects.locations.keys.list"
+      ]
+    },
+    {
+      "native_type": "vpcaccess.googleapis.com/Connector",
+      "collection": "connectors",
+      "class": "network.serverless_connector",
+      "display_name": "Serverless VPC Access connector",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "vpcaccess.projects.locations.connectors.get"
+      ],
+      "list_operations": [
+        "vpcaccess.projects.locations.connectors.list"
+      ],
+      "delete_operations": [
+        "vpcaccess.projects.locations.connectors.delete"
+      ]
+    },
+    {
+      "native_type": "composer.googleapis.com/Environment",
+      "collection": "environments",
+      "class": "orchestration.workflow_environment",
+      "display_name": "Cloud Composer environment",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "composer.projects.locations.environments.get"
+      ],
+      "list_operations": [
+        "composer.projects.locations.environments.list"
+      ],
+      "delete_operations": [
+        "composer.projects.locations.environments.delete"
+      ]
+    },
+    {
+      "native_type": "workflows.googleapis.com/Workflow",
+      "collection": "workflows",
+      "class": "orchestration.workflow",
+      "display_name": "Workflow",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "workflows.projects.locations.workflows.get"
+      ],
+      "list_operations": [
+        "workflows.projects.locations.workflows.list"
+      ],
+      "delete_operations": [
+        "workflows.projects.locations.workflows.delete"
+      ]
+    },
+    {
+      "native_type": "cloudscheduler.googleapis.com/Job",
+      "collection": "jobs",
+      "class": "orchestration.schedule",
+      "display_name": "Cloud Scheduler job",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "cloudscheduler.projects.locations.jobs.get"
+      ],
+      "list_operations": [
+        "cloudscheduler.projects.locations.jobs.list"
+      ],
+      "delete_operations": [
+        "cloudscheduler.projects.locations.jobs.delete"
+      ]
+    },
+    {
+      "native_type": "cloudbuild.googleapis.com/BuildTrigger",
+      "collection": "triggers",
+      "class": "devops.build_trigger",
+      "display_name": "Cloud Build trigger",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "cloudbuild.projects.locations.triggers.get"
+      ],
+      "list_operations": [
+        "cloudbuild.projects.locations.triggers.list"
+      ],
+      "delete_operations": [
+        "cloudbuild.projects.locations.triggers.delete"
+      ]
+    },
+    {
+      "native_type": "clouddeploy.googleapis.com/DeliveryPipeline",
+      "collection": "deliveryPipelines",
+      "class": "devops.pipeline",
+      "display_name": "Cloud Deploy delivery pipeline",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "clouddeploy.projects.locations.deliveryPipelines.get"
+      ],
+      "list_operations": [
+        "clouddeploy.projects.locations.deliveryPipelines.list"
+      ],
+      "delete_operations": [
+        "clouddeploy.projects.locations.deliveryPipelines.delete"
+      ]
+    },
+    {
+      "native_type": "clouddeploy.googleapis.com/Target",
+      "collection": "targets",
+      "class": "devops.deploy_target",
+      "display_name": "Cloud Deploy target",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "clouddeploy.projects.locations.targets.get"
+      ],
+      "list_operations": [
+        "clouddeploy.projects.locations.targets.list"
+      ],
+      "delete_operations": [
+        "clouddeploy.projects.locations.targets.delete"
+      ]
+    },
+    {
+      "native_type": "notebooks.googleapis.com/Instance",
+      "collection": "instances",
+      "class": "ai.workbench_instance",
+      "display_name": "Vertex AI Workbench instance",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "notebooks.projects.locations.instances.get"
+      ],
+      "list_operations": [
+        "notebooks.projects.locations.instances.list"
+      ],
+      "delete_operations": [
+        "notebooks.projects.locations.instances.delete"
+      ]
+    },
+    {
+      "native_type": "aiplatform.googleapis.com/IndexEndpoint",
+      "collection": "indexEndpoints",
+      "class": "ai.index_endpoint",
+      "display_name": "Vertex AI index endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "aiplatform.projects.locations.indexEndpoints.get"
+      ],
+      "list_operations": [
+        "aiplatform.projects.locations.indexEndpoints.list"
+      ],
+      "delete_operations": [
+        "aiplatform.projects.locations.indexEndpoints.delete"
+      ]
+    },
+    {
+      "native_type": "aiplatform.googleapis.com/FeatureOnlineStore",
+      "collection": "featureOnlineStores",
+      "class": "ai.feature_store",
+      "display_name": "Vertex AI feature online store",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "aiplatform.projects.locations.featureOnlineStores.get"
+      ],
+      "list_operations": [
+        "aiplatform.projects.locations.featureOnlineStores.list"
+      ],
+      "delete_operations": [
+        "aiplatform.projects.locations.featureOnlineStores.delete"
+      ]
+    },
+    {
+      "native_type": "aiplatform.googleapis.com/TrainingPipeline",
+      "collection": "trainingPipelines",
+      "class": "ai.training_pipeline",
+      "display_name": "Vertex AI training pipeline",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "aiplatform.projects.locations.trainingPipelines.get"
+      ],
+      "list_operations": [
+        "aiplatform.projects.locations.trainingPipelines.list"
+      ],
+      "delete_operations": [
+        "aiplatform.projects.locations.trainingPipelines.delete"
+      ]
+    },
+    {
+      "native_type": "privateca.googleapis.com/CaPool",
+      "collection": "caPools",
+      "class": "security.certificate_authority_pool",
+      "display_name": "Private CA pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "privateca.projects.locations.caPools.get"
+      ],
+      "list_operations": [
+        "privateca.projects.locations.caPools.list"
+      ],
+      "delete_operations": [
+        "privateca.projects.locations.caPools.delete"
+      ]
+    },
+    {
+      "native_type": "privateca.googleapis.com/CertificateAuthority",
+      "collection": "certificateAuthorities",
+      "class": "security.certificate_authority",
+      "display_name": "Private certificate authority",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "privateca.projects.locations.caPools.certificateAuthorities.get"
+      ],
+      "list_operations": [
+        "privateca.projects.locations.caPools.certificateAuthorities.list"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "memcache.googleapis.com/Instance",
+      "collection": "instances",
+      "class": "database.cache",
+      "display_name": "Memorystore for Memcached instance",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "memcache.projects.locations.instances.get"
+      ],
+      "list_operations": [
+        "memcache.projects.locations.instances.list"
+      ],
+      "delete_operations": [
+        "memcache.projects.locations.instances.delete"
+      ]
+    },
+    {
+      "native_type": "netapp.googleapis.com/StoragePool",
+      "collection": "storagePools",
+      "class": "storage.pool",
+      "display_name": "NetApp Volumes storage pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "netapp.projects.locations.storagePools.get"
+      ],
+      "list_operations": [
+        "netapp.projects.locations.storagePools.list"
+      ],
+      "delete_operations": [
+        "netapp.projects.locations.storagePools.delete"
+      ]
+    },
+    {
+      "native_type": "netapp.googleapis.com/Volume",
+      "collection": "volumes",
+      "class": "storage.file_system",
+      "display_name": "NetApp Volumes volume",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "netapp.projects.locations.volumes.get"
+      ],
+      "list_operations": [
+        "netapp.projects.locations.volumes.list"
+      ],
+      "delete_operations": [
+        "netapp.projects.locations.volumes.delete"
+      ]
+    },
+    {
+      "native_type": "dataflow.googleapis.com/Job",
+      "collection": "jobs",
+      "class": "data.pipeline",
+      "display_name": "Dataflow job",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataflow.projects.locations.jobs.get"
+      ],
+      "list_operations": [
+        "dataflow.projects.locations.jobs.list"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "clouddeploy.googleapis.com/Release",
+      "collection": "releases",
+      "class": "devops.release",
+      "display_name": "Cloud Deploy release",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "clouddeploy.projects.locations.deliveryPipelines.releases.get"
+      ],
+      "list_operations": [
+        "clouddeploy.projects.locations.deliveryPipelines.releases.list"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "clouddeploy.googleapis.com/Automation",
+      "collection": "automations",
+      "class": "devops.automation",
+      "display_name": "Cloud Deploy automation",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "clouddeploy.projects.locations.deliveryPipelines.automations.get"
+      ],
+      "list_operations": [
+        "clouddeploy.projects.locations.deliveryPipelines.automations.list"
+      ],
+      "delete_operations": [
+        "clouddeploy.projects.locations.deliveryPipelines.automations.delete"
+      ]
+    },
+    {
+      "native_type": "aiplatform.googleapis.com/FeatureView",
+      "collection": "featureViews",
+      "class": "ai.feature_view",
+      "display_name": "Vertex AI feature view",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "aiplatform.projects.locations.featureOnlineStores.featureViews.get"
+      ],
+      "list_operations": [
+        "aiplatform.projects.locations.featureOnlineStores.featureViews.list"
+      ],
+      "delete_operations": [
+        "aiplatform.projects.locations.featureOnlineStores.featureViews.delete"
+      ]
+    },
+    {
+      "native_type": "netapp.googleapis.com/Snapshot",
+      "collection": "snapshots",
+      "class": "storage.snapshot",
+      "display_name": "NetApp Volumes snapshot",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "netapp.projects.locations.volumes.snapshots.get"
+      ],
+      "list_operations": [
+        "netapp.projects.locations.volumes.snapshots.list"
+      ],
+      "delete_operations": [
+        "netapp.projects.locations.volumes.snapshots.delete"
       ]
     }
   ],

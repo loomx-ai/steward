@@ -22,6 +22,9 @@ const (
 	workstationConfigType  = "workstations.googleapis.com/WorkstationConfig"
 	workstationType        = "workstations.googleapis.com/Workstation"
 	eventarcTriggerType    = "eventarc.googleapis.com/Trigger"
+	deliveryPipelineType   = "clouddeploy.googleapis.com/DeliveryPipeline"
+	featureOnlineStoreType = "aiplatform.googleapis.com/FeatureOnlineStore"
+	netappVolumeType       = "netapp.googleapis.com/Volume"
 )
 
 type serviceCascadeRule struct {
@@ -34,6 +37,9 @@ type serviceCascadeRule struct {
 // New rules must cover the native child set, reviewed impact and final readback.
 // Without force, a workstation cluster or configuration is deleted only after
 // its configurations or workstations, so those are deleted first, one by one.
+// A delivery pipeline with releases or automations, and a feature online store
+// with feature views, are deleted only with force, which removes them natively.
+// A NetApp volume without force is deleted only after its snapshots.
 var serviceCascadeRules = map[string]serviceCascadeRule{
 	routerType:                                      {children: []string{cloudNatType, routePolicyType, namedSetType}, directChildren: []string{routePolicyType, namedSetType}},
 	identityGroupType:                               {children: []string{identityMemberType}},
@@ -55,6 +61,9 @@ var serviceCascadeRules = map[string]serviceCascadeRule{
 	"managedkafka.googleapis.com/Cluster":           {children: []string{"managedkafka.googleapis.com/Topic", "managedkafka.googleapis.com/ConsumerGroup"}},
 	workstationClusterType:                          {children: []string{workstationConfigType}, directChildren: []string{workstationConfigType}},
 	workstationConfigType:                           {children: []string{workstationType}, directChildren: []string{workstationType}},
+	deliveryPipelineType:                            {children: []string{"clouddeploy.googleapis.com/Release", "clouddeploy.googleapis.com/Automation"}, forceParameter: "force"},
+	featureOnlineStoreType:                          {children: []string{"aiplatform.googleapis.com/FeatureView"}, forceParameter: "force"},
+	netappVolumeType:                                {children: []string{"netapp.googleapis.com/Snapshot"}, directChildren: []string{"netapp.googleapis.com/Snapshot"}},
 	"spanner.googleapis.com/Instance":               {children: []string{"spanner.googleapis.com/Database"}},
 	"alloydb.googleapis.com/Cluster":                {children: []string{"alloydb.googleapis.com/Instance"}, forceParameter: "force"},
 	"servicedirectory.googleapis.com/Namespace":     {children: []string{"servicedirectory.googleapis.com/Service"}},

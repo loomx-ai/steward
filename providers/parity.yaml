@@ -2869,6 +2869,7 @@ resources:
   gcp:
     resources:
     - file.googleapis.com/Instance
+    - netapp.googleapis.com/Volume
   azure:
     resources:
     - Microsoft.Storage/storageAccounts/fileServices/shares

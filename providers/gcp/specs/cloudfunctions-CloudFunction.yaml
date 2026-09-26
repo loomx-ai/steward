@@ -87,6 +87,9 @@ relationships:
 - type: depends_on
   targetType: iam.googleapis.com/ServiceAccount
   targetIdPath: refs_iam_googleapis_com_ServiceAccount
+- type: depends_on
+  targetType: vpcaccess.googleapis.com/Connector
+  targetIdPath: refs_vpcaccess_googleapis_com_Connector
 actions:
   delete:
     operation: cloudfunctions.projects.locations.functions.delete

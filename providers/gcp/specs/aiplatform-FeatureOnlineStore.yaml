@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: aiplatform.googleapis.com/FeatureOnlineStore
+  class: ai.feature_store
+presentation:
+  displayNames:
+    en-US: Vertex AI feature online store
+    zh-CN: Vertex AI 在线特征存储
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: aiplatform.projects.locations.featureOnlineStores.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: featureOnlineStores
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: aiplatform.projects.locations.featureOnlineStores.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  etag:
+    path: etag
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  bigtable:
+    path: bigtable
+    type: object
+  optimized:
+    path: optimized
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: aiplatform.projects.locations.featureOnlineStores.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: aiplatform.projects.locations.featureOnlineStores.get
+      itemsPath: $
+      identityPath: name
