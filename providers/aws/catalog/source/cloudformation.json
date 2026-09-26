@@ -10572,6 +10572,64 @@
     "/properties/Arn"
    ]
   },
+  "AWS::MSK::Topic": {
+   "member": "aws-msk-topic.json",
+   "sha256": "3894c444e76ce4c7d78a335791e6d712224b57f8dac7782a56631aed4694cfe2",
+   "primaryIdentifier": [
+    "/properties/TopicArn"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "kafka-cluster:Connect",
+      "kafka-cluster:CreateTopic",
+      "kafka-cluster:DescribeTopic",
+      "kafka-cluster:DescribeTopicDynamicConfiguration"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "kafka-cluster:Connect",
+      "kafka-cluster:DeleteTopic",
+      "kafka-cluster:DescribeTopic",
+      "kafka-cluster:DescribeTopicDynamicConfiguration"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "kafka-cluster:Connect",
+      "kafka-cluster:DescribeTopic"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "kafka-cluster:Connect",
+      "kafka-cluster:DescribeTopic",
+      "kafka-cluster:DescribeTopicDynamicConfiguration"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "kafka-cluster:AlterTopic",
+      "kafka-cluster:AlterTopicDynamicConfiguration",
+      "kafka-cluster:Connect",
+      "kafka-cluster:DescribeTopic"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "ClusterArn": "string",
+    "Configs": "string",
+    "PartitionCount": "integer",
+    "ReplicationFactor": "integer",
+    "TopicArn": "string",
+    "TopicName": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/TopicArn"
+   ]
+  },
   "AWS::Macie::CustomDataIdentifier": {
    "member": "aws-macie-customdataidentifier.json",
    "sha256": "2474eed2490236bcf6d8c6e42a41b10742a709170f530ca989750492a265a0ef",

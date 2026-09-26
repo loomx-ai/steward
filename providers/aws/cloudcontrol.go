@@ -228,6 +228,12 @@ func cloudControlItem(resource CloudControlResource, kind asset.ResourceKind, sc
 // owns, which only that service can remove.
 func cloudControlServiceManaged(nativeType, identifier string) string {
 	switch nativeType {
+	case "AWS::MSK::Topic":
+		// Kafka and MSK own internal topics such as __consumer_offsets and
+		// __amazon_msk_canary; the topic name is the ARN's last segment.
+		if strings.HasPrefix(identifier[strings.LastIndex(identifier, "/")+1:], "__") {
+			return "kafka_internal_topic"
+		}
 	case "AWS::ResourceGroups::Group":
 		// Group names beginning with "AWS" or "aws" are reserved for groups
 		// that AWS services create, such as AppRegistry application groups.

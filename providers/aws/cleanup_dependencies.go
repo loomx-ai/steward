@@ -57,6 +57,8 @@ var childDependencies = []childDependency{
 	// Terminating a WorkSpace destroys its user volume, so it is never selected
 	// implicitly.
 	{parentType: workspaceDirectoryType, childType: "AWS::WorkSpaces::Workspace", field: "DirectoryId", kind: "aws_workspaces_directory_member", mode: childRequired},
+	// Deleting an MSK cluster deletes its topics and their data.
+	{parentType: "AWS::MSK::Cluster", childType: "AWS::MSK::Topic", field: "ClusterArn", kind: "aws_msk_topic", mode: childCascade},
 	// A usage plan's keys are removed with the plan.
 	{parentType: "AWS::ApiGateway::UsagePlan", childType: "AWS::ApiGateway::UsagePlanKey", field: "UsagePlanId", kind: "aws_api_gateway_usage_plan_key", mode: childCascade},
 	// DeleteTrustStore fails while a listener's mutual TLS configuration uses

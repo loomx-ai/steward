@@ -1,0 +1,46 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::MSK::Topic
+  class: messaging.topic
+presentation:
+  displayNames:
+    zh-CN: MSK 主题
+    en-US: MSK Topic
+scope:
+  kind: region
+discovery:
+  source: cloud-control
+  parent:
+    source: cloud-control
+    nativeType: AWS::MSK::Cluster
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::MSK::Topic
+      ResourceModel.ClusterArn: parent.nativeId
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  detail:
+    operation: com.amazonaws.cloudcontrol#GetResource
+    itemsPath: ResourceDescription
+    identityPath: Identifier
+relationships:
+- type: member_of
+  targetType: AWS::MSK::Cluster
+  targetIdPath: ClusterArn
+actions:
+  delete:
+    operation: com.amazonaws.cloudcontrol#DeleteResource
+    idempotency: provider_token
+    waiter: cloud_control_terminal
+    readback: cloud_control_absent
+extensions:
+  hook: aws.cloudcontrol.resource

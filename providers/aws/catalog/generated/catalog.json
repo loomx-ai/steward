@@ -4,10 +4,10 @@
   "source": {
     "format": "smithy",
     "uri": "catalog/source/smithy.json",
-    "checksum": "aceb4d97fc7eb573f238aeded7a4526b7636c4431406b67c236fd84fe6f64582",
+    "checksum": "630ab75b80561df6c0e3af66bcdf12841411aa9210ced4aefe88a3e7dee2538b",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "095c874c908e02681a11d0bcc269132e9d9da8df7fb2bddab99bbe618b4fb906",
+  "content_checksum": "85cdafa3281b0649f303232edf53ecf4849b5fcf8400f504a3f6b395bd015663",
   "operations": [
     {
       "id": "com.amazonaws.autoscaling#DescribeAutoScalingGroups",
@@ -3350,6 +3350,14 @@
       "native_type": "AWS::MSK::ServerlessCluster",
       "class": "messaging.broker",
       "display_name": "MSK Serverless Cluster",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::MSK::Topic",
+      "class": "messaging.topic",
+      "display_name": "MSK Topic",
       "scope_kinds": [
         "region"
       ]

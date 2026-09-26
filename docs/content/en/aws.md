@@ -47,6 +47,7 @@ Validating a connection calls STS `GetCallerIdentity` to identify the account. A
 | CloudFormation stacks and ownership | `cloudformation:DescribeStacks`, `cloudformation:ListStackResources`, `cloudformation:GetTemplate` |
 
 - **Cloud Control needs two layers.** Its actions use the `cloudformation:` prefix, but those generic actions do not replace the underlying EC2, S3, RDS, or other service permissions. Check each type's [resource handler requirements](https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/resource-operations.html).
+- **MSK topics use Kafka data-plane permissions.** Listing and deleting topics calls the cluster with `kafka-cluster:Connect`, `kafka-cluster:DescribeTopic` and `kafka-cluster:DeleteTopic`, so the cluster must have IAM access control enabled; otherwise its topic scan item fails.
 - **Grant only what you use.** A denied type fails its own scan item without affecting other types.
 - **Resource Explorer** must return resources in the queried region. Steward uses that region's default view, so the view's filters limit what it sees. See [Resource Explorer setup](https://docs.aws.amazon.com/resource-explorer/latest/userguide/getting-started-setting-up.html) and [ListResources permissions](https://docs.aws.amazon.com/resource-explorer/latest/apireference/API_ListResources.html).
 
@@ -86,7 +87,7 @@ For a coverage record you can verify across regions and connections, follow [Inv
 | Transit and hybrid networking | Transit gateways with route tables, VPC, peering and Connect attachments, multicast domains, associations, members and sources; Direct Connect connections, LAGs, gateways, associations and virtual interfaces; Cloud WAN global and core networks; Global Accelerator accelerators, listeners and endpoint groups |
 | Load balancing, edge, and DNS | Application, Network and Gateway Load Balancers with listeners, target groups and trust stores, Classic Load Balancers, CloudFront distributions, WAF web ACLs and their associations, Shield Advanced protections, Route 53 hosted zones, health checks, Resolver rules and registered domains, API Gateway APIs, custom domains, usage plans, usage plan keys and API keys, VPC Lattice |
 | Storage and backup | S3 buckets, EBS volumes and snapshots, Data Lifecycle Manager policies, EFS file systems, mount targets and access points, FSx file systems, Storage Gateway, AWS Backup vaults, plans and selections, Elastic Disaster Recovery source servers |
-| Databases and analytics | RDS and Aurora, RDS Proxy, Aurora DSQL, DynamoDB, DocumentDB and DocumentDB Elastic, Neptune and Neptune Analytics, Keyspaces, ElastiCache, MemoryDB, Timestream, OpenSearch Service and Serverless, Redshift and Redshift Serverless, Glue databases, Athena workgroups, EMR clusters, EMR Serverless, Kinesis, Managed Service for Apache Flink, DMS, MSK, Amazon MQ, DataZone, QuickSight dashboards and datasets |
+| Databases and analytics | RDS and Aurora, RDS Proxy, Aurora DSQL, DynamoDB, DocumentDB and DocumentDB Elastic, Neptune and Neptune Analytics, Keyspaces, ElastiCache, MemoryDB, Timestream, OpenSearch Service and Serverless, Redshift and Redshift Serverless, Glue databases, Athena workgroups, EMR clusters, EMR Serverless, Kinesis, Managed Service for Apache Flink, DMS, MSK clusters and topics, Amazon MQ, DataZone, QuickSight dashboards and datasets |
 | Messaging and applications | SQS, SNS topics and subscriptions, EventBridge buses and rules, Step Functions, CodePipeline, Cloud Map namespaces and services, AppRegistry applications, Pinpoint SMS templates, IVS channels and stages, Kendra indexes, SageMaker endpoints, endpoint configurations, models and HyperPod clusters, AWS PCS and Batch compute environments |
 | Identity, security, and governance | IAM users, groups, roles, instance profiles and managed policies, IAM Identity Center instances and groups, Organizations, organizational units and member accounts, KMS keys and aliases, ACM certificates, GuardDuty, Security Hub, Macie, Network Firewall, IAM Access Analyzer, CloudTrail trails and event data stores, AWS Config rules, remediation configurations, conformance packs and aggregators |
 | Monitoring and orchestration | CloudWatch alarms, dashboards and log groups, Resource Groups, Synthetics canaries, X-Ray groups, Observability Access Manager, Managed Grafana and Prometheus, CloudFormation stacks and StackSets |
@@ -103,6 +104,7 @@ Some types are listed through their parent:
 | Multicast associations, members, sources | Each multicast domain |
 | IAM Identity Center groups | Each instance |
 | API Gateway usage plan keys | Each usage plan |
+| MSK topics | Each MSK provisioned cluster |
 | Client VPN target networks, authorization rules and routes | Each Client VPN endpoint |
 | WAF web ACL associations | Each regional web ACL, for every protected resource type |
 | Organizational units | The complete organization tree |
@@ -133,7 +135,7 @@ Steward builds relationships from the resource model (such as a resource's VPC, 
 | Service-managed interfaces | Interfaces created by NAT gateways, VPC endpoints, load balancers, EFS mount targets, or Lambda belong to that service and cannot be deleted directly. |
 | Elastic IPs | An address is released only after the NAT gateway or instance using it is gone. |
 | Required children | A Client VPN endpoint is deleted only after its target networks are disassociated, and a Config rule only after its remediation configuration; both are added to the task. A WorkSpaces directory is deregistered only after its WorkSpaces are terminated, and a trust store is deleted only after the listeners that use it; Steward never selects those for you, so the task is blocked until you select them. |
-| Deleted with the parent | Deleting an SNS topic deletes its subscriptions, a Client VPN endpoint its authorization rules and manually added routes, and a usage plan its keys. The task lists them as deleted with the parent. |
+| Deleted with the parent | Deleting an MSK cluster deletes its topics, an SNS topic its subscriptions, a Client VPN endpoint its authorization rules and manually added routes, and a usage plan its keys. The task lists them as deleted with the parent. |
 | Parent-only members | Rules deployed by a conformance pack, routes added by a Client VPN subnet association and instances of an EMR cluster are removed only through that pack, association or cluster. |
 | CloudFormation | Steward reads each stack's resources and processed template to find ownership and `DeletionPolicy`. Resources with `Retain` or `RetainExceptOnCreate` are treated as retained; a stack with termination protection blocks deletion. |
 
@@ -158,6 +160,7 @@ EC2 instances, AMIs, Auto Scaling groups, EKS clusters, load balancers, RDS and 
 | Internet and virtual private gateways | Detached from their VPC first. |
 | DocumentDB clusters | Must have no member instances. |
 | AWS Config rules | Rules created by another service (a conformance pack, an organization rule, Security Hub) and member packs of an organization conformance pack cannot be deleted directly. |
+| MSK topics | Internal topics whose names begin with `__`, such as `__consumer_offsets`, belong to Kafka and MSK and cannot be deleted. |
 | Resource groups | Groups whose names begin with `AWS`, which AWS services create, cannot be deleted. |
 | WAF web ACL associations | Associations of a web ACL that Firewall Manager manages cannot be removed. CloudFront distributions are not listed: their web ACL is a distribution setting. |
 | Elastic Disaster Recovery source servers | Must be disconnected. |

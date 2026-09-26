@@ -1480,6 +1480,15 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::MSK::Topic",
+   "class": "messaging.topic",
+   "displayName": "MSK Topic",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::Macie::CustomDataIdentifier",
    "class": "security.data_protection",
    "displayName": "Macie Custom Data Identifier",

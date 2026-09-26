@@ -208,3 +208,27 @@ func TestReservedResourceGroupNamesAreServiceManaged(t *testing.T) {
 		}
 	}
 }
+
+// Internal Kafka topics are owned by Kafka and MSK; deleting a cluster deletes
+// its topics.
+func TestMSKTopicsFollowTheirCluster(t *testing.T) {
+	kind := asset.ResourceKind{NativeType: "AWS::MSK::Topic"}
+	for name, internal := range map[string]bool{"__consumer_offsets": true, "__amazon_msk_canary": true, "orders": false} {
+		arn := "arn:aws:kafka:us-east-1:123456789012:topic/events/0123abcd-4567-89ef-0123-456789abcdef-1/" + name
+		item, err := cloudControlItem(CloudControlResource{Identifier: arn, Properties: `{"TopicArn":"` + arn + `","TopicName":"` + name + `"}`}, kind, asset.Scope{Kind: asset.ScopeRegion, NativeID: "us-east-1"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if (item.Actionable != nil && !*item.Actionable) != internal {
+			t.Errorf("%s actionable = %v", name, item.Actionable)
+		}
+	}
+	cluster := "arn:aws:kafka:us-east-1:123456789012:cluster/events/0123abcd-4567-89ef-0123-456789abcdef-1"
+	contribution, err := NewLifecycle().Contribute(context.Background(), "scope", []asset.Asset{
+		awsAsset("cluster", "AWS::MSK::Cluster", cluster, nil),
+		awsAsset("topic", "AWS::MSK::Topic", cluster+"/orders", map[string]any{"ClusterArn": cluster}),
+	})
+	if err != nil || len(contribution.Bindings) != 1 || contribution.Bindings[0].ControllerAssetID != "cluster" || !contribution.Bindings[0].DirectCleanupAllowed {
+		t.Fatalf("contribution = %+v, %v", contribution, err)
+	}
+}

@@ -47,6 +47,7 @@ Steward 使用连接中的凭证读取一个 AWS 账号。每个已支持的资�
 | CloudFormation 栈与归属 | `cloudformation:DescribeStacks`、`cloudformation:ListStackResources`、`cloudformation:GetTemplate` |
 
 - **Cloud Control 需要两层权限。** 它的 Action 使用 `cloudformation:` 前缀，但这些通用 Action 不能替代 EC2、S3、RDS 等产品自身的权限。请按 AWS 的[资源处理器权限说明](https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/resource-operations.html)逐类核对。
+- **MSK 主题使用 Kafka 数据面权限。** 列举和删除主题会以 `kafka-cluster:Connect`、`kafka-cluster:DescribeTopic` 和 `kafka-cluster:DeleteTopic` 访问集群，因此集群必须启用 IAM 访问控制，否则其主题扫描项会失败。
 - **只授予实际使用的服务。** 某个类型被拒绝，只会让它自己的扫描项失败，不影响其他类型。
 - **Resource Explorer** 必须能在被查询地域返回资源。Steward 使用该地域的默认视图，视图的过滤条件会限制可见范围。参阅 [Resource Explorer 设置](https://docs.aws.amazon.com/resource-explorer/latest/userguide/getting-started-setting-up.html)和 [ListResources 权限说明](https://docs.aws.amazon.com/resource-explorer/latest/apireference/API_ListResources.html)。
 
@@ -86,7 +87,7 @@ Steward 使用连接中的凭证读取一个 AWS 账号。每个已支持的资�
 | 中转与混合网络 | 中转网关及其路由表、VPC/对等/Connect 挂载、组播域及其关联、成员与源；Direct Connect 连接、链路聚合组、网关、网关关联与虚拟接口；Cloud WAN 全球网络与核心网络；Global Accelerator 加速器、侦听器与终端节点组 |
 | 负载均衡、边缘与 DNS | 应用/网络/网关负载均衡器及其侦听器、目标组与信任存储、传统负载均衡器、CloudFront 分配、WAF Web ACL 及其关联、Shield Advanced 防护、Route 53 托管区域、运行状况检查、Resolver 规则与注册域名、API Gateway API、自定义域名、使用计划、使用计划密钥与 API 密钥、VPC Lattice |
 | 存储与备份 | S3 存储桶、EBS 卷与快照、Data Lifecycle Manager 策略、EFS 文件系统、挂载目标与接入点、FSx 文件系统、Storage Gateway、AWS Backup 备份库、备份计划与资源分配、弹性灾难恢复源服务器 |
-| 数据库与分析 | RDS 与 Aurora、RDS 代理、Aurora DSQL、DynamoDB、DocumentDB 与 DocumentDB 弹性集群、Neptune 与 Neptune Analytics、Keyspaces、ElastiCache、MemoryDB、Timestream、OpenSearch Service 与 Serverless、Redshift 与 Redshift Serverless、Glue 数据库、Athena 工作组、EMR 集群、EMR Serverless、Kinesis、Apache Flink 托管服务、DMS、MSK、Amazon MQ、DataZone、QuickSight 控制面板与数据集 |
+| 数据库与分析 | RDS 与 Aurora、RDS 代理、Aurora DSQL、DynamoDB、DocumentDB 与 DocumentDB 弹性集群、Neptune 与 Neptune Analytics、Keyspaces、ElastiCache、MemoryDB、Timestream、OpenSearch Service 与 Serverless、Redshift 与 Redshift Serverless、Glue 数据库、Athena 工作组、EMR 集群、EMR Serverless、Kinesis、Apache Flink 托管服务、DMS、MSK 集群与主题、Amazon MQ、DataZone、QuickSight 控制面板与数据集 |
 | 消息与应用 | SQS、SNS 主题与订阅、EventBridge 事件总线与规则、Step Functions、CodePipeline、Cloud Map 命名空间与服务、AppRegistry 应用程序、Pinpoint 短信模板、IVS 频道与实时舞台、Kendra 索引、SageMaker 终端节点、终端节点配置、模型与 HyperPod 集群、AWS PCS 与 Batch 计算环境 |
 | 身份、安全与治理 | IAM 用户、用户组、角色、实例配置文件与托管策略，IAM Identity Center 实例与组，Organizations 组织、组织单元与成员账号，KMS 密钥与别名、ACM 证书、GuardDuty、Security Hub、Macie、网络防火墙、IAM 访问分析器、CloudTrail 跟踪与事件数据存储、AWS Config 规则、修正配置、合规包与聚合器 |
 | 监控与编排 | CloudWatch 告警、控制面板与日志组，资源组，Synthetics 金丝雀、X-Ray 组、可观测性访问管理器、Managed Grafana 与 Prometheus、CloudFormation 资源栈与 StackSet |
@@ -103,6 +104,7 @@ Steward 使用连接中的凭证读取一个 AWS 账号。每个已支持的资�
 | 组播关联、成员与源 | 按组播域 |
 | IAM Identity Center 组 | 按实例 |
 | API Gateway 使用计划密钥 | 按使用计划 |
+| MSK 主题 | 按 MSK 预置集群 |
 | Client VPN 目标网络、授权规则与路由 | 按 Client VPN 端点 |
 | WAF Web ACL 关联 | 按每个地域级 Web ACL，逐一查询各类受保护资源 |
 | 组织单元 | 按完整组织树 |
@@ -133,7 +135,7 @@ Steward 根据资源模型（例如资源所属的 VPC、子网与安全组）�
 | 服务托管网卡 | NAT 网关、VPC 终端节点、负载均衡器、EFS 挂载目标或 Lambda 创建的网卡属于对应服务，不能直接删除。 |
 | 弹性 IP | 只有在使用它的 NAT 网关或实例删除后，才会释放地址。 |
 | 必须先删的子资源 | Client VPN 端点要在解除全部目标网络关联之后删除，Config 规则要在删除其修正配置之后删除，这两类子资源会自动加入任务。WorkSpaces 目录要在其云桌面全部终止后才能注销，信任存储要在使用它的侦听器删除后才能删除；Steward 不会替你选中这些资源，未选中时任务会被阻断。 |
-| 随父资源删除 | 删除 SNS 主题会删除其订阅，删除 Client VPN 端点会删除其授权规则与手动添加的路由，删除使用计划会删除其密钥。任务会把它们列为随父资源删除。 |
+| 随父资源删除 | 删除 MSK 集群会删除其主题，删除 SNS 主题会删除其订阅，删除 Client VPN 端点会删除其授权规则与手动添加的路由，删除使用计划会删除其密钥。任务会把它们列为随父资源删除。 |
 | 只能经父资源删除 | 合规包部署的规则、Client VPN 子网关联自动添加的路由、EMR 集群的实例，只能通过对应的合规包、关联或集群删除。 |
 | CloudFormation | Steward 读取栈资源和处理后的模板，识别归属与 `DeletionPolicy`。`Retain` 或 `RetainExceptOnCreate` 资源按保留资源处理；启用终止保护的栈会阻止删除。 |
 
@@ -158,6 +160,7 @@ EC2 实例、AMI、Auto Scaling 组、EKS 集群、负载均衡器、RDS 与 Aur
 | 互联网网关与虚拟私有网关 | 先从 VPC 分离。 |
 | DocumentDB 集群 | 不能有成员实例。 |
 | AWS Config 规则 | 由其他服务创建的规则（合规包、组织规则、Security Hub 等）以及组织合规包下发到成员账号的合规包，不能直接删除。 |
+| MSK 主题 | 以 `__` 开头的内部主题（如 `__consumer_offsets`）属于 Kafka 和 MSK，不能删除。 |
 | 资源组 | 名称以 `AWS` 开头的组由 AWS 服务创建，不能删除。 |
 | WAF Web ACL 关联 | 由 Firewall Manager 管理的 Web ACL，其关联不能解除。CloudFront 分配不在列举范围内：它的 Web ACL 是分配的一项设置。 |
 | 弹性灾难恢复源服务器 | 必须已断开复制。 |
