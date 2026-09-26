@@ -440,6 +440,18 @@ func (a *action) operationURL(data map[string]any) (string, error) {
 		parts := strings.Split(a.endpoint, "/")
 		return strings.Join(parts[:len(parts)-2], "/") + "/operations/" + name, nil
 	}
+	// API Keys reports deletion through a service-wide operations collection.
+	if nativeType == apiKeyType {
+		name := text(data["name"])
+		if name == "" && data["done"] == true {
+			return "", nil
+		}
+		parts := strings.Split(name, "/")
+		if len(parts) != 2 || parts[0] != "operations" || !segmentPattern.MatchString(parts[1]) || parts[1] == "." || parts[1] == ".." {
+			return "", fmt.Errorf("Google API omitted a valid deletion operation")
+		}
+		return "https://apikeys.googleapis.com/v2/" + name, nil
+	}
 	if a.regionalOperation() {
 		name := text(data["name"])
 		if name == "" && data["done"] == true {
@@ -741,6 +753,8 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	return contracts.ReadbackResult{Exists: true, State: resourceState(data)}, nil
 }
 
+const apiKeyType = "apikeys.googleapis.com/Key"
+
 func protectionReason(nativeType string, data map[string]any) string {
 	if nativeType == monitoringDashboardType && protectedComputeLabels(data) {
 		return "protected_labels"
@@ -787,6 +801,9 @@ func protectionReason(nativeType string, data map[string]any) string {
 	return ""
 }
 
+// A deleted API key stays readable, with deleteTime set, until it is purged
+// 30 days later; until then it can be undeleted.
 func resourceSoftDeleted(nativeType string, data map[string]any) bool {
-	return nativeType == "iam.googleapis.com/Role" && data["deleted"] == true || nativeType == "logging.googleapis.com/LogBucket" && data["lifecycleState"] == "DELETE_REQUESTED"
+	return nativeType == "iam.googleapis.com/Role" && data["deleted"] == true || nativeType == "logging.googleapis.com/LogBucket" && data["lifecycleState"] == "DELETE_REQUESTED" ||
+		nativeType == apiKeyType && text(data["deleteTime"]) != ""
 }

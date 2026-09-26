@@ -112,6 +112,7 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 		{"workstations.googleapis.com/Workstation", "v1", regional + "workstationClusters/dev/workstationConfigs/std/workstations/alice", regional + "workstationClusters/dev/workstationConfigs/std/workstations", "workstations", "us-central1", regional + "operations/delete", `{"uid":"workstation-uid"}`},
 		{"certificatemanager.googleapis.com/TrustConfig", "v1", regional + "trustConfigs/mtls", regional + "trustConfigs", "trustConfigs", "us-central1", regional + "operations/delete", `{}`},
 		{"cloudasset.googleapis.com/Feed", "v1", p + "feeds/changes", p + "feeds", "feeds", "global", "", `{"assetTypes":["compute.googleapis.com/Instance"]}`},
+		{"apikeys.googleapis.com/Key", "v2", global + "keys/browser", global + "keys", "keys", "global", "operations/delete", `{"uid":"key-uid"}`},
 		{"orgpolicy.googleapis.com/Policy", "v2", p + "policies/compute.skipDefaultNetworkCreation", p + "policies", "policies", "global", "", `{"spec":{"rules":[{"enforce":true}]}}`},
 	} {
 		t.Run(test.kind+"/"+test.region, func(t *testing.T) {

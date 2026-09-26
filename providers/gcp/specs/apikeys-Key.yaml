@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: apikeys.googleapis.com/Key
+  class: api.key
+presentation:
+  displayNames:
+    en-US: API key
+    zh-CN: API 密钥
+  consoleLinkTemplate: https://console.cloud.google.com/apis/credentials?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: apikeys.projects.locations.keys.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: keys
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 300
+  detail:
+    operation: apikeys.projects.locations.keys.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  restrictions:
+    path: restrictions
+    type: object
+  serviceAccountEmail:
+    path: serviceAccountEmail
+    type: string
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: apikeys.projects.locations.keys.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: apikeys.projects.locations.keys.get
+      itemsPath: $
+      identityPath: name

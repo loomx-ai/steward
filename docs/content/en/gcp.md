@@ -157,6 +157,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Cloud Workstations | Workstation clusters, configurations and workstations | Reviewed cleanup: workstations are deleted before their configuration, and configurations before their cluster |
 | Certificate Manager | Certificates, certificate maps and entries, trust configs | Supported; a trust config that a TLS policy still uses is rejected by the service |
 | Cloud Asset Inventory feeds | Feeds of the connected project | Supported |
+| API Keys | API keys of the connected project | Supported; a deleted key can be restored for 30 days and counts as deleted |
 | Organization Policy | Policies set directly on the connected project | Supported; deletion restores the policy inherited from the folder or organization |
 | [Security Command Center](#security-command-center) | Service settings, organization subscription, project and organization billing metadata | Read-only |
 

@@ -157,6 +157,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Cloud Workstations | 工作站集群、配置与工作站 | 审查后清理：先删除工作站，再删除其配置，最后删除集群 |
 | Certificate Manager | 证书、证书映射及其条目、信任配置 | 支持；仍被 TLS 策略使用的信任配置会被服务拒绝删除 |
 | Cloud Asset Inventory 订阅源 | 所连接项目的订阅源 | 支持 |
+| API 密钥 | 所连接项目的 API 密钥 | 支持；删除后 30 天内可恢复，这段时间内视为已删除 |
 | 组织策略 | 直接设置在所连接项目上的策略 | 支持；删除后恢复为从文件夹或组织继承的策略 |
 | [Security Command Center](#security-command-center) | 服务设置、组织订阅、项目与组织计费元数据 | 只读 |
 

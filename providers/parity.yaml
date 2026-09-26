@@ -358,7 +358,10 @@ resources:
     actions:
     - delete
   gcp:
-    notes: API consumers authenticate with API keys and service accounts; there is no app resource.
+    resources:
+    - apikeys.googleapis.com/Key
+    notes: API keys identify calling applications; service accounts are identities rather than
+      application records.
   azure:
     resources:
     - Microsoft.ApiManagement/service/products

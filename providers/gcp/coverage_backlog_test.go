@@ -29,3 +29,11 @@ func TestEventarcEnrollmentReferencesBusAndPipeline(t *testing.T) {
 		t.Fatalf("references = %v", refs)
 	}
 }
+
+// A deleted API key remains readable with deleteTime until it is purged; that
+// state is deletion, not a live key.
+func TestDeletedAPIKeysAreSoftDeleted(t *testing.T) {
+	if !resourceSoftDeleted(apiKeyType, map[string]any{"deleteTime": "2026-09-26T00:00:00Z"}) || resourceSoftDeleted(apiKeyType, map[string]any{"uid": "key"}) {
+		t.Fatal("API key soft-delete state is not recognized")
+	}
+}

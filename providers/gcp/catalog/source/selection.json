@@ -1142,6 +1142,15 @@
         "orgpolicy.projects.policies.get",
         "orgpolicy.projects.policies.list"
       ]
+    },
+    {
+      "source_uri": "https://apikeys.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "apikeys.operations.get",
+        "apikeys.projects.locations.keys.delete",
+        "apikeys.projects.locations.keys.get",
+        "apikeys.projects.locations.keys.list"
+      ]
     }
   ],
   "resource_types": [
@@ -5045,6 +5054,24 @@
       ],
       "list_operations": [
         "orgpolicy.projects.policies.list"
+      ]
+    },
+    {
+      "native_type": "apikeys.googleapis.com/Key",
+      "collection": "keys",
+      "class": "api.key",
+      "display_name": "API key",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "apikeys.projects.locations.keys.get"
+      ],
+      "delete_operations": [
+        "apikeys.projects.locations.keys.delete"
+      ],
+      "list_operations": [
+        "apikeys.projects.locations.keys.list"
       ]
     }
   ],
