@@ -152,6 +152,12 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | [OS Login](#os-login-ssh-public-keys) | SSH public keys in the connection service account's profile | Supported |
 | [Resource Manager](#resource-manager-organizations) | The organization that contains the connected project | Read-only; the public v3 API has no organization delete method |
 | Secret Manager | Global and regional secrets | Supported |
+| Managed Service for Apache Kafka | Clusters, topics and consumer groups | Supported; a cluster's topics and consumer groups are deleted with it |
+| Eventarc | Message buses, pipelines, enrollments and triggers | Supported; triggers that another service manages (labeled `goog-managed-by`) are removed through that service |
+| Cloud Workstations | Workstation clusters, configurations and workstations | Reviewed cleanup: workstations are deleted before their configuration, and configurations before their cluster |
+| Certificate Manager | Certificates, certificate maps and entries, trust configs | Supported; a trust config that a TLS policy still uses is rejected by the service |
+| Cloud Asset Inventory feeds | Feeds of the connected project | Supported |
+| Organization Policy | Policies set directly on the connected project | Supported; deletion restores the policy inherited from the folder or organization |
 | [Security Command Center](#security-command-center) | Service settings, organization subscription, project and organization billing metadata | Read-only |
 
 Inventory is eventually consistent. Newly created or deleted resources can take time to show up in Cloud Asset Inventory, even after another scan. Cleanup doesn't rely on inventory: it checks the product API directly, waits for asynchronous operations and confirms the resource is gone. See Google's [asset type and freshness documentation](https://docs.cloud.google.com/asset-inventory/docs/asset-types).
@@ -183,6 +189,8 @@ Cleanup stops rather than working around a protection. The main protections are 
 - **Cloud Monitoring:** resources that still refer to the target block deletion unless you select them too. See [Cloud Monitoring](#cloud-monitoring).
 - **Metrics scopes:** the scope and its own project link are read-only. See [Metrics scopes](#metrics-scopes).
 - **Infrastructure Manager:** partial retention is rejected. See [Infrastructure Manager](#infrastructure-manager).
+- **Cloud Workstations:** a cluster or configuration is deleted only after its configurations or workstations, each through its own deletion; Steward doesn't use the force option.
+- **Eventarc:** triggers labeled `goog-managed-by`, such as those that Cloud Run functions create, are protected.
 - **Discovery Engine:** a data store with linked apps can't be deleted until every linked app is deleted or unlinked. See [Discovery Engine](#discovery-engine).
 - **The connection's own identity:** the service account the connection uses, and its keys, are always protected. See [Clean up resources](./cleanup.md).
 

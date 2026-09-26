@@ -152,6 +152,12 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | [OS Login](#os-login-ssh-公钥) | 连接服务账号 OS Login 资料中的 SSH 公钥 | 支持 |
 | [Resource Manager](#resource-manager-组织) | 连接项目所属的组织 | 只读；公开的 v3 API 没有组织删除方法 |
 | Secret Manager | 全局和地域级密钥 | 支持 |
+| Managed Service for Apache Kafka | 集群、主题与消费组 | 支持；删除集群会同时删除其主题和消费组 |
+| Eventarc | 消息总线、管道、注册与触发器 | 支持；由其他服务管理（带 `goog-managed-by` 标签）的触发器需通过该服务删除 |
+| Cloud Workstations | 工作站集群、配置与工作站 | 审查后清理：先删除工作站，再删除其配置，最后删除集群 |
+| Certificate Manager | 证书、证书映射及其条目、信任配置 | 支持；仍被 TLS 策略使用的信任配置会被服务拒绝删除 |
+| Cloud Asset Inventory 订阅源 | 所连接项目的订阅源 | 支持 |
+| 组织策略 | 直接设置在所连接项目上的策略 | 支持；删除后恢复为从文件夹或组织继承的策略 |
 | [Security Command Center](#security-command-center) | 服务设置、组织订阅、项目与组织计费元数据 | 只读 |
 
 资源盘点具有最终一致性。新建或删除的资源可能需要一段时间才会反映到 Cloud Asset Inventory 中，立即重扫也可能看到旧数据。清理不依赖盘点结果：Steward 直接查询产品 API、等待异步操作结束并确认资源已不存在。参阅 Google 的[资源类型与数据时效说明](https://docs.cloud.google.com/asset-inventory/docs/asset-types)。
@@ -183,6 +189,8 @@ Google VPC 可以跨地域。Steward 在各地域的网络视图中展示同一�
 - **Cloud Monitoring：** 仍引用目标的资源会阻止删除，除非一并选中它们。见 [Cloud Monitoring](#cloud-monitoring)。
 - **指标范围：** 范围及其自身项目关联只读。见[指标范围](#指标范围)。
 - **Infrastructure Manager：** 不支持部分保留。见 [Infrastructure Manager](#infrastructure-manager)。
+- **Cloud Workstations：** 集群或配置要等其下的配置或工作站逐一删除后才会删除；Steward 不使用强制删除选项。
+- **Eventarc：** 带 `goog-managed-by` 标签的触发器（例如 Cloud Run functions 创建的触发器）受保护。
 - **Discovery Engine：** 数据存储仍有关联应用时，必须先删除或解除所有关联应用。见 [Discovery Engine](#discovery-engine)。
 - **连接自身的身份：** 连接使用的服务账号及其密钥始终受保护。见[清理资源](./cleanup.md)。
 

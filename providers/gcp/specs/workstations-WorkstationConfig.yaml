@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: workstations.googleapis.com/WorkstationConfig
+  class: compute.virtual_desktop_policy
+presentation:
+  displayNames:
+    en-US: Workstation configuration
+    zh-CN: 工作站配置
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: workstations.projects.locations.workstationClusters.workstationConfigs.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: workstationConfigs
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: workstations.projects.locations.workstationClusters.workstationConfigs.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: workstations.googleapis.com/WorkstationCluster
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  updateTime:
+    path: updateTime
+    type: string
+  host:
+    path: host
+    type: object
+  reconciling:
+    path: reconciling
+    type: boolean
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: workstations.googleapis.com/WorkstationCluster
+  targetIdPath: refs_workstations_googleapis_com_WorkstationCluster
+- type: uses
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
+- type: uses
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: workstations.projects.locations.workstationClusters.workstationConfigs.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: workstations.projects.locations.workstationClusters.workstationConfigs.get
+      itemsPath: $
+      identityPath: name

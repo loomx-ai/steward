@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: eventarc.googleapis.com/MessageBus
+  class: messaging.event_bus
+presentation:
+  displayNames:
+    en-US: Eventarc message bus
+    zh-CN: Eventarc 消息总线
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: eventarc.projects.locations.messageBuses.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: messageBuses
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: eventarc.projects.locations.messageBuses.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  updateTime:
+    path: updateTime
+    type: string
+  cryptoKeyName:
+    path: cryptoKeyName
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: uses
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: eventarc.projects.locations.messageBuses.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: eventarc.projects.locations.messageBuses.get
+      itemsPath: $
+      identityPath: name

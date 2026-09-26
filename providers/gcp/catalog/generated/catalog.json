@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "3e1ffc4e7f10755f30a2ac3f2b0fed04283ed4e6c3f8303ce133c93ed3c37299",
+    "checksum": "205a4828b4f1dfc601ffae0ababe5c5ef62e2000a4597cb4f01b3f98183c2baa",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "4fb3246ad28a31d5abd52c06f9e47a2d33728c870e2ce9701ce25560cae91ee2",
+  "content_checksum": "29dd7718faaa8bbe8f8f6648a93621a4353a5d643a947c6a3a5073b85f5bcd15",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -12973,6 +12973,263 @@
       "source_uri": "https://certificatemanager.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "certificatemanager.projects.locations.trustConfigs.delete",
+      "name": "delete",
+      "service": "certificatemanager",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "etag": {
+            "description": "Optional. The current etag of the TrustConfig. If an etag is provided and does not match the current etag of the resource, deletion will be blocked and an ABORTED error will be returned.",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Required. A name of the TrustConfig to delete. Must be in the format `projects/*/locations/*/trustConfigs/*`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/trustConfigs/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "certificatemanager",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://certificatemanager.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://certificatemanager.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "certificatemanager.projects.locations.trustConfigs.get",
+      "name": "get",
+      "service": "certificatemanager",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. A name of the TrustConfig to describe. Must be in the format `projects/*/locations/*/trustConfigs/*`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/trustConfigs/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Defines a trust config.",
+        "id": "TrustConfig",
+        "properties": {
+          "allowlistedCertificates": {
+            "description": "Optional. A certificate matching an allowlisted certificate is always considered valid as long as the certificate is parseable, proof of private key possession is established, and constraints on the certificate's SAN field are met.",
+            "items": {
+              "$ref": "AllowlistedCertificate"
+            },
+            "type": "array"
+          },
+          "createTime": {
+            "description": "Output only. The creation timestamp of a TrustConfig.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "description": {
+            "description": "Optional. One or more paragraphs of text description of a TrustConfig.",
+            "type": "string"
+          },
+          "etag": {
+            "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+            "type": "string"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Set of labels associated with a TrustConfig.",
+            "type": "object"
+          },
+          "name": {
+            "description": "Identifier. A user-defined name of the trust config. TrustConfig names must be unique globally and match pattern `projects/*/locations/*/trustConfigs/*`.",
+            "type": "string"
+          },
+          "spiffeTrustStores": {
+            "additionalProperties": {
+              "$ref": "TrustStore"
+            },
+            "description": "Optional. Defines a mapping from a trust domain to a TrustStore. This is used for SPIFFE certificate validation.",
+            "type": "object"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Input only. Immutable. Tag keys/values directly bound to this resource. For example: \"123/environment\": \"production\", \"123/costCenter\": \"marketing\"",
+            "type": "object"
+          },
+          "trustStores": {
+            "description": "Optional. Set of trust stores to perform validation against. This field is supported when TrustConfig is configured with Load Balancers, currently not supported for SPIFFE certificate validation. Only one TrustStore specified is currently allowed.",
+            "items": {
+              "$ref": "TrustStore"
+            },
+            "type": "array"
+          },
+          "updateTime": {
+            "description": "Output only. The last update timestamp of a TrustConfig.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "certificatemanager",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://certificatemanager.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://certificatemanager.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "certificatemanager.projects.locations.trustConfigs.list",
+      "name": "list",
+      "service": "certificatemanager",
+      "method": "GET",
+      "path": "/v1/{parent}/trustConfigs",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Filter expression to restrict the TrustConfigs returned.",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. A list of TrustConfig field names used to specify the order of the returned results. The default sorting order is ascending. To specify descending order for a field, add a suffix `\" desc\"`.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. Maximum number of TrustConfigs to return per call.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. The value returned by the last `ListTrustConfigsResponse`. Indicates that this is a continuation of a prior `ListTrustConfigs` call, and that the system should return the next page of data.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The project and location from which the TrustConfigs should be listed, specified in the format `projects/*/locations/*`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response for the `ListTrustConfigs` method.",
+        "id": "ListTrustConfigsResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+            "type": "string"
+          },
+          "trustConfigs": {
+            "description": "A list of TrustConfigs for the parent resource.",
+            "items": {
+              "$ref": "TrustConfig"
+            },
+            "type": "array"
+          },
+          "unreachable": {
+            "description": "Locations that could not be reached.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "certificatemanager",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/trustConfigs",
+        "endpoint": "https://certificatemanager.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://certificatemanager.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
       "id": "cloudasset.assets.list",
       "name": "list",
       "service": "cloudasset",
@@ -13078,6 +13335,192 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/v1/{parent}/assets",
+        "endpoint": "https://cloudasset.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudasset.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudasset.feeds.delete",
+      "name": "delete",
+      "service": "cloudasset",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the feed and it must be in the format of: projects/project_number/feeds/feed_id folders/folder_number/feeds/feed_id organizations/organization_number/feeds/feed_id",
+            "location": "path",
+            "pattern": "^[^/]+/[^/]+/feeds/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+        "id": "Empty",
+        "properties": {},
+        "type": "object"
+      },
+      "call": {
+        "product": "cloudasset",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://cloudasset.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudasset.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudasset.feeds.get",
+      "name": "get",
+      "service": "cloudasset",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the Feed and it must be in the format of: projects/project_number/feeds/feed_id folders/folder_number/feeds/feed_id organizations/organization_number/feeds/feed_id",
+            "location": "path",
+            "pattern": "^[^/]+/[^/]+/feeds/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "An asset feed used to export asset updates to a destinations. An asset feed filter controls what updates are exported. The asset feed must be created within a project, organization, or folder. Supported destinations are: Pub/Sub topics.",
+        "id": "Feed",
+        "properties": {
+          "assetNames": {
+            "description": "A list of the full names of the assets to receive updates. You must specify either or both of asset_names and asset_types. Only asset updates matching specified asset_names or asset_types are exported to the feed. Example: `//compute.googleapis.com/projects/my_project_123/zones/zone1/instances/instance1`. For a list of the full names for supported asset types, see [Resource name format](/asset-inventory/docs/resource-name-format).",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "assetTypes": {
+            "description": "A list of types of the assets to receive updates. You must specify either or both of asset_names and asset_types. Only asset updates matching specified asset_names or asset_types are exported to the feed. Example: `\"compute.googleapis.com/Disk\"` For a list of all supported asset types, see [Supported asset types](/asset-inventory/docs/supported-asset-types).",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "condition": {
+            "$ref": "Expr",
+            "description": "A condition which determines whether an asset update should be published. If specified, an asset will be returned only when the expression evaluates to true. When set, `expression` field in the `Expr` must be a valid [CEL expression] (https://github.com/google/cel-spec) on a TemporalAsset with name `temporal_asset`. Example: a Feed with expression (\"temporal_asset.deleted == true\") will only publish Asset deletions. Other fields of `Expr` are optional. See our [user guide](https://cloud.google.com/asset-inventory/docs/monitoring-asset-changes-with-condition) for detailed instructions."
+          },
+          "contentType": {
+            "description": "Asset content type. If not specified, no content but the asset name and type will be returned.",
+            "enum": [
+              "CONTENT_TYPE_UNSPECIFIED",
+              "RESOURCE",
+              "IAM_POLICY",
+              "ORG_POLICY",
+              "ACCESS_POLICY",
+              "OS_INVENTORY",
+              "RELATIONSHIP"
+            ],
+            "enumDescriptions": [
+              "Unspecified content type.",
+              "Resource metadata.",
+              "The actual IAM policy set on a resource.",
+              "The organization policy set on an asset.",
+              "The Access Context Manager policy set on an asset.",
+              "The runtime OS Inventory information.",
+              "The related resources."
+            ],
+            "type": "string"
+          },
+          "feedOutputConfig": {
+            "$ref": "FeedOutputConfig",
+            "description": "Required. Feed output configuration defining where the asset updates are published to."
+          },
+          "name": {
+            "description": "Required. The format will be projects/{project_number}/feeds/{client-assigned_feed_identifier} or folders/{folder_number}/feeds/{client-assigned_feed_identifier} or organizations/{organization_number}/feeds/{client-assigned_feed_identifier} The client-assigned feed identifier must be unique within the parent project/folder/organization.",
+            "type": "string"
+          },
+          "relationshipTypes": {
+            "description": "A list of relationship types to output, for example: `INSTANCE_TO_INSTANCEGROUP`. This field should only be specified if content_type=RELATIONSHIP. * If specified: it outputs specified relationship updates on the [asset_names] or the [asset_types]. It returns an error if any of the [relationship_types] doesn't belong to the supported relationship types of the [asset_names] or [asset_types], or any of the [asset_names] or the [asset_types] doesn't belong to the source types of the [relationship_types]. * Otherwise: it outputs the supported relationships of the types of [asset_names] and [asset_types] or returns an error if any of the [asset_names] or the [asset_types] has no replationship support. See [Introduction to Cloud Asset Inventory](https://cloud.google.com/asset-inventory/docs/overview) for all supported asset types and relationship types.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "cloudasset",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://cloudasset.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudasset.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudasset.feeds.list",
+      "name": "list",
+      "service": "cloudasset",
+      "method": "GET",
+      "path": "/v1/{parent}/feeds",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "parent": {
+            "description": "Required. The parent project/folder/organization whose feeds are to be listed. It can only be using project/folder/organization number (such as \"folders/12345\")\", or a project ID (such as \"projects/my-project-id\").",
+            "location": "path",
+            "pattern": "^[^/]+/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "id": "ListFeedsResponse",
+        "properties": {
+          "feeds": {
+            "description": "A list of feeds.",
+            "items": {
+              "$ref": "Feed"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "cloudasset",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/feeds",
         "endpoint": "https://cloudasset.googleapis.com",
         "raw_path_parameters": [
           "parent"
@@ -94454,6 +94897,1172 @@
       "source_uri": "https://domains.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "eventarc.projects.locations.enrollments.delete",
+      "name": "delete",
+      "service": "eventarc",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "allowMissing": {
+            "description": "Optional. If set to true, and the Enrollment is not found, the request will succeed but no action will be taken on the server.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "etag": {
+            "description": "Optional. If provided, the Enrollment will only be deleted if the etag matches the current etag on the resource.",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Required. The name of the Enrollment to be deleted.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/enrollments/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "validateOnly": {
+            "description": "Optional. If set, validate the request and preview the review, but do not post it.",
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "GoogleLongrunningOperation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "GoogleRpcStatus",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.enrollments.get",
+      "name": "get",
+      "service": "eventarc",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the Enrollment to get.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/enrollments/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "An enrollment represents a subscription for messages on a particular message bus. It defines a matching criteria for messages on the bus and the subscriber endpoint where matched messages should be delivered.",
+        "id": "Enrollment",
+        "properties": {
+          "annotations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Resource annotations.",
+            "type": "object"
+          },
+          "celMatch": {
+            "description": "Required. A CEL expression identifying which messages this enrollment applies to.",
+            "type": "string"
+          },
+          "createTime": {
+            "description": "Output only. The creation time.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "destination": {
+            "description": "Required. Destination is the Pipeline that the Enrollment is delivering to. It must point to the full resource name of a Pipeline. Format: \"projects/{PROJECT_ID}/locations/{region}/pipelines/{PIPELINE_ID)\"",
+            "type": "string"
+          },
+          "displayName": {
+            "description": "Optional. Resource display name.",
+            "type": "string"
+          },
+          "etag": {
+            "description": "Output only. This checksum is computed by the server based on the value of other fields, and might be sent only on update and delete requests to ensure that the client has an up-to-date value before proceeding.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Resource labels.",
+            "type": "object"
+          },
+          "messageBus": {
+            "description": "Required. Immutable. Resource name of the message bus identifying the source of the messages. It matches the form projects/{project}/locations/{location}/messageBuses/{messageBus}.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Identifier. Resource name of the form projects/{project}/locations/{location}/enrollments/{enrollment}",
+            "type": "string"
+          },
+          "uid": {
+            "description": "Output only. Server assigned unique identifier for the channel. The value is a UUID4 string and guaranteed to remain unchanged until the resource is deleted.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The last-modified time.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.enrollments.list",
+      "name": "list",
+      "service": "eventarc",
+      "method": "GET",
+      "path": "/v1/{parent}/enrollments",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. The filter field that the list request will filter on. Possible filtersare described in https://google.aip.dev/160.",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. The sorting order of the resources returned. Value should be a comma-separated list of fields. The default sorting order is ascending. To specify descending order for a field, append a `desc` suffix; for example: `name desc, update_time`.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. The maximum number of results to return on each page. Note: The service may send fewer.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. The page token; provide the value from the `next_page_token` field in a previous call to retrieve the subsequent page. When paginating, all other parameters provided must match the previous call that provided the page token.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent collection to list triggers on.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response message for the `ListEnrollments` method.",
+        "id": "ListEnrollmentsResponse",
+        "properties": {
+          "enrollments": {
+            "description": "The requested Enrollments, up to the number specified in `page_size`.",
+            "items": {
+              "$ref": "Enrollment"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "A page token that can be sent to `ListEnrollments` to request the next page. If this is empty, then there are no more pages.",
+            "type": "string"
+          },
+          "unreachable": {
+            "description": "Unreachable resources, if any.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/enrollments",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.messageBuses.delete",
+      "name": "delete",
+      "service": "eventarc",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "allowMissing": {
+            "description": "Optional. If set to true, and the MessageBus is not found, the request will succeed but no action will be taken on the server.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "etag": {
+            "description": "Optional. If provided, the MessageBus will only be deleted if the etag matches the current etag on the resource.",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Required. The name of the MessageBus to be deleted.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/messageBuses/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "validateOnly": {
+            "description": "Optional. If set, validate the request and preview the review, but do not post it.",
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "GoogleLongrunningOperation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "GoogleRpcStatus",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.messageBuses.get",
+      "name": "get",
+      "service": "eventarc",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the message bus to get.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/messageBuses/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "MessageBus for the messages flowing through the system. The admin has visibility and control over the messages being published and consumed and can restrict publishers and subscribers to only a subset of data available in the system by defining authorization policies.",
+        "id": "MessageBus",
+        "properties": {
+          "annotations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Resource annotations.",
+            "type": "object"
+          },
+          "createTime": {
+            "description": "Output only. The creation time.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "cryptoKeyName": {
+            "description": "Optional. Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt their event data. It must match the pattern `projects/*/locations/*/keyRings/*/cryptoKeys/*`.",
+            "type": "string"
+          },
+          "displayName": {
+            "description": "Optional. Resource display name.",
+            "type": "string"
+          },
+          "etag": {
+            "description": "Output only. This checksum is computed by the server based on the value of other fields, and might be sent only on update and delete requests to ensure that the client has an up-to-date value before proceeding.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Resource labels.",
+            "type": "object"
+          },
+          "loggingConfig": {
+            "$ref": "LoggingConfig",
+            "description": "Optional. Config to control Platform logging for the Message Bus. This log configuration is applied to the Message Bus itself, and all the Enrollments attached to it."
+          },
+          "name": {
+            "description": "Identifier. Resource name of the form projects/{project}/locations/{location}/messageBuses/{message_bus}",
+            "type": "string"
+          },
+          "uid": {
+            "description": "Output only. Server assigned unique identifier for the channel. The value is a UUID4 string and guaranteed to remain unchanged until the resource is deleted.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The last-modified time.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.messageBuses.list",
+      "name": "list",
+      "service": "eventarc",
+      "method": "GET",
+      "path": "/v1/{parent}/messageBuses",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. The filter field that the list request will filter on. Possible filtersare described in https://google.aip.dev/160.",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. The sorting order of the resources returned. Value should be a comma-separated list of fields. The default sorting order is ascending. To specify descending order for a field, append a `desc` suffix; for example: `name desc, update_time`.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. The maximum number of results to return on each page. Note: The service may send fewer.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. The page token; provide the value from the `next_page_token` field in a previous call to retrieve the subsequent page. When paginating, all other parameters provided must match the previous call that provided the page token.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent collection to list message buses on.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response message for the `ListMessageBuses` method.",
+        "id": "ListMessageBusesResponse",
+        "properties": {
+          "messageBuses": {
+            "description": "The requested message buses, up to the number specified in `page_size`.",
+            "items": {
+              "$ref": "MessageBus"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "A page token that can be sent to `ListMessageBuses` to request the next page. If this is empty, then there are no more pages.",
+            "type": "string"
+          },
+          "unreachable": {
+            "description": "Unreachable resources, if any.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/messageBuses",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.operations.get",
+      "name": "get",
+      "service": "eventarc",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "The name of the operation resource.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/operations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "GoogleLongrunningOperation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "GoogleRpcStatus",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.pipelines.delete",
+      "name": "delete",
+      "service": "eventarc",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "allowMissing": {
+            "description": "Optional. If set to true, and the Pipeline is not found, the request will succeed but no action will be taken on the server.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "etag": {
+            "description": "Optional. If provided, the Pipeline will only be deleted if the etag matches the current etag on the resource.",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Required. The name of the Pipeline to be deleted.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/pipelines/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "validateOnly": {
+            "description": "Optional. If set, validate the request and preview the review, but do not post it.",
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "GoogleLongrunningOperation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "GoogleRpcStatus",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.pipelines.get",
+      "name": "get",
+      "service": "eventarc",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the pipeline to get.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/pipelines/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A representation of the Pipeline resource.",
+        "id": "Pipeline",
+        "properties": {
+          "annotations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. User-defined annotations. See https://google.aip.dev/128#annotations.",
+            "type": "object"
+          },
+          "createTime": {
+            "description": "Output only. The creation time. A timestamp in RFC3339 UTC \"Zulu\" format, with nanosecond resolution and up to nine fractional digits. Examples: \"2014-10-02T15:01:23Z\" and \"2014-10-02T15:01:23.045123456Z\".",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "cryptoKeyName": {
+            "description": "Optional. Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt the event data. If not set, an internal Google-owned key will be used to encrypt messages. It must match the pattern \"projects/{project}/locations/{location}/keyRings/{keyring}/cryptoKeys/{key}\".",
+            "type": "string"
+          },
+          "destinations": {
+            "description": "Required. List of destinations to which messages will be forwarded. Currently, exactly one destination is supported per Pipeline.",
+            "items": {
+              "$ref": "GoogleCloudEventarcV1PipelineDestination"
+            },
+            "type": "array"
+          },
+          "displayName": {
+            "description": "Optional. Display name of resource.",
+            "type": "string"
+          },
+          "etag": {
+            "description": "Output only. This checksum is computed by the server based on the value of other fields, and might be sent only on create requests to ensure that the client has an up-to-date value before proceeding.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "inputPayloadFormat": {
+            "$ref": "GoogleCloudEventarcV1PipelineMessagePayloadFormat",
+            "description": "Optional. The payload format expected for the messages received by the Pipeline. If input_payload_format is set then any messages not matching this format will be treated as persistent errors. If input_payload_format is not set, then the message data will be treated as an opaque binary and no output format can be set on the Pipeline through the Pipeline.Destination.output_payload_format field. Any Mediations on the Pipeline that involve access to the data field will fail as persistent errors."
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. User labels attached to the Pipeline that can be used to group resources. An object containing a list of \"key\": value pairs. Example: { \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }.",
+            "type": "object"
+          },
+          "loggingConfig": {
+            "$ref": "LoggingConfig",
+            "description": "Optional. Config to control Platform Logging for Pipelines."
+          },
+          "mediations": {
+            "description": "Optional. List of mediation operations to be performed on the message. Currently, only one Transformation operation is allowed in each Pipeline.",
+            "items": {
+              "$ref": "GoogleCloudEventarcV1PipelineMediation"
+            },
+            "type": "array"
+          },
+          "name": {
+            "description": "Identifier. The resource name of the Pipeline. Must be unique within the location of the project and must be in `projects/{project}/locations/{location}/pipelines/{pipeline}` format.",
+            "type": "string"
+          },
+          "retryPolicy": {
+            "$ref": "GoogleCloudEventarcV1PipelineRetryPolicy",
+            "description": "Optional. The retry policy to use in the pipeline."
+          },
+          "satisfiesPzs": {
+            "description": "Output only. Whether or not this Pipeline satisfies the requirements of physical zone separation",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "uid": {
+            "description": "Output only. Server-assigned unique identifier for the Pipeline. The value is a UUID4 string and guaranteed to remain unchanged until the resource is deleted.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The last-modified time. A timestamp in RFC3339 UTC \"Zulu\" format, with nanosecond resolution and up to nine fractional digits. Examples: \"2014-10-02T15:01:23Z\" and \"2014-10-02T15:01:23.045123456Z\".",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.pipelines.list",
+      "name": "list",
+      "service": "eventarc",
+      "method": "GET",
+      "path": "/v1/{parent}/pipelines",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. The filter field that the list request will filter on. Possible filters are described in https://google.aip.dev/160.",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. The sorting order of the resources returned. Value should be a comma-separated list of fields. The default sorting order is ascending. To specify descending order for a field, append a `desc` suffix; for example: `name desc, update_time`.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. The maximum number of results to return on each page. Note: The service may send fewer.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. The page token; provide the value from the `next_page_token` field in a previous call to retrieve the subsequent page. When paginating, all other parameters provided must match the previous call that provided the page token.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent collection to list pipelines on.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response message for the ListPipelines method.",
+        "id": "ListPipelinesResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "A page token that can be sent to `ListPipelines` to request the next page. If this is empty, then there are no more pages.",
+            "type": "string"
+          },
+          "pipelines": {
+            "description": "The requested pipelines, up to the number specified in `page_size`.",
+            "items": {
+              "$ref": "Pipeline"
+            },
+            "type": "array"
+          },
+          "unreachable": {
+            "description": "Unreachable resources, if any.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/pipelines",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.triggers.delete",
+      "name": "delete",
+      "service": "eventarc",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "allowMissing": {
+            "description": "If set to true, and the trigger is not found, the request will succeed but no action will be taken on the server.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "etag": {
+            "description": "If provided, the trigger will only be deleted if the etag matches the current etag on the resource.",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Required. The name of the trigger to be deleted.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/triggers/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "validateOnly": {
+            "description": "Optional. If set, validate the request and preview the review, but do not post it.",
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "GoogleLongrunningOperation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "GoogleRpcStatus",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.triggers.get",
+      "name": "get",
+      "service": "eventarc",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the trigger to get.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/triggers/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A representation of the trigger resource.",
+        "id": "Trigger",
+        "properties": {
+          "channel": {
+            "description": "Optional. The name of the channel associated with the trigger in `projects/{project}/locations/{location}/channels/{channel}` format. You must provide a channel to receive events from Eventarc SaaS partners.",
+            "type": "string"
+          },
+          "conditions": {
+            "additionalProperties": {
+              "$ref": "StateCondition"
+            },
+            "description": "Output only. The reason(s) why a trigger is in FAILED state.",
+            "readOnly": true,
+            "type": "object"
+          },
+          "createTime": {
+            "description": "Output only. The creation time.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "destination": {
+            "$ref": "Destination",
+            "description": "Required. Destination specifies where the events should be sent to."
+          },
+          "etag": {
+            "description": "Output only. This checksum is computed by the server based on the value of other fields, and might be sent only on create requests to ensure that the client has an up-to-date value before proceeding.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "eventDataContentType": {
+            "description": "Optional. EventDataContentType specifies the type of payload in MIME format that is expected from the CloudEvent data field. This is set to `application/json` if the value is not defined.",
+            "type": "string"
+          },
+          "eventFilters": {
+            "description": "Required. Unordered list. The list of filters that applies to event attributes. Only events that match all the provided filters are sent to the destination.",
+            "items": {
+              "$ref": "EventFilter"
+            },
+            "type": "array"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. User labels attached to the triggers that can be used to group resources.",
+            "type": "object"
+          },
+          "name": {
+            "description": "Required. The resource name of the trigger. Must be unique within the location of the project and must be in `projects/{project}/locations/{location}/triggers/{trigger}` format.",
+            "type": "string"
+          },
+          "retryPolicy": {
+            "$ref": "RetryPolicy",
+            "description": "Optional. The retry policy to use in the Trigger. If unset, event delivery will be retried for up to 24 hours by default: https://cloud.google.com/eventarc/docs/retry-events"
+          },
+          "satisfiesPzs": {
+            "description": "Output only. Whether or not this Trigger satisfies the requirements of physical zone separation",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "serviceAccount": {
+            "description": "Optional. The IAM service account email associated with the trigger. The service account represents the identity of the trigger. The `iam.serviceAccounts.actAs` permission must be granted on the service account to allow a principal to impersonate the service account. For more information, see the [Roles and permissions](/eventarc/docs/all-roles-permissions) page specific to the trigger destination.",
+            "type": "string"
+          },
+          "transport": {
+            "$ref": "Transport",
+            "description": "Optional. To deliver messages, Eventarc might use other Google Cloud products as a transport intermediary. This field contains a reference to that transport intermediary. This information can be used for debugging purposes."
+          },
+          "uid": {
+            "description": "Output only. Server-assigned unique identifier for the trigger. The value is a UUID4 string and guaranteed to remain unchanged until the resource is deleted.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The last-modified time.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "eventarc.projects.locations.triggers.list",
+      "name": "list",
+      "service": "eventarc",
+      "method": "GET",
+      "path": "/v1/{parent}/triggers",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Filter field. Used to filter the Triggers to be listed. Possible filters are described in https://google.aip.dev/160. For example, using \"?filter=destination:gke\" would list only Triggers with a gke destination.",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "The sorting order of the resources returned. Value should be a comma-separated list of fields. The default sorting order is ascending. To specify descending order for a field, append a `desc` suffix; for example: `name desc, trigger_id`.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "The maximum number of triggers to return on each page. Note: The service may send fewer.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "The page token; provide the value from the `next_page_token` field in a previous `ListTriggers` call to retrieve the subsequent page. When paginating, all other parameters provided to `ListTriggers` must match the call that provided the page token.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent collection to list triggers on.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response message for the `ListTriggers` method.",
+        "id": "ListTriggersResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "A page token that can be sent to `ListTriggers` to request the next page. If this is empty, then there are no more pages.",
+            "type": "string"
+          },
+          "triggers": {
+            "description": "The requested triggers, up to the number specified in `page_size`.",
+            "items": {
+              "$ref": "Trigger"
+            },
+            "type": "array"
+          },
+          "unreachable": {
+            "description": "Unreachable resources, if any.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "eventarc",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/triggers",
+        "endpoint": "https://eventarc.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
       "id": "file.projects.locations.instances.delete",
       "name": "delete",
       "service": "file",
@@ -97729,6 +99338,189 @@
       "source_uri": "https://logging.googleapis.com/$discovery/rest?version=v2"
     },
     {
+      "id": "managedkafka.projects.locations.clusters.consumerGroups.delete",
+      "name": "delete",
+      "service": "managedkafka",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the consumer group to delete. `projects/{project}/locations/{location}/clusters/{cluster}/consumerGroups/{consumerGroup}`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/clusters/[^/]+/consumerGroups/.*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+        "id": "Empty",
+        "properties": {},
+        "type": "object"
+      },
+      "call": {
+        "product": "managedkafka",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://managedkafka.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://managedkafka.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "managedkafka.projects.locations.clusters.consumerGroups.get",
+      "name": "get",
+      "service": "managedkafka",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the consumer group whose configuration to return. `projects/{project}/locations/{location}/clusters/{cluster}/consumerGroups/{consumerGroup}`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/clusters/[^/]+/consumerGroups/.*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A Kafka consumer group in a given cluster.",
+        "id": "ConsumerGroup",
+        "properties": {
+          "name": {
+            "description": "Identifier. The name of the consumer group. The `consumer_group` segment is used when connecting directly to the cluster. Structured like: projects/{project}/locations/{location}/clusters/{cluster}/consumerGroups/{consumer_group}",
+            "type": "string"
+          },
+          "topics": {
+            "additionalProperties": {
+              "$ref": "ConsumerTopicMetadata"
+            },
+            "description": "Optional. Metadata for this consumer group for all topics it has metadata for. The key of the map is a topic name, structured like: projects/{project}/locations/{location}/clusters/{cluster}/topics/{topic}",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "managedkafka",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://managedkafka.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://managedkafka.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "managedkafka.projects.locations.clusters.consumerGroups.list",
+      "name": "list",
+      "service": "managedkafka",
+      "method": "GET",
+      "path": "/v1/{parent}/consumerGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Filter expression for the result. Only supports filtering by topic name as a key in the `topics` map.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. The maximum number of consumer groups to return. The service may return fewer than this value. If unset or zero, all consumer groups for the parent is returned.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. A page token, received from a previous `ListConsumerGroups` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListConsumerGroups` must match the call that provided the page token.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent cluster whose consumer groups are to be listed. Structured like `projects/{project}/locations/{location}/clusters/{cluster}`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/clusters/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "view": {
+            "description": "Optional. Specifies the view (BASIC or FULL) of the ConsumerGroup resource to be returned in the response. Defaults to FULL view.",
+            "enum": [
+              "CONSUMER_GROUP_VIEW_UNSPECIFIED",
+              "CONSUMER_GROUP_VIEW_BASIC",
+              "CONSUMER_GROUP_VIEW_FULL"
+            ],
+            "enumDescriptions": [
+              "The default / unset value. The API will default to the FULL view.",
+              "Include the name of the ConsumerGroup. This hides partition and topic metadata.",
+              "Include everything, including partition and topic metadata. This is the default value."
+            ],
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response for ListConsumerGroups.",
+        "id": "ListConsumerGroupsResponse",
+        "properties": {
+          "consumerGroups": {
+            "description": "The list of consumer group in the requested parent. The order of the consumer groups is unspecified.",
+            "items": {
+              "$ref": "ConsumerGroup"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "A token that can be sent as `page_token` to retrieve the next page of results. If this field is omitted, there are no more results.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "consumerGroups"
+      },
+      "call": {
+        "product": "managedkafka",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/consumerGroups",
+        "endpoint": "https://managedkafka.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://managedkafka.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
       "id": "managedkafka.projects.locations.clusters.delete",
       "name": "delete",
       "service": "managedkafka",
@@ -97879,8 +99671,7 @@
             "description": "Required. Configuration properties for a Kafka cluster deployed to Google Cloud Platform."
           },
           "kafkaVersion": {
-            "description": "Output only. Only populated when FULL view is requested. The Kafka version of the cluster.",
-            "readOnly": true,
+            "description": "Optional. The Apache Kafka version of the cluster (for example, `3.7.x`, `4.3.x`). If not specified during cluster creation, defaults to `3.7.x`.",
             "type": "string"
           },
           "labels": {
@@ -105731,6 +107522,184 @@
         "parameter_position": "query"
       },
       "source_uri": "https://networkservices.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "orgpolicy.projects.policies.delete",
+      "name": "delete",
+      "service": "orgpolicy",
+      "method": "DELETE",
+      "path": "/v2/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "etag": {
+            "description": "Optional. The current entity tag (ETag) of the organization policy. If an ETag is provided and doesn't match the current ETag of the policy, deletion of the policy will be blocked and an `ABORTED` error will be returned.",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Required. Name of the policy to delete. See the policy entry for naming rules.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/policies/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+        "id": "GoogleProtobufEmpty",
+        "properties": {},
+        "type": "object"
+      },
+      "call": {
+        "product": "orgpolicy",
+        "version": "v2",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v2/{name}",
+        "endpoint": "https://orgpolicy.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://orgpolicy.googleapis.com/$discovery/rest?version=v2"
+    },
+    {
+      "id": "orgpolicy.projects.policies.get",
+      "name": "get",
+      "service": "orgpolicy",
+      "method": "GET",
+      "path": "/v2/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. Resource name of the policy. See Policy for naming requirements.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/policies/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Defines an organization policy that is used to specify constraints for configurations of Google Cloud resources.",
+        "id": "GoogleCloudOrgpolicyV2Policy",
+        "properties": {
+          "alternate": {
+            "$ref": "GoogleCloudOrgpolicyV2AlternatePolicySpec",
+            "deprecated": true,
+            "description": "Deprecated."
+          },
+          "dryRunSpec": {
+            "$ref": "GoogleCloudOrgpolicyV2PolicySpec",
+            "description": "Dry-run policy. Audit-only policy, can be used to monitor how the policy would have impacted the existing and future resources if it's enforced."
+          },
+          "etag": {
+            "description": "Optional. An opaque tag indicating the current state of the policy, used for concurrency control. This entity tag (ETag) is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Immutable. The resource name of the policy. Must be one of the following forms, where `constraint_name` is the name of the constraint that this policy configures: * `projects/{project_number}/policies/{constraint_name}` * `folders/{folder_number}/policies/{constraint_name}` * `organizations/{organization_number}/policies/{constraint_name}` For example, `projects/123/policies/compute.disableSerialPortAccess`. Note: `projects/{project_id}/policies/{constraint_name}` is also an acceptable name for API requests, but responses will return the name using the equivalent project number.",
+            "type": "string"
+          },
+          "spec": {
+            "$ref": "GoogleCloudOrgpolicyV2PolicySpec",
+            "description": "Basic information about the organization policy."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "orgpolicy",
+        "version": "v2",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v2/{name}",
+        "endpoint": "https://orgpolicy.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://orgpolicy.googleapis.com/$discovery/rest?version=v2"
+    },
+    {
+      "id": "orgpolicy.projects.policies.list",
+      "name": "list",
+      "service": "orgpolicy",
+      "method": "GET",
+      "path": "/v2/{parent}/policies",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "pageSize": {
+            "description": "Size of the pages to be returned. This is not used, but the server may at any point start using this field to limit page size.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Page token used to retrieve the next page. This is not used, but the server may at any point start using this field.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The target Google Cloud resource that parents the set of constraints and policies that will be returned from this call. Must be in one of the following forms: * `projects/{project_number}` * `projects/{project_id}` * `folders/{folder_number}` * `organizations/{organization_number}`",
+            "location": "path",
+            "pattern": "^projects/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response returned from the ListPolicies method. It will be empty if no policies are set on the resource.",
+        "id": "GoogleCloudOrgpolicyV2ListPoliciesResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "Page token used to retrieve the next page. This is not used, but the server may at any point start supplying a valid token.",
+            "type": "string"
+          },
+          "policies": {
+            "description": "All policies that exist on the resource. It will be empty if no policies are set.",
+            "items": {
+              "$ref": "GoogleCloudOrgpolicyV2Policy"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "policies"
+      },
+      "call": {
+        "product": "orgpolicy",
+        "version": "v2",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v2/{parent}/policies",
+        "endpoint": "https://orgpolicy.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://orgpolicy.googleapis.com/$discovery/rest?version=v2"
     },
     {
       "id": "oslogin.users.getLoginProfile",
@@ -115308,6 +117277,1058 @@
         "parameter_position": "query"
       },
       "source_uri": "https://tpu.googleapis.com/$discovery/rest?version=v2alpha1"
+    },
+    {
+      "id": "workstations.projects.locations.operations.get",
+      "name": "get",
+      "service": "workstations",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "The name of the operation resource.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/operations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "workstations",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://workstations.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://workstations.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "workstations.projects.locations.workstationClusters.delete",
+      "name": "delete",
+      "service": "workstations",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "etag": {
+            "description": "Optional. If set, the request will be rejected if the latest version of the workstation cluster on the server does not have this ETag.",
+            "location": "query",
+            "type": "string"
+          },
+          "force": {
+            "description": "Optional. If set, any workstation configurations and workstations in the workstation cluster are also deleted. Otherwise, the request only works if the workstation cluster has no configurations or workstations.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "name": {
+            "description": "Required. Name of the workstation cluster to delete.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/workstationClusters/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "validateOnly": {
+            "description": "Optional. If set, validate the request and preview the result, but do not apply it.",
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "workstations",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://workstations.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://workstations.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "workstations.projects.locations.workstationClusters.get",
+      "name": "get",
+      "service": "workstations",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. Name of the requested resource.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/workstationClusters/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A workstation cluster resource in the Cloud Workstations API. Defines a group of workstations in a particular region and the VPC network they're attached to.",
+        "id": "WorkstationCluster",
+        "properties": {
+          "annotations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Client-specified annotations.",
+            "type": "object"
+          },
+          "conditions": {
+            "description": "Output only. Status conditions describing the workstation cluster's current state.",
+            "items": {
+              "$ref": "Status"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "controlPlaneIp": {
+            "description": "Output only. The private IP address of the control plane for this workstation cluster. Workstation VMs need access to this IP address to work with the service, so make sure that your firewall rules allow egress from the workstation VMs to this address.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "createTime": {
+            "description": "Output only. Time when this workstation cluster was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "degraded": {
+            "description": "Output only. Whether this workstation cluster is in degraded mode, in which case it may require user action to restore full functionality. The conditions field contains detailed information about the status of the cluster.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "deleteTime": {
+            "description": "Output only. Time when this workstation cluster was soft-deleted.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "displayName": {
+            "description": "Optional. Human-readable name for this workstation cluster.",
+            "type": "string"
+          },
+          "domainConfig": {
+            "$ref": "DomainConfig",
+            "description": "Optional. Configuration options for a custom domain."
+          },
+          "etag": {
+            "description": "Optional. Checksum computed by the server. May be sent on update and delete requests to make sure that the client has an up-to-date value before proceeding.",
+            "type": "string"
+          },
+          "gatewayConfig": {
+            "$ref": "GatewayConfig",
+            "description": "Optional. Configuration options for Cluster HTTP Gateway."
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. [Labels](https://cloud.google.com/workstations/docs/label-resources) that are applied to the workstation cluster and that are also propagated to the underlying Compute Engine resources.",
+            "type": "object"
+          },
+          "name": {
+            "description": "Identifier. Full name of this workstation cluster.",
+            "type": "string"
+          },
+          "network": {
+            "description": "Immutable. Name of the Compute Engine network in which instances associated with this workstation cluster will be created.",
+            "type": "string"
+          },
+          "privateClusterConfig": {
+            "$ref": "PrivateClusterConfig",
+            "description": "Optional. Configuration for private workstation cluster."
+          },
+          "reconciling": {
+            "description": "Output only. Indicates whether this workstation cluster is currently being updated to match its intended state.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "subnetwork": {
+            "description": "Immutable. Name of the Compute Engine subnetwork in which instances associated with this workstation cluster will be created. Must be part of the subnetwork specified for this workstation cluster.",
+            "type": "string"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Input only. Immutable. Tag keys/values directly bound to this resource. For example: \"123/environment\": \"production\", \"123/costCenter\": \"marketing\"",
+            "type": "object"
+          },
+          "uid": {
+            "description": "Output only. A system-assigned unique identifier for this workstation cluster.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. Time when this workstation cluster was most recently updated.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "workstationAuthorizationUrl": {
+            "description": "Optional. Specifies the redirect URL for unauthorized requests received by workstation VMs in this cluster. Redirects to this endpoint will send a base64 encoded `state` query param containing the target workstation name and original request hostname. The endpoint is responsible for retrieving a token using `GenerateAccessToken` and redirecting back to the original hostname with the token.",
+            "type": "string"
+          },
+          "workstationLaunchUrl": {
+            "description": "Optional. Specifies the launch URL for workstations in this cluster. Requests sent to unstarted workstations will be redirected to this URL. Requests redirected to the launch endpoint will be sent with a `workstation` and `project` query parameter containing the full workstation resource name and project ID, respectively. The launch endpoint is responsible for starting the workstation, polling it until it reaches `STATE_RUNNING`, and then issuing a redirect to the workstation's host URL.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "workstations",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://workstations.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://workstations.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "workstations.projects.locations.workstationClusters.list",
+      "name": "list",
+      "service": "workstations",
+      "method": "GET",
+      "path": "/v1/{parent}/workstationClusters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Filter the WorkstationClusters to be listed. Possible filters are described in https://google.aip.dev/160.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. Maximum number of items to return.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. next_page_token value returned from a previous List request, if any.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. Parent resource name.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response message for ListWorkstationClusters.",
+        "id": "ListWorkstationClustersResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+            "type": "string"
+          },
+          "unreachable": {
+            "description": "Unreachable resources.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "workstationClusters": {
+            "description": "The requested workstation clusters.",
+            "items": {
+              "$ref": "WorkstationCluster"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "workstations",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/workstationClusters",
+        "endpoint": "https://workstations.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://workstations.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "workstations.projects.locations.workstationClusters.workstationConfigs.delete",
+      "name": "delete",
+      "service": "workstations",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "etag": {
+            "description": "Optional. If set, the request is rejected if the latest version of the workstation configuration on the server does not have this ETag.",
+            "location": "query",
+            "type": "string"
+          },
+          "force": {
+            "description": "Optional. If set, any workstations in the workstation configuration are also deleted. Otherwise, the request works only if the workstation configuration has no workstations.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "name": {
+            "description": "Required. Name of the workstation configuration to delete.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/workstationClusters/[^/]+/workstationConfigs/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "validateOnly": {
+            "description": "Optional. If set, validate the request and preview the result, but do not actually apply it.",
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "workstations",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://workstations.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://workstations.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "workstations.projects.locations.workstationClusters.workstationConfigs.get",
+      "name": "get",
+      "service": "workstations",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. Name of the requested resource.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/workstationClusters/[^/]+/workstationConfigs/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A workstation configuration resource in the Cloud Workstations API. Workstation configurations act as templates for workstations. The workstation configuration defines details such as the workstation virtual machine (VM) instance type, persistent storage, container image defining environment, which IDE or Code Editor to use, and more. Administrators and platform teams can also use [Identity and Access Management (IAM)](https://cloud.google.com/iam/docs/overview) rules to grant access to teams or to individual developers.",
+        "id": "WorkstationConfig",
+        "properties": {
+          "allowedPorts": {
+            "description": "Optional. A list of PortRanges specifying single ports or ranges of ports that are externally accessible in the workstation. Allowed ports must be one of 22, 80, or within range 1024-65535. If not specified defaults to ports 22, 80, and ports 1024-65535.",
+            "items": {
+              "$ref": "PortRange"
+            },
+            "type": "array"
+          },
+          "annotations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Client-specified annotations.",
+            "type": "object"
+          },
+          "conditions": {
+            "description": "Output only. Status conditions describing the workstation configuration's current state.",
+            "items": {
+              "$ref": "Status"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "container": {
+            "$ref": "Container",
+            "description": "Optional. Container that runs upon startup for each workstation using this workstation configuration."
+          },
+          "createTime": {
+            "description": "Output only. Time when this workstation configuration was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "degraded": {
+            "description": "Output only. Whether this workstation configuration is in degraded mode, in which case it may require user action to restore full functionality. The conditions field contains detailed information about the status of the configuration.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "deleteTime": {
+            "description": "Output only. Time when this workstation configuration was soft-deleted.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "disableTcpConnections": {
+            "description": "Optional. Disables support for plain TCP connections in the workstation. By default the service supports TCP connections through a websocket relay. Setting this option to true disables that relay, which prevents the usage of services that require plain TCP connections, such as SSH. When enabled, all communication must occur over HTTPS or WSS.",
+            "type": "boolean"
+          },
+          "displayName": {
+            "description": "Optional. Human-readable name for this workstation configuration.",
+            "type": "string"
+          },
+          "enableAuditAgent": {
+            "description": "Optional. Whether to enable Linux `auditd` logging on the workstation. When enabled, a service_account must also be specified that has `roles/logging.logWriter` and `roles/monitoring.metricWriter` on the project. Operating system audit logging is distinct from [Cloud Audit Logs](https://cloud.google.com/workstations/docs/audit-logging) and [Container output logging](https://cloud.google.com/workstations/docs/container-output-logging#overview). Operating system audit logs are available in the [Cloud Logging](https://cloud.google.com/logging/docs) console by querying: resource.type=\"gce_instance\" log_name:\"/logs/linux-auditd\"",
+            "type": "boolean"
+          },
+          "encryptionKey": {
+            "$ref": "CustomerEncryptionKey",
+            "description": "Immutable. Encrypts resources of this workstation configuration using a customer-managed encryption key (CMEK). If specified, the boot disk of the Compute Engine instance and the persistent disk are encrypted using this encryption key. If this field is not set, the disks are encrypted using a generated key. Customer-managed encryption keys do not protect disk metadata. If the customer-managed encryption key is rotated, when the workstation instance is stopped, the system attempts to recreate the persistent disk with the new version of the key. Be sure to keep older versions of the key until the persistent disk is recreated. Otherwise, data on the persistent disk might be lost. If the encryption key is revoked, the workstation session automatically stops within 7 hours. Immutable after the workstation configuration is created."
+          },
+          "ephemeralDirectories": {
+            "description": "Optional. Ephemeral directories which won't persist across workstation sessions.",
+            "items": {
+              "$ref": "EphemeralDirectory"
+            },
+            "type": "array"
+          },
+          "etag": {
+            "description": "Optional. Checksum computed by the server. May be sent on update and delete requests to make sure that the client has an up-to-date value before proceeding.",
+            "type": "string"
+          },
+          "grantWorkstationAdminRoleOnCreate": {
+            "description": "Optional. Grant creator of a workstation `roles/workstations.policyAdmin` role along with `roles/workstations.user` role on the workstation created by them. This allows workstation users to share access to either their entire workstation, or individual ports. Defaults to false.",
+            "type": "boolean"
+          },
+          "host": {
+            "$ref": "Host",
+            "description": "Optional. Runtime host for the workstation."
+          },
+          "idleAction": {
+            "description": "Optional. The action to take when the workstation has been idle for the duration specified in idle_timeout. Defaults to STOP.",
+            "enum": [
+              "IDLE_ACTION_UNSPECIFIED",
+              "STOP",
+              "SUSPEND"
+            ],
+            "enumDescriptions": [
+              "Defaults to STOP.",
+              "Stop the workstation after idle_timeout.",
+              "Suspend the workstation after idle_timeout."
+            ],
+            "type": "string"
+          },
+          "idleTimeout": {
+            "description": "Optional. Number of seconds to wait before automatically stopping or suspending a workstation after it last received user traffic. See idle_action to configure whether to stop or suspend idle workstations. A value of `\"0s\"` indicates that Cloud Workstations VMs created with this configuration should never time out due to idleness. Provide [duration](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#duration) terminated by `s` for seconds—for example, `\"7200s\"` (2 hours). The default is `\"1200s\"` (20 minutes).",
+            "format": "google-duration",
+            "type": "string"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. [Labels](https://cloud.google.com/workstations/docs/label-resources) that are applied to the workstation configuration and that are also propagated to the underlying Compute Engine resources.",
+            "type": "object"
+          },
+          "maxUsableWorkstations": {
+            "description": "Optional. Maximum number of workstations under this configuration a user can have `workstations.workstation.use` permission on. Only enforced on CreateWorkstation API calls on the user issuing the API request. Can be overridden by: - granting a user workstations.workstationConfigs.exemptMaxUsableWorkstationLimit permission, or - having a user with that permission create a workstation and granting another user `workstations.workstation.use` permission on that workstation. If not specified, defaults to `0`, which indicates unlimited.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "name": {
+            "description": "Identifier. Full name of this workstation configuration.",
+            "type": "string"
+          },
+          "persistentDirectories": {
+            "description": "Optional. Directories to persist across workstation sessions.",
+            "items": {
+              "$ref": "PersistentDirectory"
+            },
+            "type": "array"
+          },
+          "readinessChecks": {
+            "description": "Optional. Readiness checks to perform when starting a workstation using this workstation configuration. Mark a workstation as running only after all specified readiness checks return 200 status codes.",
+            "items": {
+              "$ref": "ReadinessCheck"
+            },
+            "type": "array"
+          },
+          "reconciling": {
+            "description": "Output only. Indicates whether this workstation configuration is currently being updated to match its intended state.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "replicaZones": {
+            "description": "Optional. Immutable. Specifies the zones used to replicate the VM and disk resources within the region. If set, exactly two zones within the workstation cluster's region must be specified—for example, `['us-central1-a', 'us-central1-f']`. If this field is empty, two default zones within the region are used. Immutable after the workstation configuration is created.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "runningTimeout": {
+            "description": "Optional. Number of seconds to wait before automatically stopping a workstation. We recommend that workstations be stopped daily so that security updates can be applied upon restart. The idle_timeout and running_timeout fields are independent of each other. Note that the running_timeout field stops workstations after the specified time, regardless of whether or not the workstations are idle. Note: This timeout applies to workstations in the following states: * STATE_RUNNING * STATE_SUSPENDED Suspending a workstation does not reset this timeout. Provide duration terminated by `s` for seconds—for example, `\"54000s\"` (15 hours). Defaults to `\"43200s\"` (12 hours). A value of `\"0s\"` indicates that workstations using this configuration should never time out. If encryption_key is set, it must be greater than `\"0s\"` and less than `\"86400s\"` (24 hours). Warning: A value of `\"0s\"` indicates that Cloud Workstations VMs created with this configuration have no maximum running time. This is strongly discouraged because you incur costs and will not pick up security updates.",
+            "format": "google-duration",
+            "type": "string"
+          },
+          "uid": {
+            "description": "Output only. A system-assigned unique identifier for this workstation configuration.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. Time when this workstation configuration was most recently updated.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "workstations",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://workstations.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://workstations.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "workstations.projects.locations.workstationClusters.workstationConfigs.list",
+      "name": "list",
+      "service": "workstations",
+      "method": "GET",
+      "path": "/v1/{parent}/workstationConfigs",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Filter the WorkstationConfigs to be listed. Possible filters are described in https://google.aip.dev/160.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. Maximum number of items to return.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. next_page_token value returned from a previous List request, if any.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. Parent resource name.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/workstationClusters/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response message for ListWorkstationConfigs.",
+        "id": "ListWorkstationConfigsResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+            "type": "string"
+          },
+          "unreachable": {
+            "description": "Unreachable resources.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "workstationConfigs": {
+            "description": "The requested configs.",
+            "items": {
+              "$ref": "WorkstationConfig"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "workstations",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/workstationConfigs",
+        "endpoint": "https://workstations.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://workstations.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.delete",
+      "name": "delete",
+      "service": "workstations",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "etag": {
+            "description": "Optional. If set, the request will be rejected if the latest version of the workstation on the server does not have this ETag.",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Required. Name of the workstation to delete.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/workstationClusters/[^/]+/workstationConfigs/[^/]+/workstations/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "validateOnly": {
+            "description": "Optional. If set, validate the request and preview the result, but do not actually apply it.",
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "workstations",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://workstations.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://workstations.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.get",
+      "name": "get",
+      "service": "workstations",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. Name of the requested resource.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/workstationClusters/[^/]+/workstationConfigs/[^/]+/workstations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A single instance of a developer workstation with its own persistent storage.",
+        "id": "Workstation",
+        "properties": {
+          "annotations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Client-specified annotations.",
+            "type": "object"
+          },
+          "createTime": {
+            "description": "Output only. Time when this workstation was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "deleteTime": {
+            "description": "Output only. Time when this workstation was soft-deleted.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "displayName": {
+            "description": "Optional. Human-readable name for this workstation.",
+            "type": "string"
+          },
+          "env": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Environment variables passed to the workstation container's entrypoint.",
+            "type": "object"
+          },
+          "etag": {
+            "description": "Optional. Checksum computed by the server. May be sent on update and delete requests to make sure that the client has an up-to-date value before proceeding.",
+            "type": "string"
+          },
+          "host": {
+            "description": "Output only. Host to which clients can send HTTPS traffic that will be received by the workstation. Authorized traffic will be received to the workstation as HTTP on port 80. To send traffic to a different port, clients may prefix the host with the destination port in the format `{port}-{host}`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "kmsKey": {
+            "description": "Output only. The name of the Google Cloud KMS encryption key used to encrypt this workstation. The KMS key can only be configured in the WorkstationConfig. The expected format is `projects/*/locations/*/keyRings/*/cryptoKeys/*`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. [Labels](https://cloud.google.com/workstations/docs/label-resources) that are applied to the workstation and that are also propagated to the underlying Compute Engine resources.",
+            "type": "object"
+          },
+          "name": {
+            "description": "Identifier. Full name of this workstation.",
+            "type": "string"
+          },
+          "persistentDirectories": {
+            "description": "Optional. Directories to persist across workstation sessions.",
+            "items": {
+              "$ref": "WorkstationPersistentDirectory"
+            },
+            "type": "array"
+          },
+          "reconciling": {
+            "description": "Output only. Indicates whether this workstation is currently being updated to match its intended state.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "runtimeHost": {
+            "$ref": "RuntimeHost",
+            "description": "Optional. Output only. Runtime host for the workstation when in STATE_RUNNING.",
+            "readOnly": true
+          },
+          "sourceWorkstation": {
+            "description": "Optional. The source workstation from which this workstation's persistent directories were cloned on creation.",
+            "type": "string"
+          },
+          "startTime": {
+            "description": "Output only. Time when this workstation was most recently successfully started, regardless of the workstation's initial state.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "state": {
+            "description": "Output only. Current state of the workstation.",
+            "enum": [
+              "STATE_UNSPECIFIED",
+              "STATE_STARTING",
+              "STATE_RUNNING",
+              "STATE_STOPPING",
+              "STATE_STOPPED",
+              "STATE_SUSPENDING",
+              "STATE_SUSPENDED"
+            ],
+            "enumDescriptions": [
+              "Do not use.",
+              "The workstation is not yet ready to accept requests from users but will be soon.",
+              "The workstation is ready to accept requests from users.",
+              "The workstation is being stopped.",
+              "The workstation is stopped and will not be able to receive requests until it is started.",
+              "The workstation is being suspended.",
+              "The workstation is suspended."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "uid": {
+            "description": "Output only. A system-assigned unique identifier for this workstation.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. Time when this workstation was most recently updated.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "workstations",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://workstations.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://workstations.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.list",
+      "name": "list",
+      "service": "workstations",
+      "method": "GET",
+      "path": "/v1/{parent}/workstations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Filter the Workstations to be listed. Possible filters are described in https://google.aip.dev/160.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. Maximum number of items to return.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. next_page_token value returned from a previous List request, if any.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. Parent resource name.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/workstationClusters/[^/]+/workstationConfigs/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response message for ListWorkstations.",
+        "id": "ListWorkstationsResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "Optional. Token to retrieve the next page of results, or empty if there are no more results in the list.",
+            "type": "string"
+          },
+          "unreachable": {
+            "description": "Optional. Unreachable resources.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "workstations": {
+            "description": "The requested workstations.",
+            "items": {
+              "$ref": "Workstation"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "workstations",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/workstations",
+        "endpoint": "https://workstations.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://workstations.googleapis.com/$discovery/rest?version=v1"
     }
   ],
   "resource_types": [
@@ -115829,6 +118850,47 @@
         ],
         "list_operations": [
           "certificatemanager.projects.locations.certificateMaps.certificateMapEntries.list"
+        ]
+      }
+    },
+    {
+      "native_type": "certificatemanager.googleapis.com/TrustConfig",
+      "class": "security.certificate",
+      "display_name": "Certificate Manager trust config",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "trustConfigs",
+        "read_operations": [
+          "certificatemanager.projects.locations.trustConfigs.get"
+        ],
+        "delete_operations": [
+          "certificatemanager.projects.locations.trustConfigs.delete"
+        ],
+        "list_operations": [
+          "certificatemanager.projects.locations.trustConfigs.list"
+        ]
+      }
+    },
+    {
+      "native_type": "cloudasset.googleapis.com/Feed",
+      "class": "governance.aggregator",
+      "display_name": "Cloud Asset Inventory feed",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "feeds",
+        "read_operations": [
+          "cloudasset.feeds.get"
+        ],
+        "delete_operations": [
+          "cloudasset.feeds.delete"
+        ],
+        "list_operations": [
+          "cloudasset.feeds.list"
         ]
       }
     },
@@ -118175,6 +121237,86 @@
       }
     },
     {
+      "native_type": "eventarc.googleapis.com/Enrollment",
+      "class": "messaging.event_rule",
+      "display_name": "Eventarc enrollment",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "enrollments",
+        "read_operations": [
+          "eventarc.projects.locations.enrollments.get"
+        ],
+        "delete_operations": [
+          "eventarc.projects.locations.enrollments.delete"
+        ],
+        "list_operations": [
+          "eventarc.projects.locations.enrollments.list"
+        ]
+      }
+    },
+    {
+      "native_type": "eventarc.googleapis.com/MessageBus",
+      "class": "messaging.event_bus",
+      "display_name": "Eventarc message bus",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "messageBuses",
+        "read_operations": [
+          "eventarc.projects.locations.messageBuses.get"
+        ],
+        "delete_operations": [
+          "eventarc.projects.locations.messageBuses.delete"
+        ],
+        "list_operations": [
+          "eventarc.projects.locations.messageBuses.list"
+        ]
+      }
+    },
+    {
+      "native_type": "eventarc.googleapis.com/Pipeline",
+      "class": "messaging.event_pipeline",
+      "display_name": "Eventarc pipeline",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "pipelines",
+        "read_operations": [
+          "eventarc.projects.locations.pipelines.get"
+        ],
+        "delete_operations": [
+          "eventarc.projects.locations.pipelines.delete"
+        ],
+        "list_operations": [
+          "eventarc.projects.locations.pipelines.list"
+        ]
+      }
+    },
+    {
+      "native_type": "eventarc.googleapis.com/Trigger",
+      "class": "messaging.event_rule",
+      "display_name": "Eventarc trigger",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "triggers",
+        "read_operations": [
+          "eventarc.projects.locations.triggers.get"
+        ],
+        "delete_operations": [
+          "eventarc.projects.locations.triggers.delete"
+        ],
+        "list_operations": [
+          "eventarc.projects.locations.triggers.list"
+        ]
+      }
+    },
+    {
       "native_type": "file.googleapis.com/Instance",
       "class": "storage.file_system",
       "display_name": "Filestore instance",
@@ -118393,6 +121535,26 @@
         ],
         "list_operations": [
           "managedkafka.projects.locations.clusters.list"
+        ]
+      }
+    },
+    {
+      "native_type": "managedkafka.googleapis.com/ConsumerGroup",
+      "class": "messaging.consumer_group",
+      "display_name": "Managed Kafka consumer group",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "consumerGroups",
+        "read_operations": [
+          "managedkafka.projects.locations.clusters.consumerGroups.get"
+        ],
+        "delete_operations": [
+          "managedkafka.projects.locations.clusters.consumerGroups.delete"
+        ],
+        "list_operations": [
+          "managedkafka.projects.locations.clusters.consumerGroups.list"
         ]
       }
     },
@@ -118986,6 +122148,26 @@
       }
     },
     {
+      "native_type": "orgpolicy.googleapis.com/Policy",
+      "class": "governance.policy_rule",
+      "display_name": "Organization policy",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "policies",
+        "read_operations": [
+          "orgpolicy.projects.policies.get"
+        ],
+        "delete_operations": [
+          "orgpolicy.projects.policies.delete"
+        ],
+        "list_operations": [
+          "orgpolicy.projects.policies.list"
+        ]
+      }
+    },
+    {
       "native_type": "oslogin.googleapis.com/SshPublicKey",
       "class": "security.key_pair",
       "display_name": "OS Login SSH public key",
@@ -119440,6 +122622,66 @@
         ],
         "list_operations": [
           "tpu.projects.locations.reservations.list"
+        ]
+      }
+    },
+    {
+      "native_type": "workstations.googleapis.com/Workstation",
+      "class": "compute.virtual_desktop",
+      "display_name": "Workstation",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "workstations",
+        "read_operations": [
+          "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.get"
+        ],
+        "delete_operations": [
+          "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.delete"
+        ],
+        "list_operations": [
+          "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.list"
+        ]
+      }
+    },
+    {
+      "native_type": "workstations.googleapis.com/WorkstationCluster",
+      "class": "network.virtual_desktop_network",
+      "display_name": "Workstation cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "workstationClusters",
+        "read_operations": [
+          "workstations.projects.locations.workstationClusters.get"
+        ],
+        "delete_operations": [
+          "workstations.projects.locations.workstationClusters.delete"
+        ],
+        "list_operations": [
+          "workstations.projects.locations.workstationClusters.list"
+        ]
+      }
+    },
+    {
+      "native_type": "workstations.googleapis.com/WorkstationConfig",
+      "class": "compute.virtual_desktop_policy",
+      "display_name": "Workstation configuration",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "workstationConfigs",
+        "read_operations": [
+          "workstations.projects.locations.workstationClusters.workstationConfigs.get"
+        ],
+        "delete_operations": [
+          "workstations.projects.locations.workstationClusters.workstationConfigs.delete"
+        ],
+        "list_operations": [
+          "workstations.projects.locations.workstationClusters.workstationConfigs.list"
         ]
       }
     }

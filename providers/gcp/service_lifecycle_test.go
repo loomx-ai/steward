@@ -224,6 +224,7 @@ func TestDatabaseAndBrokerCascadesRequireReviewedNativeChildren(t *testing.T) {
 		{"bigtableadmin.googleapis.com/Instance", "bigtableadmin.googleapis.com/Cluster", p + "instances/wide", "clusters", p + "instances/wide/clusters/zone-a"},
 		{"alloydb.googleapis.com/Cluster", "alloydb.googleapis.com/Instance", p + "locations/us-central1/clusters/sql", "instances", p + "locations/us-central1/clusters/sql/instances/primary"},
 		{"managedkafka.googleapis.com/Cluster", "managedkafka.googleapis.com/Topic", p + "locations/us-central1/clusters/broker", "topics", p + "locations/us-central1/clusters/broker/topics/__remote_log_metadata"},
+		{"managedkafka.googleapis.com/Cluster", "managedkafka.googleapis.com/ConsumerGroup", p + "locations/us-central1/clusters/broker", "consumerGroups", p + "locations/us-central1/clusters/broker/consumerGroups/readers"},
 	} {
 		t.Run(test.parent+"/"+test.child, func(t *testing.T) {
 			host := strings.Split(test.parent, "/")[0]
@@ -280,6 +281,8 @@ func TestDatabaseAndBrokerCascadesRequireReviewedNativeChildren(t *testing.T) {
 				case r.URL.Path == "/"+version+"/"+test.name+"/"+test.collection:
 					body = map[string]any{test.collection: []any{child.Normalized}}
 				case host == "bigtableadmin.googleapis.com" && (strings.HasSuffix(r.URL.Path, "/tables") || strings.HasSuffix(r.URL.Path, "/clusters")):
+					body = map[string]any{}
+				case host == "managedkafka.googleapis.com" && (strings.HasSuffix(r.URL.Path, "/topics") || strings.HasSuffix(r.URL.Path, "/consumerGroups")):
 					body = map[string]any{}
 				default:
 					t.Fatalf("unexpected native child request: %s", r.URL)
@@ -435,5 +438,47 @@ func TestNCCHubOwnsNativeReadOnlyTablesGroupsAndRoutes(t *testing.T) {
 	result, err = plan.Solve(input)
 	if err != nil || len(result.Blockers) == 0 {
 		t.Fatalf("native NCC route retention accepted %+v %v", result, err)
+	}
+}
+
+// Without force, a workstation cluster or configuration is deleted only after
+// its configurations or workstations; each child is a direct prerequisite.
+func TestWorkstationChildrenAreDeletedBeforeTheirParents(t *testing.T) {
+	const p = "projects/sample-project/locations/us-central1/workstationClusters/dev"
+	cluster := asset.Asset{ID: "cluster", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", NativeType: workstationClusterType, NativeID: "//workstations.googleapis.com/" + p}, Normalized: map[string]any{"name": p}}
+	config := asset.Asset{ID: "config", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", NativeType: workstationConfigType, NativeID: "//workstations.googleapis.com/" + p + "/workstationConfigs/std"}, Normalized: map[string]any{"name": p + "/workstationConfigs/std"}}
+	station := asset.Asset{ID: "station", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", NativeType: workstationType, NativeID: "//workstations.googleapis.com/" + p + "/workstationConfigs/std/workstations/alice"}, Normalized: map[string]any{"name": p + "/workstationConfigs/std/workstations/alice"}}
+	transport := func(r *http.Request) (*http.Response, error) {
+		if r.Method != "GET" || r.URL.Host != "workstations.googleapis.com" {
+			t.Fatalf("unexpected request %s %s", r.Method, r.URL)
+		}
+		var body any
+		switch r.URL.Path {
+		case "/v1/" + p:
+			body = cluster.Normalized
+		case "/v1/" + p + "/workstationConfigs":
+			body = map[string]any{"workstationConfigs": []any{config.Normalized}}
+		case "/v1/" + p + "/workstationConfigs/std":
+			body = config.Normalized
+		case "/v1/" + p + "/workstationConfigs/std/workstations":
+			body = map[string]any{"workstations": []any{station.Normalized}}
+		case "/v1/" + p + "/workstationConfigs/std/workstations/alice":
+			body = station.Normalized
+		default:
+			t.Fatalf("unexpected native request %s", r.URL)
+		}
+		encoded, _ := json.Marshal(body)
+		return apiResponse(r, 200, string(encoded)), nil
+	}
+	c := &client{project: "sample-project", number: "123456", http: &http.Client{Transport: roundTripFunc(transport)}}
+	contribution, err := (&serviceCascades{client: c}).Contribute(context.Background(), "scope", []asset.Asset{cluster, config, station})
+	if err != nil || len(contribution.Bindings) != 2 {
+		t.Fatalf("contribution = %+v, %v", contribution, err)
+	}
+	for _, binding := range contribution.Bindings {
+		want := map[asset.AssetID]asset.AssetID{"config": "cluster", "station": "config"}[binding.ManagedAssetID]
+		if binding.ControllerAssetID != want || binding.CleanupPolicy != graph.CleanupDirect {
+			t.Fatalf("binding = %+v", binding)
+		}
 	}
 }

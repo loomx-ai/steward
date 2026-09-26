@@ -6,7 +6,7 @@ not cloud feature acceptance. Dated sections below keep the row count that held
 when they were written.
 
 The matrix covers all 202 Alibaba Cloud specifications for GCP, Azure and AWS.
-The repository contains 205 GCP, 491 Azure and 212 AWS specifications; those
+The repository contains 216 GCP, 491 Azure and 212 AWS specifications; those
 counts do not prove equivalence. All 202 rows remain pending behavioral
 verification.
 
@@ -21,12 +21,12 @@ check verifies matrix consistency only. AWS progress and evidence are tracked in
 
 | Measure | GCP | Azure | AWS |
 | --- | --- | --- | --- |
-| Explicit native specifications | 205 | 491 | 212 |
-| Baseline rows with at least one existing mapped specification | 177/202 | 172/202 | 185/202 |
-| Candidate types still without a specification | 7 | 5 | 0 |
-| Baseline rows affected by missing candidate specifications | 7 | 5 | 0 |
-| Empty mappings deferred as not yet modeled | 3 | 2 | 0 |
-| Empty mappings with a documented platform difference | 15 | 23 | 17 |
+| Explicit native specifications | 216 | 491 | 212 |
+| Baseline rows with at least one existing mapped specification | 186/202 | 172/202 | 185/202 |
+| Candidate types still without a specification | 0 | 5 | 0 |
+| Baseline rows affected by missing candidate specifications | 0 | 5 | 0 |
+| Empty mappings deferred as not yet modeled | 0 | 2 | 0 |
+| Empty mappings with a documented platform difference | 16 | 23 | 17 |
 
 These are registration/mapping measures, not functional completion percentages.
 A row can have both an implemented mapping and an absent candidate. None of the
@@ -37,18 +37,17 @@ A row can have both an implemented mapping and an absent candidate. None of the
 Rows added with the 2026-09-19 Alibaba Cloud expansion left these mappings open.
 Candidates listed under `unimplemented_resources`:
 
-- GCP: `managedkafka.googleapis.com/ConsumerGroup`; `eventarc.googleapis.com/MessageBus`
-  and `Trigger`; `workstations.googleapis.com/Workstation`, `WorkstationCluster` and
-  `WorkstationConfig`; `certificatemanager.googleapis.com/TrustConfig`.
 - Azure: `Microsoft.EventGrid/topics` and `topics/eventSubscriptions`;
   `Microsoft.DesktopVirtualization/hostPools/sessionHosts` and `workspaces`;
   `Microsoft.HDInsight/clusters`.
 
+GCP security posture deployments (Cloud Config compliance pack) exist only at
+organization scope, so a project connection cannot list or delete them; the row
+records that as a platform difference.
+
 Empty mappings whose notes defer the work rather than record a platform
 difference:
 
-- GCP: Cloud Asset Inventory feeds, security posture deployments and organization
-  policy constraints (Cloud Config aggregator, compliance pack and rule).
 - Azure: Azure Policy assignments and initiative assignments (Cloud Config rule
   and compliance pack).
 

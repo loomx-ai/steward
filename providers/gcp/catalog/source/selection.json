@@ -306,7 +306,10 @@
     {
       "source_uri": "https://cloudasset.googleapis.com/$discovery/rest?version=v1",
       "methods": [
-        "cloudasset.assets.list"
+        "cloudasset.assets.list",
+        "cloudasset.feeds.delete",
+        "cloudasset.feeds.get",
+        "cloudasset.feeds.list"
       ]
     },
     {
@@ -451,6 +454,9 @@
     {
       "source_uri": "https://managedkafka.googleapis.com/$discovery/rest?version=v1",
       "methods": [
+        "managedkafka.projects.locations.clusters.consumerGroups.delete",
+        "managedkafka.projects.locations.clusters.consumerGroups.get",
+        "managedkafka.projects.locations.clusters.consumerGroups.list",
         "managedkafka.projects.locations.clusters.delete",
         "managedkafka.projects.locations.clusters.get",
         "managedkafka.projects.locations.clusters.list",
@@ -487,7 +493,10 @@
         "certificatemanager.projects.locations.certificates.delete",
         "certificatemanager.projects.locations.certificates.get",
         "certificatemanager.projects.locations.certificates.list",
-        "certificatemanager.projects.locations.operations.get"
+        "certificatemanager.projects.locations.operations.get",
+        "certificatemanager.projects.locations.trustConfigs.delete",
+        "certificatemanager.projects.locations.trustConfigs.get",
+        "certificatemanager.projects.locations.trustConfigs.list"
       ]
     },
     {
@@ -1092,6 +1101,47 @@
         "oslogin.users.sshPublicKeys.get"
       ],
       "source_uri": "https://oslogin.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "source_uri": "https://eventarc.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "eventarc.projects.locations.enrollments.delete",
+        "eventarc.projects.locations.enrollments.get",
+        "eventarc.projects.locations.enrollments.list",
+        "eventarc.projects.locations.messageBuses.delete",
+        "eventarc.projects.locations.messageBuses.get",
+        "eventarc.projects.locations.messageBuses.list",
+        "eventarc.projects.locations.operations.get",
+        "eventarc.projects.locations.pipelines.delete",
+        "eventarc.projects.locations.pipelines.get",
+        "eventarc.projects.locations.pipelines.list",
+        "eventarc.projects.locations.triggers.delete",
+        "eventarc.projects.locations.triggers.get",
+        "eventarc.projects.locations.triggers.list"
+      ]
+    },
+    {
+      "source_uri": "https://workstations.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "workstations.projects.locations.operations.get",
+        "workstations.projects.locations.workstationClusters.delete",
+        "workstations.projects.locations.workstationClusters.get",
+        "workstations.projects.locations.workstationClusters.list",
+        "workstations.projects.locations.workstationClusters.workstationConfigs.delete",
+        "workstations.projects.locations.workstationClusters.workstationConfigs.get",
+        "workstations.projects.locations.workstationClusters.workstationConfigs.list",
+        "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.delete",
+        "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.get",
+        "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.list"
+      ]
+    },
+    {
+      "source_uri": "https://orgpolicy.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "orgpolicy.projects.policies.delete",
+        "orgpolicy.projects.policies.get",
+        "orgpolicy.projects.policies.list"
+      ]
     }
   ],
   "resource_types": [
@@ -4796,6 +4846,205 @@
       ],
       "scope_kinds": [
         "global"
+      ]
+    },
+    {
+      "native_type": "managedkafka.googleapis.com/ConsumerGroup",
+      "collection": "consumerGroups",
+      "class": "messaging.consumer_group",
+      "display_name": "Managed Kafka consumer group",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "managedkafka.projects.locations.clusters.consumerGroups.get"
+      ],
+      "delete_operations": [
+        "managedkafka.projects.locations.clusters.consumerGroups.delete"
+      ],
+      "list_operations": [
+        "managedkafka.projects.locations.clusters.consumerGroups.list"
+      ]
+    },
+    {
+      "native_type": "eventarc.googleapis.com/MessageBus",
+      "collection": "messageBuses",
+      "class": "messaging.event_bus",
+      "display_name": "Eventarc message bus",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "eventarc.projects.locations.messageBuses.get"
+      ],
+      "delete_operations": [
+        "eventarc.projects.locations.messageBuses.delete"
+      ],
+      "list_operations": [
+        "eventarc.projects.locations.messageBuses.list"
+      ]
+    },
+    {
+      "native_type": "eventarc.googleapis.com/Enrollment",
+      "collection": "enrollments",
+      "class": "messaging.event_rule",
+      "display_name": "Eventarc enrollment",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "eventarc.projects.locations.enrollments.get"
+      ],
+      "delete_operations": [
+        "eventarc.projects.locations.enrollments.delete"
+      ],
+      "list_operations": [
+        "eventarc.projects.locations.enrollments.list"
+      ]
+    },
+    {
+      "native_type": "eventarc.googleapis.com/Pipeline",
+      "collection": "pipelines",
+      "class": "messaging.event_pipeline",
+      "display_name": "Eventarc pipeline",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "eventarc.projects.locations.pipelines.get"
+      ],
+      "delete_operations": [
+        "eventarc.projects.locations.pipelines.delete"
+      ],
+      "list_operations": [
+        "eventarc.projects.locations.pipelines.list"
+      ]
+    },
+    {
+      "native_type": "eventarc.googleapis.com/Trigger",
+      "collection": "triggers",
+      "class": "messaging.event_rule",
+      "display_name": "Eventarc trigger",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "eventarc.projects.locations.triggers.get"
+      ],
+      "delete_operations": [
+        "eventarc.projects.locations.triggers.delete"
+      ],
+      "list_operations": [
+        "eventarc.projects.locations.triggers.list"
+      ]
+    },
+    {
+      "native_type": "workstations.googleapis.com/WorkstationCluster",
+      "collection": "workstationClusters",
+      "class": "network.virtual_desktop_network",
+      "display_name": "Workstation cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "workstations.projects.locations.workstationClusters.get"
+      ],
+      "delete_operations": [
+        "workstations.projects.locations.workstationClusters.delete"
+      ],
+      "list_operations": [
+        "workstations.projects.locations.workstationClusters.list"
+      ]
+    },
+    {
+      "native_type": "workstations.googleapis.com/WorkstationConfig",
+      "collection": "workstationConfigs",
+      "class": "compute.virtual_desktop_policy",
+      "display_name": "Workstation configuration",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "workstations.projects.locations.workstationClusters.workstationConfigs.get"
+      ],
+      "delete_operations": [
+        "workstations.projects.locations.workstationClusters.workstationConfigs.delete"
+      ],
+      "list_operations": [
+        "workstations.projects.locations.workstationClusters.workstationConfigs.list"
+      ]
+    },
+    {
+      "native_type": "workstations.googleapis.com/Workstation",
+      "collection": "workstations",
+      "class": "compute.virtual_desktop",
+      "display_name": "Workstation",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.get"
+      ],
+      "delete_operations": [
+        "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.delete"
+      ],
+      "list_operations": [
+        "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.list"
+      ]
+    },
+    {
+      "native_type": "certificatemanager.googleapis.com/TrustConfig",
+      "collection": "trustConfigs",
+      "class": "security.certificate",
+      "display_name": "Certificate Manager trust config",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "certificatemanager.projects.locations.trustConfigs.get"
+      ],
+      "delete_operations": [
+        "certificatemanager.projects.locations.trustConfigs.delete"
+      ],
+      "list_operations": [
+        "certificatemanager.projects.locations.trustConfigs.list"
+      ]
+    },
+    {
+      "native_type": "cloudasset.googleapis.com/Feed",
+      "collection": "feeds",
+      "class": "governance.aggregator",
+      "display_name": "Cloud Asset Inventory feed",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "cloudasset.feeds.get"
+      ],
+      "delete_operations": [
+        "cloudasset.feeds.delete"
+      ],
+      "list_operations": [
+        "cloudasset.feeds.list"
+      ]
+    },
+    {
+      "native_type": "orgpolicy.googleapis.com/Policy",
+      "collection": "policies",
+      "class": "governance.policy_rule",
+      "display_name": "Organization policy",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "orgpolicy.projects.policies.get"
+      ],
+      "delete_operations": [
+        "orgpolicy.projects.policies.delete"
+      ],
+      "list_operations": [
+        "orgpolicy.projects.policies.list"
       ]
     }
   ],

@@ -1,0 +1,59 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: orgpolicy.googleapis.com/Policy
+  class: governance.policy_rule
+presentation:
+  displayNames:
+    en-US: Organization policy
+    zh-CN: 组织策略
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: orgpolicy.projects.policies.list
+    parameters:
+      parent: scope.projectPath
+    itemsPath: policies
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: orgpolicy.projects.policies.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  spec:
+    path: spec
+    type: object
+  dryRunSpec:
+    path: dryRunSpec
+    type: object
+  etag:
+    path: etag
+    type: string
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: orgpolicy.projects.policies.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: orgpolicy.projects.policies.get
+      itemsPath: $
+      identityPath: name

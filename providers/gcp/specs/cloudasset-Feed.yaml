@@ -1,0 +1,61 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: cloudasset.googleapis.com/Feed
+  class: governance.aggregator
+presentation:
+  displayNames:
+    en-US: Cloud Asset Inventory feed
+    zh-CN: Cloud Asset Inventory 订阅源
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: cloudasset.feeds.list
+    parameters:
+      parent: scope.projectPath
+    itemsPath: feeds
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+  detail:
+    operation: cloudasset.feeds.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  assetTypes:
+    path: assetTypes
+    type: array
+  contentType:
+    path: contentType
+    type: string
+  feedOutputConfig:
+    path: feedOutputConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: uses
+  targetType: pubsub.googleapis.com/Topic
+  targetIdPath: refs_pubsub_googleapis_com_Topic
+actions:
+  delete:
+    operation: cloudasset.feeds.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: cloudasset.feeds.get
+      itemsPath: $
+      identityPath: name

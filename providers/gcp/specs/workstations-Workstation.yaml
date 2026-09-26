@@ -1,0 +1,72 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: workstations.googleapis.com/Workstation
+  class: compute.virtual_desktop
+presentation:
+  displayNames:
+    en-US: Workstation
+    zh-CN: 工作站
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: workstations.projects.locations.workstationClusters.workstationConfigs.workstations.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: workstations
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: workstations.projects.locations.workstationClusters.workstationConfigs.workstations.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: workstations.googleapis.com/WorkstationConfig
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  updateTime:
+    path: updateTime
+    type: string
+  state:
+    path: state
+    type: string
+  reconciling:
+    path: reconciling
+    type: boolean
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: workstations.googleapis.com/WorkstationConfig
+  targetIdPath: refs_workstations_googleapis_com_WorkstationConfig
+actions:
+  delete:
+    operation: workstations.projects.locations.workstationClusters.workstationConfigs.workstations.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: workstations.projects.locations.workstationClusters.workstationConfigs.workstations.get
+      itemsPath: $
+      identityPath: name

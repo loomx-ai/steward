@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: eventarc.googleapis.com/Pipeline
+  class: messaging.event_pipeline
+presentation:
+  displayNames:
+    en-US: Eventarc pipeline
+    zh-CN: Eventarc 管道
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: eventarc.projects.locations.pipelines.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: pipelines
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: eventarc.projects.locations.pipelines.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  updateTime:
+    path: updateTime
+    type: string
+  destinations:
+    path: destinations
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: uses
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: eventarc.projects.locations.pipelines.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: eventarc.projects.locations.pipelines.get
+      itemsPath: $
+      identityPath: name

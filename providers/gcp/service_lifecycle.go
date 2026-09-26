@@ -17,6 +17,13 @@ import (
 
 const serviceCascadeSource = "gcp:service-cascade"
 
+const (
+	workstationClusterType = "workstations.googleapis.com/WorkstationCluster"
+	workstationConfigType  = "workstations.googleapis.com/WorkstationConfig"
+	workstationType        = "workstations.googleapis.com/Workstation"
+	eventarcTriggerType    = "eventarc.googleapis.com/Trigger"
+)
+
 type serviceCascadeRule struct {
 	children       []string
 	directChildren []string
@@ -25,6 +32,8 @@ type serviceCascadeRule struct {
 
 // These are documented native cascades, not an inference from resource nesting.
 // New rules must cover the native child set, reviewed impact and final readback.
+// Without force, a workstation cluster or configuration is deleted only after
+// its configurations or workstations, so those are deleted first, one by one.
 var serviceCascadeRules = map[string]serviceCascadeRule{
 	routerType:                                      {children: []string{cloudNatType, routePolicyType, namedSetType}, directChildren: []string{routePolicyType, namedSetType}},
 	identityGroupType:                               {children: []string{identityMemberType}},
@@ -43,7 +52,9 @@ var serviceCascadeRules = map[string]serviceCascadeRule{
 	dataformTeamFolderType:                          {children: []string{dataformFolderType, dataformRepositoryType}, directChildren: []string{dataformFolderType, dataformRepositoryType}},
 	dataformRepositoryType:                          {children: []string{"dataform.googleapis.com/Workspace", "dataform.googleapis.com/WorkflowConfig", "dataform.googleapis.com/ReleaseConfig", dataformInvocationType, "dataform.googleapis.com/CompilationResult"}, directChildren: []string{"dataform.googleapis.com/Workspace", "dataform.googleapis.com/WorkflowConfig", "dataform.googleapis.com/ReleaseConfig", dataformInvocationType}, forceParameter: "force"},
 	"bigtableadmin.googleapis.com/Instance":         {children: []string{"bigtableadmin.googleapis.com/Cluster", "bigtableadmin.googleapis.com/Table"}},
-	"managedkafka.googleapis.com/Cluster":           {children: []string{"managedkafka.googleapis.com/Topic"}},
+	"managedkafka.googleapis.com/Cluster":           {children: []string{"managedkafka.googleapis.com/Topic", "managedkafka.googleapis.com/ConsumerGroup"}},
+	workstationClusterType:                          {children: []string{workstationConfigType}, directChildren: []string{workstationConfigType}},
+	workstationConfigType:                           {children: []string{workstationType}, directChildren: []string{workstationType}},
 	"spanner.googleapis.com/Instance":               {children: []string{"spanner.googleapis.com/Database"}},
 	"alloydb.googleapis.com/Cluster":                {children: []string{"alloydb.googleapis.com/Instance"}, forceParameter: "force"},
 	"servicedirectory.googleapis.com/Namespace":     {children: []string{"servicedirectory.googleapis.com/Service"}},

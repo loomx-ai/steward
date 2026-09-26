@@ -1,0 +1,75 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: eventarc.googleapis.com/Enrollment
+  class: messaging.event_rule
+presentation:
+  displayNames:
+    en-US: Eventarc enrollment
+    zh-CN: Eventarc 注册
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: eventarc.projects.locations.enrollments.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: enrollments
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: eventarc.projects.locations.enrollments.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  updateTime:
+    path: updateTime
+    type: string
+  messageBus:
+    path: messageBus
+    type: string
+  destination:
+    path: destination
+    type: string
+  celMatch:
+    path: celMatch
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: uses
+  targetType: eventarc.googleapis.com/MessageBus
+  targetIdPath: refs_eventarc_googleapis_com_MessageBus
+- type: uses
+  targetType: eventarc.googleapis.com/Pipeline
+  targetIdPath: refs_eventarc_googleapis_com_Pipeline
+actions:
+  delete:
+    operation: eventarc.projects.locations.enrollments.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: eventarc.projects.locations.enrollments.get
+      itemsPath: $
+      identityPath: name

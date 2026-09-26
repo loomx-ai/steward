@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: eventarc.googleapis.com/Trigger
+  class: messaging.event_rule
+presentation:
+  displayNames:
+    en-US: Eventarc trigger
+    zh-CN: Eventarc 触发器
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: eventarc.projects.locations.triggers.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: triggers
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: eventarc.projects.locations.triggers.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  updateTime:
+    path: updateTime
+    type: string
+  destination:
+    path: destination
+    type: object
+  eventFilters:
+    path: eventFilters
+    type: array
+  serviceAccount:
+    path: serviceAccount
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: uses
+  targetType: pubsub.googleapis.com/Topic
+  targetIdPath: refs_pubsub_googleapis_com_Topic
+- type: uses
+  targetType: run.googleapis.com/Service
+  targetIdPath: refs_run_googleapis_com_Service
+- type: uses
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
+actions:
+  delete:
+    operation: eventarc.projects.locations.triggers.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: eventarc.projects.locations.triggers.get
+      itemsPath: $
+      identityPath: name

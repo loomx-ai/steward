@@ -101,6 +101,18 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 		{"networkservices.googleapis.com/MulticastConsumerAssociation", "v1", p + "locations/us-central1-a/multicastConsumerAssociations/consumer", p + "locations/us-central1-a/multicastConsumerAssociations", "multicastConsumerAssociations", "us-central1", p + "locations/us-central1-a/operations/delete", `{"uniqueId":"association-uid"}`},
 		{"networkservices.googleapis.com/MulticastGroupConsumerActivation", "v1", p + "locations/us-central1-a/multicastGroupConsumerActivations/consumer", p + "locations/us-central1-a/multicastGroupConsumerActivations", "multicastGroupConsumerActivations", "us-central1", p + "locations/us-central1-a/operations/delete", `{"uniqueId":"activation-uid"}`},
 		{"networkconnectivity.googleapis.com/InternalRange", "v1", global + "internalRanges/multicast", global + "internalRanges", "internalRanges", "global", global + "operations/delete", `{"ipCidrRange":"239.0.0.0/23"}`},
+
+		{"managedkafka.googleapis.com/ConsumerGroup", "v1", regional + "clusters/broker/consumerGroups/readers", regional + "clusters/broker/consumerGroups", "consumerGroups", "us-central1", "", `{}`},
+		{"eventarc.googleapis.com/MessageBus", "v1", regional + "messageBuses/orders", regional + "messageBuses", "messageBuses", "us-central1", regional + "operations/delete", `{"uid":"bus-uid"}`},
+		{"eventarc.googleapis.com/Pipeline", "v1", regional + "pipelines/fulfil", regional + "pipelines", "pipelines", "us-central1", regional + "operations/delete", `{"uid":"pipeline-uid"}`},
+		{"eventarc.googleapis.com/Enrollment", "v1", regional + "enrollments/paid", regional + "enrollments", "enrollments", "us-central1", regional + "operations/delete", `{"uid":"enrollment-uid"}`},
+		{"eventarc.googleapis.com/Trigger", "v1", regional + "triggers/upload", regional + "triggers", "triggers", "us-central1", regional + "operations/delete", `{"uid":"trigger-uid"}`},
+		{"workstations.googleapis.com/WorkstationCluster", "v1", regional + "workstationClusters/dev", regional + "workstationClusters", "workstationClusters", "us-central1", regional + "operations/delete", `{"uid":"cluster-uid"}`},
+		{"workstations.googleapis.com/WorkstationConfig", "v1", regional + "workstationClusters/dev/workstationConfigs/std", regional + "workstationClusters/dev/workstationConfigs", "workstationConfigs", "us-central1", regional + "operations/delete", `{"uid":"config-uid"}`},
+		{"workstations.googleapis.com/Workstation", "v1", regional + "workstationClusters/dev/workstationConfigs/std/workstations/alice", regional + "workstationClusters/dev/workstationConfigs/std/workstations", "workstations", "us-central1", regional + "operations/delete", `{"uid":"workstation-uid"}`},
+		{"certificatemanager.googleapis.com/TrustConfig", "v1", regional + "trustConfigs/mtls", regional + "trustConfigs", "trustConfigs", "us-central1", regional + "operations/delete", `{}`},
+		{"cloudasset.googleapis.com/Feed", "v1", p + "feeds/changes", p + "feeds", "feeds", "global", "", `{"assetTypes":["compute.googleapis.com/Instance"]}`},
+		{"orgpolicy.googleapis.com/Policy", "v2", p + "policies/compute.skipDefaultNetworkCreation", p + "policies", "policies", "global", "", `{"spec":{"rules":[{"enforce":true}]}}`},
 	} {
 		t.Run(test.kind+"/"+test.region, func(t *testing.T) {
 			host := strings.Split(test.kind, "/")[0]
@@ -197,8 +209,17 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 						return apiResponse(r, 200, `{}`), nil
 					}
 					childCollection := map[string]string{"spanner.googleapis.com/Instance": "databases", "alloydb.googleapis.com/Cluster": "instances", "servicedirectory.googleapis.com/Namespace": "services", "servicedirectory.googleapis.com/Service": "endpoints"}[test.kind]
+					if test.kind == "managedkafka.googleapis.com/Cluster" && r.URL.Path == targetPath+"/consumerGroups" && r.Method == "GET" {
+						return apiResponse(r, 200, `{}`), nil
+					}
 					if test.kind == "managedkafka.googleapis.com/Cluster" {
 						childCollection = "topics"
+					}
+					if test.kind == workstationClusterType {
+						childCollection = "workstationConfigs"
+					}
+					if test.kind == workstationConfigType {
+						childCollection = "workstations"
 					}
 					if test.kind == "bigtableadmin.googleapis.com/Instance" && (r.URL.Path == targetPath+"/clusters" || r.URL.Path == targetPath+"/tables") && r.Method == "GET" {
 						return apiResponse(r, 200, `{}`), nil
@@ -275,12 +296,14 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 // and a project-scoped Bigtable parent for a cluster located in a zone.
 func serviceParentFixture(host, path string) (string, bool) {
 	fixtures := map[string]string{
-		"bigquery.googleapis.com/bigquery/v2/projects/sample-project/datasets/warehouse":                          `{"datasetReference":{"projectId":"sample-project","datasetId":"warehouse"},"location":"US"}`,
-		"apphub.googleapis.com/v1/projects/sample-project/locations/global/applications":                          `{"applications":[{"name":"projects/sample-project/locations/global/applications/shop"}]}`,
-		"backupdr.googleapis.com/v1/projects/sample-project/locations/-/backupVaults":                             `{"backupVaults":[{"name":"projects/sample-project/locations/us-central1/backupVaults/vault"}]}`,
-		"backupdr.googleapis.com/v1/projects/sample-project/locations/us-central1/backupVaults/vault/dataSources": `{"dataSources":[{"name":"projects/sample-project/locations/us-central1/backupVaults/vault/dataSources/vm"}]}`,
-		"dataplex.googleapis.com/v1/projects/sample-project/locations/us-central1/lakes":                          `{"lakes":[{"name":"projects/sample-project/locations/us-central1/lakes/data"}]}`,
-		"dataplex.googleapis.com/v1/projects/sample-project/locations/us-central1/lakes/data/zones":               `{"zones":[{"name":"projects/sample-project/locations/us-central1/lakes/data/zones/raw"}]}`,
+		"bigquery.googleapis.com/bigquery/v2/projects/sample-project/datasets/warehouse":                                          `{"datasetReference":{"projectId":"sample-project","datasetId":"warehouse"},"location":"US"}`,
+		"apphub.googleapis.com/v1/projects/sample-project/locations/global/applications":                                          `{"applications":[{"name":"projects/sample-project/locations/global/applications/shop"}]}`,
+		"backupdr.googleapis.com/v1/projects/sample-project/locations/-/backupVaults":                                             `{"backupVaults":[{"name":"projects/sample-project/locations/us-central1/backupVaults/vault"}]}`,
+		"backupdr.googleapis.com/v1/projects/sample-project/locations/us-central1/backupVaults/vault/dataSources":                 `{"dataSources":[{"name":"projects/sample-project/locations/us-central1/backupVaults/vault/dataSources/vm"}]}`,
+		"dataplex.googleapis.com/v1/projects/sample-project/locations/us-central1/lakes":                                          `{"lakes":[{"name":"projects/sample-project/locations/us-central1/lakes/data"}]}`,
+		"workstations.googleapis.com/v1/projects/sample-project/locations/us-central1/workstationClusters":                        `{"workstationClusters":[{"name":"projects/sample-project/locations/us-central1/workstationClusters/dev"}]}`,
+		"workstations.googleapis.com/v1/projects/sample-project/locations/us-central1/workstationClusters/dev/workstationConfigs": `{"workstationConfigs":[{"name":"projects/sample-project/locations/us-central1/workstationClusters/dev/workstationConfigs/std"}]}`,
+		"dataplex.googleapis.com/v1/projects/sample-project/locations/us-central1/lakes/data/zones":                               `{"zones":[{"name":"projects/sample-project/locations/us-central1/lakes/data/zones/raw"}]}`,
 
 		"dns.googleapis.com/dns/v1/projects/sample-project/managedZones":                                            `{"managedZones":[{"name":"example","dnsName":"example.com."}]}`,
 		"bigquery.googleapis.com/bigquery/v2/projects/sample-project/datasets":                                      `{"datasets":[{"datasetReference":{"projectId":"sample-project","datasetId":"warehouse"},"location":"US"}]}`,

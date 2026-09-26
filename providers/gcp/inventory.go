@@ -630,7 +630,7 @@ func references(c *client, data map[string]any) map[string][]string {
 		"sourceConnectionProfile": "datastream.googleapis.com/ConnectionProfile", "destinationConnectionProfile": "datastream.googleapis.com/ConnectionProfile", "privateConnection": "datastream.googleapis.com/PrivateConnection",
 		"backupVault": "backupdr.googleapis.com/BackupVault", "backupPlan": "backupdr.googleapis.com/BackupPlan", "dataSource": "backupdr.googleapis.com/DataSource",
 		"firewallEndpoint": "networksecurity.googleapis.com/FirewallEndpoint", "hub": "networkconnectivity.googleapis.com/Hub", "vpcNetwork": "compute.googleapis.com/Network", "subnet": "compute.googleapis.com/Subnetwork", "vpnTunnel": "compute.googleapis.com/VpnTunnel",
-		"pubsubTopic": "pubsub.googleapis.com/Topic", "virtualMachine": instanceType,
+		"pubsubTopic": "pubsub.googleapis.com/Topic", "virtualMachine": instanceType, "messageBus": "eventarc.googleapis.com/MessageBus",
 		"adminNetwork": "compute.googleapis.com/Network", "nccHub": "networkconnectivity.googleapis.com/Hub", "reservedInternalRange": "networkconnectivity.googleapis.com/InternalRange",
 		"multicastDomainGroup": "networkservices.googleapis.com/MulticastDomainGroup", "multicastDomain": "networkservices.googleapis.com/MulticastDomain", "multicastDomainActivation": "networkservices.googleapis.com/MulticastDomainActivation",
 		"multicastGroupRange": "networkservices.googleapis.com/MulticastGroupRange", "multicastGroupRangeActivation": "networkservices.googleapis.com/MulticastGroupRangeActivation",
@@ -789,6 +789,11 @@ func references(c *client, data map[string]any) map[string][]string {
 			fields["sinkDestination"] = target
 			visit("//"+destination, "sinkDestination")
 		}
+	}
+	// An Eventarc enrollment delivers to a pipeline named by its destination.
+	if destination := text(data["destination"]); strings.Contains(destination, "/pipelines/") {
+		fields["eventarcPipeline"] = "eventarc.googleapis.com/Pipeline"
+		visit(destination, "eventarcPipeline")
 	}
 	// Sole-tenant placement and specific reservation affinity use native names
 	// instead of selfLinks. Resolve them within this VM's actual zone only.

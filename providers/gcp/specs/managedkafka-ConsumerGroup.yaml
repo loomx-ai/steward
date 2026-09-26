@@ -1,0 +1,60 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: managedkafka.googleapis.com/ConsumerGroup
+  class: messaging.consumer_group
+presentation:
+  displayNames:
+    en-US: Managed Kafka consumer group
+    zh-CN: 托管 Kafka 消费组
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: managedkafka.projects.locations.clusters.consumerGroups.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: consumerGroups
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: managedkafka.projects.locations.clusters.consumerGroups.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: managedkafka.googleapis.com/Cluster
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  topics:
+    path: topics
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: managedkafka.googleapis.com/Cluster
+  targetIdPath: refs_managedkafka_googleapis_com_Cluster
+actions:
+  delete:
+    operation: managedkafka.projects.locations.clusters.consumerGroups.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: managedkafka.projects.locations.clusters.consumerGroups.get
+      itemsPath: $
+      identityPath: name

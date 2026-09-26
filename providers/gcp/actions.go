@@ -748,6 +748,11 @@ func protectionReason(nativeType string, data map[string]any) string {
 	if nativeType == notificationChannelType && data["type"] == "email" {
 		return "notification_channel_budget_scope_required"
 	}
+	// Cloud Run functions and other services create Eventarc triggers they
+	// manage and recreate; they are removed through their owner.
+	if nativeType == eventarcTriggerType && text(object(data["labels"])["goog-managed-by"]) != "" {
+		return "trigger_managed_by_service"
+	}
 	if nativeType == monitoredProjectType {
 		parts := strings.Split(text(data["name"]), "/")
 		if len(parts) >= 6 && parts[len(parts)-1] == parts[len(parts)-3] {

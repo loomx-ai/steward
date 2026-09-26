@@ -230,7 +230,7 @@ resources:
     - delete
     parent_discovery: true
   gcp:
-    unimplemented_resources:
+    resources:
     - managedkafka.googleapis.com/ConsumerGroup
   azure:
     resources:
@@ -613,7 +613,10 @@ resources:
     scope: region
     actions: []
   gcp:
-    notes: Cloud Asset Inventory feeds are not modeled yet.
+    resources:
+    - cloudasset.googleapis.com/Feed
+    notes: Project Cloud Asset Inventory feeds; folder and organization feeds are outside a project
+      connection.
   azure:
     notes: Azure Policy compliance is aggregated by management group scope, not a resource.
   aws:
@@ -631,7 +634,9 @@ resources:
     actions:
     - delete
   gcp:
-    notes: Security posture deployments are not modeled yet.
+    notes: Security posture deployments exist only at organization scope
+      (organizations/{organization}/locations/global/postureDeployments); a project connection
+      cannot list or delete them.
   azure:
     notes: Azure Policy initiative assignments are not modeled yet.
   aws:
@@ -650,7 +655,10 @@ resources:
     actions:
     - delete
   gcp:
-    notes: Organization policy constraints are not modeled yet.
+    resources:
+    - orgpolicy.googleapis.com/Policy
+    notes: Policies set directly on the project; deleting one restores the inherited policy. Folder
+      and organization policies are outside a project connection.
   azure:
     notes: Azure Policy assignments are not modeled yet.
   aws:
@@ -671,7 +679,7 @@ resources:
     actions:
     - delete
   gcp:
-    unimplemented_resources:
+    resources:
     - workstations.googleapis.com/Workstation
   azure:
     unimplemented_resources:
@@ -691,7 +699,7 @@ resources:
     actions:
     - delete
   gcp:
-    unimplemented_resources:
+    resources:
     - workstations.googleapis.com/WorkstationCluster
   azure:
     unimplemented_resources:
@@ -712,7 +720,7 @@ resources:
     actions:
     - delete
   gcp:
-    unimplemented_resources:
+    resources:
     - workstations.googleapis.com/WorkstationConfig
   azure:
     notes: Session host policies are properties of host pools.
@@ -1300,7 +1308,7 @@ resources:
     actions:
     - delete
   gcp:
-    unimplemented_resources:
+    resources:
     - eventarc.googleapis.com/MessageBus
   azure:
     unimplemented_resources:
@@ -1319,8 +1327,12 @@ resources:
     - delete
     parent_discovery: true
   gcp:
-    unimplemented_resources:
+    resources:
+    - eventarc.googleapis.com/Enrollment
+    - eventarc.googleapis.com/Pipeline
     - eventarc.googleapis.com/Trigger
+    notes: Eventarc Advanced routes a bus to a pipeline through an enrollment; Eventarc Standard
+      triggers deliver provider events directly.
   azure:
     unimplemented_resources:
     - Microsoft.EventGrid/topics/eventSubscriptions
@@ -1521,7 +1533,7 @@ resources:
     actions:
     - delete
   gcp:
-    unimplemented_resources:
+    resources:
     - certificatemanager.googleapis.com/TrustConfig
   azure:
     notes: Trusted client CA certificates are properties of Microsoft.Network/applicationGateways.
