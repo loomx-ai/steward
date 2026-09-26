@@ -2,13 +2,12 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: aws
-  nativeType: AWS::EC2::SecurityGroup
-  class: network.security_group
+  nativeType: AWS::EC2::IPAMPool
+  class: network.ip_address_pool
 presentation:
   displayNames:
-    zh-CN: 安全组
-    en-US: Security Group
-  consoleLinkTemplate: https://{regionId}.console.aws.amazon.com/ec2/home?region={regionId}#SecurityGroup:groupId={nativeId}
+    zh-CN: IPAM 池
+    en-US: IPAM Pool
 scope:
   kind: region
 discovery:
@@ -16,7 +15,7 @@ discovery:
   list:
     operation: com.amazonaws.cloudcontrol#ListResources
     parameters:
-      TypeName: AWS::EC2::SecurityGroup
+      TypeName: AWS::EC2::IPAMPool
     itemsPath: ResourceDescriptions
     identityPath: Identifier
     pagination:
@@ -31,11 +30,11 @@ discovery:
     identityPath: Identifier
 relationships:
 - type: member_of
-  targetType: AWS::EC2::VPC
-  targetIdPath: vpc_id
-- type: uses
-  targetType: AWS::EC2::PrefixList
-  targetIdPath: prefix_list_ids
+  targetType: AWS::EC2::IPAMScope
+  targetIdPath: IpamScopeId
+- type: member_of
+  targetType: AWS::EC2::IPAMPool
+  targetIdPath: SourceIpamPoolId
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource

@@ -4,11 +4,112 @@
   "source": {
     "format": "smithy",
     "uri": "catalog/source/smithy.json",
-    "checksum": "630ab75b80561df6c0e3af66bcdf12841411aa9210ced4aefe88a3e7dee2538b",
+    "checksum": "e0a3e8787c43570540ad815cfd7b3138ea9f4fcad09203167e0774b05074ff76",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "85cdafa3281b0649f303232edf53ecf4849b5fcf8400f504a3f6b395bd015663",
+  "content_checksum": "bbd3e07c9bd1738d55bf50a07f9077951cb7e81c224e02ebe34e1fc67ff24077",
   "operations": [
+    {
+      "id": "com.amazonaws.acmpca#DeleteCertificateAuthority",
+      "name": "DeleteCertificateAuthority",
+      "service": "com.amazonaws.acmpca",
+      "method": "POST",
+      "path": "/",
+      "destructive": true,
+      "call": {
+        "product": "ACM PCA",
+        "version": "2017-08-22",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://acm-pca.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.acmpca#DescribeCertificateAuthority",
+      "name": "DescribeCertificateAuthority",
+      "service": "com.amazonaws.acmpca",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "ACM PCA",
+        "version": "2017-08-22",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://acm-pca.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.acmpca#ListCertificateAuthorities",
+      "name": "ListCertificateAuthorities",
+      "service": "com.amazonaws.acmpca",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "NextToken",
+        "output_token_path": "NextToken",
+        "items_path": "CertificateAuthorities"
+      },
+      "call": {
+        "product": "ACM PCA",
+        "version": "2017-08-22",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://acm-pca.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.acmpca#UpdateCertificateAuthority",
+      "name": "UpdateCertificateAuthority",
+      "service": "com.amazonaws.acmpca",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "ACM PCA",
+        "version": "2017-08-22",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://acm-pca.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
     {
       "id": "com.amazonaws.autoscaling#DescribeAutoScalingGroups",
       "name": "DescribeAutoScalingGroups",
@@ -53,6 +154,83 @@
         "method": "GET",
         "path": "/backup-vaults/{BackupVaultName}",
         "endpoint": "https://backup.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.bedrock#DeleteProvisionedModelThroughput",
+      "name": "DeleteProvisionedModelThroughput",
+      "service": "com.amazonaws.bedrock",
+      "method": "DELETE",
+      "path": "/provisioned-model-throughput/{provisionedModelId}",
+      "destructive": true,
+      "call": {
+        "product": "Bedrock",
+        "version": "2023-04-20",
+        "style": "aws-smithy",
+        "protocol": "restJson1",
+        "method": "DELETE",
+        "path": "/provisioned-model-throughput/{provisionedModelId}",
+        "endpoint": "https://bedrock.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.bedrock#GetProvisionedModelThroughput",
+      "name": "GetProvisionedModelThroughput",
+      "service": "com.amazonaws.bedrock",
+      "method": "GET",
+      "path": "/provisioned-model-throughput/{provisionedModelId}",
+      "destructive": false,
+      "call": {
+        "product": "Bedrock",
+        "version": "2023-04-20",
+        "style": "aws-smithy",
+        "protocol": "restJson1",
+        "method": "GET",
+        "path": "/provisioned-model-throughput/{provisionedModelId}",
+        "endpoint": "https://bedrock.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.bedrock#ListProvisionedModelThroughputs",
+      "name": "ListProvisionedModelThroughputs",
+      "service": "com.amazonaws.bedrock",
+      "method": "GET",
+      "path": "/provisioned-model-throughputs",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "nextToken",
+        "output_token_path": "nextToken",
+        "items_path": "provisionedModelSummaries"
+      },
+      "call": {
+        "product": "Bedrock",
+        "version": "2023-04-20",
+        "style": "aws-smithy",
+        "protocol": "restJson1",
+        "method": "GET",
+        "path": "/provisioned-model-throughputs",
+        "endpoint": "https://bedrock.{region}.amazonaws.com",
         "endpoint_parameters": [
           "region"
         ],
@@ -290,6 +468,184 @@
           "region"
         ],
         "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.codebuild#BatchGetProjects",
+      "name": "BatchGetProjects",
+      "service": "com.amazonaws.codebuild",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "CodeBuild",
+        "version": "2016-10-06",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://codebuild.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.codebuild#DeleteProject",
+      "name": "DeleteProject",
+      "service": "com.amazonaws.codebuild",
+      "method": "POST",
+      "path": "/",
+      "destructive": true,
+      "call": {
+        "product": "CodeBuild",
+        "version": "2016-10-06",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://codebuild.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.codebuild#ListProjects",
+      "name": "ListProjects",
+      "service": "com.amazonaws.codebuild",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "nextToken",
+        "output_token_path": "nextToken",
+        "items_path": "projects"
+      },
+      "call": {
+        "product": "CodeBuild",
+        "version": "2016-10-06",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://codebuild.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.cognitoidentityprovider#DeleteUserPoolDomain",
+      "name": "DeleteUserPoolDomain",
+      "service": "com.amazonaws.cognitoidentityprovider",
+      "method": "POST",
+      "path": "/",
+      "destructive": true,
+      "call": {
+        "product": "Cognito Identity Provider",
+        "version": "2016-04-18",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://cognito-idp.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.cognitoidentityprovider#DescribeUserPool",
+      "name": "DescribeUserPool",
+      "service": "com.amazonaws.cognitoidentityprovider",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "Cognito Identity Provider",
+        "version": "2016-04-18",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://cognito-idp.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.cognitoidentityprovider#DescribeUserPoolDomain",
+      "name": "DescribeUserPoolDomain",
+      "service": "com.amazonaws.cognitoidentityprovider",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "Cognito Identity Provider",
+        "version": "2016-04-18",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://cognito-idp.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.cognitoidentityprovider#ListUserPools",
+      "name": "ListUserPools",
+      "service": "com.amazonaws.cognitoidentityprovider",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "NextToken",
+        "output_token_path": "NextToken",
+        "items_path": "UserPools"
+      },
+      "call": {
+        "product": "Cognito Identity Provider",
+        "version": "2016-04-18",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://cognito-idp.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
         "parameter_position": "body"
       },
       "source_uri": "catalog/source/smithy.json",
@@ -1858,6 +2214,30 @@
       "source_format": "aws-smithy"
     },
     {
+      "id": "com.amazonaws.secretsmanager#DescribeSecret",
+      "name": "DescribeSecret",
+      "service": "com.amazonaws.secretsmanager",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "Secrets Manager",
+        "version": "2017-10-17",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://secretsmanager.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
       "id": "com.amazonaws.storagegateway#DeleteGateway",
       "name": "DeleteGateway",
       "service": "com.amazonaws.storagegateway",
@@ -2163,6 +2543,14 @@
   ],
   "resource_types": [
     {
+      "native_type": "AWS::ACMPCA::CertificateAuthority",
+      "class": "security.certificate_authority",
+      "display_name": "Private Certificate Authority",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::APS::Scraper",
       "class": "observability.prometheus",
       "display_name": "Managed Prometheus Scraper",
@@ -2190,6 +2578,14 @@
       "native_type": "AWS::AmazonMQ::Broker",
       "class": "messaging.broker",
       "display_name": "Amazon MQ Broker",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Amplify::App",
+      "class": "application.hosting",
+      "display_name": "Amplify App",
       "scope_kinds": [
         "region"
       ]
@@ -2259,6 +2655,14 @@
       ]
     },
     {
+      "native_type": "AWS::AppSync::GraphQLApi",
+      "class": "api.gateway",
+      "display_name": "AppSync GraphQL API",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::Athena::WorkGroup",
       "class": "analytics.workgroup",
       "display_name": "Athena Workgroup",
@@ -2318,6 +2722,46 @@
       "native_type": "AWS::Batch::ComputeEnvironment",
       "class": "compute.hpc_cluster",
       "display_name": "Batch Compute Environment",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Bedrock::Agent",
+      "class": "ai.agent",
+      "display_name": "Bedrock Agent",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Bedrock::DataSource",
+      "class": "ai.knowledge_base_data_source",
+      "display_name": "Bedrock Knowledge Base Data Source",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Bedrock::Guardrail",
+      "class": "ai.guardrail",
+      "display_name": "Bedrock Guardrail",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Bedrock::KnowledgeBase",
+      "class": "ai.knowledge_base",
+      "display_name": "Bedrock Knowledge Base",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Bedrock::ProvisionedModelThroughput",
+      "class": "ai.provisioned_throughput",
+      "display_name": "Bedrock Provisioned Throughput",
       "scope_kinds": [
         "region"
       ]
@@ -2411,9 +2855,41 @@
       ]
     },
     {
+      "native_type": "AWS::CodeBuild::Project",
+      "class": "devops.build_project",
+      "display_name": "CodeBuild Project",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::CodePipeline::Pipeline",
       "class": "devops.pipeline",
       "display_name": "CodePipeline Pipeline",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Cognito::IdentityPool",
+      "class": "identity.identity_pool",
+      "display_name": "Cognito Identity Pool",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Cognito::UserPool",
+      "class": "identity.user_pool",
+      "display_name": "Cognito User Pool",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Cognito::UserPoolDomain",
+      "class": "identity.user_pool_domain",
+      "display_name": "Cognito User Pool Domain",
       "scope_kinds": [
         "region"
       ]
@@ -2715,6 +3191,30 @@
       ]
     },
     {
+      "native_type": "AWS::EC2::IPAM",
+      "class": "network.ip_address_manager",
+      "display_name": "VPC IP Address Manager",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::IPAMPool",
+      "class": "network.ip_address_pool",
+      "display_name": "IPAM Pool",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::IPAMScope",
+      "class": "network.ip_address_scope",
+      "display_name": "IPAM Scope",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::EC2::Image",
       "class": "compute.image",
       "display_name": "Amazon Machine Image",
@@ -2782,6 +3282,22 @@
       "native_type": "AWS::EC2::NetworkInterface",
       "class": "network.interface",
       "display_name": "Elastic Network Interface",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::PlacementGroup",
+      "class": "compute.placement_group",
+      "display_name": "Placement Group",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::PrefixList",
+      "class": "network.prefix_list",
+      "display_name": "Managed Prefix List",
       "scope_kinds": [
         "region"
       ]
@@ -3099,6 +3615,22 @@
       ]
     },
     {
+      "native_type": "AWS::ElasticBeanstalk::Application",
+      "class": "application",
+      "display_name": "Elastic Beanstalk Application",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ElasticBeanstalk::Environment",
+      "class": "compute.application_environment",
+      "display_name": "Elastic Beanstalk Environment",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "class": "network.load_balancer",
       "display_name": "Classic Load Balancer",
@@ -3315,6 +3847,14 @@
       ]
     },
     {
+      "native_type": "AWS::KinesisFirehose::DeliveryStream",
+      "class": "messaging.delivery_stream",
+      "display_name": "Data Firehose Stream",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::Lambda::Function",
       "class": "compute.function",
       "display_name": "Lambda Function",
@@ -3358,6 +3898,14 @@
       "native_type": "AWS::MSK::Topic",
       "class": "messaging.topic",
       "display_name": "MSK Topic",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::MWAA::Environment",
+      "class": "orchestration.workflow_environment",
+      "display_name": "Managed Workflows for Apache Airflow Environment",
       "scope_kinds": [
         "region"
       ]
@@ -3667,6 +4215,14 @@
       ]
     },
     {
+      "native_type": "AWS::SSM::Parameter",
+      "class": "configuration.parameter",
+      "display_name": "Systems Manager Parameter",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::SSO::Instance",
       "class": "identity.directory",
       "display_name": "IAM Identity Center Instance",
@@ -3702,6 +4258,30 @@
       "native_type": "AWS::SageMaker::Model",
       "class": "ai.model",
       "display_name": "SageMaker Model",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Scheduler::Schedule",
+      "class": "orchestration.schedule",
+      "display_name": "EventBridge Scheduler Schedule",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Scheduler::ScheduleGroup",
+      "class": "orchestration.schedule_group",
+      "display_name": "EventBridge Scheduler Schedule Group",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::SecretsManager::Secret",
+      "class": "security.secret",
+      "display_name": "Secrets Manager Secret",
       "scope_kinds": [
         "region"
       ]
@@ -3806,6 +4386,14 @@
       "native_type": "AWS::Timestream::Table",
       "class": "database.timeseries",
       "display_name": "Timestream Table",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Transfer::Server",
+      "class": "storage.transfer_server",
+      "display_name": "Transfer Family Server",
       "scope_kinds": [
         "region"
       ]

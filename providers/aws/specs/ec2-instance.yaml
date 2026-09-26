@@ -49,6 +49,9 @@ relationships:
   targetType: AWS::EC2::KeyPair
   targetIdPath: KeyName
 - type: uses
+  targetType: AWS::EC2::PlacementGroup
+  targetIdPath: PlacementGroupName
+- type: uses
   targetType: AWS::EC2::Image
   targetIdPath: ImageId
 - type: depends_on

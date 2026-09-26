@@ -11,6 +11,7 @@ import (
 	awskms "github.com/aws/aws-sdk-go-v2/service/kms"
 	kmstypes "github.com/aws/aws-sdk-go-v2/service/kms/types"
 	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
+	awssecrets "github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -178,5 +179,32 @@ func s3BucketGuard(client S3NativeAPI) deleteGuard {
 			return guardOutcome{blocked: "the S3 bucket still holds object versions or delete markers; empty it before cleanup", evidence: map[string]any{"bucket_empty": false}}, nil
 		}
 		return guardOutcome{evidence: map[string]any{"bucket_empty": true}}, nil
+	}
+}
+
+// A secret scheduled for deletion stays readable until its recovery window
+// ends, which counts as deleted. Secrets another service manages, and replicas
+// of a secret in another Region, are removed by that service or the primary.
+func secretGuard(client SecretsNativeAPI, region string) deleteGuard {
+	return func(ctx context.Context, id string) (guardOutcome, error) {
+		output, err := client.DescribeSecret(ctx, &awssecrets.DescribeSecretInput{SecretId: awssdk.String(id)})
+		if nativeNotFound(err, "ResourceNotFoundException") {
+			return guardOutcome{pending: true, evidence: map[string]any{"secret_state": "absent"}}, nil
+		}
+		if err != nil {
+			return guardOutcome{}, NormalizeError(err)
+		}
+		owner, primary := strings.TrimSpace(awssdk.ToString(output.OwningService)), strings.TrimSpace(awssdk.ToString(output.PrimaryRegion))
+		evidence := map[string]any{"owning_service": owner, "primary_region": primary}
+		switch {
+		case output.DeletedDate != nil:
+			evidence["deleted_date"] = output.DeletedDate.UTC().Format(time.RFC3339)
+			return guardOutcome{pending: true, evidence: evidence}, nil
+		case owner != "":
+			return guardOutcome{blocked: "the secret is managed by " + owner + " and is removed through that service", evidence: evidence}, nil
+		case primary != "" && region != "" && primary != region:
+			return guardOutcome{blocked: "the secret is a replica; remove it from the primary secret's replication in " + primary, evidence: evidence}, nil
+		}
+		return guardOutcome{evidence: evidence}, nil
 	}
 }

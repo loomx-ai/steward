@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::CodeBuild::Project
+  class: devops.build_project
+presentation:
+  displayNames:
+    zh-CN: CodeBuild 项目
+    en-US: CodeBuild Project
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: com.amazonaws.codebuild#ListProjects
+    itemsPath: projects
+    identityPath: Name
+    pagination:
+      type: token
+      tokenParameter: nextToken
+      tokenPath: nextToken
+relationships:
+- type: member_of
+  targetType: AWS::EC2::VPC
+  targetIdPath: vpc_id
+- type: uses
+  targetType: AWS::EC2::Subnet
+  targetIdPath: subnet_ids
+- type: uses
+  targetType: AWS::EC2::SecurityGroup
+  targetIdPath: security_group_ids
+actions:
+  delete:
+    operation: com.amazonaws.codebuild#DeleteProject
+    parameters:
+      name: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.codebuild#BatchGetProjects
+      parameters:
+        names: resource.nativeIdsJson
+      itemsPath: projects
+      identityPath: Name
+extensions:
+  hook: aws.product.resource

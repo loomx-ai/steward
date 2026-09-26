@@ -9,7 +9,10 @@ import (
 	"github.com/loomx-ai/steward/internal/core/graph"
 )
 
-const dependencyEvidenceSource = "aws:cleanup-dependencies"
+const (
+	dependencyEvidenceSource = "aws:cleanup-dependencies"
+	beanstalkEnvironmentTag  = "elasticbeanstalk:environment-name"
+)
 
 // childDependency is the documented deletion contract between a parent kind
 // and a child kind that names the parent in field.
@@ -59,6 +62,24 @@ var childDependencies = []childDependency{
 	{parentType: workspaceDirectoryType, childType: "AWS::WorkSpaces::Workspace", field: "DirectoryId", kind: "aws_workspaces_directory_member", mode: childRequired},
 	// Deleting an MSK cluster deletes its topics and their data.
 	{parentType: "AWS::MSK::Cluster", childType: "AWS::MSK::Topic", field: "ClusterArn", kind: "aws_msk_topic", mode: childCascade},
+	// DeleteScheduleGroup deletes the schedules in the group.
+	{parentType: "AWS::Scheduler::ScheduleGroup", childType: "AWS::Scheduler::Schedule", field: "schedule_group_name", kind: "aws_scheduler_schedule", mode: childCascade},
+	// Without its cascade option, DeleteIpam requires the IPAM's private
+	// scopes and pools to be deleted first; its default scopes go with it.
+	// Pools hold provisioned CIDRs, so they are never selected implicitly.
+	{parentType: "AWS::EC2::IPAM", childType: "AWS::EC2::IPAMScope", field: "IpamId", kind: "aws_ipam_scope", mode: childRequired, automatic: true, applies: func(scope asset.Asset) bool { return scope.Normalized["IsDefault"] != true }},
+	{parentType: "AWS::EC2::IPAM", childType: "AWS::EC2::IPAMScope", field: "IpamId", kind: "aws_ipam_default_scope", mode: childManaged, applies: func(scope asset.Asset) bool { return scope.Normalized["IsDefault"] == true }},
+	{parentType: "AWS::EC2::IPAMScope", childType: "AWS::EC2::IPAMPool", field: "IpamScopeId", kind: "aws_ipam_pool", mode: childRequired},
+	{parentType: "AWS::EC2::IPAMPool", childType: "AWS::EC2::IPAMPool", field: "SourceIpamPoolId", kind: "aws_ipam_child_pool", mode: childRequired},
+	// A data source's deletion policy decides whether its vectors are removed
+	// from the vector store, so each data source is reviewed on its own.
+	{parentType: "AWS::Bedrock::KnowledgeBase", childType: "AWS::Bedrock::DataSource", field: "KnowledgeBaseId", kind: "aws_bedrock_data_source", mode: childRequired},
+	// An application with running environments is deleted only by force,
+	// which terminates them; environments are selected explicitly instead.
+	{parentType: "AWS::ElasticBeanstalk::Application", childType: "AWS::ElasticBeanstalk::Environment", field: "ApplicationName", kind: "aws_elastic_beanstalk_environment", mode: childRequired},
+	// DeleteUserPool fails while the pool has a domain; the domain only
+	// serves the pool's managed login pages.
+	{parentType: "AWS::Cognito::UserPool", childType: cognitoUserPoolDomain, field: "UserPoolId", kind: "aws_cognito_user_pool_domain", mode: childRequired, automatic: true},
 	// A usage plan's keys are removed with the plan.
 	{parentType: "AWS::ApiGateway::UsagePlan", childType: "AWS::ApiGateway::UsagePlanKey", field: "UsagePlanId", kind: "aws_api_gateway_usage_plan_key", mode: childCascade},
 	// DeleteTrustStore fails while a listener's mutual TLS configuration uses
@@ -79,6 +100,8 @@ var globalReferences = []globalReference{
 	// instances run under the cluster's instance profile until they stop.
 	{sourceType: emrClusterType, field: "service_role_name", targetType: "AWS::IAM::Role", kind: "aws_emr_service_role"},
 	{sourceType: emrClusterType, field: "instance_profile_name", targetType: "AWS::IAM::InstanceProfile", kind: "aws_emr_instance_profile"},
+	// CodeBuild runs a project's builds with its service role.
+	{sourceType: codeBuildProjectType, field: "service_role_name", targetType: "AWS::IAM::Role", kind: "aws_codebuild_service_role"},
 }
 
 func contributeGlobalReferences(result *governance.Contribution, index assetIndex, source asset.Asset) error {
@@ -148,6 +171,8 @@ func contributeChildDependencies(result *governance.Contribution, index assetInd
 			if err := contributeEMRInstance(result, index, child); err != nil {
 				return err
 			}
+		case CloudFormationStackNativeType:
+			contributeBeanstalkStack(result, assets, child)
 		}
 	}
 	return nil
@@ -247,4 +272,24 @@ func contributeEMRInstance(result *governance.Contribution, index assetIndex, in
 	}
 	addChildDependency(result, "aws_emr_cluster_instance", childManaged, false, cluster, instance, map[string]any{"tag": emrClusterTag})
 	return nil
+}
+
+// Elastic Beanstalk provisions an environment's resources through a
+// CloudFormation stack it owns and tags with the environment; the stack is
+// removed by terminating the environment.
+func contributeBeanstalkStack(result *governance.Contribution, assets []asset.Asset, stack asset.Asset) {
+	name := strings.TrimSpace(stack.Tags[beanstalkEnvironmentTag])
+	if name == "" {
+		return
+	}
+	var matched []asset.Asset
+	for _, candidate := range assets {
+		if candidate.Identity.Provider == asset.ProviderAWS && candidate.ClosedAt == nil && candidate.Identity.NativeType == "AWS::ElasticBeanstalk::Environment" &&
+			candidate.Identity.ConnectionID == stack.Identity.ConnectionID && sameRegion(candidate, stack) && candidate.Identity.NativeID == name {
+			matched = append(matched, candidate)
+		}
+	}
+	if len(matched) == 1 {
+		addChildDependency(result, "aws_elastic_beanstalk_stack", childManaged, false, matched[0], stack, map[string]any{"tag": beanstalkEnvironmentTag})
+	}
 }

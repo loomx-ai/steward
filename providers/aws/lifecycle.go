@@ -108,7 +108,7 @@ func attachmentDocuments[T any](values []T) []any {
 func lifecycleFactKind(nativeType string) bool {
 	switch nativeType {
 	case "AWS::EC2::Instance", "AWS::EC2::NetworkInterface", "AWS::AutoScaling::AutoScalingGroup", "AWS::EKS::Nodegroup", "AWS::S3::Bucket",
-		"AWS::Config::ConfigRule", "AWS::Config::ConformancePack":
+		"AWS::Config::ConfigRule", "AWS::Config::ConformancePack", secretType:
 		return true
 	}
 	return false
@@ -144,6 +144,11 @@ func enrichLifecycleFacts(ctx context.Context, clients *NativeClients, items []c
 	}
 	if indexes := byType["AWS::Config::ConformancePack"]; len(indexes) > 0 {
 		if err := enrichConformancePacks(ctx, clients.Config, items, indexes); err != nil {
+			return err
+		}
+	}
+	if indexes := byType[secretType]; len(indexes) > 0 {
+		if err := enrichSecrets(ctx, clients.Secrets, items[indexes[0]].Location, items, indexes); err != nil {
 			return err
 		}
 	}

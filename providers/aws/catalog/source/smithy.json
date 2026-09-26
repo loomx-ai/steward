@@ -3,6 +3,10 @@
  "metadata": {
   "steward.sources": [
    {
+    "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/acm-pca/service/2017-08-22/acm-pca-2017-08-22.json",
+    "sha256": "9cf0f2b185ec56f60e3739eef881a431208098f2af2757b3d5384958d09f9b8f"
+   },
+   {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/auto-scaling/service/2011-01-01/auto-scaling-2011-01-01.json",
     "sha256": "c4e07d4cf465d9be7d187d9f9b9a48dd1e9869cfb039941e2fe96d51b74e55ce"
    },
@@ -11,12 +15,24 @@
     "sha256": "42fd0f16fd8896247137607430b54f69079678c8fb461afe3fe54a4fdf00f65d"
    },
    {
+    "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/bedrock/service/2023-04-20/bedrock-2023-04-20.json",
+    "sha256": "31e8c7eb23e9e87e564c4e1ad8f7f07a65fd0e3f15ce60f799872e4236744c8d"
+   },
+   {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/cloudcontrol/service/2021-09-30/cloudcontrol-2021-09-30.json",
     "sha256": "28bb7a61913fc5b0692160ca26547c57893d5a50198a7b82c7afa3b1c8d836ce"
    },
    {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/cloudformation/service/2010-05-15/cloudformation-2010-05-15.json",
     "sha256": "9992e8206bda7e3c3bb34886f99ca4e07acc12fa24542b788bf03759ad9e6a9c"
+   },
+   {
+    "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/codebuild/service/2016-10-06/codebuild-2016-10-06.json",
+    "sha256": "aadda1f2127d1fc013f88a014bfe1c2a74805147d222b7445df0276ff1b47372"
+   },
+   {
+    "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/cognito-identity-provider/service/2016-04-18/cognito-identity-provider-2016-04-18.json",
+    "sha256": "ae32104a831ac775b72289069940b46855bd38ce73326f33507ec51b3df8ec0e"
    },
    {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/config-service/service/2014-11-12/config-service-2014-11-12.json",
@@ -79,6 +95,10 @@
     "sha256": "1926cf7277c37587dbd9cbdae498337d7b3b92df35a591e14cc0a40ea9615559"
    },
    {
+    "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/secrets-manager/service/2017-10-17/secrets-manager-2017-10-17.json",
+    "sha256": "2738bd8ded2b25834c71089cf71232738972d78befa80fa168ea476978ac8604"
+   },
+   {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/storage-gateway/service/2013-06-30/storage-gateway-2013-06-30.json",
     "sha256": "f9ef5fbb6f41ea6f18c4366b22004c9445c9de8fed15916eeb34067cb2ad14c6"
    },
@@ -97,6 +117,169 @@
   ]
  },
  "shapes": {
+  "com.amazonaws.acmpca#ACMPrivateCA": {
+   "type": "service",
+   "version": "2017-08-22",
+   "operations": [
+    {
+     "target": "com.amazonaws.acmpca#DeleteCertificateAuthority"
+    },
+    {
+     "target": "com.amazonaws.acmpca#DescribeCertificateAuthority"
+    },
+    {
+     "target": "com.amazonaws.acmpca#ListCertificateAuthorities"
+    },
+    {
+     "target": "com.amazonaws.acmpca#UpdateCertificateAuthority"
+    }
+   ],
+   "traits": {
+    "aws.api#service": {
+     "sdkId": "ACM PCA",
+     "arnNamespace": "acm-pca",
+     "cloudFormationName": "ACMPCA",
+     "cloudTrailEventSource": "acm-pca.amazonaws.com",
+     "docId": "acm-pca-2017-08-22",
+     "endpointPrefix": "acm-pca"
+    },
+    "aws.auth#sigv4": {
+     "name": "acm-pca"
+    },
+    "aws.protocols#awsJson1_1": {}
+   }
+  },
+  "com.amazonaws.acmpca#DeleteCertificateAuthority": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.acmpca#DeleteCertificateAuthorityRequest"
+   },
+   "output": {
+    "target": "smithy.api#Unit"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.acmpca#DeleteCertificateAuthorityRequest": {
+   "type": "structure",
+   "members": {
+    "CertificateAuthorityArn": {
+     "target": "com.amazonaws.acmpca#Arn",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "PermanentDeletionTimeInDays": {
+     "target": "com.amazonaws.acmpca#PermanentDeletionTimeInDays",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.acmpca#DescribeCertificateAuthority": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.acmpca#DescribeCertificateAuthorityRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.acmpca#DescribeCertificateAuthorityResponse"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.acmpca#DescribeCertificateAuthorityRequest": {
+   "type": "structure",
+   "members": {
+    "CertificateAuthorityArn": {
+     "target": "com.amazonaws.acmpca#Arn",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.acmpca#DescribeCertificateAuthorityResponse": {
+   "type": "structure",
+   "members": {
+    "CertificateAuthority": {
+     "target": "com.amazonaws.acmpca#CertificateAuthority",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.acmpca#ListCertificateAuthorities": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.acmpca#ListCertificateAuthoritiesRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.acmpca#ListCertificateAuthoritiesResponse"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "NextToken",
+     "outputToken": "NextToken",
+     "items": "CertificateAuthorities",
+     "pageSize": "MaxResults"
+    }
+   }
+  },
+  "com.amazonaws.acmpca#ListCertificateAuthoritiesRequest": {
+   "type": "structure",
+   "members": {
+    "MaxResults": {
+     "target": "com.amazonaws.acmpca#MaxResults",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.acmpca#NextToken",
+     "traits": {}
+    },
+    "ResourceOwner": {
+     "target": "com.amazonaws.acmpca#ResourceOwner",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.acmpca#ListCertificateAuthoritiesResponse": {
+   "type": "structure",
+   "members": {
+    "CertificateAuthorities": {
+     "target": "com.amazonaws.acmpca#CertificateAuthorities",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.acmpca#NextToken",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.acmpca#UpdateCertificateAuthority": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.acmpca#UpdateCertificateAuthorityRequest"
+   },
+   "output": {
+    "target": "smithy.api#Unit"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.acmpca#UpdateCertificateAuthorityRequest": {
+   "type": "structure",
+   "members": {
+    "CertificateAuthorityArn": {
+     "target": "com.amazonaws.acmpca#Arn",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "RevocationConfiguration": {
+     "target": "com.amazonaws.acmpca#RevocationConfiguration",
+     "traits": {}
+    },
+    "Status": {
+     "target": "com.amazonaws.acmpca#CertificateAuthorityStatus",
+     "traits": {}
+    }
+   }
+  },
   "com.amazonaws.autoscaling#AutoScalingGroupNamesType": {
    "type": "structure",
    "members": {
@@ -303,6 +486,265 @@
     },
     "VaultType": {
      "target": "com.amazonaws.backup#VaultType",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.bedrock#AmazonBedrockControlPlaneService": {
+   "type": "service",
+   "version": "2023-04-20",
+   "operations": [
+    {
+     "target": "com.amazonaws.bedrock#DeleteProvisionedModelThroughput"
+    },
+    {
+     "target": "com.amazonaws.bedrock#GetProvisionedModelThroughput"
+    },
+    {
+     "target": "com.amazonaws.bedrock#ListProvisionedModelThroughputs"
+    }
+   ],
+   "traits": {
+    "aws.api#service": {
+     "sdkId": "Bedrock",
+     "endpointPrefix": "bedrock"
+    },
+    "aws.auth#sigv4": {
+     "name": "bedrock"
+    },
+    "aws.protocols#restJson1": {}
+   }
+  },
+  "com.amazonaws.bedrock#DeleteProvisionedModelThroughput": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.bedrock#DeleteProvisionedModelThroughputRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.bedrock#DeleteProvisionedModelThroughputResponse"
+   },
+   "traits": {
+    "smithy.api#http": {
+     "code": 200,
+     "method": "DELETE",
+     "uri": "/provisioned-model-throughput/{provisionedModelId}"
+    },
+    "smithy.api#idempotent": {}
+   }
+  },
+  "com.amazonaws.bedrock#DeleteProvisionedModelThroughputRequest": {
+   "type": "structure",
+   "members": {
+    "provisionedModelId": {
+     "target": "com.amazonaws.bedrock#ProvisionedModelId",
+     "traits": {
+      "smithy.api#httpLabel": {},
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.bedrock#DeleteProvisionedModelThroughputResponse": {
+   "type": "structure",
+   "members": {}
+  },
+  "com.amazonaws.bedrock#GetProvisionedModelThroughput": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.bedrock#GetProvisionedModelThroughputRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.bedrock#GetProvisionedModelThroughputResponse"
+   },
+   "traits": {
+    "smithy.api#http": {
+     "code": 200,
+     "method": "GET",
+     "uri": "/provisioned-model-throughput/{provisionedModelId}"
+    },
+    "smithy.api#readonly": {}
+   }
+  },
+  "com.amazonaws.bedrock#GetProvisionedModelThroughputRequest": {
+   "type": "structure",
+   "members": {
+    "provisionedModelId": {
+     "target": "com.amazonaws.bedrock#ProvisionedModelId",
+     "traits": {
+      "smithy.api#httpLabel": {},
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.bedrock#GetProvisionedModelThroughputResponse": {
+   "type": "structure",
+   "members": {
+    "commitmentDuration": {
+     "target": "com.amazonaws.bedrock#CommitmentDuration",
+     "traits": {}
+    },
+    "commitmentExpirationTime": {
+     "target": "com.amazonaws.bedrock#Timestamp",
+     "traits": {}
+    },
+    "creationTime": {
+     "target": "com.amazonaws.bedrock#Timestamp",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "desiredModelArn": {
+     "target": "com.amazonaws.bedrock#ModelArn",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "desiredModelUnits": {
+     "target": "com.amazonaws.bedrock#PositiveInteger",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "failureMessage": {
+     "target": "com.amazonaws.bedrock#ErrorMessage",
+     "traits": {}
+    },
+    "foundationModelArn": {
+     "target": "com.amazonaws.bedrock#FoundationModelArn",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "lastModifiedTime": {
+     "target": "com.amazonaws.bedrock#Timestamp",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "modelArn": {
+     "target": "com.amazonaws.bedrock#ModelArn",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "modelUnits": {
+     "target": "com.amazonaws.bedrock#PositiveInteger",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "provisionedModelArn": {
+     "target": "com.amazonaws.bedrock#ProvisionedModelArn",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "provisionedModelName": {
+     "target": "com.amazonaws.bedrock#ProvisionedModelName",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "status": {
+     "target": "com.amazonaws.bedrock#ProvisionedModelStatus",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.bedrock#ListProvisionedModelThroughputs": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.bedrock#ListProvisionedModelThroughputsRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.bedrock#ListProvisionedModelThroughputsResponse"
+   },
+   "traits": {
+    "smithy.api#http": {
+     "code": 200,
+     "method": "GET",
+     "uri": "/provisioned-model-throughputs"
+    },
+    "smithy.api#paginated": {
+     "inputToken": "nextToken",
+     "outputToken": "nextToken",
+     "pageSize": "maxResults",
+     "items": "provisionedModelSummaries"
+    },
+    "smithy.api#readonly": {}
+   }
+  },
+  "com.amazonaws.bedrock#ListProvisionedModelThroughputsRequest": {
+   "type": "structure",
+   "members": {
+    "creationTimeAfter": {
+     "target": "com.amazonaws.bedrock#Timestamp",
+     "traits": {
+      "smithy.api#httpQuery": "creationTimeAfter"
+     }
+    },
+    "creationTimeBefore": {
+     "target": "com.amazonaws.bedrock#Timestamp",
+     "traits": {
+      "smithy.api#httpQuery": "creationTimeBefore"
+     }
+    },
+    "maxResults": {
+     "target": "com.amazonaws.bedrock#MaxResults",
+     "traits": {
+      "smithy.api#httpQuery": "maxResults"
+     }
+    },
+    "modelArnEquals": {
+     "target": "com.amazonaws.bedrock#ModelArn",
+     "traits": {
+      "smithy.api#httpQuery": "modelArnEquals"
+     }
+    },
+    "nameContains": {
+     "target": "com.amazonaws.bedrock#ProvisionedModelName",
+     "traits": {
+      "smithy.api#httpQuery": "nameContains"
+     }
+    },
+    "nextToken": {
+     "target": "com.amazonaws.bedrock#PaginationToken",
+     "traits": {
+      "smithy.api#httpQuery": "nextToken"
+     }
+    },
+    "sortBy": {
+     "target": "com.amazonaws.bedrock#SortByProvisionedModels",
+     "traits": {
+      "smithy.api#httpQuery": "sortBy"
+     }
+    },
+    "sortOrder": {
+     "target": "com.amazonaws.bedrock#SortOrder",
+     "traits": {
+      "smithy.api#httpQuery": "sortOrder"
+     }
+    },
+    "statusEquals": {
+     "target": "com.amazonaws.bedrock#ProvisionedModelStatus",
+     "traits": {
+      "smithy.api#httpQuery": "statusEquals"
+     }
+    }
+   }
+  },
+  "com.amazonaws.bedrock#ListProvisionedModelThroughputsResponse": {
+   "type": "structure",
+   "members": {
+    "nextToken": {
+     "target": "com.amazonaws.bedrock#PaginationToken",
+     "traits": {}
+    },
+    "provisionedModelSummaries": {
+     "target": "com.amazonaws.bedrock#ProvisionedModelSummaries",
      "traits": {}
     }
    }
@@ -786,6 +1228,307 @@
     },
     "StackResourceSummaries": {
      "target": "com.amazonaws.cloudformation#StackResourceSummaries",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.codebuild#BatchGetProjects": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.codebuild#BatchGetProjectsInput"
+   },
+   "output": {
+    "target": "com.amazonaws.codebuild#BatchGetProjectsOutput"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.codebuild#BatchGetProjectsInput": {
+   "type": "structure",
+   "members": {
+    "names": {
+     "target": "com.amazonaws.codebuild#ProjectNames",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.codebuild#BatchGetProjectsOutput": {
+   "type": "structure",
+   "members": {
+    "projects": {
+     "target": "com.amazonaws.codebuild#Projects",
+     "traits": {}
+    },
+    "projectsNotFound": {
+     "target": "com.amazonaws.codebuild#ProjectNames",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.codebuild#CodeBuild_20161006": {
+   "type": "service",
+   "version": "2016-10-06",
+   "operations": [
+    {
+     "target": "com.amazonaws.codebuild#BatchGetProjects"
+    },
+    {
+     "target": "com.amazonaws.codebuild#DeleteProject"
+    },
+    {
+     "target": "com.amazonaws.codebuild#ListProjects"
+    }
+   ],
+   "traits": {
+    "aws.api#service": {
+     "sdkId": "CodeBuild",
+     "arnNamespace": "codebuild",
+     "cloudFormationName": "CodeBuild",
+     "cloudTrailEventSource": "codebuild.amazonaws.com",
+     "endpointPrefix": "codebuild"
+    },
+    "aws.auth#sigv4": {
+     "name": "codebuild"
+    },
+    "aws.protocols#awsJson1_1": {}
+   }
+  },
+  "com.amazonaws.codebuild#DeleteProject": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.codebuild#DeleteProjectInput"
+   },
+   "output": {
+    "target": "com.amazonaws.codebuild#DeleteProjectOutput"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.codebuild#DeleteProjectInput": {
+   "type": "structure",
+   "members": {
+    "name": {
+     "target": "com.amazonaws.codebuild#NonEmptyString",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.codebuild#DeleteProjectOutput": {
+   "type": "structure",
+   "members": {}
+  },
+  "com.amazonaws.codebuild#ListProjects": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.codebuild#ListProjectsInput"
+   },
+   "output": {
+    "target": "com.amazonaws.codebuild#ListProjectsOutput"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "nextToken",
+     "outputToken": "nextToken",
+     "items": "projects"
+    }
+   }
+  },
+  "com.amazonaws.codebuild#ListProjectsInput": {
+   "type": "structure",
+   "members": {
+    "nextToken": {
+     "target": "com.amazonaws.codebuild#NonEmptyString",
+     "traits": {}
+    },
+    "sortBy": {
+     "target": "com.amazonaws.codebuild#ProjectSortByType",
+     "traits": {}
+    },
+    "sortOrder": {
+     "target": "com.amazonaws.codebuild#SortOrderType",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.codebuild#ListProjectsOutput": {
+   "type": "structure",
+   "members": {
+    "nextToken": {
+     "target": "com.amazonaws.codebuild#String",
+     "traits": {}
+    },
+    "projects": {
+     "target": "com.amazonaws.codebuild#ProjectNames",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.cognitoidentityprovider#AWSCognitoIdentityProviderService": {
+   "type": "service",
+   "version": "2016-04-18",
+   "operations": [
+    {
+     "target": "com.amazonaws.cognitoidentityprovider#DeleteUserPoolDomain"
+    },
+    {
+     "target": "com.amazonaws.cognitoidentityprovider#DescribeUserPool"
+    },
+    {
+     "target": "com.amazonaws.cognitoidentityprovider#DescribeUserPoolDomain"
+    },
+    {
+     "target": "com.amazonaws.cognitoidentityprovider#ListUserPools"
+    }
+   ],
+   "traits": {
+    "aws.api#service": {
+     "sdkId": "Cognito Identity Provider",
+     "arnNamespace": "cognito-idp",
+     "cloudFormationName": "Cognito",
+     "cloudTrailEventSource": "cognito-idp.amazonaws.com",
+     "docId": "cognito-idp-2016-04-18",
+     "endpointPrefix": "cognito-idp"
+    },
+    "aws.auth#sigv4": {
+     "name": "cognito-idp"
+    },
+    "aws.protocols#awsJson1_1": {}
+   }
+  },
+  "com.amazonaws.cognitoidentityprovider#DeleteUserPoolDomain": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.cognitoidentityprovider#DeleteUserPoolDomainRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.cognitoidentityprovider#DeleteUserPoolDomainResponse"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.cognitoidentityprovider#DeleteUserPoolDomainRequest": {
+   "type": "structure",
+   "members": {
+    "Domain": {
+     "target": "com.amazonaws.cognitoidentityprovider#DomainType",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "UserPoolId": {
+     "target": "com.amazonaws.cognitoidentityprovider#UserPoolIdType",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.cognitoidentityprovider#DeleteUserPoolDomainResponse": {
+   "type": "structure",
+   "members": {}
+  },
+  "com.amazonaws.cognitoidentityprovider#DescribeUserPool": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.cognitoidentityprovider#DescribeUserPoolRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.cognitoidentityprovider#DescribeUserPoolResponse"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.cognitoidentityprovider#DescribeUserPoolDomain": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.cognitoidentityprovider#DescribeUserPoolDomainRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.cognitoidentityprovider#DescribeUserPoolDomainResponse"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.cognitoidentityprovider#DescribeUserPoolDomainRequest": {
+   "type": "structure",
+   "members": {
+    "Domain": {
+     "target": "com.amazonaws.cognitoidentityprovider#DomainType",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.cognitoidentityprovider#DescribeUserPoolDomainResponse": {
+   "type": "structure",
+   "members": {
+    "DomainDescription": {
+     "target": "com.amazonaws.cognitoidentityprovider#DomainDescriptionType",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.cognitoidentityprovider#DescribeUserPoolRequest": {
+   "type": "structure",
+   "members": {
+    "UserPoolId": {
+     "target": "com.amazonaws.cognitoidentityprovider#UserPoolIdType",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.cognitoidentityprovider#DescribeUserPoolResponse": {
+   "type": "structure",
+   "members": {
+    "UserPool": {
+     "target": "com.amazonaws.cognitoidentityprovider#UserPoolType",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.cognitoidentityprovider#ListUserPools": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.cognitoidentityprovider#ListUserPoolsRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.cognitoidentityprovider#ListUserPoolsResponse"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "NextToken",
+     "outputToken": "NextToken",
+     "items": "UserPools",
+     "pageSize": "MaxResults"
+    }
+   }
+  },
+  "com.amazonaws.cognitoidentityprovider#ListUserPoolsRequest": {
+   "type": "structure",
+   "members": {
+    "MaxResults": {
+     "target": "com.amazonaws.cognitoidentityprovider#PoolQueryLimitType",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "NextToken": {
+     "target": "com.amazonaws.cognitoidentityprovider#PaginationKeyType",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.cognitoidentityprovider#ListUserPoolsResponse": {
+   "type": "structure",
+   "members": {
+    "NextToken": {
+     "target": "com.amazonaws.cognitoidentityprovider#PaginationKeyType",
+     "traits": {}
+    },
+    "UserPools": {
+     "target": "com.amazonaws.cognitoidentityprovider#UserPoolListType",
      "traits": {}
     }
    }
@@ -4309,6 +5052,139 @@
     "aws.protocols#awsJson1_1": {}
    }
   },
+  "com.amazonaws.secretsmanager#DescribeSecret": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.secretsmanager#DescribeSecretRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.secretsmanager#DescribeSecretResponse"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.secretsmanager#DescribeSecretRequest": {
+   "type": "structure",
+   "members": {
+    "SecretId": {
+     "target": "com.amazonaws.secretsmanager#SecretIdType",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.secretsmanager#DescribeSecretResponse": {
+   "type": "structure",
+   "members": {
+    "ARN": {
+     "target": "com.amazonaws.secretsmanager#SecretARNType",
+     "traits": {}
+    },
+    "CreatedDate": {
+     "target": "com.amazonaws.secretsmanager#TimestampType",
+     "traits": {}
+    },
+    "DeletedDate": {
+     "target": "com.amazonaws.secretsmanager#DeletedDateType",
+     "traits": {}
+    },
+    "Description": {
+     "target": "com.amazonaws.secretsmanager#DescriptionType",
+     "traits": {}
+    },
+    "ExternalSecretRotationMetadata": {
+     "target": "com.amazonaws.secretsmanager#ExternalSecretRotationMetadataType",
+     "traits": {}
+    },
+    "ExternalSecretRotationRoleArn": {
+     "target": "com.amazonaws.secretsmanager#RoleARNType",
+     "traits": {}
+    },
+    "KmsKeyId": {
+     "target": "com.amazonaws.secretsmanager#KmsKeyIdType",
+     "traits": {}
+    },
+    "LastAccessedDate": {
+     "target": "com.amazonaws.secretsmanager#LastAccessedDateType",
+     "traits": {}
+    },
+    "LastChangedDate": {
+     "target": "com.amazonaws.secretsmanager#LastChangedDateType",
+     "traits": {}
+    },
+    "LastRotatedDate": {
+     "target": "com.amazonaws.secretsmanager#LastRotatedDateType",
+     "traits": {}
+    },
+    "Name": {
+     "target": "com.amazonaws.secretsmanager#SecretNameType",
+     "traits": {}
+    },
+    "NextRotationDate": {
+     "target": "com.amazonaws.secretsmanager#NextRotationDateType",
+     "traits": {}
+    },
+    "OwningService": {
+     "target": "com.amazonaws.secretsmanager#OwningServiceType",
+     "traits": {}
+    },
+    "PrimaryRegion": {
+     "target": "com.amazonaws.secretsmanager#RegionType",
+     "traits": {}
+    },
+    "ReplicationStatus": {
+     "target": "com.amazonaws.secretsmanager#ReplicationStatusListType",
+     "traits": {}
+    },
+    "RotationEnabled": {
+     "target": "com.amazonaws.secretsmanager#RotationEnabledType",
+     "traits": {}
+    },
+    "RotationLambdaARN": {
+     "target": "com.amazonaws.secretsmanager#RotationLambdaARNType",
+     "traits": {}
+    },
+    "RotationRules": {
+     "target": "com.amazonaws.secretsmanager#RotationRulesType",
+     "traits": {}
+    },
+    "Tags": {
+     "target": "com.amazonaws.secretsmanager#TagListType",
+     "traits": {}
+    },
+    "Type": {
+     "target": "com.amazonaws.secretsmanager#MedeaTypeType",
+     "traits": {}
+    },
+    "VersionIdsToStages": {
+     "target": "com.amazonaws.secretsmanager#SecretVersionsToStagesMapType",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.secretsmanager#secretsmanager": {
+   "type": "service",
+   "version": "2017-10-17",
+   "operations": [
+    {
+     "target": "com.amazonaws.secretsmanager#DescribeSecret"
+    }
+   ],
+   "traits": {
+    "aws.api#service": {
+     "sdkId": "Secrets Manager",
+     "arnNamespace": "secretsmanager",
+     "cloudFormationName": "SecretsManager",
+     "cloudTrailEventSource": "secretsmanager.amazonaws.com",
+     "docId": "secretsmanager-2017-10-17",
+     "endpointPrefix": "secretsmanager"
+    },
+    "aws.auth#sigv4": {
+     "name": "secretsmanager"
+    },
+    "aws.protocols#awsJson1_1": {}
+   }
+  },
   "com.amazonaws.storagegateway#DeleteGateway": {
    "type": "operation",
    "input": {
@@ -4964,6 +5840,14 @@
  },
  "x-resource-types": [
   {
+   "nativeType": "AWS::ACMPCA::CertificateAuthority",
+   "class": "security.certificate_authority",
+   "displayName": "Private Certificate Authority",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::APS::Scraper",
    "class": "observability.prometheus",
    "displayName": "Managed Prometheus Scraper",
@@ -4991,6 +5875,14 @@
    "nativeType": "AWS::AmazonMQ::Broker",
    "class": "messaging.broker",
    "displayName": "Amazon MQ Broker",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Amplify::App",
+   "class": "application.hosting",
+   "displayName": "Amplify App",
    "scopeKinds": [
     "region"
    ]
@@ -5060,6 +5952,14 @@
    ]
   },
   {
+   "nativeType": "AWS::AppSync::GraphQLApi",
+   "class": "api.gateway",
+   "displayName": "AppSync GraphQL API",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::Athena::WorkGroup",
    "class": "analytics.workgroup",
    "displayName": "Athena Workgroup",
@@ -5119,6 +6019,46 @@
    "nativeType": "AWS::Batch::ComputeEnvironment",
    "class": "compute.hpc_cluster",
    "displayName": "Batch Compute Environment",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Bedrock::Agent",
+   "class": "ai.agent",
+   "displayName": "Bedrock Agent",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Bedrock::DataSource",
+   "class": "ai.knowledge_base_data_source",
+   "displayName": "Bedrock Knowledge Base Data Source",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Bedrock::Guardrail",
+   "class": "ai.guardrail",
+   "displayName": "Bedrock Guardrail",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Bedrock::KnowledgeBase",
+   "class": "ai.knowledge_base",
+   "displayName": "Bedrock Knowledge Base",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Bedrock::ProvisionedModelThroughput",
+   "class": "ai.provisioned_throughput",
+   "displayName": "Bedrock Provisioned Throughput",
    "scopeKinds": [
     "region"
    ]
@@ -5212,9 +6152,41 @@
    ]
   },
   {
+   "nativeType": "AWS::CodeBuild::Project",
+   "class": "devops.build_project",
+   "displayName": "CodeBuild Project",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::CodePipeline::Pipeline",
    "class": "devops.pipeline",
    "displayName": "CodePipeline Pipeline",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Cognito::IdentityPool",
+   "class": "identity.identity_pool",
+   "displayName": "Cognito Identity Pool",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Cognito::UserPool",
+   "class": "identity.user_pool",
+   "displayName": "Cognito User Pool",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Cognito::UserPoolDomain",
+   "class": "identity.user_pool_domain",
+   "displayName": "Cognito User Pool Domain",
    "scopeKinds": [
     "region"
    ]
@@ -5516,6 +6488,30 @@
    ]
   },
   {
+   "nativeType": "AWS::EC2::IPAM",
+   "class": "network.ip_address_manager",
+   "displayName": "VPC IP Address Manager",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::EC2::IPAMPool",
+   "class": "network.ip_address_pool",
+   "displayName": "IPAM Pool",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::EC2::IPAMScope",
+   "class": "network.ip_address_scope",
+   "displayName": "IPAM Scope",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::EC2::Image",
    "class": "compute.image",
    "displayName": "Amazon Machine Image",
@@ -5583,6 +6579,22 @@
    "nativeType": "AWS::EC2::NetworkInterface",
    "class": "network.interface",
    "displayName": "Elastic Network Interface",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::EC2::PlacementGroup",
+   "class": "compute.placement_group",
+   "displayName": "Placement Group",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::EC2::PrefixList",
+   "class": "network.prefix_list",
+   "displayName": "Managed Prefix List",
    "scopeKinds": [
     "region"
    ]
@@ -5900,6 +6912,22 @@
    ]
   },
   {
+   "nativeType": "AWS::ElasticBeanstalk::Application",
+   "class": "application",
+   "displayName": "Elastic Beanstalk Application",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::ElasticBeanstalk::Environment",
+   "class": "compute.application_environment",
+   "displayName": "Elastic Beanstalk Environment",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::ElasticLoadBalancing::LoadBalancer",
    "class": "network.load_balancer",
    "displayName": "Classic Load Balancer",
@@ -6116,6 +7144,14 @@
    ]
   },
   {
+   "nativeType": "AWS::KinesisFirehose::DeliveryStream",
+   "class": "messaging.delivery_stream",
+   "displayName": "Data Firehose Stream",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::Lambda::Function",
    "class": "compute.function",
    "displayName": "Lambda Function",
@@ -6159,6 +7195,14 @@
    "nativeType": "AWS::MSK::Topic",
    "class": "messaging.topic",
    "displayName": "MSK Topic",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::MWAA::Environment",
+   "class": "orchestration.workflow_environment",
+   "displayName": "Managed Workflows for Apache Airflow Environment",
    "scopeKinds": [
     "region"
    ]
@@ -6468,6 +7512,14 @@
    ]
   },
   {
+   "nativeType": "AWS::SSM::Parameter",
+   "class": "configuration.parameter",
+   "displayName": "Systems Manager Parameter",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::SSO::Instance",
    "class": "identity.directory",
    "displayName": "IAM Identity Center Instance",
@@ -6503,6 +7555,30 @@
    "nativeType": "AWS::SageMaker::Model",
    "class": "ai.model",
    "displayName": "SageMaker Model",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Scheduler::Schedule",
+   "class": "orchestration.schedule",
+   "displayName": "EventBridge Scheduler Schedule",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Scheduler::ScheduleGroup",
+   "class": "orchestration.schedule_group",
+   "displayName": "EventBridge Scheduler Schedule Group",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::SecretsManager::Secret",
+   "class": "security.secret",
+   "displayName": "Secrets Manager Secret",
    "scopeKinds": [
     "region"
    ]
@@ -6607,6 +7683,14 @@
    "nativeType": "AWS::Timestream::Table",
    "class": "database.timeseries",
    "displayName": "Timestream Table",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Transfer::Server",
+   "class": "storage.transfer_server",
+   "displayName": "Transfer Family Server",
    "scopeKinds": [
     "region"
    ]

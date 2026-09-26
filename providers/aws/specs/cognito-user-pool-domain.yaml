@@ -1,0 +1,45 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::Cognito::UserPoolDomain
+  class: identity.user_pool_domain
+presentation:
+  displayNames:
+    zh-CN: Cognito 用户池域
+    en-US: Cognito User Pool Domain
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    source: cloud-control
+    nativeType: AWS::Cognito::UserPool
+  list:
+    operation: com.amazonaws.cognitoidentityprovider#DescribeUserPool
+    parameters:
+      UserPoolId: parent.nativeId
+    itemsPath: UserPool
+    identityPath: Domain
+    statePath: Status
+relationships:
+- type: member_of
+  targetType: AWS::Cognito::UserPool
+  targetIdPath: UserPoolId
+actions:
+  delete:
+    operation: com.amazonaws.cognitoidentityprovider#DeleteUserPoolDomain
+    parameters:
+      Domain: resource.nativeId
+      UserPoolId: resource.normalized.UserPoolId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.cognitoidentityprovider#DescribeUserPoolDomain
+      parameters:
+        Domain: resource.nativeId
+      itemsPath: DomainDescription
+      identityPath: Domain
+      statePath: Status
+extensions:
+  hook: aws.product.resource

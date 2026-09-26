@@ -40,8 +40,8 @@ Steward 使用连接中的凭证读取一个 AWS 账号。每个已支持的资�
 | --- | --- |
 | 地域与网络选择 | `ec2:DescribeRegions`、`ec2:DescribeVpcs`、`ec2:DescribeSubnets` |
 | Cloud Control 盘点与详情 | `cloudformation:ListResources`、`cloudformation:GetResource`，以及各资源类型处理器要求的产品读取权限 |
-| 挂载与成员关系 | `ec2:DescribeInstances`、`ec2:DescribeNetworkInterfaces`、`ec2:DescribeVolumes`、`autoscaling:DescribeAutoScalingGroups`、`eks:DescribeNodegroup`、`config:DescribeConfigRules`、`config:DescribeConformancePackCompliance` |
-| 产品 API 盘点 | `ec2:DescribeImages`、`ec2:DescribeSnapshots`、`es:ListDomainNames`、`es:DescribeDomains`、`rds:DescribeDBClusters`、`rds:DescribeDBInstances`（DocumentDB）、`dms:DescribeReplicationInstances`、`fsx:DescribeFileSystems`、`storagegateway:ListGateways`、`storagegateway:DescribeGatewayInformation`、`route53domains:ListDomains`、`drs:DescribeSourceServers`、`mobiletargeting:ListTemplates`、`mobiletargeting:GetSmsTemplate`、`ec2:DescribeClientVpnEndpoints`、`ec2:DescribeClientVpnTargetNetworks`、`ec2:DescribeClientVpnAuthorizationRules`、`ec2:DescribeClientVpnRoutes`、`elasticmapreduce:ListClusters`、`elasticmapreduce:DescribeCluster`、`workspaces:DescribeWorkspaceDirectories`、`wafv2:ListWebACLs`、`wafv2:GetWebACL`、`wafv2:ListResourcesForWebACL`、`wafv2:GetWebACLForResource` |
+| 挂载与成员关系 | `ec2:DescribeInstances`、`ec2:DescribeNetworkInterfaces`、`ec2:DescribeVolumes`、`autoscaling:DescribeAutoScalingGroups`、`eks:DescribeNodegroup`、`config:DescribeConfigRules`、`config:DescribeConformancePackCompliance`、`secretsmanager:DescribeSecret` |
+| 产品 API 盘点 | `ec2:DescribeImages`、`ec2:DescribeSnapshots`、`es:ListDomainNames`、`es:DescribeDomains`、`rds:DescribeDBClusters`、`rds:DescribeDBInstances`（DocumentDB）、`dms:DescribeReplicationInstances`、`fsx:DescribeFileSystems`、`storagegateway:ListGateways`、`storagegateway:DescribeGatewayInformation`、`route53domains:ListDomains`、`drs:DescribeSourceServers`、`mobiletargeting:ListTemplates`、`mobiletargeting:GetSmsTemplate`、`ec2:DescribeClientVpnEndpoints`、`ec2:DescribeClientVpnTargetNetworks`、`ec2:DescribeClientVpnAuthorizationRules`、`ec2:DescribeClientVpnRoutes`、`elasticmapreduce:ListClusters`、`elasticmapreduce:DescribeCluster`、`workspaces:DescribeWorkspaceDirectories`、`wafv2:ListWebACLs`、`wafv2:GetWebACL`、`wafv2:ListResourcesForWebACL`、`wafv2:GetWebACLForResource`、`acm-pca:ListCertificateAuthorities`、`acm-pca:DescribeCertificateAuthority`、`bedrock:ListProvisionedModelThroughputs`、`bedrock:GetProvisionedModelThroughput`、`codebuild:ListProjects`、`codebuild:BatchGetProjects`、`cognito-idp:ListUserPools`、`cognito-idp:DescribeUserPool`、`cognito-idp:DescribeUserPoolDomain` |
 | 组织树 | `organizations:ListRoots`、`organizations:ListOrganizationalUnitsForParent` |
 | Resource Explorer 索引 | `resource-explorer-2:Search`（Steward 调用的 `ListResources` 使用该权限） |
 | CloudFormation 栈与归属 | `cloudformation:DescribeStacks`、`cloudformation:ListStackResources`、`cloudformation:GetTemplate` |
@@ -58,10 +58,10 @@ Steward 使用连接中的凭证读取一个 AWS 账号。每个已支持的资�
 | 用途 | IAM Action |
 | --- | --- |
 | 通过 Cloud Control 删除 | `cloudformation:DeleteResource`、`cloudformation:GetResourceRequestStatus`，以及目标类型的产品删除和读取权限 |
-| 通过产品 API 删除 | 该类型自身的删除 Action，例如 `ec2:DeregisterImage`、`ec2:DeleteSnapshot`、`es:DeleteDomain`、`rds:DeleteDBCluster`、`dms:DeleteReplicationInstance`、`fsx:DeleteFileSystem`、`storagegateway:DeleteGateway`、`route53domains:DeleteDomain`、`drs:DeleteSourceServer`、`mobiletargeting:DeleteSmsTemplate`、`ec2:DeleteClientVpnEndpoint`、`ec2:DisassociateClientVpnTargetNetwork`、`ec2:RevokeClientVpnIngress`、`ec2:DeleteClientVpnRoute`、`elasticmapreduce:TerminateJobFlows`、`workspaces:DeregisterWorkspaceDirectory`、`wafv2:DisassociateWebACL`（以及受保护服务自身的权限，例如 `elasticloadbalancing:SetWebACL`） |
+| 通过产品 API 删除 | 该类型自身的删除 Action，例如 `ec2:DeregisterImage`、`ec2:DeleteSnapshot`、`es:DeleteDomain`、`rds:DeleteDBCluster`、`dms:DeleteReplicationInstance`、`fsx:DeleteFileSystem`、`storagegateway:DeleteGateway`、`route53domains:DeleteDomain`、`drs:DeleteSourceServer`、`mobiletargeting:DeleteSmsTemplate`、`ec2:DeleteClientVpnEndpoint`、`ec2:DisassociateClientVpnTargetNetwork`、`ec2:RevokeClientVpnIngress`、`ec2:DeleteClientVpnRoute`、`elasticmapreduce:TerminateJobFlows`、`workspaces:DeregisterWorkspaceDirectory`、`wafv2:DisassociateWebACL`（以及受保护服务自身的权限，例如 `elasticloadbalancing:SetWebACL`）、`acm-pca:DeleteCertificateAuthority`、`bedrock:DeleteProvisionedModelThroughput`、`codebuild:DeleteProject`、`cognito-idp:DeleteUserPoolDomain` |
 | 终止实例时保留卷或网卡 | `ec2:ModifyInstanceAttribute`、`ec2:ModifyNetworkInterfaceAttribute` |
-| 关闭删除保护 | `cloudformation:UpdateResource`，以及产品的修改权限，例如 `rds:ModifyDBCluster`、`ec2:DisableImageDeregistrationProtection` 或 `elasticmapreduce:SetTerminationProtection` |
-| KMS 密钥、Backup 备份库与 S3 存储桶的删除前检查 | `kms:DescribeKey`、`backup:DescribeBackupVault`、`s3:ListBucketVersions` |
+| 关闭删除保护 | `cloudformation:UpdateResource`，以及产品的修改权限，例如 `rds:ModifyDBCluster`、`ec2:DisableImageDeregistrationProtection` `elasticmapreduce:SetTerminationProtection` 或 `acm-pca:UpdateCertificateAuthority` |
+| KMS 密钥、Backup 备份库、S3 存储桶与 Secrets Manager 密钥的删除前检查 | `kms:DescribeKey`、`backup:DescribeBackupVault`、`s3:ListBucketVersions`、`secretsmanager:DescribeSecret` |
 
 ## 完成第一次扫描
 
@@ -81,15 +81,15 @@ Steward 使用连接中的凭证读取一个 AWS 账号。每个已支持的资�
 
 | 类别 | 资源类型 |
 | --- | --- |
-| 计算 | EC2 实例、AMI、启动模板、专用主机、容量预留与容量预留队列、Auto Scaling 组、Lightsail 实例、密钥对、Instance Connect 终端节点、WorkSpaces 云桌面与 WorkSpaces 目录 |
+| 计算 | EC2 实例、AMI、启动模板、专用主机、容量预留与容量预留队列、Auto Scaling 组、Lightsail 实例、密钥对、Instance Connect 终端节点、置放群组、WorkSpaces 云桌面与 WorkSpaces 目录、Elastic Beanstalk 应用程序与环境 |
 | 容器与无服务器 | EKS 集群、托管节点组、Fargate 配置文件与插件；ECS 集群、服务与任务定义；ECR 仓库与拉取缓存规则；Lambda；App Runner |
-| 网络 | VPC、子网、CIDR 块、路由表、安全组、网络 ACL、网卡、弹性 IP，互联网、仅出口、NAT 与虚拟私有网关，客户网关、VPN 连接、Client VPN 端点及其目标网络、授权规则与路由、VPC 对等连接、终端节点与终端节点服务、流日志、DHCP 选项集 |
+| 网络 | VPC、子网、CIDR 块、路由表、安全组、网络 ACL、网卡、弹性 IP，互联网、仅出口、NAT 与虚拟私有网关，客户网关、VPN 连接、Client VPN 端点及其目标网络、授权规则与路由、托管前缀列表、IPAM 及其范围与池、VPC 对等连接、终端节点与终端节点服务、流日志、DHCP 选项集 |
 | 中转与混合网络 | 中转网关及其路由表、VPC/对等/Connect 挂载、组播域及其关联、成员与源；Direct Connect 连接、链路聚合组、网关、网关关联与虚拟接口；Cloud WAN 全球网络与核心网络；Global Accelerator 加速器、侦听器与终端节点组 |
-| 负载均衡、边缘与 DNS | 应用/网络/网关负载均衡器及其侦听器、目标组与信任存储、传统负载均衡器、CloudFront 分配、WAF Web ACL 及其关联、Shield Advanced 防护、Route 53 托管区域、运行状况检查、Resolver 规则与注册域名、API Gateway API、自定义域名、使用计划、使用计划密钥与 API 密钥、VPC Lattice |
-| 存储与备份 | S3 存储桶、EBS 卷与快照、Data Lifecycle Manager 策略、EFS 文件系统、挂载目标与接入点、FSx 文件系统、Storage Gateway、AWS Backup 备份库、备份计划与资源分配、弹性灾难恢复源服务器 |
-| 数据库与分析 | RDS 与 Aurora、RDS 代理、Aurora DSQL、DynamoDB、DocumentDB 与 DocumentDB 弹性集群、Neptune 与 Neptune Analytics、Keyspaces、ElastiCache、MemoryDB、Timestream、OpenSearch Service 与 Serverless、Redshift 与 Redshift Serverless、Glue 数据库、Athena 工作组、EMR 集群、EMR Serverless、Kinesis、Apache Flink 托管服务、DMS、MSK 集群与主题、Amazon MQ、DataZone、QuickSight 控制面板与数据集 |
-| 消息与应用 | SQS、SNS 主题与订阅、EventBridge 事件总线与规则、Step Functions、CodePipeline、Cloud Map 命名空间与服务、AppRegistry 应用程序、Pinpoint 短信模板、IVS 频道与实时舞台、Kendra 索引、SageMaker 终端节点、终端节点配置、模型与 HyperPod 集群、AWS PCS 与 Batch 计算环境 |
-| 身份、安全与治理 | IAM 用户、用户组、角色、实例配置文件与托管策略，IAM Identity Center 实例与组，Organizations 组织、组织单元与成员账号，KMS 密钥与别名、ACM 证书、GuardDuty、Security Hub、Macie、网络防火墙、IAM 访问分析器、CloudTrail 跟踪与事件数据存储、AWS Config 规则、修正配置、合规包与聚合器 |
+| 负载均衡、边缘与 DNS | 应用/网络/网关负载均衡器及其侦听器、目标组与信任存储、传统负载均衡器、CloudFront 分配、WAF Web ACL 及其关联、Shield Advanced 防护、Route 53 托管区域、运行状况检查、Resolver 规则与注册域名、API Gateway API、自定义域名、使用计划、使用计划密钥与 API 密钥、AppSync GraphQL API、Amplify 应用、VPC Lattice |
+| 存储与备份 | S3 存储桶、EBS 卷与快照、Data Lifecycle Manager 策略、EFS 文件系统、挂载目标与接入点、FSx 文件系统、Storage Gateway、Transfer Family 服务器、AWS Backup 备份库、备份计划与资源分配、弹性灾难恢复源服务器 |
+| 数据库与分析 | RDS 与 Aurora、RDS 代理、Aurora DSQL、DynamoDB、DocumentDB 与 DocumentDB 弹性集群、Neptune 与 Neptune Analytics、Keyspaces、ElastiCache、MemoryDB、Timestream、OpenSearch Service 与 Serverless、Redshift 与 Redshift Serverless、Glue 数据库、Athena 工作组、EMR 集群、EMR Serverless、Kinesis、Data Firehose 流、Apache Flink 托管服务、DMS、MSK 集群与主题、Amazon MQ、DataZone、QuickSight 控制面板与数据集 |
+| 消息与应用 | SQS、SNS 主题与订阅、EventBridge 事件总线与规则、EventBridge Scheduler 计划与计划组、Step Functions、Apache Airflow 托管工作流、CodePipeline、CodeBuild 项目、Cloud Map 命名空间与服务、AppRegistry 应用程序、Pinpoint 短信模板、IVS 频道与实时舞台、Kendra 索引、Bedrock 智能体、知识库、数据源、防护栏与预置吞吐量、SageMaker 终端节点、终端节点配置、模型与 HyperPod 集群、AWS PCS 与 Batch 计算环境 |
+| 身份、安全与治理 | IAM 用户、用户组、角色、实例配置文件与托管策略，IAM Identity Center 实例与组，Organizations 组织、组织单元与成员账号，KMS 密钥与别名、ACM 证书、ACM 私有证书颁发机构、Secrets Manager 密钥、Systems Manager 参数、Cognito 用户池、用户池域与身份池、GuardDuty、Security Hub、Macie、网络防火墙、IAM 访问分析器、CloudTrail 跟踪与事件数据存储、AWS Config 规则、修正配置、合规包与聚合器 |
 | 监控与编排 | CloudWatch 告警、控制面板与日志组，资源组，Synthetics 金丝雀、X-Ray 组、可观测性访问管理器、Managed Grafana 与 Prometheus、CloudFormation 资源栈与 StackSet |
 
 ### 子资源
@@ -105,6 +105,8 @@ Steward 使用连接中的凭证读取一个 AWS 账号。每个已支持的资�
 | IAM Identity Center 组 | 按实例 |
 | API Gateway 使用计划密钥 | 按使用计划 |
 | MSK 主题 | 按 MSK 预置集群 |
+| Bedrock 知识库数据源 | 按知识库 |
+| Cognito 用户池域 | 按用户池 |
 | Client VPN 目标网络、授权规则与路由 | 按 Client VPN 端点 |
 | WAF Web ACL 关联 | 按每个地域级 Web ACL，逐一查询各类受保护资源 |
 | 组织单元 | 按完整组织树 |
@@ -136,7 +138,8 @@ Steward 根据资源模型（例如资源所属的 VPC、子网与安全组）�
 | 弹性 IP | 只有在使用它的 NAT 网关或实例删除后，才会释放地址。 |
 | 必须先删的子资源 | Client VPN 端点要在解除全部目标网络关联之后删除，Config 规则要在删除其修正配置之后删除，这两类子资源会自动加入任务。WorkSpaces 目录要在其云桌面全部终止后才能注销，信任存储要在使用它的侦听器删除后才能删除；Steward 不会替你选中这些资源，未选中时任务会被阻断。 |
 | 随父资源删除 | 删除 MSK 集群会删除其主题，删除 SNS 主题会删除其订阅，删除 Client VPN 端点会删除其授权规则与手动添加的路由，删除使用计划会删除其密钥。任务会把它们列为随父资源删除。 |
-| 只能经父资源删除 | 合规包部署的规则、Client VPN 子网关联自动添加的路由、EMR 集群的实例，只能通过对应的合规包、关联或集群删除。 |
+| 其他前置条件 | IPAM 的私有范围在 IPAM 之前删除，并自动加入任务；IPAM 池、知识库数据源和 Elastic Beanstalk 环境会阻断其所属范围、池、知识库或应用程序的删除，直到你选中它们；Cognito 用户池域在用户池之前删除。删除计划组会同时删除其中的计划。引用托管前缀列表的安全组、置放群组中的实例，会先于前缀列表或置放群组删除。 |
+| 只能经父资源删除 | 合规包部署的规则、Elastic Beanstalk 环境的 CloudFormation 栈、Client VPN 子网关联自动添加的路由、EMR 集群的实例，只能通过对应的合规包、关联或集群删除。 |
 | CloudFormation | Steward 读取栈资源和处理后的模板，识别归属与 `DeletionPolicy`。`Retain` 或 `RetainExceptOnCreate` 资源按保留资源处理；启用终止保护的栈会阻止删除。 |
 
 ## 清理行为与保护
@@ -151,7 +154,7 @@ Steward 根据资源模型（例如资源所属的 VPC、子网与安全组）�
 
 以下类型的删除保护会在删除前由 Steward 关闭并回读确认：
 
-EC2 实例、AMI、Auto Scaling 组、EKS 集群、负载均衡器、RDS 与 Aurora、DocumentDB 集群、Neptune、Aurora DSQL、DynamoDB、CloudWatch 日志组、网络防火墙、CloudTrail 事件数据存储、EMR 集群（终止保护）。
+EC2 实例、AMI、Auto Scaling 组、EKS 集群、负载均衡器、RDS 与 Aurora、DocumentDB 集群、Neptune、Aurora DSQL、DynamoDB、CloudWatch 日志组、网络防火墙、CloudTrail 事件数据存储、EMR 集群（终止保护）、Cognito 用户池。处于启用状态的 ACM 私有 CA 会先被停用并回读确认，再删除。
 
 ### 前置条件与阻断
 
@@ -161,6 +164,9 @@ EC2 实例、AMI、Auto Scaling 组、EKS 集群、负载均衡器、RDS 与 Aur
 | DocumentDB 集群 | 不能有成员实例。 |
 | AWS Config 规则 | 由其他服务创建的规则（合规包、组织规则、Security Hub 等）以及组织合规包下发到成员账号的合规包，不能直接删除。 |
 | MSK 主题 | 以 `__` 开头的内部主题（如 `__consumer_offsets`）属于 Kafka 和 MSK，不能删除。 |
+| Secrets Manager 密钥 | 由其他服务管理的密钥（如 RDS 主用户密钥）以及主密钥位于其他地域的副本不能直接删除。 |
+| Bedrock 预置吞吐量 | 有承诺期限的预置吞吐量在期限结束前不能删除。 |
+| AWS 托管资源 | AWS 托管的前缀列表、默认 IPAM 范围和默认计划组不能删除。 |
 | 资源组 | 名称以 `AWS` 开头的组由 AWS 服务创建，不能删除。 |
 | WAF Web ACL 关联 | 由 Firewall Manager 管理的 Web ACL，其关联不能解除。CloudFront 分配不在列举范围内：它的 Web ACL 是分配的一项设置。 |
 | 弹性灾难恢复源服务器 | 必须已断开复制。 |
@@ -178,6 +184,10 @@ EC2 实例、AMI、Auto Scaling 组、EKS 集群、负载均衡器、RDS 与 Aur
 | EMR 集群 | 执行终止；未完成的步骤会被取消，实例存储中的数据会丢失，已写入 S3 的日志保留。只列举尚未终止的集群。 |
 | WorkSpaces 目录 | 从 WorkSpaces 注销；Directory Service 目录本身保留，不再被 WorkSpaces 使用后按 Directory Service 价格计费。 |
 | AWS Config 规则 | 连同评估结果一起删除。 |
+| ACM 私有 CA | 删除后保留默认 30 天的恢复期；该 CA 签发的证书将无法再通过验证。处于恢复期的 CA 视为已删除。 |
+| Secrets Manager 密钥 | 按服务的恢复期计划删除；处于待删除状态的密钥视为已删除。 |
+| Bedrock 知识库数据源 | 每个数据源的数据删除策略决定是否从向量存储中删除其向量。 |
+| Elastic Beanstalk 环境 | 连同其 CloudFormation 栈创建的资源一起终止；S3 中的应用程序版本保留。 |
 | FSx 文件系统 | 遵循各文件系统类型默认的最终备份行为。 |
 | KMS 密钥 | 进入计划删除等待期；已处于待删除状态的密钥视为已删除。 |
 | Route 53 注册域名 | 删除不可撤销，且只支持部分顶级域名。 |

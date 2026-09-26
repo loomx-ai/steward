@@ -40,8 +40,8 @@ Validating a connection calls STS `GetCallerIdentity` to identify the account. A
 | --- | --- |
 | Regions and network selection | `ec2:DescribeRegions`, `ec2:DescribeVpcs`, `ec2:DescribeSubnets` |
 | Cloud Control inventory and details | `cloudformation:ListResources`, `cloudformation:GetResource`, plus the service reads each resource type's handlers require |
-| Attachments and membership | `ec2:DescribeInstances`, `ec2:DescribeNetworkInterfaces`, `ec2:DescribeVolumes`, `autoscaling:DescribeAutoScalingGroups`, `eks:DescribeNodegroup`, `config:DescribeConfigRules`, `config:DescribeConformancePackCompliance` |
-| Service API inventory | `ec2:DescribeImages`, `ec2:DescribeSnapshots`, `es:ListDomainNames`, `es:DescribeDomains`, `rds:DescribeDBClusters`, `rds:DescribeDBInstances` (DocumentDB), `dms:DescribeReplicationInstances`, `fsx:DescribeFileSystems`, `storagegateway:ListGateways`, `storagegateway:DescribeGatewayInformation`, `route53domains:ListDomains`, `drs:DescribeSourceServers`, `mobiletargeting:ListTemplates`, `mobiletargeting:GetSmsTemplate`, `ec2:DescribeClientVpnEndpoints`, `ec2:DescribeClientVpnTargetNetworks`, `ec2:DescribeClientVpnAuthorizationRules`, `ec2:DescribeClientVpnRoutes`, `elasticmapreduce:ListClusters`, `elasticmapreduce:DescribeCluster`, `workspaces:DescribeWorkspaceDirectories`, `wafv2:ListWebACLs`, `wafv2:GetWebACL`, `wafv2:ListResourcesForWebACL`, `wafv2:GetWebACLForResource` |
+| Attachments and membership | `ec2:DescribeInstances`, `ec2:DescribeNetworkInterfaces`, `ec2:DescribeVolumes`, `autoscaling:DescribeAutoScalingGroups`, `eks:DescribeNodegroup`, `config:DescribeConfigRules`, `config:DescribeConformancePackCompliance`, `secretsmanager:DescribeSecret` |
+| Service API inventory | `ec2:DescribeImages`, `ec2:DescribeSnapshots`, `es:ListDomainNames`, `es:DescribeDomains`, `rds:DescribeDBClusters`, `rds:DescribeDBInstances` (DocumentDB), `dms:DescribeReplicationInstances`, `fsx:DescribeFileSystems`, `storagegateway:ListGateways`, `storagegateway:DescribeGatewayInformation`, `route53domains:ListDomains`, `drs:DescribeSourceServers`, `mobiletargeting:ListTemplates`, `mobiletargeting:GetSmsTemplate`, `ec2:DescribeClientVpnEndpoints`, `ec2:DescribeClientVpnTargetNetworks`, `ec2:DescribeClientVpnAuthorizationRules`, `ec2:DescribeClientVpnRoutes`, `elasticmapreduce:ListClusters`, `elasticmapreduce:DescribeCluster`, `workspaces:DescribeWorkspaceDirectories`, `wafv2:ListWebACLs`, `wafv2:GetWebACL`, `wafv2:ListResourcesForWebACL`, `wafv2:GetWebACLForResource`, `acm-pca:ListCertificateAuthorities`, `acm-pca:DescribeCertificateAuthority`, `bedrock:ListProvisionedModelThroughputs`, `bedrock:GetProvisionedModelThroughput`, `codebuild:ListProjects`, `codebuild:BatchGetProjects`, `cognito-idp:ListUserPools`, `cognito-idp:DescribeUserPool`, `cognito-idp:DescribeUserPoolDomain` |
 | Organization tree | `organizations:ListRoots`, `organizations:ListOrganizationalUnitsForParent` |
 | Resource Explorer index | `resource-explorer-2:Search` (Steward calls `ListResources`, which uses this permission) |
 | CloudFormation stacks and ownership | `cloudformation:DescribeStacks`, `cloudformation:ListStackResources`, `cloudformation:GetTemplate` |
@@ -58,10 +58,10 @@ Read permissions do not allow cleanup. Add these only for the types you plan to 
 | Purpose | IAM actions |
 | --- | --- |
 | Delete through Cloud Control | `cloudformation:DeleteResource`, `cloudformation:GetResourceRequestStatus`, plus the target type's service delete and read permissions |
-| Delete through service APIs | The type's own delete action, such as `ec2:DeregisterImage`, `ec2:DeleteSnapshot`, `es:DeleteDomain`, `rds:DeleteDBCluster`, `dms:DeleteReplicationInstance`, `fsx:DeleteFileSystem`, `storagegateway:DeleteGateway`, `route53domains:DeleteDomain`, `drs:DeleteSourceServer`, `mobiletargeting:DeleteSmsTemplate`, `ec2:DeleteClientVpnEndpoint`, `ec2:DisassociateClientVpnTargetNetwork`, `ec2:RevokeClientVpnIngress`, `ec2:DeleteClientVpnRoute`, `elasticmapreduce:TerminateJobFlows`, `workspaces:DeregisterWorkspaceDirectory`, `wafv2:DisassociateWebACL` (plus the protected service's permission, such as `elasticloadbalancing:SetWebACL`) |
+| Delete through service APIs | The type's own delete action, such as `ec2:DeregisterImage`, `ec2:DeleteSnapshot`, `es:DeleteDomain`, `rds:DeleteDBCluster`, `dms:DeleteReplicationInstance`, `fsx:DeleteFileSystem`, `storagegateway:DeleteGateway`, `route53domains:DeleteDomain`, `drs:DeleteSourceServer`, `mobiletargeting:DeleteSmsTemplate`, `ec2:DeleteClientVpnEndpoint`, `ec2:DisassociateClientVpnTargetNetwork`, `ec2:RevokeClientVpnIngress`, `ec2:DeleteClientVpnRoute`, `elasticmapreduce:TerminateJobFlows`, `workspaces:DeregisterWorkspaceDirectory`, `wafv2:DisassociateWebACL` (plus the protected service's permission, such as `elasticloadbalancing:SetWebACL`), `acm-pca:DeleteCertificateAuthority`, `bedrock:DeleteProvisionedModelThroughput`, `codebuild:DeleteProject`, `cognito-idp:DeleteUserPoolDomain` |
 | Keep volumes or interfaces when an instance is terminated | `ec2:ModifyInstanceAttribute`, `ec2:ModifyNetworkInterfaceAttribute` |
-| Turn off deletion protection | `cloudformation:UpdateResource` plus the service's modify permission, such as `rds:ModifyDBCluster`, `ec2:DisableImageDeregistrationProtection` or `elasticmapreduce:SetTerminationProtection` |
-| Pre-deletion checks for KMS keys, Backup vaults, and S3 buckets | `kms:DescribeKey`, `backup:DescribeBackupVault`, `s3:ListBucketVersions` |
+| Turn off deletion protection | `cloudformation:UpdateResource` plus the service's modify permission, such as `rds:ModifyDBCluster`, `ec2:DisableImageDeregistrationProtection` `elasticmapreduce:SetTerminationProtection` or `acm-pca:UpdateCertificateAuthority` |
+| Pre-deletion checks for KMS keys, Backup vaults, S3 buckets and secrets | `kms:DescribeKey`, `backup:DescribeBackupVault`, `s3:ListBucketVersions`, `secretsmanager:DescribeSecret` |
 
 ## Run your first scan
 
@@ -81,15 +81,15 @@ For a coverage record you can verify across regions and connections, follow [Inv
 
 | Category | Resource types |
 | --- | --- |
-| Compute | EC2 instances, AMIs, launch templates, Dedicated Hosts, capacity reservations and fleets, Auto Scaling groups, Lightsail instances, key pairs, Instance Connect endpoints, WorkSpaces and WorkSpaces directories |
+| Compute | EC2 instances, AMIs, launch templates, Dedicated Hosts, capacity reservations and fleets, Auto Scaling groups, Lightsail instances, key pairs, Instance Connect endpoints, placement groups, WorkSpaces and WorkSpaces directories, Elastic Beanstalk applications and environments |
 | Containers and serverless | EKS clusters, managed node groups, Fargate profiles and add-ons; ECS clusters, services and task definitions; ECR repositories and pull-through cache rules; Lambda; App Runner |
-| Networking | VPCs, subnets, CIDR blocks, route tables, security groups, network ACLs, network interfaces, Elastic IPs, internet, egress-only, NAT and virtual private gateways, customer gateways, VPN connections, Client VPN endpoints with their target networks, authorization rules and routes, VPC peering, endpoints and endpoint services, flow logs, DHCP option sets |
+| Networking | VPCs, subnets, CIDR blocks, route tables, security groups, network ACLs, network interfaces, Elastic IPs, internet, egress-only, NAT and virtual private gateways, customer gateways, VPN connections, Client VPN endpoints with their target networks, authorization rules and routes, managed prefix lists, IPAM with scopes and pools, VPC peering, endpoints and endpoint services, flow logs, DHCP option sets |
 | Transit and hybrid networking | Transit gateways with route tables, VPC, peering and Connect attachments, multicast domains, associations, members and sources; Direct Connect connections, LAGs, gateways, associations and virtual interfaces; Cloud WAN global and core networks; Global Accelerator accelerators, listeners and endpoint groups |
-| Load balancing, edge, and DNS | Application, Network and Gateway Load Balancers with listeners, target groups and trust stores, Classic Load Balancers, CloudFront distributions, WAF web ACLs and their associations, Shield Advanced protections, Route 53 hosted zones, health checks, Resolver rules and registered domains, API Gateway APIs, custom domains, usage plans, usage plan keys and API keys, VPC Lattice |
-| Storage and backup | S3 buckets, EBS volumes and snapshots, Data Lifecycle Manager policies, EFS file systems, mount targets and access points, FSx file systems, Storage Gateway, AWS Backup vaults, plans and selections, Elastic Disaster Recovery source servers |
-| Databases and analytics | RDS and Aurora, RDS Proxy, Aurora DSQL, DynamoDB, DocumentDB and DocumentDB Elastic, Neptune and Neptune Analytics, Keyspaces, ElastiCache, MemoryDB, Timestream, OpenSearch Service and Serverless, Redshift and Redshift Serverless, Glue databases, Athena workgroups, EMR clusters, EMR Serverless, Kinesis, Managed Service for Apache Flink, DMS, MSK clusters and topics, Amazon MQ, DataZone, QuickSight dashboards and datasets |
-| Messaging and applications | SQS, SNS topics and subscriptions, EventBridge buses and rules, Step Functions, CodePipeline, Cloud Map namespaces and services, AppRegistry applications, Pinpoint SMS templates, IVS channels and stages, Kendra indexes, SageMaker endpoints, endpoint configurations, models and HyperPod clusters, AWS PCS and Batch compute environments |
-| Identity, security, and governance | IAM users, groups, roles, instance profiles and managed policies, IAM Identity Center instances and groups, Organizations, organizational units and member accounts, KMS keys and aliases, ACM certificates, GuardDuty, Security Hub, Macie, Network Firewall, IAM Access Analyzer, CloudTrail trails and event data stores, AWS Config rules, remediation configurations, conformance packs and aggregators |
+| Load balancing, edge, and DNS | Application, Network and Gateway Load Balancers with listeners, target groups and trust stores, Classic Load Balancers, CloudFront distributions, WAF web ACLs and their associations, Shield Advanced protections, Route 53 hosted zones, health checks, Resolver rules and registered domains, API Gateway APIs, custom domains, usage plans, usage plan keys and API keys, AppSync GraphQL APIs, Amplify apps, VPC Lattice |
+| Storage and backup | S3 buckets, EBS volumes and snapshots, Data Lifecycle Manager policies, EFS file systems, mount targets and access points, FSx file systems, Storage Gateway, Transfer Family servers, AWS Backup vaults, plans and selections, Elastic Disaster Recovery source servers |
+| Databases and analytics | RDS and Aurora, RDS Proxy, Aurora DSQL, DynamoDB, DocumentDB and DocumentDB Elastic, Neptune and Neptune Analytics, Keyspaces, ElastiCache, MemoryDB, Timestream, OpenSearch Service and Serverless, Redshift and Redshift Serverless, Glue databases, Athena workgroups, EMR clusters, EMR Serverless, Kinesis, Data Firehose streams, Managed Service for Apache Flink, DMS, MSK clusters and topics, Amazon MQ, DataZone, QuickSight dashboards and datasets |
+| Messaging and applications | SQS, SNS topics and subscriptions, EventBridge buses and rules, EventBridge Scheduler schedules and groups, Step Functions, Managed Workflows for Apache Airflow, CodePipeline, CodeBuild projects, Cloud Map namespaces and services, AppRegistry applications, Pinpoint SMS templates, IVS channels and stages, Kendra indexes, Bedrock agents, knowledge bases, data sources, guardrails and Provisioned Throughput, SageMaker endpoints, endpoint configurations, models and HyperPod clusters, AWS PCS and Batch compute environments |
+| Identity, security, and governance | IAM users, groups, roles, instance profiles and managed policies, IAM Identity Center instances and groups, Organizations, organizational units and member accounts, KMS keys and aliases, ACM certificates, ACM Private CA certificate authorities, Secrets Manager secrets, Systems Manager parameters, Cognito user pools, user pool domains and identity pools, GuardDuty, Security Hub, Macie, Network Firewall, IAM Access Analyzer, CloudTrail trails and event data stores, AWS Config rules, remediation configurations, conformance packs and aggregators |
 | Monitoring and orchestration | CloudWatch alarms, dashboards and log groups, Resource Groups, Synthetics canaries, X-Ray groups, Observability Access Manager, Managed Grafana and Prometheus, CloudFormation stacks and StackSets |
 
 ### Child resources
@@ -105,6 +105,8 @@ Some types are listed through their parent:
 | IAM Identity Center groups | Each instance |
 | API Gateway usage plan keys | Each usage plan |
 | MSK topics | Each MSK provisioned cluster |
+| Bedrock knowledge base data sources | Each knowledge base |
+| Cognito user pool domains | Each user pool |
 | Client VPN target networks, authorization rules and routes | Each Client VPN endpoint |
 | WAF web ACL associations | Each regional web ACL, for every protected resource type |
 | Organizational units | The complete organization tree |
@@ -136,7 +138,8 @@ Steward builds relationships from the resource model (such as a resource's VPC, 
 | Elastic IPs | An address is released only after the NAT gateway or instance using it is gone. |
 | Required children | A Client VPN endpoint is deleted only after its target networks are disassociated, and a Config rule only after its remediation configuration; both are added to the task. A WorkSpaces directory is deregistered only after its WorkSpaces are terminated, and a trust store is deleted only after the listeners that use it; Steward never selects those for you, so the task is blocked until you select them. |
 | Deleted with the parent | Deleting an MSK cluster deletes its topics, an SNS topic its subscriptions, a Client VPN endpoint its authorization rules and manually added routes, and a usage plan its keys. The task lists them as deleted with the parent. |
-| Parent-only members | Rules deployed by a conformance pack, routes added by a Client VPN subnet association and instances of an EMR cluster are removed only through that pack, association or cluster. |
+| Other prerequisites | A private IPAM scope is deleted before its IPAM and added to the task; IPAM pools, knowledge base data sources and Elastic Beanstalk environments block their scope, pool, knowledge base or application until you select them; a Cognito user pool domain is deleted before its pool. Deleting a schedule group deletes its schedules. A security group that references a managed prefix list, and an instance in a placement group, are deleted before the prefix list or group. |
+| Parent-only members | Rules deployed by a conformance pack, the CloudFormation stack of an Elastic Beanstalk environment, routes added by a Client VPN subnet association and instances of an EMR cluster are removed only through that pack, association or cluster. |
 | CloudFormation | Steward reads each stack's resources and processed template to find ownership and `DeletionPolicy`. Resources with `Retain` or `RetainExceptOnCreate` are treated as retained; a stack with termination protection blocks deletion. |
 
 ## Cleanup behavior and protections
@@ -151,7 +154,7 @@ To keep a volume or interface that its instance would delete, retain it when you
 
 For these types, Steward turns deletion protection off before deletion, then reads it back:
 
-EC2 instances, AMIs, Auto Scaling groups, EKS clusters, load balancers, RDS and Aurora, DocumentDB clusters, Neptune, Aurora DSQL, DynamoDB, CloudWatch log groups, Network Firewall, CloudTrail event data stores, EMR clusters (termination protection).
+EC2 instances, AMIs, Auto Scaling groups, EKS clusters, load balancers, RDS and Aurora, DocumentDB clusters, Neptune, Aurora DSQL, DynamoDB, CloudWatch log groups, Network Firewall, CloudTrail event data stores, EMR clusters (termination protection), Cognito user pools. An active ACM Private CA is disabled and read back before deletion.
 
 ### Preconditions and blockers
 
@@ -161,6 +164,9 @@ EC2 instances, AMIs, Auto Scaling groups, EKS clusters, load balancers, RDS and 
 | DocumentDB clusters | Must have no member instances. |
 | AWS Config rules | Rules created by another service (a conformance pack, an organization rule, Security Hub) and member packs of an organization conformance pack cannot be deleted directly. |
 | MSK topics | Internal topics whose names begin with `__`, such as `__consumer_offsets`, belong to Kafka and MSK and cannot be deleted. |
+| Secrets Manager secrets | Secrets that another service manages (such as RDS master user secrets) and replicas of a secret in another Region cannot be deleted directly. |
+| Bedrock Provisioned Throughput | Throughput with a commitment term cannot be deleted before the term ends. |
+| AWS-managed resources | AWS-managed prefix lists, default IPAM scopes and the default schedule group cannot be deleted. |
 | Resource groups | Groups whose names begin with `AWS`, which AWS services create, cannot be deleted. |
 | WAF web ACL associations | Associations of a web ACL that Firewall Manager manages cannot be removed. CloudFront distributions are not listed: their web ACL is a distribution setting. |
 | Elastic Disaster Recovery source servers | Must be disconnected. |
@@ -178,6 +184,10 @@ Non-empty repositories, other dependencies, and resources changing state can sti
 | EMR clusters | Terminated; unfinished steps are canceled and instance storage is lost. Logs already delivered to S3 remain. Only clusters that are not yet terminated are listed. |
 | WorkSpaces directories | Deregistered from WorkSpaces; the Directory Service directory itself remains and is billed by Directory Service once no WorkSpaces use it. |
 | AWS Config rules | Deleted with their evaluation results. |
+| ACM Private CA | Deleted with the default 30-day restore period; certificates the CA issued stop validating. A CA in the restore period counts as deleted. |
+| Secrets Manager secrets | Scheduled for deletion with the service's recovery window; a secret pending deletion counts as deleted. |
+| Bedrock knowledge base data sources | Each data source's data deletion policy decides whether its vectors are removed from the vector store. |
+| Elastic Beanstalk environments | Terminated with the resources their CloudFormation stack created; application versions in S3 remain. |
 | FSx file systems | Follow each file system type's default final-backup behavior. |
 | KMS keys | Enter their scheduled deletion window. A key already pending deletion counts as deleted. |
 | Route 53 registered domains | Deletion cannot be undone and is supported only for some top-level domains. |

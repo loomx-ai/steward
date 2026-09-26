@@ -216,7 +216,7 @@ func cloudControlItem(resource CloudControlResource, kind asset.ResourceKind, sc
 		Normalized: normalized, Raw: map[string]any{"TypeName": kind.NativeType, "Identifier": identifier, "Properties": properties},
 		NativeAliases: cloudControlAliases(properties, identifier), NetworkReferences: cloudControlNetworkReferences(normalized),
 	}
-	if reason := cloudControlServiceManaged(kind.NativeType, identifier); reason != "" {
+	if reason := cloudControlServiceManaged(kind.NativeType, identifier, properties); reason != "" {
 		actionable := false
 		item.Actionable = &actionable
 		normalized["cleanup_protection_reason"] = reason
@@ -226,8 +226,23 @@ func cloudControlItem(resource CloudControlResource, kind asset.ResourceKind, sc
 
 // cloudControlServiceManaged names resources that an AWS service creates and
 // owns, which only that service can remove.
-func cloudControlServiceManaged(nativeType, identifier string) string {
+func cloudControlServiceManaged(nativeType, identifier string, properties map[string]any) string {
 	switch nativeType {
+	case "AWS::EC2::PrefixList":
+		// AWS-managed prefix lists, such as those of S3 or CloudFront, are
+		// owned by AWS rather than the account.
+		if stringValue(properties["OwnerId"]) == "AWS" {
+			return "aws_managed_prefix_list"
+		}
+	case "AWS::EC2::IPAMScope":
+		// Default scopes are created and deleted with their IPAM.
+		if properties["IsDefault"] == true {
+			return "ipam_default_scope"
+		}
+	case "AWS::Scheduler::ScheduleGroup":
+		if identifier == "default" {
+			return "scheduler_default_group"
+		}
 	case "AWS::MSK::Topic":
 		// Kafka and MSK own internal topics such as __consumer_offsets and
 		// __amazon_msk_canary; the topic name is the ARN's last segment.

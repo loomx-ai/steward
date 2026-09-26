@@ -135,6 +135,21 @@ func deriveCloudControlReferences(nativeType string, model map[string]any) {
 		}
 	case "AWS::ApiGateway::UsagePlan":
 		collect("rest_api_ids", "ApiStages.ApiId")
+	case "AWS::EC2::SecurityGroup":
+		collect("prefix_list_ids", "SecurityGroupIngress.SourcePrefixListId", "SecurityGroupEgress.DestinationPrefixListId")
+	case "AWS::Bedrock::Agent":
+		collect("knowledge_base_ids", "KnowledgeBases.KnowledgeBaseId")
+		// Agents name a guardrail by ID or ARN; only the ARN is its identifier.
+		if guardrail := stringValue(nestedValue(model, "GuardrailConfiguration", "GuardrailIdentifier")); strings.HasPrefix(guardrail, "arn:") {
+			model["guardrail_arn"] = guardrail
+		}
+	case "AWS::Scheduler::Schedule":
+		// A schedule without a group belongs to the default group.
+		group := strings.TrimSpace(stringValue(model["GroupName"]))
+		if group == "" {
+			group = "default"
+		}
+		model["schedule_group_name"] = group
 	case "AWS::EC2::VPCEndpoint":
 		name := strings.TrimSpace(stringValue(model["ServiceName"]))
 		if index := strings.LastIndex(name, "."); index >= 0 && strings.HasPrefix(name[index+1:], "vpce-svc-") {

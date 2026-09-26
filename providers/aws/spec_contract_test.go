@@ -33,6 +33,7 @@ var derivedReferenceFields = map[string]bool{
 	"vpc_id": true, "subnet_ids": true, "security_group_ids": true, "volume_ids": true,
 	"network_interface_ids": true, "snapshot_ids": true, "rule_group_arns": true,
 	"cluster_name": true, "service_id": true, "trust_store_arn": true, "rest_api_ids": true,
+	"prefix_list_ids": true, "knowledge_base_ids": true, "guardrail_arn": true, "schedule_group_name": true,
 }
 
 // knownCloudControlDefects lists specifications that still route through a
@@ -217,7 +218,7 @@ func TestProductAPISpecificationsMatchNativeHandlers(t *testing.T) {
 		if definition.Extensions.Hook != productAPIHook {
 			t.Errorf("%s must use the product API hook", name)
 		}
-		if digest, ok := digests[name]; ok {
+		if digest, ok := digests[name]; ok && productKindsWithCloudControlHandlers[name] == "" {
 			if _, hasList := digest.Handlers["list"]; hasList {
 				if _, hasDelete := digest.Handlers["delete"]; hasDelete {
 					t.Errorf("%s has Cloud Control list and delete handlers; use Cloud Control", name)

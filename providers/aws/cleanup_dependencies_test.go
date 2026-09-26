@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
@@ -230,5 +231,79 @@ func TestMSKTopicsFollowTheirCluster(t *testing.T) {
 	})
 	if err != nil || len(contribution.Bindings) != 1 || contribution.Bindings[0].ControllerAssetID != "cluster" || !contribution.Bindings[0].DirectCleanupAllowed {
 		t.Fatalf("contribution = %+v, %v", contribution, err)
+	}
+}
+
+func TestCommonProductDependenciesOrderIPAMSchedulerBedrockAndBeanstalk(t *testing.T) {
+	stack := awsAsset("stack", CloudFormationStackNativeType, "arn:aws:cloudformation:us-east-1:123456789012:stack/awseb-e-abc-stack/1", nil)
+	stack.Tags = map[string]string{beanstalkEnvironmentTag: "web-prod"}
+	assets := []asset.Asset{
+		awsAsset("ipam", "AWS::EC2::IPAM", "ipam-1", nil),
+		awsAsset("default-scope", "AWS::EC2::IPAMScope", "ipam-scope-default", map[string]any{"IpamId": "ipam-1", "IsDefault": true}),
+		awsAsset("scope", "AWS::EC2::IPAMScope", "ipam-scope-private", map[string]any{"IpamId": "ipam-1", "IsDefault": false}),
+		awsAsset("pool", "AWS::EC2::IPAMPool", "ipam-pool-top", map[string]any{"IpamScopeId": "ipam-scope-private"}),
+		awsAsset("child-pool", "AWS::EC2::IPAMPool", "ipam-pool-child", map[string]any{"IpamScopeId": "ipam-scope-private", "SourceIpamPoolId": "ipam-pool-top"}),
+		awsAsset("group", "AWS::Scheduler::ScheduleGroup", "nightly", nil),
+		awsAsset("schedule", "AWS::Scheduler::Schedule", "backup", map[string]any{"schedule_group_name": "nightly"}),
+		awsAsset("kb", "AWS::Bedrock::KnowledgeBase", "KB123", nil),
+		awsAsset("source", "AWS::Bedrock::DataSource", "KB123|DS456", map[string]any{"KnowledgeBaseId": "KB123"}),
+		awsAsset("app", "AWS::ElasticBeanstalk::Application", "web", nil),
+		awsAsset("env", "AWS::ElasticBeanstalk::Environment", "web-prod", map[string]any{"ApplicationName": "web"}),
+		stack,
+	}
+	contribution, err := NewLifecycle().Contribute(context.Background(), "scope", assets)
+	if err != nil {
+		t.Fatal(err)
+	}
+	required := map[string]bool{}
+	for _, relationship := range contribution.Relationships {
+		if relationship.Evidence[graph.RelationshipEvidenceRequiredDeletion] == true {
+			required[string(relationship.SourceAssetID)+">"+string(relationship.TargetAssetID)] = relationship.Evidence[graph.RelationshipEvidenceAutomaticSelection].(bool)
+		}
+	}
+	want := map[string]bool{"ipam>scope": true, "scope>pool": false, "scope>child-pool": false, "pool>child-pool": false, "kb>source": false, "app>env": false}
+	if len(required) != len(want) {
+		t.Fatalf("required = %v", required)
+	}
+	for key, automatic := range want {
+		if value, ok := required[key]; !ok || value != automatic {
+			t.Errorf("required %s = %v, %v", key, value, ok)
+		}
+	}
+	bindings := map[asset.AssetID]graph.LifecycleBinding{}
+	for _, binding := range contribution.Bindings {
+		bindings[binding.ManagedAssetID] = binding
+	}
+	if len(bindings) != 3 || bindings["default-scope"].ControllerAssetID != "ipam" || bindings["default-scope"].DirectCleanupAllowed ||
+		bindings["schedule"].ControllerAssetID != "group" || !bindings["schedule"].DirectCleanupAllowed ||
+		bindings["stack"].ControllerAssetID != "env" || bindings["stack"].DirectCleanupAllowed {
+		t.Fatalf("bindings = %+v", bindings)
+	}
+}
+
+func TestCommonProductServiceManagedResourcesAreProtected(t *testing.T) {
+	for _, tc := range []struct {
+		kind, id, properties string
+		managed              bool
+	}{
+		{"AWS::EC2::PrefixList", "pl-63a5400a", `{"OwnerId":"AWS"}`, true},
+		{"AWS::EC2::PrefixList", "pl-0123456789abcdef0", `{"OwnerId":"123456789012"}`, false},
+		{"AWS::EC2::IPAMScope", "ipam-scope-1", `{"IsDefault":true}`, true},
+		{"AWS::EC2::IPAMScope", "ipam-scope-2", `{"IsDefault":false}`, false},
+		{"AWS::Scheduler::ScheduleGroup", "default", `{}`, true},
+		{"AWS::Scheduler::ScheduleGroup", "nightly", `{}`, false},
+	} {
+		item, err := cloudControlItem(CloudControlResource{Identifier: tc.id, Properties: tc.properties}, asset.ResourceKind{NativeType: tc.kind}, asset.Scope{Kind: asset.ScopeRegion, NativeID: "us-east-1"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if (item.Actionable != nil && !*item.Actionable) != tc.managed {
+			t.Errorf("%s %s actionable = %v", tc.kind, tc.id, item.Actionable)
+		}
+	}
+	model := map[string]any{"SecurityGroupIngress": []any{map[string]any{"SourcePrefixListId": "pl-1"}}, "SecurityGroupEgress": []any{map[string]any{"DestinationPrefixListId": "pl-2"}}}
+	deriveCloudControlReferences("AWS::EC2::SecurityGroup", model)
+	if strings.Join(stringSliceValue(model["prefix_list_ids"]), ",") != "pl-1,pl-2" {
+		t.Fatalf("prefix lists = %v", model["prefix_list_ids"])
 	}
 }

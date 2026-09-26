@@ -4,6 +4,69 @@
   "sha256": "aec5281692a60e9414e2f95be16a0e894da81dcac8758be0d8177a37f9d96278"
  },
  "types": {
+  "AWS::ACMPCA::CertificateAuthority": {
+   "member": "aws-acmpca-certificateauthority.json",
+   "sha256": "7ce11104ab178b1fbfbe14e7e054e80298cbc6d1f1ba7347b09a03f8662e5c66",
+   "primaryIdentifier": [
+    "/properties/Arn"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "acm-pca:CreateCertificateAuthority",
+      "acm-pca:DescribeCertificateAuthority",
+      "acm-pca:GetCertificateAuthorityCsr",
+      "acm-pca:TagCertificateAuthority"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "acm-pca:DeleteCertificateAuthority",
+      "acm-pca:DescribeCertificateAuthority"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "acm-pca:DescribeCertificateAuthority",
+      "acm-pca:GetCertificateAuthorityCsr",
+      "acm-pca:ListCertificateAuthorities",
+      "acm-pca:ListTags"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "acm-pca:DescribeCertificateAuthority",
+      "acm-pca:GetCertificateAuthorityCsr",
+      "acm-pca:ListTags"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "acm-pca:TagCertificateAuthority",
+      "acm-pca:UntagCertificateAuthority",
+      "acm-pca:UpdateCertificateAuthority"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "Arn": "$ref",
+    "CertificateSigningRequest": "string",
+    "CsrExtensions": "$ref",
+    "KeyAlgorithm": "string",
+    "KeyStorageSecurityStandard": "string",
+    "RevocationConfiguration": "$ref",
+    "SigningAlgorithm": "string",
+    "Subject": "$ref",
+    "Tags": "array",
+    "Type": "string",
+    "UsageMode": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/CertificateSigningRequest"
+   ]
+  },
   "AWS::APS::Scraper": {
    "member": "aws-aps-scraper.json",
    "sha256": "22c31256545112bbe828127c94c8a8bc7645c90a554223f71edfe4077d80b953",
@@ -433,6 +496,103 @@
     "/properties/OpenWireEndpoints",
     "/properties/StompEndpoints",
     "/properties/WssEndpoints"
+   ]
+  },
+  "AWS::Amplify::App": {
+   "member": "aws-amplify-app.json",
+   "sha256": "99c05833ea556275030c92baeb7f0634e0aeb40643f073d2e64761f3960453a2",
+   "primaryIdentifier": [
+    "/properties/Arn"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "amplify:CreateApp",
+      "amplify:GetApp",
+      "amplify:TagResource",
+      "codecommit:GetRepository",
+      "codecommit:GetRepositoryTriggers",
+      "codecommit:PutRepositoryTriggers",
+      "iam:PassRole",
+      "sns:CreateTopic",
+      "sns:Subscribe"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "amplify:DeleteApp",
+      "amplify:GetApp",
+      "codecommit:GetRepository",
+      "codecommit:GetRepositoryTriggers",
+      "codecommit:PutRepositoryTriggers",
+      "iam:PassRole",
+      "sns:Unsubscribe"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "amplify:GetApp",
+      "amplify:ListApps",
+      "amplify:ListTagsForResource",
+      "iam:PassRole"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "amplify:GetApp",
+      "amplify:ListTagsForResource",
+      "codecommit:GetRepository",
+      "codecommit:GetRepositoryTriggers",
+      "iam:PassRole"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "amplify:GetApp",
+      "amplify:ListTagsForResource",
+      "amplify:TagResource",
+      "amplify:UntagResource",
+      "amplify:UpdateApp",
+      "codecommit:GetRepository",
+      "codecommit:GetRepositoryTriggers",
+      "codecommit:PutRepositoryTriggers",
+      "iam:PassRole",
+      "sns:CreateTopic",
+      "sns:Subscribe",
+      "sns:Unsubscribe"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AccessToken": "string",
+    "AppId": "string",
+    "AppName": "string",
+    "Arn": "string",
+    "AutoBranchCreationConfig": "$ref",
+    "BasicAuthConfig": "$ref",
+    "BuildSpec": "string",
+    "CacheConfig": "$ref",
+    "ComputeRoleArn": "string",
+    "CustomHeaders": "string",
+    "CustomRules": "array",
+    "DefaultDomain": "string",
+    "Description": "string",
+    "EnableBranchAutoDeletion": "boolean",
+    "EnvironmentVariables": "array",
+    "IAMServiceRole": "string",
+    "JobConfig": "$ref",
+    "Name": "string",
+    "OauthToken": "string",
+    "Platform": "string",
+    "Repository": "string",
+    "Tags": "array"
+   },
+   "readOnlyProperties": [
+    "/properties/AppId",
+    "/properties/AppName",
+    "/properties/Arn",
+    "/properties/DefaultDomain"
    ]
   },
   "AWS::ApiGateway::ApiKey": {
@@ -938,6 +1098,88 @@
     "/properties/ServiceId",
     "/properties/ServiceUrl",
     "/properties/Status"
+   ]
+  },
+  "AWS::AppSync::GraphQLApi": {
+   "member": "aws-appsync-graphqlapi.json",
+   "sha256": "66e56ca8a4eb8f79d6b32e54564fa699d390cf0176176823409ad55e9d6d834c",
+   "primaryIdentifier": [
+    "/properties/Arn"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "appsync:CreateGraphqlApi",
+      "appsync:PutGraphqlApiEnvironmentVariables",
+      "appsync:TagResource",
+      "iam:PassRole"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "appsync:DeleteGraphqlApi"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "appsync:ListGraphqlApis"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "appsync:GetGraphqlApi",
+      "appsync:GetGraphqlApiEnvironmentVariables",
+      "appsync:ListTagsForResource"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "appsync:GetGraphqlApi",
+      "appsync:GetGraphqlApiEnvironmentVariables",
+      "appsync:PutGraphqlApiEnvironmentVariables",
+      "appsync:TagResource",
+      "appsync:UntagResource",
+      "appsync:UpdateGraphqlApi",
+      "iam:PassRole"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AdditionalAuthenticationProviders": "array",
+    "ApiId": "string",
+    "ApiType": "string",
+    "Arn": "string",
+    "AuthenticationType": "string",
+    "EnhancedMetricsConfig": "$ref",
+    "EnvironmentVariables": "object",
+    "GraphQLDns": "string",
+    "GraphQLEndpointArn": "string",
+    "GraphQLUrl": "string",
+    "IntrospectionConfig": "string",
+    "LambdaAuthorizerConfig": "$ref",
+    "LogConfig": "$ref",
+    "MergedApiExecutionRoleArn": "string",
+    "Name": "string",
+    "OpenIDConnectConfig": "$ref",
+    "OwnerContact": "string",
+    "QueryDepthLimit": "integer",
+    "RealtimeDns": "string",
+    "RealtimeUrl": "string",
+    "ResolverCountLimit": "integer",
+    "Tags": "array",
+    "UserPoolConfig": "$ref",
+    "Visibility": "string",
+    "XrayEnabled": "boolean"
+   },
+   "readOnlyProperties": [
+    "/properties/ApiId",
+    "/properties/Arn",
+    "/properties/GraphQLDns",
+    "/properties/GraphQLEndpointArn",
+    "/properties/GraphQLUrl",
+    "/properties/RealtimeDns",
+    "/properties/RealtimeUrl"
    ]
   },
   "AWS::Athena::WorkGroup": {
@@ -1532,6 +1774,401 @@
    "readOnlyProperties": [
     "/properties/ComputeEnvironmentArn",
     "/properties/ComputeResources/Ec2Configuration/*/BatchImageStatus"
+   ]
+  },
+  "AWS::Bedrock::Agent": {
+   "member": "aws-bedrock-agent.json",
+   "sha256": "25a6da45c0abb116e82a55269510d1a8c85043fcd9cd2d00eb99517b66a685c9",
+   "primaryIdentifier": [
+    "/properties/AgentId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "bedrock:AssociateAgentCollaborator",
+      "bedrock:AssociateAgentKnowledgeBase",
+      "bedrock:CreateAgent",
+      "bedrock:CreateAgentActionGroup",
+      "bedrock:CreateGuardrail",
+      "bedrock:CreateGuardrailVersion",
+      "bedrock:GetAgent",
+      "bedrock:GetAgentActionGroup",
+      "bedrock:GetAgentCollaborator",
+      "bedrock:GetAgentKnowledgeBase",
+      "bedrock:GetGuardrail",
+      "bedrock:ListAgentActionGroups",
+      "bedrock:ListAgentCollaborators",
+      "bedrock:ListAgentKnowledgeBases",
+      "bedrock:ListTagsForResource",
+      "bedrock:PrepareAgent",
+      "bedrock:TagResource",
+      "iam:PassRole",
+      "kms:Decrypt",
+      "kms:GenerateDataKey",
+      "kms:GenerateDataKeyWithoutPlainText",
+      "kms:ReEncryptFrom",
+      "kms:ReEncryptTo"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "bedrock:DeleteAgent",
+      "bedrock:DeleteGuardrail",
+      "bedrock:GetAgent",
+      "bedrock:GetGuardrail",
+      "kms:Decrypt",
+      "kms:Encrypt",
+      "kms:GenerateDataKey"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "bedrock:ListAgents",
+      "bedrock:ListGuardrails"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "bedrock:GetAgent",
+      "bedrock:GetAgentActionGroup",
+      "bedrock:GetAgentCollaborator",
+      "bedrock:GetAgentKnowledgeBase",
+      "bedrock:GetGuardrail",
+      "bedrock:ListAgentActionGroups",
+      "bedrock:ListAgentCollaborators",
+      "bedrock:ListAgentKnowledgeBases",
+      "bedrock:ListTagsForResource",
+      "kms:Decrypt",
+      "kms:Encrypt",
+      "kms:GenerateDataKey"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "bedrock:AssociateAgentCollaborator",
+      "bedrock:AssociateAgentKnowledgeBase",
+      "bedrock:CreateAgentActionGroup",
+      "bedrock:DeleteAgentActionGroup",
+      "bedrock:DisassociateAgentCollaborator",
+      "bedrock:DisassociateAgentKnowledgeBase",
+      "bedrock:GetAgent",
+      "bedrock:GetAgentActionGroup",
+      "bedrock:GetAgentCollaborator",
+      "bedrock:GetAgentKnowledgeBase",
+      "bedrock:GetGuardrail",
+      "bedrock:ListAgentActionGroups",
+      "bedrock:ListAgentCollaborators",
+      "bedrock:ListAgentKnowledgeBases",
+      "bedrock:ListTagsForResource",
+      "bedrock:PrepareAgent",
+      "bedrock:TagResource",
+      "bedrock:UntagResource",
+      "bedrock:UpdateAgent",
+      "bedrock:UpdateAgentActionGroup",
+      "bedrock:UpdateAgentCollaborator",
+      "bedrock:UpdateAgentKnowledgeBase",
+      "bedrock:UpdateGuardrail",
+      "iam:PassRole",
+      "kms:Decrypt",
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
+      "kms:GenerateDataKeyWithoutPlainText",
+      "kms:ReEncryptFrom",
+      "kms:ReEncryptTo"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "ActionGroups": "array",
+    "AgentArn": "string",
+    "AgentCollaboration": "$ref",
+    "AgentCollaborators": "array",
+    "AgentId": "string",
+    "AgentName": "string",
+    "AgentResourceRoleArn": "string",
+    "AgentStatus": "$ref",
+    "AgentVersion": "string",
+    "AutoPrepare": "boolean",
+    "CreatedAt": "string",
+    "CustomOrchestration": "$ref",
+    "CustomerEncryptionKeyArn": "string",
+    "Description": "string",
+    "FailureReasons": "array",
+    "FoundationModel": "$ref",
+    "GuardrailConfiguration": "$ref",
+    "IdleSessionTTLInSeconds": "number",
+    "Instruction": "string",
+    "KnowledgeBases": "array",
+    "MemoryConfiguration": "$ref",
+    "OrchestrationType": "$ref",
+    "PreparedAt": "string",
+    "PromptOverrideConfiguration": "$ref",
+    "RecommendedActions": "array",
+    "SkipResourceInUseCheckOnDelete": "boolean",
+    "Tags": "$ref",
+    "TestAliasTags": "$ref",
+    "UpdatedAt": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/AgentArn",
+    "/properties/AgentId",
+    "/properties/AgentStatus",
+    "/properties/AgentVersion",
+    "/properties/CreatedAt",
+    "/properties/FailureReasons",
+    "/properties/PreparedAt",
+    "/properties/RecommendedActions",
+    "/properties/UpdatedAt"
+   ]
+  },
+  "AWS::Bedrock::DataSource": {
+   "member": "aws-bedrock-datasource.json",
+   "sha256": "08656ffb59c5ac31a864d22dbfe74a7aafe2d9b68096a35db0ef2b89869a3e49",
+   "primaryIdentifier": [
+    "/properties/KnowledgeBaseId",
+    "/properties/DataSourceId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "bedrock:CreateDataSource",
+      "bedrock:GetDataSource",
+      "bedrock:GetKnowledgeBase",
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "bedrock:DeleteDataSource",
+      "bedrock:GetDataSource"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "bedrock:ListDataSources"
+     ],
+     "handlerSchema": {
+      "properties": {
+       "KnowledgeBaseId": {
+        "$ref": "resource-schema.json#/properties/KnowledgeBaseId"
+       }
+      },
+      "required": [
+       "KnowledgeBaseId"
+      ]
+     }
+    },
+    "read": {
+     "permissions": [
+      "bedrock:GetDataSource"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "bedrock:GetDataSource",
+      "bedrock:UpdateDataSource",
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "CreatedAt": "string",
+    "DataDeletionPolicy": "$ref",
+    "DataSourceConfiguration": "$ref",
+    "DataSourceId": "string",
+    "DataSourceStatus": "$ref",
+    "Description": "string",
+    "FailureReasons": "array",
+    "KnowledgeBaseId": "string",
+    "Name": "string",
+    "ServerSideEncryptionConfiguration": "$ref",
+    "UpdatedAt": "string",
+    "VectorIngestionConfiguration": "$ref"
+   },
+   "readOnlyProperties": [
+    "/properties/CreatedAt",
+    "/properties/DataSourceConfiguration/WebConfiguration/CrawlerConfiguration/UserAgentHeader",
+    "/properties/DataSourceId",
+    "/properties/DataSourceStatus",
+    "/properties/FailureReasons",
+    "/properties/UpdatedAt"
+   ]
+  },
+  "AWS::Bedrock::Guardrail": {
+   "member": "aws-bedrock-guardrail.json",
+   "sha256": "099502db164380bfe3aa0825cada56c7dbaeec50428b6a432c62d9c98d561037",
+   "primaryIdentifier": [
+    "/properties/GuardrailArn"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "bedrock:CreateGuardrail",
+      "bedrock:GetGuardrail",
+      "bedrock:ListTagsForResource",
+      "bedrock:TagResource",
+      "kms:CreateGrant",
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:GenerateDataKey"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "bedrock:DeleteGuardrail",
+      "bedrock:GetGuardrail",
+      "kms:Decrypt",
+      "kms:RetireGrant"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "bedrock:ListGuardrails"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "bedrock:GetGuardrail",
+      "bedrock:ListTagsForResource",
+      "kms:Decrypt"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "bedrock:GetGuardrail",
+      "bedrock:ListTagsForResource",
+      "bedrock:TagResource",
+      "bedrock:UntagResource",
+      "bedrock:UpdateGuardrail",
+      "kms:CreateGrant",
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:GenerateDataKey"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AutomatedReasoningPolicyConfig": "$ref",
+    "BlockedInputMessaging": "string",
+    "BlockedOutputsMessaging": "string",
+    "ContentPolicyConfig": "$ref",
+    "ContextualGroundingPolicyConfig": "$ref",
+    "CreatedAt": "string",
+    "CrossRegionConfig": "$ref",
+    "Description": "string",
+    "FailureRecommendations": "array",
+    "GuardrailArn": "string",
+    "GuardrailId": "string",
+    "KmsKeyArn": "string",
+    "Name": "string",
+    "SensitiveInformationPolicyConfig": "$ref",
+    "Status": "$ref",
+    "StatusReasons": "array",
+    "Tags": "array",
+    "TopicPolicyConfig": "$ref",
+    "UpdatedAt": "string",
+    "Version": "string",
+    "WordPolicyConfig": "$ref"
+   },
+   "readOnlyProperties": [
+    "/properties/CreatedAt",
+    "/properties/FailureRecommendations",
+    "/properties/GuardrailArn",
+    "/properties/GuardrailId",
+    "/properties/Status",
+    "/properties/StatusReasons",
+    "/properties/UpdatedAt",
+    "/properties/Version"
+   ]
+  },
+  "AWS::Bedrock::KnowledgeBase": {
+   "member": "aws-bedrock-knowledgebase.json",
+   "sha256": "6ec0466350e9ae55cbdca7276e00d87220616cb0eed69da3fed171058c942e8c",
+   "primaryIdentifier": [
+    "/properties/KnowledgeBaseId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "bedrock:AssociateThirdPartyKnowledgeBase",
+      "bedrock:CreateKnowledgeBase",
+      "bedrock:GetKnowledgeBase",
+      "bedrock:ListTagsForResource",
+      "bedrock:TagResource",
+      "iam:PassRole",
+      "kms:CreateGrant",
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
+      "kms:GenerateDataKeyWithoutPlaintext",
+      "kms:RetireGrant"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "bedrock:DeleteKnowledgeBase",
+      "bedrock:GetKnowledgeBase",
+      "bedrock:ListDataSources"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "bedrock:ListKnowledgeBases"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "bedrock:GetKnowledgeBase",
+      "bedrock:ListTagsForResource"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "bedrock:AssociateThirdPartyKnowledgeBase",
+      "bedrock:GetKnowledgeBase",
+      "bedrock:ListTagsForResource",
+      "bedrock:TagResource",
+      "bedrock:UntagResource",
+      "bedrock:UpdateKnowledgeBase",
+      "iam:PassRole",
+      "kms:CreateGrant",
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
+      "kms:GenerateDataKeyWithoutPlaintext",
+      "kms:RetireGrant"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "CreatedAt": "string",
+    "Description": "string",
+    "FailureReasons": "array",
+    "KnowledgeBaseArn": "string",
+    "KnowledgeBaseConfiguration": "$ref",
+    "KnowledgeBaseId": "string",
+    "Name": "string",
+    "RoleArn": "string",
+    "Status": "$ref",
+    "StorageConfiguration": "$ref",
+    "Tags": "$ref",
+    "UpdatedAt": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/CreatedAt",
+    "/properties/FailureReasons",
+    "/properties/KnowledgeBaseArn",
+    "/properties/KnowledgeBaseId",
+    "/properties/Status",
+    "/properties/UpdatedAt"
    ]
   },
   "AWS::Cassandra::Keyspace": {
@@ -2479,6 +3116,183 @@
    "readOnlyProperties": [
     "/properties/Arn",
     "/properties/Version"
+   ]
+  },
+  "AWS::Cognito::IdentityPool": {
+   "member": "aws-cognito-identitypool.json",
+   "sha256": "706755806e87a8b3575f80af9e09125a9d4c19aff52ee5e05699d78e36e9019f",
+   "primaryIdentifier": [
+    "/properties/Id"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "cognito-identity:CreateIdentityPool",
+      "cognito-identity:TagResource",
+      "cognito-sync:SetCognitoEvents",
+      "cognito-sync:SetIdentityPoolConfiguration",
+      "iam:PassRole"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "cognito-identity:DeleteIdentityPool"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "cognito-identity:ListIdentityPools"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "cognito-identity:DescribeIdentityPool",
+      "cognito-identity:ListTagsForResource"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "cognito-identity:DescribeIdentityPool",
+      "cognito-identity:TagResource",
+      "cognito-identity:UntagResource",
+      "cognito-identity:UpdateIdentityPool",
+      "cognito-sync:SetCognitoEvents",
+      "cognito-sync:SetIdentityPoolConfiguration",
+      "iam:PassRole"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AllowClassicFlow": "boolean",
+    "AllowUnauthenticatedIdentities": "boolean",
+    "CognitoEvents": "object",
+    "CognitoIdentityProviders": "array",
+    "CognitoStreams": "$ref",
+    "DeveloperProviderName": "string",
+    "Id": "string",
+    "IdentityPoolName": "string",
+    "IdentityPoolTags": "array",
+    "Name": "string",
+    "OpenIdConnectProviderARNs": "array",
+    "PushSync": "$ref",
+    "SamlProviderARNs": "array",
+    "SupportedLoginProviders": "object"
+   },
+   "readOnlyProperties": [
+    "/properties/Id",
+    "/properties/Name"
+   ]
+  },
+  "AWS::Cognito::UserPool": {
+   "member": "aws-cognito-userpool.json",
+   "sha256": "f149c5ae323ba3f5d56cf3a9a9c1ced64f951869c754c0dd5368c399be391d6e",
+   "primaryIdentifier": [
+    "/properties/UserPoolId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "cognito-idp:CreateUserPool",
+      "cognito-idp:DescribeUserPool",
+      "cognito-idp:SetUserPoolMfaConfig",
+      "cognito-idp:TagResource",
+      "iam:CreateServiceLinkedRole",
+      "iam:PassRole",
+      "kms:CreateGrant",
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
+      "kms:GenerateDataKeyWithoutPlaintext",
+      "kms:ReEncryptFrom",
+      "kms:ReEncryptTo"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "cognito-idp:DeleteUserPool"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "cognito-idp:ListUserPools"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "cognito-idp:DescribeUserPool",
+      "cognito-idp:GetUserPoolMfaConfig",
+      "kms:Decrypt",
+      "kms:DescribeKey"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "cognito-idp:AddCustomAttributes",
+      "cognito-idp:DescribeUserPool",
+      "cognito-idp:GetUserPoolMfaConfig",
+      "cognito-idp:ListTagsForResource",
+      "cognito-idp:SetUserPoolMfaConfig",
+      "cognito-idp:TagResource",
+      "cognito-idp:UntagResource",
+      "cognito-idp:UpdateUserPool",
+      "iam:PassRole",
+      "kms:CreateGrant",
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
+      "kms:GenerateDataKeyWithoutPlaintext",
+      "kms:ReEncryptFrom",
+      "kms:ReEncryptTo"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AccountRecoverySetting": "$ref",
+    "AdminCreateUserConfig": "$ref",
+    "AliasAttributes": "array",
+    "Arn": "string",
+    "AutoVerifiedAttributes": "array",
+    "DeletionProtection": "string",
+    "DeviceConfiguration": "$ref",
+    "EmailAuthenticationMessage": "string",
+    "EmailAuthenticationSubject": "string",
+    "EmailConfiguration": "$ref",
+    "EmailVerificationMessage": "string",
+    "EmailVerificationSubject": "string",
+    "EnabledMfas": "array",
+    "IssuerConfiguration": "$ref",
+    "KeyConfiguration": "$ref",
+    "LambdaConfig": "$ref",
+    "MfaConfiguration": "string",
+    "Policies": "$ref",
+    "ProviderName": "string",
+    "ProviderURL": "string",
+    "Schema": "array",
+    "SmsAuthenticationMessage": "string",
+    "SmsConfiguration": "$ref",
+    "SmsVerificationMessage": "string",
+    "UserAttributeUpdateSettings": "$ref",
+    "UserPoolAddOns": "$ref",
+    "UserPoolId": "string",
+    "UserPoolName": "string",
+    "UserPoolTags": "object",
+    "UserPoolTier": "string",
+    "UsernameAttributes": "array",
+    "UsernameConfiguration": "$ref",
+    "VerificationMessageTemplate": "$ref",
+    "WebAuthnFactorConfiguration": "string",
+    "WebAuthnRelyingPartyID": "string",
+    "WebAuthnUserVerification": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/ProviderName",
+    "/properties/ProviderURL",
+    "/properties/UserPoolId"
    ]
   },
   "AWS::Config::ConfigRule": {
@@ -4736,6 +5550,229 @@
     "/properties/HostId"
    ]
   },
+  "AWS::EC2::IPAM": {
+   "member": "aws-ec2-ipam.json",
+   "sha256": "d893536c86ef6ca0aca8274f4a6d10595df0652451e32d36d2b0473687ec7cb5",
+   "primaryIdentifier": [
+    "/properties/IpamId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "ec2:CreateIpam",
+      "ec2:CreateTags",
+      "ec2:DescribeIpamResourceDiscoveries",
+      "ec2:DescribeIpams",
+      "ec2:ModifyIpamResourceDiscovery",
+      "iam:CreateServiceLinkedRole"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "ec2:DeleteIpam",
+      "ec2:DeleteTags",
+      "ec2:DescribeIpams"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "ec2:DescribeIpams"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "ec2:DescribeIpamResourceDiscoveries",
+      "ec2:DescribeIpams"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "ec2:CreateTags",
+      "ec2:DeleteTags",
+      "ec2:DescribeIpamResourceDiscoveries",
+      "ec2:DescribeIpams",
+      "ec2:ModifyIpam",
+      "ec2:ModifyIpamResourceDiscovery"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "Arn": "string",
+    "DefaultResourceDiscoveryAssociationId": "string",
+    "DefaultResourceDiscoveryId": "string",
+    "DefaultResourceDiscoveryOrganizationalUnitExclusions": "array",
+    "Description": "string",
+    "EnablePrivateGua": "boolean",
+    "IpamId": "string",
+    "MeteredAccount": "string",
+    "OperatingRegions": "array",
+    "PrivateDefaultScopeId": "string",
+    "PublicDefaultScopeId": "string",
+    "ResourceDiscoveryAssociationCount": "integer",
+    "ScopeCount": "integer",
+    "Tags": "array",
+    "Tier": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/DefaultResourceDiscoveryAssociationId",
+    "/properties/DefaultResourceDiscoveryId",
+    "/properties/IpamId",
+    "/properties/PrivateDefaultScopeId",
+    "/properties/PublicDefaultScopeId",
+    "/properties/ResourceDiscoveryAssociationCount",
+    "/properties/ScopeCount"
+   ]
+  },
+  "AWS::EC2::IPAMPool": {
+   "member": "aws-ec2-ipampool.json",
+   "sha256": "945b03a55887ee5b0f5d452203326e4325e485b621c4052643c1796f6ec38afc",
+   "primaryIdentifier": [
+    "/properties/IpamPoolId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "ec2:CreateIpamPool",
+      "ec2:CreateTags",
+      "ec2:DescribeIpamPools",
+      "ec2:GetIpamPoolCidrs",
+      "ec2:ProvisionIpamPoolCidr"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "ec2:DeleteIpamPool",
+      "ec2:DeleteTags",
+      "ec2:DeprovisionIpamPoolCidr",
+      "ec2:DescribeIpamPools",
+      "ec2:GetIpamPoolCidrs"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "ec2:DescribeIpamPools"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "ec2:DescribeIpamPools",
+      "ec2:GetIpamPoolCidrs"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "ec2:CreateTags",
+      "ec2:DeleteTags",
+      "ec2:DeprovisionIpamPoolCidr",
+      "ec2:DescribeIpamPools",
+      "ec2:GetIpamPoolCidrs",
+      "ec2:ModifyIpamPool",
+      "ec2:ProvisionIpamPoolCidr"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AddressFamily": "string",
+    "AllocationDefaultNetmaskLength": "integer",
+    "AllocationMaxNetmaskLength": "integer",
+    "AllocationMinNetmaskLength": "integer",
+    "AllocationResourceTags": "array",
+    "Arn": "string",
+    "AutoImport": "boolean",
+    "AwsService": "string",
+    "Description": "string",
+    "IpamArn": "string",
+    "IpamPoolId": "string",
+    "IpamScopeArn": "string",
+    "IpamScopeId": "string",
+    "IpamScopeType": "string",
+    "Locale": "string",
+    "PoolDepth": "integer",
+    "ProvisionedCidrs": "array",
+    "PublicIpSource": "string",
+    "PubliclyAdvertisable": "boolean",
+    "SourceIpamPoolId": "string",
+    "SourceResource": "$ref",
+    "State": "string",
+    "StateMessage": "string",
+    "Tags": "array"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/IpamArn",
+    "/properties/IpamPoolId",
+    "/properties/IpamScopeArn",
+    "/properties/IpamScopeType",
+    "/properties/PoolDepth",
+    "/properties/State",
+    "/properties/StateMessage"
+   ]
+  },
+  "AWS::EC2::IPAMScope": {
+   "member": "aws-ec2-ipamscope.json",
+   "sha256": "d830ba7c6920695f5fca43c60e1dccb76f6d64268f6e0a1890f54b33d9acbc62",
+   "primaryIdentifier": [
+    "/properties/IpamScopeId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "ec2:CreateIpamScope",
+      "ec2:CreateTags",
+      "ec2:DescribeIpamScopes"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "ec2:DeleteIpamScope",
+      "ec2:DeleteTags",
+      "ec2:DescribeIpamScopes"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "ec2:DescribeIpamScopes"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "ec2:DescribeIpamScopes"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "ec2:CreateTags",
+      "ec2:DeleteTags",
+      "ec2:DescribeIpamScopes",
+      "ec2:ModifyIpamScope"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "Arn": "string",
+    "Description": "string",
+    "ExternalAuthorityConfiguration": "$ref",
+    "IpamArn": "string",
+    "IpamId": "string",
+    "IpamScopeId": "string",
+    "IpamScopeType": "string",
+    "IsDefault": "boolean",
+    "PoolCount": "integer",
+    "Tags": "array"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/IpamArn",
+    "/properties/IpamScopeId",
+    "/properties/IpamScopeType",
+    "/properties/IsDefault",
+    "/properties/PoolCount"
+   ]
+  },
   "AWS::EC2::Instance": {
    "member": "aws-ec2-instance.json",
    "sha256": "ab76bb962048bb74d1a0e97361e752834430f9abe61445d179ffa190d96fdadd",
@@ -5326,6 +6363,113 @@
     "/properties/PublicIpDnsNameOptions",
     "/properties/SecondaryPrivateIpAddresses",
     "/properties/VpcId"
+   ]
+  },
+  "AWS::EC2::PlacementGroup": {
+   "member": "aws-ec2-placementgroup.json",
+   "sha256": "d0b55de0cf0f068e1d8b77a24ea2d535fa97031cc0f72c709d13497794f95222",
+   "primaryIdentifier": [
+    "/properties/GroupName"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "ec2:CreatePlacementGroup",
+      "ec2:CreateTags",
+      "ec2:DescribePlacementGroups"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "ec2:DeletePlacementGroup",
+      "ec2:DescribePlacementGroups"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "ec2:DescribePlacementGroups"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "ec2:DescribePlacementGroups"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "GroupId": "string",
+    "GroupName": "string",
+    "ParentGroupId": "string",
+    "PartitionCount": "integer",
+    "SpreadLevel": "string",
+    "Strategy": "string",
+    "Tags": "array"
+   },
+   "readOnlyProperties": [
+    "/properties/GroupId",
+    "/properties/GroupName"
+   ]
+  },
+  "AWS::EC2::PrefixList": {
+   "member": "aws-ec2-prefixlist.json",
+   "sha256": "01f7a2ca288efe8a25a5c5675689a7a4397975ae46265dde0dc9b6bb4ec590a7",
+   "primaryIdentifier": [
+    "/properties/PrefixListId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "EC2:CreateManagedPrefixList",
+      "EC2:CreateTags",
+      "EC2:DescribeManagedPrefixLists"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "EC2:DeleteManagedPrefixList",
+      "EC2:DescribeManagedPrefixLists"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "EC2:DescribeManagedPrefixLists",
+      "EC2:GetManagedPrefixListEntries"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "EC2:DescribeManagedPrefixLists",
+      "EC2:GetManagedPrefixListEntries"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "EC2:CreateTags",
+      "EC2:DeleteTags",
+      "EC2:DescribeManagedPrefixLists",
+      "EC2:GetManagedPrefixListEntries",
+      "EC2:ModifyManagedPrefixList"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AddressFamily": "string",
+    "Arn": "string",
+    "Entries": "array",
+    "MaxEntries": "integer",
+    "OwnerId": "string",
+    "PrefixListId": "string",
+    "PrefixListName": "string",
+    "Tags": "array",
+    "Version": "integer"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/OwnerId",
+    "/properties/PrefixListId",
+    "/properties/Version"
    ]
   },
   "AWS::EC2::RouteTable": {
@@ -8118,6 +9262,138 @@
     "/properties/Status"
    ]
   },
+  "AWS::ElasticBeanstalk::Application": {
+   "member": "aws-elasticbeanstalk-application.json",
+   "sha256": "4b5a464c8c174d5d44a345f0f331a8ef17535cd1ffd6f1caec7ea1b0e60d74a2",
+   "primaryIdentifier": [
+    "/properties/ApplicationName"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "elasticbeanstalk:CreateApplication",
+      "elasticbeanstalk:DescribeApplications",
+      "iam:PassRole",
+      "s3:CreateBucket",
+      "s3:GetBucketLocation",
+      "s3:GetBucketPolicy",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:PutBucketAcl",
+      "s3:PutBucketObjectLockConfiguration",
+      "s3:PutBucketOwnershipControls",
+      "s3:PutBucketPolicy",
+      "s3:PutBucketPublicAccessBlock",
+      "s3:PutBucketVersioning",
+      "s3:PutObject"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "elasticbeanstalk:DeleteApplication",
+      "elasticbeanstalk:DescribeApplications",
+      "s3:ListBucket"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "elasticbeanstalk:DescribeApplications"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "elasticbeanstalk:DescribeApplications"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "elasticbeanstalk:DescribeApplications",
+      "elasticbeanstalk:UpdateApplication",
+      "elasticbeanstalk:UpdateApplicationResourceLifecycle",
+      "iam:PassRole"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "ApplicationName": "string",
+    "Description": "string",
+    "ResourceLifecycleConfig": "$ref"
+   },
+   "readOnlyProperties": []
+  },
+  "AWS::ElasticBeanstalk::Environment": {
+   "member": "aws-elasticbeanstalk-environment.json",
+   "sha256": "571e292c4aefcd5cd4fc6e3f623874d491e329b4635d516ebbf8406536d73d31",
+   "primaryIdentifier": [
+    "/properties/EnvironmentName"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "elasticbeanstalk:AddTags",
+      "elasticbeanstalk:CreateEnvironment",
+      "elasticbeanstalk:DescribeEnvironments",
+      "elasticbeanstalk:ListTagsForResource",
+      "iam:PassRole"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "elasticbeanstalk:DescribeEnvironments",
+      "elasticbeanstalk:TerminateEnvironment"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "elasticbeanstalk:DescribeEnvironments",
+      "elasticbeanstalk:ListTagsForResource"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "elasticbeanstalk:DescribeConfigurationSettings",
+      "elasticbeanstalk:DescribeEnvironments",
+      "elasticbeanstalk:ListTagsForResource"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "elasticbeanstalk:AddTags",
+      "elasticbeanstalk:AssociateEnvironmentOperationsRole",
+      "elasticbeanstalk:DescribeEnvironments",
+      "elasticbeanstalk:DisassociateEnvironmentOperationsRole",
+      "elasticbeanstalk:ListTagsForResource",
+      "elasticbeanstalk:RemoveTags",
+      "elasticbeanstalk:UpdateEnvironment",
+      "iam:PassRole",
+      "s3:GetBucketLocation",
+      "s3:GetBucketPolicy",
+      "s3:ListBucket",
+      "s3:PutBucketPolicy"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "ApplicationName": "string",
+    "CNAMEPrefix": "string",
+    "Description": "string",
+    "EndpointURL": "string",
+    "EnvironmentName": "string",
+    "OperationsRole": "string",
+    "OptionSettings": "array",
+    "PlatformArn": "string",
+    "SolutionStackName": "string",
+    "Tags": "array",
+    "TemplateName": "string",
+    "Tier": "$ref",
+    "VersionLabel": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/EndpointURL"
+   ]
+  },
   "AWS::ElasticLoadBalancing::LoadBalancer": {
    "member": "aws-elasticloadbalancing-loadbalancer.json",
    "sha256": "8c0a252c1730a8b2bfa2a0f981752172ed6e33c0839dc0ceef50a96b36b87757",
@@ -10068,6 +11344,85 @@
    },
    "readOnlyProperties": []
   },
+  "AWS::KinesisFirehose::DeliveryStream": {
+   "member": "aws-kinesisfirehose-deliverystream.json",
+   "sha256": "f4aa45716a992a677ad9b2bf3cff1b2df712d7f3232d79fefc017e84bdcf6d7d",
+   "primaryIdentifier": [
+    "/properties/DeliveryStreamName"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "firehose:CreateDeliveryStream",
+      "firehose:DescribeDeliveryStream",
+      "firehose:TagDeliveryStream",
+      "iam:GetRole",
+      "iam:PassRole",
+      "kms:CreateGrant",
+      "kms:DescribeKey"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "firehose:DeleteDeliveryStream",
+      "firehose:DescribeDeliveryStream",
+      "kms:DescribeKey",
+      "kms:RevokeGrant"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "firehose:ListDeliveryStreams"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "firehose:DescribeDeliveryStream",
+      "firehose:ListTagsForDeliveryStream"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "firehose:DescribeDeliveryStream",
+      "firehose:ListTagsForDeliveryStream",
+      "firehose:StartDeliveryStreamEncryption",
+      "firehose:StopDeliveryStreamEncryption",
+      "firehose:TagDeliveryStream",
+      "firehose:UntagDeliveryStream",
+      "firehose:UpdateDestination",
+      "iam:PassRole",
+      "kms:CreateGrant",
+      "kms:DescribeKey",
+      "kms:RevokeGrant"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AmazonOpenSearchServerlessDestinationConfiguration": "$ref",
+    "AmazonopensearchserviceDestinationConfiguration": "$ref",
+    "Arn": "string",
+    "DatabaseSourceConfiguration": "$ref",
+    "DeliveryStreamEncryptionConfigurationInput": "$ref",
+    "DeliveryStreamName": "string",
+    "DeliveryStreamType": "string",
+    "DirectPutSourceConfiguration": "$ref",
+    "ElasticsearchDestinationConfiguration": "$ref",
+    "ExtendedS3DestinationConfiguration": "$ref",
+    "HttpEndpointDestinationConfiguration": "$ref",
+    "IcebergDestinationConfiguration": "$ref",
+    "KinesisStreamSourceConfiguration": "$ref",
+    "MSKSourceConfiguration": "$ref",
+    "RedshiftDestinationConfiguration": "$ref",
+    "S3DestinationConfiguration": "$ref",
+    "SnowflakeDestinationConfiguration": "$ref",
+    "SplunkDestinationConfiguration": "$ref",
+    "Tags": "array"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn"
+   ]
+  },
   "AWS::Lambda::Function": {
    "member": "aws-lambda-function.json",
    "sha256": "dc32878aba8a4aa61621bb65d7b88266152a751c876550b5e566dc0245c99652",
@@ -10628,6 +11983,130 @@
    },
    "readOnlyProperties": [
     "/properties/TopicArn"
+   ]
+  },
+  "AWS::MWAA::Environment": {
+   "member": "aws-mwaa-environment.json",
+   "sha256": "b82a32ac11c3e6bee91ab17031c9a273c203862db3511cc7ba6b2ec89ba939f2",
+   "primaryIdentifier": [
+    "/properties/Name"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "airflow:CreateEnvironment",
+      "airflow:GetEnvironment",
+      "airflow:TagResource",
+      "airflow:UntagResource",
+      "ec2:AuthorizeSecurityGroupIngress",
+      "ec2:CreateNetworkInterface",
+      "ec2:CreateSecurityGroup",
+      "ec2:CreateVpcEndpoint",
+      "ec2:DescribeRouteTables",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeVpcs",
+      "iam:AttachRolePolicy",
+      "iam:CreatePolicy",
+      "iam:CreateRole",
+      "iam:CreateServiceLinkedRole",
+      "iam:ListRoles",
+      "iam:PassRole",
+      "kms:CreateGrant",
+      "kms:DescribeKey",
+      "kms:ListAliases",
+      "s3:CreateBucket",
+      "s3:GetBucketLocation",
+      "s3:GetEncryptionConfiguration",
+      "s3:ListAllMyBuckets",
+      "s3:ListBucket",
+      "s3:ListBucketVersions",
+      "s3:PutObject"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "airflow:DeleteEnvironment",
+      "airflow:GetEnvironment"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "airflow:ListEnvironments"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "airflow:GetEnvironment"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "airflow:GetEnvironment",
+      "airflow:TagResource",
+      "airflow:UntagResource",
+      "airflow:UpdateEnvironment",
+      "ec2:DescribeRouteTables",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeVpcs",
+      "iam:AttachRolePolicy",
+      "iam:ListRoles",
+      "iam:PassRole",
+      "kms:DescribeKey",
+      "kms:ListAliases",
+      "s3:GetBucketLocation",
+      "s3:GetEncryptionConfiguration",
+      "s3:ListBucket",
+      "s3:ListBucketVersions"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AirflowConfigurationOptions": "object",
+    "AirflowVersion": "$ref",
+    "Arn": "$ref",
+    "CeleryExecutorQueue": "$ref",
+    "DagS3Path": "$ref",
+    "DatabaseVpcEndpointService": "$ref",
+    "EndpointManagement": "$ref",
+    "EnvironmentClass": "$ref",
+    "ExecutionRoleArn": "$ref",
+    "KmsKey": "$ref",
+    "LoggingConfiguration": "$ref",
+    "MaxWebservers": "$ref",
+    "MaxWorkers": "$ref",
+    "MinWebservers": "$ref",
+    "MinWorkers": "$ref",
+    "Name": "$ref",
+    "NetworkConfiguration": "$ref",
+    "PluginsS3ObjectVersion": "$ref",
+    "PluginsS3Path": "$ref",
+    "RequirementsS3ObjectVersion": "$ref",
+    "RequirementsS3Path": "$ref",
+    "Schedulers": "$ref",
+    "SourceBucketArn": "$ref",
+    "StartupScriptS3ObjectVersion": "$ref",
+    "StartupScriptS3Path": "$ref",
+    "Tags": "object",
+    "WebserverAccessMode": "$ref",
+    "WebserverUrl": "$ref",
+    "WebserverVpcEndpointService": "$ref",
+    "WeeklyMaintenanceWindowStart": "$ref",
+    "WorkerReplacementStrategy": "$ref"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/CeleryExecutorQueue",
+    "/properties/DatabaseVpcEndpointService",
+    "/properties/LoggingConfiguration/DagProcessingLogs/CloudWatchLogGroupArn",
+    "/properties/LoggingConfiguration/SchedulerLogs/CloudWatchLogGroupArn",
+    "/properties/LoggingConfiguration/TaskLogs/CloudWatchLogGroupArn",
+    "/properties/LoggingConfiguration/WebserverLogs/CloudWatchLogGroupArn",
+    "/properties/LoggingConfiguration/WorkerLogs/CloudWatchLogGroupArn",
+    "/properties/WebserverUrl",
+    "/properties/WebserverVpcEndpointService"
    ]
   },
   "AWS::Macie::CustomDataIdentifier": {
@@ -13894,6 +15373,62 @@
     "/properties/QueueUrl"
    ]
   },
+  "AWS::SSM::Parameter": {
+   "member": "aws-ssm-parameter.json",
+   "sha256": "77acb6b212c2993f5b0c2d7bd85bcac14cde95c5cc4d8e682ec7bc3660a31b1a",
+   "primaryIdentifier": [
+    "/properties/Name"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "ssm:AddTagsToResource",
+      "ssm:GetParameters",
+      "ssm:PutParameter"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "ssm:DeleteParameter"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "ssm:DescribeParameters"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "ssm:GetParameters",
+      "ssm:ListTagsForResource"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "ssm:AddTagsToResource",
+      "ssm:GetParameters",
+      "ssm:PutParameter",
+      "ssm:RemoveTagsFromResource"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AllowedPattern": "string",
+    "Arn": "string",
+    "DataType": "string",
+    "Description": "string",
+    "Name": "string",
+    "Policies": "string",
+    "Tags": "object",
+    "Tier": "string",
+    "Type": "string",
+    "Value": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn"
+   ]
+  },
   "AWS::SSO::Instance": {
    "member": "aws-sso-instance.json",
    "sha256": "8081a34dd83a48780f5cf1f779d6c0fb7d4d167e6ae705016184ef598e29fd78",
@@ -14226,6 +15761,183 @@
    },
    "readOnlyProperties": [
     "/properties/ModelArn"
+   ]
+  },
+  "AWS::Scheduler::Schedule": {
+   "member": "aws-scheduler-schedule.json",
+   "sha256": "cd4c95a62d6cfa0b9d7b2c12d04c361f6dd3947e84e59150ab3c32bf2afc2fe8",
+   "primaryIdentifier": [
+    "/properties/Name"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "iam:PassRole",
+      "scheduler:CreateSchedule",
+      "scheduler:GetSchedule"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "scheduler:DeleteSchedule",
+      "scheduler:GetSchedule"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "scheduler:ListSchedules"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "scheduler:GetSchedule"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "iam:PassRole",
+      "scheduler:GetSchedule",
+      "scheduler:UpdateSchedule"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "Arn": "string",
+    "Description": "string",
+    "EndDate": "string",
+    "FlexibleTimeWindow": "$ref",
+    "GroupName": "string",
+    "KmsKeyArn": "string",
+    "Name": "string",
+    "ScheduleExpression": "string",
+    "ScheduleExpressionTimezone": "string",
+    "StartDate": "string",
+    "State": "$ref",
+    "Target": "$ref"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn"
+   ]
+  },
+  "AWS::Scheduler::ScheduleGroup": {
+   "member": "aws-scheduler-schedulegroup.json",
+   "sha256": "0183b32826044ae0b74f8602f50a4b8238bd8b2dfbd60c9d518d6d5aa1fdb63c",
+   "primaryIdentifier": [
+    "/properties/Name"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "scheduler:CreateScheduleGroup",
+      "scheduler:GetScheduleGroup",
+      "scheduler:ListTagsForResource",
+      "scheduler:TagResource"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "scheduler:DeleteSchedule",
+      "scheduler:DeleteScheduleGroup",
+      "scheduler:GetScheduleGroup"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "scheduler:ListScheduleGroups"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "scheduler:GetScheduleGroup",
+      "scheduler:ListTagsForResource"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "scheduler:GetScheduleGroup",
+      "scheduler:ListTagsForResource",
+      "scheduler:TagResource",
+      "scheduler:UntagResource"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "Arn": "string",
+    "CreationDate": "string",
+    "LastModificationDate": "string",
+    "Name": "string",
+    "State": "$ref",
+    "Tags": "array"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/CreationDate",
+    "/properties/LastModificationDate",
+    "/properties/State"
+   ]
+  },
+  "AWS::SecretsManager::Secret": {
+   "member": "aws-secretsmanager-secret.json",
+   "sha256": "26a06d7455218db20c6c0d63b0c21a440a5202a6a967d98578b4f7e12d31779b",
+   "primaryIdentifier": [
+    "/properties/Id"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "secretsmanager:CreateSecret",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetRandomPassword",
+      "secretsmanager:ReplicateSecretToRegions",
+      "secretsmanager:TagResource"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "secretsmanager:DeleteSecret",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:RemoveRegionsFromReplication"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "secretsmanager:ListSecrets"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "secretsmanager:GetRandomPassword",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:RemoveRegionsFromReplication",
+      "secretsmanager:ReplicateSecretToRegions",
+      "secretsmanager:TagResource",
+      "secretsmanager:UntagResource",
+      "secretsmanager:UpdateSecret"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "Description": "string",
+    "GenerateSecretString": "$ref",
+    "Id": "string",
+    "KmsKeyId": "string",
+    "Name": "string",
+    "ReplicaRegions": "array",
+    "SecretString": "string",
+    "Tags": "array",
+    "Type": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/Id"
    ]
   },
   "AWS::SecurityHub::Hub": {
@@ -15113,6 +16825,129 @@
    "readOnlyProperties": [
     "/properties/Arn",
     "/properties/Name"
+   ]
+  },
+  "AWS::Transfer::Server": {
+   "member": "aws-transfer-server.json",
+   "sha256": "e5572b21f4b33fddf844feab2d886b178b797d04d471fc93eda6b47f7bfd56b6",
+   "primaryIdentifier": [
+    "/properties/Arn"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "apigateway:GET",
+      "ds:AuthorizeApplication",
+      "ds:DescribeDirectories",
+      "ec2:AssociateAddress",
+      "ec2:CreateVpcEndpoint",
+      "ec2:DescribeAddresses",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DescribeVpcEndpoints",
+      "iam:PassRole",
+      "logs:CreateLogDelivery",
+      "logs:DeleteLogDelivery",
+      "logs:DescribeLogGroups",
+      "logs:DescribeResourcePolicies",
+      "logs:GetLogDelivery",
+      "logs:ListLogDeliveries",
+      "logs:PutResourcePolicy",
+      "logs:UpdateLogDelivery",
+      "transfer:CreateServer",
+      "transfer:DescribeServer",
+      "transfer:StartServer",
+      "transfer:StopServer",
+      "transfer:TagResource",
+      "transfer:UpdateServer"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "ds:DescribeDirectories",
+      "ds:UnauthorizeApplication",
+      "ec2:DeleteVpcEndpoints",
+      "ec2:DescribeAddresses",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DescribeVpcEndpoints",
+      "ec2:DisassociateAddress",
+      "logs:DeleteLogDelivery",
+      "logs:GetLogDelivery",
+      "logs:ListLogDeliveries",
+      "transfer:DeleteServer"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "transfer:ListServers"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "ec2:DescribeVpcEndpoints",
+      "transfer:DescribeServer"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "apigateway:GET",
+      "ds:AuthorizeApplication",
+      "ds:DescribeDirectories",
+      "ds:UnauthorizeApplication",
+      "ec2:AssociateAddress",
+      "ec2:CreateVpcEndpoint",
+      "ec2:DeleteVpcEndpoints",
+      "ec2:DescribeAddresses",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DescribeVpcEndpoints",
+      "ec2:DisassociateAddress",
+      "ec2:ModifyVpcEndpoint",
+      "iam:PassRole",
+      "logs:CreateLogDelivery",
+      "logs:DeleteLogDelivery",
+      "logs:DescribeLogGroups",
+      "logs:DescribeResourcePolicies",
+      "logs:GetLogDelivery",
+      "logs:ListLogDeliveries",
+      "logs:PutResourcePolicy",
+      "logs:UpdateLogDelivery",
+      "transfer:DescribeServer",
+      "transfer:StartServer",
+      "transfer:StopServer",
+      "transfer:TagResource",
+      "transfer:UnTagResource",
+      "transfer:UpdateServer"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "Arn": "string",
+    "As2ServiceManagedEgressIpAddresses": "array",
+    "Certificate": "string",
+    "Domain": "$ref",
+    "EndpointDetails": "$ref",
+    "EndpointType": "$ref",
+    "IdentityProviderDetails": "$ref",
+    "IdentityProviderType": "$ref",
+    "IpAddressType": "$ref",
+    "LoggingRole": "string",
+    "PostAuthenticationLoginBanner": "string",
+    "PreAuthenticationLoginBanner": "string",
+    "ProtocolDetails": "$ref",
+    "Protocols": "array",
+    "S3StorageOptions": "$ref",
+    "SecurityPolicyName": "string",
+    "ServerId": "string",
+    "State": "$ref",
+    "StructuredLogDestinations": "array",
+    "Tags": "array",
+    "WorkflowDetails": "$ref"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/As2ServiceManagedEgressIpAddresses",
+    "/properties/ServerId",
+    "/properties/State"
    ]
   },
   "AWS::VpcLattice::Service": {

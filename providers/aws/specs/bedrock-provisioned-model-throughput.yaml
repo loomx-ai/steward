@@ -1,0 +1,41 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::Bedrock::ProvisionedModelThroughput
+  class: ai.provisioned_throughput
+presentation:
+  displayNames:
+    zh-CN: Bedrock 预置吞吐量
+    en-US: Bedrock Provisioned Throughput
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: com.amazonaws.bedrock#ListProvisionedModelThroughputs
+    itemsPath: provisionedModelSummaries
+    identityPath: ProvisionedModelArn
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: nextToken
+      tokenPath: nextToken
+      pageSizeParameter: maxResults
+      maxPageSize: 1000
+actions:
+  delete:
+    operation: com.amazonaws.bedrock#DeleteProvisionedModelThroughput
+    parameters:
+      provisionedModelId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.bedrock#GetProvisionedModelThroughput
+      parameters:
+        provisionedModelId: resource.nativeId
+      itemsPath: $
+      identityPath: ProvisionedModelArn
+      statePath: Status
+extensions:
+  hook: aws.product.resource

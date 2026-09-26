@@ -13,8 +13,12 @@ import (
 
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
+	awsacmpca "github.com/aws/aws-sdk-go-v2/service/acmpca"
 	awsautoscaling "github.com/aws/aws-sdk-go-v2/service/autoscaling"
 	awsbackup "github.com/aws/aws-sdk-go-v2/service/backup"
+	awsbedrock "github.com/aws/aws-sdk-go-v2/service/bedrock"
+	awscodebuild "github.com/aws/aws-sdk-go-v2/service/codebuild"
+	awscognito "github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
 	awsconfigservice "github.com/aws/aws-sdk-go-v2/service/configservice"
 	awsdms "github.com/aws/aws-sdk-go-v2/service/databasemigrationservice"
 	dmstypes "github.com/aws/aws-sdk-go-v2/service/databasemigrationservice/types"
@@ -32,6 +36,7 @@ import (
 	awspinpoint "github.com/aws/aws-sdk-go-v2/service/pinpoint"
 	awsdomains "github.com/aws/aws-sdk-go-v2/service/route53domains"
 	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
+	awssecrets "github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	awsstoragegateway "github.com/aws/aws-sdk-go-v2/service/storagegateway"
 	awswafv2 "github.com/aws/aws-sdk-go-v2/service/wafv2"
 	awsworkspaces "github.com/aws/aws-sdk-go-v2/service/workspaces"
@@ -133,6 +138,11 @@ type NativeClients struct {
 	WorkSpaces     WorkSpacesNativeAPI
 	WAF            WAFNativeAPI
 	Config         ConfigNativeAPI
+	PrivateCA      PrivateCANativeAPI
+	Bedrock        BedrockNativeAPI
+	CodeBuild      CodeBuildNativeAPI
+	Cognito        CognitoNativeAPI
+	Secrets        SecretsNativeAPI
 }
 
 func newNativeClients(config awssdk.Config) *NativeClients {
@@ -145,6 +155,8 @@ func newNativeClients(config awssdk.Config) *NativeClients {
 		KMS: awskms.NewFromConfig(config), Backup: awsbackup.NewFromConfig(config), S3: awss3.NewFromConfig(config),
 		ClientVPN: awsec2.NewFromConfig(config), EMR: awsemr.NewFromConfig(config), WorkSpaces: awsworkspaces.NewFromConfig(config),
 		WAF: awswafv2.NewFromConfig(config), Config: awsconfigservice.NewFromConfig(config),
+		PrivateCA: awsacmpca.NewFromConfig(config), Bedrock: awsbedrock.NewFromConfig(config), CodeBuild: awscodebuild.NewFromConfig(config),
+		Cognito: awscognito.NewFromConfig(config), Secrets: awssecrets.NewFromConfig(config),
 	}
 }
 
@@ -173,8 +185,8 @@ type nativeKind struct {
 	// resource although it no longer exists as a deletable resource.
 	absentStates []string
 	failedStates []string
-	protection      *nativeProtection
-	precondition    func(map[string]any) (bool, string)
+	protection   *nativeProtection
+	precondition func(map[string]any) (bool, string)
 }
 
 type nativeProtection struct {
@@ -730,6 +742,13 @@ func deriveNativeReferences(nativeType string, model map[string]any) {
 		if arn := stringValue(model["ResourceArn"]); strings.Contains(arn, ":loadbalancer/app/") {
 			model["load_balancer_arn"] = arn
 		}
+	case codeBuildProjectType:
+		collectNativeReferences(model, "subnet_ids", "VpcConfig.Subnets")
+		collectNativeReferences(model, "security_group_ids", "VpcConfig.SecurityGroupIds")
+		if vpc := stringValue(nestedValue(model, "VpcConfig", "VpcId")); vpc != "" {
+			model["vpc_id"] = vpc
+		}
+		model["service_role_name"] = iamName(stringValue(model["ServiceRole"]))
 	case "AWS::DMS::ReplicationInstance":
 		if vpc := stringValue(nestedValue(model, "ReplicationSubnetGroup", "VpcId")); vpc != "" {
 			model["vpc_id"] = vpc

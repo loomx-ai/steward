@@ -3,11 +3,22 @@
   "repository": "https://github.com/aws/api-models-aws",
   "commit": "d86f18ce2e5917f532d6e3eb98befe94371e698d",
   "models": {
+   "models/acm-pca/service/2017-08-22/acm-pca-2017-08-22.json": [
+    "ListCertificateAuthorities",
+    "DescribeCertificateAuthority",
+    "UpdateCertificateAuthority",
+    "DeleteCertificateAuthority"
+   ],
    "models/auto-scaling/service/2011-01-01/auto-scaling-2011-01-01.json": [
     "DescribeAutoScalingGroups"
    ],
    "models/backup/service/2018-11-15/backup-2018-11-15.json": [
     "DescribeBackupVault"
+   ],
+   "models/bedrock/service/2023-04-20/bedrock-2023-04-20.json": [
+    "ListProvisionedModelThroughputs",
+    "GetProvisionedModelThroughput",
+    "DeleteProvisionedModelThroughput"
    ],
    "models/cloudcontrol/service/2021-09-30/cloudcontrol-2021-09-30.json": [
     "ListResources",
@@ -21,6 +32,17 @@
     "GetTemplate",
     "DescribeStacks",
     "DeleteStack"
+   ],
+   "models/codebuild/service/2016-10-06/codebuild-2016-10-06.json": [
+    "ListProjects",
+    "BatchGetProjects",
+    "DeleteProject"
+   ],
+   "models/cognito-identity-provider/service/2016-04-18/cognito-identity-provider-2016-04-18.json": [
+    "ListUserPools",
+    "DescribeUserPool",
+    "DescribeUserPoolDomain",
+    "DeleteUserPoolDomain"
    ],
    "models/config-service/service/2014-11-12/config-service-2014-11-12.json": [
     "DescribeConfigRules",
@@ -112,6 +134,9 @@
     "GetDomainDetail",
     "DeleteDomain"
    ],
+   "models/secrets-manager/service/2017-10-17/secrets-manager-2017-10-17.json": [
+    "DescribeSecret"
+   ],
    "models/storage-gateway/service/2013-06-30/storage-gateway-2013-06-30.json": [
     "ListGateways",
     "DescribeGatewayInformation",
@@ -138,6 +163,15 @@
   "archive": "https://schema.cloudformation.us-east-1.amazonaws.com/CloudformationSchema.zip"
  },
  "resource_types": [
+  {
+   "nativeType": "AWS::ACMPCA::CertificateAuthority",
+   "class": "security.certificate_authority",
+   "displayName": "Private Certificate Authority",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
   {
    "nativeType": "AWS::APS::Scraper",
    "class": "observability.prometheus",
@@ -169,6 +203,15 @@
    "nativeType": "AWS::AmazonMQ::Broker",
    "class": "messaging.broker",
    "displayName": "Amazon MQ Broker",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Amplify::App",
+   "class": "application.hosting",
+   "displayName": "Amplify App",
    "scopeKinds": [
     "region"
    ],
@@ -247,6 +290,15 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::AppSync::GraphQLApi",
+   "class": "api.gateway",
+   "displayName": "AppSync GraphQL API",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::Athena::WorkGroup",
    "class": "analytics.workgroup",
    "displayName": "Athena Workgroup",
@@ -317,6 +369,51 @@
     "region"
    ],
    "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Bedrock::Agent",
+   "class": "ai.agent",
+   "displayName": "Bedrock Agent",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Bedrock::DataSource",
+   "class": "ai.knowledge_base_data_source",
+   "displayName": "Bedrock Knowledge Base Data Source",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Bedrock::Guardrail",
+   "class": "ai.guardrail",
+   "displayName": "Bedrock Guardrail",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Bedrock::KnowledgeBase",
+   "class": "ai.knowledge_base",
+   "displayName": "Bedrock Knowledge Base",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Bedrock::ProvisionedModelThroughput",
+   "class": "ai.provisioned_throughput",
+   "displayName": "Bedrock Provisioned Throughput",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
   },
   {
    "nativeType": "AWS::Cassandra::Keyspace",
@@ -418,6 +515,15 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::CodeBuild::Project",
+   "class": "devops.build_project",
+   "displayName": "CodeBuild Project",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
+  },
+  {
    "nativeType": "AWS::CodePipeline::Pipeline",
    "class": "devops.pipeline",
    "displayName": "CodePipeline Pipeline",
@@ -425,6 +531,33 @@
     "region"
    ],
    "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Cognito::IdentityPool",
+   "class": "identity.identity_pool",
+   "displayName": "Cognito Identity Pool",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Cognito::UserPool",
+   "class": "identity.user_pool",
+   "displayName": "Cognito User Pool",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Cognito::UserPoolDomain",
+   "class": "identity.user_pool_domain",
+   "displayName": "Cognito User Pool Domain",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
   },
   {
    "nativeType": "AWS::Config::ConfigRule",
@@ -760,6 +893,33 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::EC2::IPAM",
+   "class": "network.ip_address_manager",
+   "displayName": "VPC IP Address Manager",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::IPAMPool",
+   "class": "network.ip_address_pool",
+   "displayName": "IPAM Pool",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::IPAMScope",
+   "class": "network.ip_address_scope",
+   "displayName": "IPAM Scope",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::EC2::Image",
    "class": "compute.image",
    "displayName": "Amazon Machine Image",
@@ -835,6 +995,24 @@
    "nativeType": "AWS::EC2::NetworkInterface",
    "class": "network.interface",
    "displayName": "Elastic Network Interface",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::PlacementGroup",
+   "class": "compute.placement_group",
+   "displayName": "Placement Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::PrefixList",
+   "class": "network.prefix_list",
+   "displayName": "Managed Prefix List",
    "scopeKinds": [
     "region"
    ],
@@ -1192,6 +1370,24 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::ElasticBeanstalk::Application",
+   "class": "application",
+   "displayName": "Elastic Beanstalk Application",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ElasticBeanstalk::Environment",
+   "class": "compute.application_environment",
+   "displayName": "Elastic Beanstalk Environment",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::ElasticLoadBalancing::LoadBalancer",
    "class": "network.load_balancer",
    "displayName": "Classic Load Balancer",
@@ -1435,6 +1631,15 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::KinesisFirehose::DeliveryStream",
+   "class": "messaging.delivery_stream",
+   "displayName": "Data Firehose Stream",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::Lambda::Function",
    "class": "compute.function",
    "displayName": "Lambda Function",
@@ -1483,6 +1688,15 @@
    "nativeType": "AWS::MSK::Topic",
    "class": "messaging.topic",
    "displayName": "MSK Topic",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::MWAA::Environment",
+   "class": "orchestration.workflow_environment",
+   "displayName": "Managed Workflows for Apache Airflow Environment",
    "scopeKinds": [
     "region"
    ],
@@ -1831,6 +2045,15 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::SSM::Parameter",
+   "class": "configuration.parameter",
+   "displayName": "Systems Manager Parameter",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::SSO::Instance",
    "class": "identity.directory",
    "displayName": "IAM Identity Center Instance",
@@ -1870,6 +2093,33 @@
    "nativeType": "AWS::SageMaker::Model",
    "class": "ai.model",
    "displayName": "SageMaker Model",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Scheduler::Schedule",
+   "class": "orchestration.schedule",
+   "displayName": "EventBridge Scheduler Schedule",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Scheduler::ScheduleGroup",
+   "class": "orchestration.schedule_group",
+   "displayName": "EventBridge Scheduler Schedule Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::SecretsManager::Secret",
+   "class": "security.secret",
+   "displayName": "Secrets Manager Secret",
    "scopeKinds": [
     "region"
    ],
@@ -1987,6 +2237,15 @@
    "nativeType": "AWS::Timestream::Table",
    "class": "database.timeseries",
    "displayName": "Timestream Table",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Transfer::Server",
+   "class": "storage.transfer_server",
+   "displayName": "Transfer Family Server",
    "scopeKinds": [
     "region"
    ],

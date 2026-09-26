@@ -2,13 +2,12 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: aws
-  nativeType: AWS::EC2::SecurityGroup
-  class: network.security_group
+  nativeType: AWS::Cognito::UserPool
+  class: identity.user_pool
 presentation:
   displayNames:
-    zh-CN: 安全组
-    en-US: Security Group
-  consoleLinkTemplate: https://{regionId}.console.aws.amazon.com/ec2/home?region={regionId}#SecurityGroup:groupId={nativeId}
+    zh-CN: Cognito 用户池
+    en-US: Cognito User Pool
 scope:
   kind: region
 discovery:
@@ -16,7 +15,7 @@ discovery:
   list:
     operation: com.amazonaws.cloudcontrol#ListResources
     parameters:
-      TypeName: AWS::EC2::SecurityGroup
+      TypeName: AWS::Cognito::UserPool
     itemsPath: ResourceDescriptions
     identityPath: Identifier
     pagination:
@@ -29,18 +28,29 @@ discovery:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
     identityPath: Identifier
-relationships:
-- type: member_of
-  targetType: AWS::EC2::VPC
-  targetIdPath: vpc_id
-- type: uses
-  targetType: AWS::EC2::PrefixList
-  targetIdPath: prefix_list_ids
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource
     idempotency: provider_token
     waiter: cloud_control_terminal
     readback: cloud_control_absent
+    read:
+      operation: com.amazonaws.cloudcontrol#GetResource
+      parameters:
+        TypeName: AWS::Cognito::UserPool
+        Identifier: resource.nativeId
+      itemsPath: ResourceDescription.Properties
+      identityPath: Identifier
+    deletionProtection:
+      path: DeletionProtection
+      enabledValues:
+      - ACTIVE
+      disable:
+        operation: com.amazonaws.cloudcontrol#UpdateResource
+        parameters:
+          TypeName: AWS::Cognito::UserPool
+          Identifier: resource.nativeId
+          PatchOperation: replace
+          PatchValue: INACTIVE
 extensions:
   hook: aws.cloudcontrol.resource
