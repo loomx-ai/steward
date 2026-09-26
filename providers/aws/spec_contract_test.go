@@ -32,7 +32,7 @@ type cloudFormationHandler struct {
 var derivedReferenceFields = map[string]bool{
 	"vpc_id": true, "subnet_ids": true, "security_group_ids": true, "volume_ids": true,
 	"network_interface_ids": true, "snapshot_ids": true, "rule_group_arns": true,
-	"cluster_name": true, "service_id": true,
+	"cluster_name": true, "service_id": true, "trust_store_arn": true, "rest_api_ids": true,
 }
 
 // knownCloudControlDefects lists specifications that still route through a

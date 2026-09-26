@@ -129,6 +129,12 @@ func deriveCloudControlReferences(nativeType string, model map[string]any) {
 		if cluster := strings.TrimSpace(stringValue(model["Cluster"])); cluster != "" {
 			model["cluster_name"] = cluster[strings.LastIndex(cluster, "/")+1:]
 		}
+	case "AWS::ElasticLoadBalancingV2::Listener":
+		if arn := strings.TrimSpace(stringValue(nestedValue(model, "MutualAuthentication", "TrustStoreArn"))); arn != "" {
+			model["trust_store_arn"] = arn
+		}
+	case "AWS::ApiGateway::UsagePlan":
+		collect("rest_api_ids", "ApiStages.ApiId")
 	case "AWS::EC2::VPCEndpoint":
 		name := strings.TrimSpace(stringValue(model["ServiceName"]))
 		if index := strings.LastIndex(name, "."); index >= 0 && strings.HasPrefix(name[index+1:], "vpce-svc-") {

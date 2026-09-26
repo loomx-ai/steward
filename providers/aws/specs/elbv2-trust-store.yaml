@@ -2,24 +2,20 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: aws
-  nativeType: AWS::ElasticLoadBalancingV2::Listener
-  class: network.load_balancer_listener
+  nativeType: AWS::ElasticLoadBalancingV2::TrustStore
+  class: security.certificate
 presentation:
   displayNames:
-    zh-CN: 负载均衡监听器
-    en-US: Load Balancer Listener
+    zh-CN: 负载均衡信任存储
+    en-US: Load Balancer Trust Store
 scope:
   kind: region
 discovery:
   source: cloud-control
-  parent:
-    source: cloud-control
-    nativeType: AWS::ElasticLoadBalancingV2::LoadBalancer
   list:
     operation: com.amazonaws.cloudcontrol#ListResources
     parameters:
-      TypeName: AWS::ElasticLoadBalancingV2::Listener
-      ResourceModel.LoadBalancerArn: parent.nativeId
+      TypeName: AWS::ElasticLoadBalancingV2::TrustStore
     itemsPath: ResourceDescriptions
     identityPath: Identifier
     pagination:
@@ -32,13 +28,6 @@ discovery:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
     identityPath: Identifier
-relationships:
-- type: member_of
-  targetType: AWS::ElasticLoadBalancingV2::LoadBalancer
-  targetIdPath: LoadBalancerArn
-- type: uses
-  targetType: AWS::ElasticLoadBalancingV2::TrustStore
-  targetIdPath: trust_store_arn
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource

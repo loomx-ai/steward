@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::EMR::Cluster
+  class: data.processing_cluster
+presentation:
+  displayNames:
+    zh-CN: EMR 集群
+    en-US: EMR Cluster
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: com.amazonaws.emr#ListClusters
+    parameters:
+      ClusterStates:
+        - STARTING
+        - BOOTSTRAPPING
+        - RUNNING
+        - WAITING
+        - TERMINATING
+    itemsPath: Clusters
+    identityPath: Id
+    statePath: Status.State
+    pagination:
+      type: token
+      tokenParameter: Marker
+      tokenPath: Marker
+relationships:
+- type: uses
+  targetType: AWS::EC2::Subnet
+  targetIdPath: subnet_ids
+- type: uses
+  targetType: AWS::EC2::SecurityGroup
+  targetIdPath: security_group_ids
+actions:
+  delete:
+    operation: com.amazonaws.emr#TerminateJobFlows
+    parameters:
+      JobFlowIds: resource.nativeIdsJson
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.emr#DescribeCluster
+      parameters:
+        ClusterId: resource.nativeId
+      itemsPath: Cluster
+      identityPath: Id
+      statePath: Status.State
+    deletionProtection:
+      path: TerminationProtected
+      enabledValues:
+      - 'true'
+      disable:
+        operation: com.amazonaws.emr#SetTerminationProtection
+        parameters:
+          JobFlowIds: resource.nativeIdsJson
+          TerminationProtected: false
+extensions:
+  hook: aws.product.resource

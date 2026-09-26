@@ -209,13 +209,33 @@ func cloudControlItem(resource CloudControlResource, kind asset.ResourceKind, sc
 	}
 	normalizeCloudControlNetwork(normalized)
 	deriveCloudControlReferences(kind.NativeType, normalized)
-	return contracts.InventoryItem{
+	item := contracts.InventoryItem{
 		NativeType: kind.NativeType, NativeID: identifier, ResourceKind: kind,
 		Scope: contracts.InventoryScope{Kind: scope.Kind, NativeID: scope.NativeID, Name: scope.Name, Location: location},
 		Name:  name, State: state, Location: location, Tags: cloudControlTags(properties),
 		Normalized: normalized, Raw: map[string]any{"TypeName": kind.NativeType, "Identifier": identifier, "Properties": properties},
 		NativeAliases: cloudControlAliases(properties, identifier), NetworkReferences: cloudControlNetworkReferences(normalized),
-	}, nil
+	}
+	if reason := cloudControlServiceManaged(kind.NativeType, identifier); reason != "" {
+		actionable := false
+		item.Actionable = &actionable
+		normalized["cleanup_protection_reason"] = reason
+	}
+	return item, nil
+}
+
+// cloudControlServiceManaged names resources that an AWS service creates and
+// owns, which only that service can remove.
+func cloudControlServiceManaged(nativeType, identifier string) string {
+	switch nativeType {
+	case "AWS::ResourceGroups::Group":
+		// Group names beginning with "AWS" or "aws" are reserved for groups
+		// that AWS services create, such as AppRegistry application groups.
+		if strings.HasPrefix(strings.ToLower(identifier), "aws") {
+			return "service_managed_resource_group"
+		}
+	}
+	return ""
 }
 
 // ListResources may return only primary identifiers. Fetch the full model before

@@ -1,7 +1,7 @@
 {
  "source": {
   "uri": "https://schema.cloudformation.us-east-1.amazonaws.com/CloudformationSchema.zip",
-  "sha256": "ce0cbcb545291a6068721242f857e5800e4204530086e220766de7460b61b8ac"
+  "sha256": "aec5281692a60e9414e2f95be16a0e894da81dcac8758be0d8177a37f9d96278"
  },
  "types": {
   "AWS::APS::Scraper": {
@@ -435,6 +435,61 @@
     "/properties/WssEndpoints"
    ]
   },
+  "AWS::ApiGateway::ApiKey": {
+   "member": "aws-apigateway-apikey.json",
+   "sha256": "b899a0d240b53d9d3ff3521f02e6b75c31c2baf7104dc33d9f22960cf2449a12",
+   "primaryIdentifier": [
+    "/properties/APIKeyId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "apigateway:GET",
+      "apigateway:POST",
+      "apigateway:PUT"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "apigateway:DELETE",
+      "apigateway:GET"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "apigateway:GET"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "apigateway:GET"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "apigateway:DELETE",
+      "apigateway:GET",
+      "apigateway:PATCH",
+      "apigateway:PUT"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "APIKeyId": "string",
+    "CustomerId": "string",
+    "Description": "string",
+    "Enabled": "boolean",
+    "GenerateDistinctId": "boolean",
+    "Name": "string",
+    "StageKeys": "array",
+    "Tags": "array",
+    "Value": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/APIKeyId"
+   ]
+  },
   "AWS::ApiGateway::DomainName": {
    "member": "aws-apigateway-domainname.json",
    "sha256": "1b2e9341bece5f254c5672adfd7d6ecf298edfa145b3f07fe53d8712795439fa",
@@ -571,6 +626,111 @@
    "readOnlyProperties": [
     "/properties/RestApiId",
     "/properties/RootResourceId"
+   ]
+  },
+  "AWS::ApiGateway::UsagePlan": {
+   "member": "aws-apigateway-usageplan.json",
+   "sha256": "f2210ee1e5532f1ecea08b4abc545ae2371a2cbe84604e82eb73190a2711fe98",
+   "primaryIdentifier": [
+    "/properties/Id"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "apigateway:GET",
+      "apigateway:POST",
+      "apigateway:PUT"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "apigateway:DELETE",
+      "apigateway:GET",
+      "apigateway:PATCH"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "apigateway:GET"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "apigateway:GET"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "apigateway:DELETE",
+      "apigateway:GET",
+      "apigateway:PATCH",
+      "apigateway:PUT"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "ApiStages": "array",
+    "Description": "string",
+    "Id": "string",
+    "Quota": "$ref",
+    "Tags": "array",
+    "Throttle": "$ref",
+    "UsagePlanName": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/Id"
+   ]
+  },
+  "AWS::ApiGateway::UsagePlanKey": {
+   "member": "aws-apigateway-usageplankey.json",
+   "sha256": "bfa3add8b26e853032714369230a0c223e77d1cc68e85c12b5372eb663b676b9",
+   "primaryIdentifier": [
+    "/properties/Id"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "apigateway:GET",
+      "apigateway:POST"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "apigateway:DELETE",
+      "apigateway:GET"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "apigateway:GET"
+     ],
+     "handlerSchema": {
+      "properties": {
+       "UsagePlanId": {
+        "$ref": "resource-schema.json#/properties/UsagePlanId"
+       }
+      },
+      "required": [
+       "UsagePlanId"
+      ]
+     }
+    },
+    "read": {
+     "permissions": [
+      "apigateway:GET"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "Id": "string",
+    "KeyId": "string",
+    "KeyType": "string",
+    "UsagePlanId": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/Id"
    ]
   },
   "AWS::ApiGatewayV2::Api": {
@@ -2320,6 +2480,245 @@
     "/properties/Arn",
     "/properties/Version"
    ]
+  },
+  "AWS::Config::ConfigRule": {
+   "member": "aws-config-configrule.json",
+   "sha256": "b9141d475718d7475cf3882f86a5ac7d76f18c804e51115a212fcb928ee1b192",
+   "primaryIdentifier": [
+    "/properties/ConfigRuleName"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "config:DescribeConfigRules",
+      "config:PutConfigRule"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "config:DeleteConfigRule",
+      "config:DescribeConfigRules"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "config:DescribeConfigRules"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "config:DescribeComplianceByConfigRule",
+      "config:DescribeConfigRules"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "config:DescribeConfigRules",
+      "config:PutConfigRule"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "Arn": "string",
+    "Compliance": "object",
+    "ConfigRuleId": "string",
+    "ConfigRuleName": "string",
+    "Description": "string",
+    "EvaluationModes": "array",
+    "InputParameters": "object|string",
+    "MaximumExecutionFrequency": "string",
+    "Scope": "$ref",
+    "Source": "$ref"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/Compliance/Type",
+    "/properties/ConfigRuleId"
+   ]
+  },
+  "AWS::Config::ConfigurationAggregator": {
+   "member": "aws-config-configurationaggregator.json",
+   "sha256": "83564169bc5eb4f0fde6e7bc040b39a83b80ccd71c12ec07519730828f800b9a",
+   "primaryIdentifier": [
+    "/properties/ConfigurationAggregatorName"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "config:DescribeConfigurationAggregators",
+      "config:PutConfigurationAggregator",
+      "config:TagResource",
+      "iam:PassRole",
+      "organizations:EnableAWSServiceAccess",
+      "organizations:ListDelegatedAdministrators"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "config:DeleteConfigurationAggregator",
+      "config:UntagResource"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "config:DescribeConfigurationAggregators"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "config:DescribeConfigurationAggregators",
+      "config:ListTagsForResource"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "config:DescribeConfigurationAggregators",
+      "config:ListTagsForResource",
+      "config:PutConfigurationAggregator",
+      "config:TagResource",
+      "config:UntagResource",
+      "iam:PassRole",
+      "organizations:EnableAWSServiceAccess",
+      "organizations:ListDelegatedAdministrators"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AccountAggregationSources": "array",
+    "ConfigurationAggregatorArn": "string",
+    "ConfigurationAggregatorName": "string",
+    "OrganizationAggregationSource": "$ref",
+    "Tags": "array"
+   },
+   "readOnlyProperties": [
+    "/properties/ConfigurationAggregatorArn"
+   ]
+  },
+  "AWS::Config::ConformancePack": {
+   "member": "aws-config-conformancepack.json",
+   "sha256": "12b0dc479b7b19b0eed17e5410e8a3b0b0fa5087458741cd8c54cf94d4875a66",
+   "primaryIdentifier": [
+    "/properties/ConformancePackName"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "config:DescribeConformancePackStatus",
+      "config:DescribeConformancePacks",
+      "config:ListTagsForResource",
+      "config:PutConformancePack",
+      "config:TagResource",
+      "iam:CreateServiceLinkedRole",
+      "iam:PassRole",
+      "s3:GetBucketAcl",
+      "s3:GetObject"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "config:DeleteConformancePack",
+      "config:DescribeConformancePackStatus",
+      "config:UntagResource"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "config:DescribeConformancePacks"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "config:DescribeConformancePacks",
+      "config:ListTagsForResource"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "config:DescribeConformancePackStatus",
+      "config:DescribeConformancePacks",
+      "config:ListTagsForResource",
+      "config:PutConformancePack",
+      "config:TagResource",
+      "config:UntagResource",
+      "iam:CreateServiceLinkedRole",
+      "iam:PassRole",
+      "s3:GetBucketAcl",
+      "s3:GetObject"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "ConformancePackArn": "string",
+    "ConformancePackInputParameters": "array",
+    "ConformancePackName": "string",
+    "DeliveryS3Bucket": "string",
+    "DeliveryS3KeyPrefix": "string",
+    "Tags": "array",
+    "TemplateBody": "string",
+    "TemplateS3Uri": "string",
+    "TemplateSSMDocumentDetails": "object"
+   },
+   "readOnlyProperties": [
+    "/properties/ConformancePackArn"
+   ]
+  },
+  "AWS::Config::RemediationConfiguration": {
+   "member": "aws-config-remediationconfiguration.json",
+   "sha256": "253c4cef28e411fcbe0a6246481b3fb6702f8399a17da5cf045ca93628789812",
+   "primaryIdentifier": [
+    "/properties/ConfigRuleName"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "config:DescribeRemediationConfigurations",
+      "config:PutRemediationConfigurations",
+      "iam:CreateServiceLinkedRole",
+      "iam:PassRole"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "config:DeleteRemediationConfiguration"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "config:DescribeConfigRules",
+      "config:DescribeRemediationConfigurations"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "config:DescribeRemediationConfigurations"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "config:DescribeRemediationConfigurations",
+      "config:PutRemediationConfigurations",
+      "iam:CreateServiceLinkedRole",
+      "iam:PassRole"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "Automatic": "boolean",
+    "ConfigRuleName": "string",
+    "ExecutionControls": "$ref",
+    "MaximumAutomaticAttempts": "integer",
+    "Parameters": "object",
+    "ResourceType": "string",
+    "RetryAttemptSeconds": "integer",
+    "TargetId": "string",
+    "TargetType": "string",
+    "TargetVersion": "string"
+   },
+   "readOnlyProperties": []
   },
   "AWS::DLM::LifecyclePolicy": {
    "member": "aws-dlm-lifecyclepolicy.json",
@@ -7829,7 +8228,7 @@
   },
   "AWS::ElasticLoadBalancingV2::Listener": {
    "member": "aws-elasticloadbalancingv2-listener.json",
-   "sha256": "b8c1cb161ed638004fa8e9676a1a3832bc3121a40c88172929f36ba5f2f45d29",
+   "sha256": "41a6e45be433fbdabe367c6b4a6a3f1345831d065c8fe0898e8f218a8452bf05",
    "primaryIdentifier": [
     "/properties/ListenerArn"
    ],
@@ -8081,6 +8480,88 @@
     "/properties/TargetGroupArn",
     "/properties/TargetGroupFullName",
     "/properties/TargetGroupName"
+   ]
+  },
+  "AWS::ElasticLoadBalancingV2::TrustStore": {
+   "member": "aws-elasticloadbalancingv2-truststore.json",
+   "sha256": "5d33ec1a482f8fbeca3b2705352964a96fa3140dee8064047657a0789a787853",
+   "primaryIdentifier": [
+    "/properties/TrustStoreArn"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "elasticloadbalancing:AddTags",
+      "elasticloadbalancing:CreateTrustStore",
+      "elasticloadbalancing:DescribeTrustStores",
+      "s3:GetObject",
+      "s3:GetObjectVersion"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "elasticloadbalancing:DeleteTrustStore",
+      "elasticloadbalancing:DescribeTrustStores"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "elasticloadbalancing:DescribeTrustStores",
+      "s3:GetObject",
+      "s3:GetObjectVersion"
+     ],
+     "handlerSchema": {
+      "properties": {
+       "TrustStoreArns": {
+        "type": "array",
+        "uniqueItems": false,
+        "insertionOrder": false,
+        "items": {
+         "$ref": "resource-schema.json#/properties/TrustStoreArn"
+        }
+       },
+       "Names": {
+        "type": "array",
+        "uniqueItems": false,
+        "insertionOrder": false,
+        "items": {
+         "$ref": "resource-schema.json#/properties/Name"
+        }
+       }
+      }
+     }
+    },
+    "read": {
+     "permissions": [
+      "elasticloadbalancing:DescribeTags",
+      "elasticloadbalancing:DescribeTrustStores"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "elasticloadbalancing:AddTags",
+      "elasticloadbalancing:ModifyTrustStore",
+      "elasticloadbalancing:RemoveTags",
+      "s3:GetObject",
+      "s3:GetObjectVersion"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "CaCertificatesBundleS3Bucket": "string",
+    "CaCertificatesBundleS3Key": "string",
+    "CaCertificatesBundleS3ObjectVersion": "string",
+    "Name": "string",
+    "NumberOfCaCertificates": "integer",
+    "Status": "string",
+    "Tags": "array",
+    "TrustStoreArn": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/NumberOfCaCertificates",
+    "/properties/Status",
+    "/properties/TrustStoreArn"
    ]
   },
   "AWS::Events::EventBus": {
@@ -9589,7 +10070,7 @@
   },
   "AWS::Lambda::Function": {
    "member": "aws-lambda-function.json",
-   "sha256": "029f17f68005b70ab96b76f61831968467906683eca161fbae0d5c83a62c607b",
+   "sha256": "dc32878aba8a4aa61621bb65d7b88266152a751c876550b5e566dc0245c99652",
    "primaryIdentifier": [
     "/properties/FunctionName"
    ],
@@ -11595,7 +12076,7 @@
   },
   "AWS::QuickSight::Dashboard": {
    "member": "aws-quicksight-dashboard.json",
-   "sha256": "c4b6514ee5f531ef539203bb9633be4098fa359becf16b8479d301c025b23d08",
+   "sha256": "d787a88661c4584630972ed3cd19872cabe602691f176a1459bf712718ff49b2",
    "primaryIdentifier": [
     "/properties/AwsAccountId",
     "/properties/DashboardId"
@@ -11613,6 +12094,7 @@
       "quicksight:ListFoldersForResource",
       "quicksight:ListTagsForResource",
       "quicksight:PassDataSet",
+      "quicksight:PassTopic",
       "quicksight:TagResource",
       "quicksight:UntagResource"
      ]
@@ -11656,6 +12138,7 @@
       "quicksight:ListFoldersForResource",
       "quicksight:ListTagsForResource",
       "quicksight:PassDataSet",
+      "quicksight:PassTopic",
       "quicksight:TagResource",
       "quicksight:UntagResource",
       "quicksight:UpdateDashboard",
@@ -12708,6 +13191,75 @@
     "/properties/Workgroup/WorkgroupName"
    ]
   },
+  "AWS::ResourceGroups::Group": {
+   "member": "aws-resourcegroups-group.json",
+   "sha256": "83cca1ed6952414fe0d85c69ea008656f07a0f6eddffdbe36e7673a872e8cb2b",
+   "primaryIdentifier": [
+    "/properties/Name"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "cloudformation:DescribeStacks",
+      "cloudformation:ListStackResources",
+      "resource-groups:CreateGroup",
+      "resource-groups:GroupResources",
+      "resource-groups:ListGroupResources",
+      "resource-groups:Tag"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "resource-groups:DeleteGroup",
+      "resource-groups:UnGroupResources"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "resource-groups:ListGroups"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "resource-groups:GetGroup",
+      "resource-groups:GetGroupConfiguration",
+      "resource-groups:GetGroupQuery",
+      "resource-groups:GetTags",
+      "resource-groups:ListGroupResources"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "cloudformation:DescribeStacks",
+      "cloudformation:ListStackResources",
+      "resource-groups:GetGroupConfiguration",
+      "resource-groups:GetGroupQuery",
+      "resource-groups:GetTags",
+      "resource-groups:GroupResources",
+      "resource-groups:ListGroupResources",
+      "resource-groups:PutGroupConfiguration",
+      "resource-groups:Tag",
+      "resource-groups:UnGroupResources",
+      "resource-groups:Untag",
+      "resource-groups:UpdateGroup",
+      "resource-groups:UpdateGroupQuery"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "Arn": "string",
+    "Configuration": "$ref",
+    "Description": "string",
+    "Name": "string",
+    "ResourceQuery": "$ref",
+    "Resources": "array",
+    "Tags": "array"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn"
+   ]
+  },
   "AWS::Route53::HealthCheck": {
    "member": "aws-route53-healthcheck.json",
    "sha256": "b4e1df94c58a36920183e55e3997da846842c84a5cb4d17b458e90694636d2c8",
@@ -13082,9 +13634,66 @@
     "/properties/WebsiteURL"
    ]
   },
+  "AWS::SNS::Subscription": {
+   "member": "aws-sns-subscription.json",
+   "sha256": "d12fd403dfb0f9c30239c10e7cc149572f16defaed31fe45910f39e5d35f9218",
+   "primaryIdentifier": [
+    "/properties/Arn"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "iam:GetRole",
+      "iam:PassRole",
+      "sns:Subscribe"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "sns:GetSubscriptionAttributes",
+      "sns:Unsubscribe"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "sns:ListSubscriptions"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "sns:GetSubscriptionAttributes"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "iam:GetRole",
+      "iam:PassRole",
+      "sns:SetSubscriptionAttributes"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "Arn": "string",
+    "DeliveryPolicy": "object|string",
+    "Endpoint": "string",
+    "FilterPolicy": "object|string",
+    "FilterPolicyScope": "string",
+    "Protocol": "string",
+    "RawMessageDelivery": "boolean",
+    "RedrivePolicy": "object|string",
+    "Region": "string",
+    "ReplayPolicy": "object|string",
+    "SubscriptionRoleArn": "string",
+    "TopicArn": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn"
+   ]
+  },
   "AWS::SNS::Topic": {
    "member": "aws-sns-topic.json",
-   "sha256": "7d8cce8f1f5f560b9188ca25b7b10e7eb180d870a797145b63150915d0685f6e",
+   "sha256": "7a6ccf02f9ccbe4becc0e4006ad0520a37a00e025de5b65f9c6a0328e21a349a",
    "primaryIdentifier": [
     "/properties/TopicArn"
    ],
@@ -13146,6 +13755,7 @@
     "FifoThroughputScope": "string",
     "FifoTopic": "boolean",
     "KmsMasterKeyId": "string",
+    "MaximumMessageSize": "integer",
     "SignatureVersion": "string",
     "Subscription": "array",
     "Tags": "array",
@@ -14581,7 +15191,7 @@
   },
   "AWS::WAFv2::WebACL": {
    "member": "aws-wafv2-webacl.json",
-   "sha256": "728ec216dd54259b31c517f94be5f22b98ab8600138f289f39bd0e4eb5a23707",
+   "sha256": "2feaf519ceb0409a60cf6c11bd2476cdaa9f4c9e5bfb62e2a4abd9d360490caa",
    "primaryIdentifier": [
     "/properties/Name",
     "/properties/Id",
@@ -14590,6 +15200,7 @@
    "handlers": {
     "create": {
      "permissions": [
+      "payments:GetConnectedAccount",
       "wafv2:CreateWebACL",
       "wafv2:GetWebACL",
       "wafv2:ListTagsForResource",
@@ -14626,6 +15237,7 @@
     },
     "update": {
      "permissions": [
+      "payments:GetConnectedAccount",
       "wafv2:GetWebACL",
       "wafv2:ListTagsForResource",
       "wafv2:TagResource",
@@ -14662,6 +15274,71 @@
     "/properties/Capacity",
     "/properties/Id",
     "/properties/LabelNamespace"
+   ]
+  },
+  "AWS::WorkSpaces::Workspace": {
+   "member": "aws-workspaces-workspace.json",
+   "sha256": "585e0a265decb1880a3e05c2d1aa8c23e10edf5dc6be0a98d880cdf53cc2b4cd",
+   "primaryIdentifier": [
+    "/properties/WorkspaceId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "kms:CreateGrant",
+      "kms:DescribeKey",
+      "workspaces:CreateTags",
+      "workspaces:CreateWorkspaces",
+      "workspaces:DescribeWorkspaces"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "workspaces:DescribeWorkspaces",
+      "workspaces:TerminateWorkspaces"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "workspaces:DescribeTags",
+      "workspaces:DescribeWorkspaces"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "workspaces:DescribeTags",
+      "workspaces:DescribeWorkspaces"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "kms:CreateGrant",
+      "kms:DescribeKey",
+      "workspaces:CreateTags",
+      "workspaces:DeleteTags",
+      "workspaces:DescribeTags",
+      "workspaces:DescribeWorkspaceBundles",
+      "workspaces:DescribeWorkspaces",
+      "workspaces:ModifyWorkspaceProperties"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "BundleId": "string",
+    "DirectoryId": "string",
+    "Id": "string",
+    "RootVolumeEncryptionEnabled": "boolean",
+    "Tags": "array",
+    "UserName": "string",
+    "UserVolumeEncryptionEnabled": "boolean",
+    "VolumeEncryptionKey": "string",
+    "WorkspaceId": "string",
+    "WorkspaceProperties": "$ref"
+   },
+   "readOnlyProperties": [
+    "/properties/Id",
+    "/properties/WorkspaceId"
    ]
   },
   "AWS::XRay::Group": {

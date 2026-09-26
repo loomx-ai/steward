@@ -210,7 +210,7 @@ func (SmithyImporter) Import(provider asset.Provider, sourceURI string, source [
 			operation.SourceFormat = "aws-smithy"
 		}
 		operation.Destructive = isDestructiveOperation(operation.Name, operation.Method) ||
-			(provider == asset.ProviderAWS && strings.HasPrefix(strings.ToLower(operation.Name), "deregister"))
+			(provider == asset.ProviderAWS && awsDestructiveOperation(operation.Name))
 		c.Operations = append(c.Operations, operation)
 	}
 	appendResourceTypes(&c, document.ResourceTypes)
@@ -404,6 +404,20 @@ func cloneSiteEndpointMap(
 		cloned[key] = value
 	}
 	return cloned
+}
+
+// AWS removes some resources with verbs other than delete: AMIs and WorkSpaces
+// directories are deregistered, Client VPN target networks and web ACL
+// associations are disassociated, and Client VPN authorization rules are
+// revoked. Each of these removes the resource named by its input.
+func awsDestructiveOperation(name string) bool {
+	name = strings.ToLower(name)
+	for _, prefix := range []string{"deregister", "disassociate", "revoke"} {
+		if strings.HasPrefix(name, prefix) {
+			return true
+		}
+	}
+	return false
 }
 
 func isDestructiveOperation(operationID, method string) bool {

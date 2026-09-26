@@ -360,7 +360,10 @@ resources:
     resources:
     - Microsoft.ApiManagement/service/products
   aws:
-    notes: API Gateway usage plans and API keys are not modeled yet.
+    resources:
+    - AWS::ApiGateway::ApiKey
+    - AWS::ApiGateway::UsagePlan
+    - AWS::ApiGateway::UsagePlanKey
   status: pending_verification
   notes: Deleting an app also removes its API authorizations; neither can be restored.
 - alicloud: ACS::ApiGateway::Instance
@@ -507,7 +510,9 @@ resources:
   azure:
     notes: Alert recipients are receivers inside Microsoft.Insights/actionGroups, not separate resources.
   aws:
-    notes: CloudWatch alarm recipients are SNS subscriptions, which are not modeled yet.
+    resources:
+    - AWS::SNS::Subscription
+    notes: CloudWatch alarm recipients are SNS subscriptions.
   status: pending_verification
 - alicloud: ACS::CMS::AlarmContactGroup
   spec: providers/alicloud/specs/cms-alarm-contact-group.yaml
@@ -560,7 +565,8 @@ resources:
   azure:
     notes: Azure Monitor scopes alerts to resource groups and subscriptions; there is no monitoring group.
   aws:
-    notes: AWS Resource Groups are not modeled yet.
+    resources:
+    - AWS::ResourceGroups::Group
   status: pending_verification
   notes: Only custom application groups are deleted; groups synchronized from another service, tags or
     resource groups are recreated by their source.
@@ -611,7 +617,8 @@ resources:
   azure:
     notes: Azure Policy compliance is aggregated by management group scope, not a resource.
   aws:
-    notes: AWS Config aggregators are not in the pinned AWS resource selection yet.
+    resources:
+    - AWS::Config::ConfigurationAggregator
   status: pending_verification
   notes: Inventory only; GetAggregator reports a missing aggregator with the same code as a malformed ID,
     so deletion could not be confirmed.
@@ -628,7 +635,10 @@ resources:
   azure:
     notes: Azure Policy initiative assignments are not modeled yet.
   aws:
-    notes: AWS Config conformance packs are not in the pinned AWS resource selection yet.
+    resources:
+    - AWS::Config::ConformancePack
+    notes: Member packs of an organization conformance pack are removed only from the management
+      account.
   status: pending_verification
   notes: Deleting a pack also deletes the rules it created; each is then confirmed absent.
 - alicloud: ACS::Config::Rule
@@ -644,7 +654,11 @@ resources:
   azure:
     notes: Azure Policy assignments are not modeled yet.
   aws:
-    notes: AWS Config rules are not in the pinned AWS resource selection yet.
+    resources:
+    - AWS::Config::ConfigRule
+    - AWS::Config::RemediationConfiguration
+    notes: Rules created by a conformance pack, an organization rule or another service are removed
+      only by their creator.
   status: pending_verification
   notes: Rules are managed in cn-shanghai and ap-southeast-1. Batch delete results report each rule; a
     rule that a compliance pack created is removed with the pack.
@@ -663,7 +677,8 @@ resources:
     unimplemented_resources:
     - Microsoft.DesktopVirtualization/hostPools/sessionHosts
   aws:
-    notes: Amazon WorkSpaces are not in the pinned AWS resource selection yet.
+    resources:
+    - AWS::WorkSpaces::Workspace
   status: pending_verification
   notes: Only pay-as-you-go desktops outside desktop pools are inventoried for cleanup; pooled desktops
     are managed by their pool.
@@ -682,7 +697,10 @@ resources:
     unimplemented_resources:
     - Microsoft.DesktopVirtualization/workspaces
   aws:
-    notes: WorkSpaces directories are not in the pinned AWS resource selection yet.
+    resources:
+    - AWS::WorkSpaces::WorkspaceDirectory
+    notes: WorkSpaces registers a Directory Service directory; deregistration keeps the directory
+      itself.
   status: pending_verification
   notes: An office network can be deleted only after every desktop in it is released.
 - alicloud: ACS::ECD::PolicyGroup
@@ -1252,7 +1270,8 @@ resources:
     unimplemented_resources:
     - Microsoft.HDInsight/clusters
   aws:
-    notes: Amazon EMR clusters are not in the pinned AWS resource selection yet.
+    resources:
+    - AWS::EMR::Cluster
   status: pending_verification
   notes: Only pay-as-you-go clusters are deleted. Release protection is turned off as its own reviewed
     step, and deletion completes when the cluster reports TERMINATED.
@@ -1359,7 +1378,9 @@ resources:
     resources:
     - Microsoft.ServiceBus/namespaces/topics/subscriptions
   aws:
-    notes: Amazon SNS subscriptions attach queues and endpoints to topics; they are not modeled yet.
+    resources:
+    - AWS::SNS::Subscription
+    notes: SNS subscriptions attach queues and endpoints to topics.
   status: pending_verification
 - alicloud: ACS::Ons::Topic
   spec: providers/alicloud/specs/ons-topic.yaml
@@ -1412,7 +1433,9 @@ resources:
     resources:
     - Microsoft.ServiceBus/namespaces/topics/subscriptions
   aws:
-    notes: Amazon SNS subscriptions attach queues and endpoints to topics; they are not modeled yet.
+    resources:
+    - AWS::SNS::Subscription
+    notes: SNS subscriptions attach queues and endpoints to topics.
   status: pending_verification
 - alicloud: ACS::RocketMQ::Topic
   spec: providers/alicloud/specs/rocketmq-topic.yaml
@@ -1503,7 +1526,8 @@ resources:
   azure:
     notes: Trusted client CA certificates are properties of Microsoft.Network/applicationGateways.
   aws:
-    notes: Load balancer trust stores are not modeled yet.
+    resources:
+    - AWS::ElasticLoadBalancingV2::TrustStore
   status: pending_verification
 - alicloud: ACS::SLB::ServerCertificate
   spec: providers/alicloud/specs/slb-server-certificate.yaml
@@ -3857,7 +3881,13 @@ resources:
   azure:
     notes: Point-to-site IPsec settings are properties of Microsoft.Network/virtualNetworkGateways.
   aws:
-    notes: AWS Client VPN endpoints are not modeled yet.
+    resources:
+    - AWS::EC2::ClientVpnEndpoint
+    - AWS::EC2::ClientVpnTargetNetworkAssociation
+    - AWS::EC2::ClientVpnAuthorizationRule
+    - AWS::EC2::ClientVpnRoute
+    notes: AWS Client VPN uses OpenVPN over TLS rather than IPsec; site-to-site IPsec is mapped by
+      the VPN connection rows.
   status: pending_verification
 - alicloud: ACS::VPN::SslVpnClientCert
   spec: providers/alicloud/specs/vpn-ssl-client-cert.yaml
@@ -3872,7 +3902,11 @@ resources:
   azure:
     notes: Point-to-site client root certificates are properties of Microsoft.Network/virtualNetworkGateways.
   aws:
-    notes: AWS Client VPN endpoints are not modeled yet.
+    resources:
+    - AWS::EC2::ClientVpnEndpoint
+    - AWS::CertificateManager::Certificate
+    notes: Client VPN mutual authentication trusts an ACM client root certificate chain referenced
+      by the endpoint; there is no per-client certificate resource.
   status: pending_verification
 - alicloud: ACS::VPN::SslVpnServer
   spec: providers/alicloud/specs/vpn-ssl-server.yaml
@@ -3887,7 +3921,11 @@ resources:
   azure:
     notes: Point-to-site configuration is a property of Microsoft.Network/virtualNetworkGateways.
   aws:
-    notes: AWS Client VPN endpoints are not modeled yet.
+    resources:
+    - AWS::EC2::ClientVpnEndpoint
+    - AWS::EC2::ClientVpnTargetNetworkAssociation
+    - AWS::EC2::ClientVpnAuthorizationRule
+    - AWS::EC2::ClientVpnRoute
   status: pending_verification
 - alicloud: ACS::VPN::VpnConnection
   spec: providers/alicloud/specs/vpn-connection.yaml
@@ -3956,7 +3994,10 @@ resources:
   azure:
     notes: Web Application Firewall policies attach to gateways; there is no protected-object resource.
   aws:
-    notes: AWS WAF web ACL associations are not modeled yet.
+    resources:
+    - AWS::WAFv2::WebACLAssociation
+    notes: CloudFront distributions carry their web ACL as a distribution property rather than an
+      association.
   status: pending_verification
   notes: Inventory only; protected objects synchronized from cloud products return with their product.
 evidence:

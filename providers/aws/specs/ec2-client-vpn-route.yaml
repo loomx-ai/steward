@@ -1,0 +1,60 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::EC2::ClientVpnRoute
+  class: network.vpn_server_route
+presentation:
+  displayNames:
+    zh-CN: Client VPN 路由
+    en-US: Client VPN Route
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    source: product-api
+    nativeType: AWS::EC2::ClientVpnEndpoint
+  list:
+    operation: com.amazonaws.ec2#DescribeClientVpnRoutes
+    parameters:
+      ClientVpnEndpointId: parent.nativeId
+    itemsPath: Routes
+    identityPath: RouteKey
+    statePath: Status.Code
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 1000
+relationships:
+- type: member_of
+  targetType: AWS::EC2::ClientVpnEndpoint
+  targetIdPath: ClientVpnEndpointId
+- type: uses
+  targetType: AWS::EC2::Subnet
+  targetIdPath: subnet_ids
+actions:
+  delete:
+    operation: com.amazonaws.ec2#DeleteClientVpnRoute
+    parameters:
+      ClientVpnEndpointId: resource.normalized.ClientVpnEndpointId
+      DestinationCidrBlock: resource.normalized.DestinationCidr
+      TargetVpcSubnetId: resource.normalized.TargetSubnet
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.ec2#DescribeClientVpnRoutes
+      parameters:
+        ClientVpnEndpointId: resource.normalized.ClientVpnEndpointId
+      itemsPath: Routes
+      identityPath: RouteKey
+      statePath: Status.Code
+    preconditions:
+    - path: Origin
+      allowedValues:
+      - add-route
+      reason: A route added with a subnet association is removed by disassociating that subnet.
+extensions:
+  hook: aws.product.resource

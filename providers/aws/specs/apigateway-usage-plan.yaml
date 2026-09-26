@@ -2,24 +2,20 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: aws
-  nativeType: AWS::ElasticLoadBalancingV2::Listener
-  class: network.load_balancer_listener
+  nativeType: AWS::ApiGateway::UsagePlan
+  class: api.usage_plan
 presentation:
   displayNames:
-    zh-CN: 负载均衡监听器
-    en-US: Load Balancer Listener
+    zh-CN: API Gateway 使用计划
+    en-US: API Gateway Usage Plan
 scope:
   kind: region
 discovery:
   source: cloud-control
-  parent:
-    source: cloud-control
-    nativeType: AWS::ElasticLoadBalancingV2::LoadBalancer
   list:
     operation: com.amazonaws.cloudcontrol#ListResources
     parameters:
-      TypeName: AWS::ElasticLoadBalancingV2::Listener
-      ResourceModel.LoadBalancerArn: parent.nativeId
+      TypeName: AWS::ApiGateway::UsagePlan
     itemsPath: ResourceDescriptions
     identityPath: Identifier
     pagination:
@@ -33,12 +29,9 @@ discovery:
     itemsPath: ResourceDescription
     identityPath: Identifier
 relationships:
-- type: member_of
-  targetType: AWS::ElasticLoadBalancingV2::LoadBalancer
-  targetIdPath: LoadBalancerArn
 - type: uses
-  targetType: AWS::ElasticLoadBalancingV2::TrustStore
-  targetIdPath: trust_store_arn
+  targetType: AWS::ApiGateway::RestApi
+  targetIdPath: rest_api_ids
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource

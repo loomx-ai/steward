@@ -19,6 +19,10 @@
     "sha256": "9992e8206bda7e3c3bb34886f99ca4e07acc12fa24542b788bf03759ad9e6a9c"
    },
    {
+    "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/config-service/service/2014-11-12/config-service-2014-11-12.json",
+    "sha256": "140b2f862c302d6d747c170e61f22a3108d517b42af3623c3e329027d373862b"
+   },
+   {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/database-migration-service/service/2016-01-01/database-migration-service-2016-01-01.json",
     "sha256": "22b9dfa440ad265ee0d08c36569b24fa3883687278de697698f14c1303080ca0"
    },
@@ -41,6 +45,10 @@
    {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/elastic-load-balancing-v2/service/2015-12-01/elastic-load-balancing-v2-2015-12-01.json",
     "sha256": "b8e2667dc02196215c863ecab13f2aecd8d9520262c85de1edbe80fd95e74d2f"
+   },
+   {
+    "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/emr/service/2009-03-31/emr-2009-03-31.json",
+    "sha256": "cff4f77057767f2010954968e34881199e6d306510ca2d8c4175a6deb2c02add"
    },
    {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/fsx/service/2018-03-01/fsx-2018-03-01.json",
@@ -77,6 +85,14 @@
    {
     "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/sts/service/2011-06-15/sts-2011-06-15.json",
     "sha256": "794c8b2142e3a65bc6cc7922005eb85d6b71b02353fef03c0f395e8f902ee2d0"
+   },
+   {
+    "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/wafv2/service/2019-07-29/wafv2-2019-07-29.json",
+    "sha256": "c52233aa2816fad73bc9f2dc360f4ac61c5eb781a12950b6157ec431bbd4475c"
+   },
+   {
+    "uri": "https://raw.githubusercontent.com/aws/api-models-aws/d86f18ce2e5917f532d6e3eb98befe94371e698d/models/workspaces/service/2015-04-08/workspaces-2015-04-08.json",
+    "sha256": "ac4e90c24cc418c3af528bb3bed5beb3c9253f9ba3c9512396f3935c8fbe51e8"
    }
   ]
  },
@@ -774,6 +790,139 @@
     }
    }
   },
+  "com.amazonaws.configservice#DescribeConfigRules": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.configservice#DescribeConfigRulesRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.configservice#DescribeConfigRulesResponse"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "NextToken",
+     "outputToken": "NextToken",
+     "items": "ConfigRules"
+    }
+   }
+  },
+  "com.amazonaws.configservice#DescribeConfigRulesRequest": {
+   "type": "structure",
+   "members": {
+    "ConfigRuleNames": {
+     "target": "com.amazonaws.configservice#ConfigRuleNames",
+     "traits": {}
+    },
+    "Filters": {
+     "target": "com.amazonaws.configservice#DescribeConfigRulesFilters",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.configservice#String",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.configservice#DescribeConfigRulesResponse": {
+   "type": "structure",
+   "members": {
+    "ConfigRules": {
+     "target": "com.amazonaws.configservice#ConfigRules",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.configservice#String",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.configservice#DescribeConformancePackCompliance": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.configservice#DescribeConformancePackComplianceRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.configservice#DescribeConformancePackComplianceResponse"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "NextToken",
+     "outputToken": "NextToken",
+     "items": "ConformancePackRuleComplianceList",
+     "pageSize": "Limit"
+    }
+   }
+  },
+  "com.amazonaws.configservice#DescribeConformancePackComplianceRequest": {
+   "type": "structure",
+   "members": {
+    "ConformancePackName": {
+     "target": "com.amazonaws.configservice#ConformancePackName",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "Filters": {
+     "target": "com.amazonaws.configservice#ConformancePackComplianceFilters",
+     "traits": {}
+    },
+    "Limit": {
+     "target": "com.amazonaws.configservice#DescribeConformancePackComplianceLimit",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.configservice#NextToken",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.configservice#DescribeConformancePackComplianceResponse": {
+   "type": "structure",
+   "members": {
+    "ConformancePackName": {
+     "target": "com.amazonaws.configservice#ConformancePackName",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "ConformancePackRuleComplianceList": {
+     "target": "com.amazonaws.configservice#ConformancePackRuleComplianceList",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "NextToken": {
+     "target": "com.amazonaws.configservice#NextToken",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.configservice#StarlingDoveService": {
+   "type": "service",
+   "version": "2014-11-12",
+   "operations": [
+    {
+     "target": "com.amazonaws.configservice#DescribeConfigRules"
+    },
+    {
+     "target": "com.amazonaws.configservice#DescribeConformancePackCompliance"
+    }
+   ],
+   "traits": {
+    "aws.api#service": {
+     "sdkId": "Config Service",
+     "arnNamespace": "config",
+     "cloudFormationName": "Config",
+     "cloudTrailEventSource": "configservice.amazonaws.com",
+     "docId": "config-2014-11-12",
+     "endpointPrefix": "config"
+    },
+    "aws.auth#sigv4": {
+     "name": "config"
+    },
+    "aws.protocols#awsJson1_1": {}
+   }
+  },
   "com.amazonaws.databasemigrationservice#AmazonDMSv20160101": {
    "type": "service",
    "version": "2016-01-01",
@@ -1300,6 +1449,12 @@
    "version": "2016-11-15",
    "operations": [
     {
+     "target": "com.amazonaws.ec2#DeleteClientVpnEndpoint"
+    },
+    {
+     "target": "com.amazonaws.ec2#DeleteClientVpnRoute"
+    },
+    {
      "target": "com.amazonaws.ec2#DeleteSnapshot"
     },
     {
@@ -1307,6 +1462,18 @@
     },
     {
      "target": "com.amazonaws.ec2#DescribeAddresses"
+    },
+    {
+     "target": "com.amazonaws.ec2#DescribeClientVpnAuthorizationRules"
+    },
+    {
+     "target": "com.amazonaws.ec2#DescribeClientVpnEndpoints"
+    },
+    {
+     "target": "com.amazonaws.ec2#DescribeClientVpnRoutes"
+    },
+    {
+     "target": "com.amazonaws.ec2#DescribeClientVpnTargetNetworks"
     },
     {
      "target": "com.amazonaws.ec2#DescribeImages"
@@ -1351,10 +1518,16 @@
      "target": "com.amazonaws.ec2#DisableImageDeregistrationProtection"
     },
     {
+     "target": "com.amazonaws.ec2#DisassociateClientVpnTargetNetwork"
+    },
+    {
      "target": "com.amazonaws.ec2#ModifyInstanceAttribute"
     },
     {
      "target": "com.amazonaws.ec2#ModifyNetworkInterfaceAttribute"
+    },
+    {
+     "target": "com.amazonaws.ec2#RevokeClientVpnIngress"
     }
    ],
    "traits": {
@@ -1369,6 +1542,88 @@
      "name": "ec2"
     },
     "aws.protocols#ec2Query": {}
+   }
+  },
+  "com.amazonaws.ec2#DeleteClientVpnEndpoint": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.ec2#DeleteClientVpnEndpointRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.ec2#DeleteClientVpnEndpointResult"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.ec2#DeleteClientVpnEndpointRequest": {
+   "type": "structure",
+   "members": {
+    "ClientVpnEndpointId": {
+     "target": "com.amazonaws.ec2#ClientVpnEndpointId",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "DryRun": {
+     "target": "com.amazonaws.ec2#Boolean",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.ec2#DeleteClientVpnEndpointResult": {
+   "type": "structure",
+   "members": {
+    "Status": {
+     "target": "com.amazonaws.ec2#ClientVpnEndpointStatus",
+     "traits": {
+      "aws.protocols#ec2QueryName": "Status"
+     }
+    }
+   }
+  },
+  "com.amazonaws.ec2#DeleteClientVpnRoute": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.ec2#DeleteClientVpnRouteRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.ec2#DeleteClientVpnRouteResult"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.ec2#DeleteClientVpnRouteRequest": {
+   "type": "structure",
+   "members": {
+    "ClientVpnEndpointId": {
+     "target": "com.amazonaws.ec2#ClientVpnEndpointId",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "DestinationCidrBlock": {
+     "target": "com.amazonaws.ec2#String",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "DryRun": {
+     "target": "com.amazonaws.ec2#Boolean",
+     "traits": {}
+    },
+    "TargetVpcSubnetId": {
+     "target": "com.amazonaws.ec2#SubnetId",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.ec2#DeleteClientVpnRouteResult": {
+   "type": "structure",
+   "members": {
+    "Status": {
+     "target": "com.amazonaws.ec2#ClientVpnRouteStatus",
+     "traits": {
+      "aws.protocols#ec2QueryName": "Status"
+     }
+    }
    }
   },
   "com.amazonaws.ec2#DeleteSnapshot": {
@@ -1486,6 +1741,252 @@
      "target": "com.amazonaws.ec2#AddressList",
      "traits": {
       "aws.protocols#ec2QueryName": "AddressesSet"
+     }
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnAuthorizationRules": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.ec2#DescribeClientVpnAuthorizationRulesRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.ec2#DescribeClientVpnAuthorizationRulesResult"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "NextToken",
+     "outputToken": "NextToken",
+     "items": "AuthorizationRules",
+     "pageSize": "MaxResults"
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnAuthorizationRulesRequest": {
+   "type": "structure",
+   "members": {
+    "ClientVpnEndpointId": {
+     "target": "com.amazonaws.ec2#ClientVpnEndpointId",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "DryRun": {
+     "target": "com.amazonaws.ec2#Boolean",
+     "traits": {}
+    },
+    "Filters": {
+     "target": "com.amazonaws.ec2#FilterList",
+     "traits": {}
+    },
+    "MaxResults": {
+     "target": "com.amazonaws.ec2#DescribeClientVpnAuthorizationRulesMaxResults",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.ec2#NextToken",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnAuthorizationRulesResult": {
+   "type": "structure",
+   "members": {
+    "AuthorizationRules": {
+     "target": "com.amazonaws.ec2#AuthorizationRuleSet",
+     "traits": {
+      "aws.protocols#ec2QueryName": "AuthorizationRule"
+     }
+    },
+    "NextToken": {
+     "target": "com.amazonaws.ec2#NextToken",
+     "traits": {
+      "aws.protocols#ec2QueryName": "NextToken"
+     }
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnEndpoints": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.ec2#DescribeClientVpnEndpointsRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.ec2#DescribeClientVpnEndpointsResult"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "NextToken",
+     "outputToken": "NextToken",
+     "items": "ClientVpnEndpoints",
+     "pageSize": "MaxResults"
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnEndpointsRequest": {
+   "type": "structure",
+   "members": {
+    "ClientVpnEndpointIds": {
+     "target": "com.amazonaws.ec2#ClientVpnEndpointIdList",
+     "traits": {}
+    },
+    "DryRun": {
+     "target": "com.amazonaws.ec2#Boolean",
+     "traits": {}
+    },
+    "Filters": {
+     "target": "com.amazonaws.ec2#FilterList",
+     "traits": {}
+    },
+    "MaxResults": {
+     "target": "com.amazonaws.ec2#DescribeClientVpnEndpointMaxResults",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.ec2#NextToken",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnEndpointsResult": {
+   "type": "structure",
+   "members": {
+    "ClientVpnEndpoints": {
+     "target": "com.amazonaws.ec2#EndpointSet",
+     "traits": {
+      "aws.protocols#ec2QueryName": "ClientVpnEndpoint"
+     }
+    },
+    "NextToken": {
+     "target": "com.amazonaws.ec2#NextToken",
+     "traits": {
+      "aws.protocols#ec2QueryName": "NextToken"
+     }
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnRoutes": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.ec2#DescribeClientVpnRoutesRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.ec2#DescribeClientVpnRoutesResult"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "NextToken",
+     "outputToken": "NextToken",
+     "items": "Routes",
+     "pageSize": "MaxResults"
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnRoutesRequest": {
+   "type": "structure",
+   "members": {
+    "ClientVpnEndpointId": {
+     "target": "com.amazonaws.ec2#ClientVpnEndpointId",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "DryRun": {
+     "target": "com.amazonaws.ec2#Boolean",
+     "traits": {}
+    },
+    "Filters": {
+     "target": "com.amazonaws.ec2#FilterList",
+     "traits": {}
+    },
+    "MaxResults": {
+     "target": "com.amazonaws.ec2#DescribeClientVpnRoutesMaxResults",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.ec2#NextToken",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnRoutesResult": {
+   "type": "structure",
+   "members": {
+    "NextToken": {
+     "target": "com.amazonaws.ec2#NextToken",
+     "traits": {
+      "aws.protocols#ec2QueryName": "NextToken"
+     }
+    },
+    "Routes": {
+     "target": "com.amazonaws.ec2#ClientVpnRouteSet",
+     "traits": {
+      "aws.protocols#ec2QueryName": "Routes"
+     }
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnTargetNetworks": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.ec2#DescribeClientVpnTargetNetworksRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.ec2#DescribeClientVpnTargetNetworksResult"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "NextToken",
+     "outputToken": "NextToken",
+     "items": "ClientVpnTargetNetworks",
+     "pageSize": "MaxResults"
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnTargetNetworksRequest": {
+   "type": "structure",
+   "members": {
+    "AssociationIds": {
+     "target": "com.amazonaws.ec2#ValueStringList",
+     "traits": {}
+    },
+    "ClientVpnEndpointId": {
+     "target": "com.amazonaws.ec2#ClientVpnEndpointId",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "DryRun": {
+     "target": "com.amazonaws.ec2#Boolean",
+     "traits": {}
+    },
+    "Filters": {
+     "target": "com.amazonaws.ec2#FilterList",
+     "traits": {}
+    },
+    "MaxResults": {
+     "target": "com.amazonaws.ec2#DescribeClientVpnTargetNetworksMaxResults",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.ec2#NextToken",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.ec2#DescribeClientVpnTargetNetworksResult": {
+   "type": "structure",
+   "members": {
+    "ClientVpnTargetNetworks": {
+     "target": "com.amazonaws.ec2#TargetNetworkSet",
+     "traits": {
+      "aws.protocols#ec2QueryName": "ClientVpnTargetNetworks"
+     }
+    },
+    "NextToken": {
+     "target": "com.amazonaws.ec2#NextToken",
+     "traits": {
+      "aws.protocols#ec2QueryName": "NextToken"
      }
     }
    }
@@ -2273,6 +2774,54 @@
     }
    }
   },
+  "com.amazonaws.ec2#DisassociateClientVpnTargetNetwork": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.ec2#DisassociateClientVpnTargetNetworkRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.ec2#DisassociateClientVpnTargetNetworkResult"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.ec2#DisassociateClientVpnTargetNetworkRequest": {
+   "type": "structure",
+   "members": {
+    "AssociationId": {
+     "target": "com.amazonaws.ec2#String",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "ClientVpnEndpointId": {
+     "target": "com.amazonaws.ec2#ClientVpnEndpointId",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "DryRun": {
+     "target": "com.amazonaws.ec2#Boolean",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.ec2#DisassociateClientVpnTargetNetworkResult": {
+   "type": "structure",
+   "members": {
+    "AssociationId": {
+     "target": "com.amazonaws.ec2#String",
+     "traits": {
+      "aws.protocols#ec2QueryName": "AssociationId"
+     }
+    },
+    "Status": {
+     "target": "com.amazonaws.ec2#AssociationStatus",
+     "traits": {
+      "aws.protocols#ec2QueryName": "Status"
+     }
+    }
+   }
+  },
   "com.amazonaws.ec2#ModifyInstanceAttribute": {
    "type": "operation",
    "input": {
@@ -2459,6 +3008,56 @@
     }
    }
   },
+  "com.amazonaws.ec2#RevokeClientVpnIngress": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.ec2#RevokeClientVpnIngressRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.ec2#RevokeClientVpnIngressResult"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.ec2#RevokeClientVpnIngressRequest": {
+   "type": "structure",
+   "members": {
+    "AccessGroupId": {
+     "target": "com.amazonaws.ec2#String",
+     "traits": {}
+    },
+    "ClientVpnEndpointId": {
+     "target": "com.amazonaws.ec2#ClientVpnEndpointId",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "DryRun": {
+     "target": "com.amazonaws.ec2#Boolean",
+     "traits": {}
+    },
+    "RevokeAllGroups": {
+     "target": "com.amazonaws.ec2#Boolean",
+     "traits": {}
+    },
+    "TargetNetworkCidr": {
+     "target": "com.amazonaws.ec2#String",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.ec2#RevokeClientVpnIngressResult": {
+   "type": "structure",
+   "members": {
+    "Status": {
+     "target": "com.amazonaws.ec2#ClientVpnAuthorizationRuleStatus",
+     "traits": {
+      "aws.protocols#ec2QueryName": "Status"
+     }
+    }
+   }
+  },
   "com.amazonaws.eks#AWSWesleyFrontend": {
    "type": "service",
    "version": "2017-11-01",
@@ -2614,6 +3213,166 @@
     "Attributes": {
      "target": "com.amazonaws.elasticloadbalancingv2#LoadBalancerAttributes",
      "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.emr#DescribeCluster": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.emr#DescribeClusterInput"
+   },
+   "output": {
+    "target": "com.amazonaws.emr#DescribeClusterOutput"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.emr#DescribeClusterInput": {
+   "type": "structure",
+   "members": {
+    "ClusterId": {
+     "target": "com.amazonaws.emr#ClusterId",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.emr#DescribeClusterOutput": {
+   "type": "structure",
+   "members": {
+    "Cluster": {
+     "target": "com.amazonaws.emr#Cluster",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.emr#ElasticMapReduce": {
+   "type": "service",
+   "version": "2009-03-31",
+   "operations": [
+    {
+     "target": "com.amazonaws.emr#DescribeCluster"
+    },
+    {
+     "target": "com.amazonaws.emr#ListClusters"
+    },
+    {
+     "target": "com.amazonaws.emr#SetTerminationProtection"
+    },
+    {
+     "target": "com.amazonaws.emr#TerminateJobFlows"
+    }
+   ],
+   "traits": {
+    "aws.api#service": {
+     "sdkId": "EMR",
+     "arnNamespace": "elasticmapreduce",
+     "cloudFormationName": "EMR",
+     "cloudTrailEventSource": "elasticmapreduce.amazonaws.com",
+     "docId": "elasticmapreduce-2009-03-31",
+     "endpointPrefix": "elasticmapreduce"
+    },
+    "aws.auth#sigv4": {
+     "name": "elasticmapreduce"
+    },
+    "aws.protocols#awsJson1_1": {}
+   }
+  },
+  "com.amazonaws.emr#ListClusters": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.emr#ListClustersInput"
+   },
+   "output": {
+    "target": "com.amazonaws.emr#ListClustersOutput"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "Marker",
+     "outputToken": "Marker",
+     "items": "Clusters"
+    }
+   }
+  },
+  "com.amazonaws.emr#ListClustersInput": {
+   "type": "structure",
+   "members": {
+    "ClusterStates": {
+     "target": "com.amazonaws.emr#ClusterStateList",
+     "traits": {}
+    },
+    "CreatedAfter": {
+     "target": "com.amazonaws.emr#Date",
+     "traits": {}
+    },
+    "CreatedBefore": {
+     "target": "com.amazonaws.emr#Date",
+     "traits": {}
+    },
+    "Marker": {
+     "target": "com.amazonaws.emr#Marker",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.emr#ListClustersOutput": {
+   "type": "structure",
+   "members": {
+    "Clusters": {
+     "target": "com.amazonaws.emr#ClusterSummaryList",
+     "traits": {}
+    },
+    "Marker": {
+     "target": "com.amazonaws.emr#Marker",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.emr#SetTerminationProtection": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.emr#SetTerminationProtectionInput"
+   },
+   "output": {
+    "target": "smithy.api#Unit"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.emr#SetTerminationProtectionInput": {
+   "type": "structure",
+   "members": {
+    "JobFlowIds": {
+     "target": "com.amazonaws.emr#XmlStringList",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    },
+    "TerminationProtected": {
+     "target": "com.amazonaws.emr#Boolean",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.emr#TerminateJobFlows": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.emr#TerminateJobFlowsInput"
+   },
+   "output": {
+    "target": "smithy.api#Unit"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.emr#TerminateJobFlowsInput": {
+   "type": "structure",
+   "members": {
+    "JobFlowIds": {
+     "target": "com.amazonaws.emr#XmlStringList",
+     "traits": {
+      "smithy.api#required": {}
+     }
     }
    }
   },
@@ -3818,6 +4577,389 @@
      "traits": {}
     }
    }
+  },
+  "com.amazonaws.wafv2#AWSWAF_20190729": {
+   "type": "service",
+   "version": "2019-07-29",
+   "operations": [
+    {
+     "target": "com.amazonaws.wafv2#DisassociateWebACL"
+    },
+    {
+     "target": "com.amazonaws.wafv2#GetWebACL"
+    },
+    {
+     "target": "com.amazonaws.wafv2#GetWebACLForResource"
+    },
+    {
+     "target": "com.amazonaws.wafv2#ListResourcesForWebACL"
+    },
+    {
+     "target": "com.amazonaws.wafv2#ListWebACLs"
+    }
+   ],
+   "traits": {
+    "aws.api#service": {
+     "sdkId": "WAFV2",
+     "arnNamespace": "wafv2",
+     "cloudFormationName": "WAFv2",
+     "cloudTrailEventSource": "wafv2.amazonaws.com",
+     "endpointPrefix": "wafv2"
+    },
+    "aws.auth#sigv4": {
+     "name": "wafv2"
+    },
+    "aws.protocols#awsJson1_1": {}
+   }
+  },
+  "com.amazonaws.wafv2#DisassociateWebACL": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.wafv2#DisassociateWebACLRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.wafv2#DisassociateWebACLResponse"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.wafv2#DisassociateWebACLRequest": {
+   "type": "structure",
+   "members": {
+    "ResourceArn": {
+     "target": "com.amazonaws.wafv2#ResourceArn",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.wafv2#DisassociateWebACLResponse": {
+   "type": "structure",
+   "members": {}
+  },
+  "com.amazonaws.wafv2#GetWebACL": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.wafv2#GetWebACLRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.wafv2#GetWebACLResponse"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.wafv2#GetWebACLForResource": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.wafv2#GetWebACLForResourceRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.wafv2#GetWebACLForResourceResponse"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.wafv2#GetWebACLForResourceRequest": {
+   "type": "structure",
+   "members": {
+    "ResourceArn": {
+     "target": "com.amazonaws.wafv2#ResourceArn",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.wafv2#GetWebACLForResourceResponse": {
+   "type": "structure",
+   "members": {
+    "WebACL": {
+     "target": "com.amazonaws.wafv2#WebACL",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.wafv2#GetWebACLRequest": {
+   "type": "structure",
+   "members": {
+    "ARN": {
+     "target": "com.amazonaws.wafv2#ResourceArn",
+     "traits": {}
+    },
+    "Id": {
+     "target": "com.amazonaws.wafv2#EntityId",
+     "traits": {}
+    },
+    "Name": {
+     "target": "com.amazonaws.wafv2#EntityName",
+     "traits": {}
+    },
+    "Scope": {
+     "target": "com.amazonaws.wafv2#Scope",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.wafv2#GetWebACLResponse": {
+   "type": "structure",
+   "members": {
+    "ApplicationIntegrationURL": {
+     "target": "com.amazonaws.wafv2#OutputUrl",
+     "traits": {}
+    },
+    "LockToken": {
+     "target": "com.amazonaws.wafv2#LockToken",
+     "traits": {}
+    },
+    "WebACL": {
+     "target": "com.amazonaws.wafv2#WebACL",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.wafv2#ListResourcesForWebACL": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.wafv2#ListResourcesForWebACLRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.wafv2#ListResourcesForWebACLResponse"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.wafv2#ListResourcesForWebACLRequest": {
+   "type": "structure",
+   "members": {
+    "ResourceType": {
+     "target": "com.amazonaws.wafv2#ResourceType",
+     "traits": {}
+    },
+    "WebACLArn": {
+     "target": "com.amazonaws.wafv2#ResourceArn",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.wafv2#ListResourcesForWebACLResponse": {
+   "type": "structure",
+   "members": {
+    "ResourceArns": {
+     "target": "com.amazonaws.wafv2#ResourceArns",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.wafv2#ListWebACLs": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.wafv2#ListWebACLsRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.wafv2#ListWebACLsResponse"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.wafv2#ListWebACLsRequest": {
+   "type": "structure",
+   "members": {
+    "Limit": {
+     "target": "com.amazonaws.wafv2#PaginationLimit",
+     "traits": {}
+    },
+    "NextMarker": {
+     "target": "com.amazonaws.wafv2#NextMarker",
+     "traits": {}
+    },
+    "Scope": {
+     "target": "com.amazonaws.wafv2#Scope",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.wafv2#ListWebACLsResponse": {
+   "type": "structure",
+   "members": {
+    "NextMarker": {
+     "target": "com.amazonaws.wafv2#NextMarker",
+     "traits": {}
+    },
+    "WebACLs": {
+     "target": "com.amazonaws.wafv2#WebACLSummaries",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.workspaces#DeregisterWorkspaceDirectory": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.workspaces#DeregisterWorkspaceDirectoryRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.workspaces#DeregisterWorkspaceDirectoryResult"
+   },
+   "traits": {}
+  },
+  "com.amazonaws.workspaces#DeregisterWorkspaceDirectoryRequest": {
+   "type": "structure",
+   "members": {
+    "DirectoryId": {
+     "target": "com.amazonaws.workspaces#DirectoryId",
+     "traits": {
+      "smithy.api#required": {}
+     }
+    }
+   }
+  },
+  "com.amazonaws.workspaces#DeregisterWorkspaceDirectoryResult": {
+   "type": "structure",
+   "members": {}
+  },
+  "com.amazonaws.workspaces#DescribeWorkspaceDirectories": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.workspaces#DescribeWorkspaceDirectoriesRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.workspaces#DescribeWorkspaceDirectoriesResult"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "NextToken",
+     "outputToken": "NextToken",
+     "items": "Directories"
+    }
+   }
+  },
+  "com.amazonaws.workspaces#DescribeWorkspaceDirectoriesRequest": {
+   "type": "structure",
+   "members": {
+    "DirectoryIds": {
+     "target": "com.amazonaws.workspaces#DirectoryIdList",
+     "traits": {}
+    },
+    "Filters": {
+     "target": "com.amazonaws.workspaces#DescribeWorkspaceDirectoriesFilterList",
+     "traits": {}
+    },
+    "Limit": {
+     "target": "com.amazonaws.workspaces#Limit",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.workspaces#PaginationToken",
+     "traits": {}
+    },
+    "WorkspaceDirectoryNames": {
+     "target": "com.amazonaws.workspaces#WorkspaceDirectoryNameList",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.workspaces#DescribeWorkspaceDirectoriesResult": {
+   "type": "structure",
+   "members": {
+    "Directories": {
+     "target": "com.amazonaws.workspaces#DirectoryList",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.workspaces#PaginationToken",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.workspaces#DescribeWorkspaces": {
+   "type": "operation",
+   "input": {
+    "target": "com.amazonaws.workspaces#DescribeWorkspacesRequest"
+   },
+   "output": {
+    "target": "com.amazonaws.workspaces#DescribeWorkspacesResult"
+   },
+   "traits": {
+    "smithy.api#paginated": {
+     "inputToken": "NextToken",
+     "outputToken": "NextToken",
+     "items": "Workspaces",
+     "pageSize": "Limit"
+    }
+   }
+  },
+  "com.amazonaws.workspaces#DescribeWorkspacesRequest": {
+   "type": "structure",
+   "members": {
+    "BundleId": {
+     "target": "com.amazonaws.workspaces#BundleId",
+     "traits": {}
+    },
+    "DirectoryId": {
+     "target": "com.amazonaws.workspaces#DirectoryId",
+     "traits": {}
+    },
+    "Limit": {
+     "target": "com.amazonaws.workspaces#Limit",
+     "traits": {}
+    },
+    "NextToken": {
+     "target": "com.amazonaws.workspaces#PaginationToken",
+     "traits": {}
+    },
+    "UserName": {
+     "target": "com.amazonaws.workspaces#UserName",
+     "traits": {}
+    },
+    "WorkspaceIds": {
+     "target": "com.amazonaws.workspaces#WorkspaceIdList",
+     "traits": {}
+    },
+    "WorkspaceName": {
+     "target": "com.amazonaws.workspaces#WorkspaceName",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.workspaces#DescribeWorkspacesResult": {
+   "type": "structure",
+   "members": {
+    "NextToken": {
+     "target": "com.amazonaws.workspaces#PaginationToken",
+     "traits": {}
+    },
+    "Workspaces": {
+     "target": "com.amazonaws.workspaces#WorkspaceList",
+     "traits": {}
+    }
+   }
+  },
+  "com.amazonaws.workspaces#WorkspacesService": {
+   "type": "service",
+   "version": "2015-04-08",
+   "operations": [
+    {
+     "target": "com.amazonaws.workspaces#DeregisterWorkspaceDirectory"
+    },
+    {
+     "target": "com.amazonaws.workspaces#DescribeWorkspaceDirectories"
+    },
+    {
+     "target": "com.amazonaws.workspaces#DescribeWorkspaces"
+    }
+   ],
+   "traits": {
+    "aws.api#service": {
+     "sdkId": "WorkSpaces",
+     "arnNamespace": "workspaces",
+     "cloudFormationName": "WorkSpaces",
+     "cloudTrailEventSource": "workspaces.amazonaws.com",
+     "endpointPrefix": "workspaces"
+    },
+    "aws.auth#sigv4": {
+     "name": "workspaces"
+    },
+    "aws.protocols#awsJson1_1": {}
+   }
   }
  },
  "x-resource-types": [
@@ -3854,6 +4996,14 @@
    ]
   },
   {
+   "nativeType": "AWS::ApiGateway::ApiKey",
+   "class": "api.key",
+   "displayName": "API Gateway API Key",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::ApiGateway::DomainName",
    "class": "network.api_domain",
    "displayName": "API Gateway Custom Domain",
@@ -3865,6 +5015,22 @@
    "nativeType": "AWS::ApiGateway::RestApi",
    "class": "api.gateway",
    "displayName": "API Gateway REST API",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::ApiGateway::UsagePlan",
+   "class": "api.usage_plan",
+   "displayName": "API Gateway Usage Plan",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::ApiGateway::UsagePlanKey",
+   "class": "api.usage_plan_key",
+   "displayName": "API Gateway Usage Plan Key",
    "scopeKinds": [
     "region"
    ]
@@ -4054,6 +5220,38 @@
    ]
   },
   {
+   "nativeType": "AWS::Config::ConfigRule",
+   "class": "governance.policy_rule",
+   "displayName": "AWS Config Rule",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Config::ConfigurationAggregator",
+   "class": "governance.aggregator",
+   "displayName": "AWS Config Aggregator",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Config::ConformancePack",
+   "class": "governance.policy_set",
+   "displayName": "AWS Config Conformance Pack",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Config::RemediationConfiguration",
+   "class": "governance.remediation",
+   "displayName": "AWS Config Remediation Configuration",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::DLM::LifecyclePolicy",
    "class": "storage.snapshot_policy",
    "displayName": "Data Lifecycle Manager Policy",
@@ -4233,6 +5431,38 @@
    "nativeType": "AWS::EC2::CapacityReservationFleet",
    "class": "compute.elasticity_assurance",
    "displayName": "EC2 Capacity Reservation Fleet",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::EC2::ClientVpnAuthorizationRule",
+   "class": "network.vpn_server_rule",
+   "displayName": "Client VPN Authorization Rule",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::EC2::ClientVpnEndpoint",
+   "class": "network.vpn_server",
+   "displayName": "Client VPN Endpoint",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::EC2::ClientVpnRoute",
+   "class": "network.vpn_server_route",
+   "displayName": "Client VPN Route",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::EC2::ClientVpnTargetNetworkAssociation",
+   "class": "network.vpn_server_association",
+   "displayName": "Client VPN Target Network Association",
    "scopeKinds": [
     "region"
    ]
@@ -4630,6 +5860,14 @@
    ]
   },
   {
+   "nativeType": "AWS::EMR::Cluster",
+   "class": "data.processing_cluster",
+   "displayName": "EMR Cluster",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::EMRServerless::Application",
    "class": "data.workspace",
    "displayName": "EMR Serverless Application",
@@ -4689,6 +5927,14 @@
    "nativeType": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "class": "network.target_group",
    "displayName": "Target Group",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::ElasticLoadBalancingV2::TrustStore",
+   "class": "security.certificate",
+   "displayName": "Load Balancer Trust Store",
    "scopeKinds": [
     "region"
    ]
@@ -5142,6 +6388,14 @@
    ]
   },
   {
+   "nativeType": "AWS::ResourceGroups::Group",
+   "class": "observability.monitoring_group",
+   "displayName": "Resource Group",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::Route53::HealthCheck",
    "class": "dns.gtm_instance",
    "displayName": "Route 53 Health Check",
@@ -5179,6 +6433,14 @@
    "displayName": "S3 Bucket",
    "scopeKinds": [
     "global"
+   ]
+  },
+  {
+   "nativeType": "AWS::SNS::Subscription",
+   "class": "messaging.subscription",
+   "displayName": "SNS Subscription",
+   "scopeKinds": [
+    "region"
    ]
   },
   {
@@ -5361,6 +6623,30 @@
    "nativeType": "AWS::WAFv2::WebACL",
    "class": "security.web_acl",
    "displayName": "WAF Web ACL",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::WAFv2::WebACLAssociation",
+   "class": "security.protected_resource",
+   "displayName": "WAF Web ACL Association",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::WorkSpaces::Workspace",
+   "class": "compute.virtual_desktop",
+   "displayName": "WorkSpaces Desktop",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::WorkSpaces::WorkspaceDirectory",
+   "class": "network.virtual_desktop_network",
+   "displayName": "WorkSpaces Directory",
    "scopeKinds": [
     "region"
    ]

@@ -20,13 +20,13 @@ authoritative Cloud Control inventory could never succeed.
 
 | Measure | AWS |
 | --- | --- |
-| Explicit specifications | 194 (182 Cloud Control, 11 product API, 1 CloudFormation stack) |
-| Parity rows with an implemented mapping | 169/202 |
-| Rows deferred as not yet modeled | 16 |
+| Explicit specifications | 212 (193 Cloud Control, 18 product API, 1 CloudFormation stack) |
+| Parity rows with an implemented mapping | 185/202 |
+| Rows deferred as not yet modeled | 0 |
 | Rows with a documented platform difference instead of a mapping | 17 |
 | Candidate types without a specification | 0 |
-| Pinned official operations | 61 from 19 Smithy models |
-| Pinned CloudFormation resource schemas | 189 |
+| Pinned official operations | 83 from 23 Smithy models |
+| Pinned CloudFormation resource schemas | 200 |
 
 These are registration and verification measures, not a claim that every row
 has closed behavioral acceptance. Rows remain `pending_verification` in the
@@ -59,7 +59,12 @@ matrix, as for GCP and Azure.
    retention (policy changed and read back before termination, outcomes verified
    after), Auto Scaling and EKS managed members, requester-managed interfaces,
    Elastic IP ordering, Internet and virtual private gateway detachment,
-   CloudFormation stacks.
+   CloudFormation stacks. `cleanup_dependencies.go` records documented
+   parent/child contracts: required prerequisites (Client VPN target networks,
+   Config remediation, WorkSpaces in a directory, listeners using a trust
+   store), native cascades (SNS subscriptions, Client VPN rules and routes,
+   usage plan keys) and parent-only members (conformance pack rules, routes of a
+   subnet association, EMR cluster instances).
 6. [x] **Tests.** Protocol tests use the official SDK clients against documented
    response shapes (`cloudcontrol_protocol_test.go`,
    `native_protocol_test.go`). Unit tests cover plans, cursors, protection,
@@ -86,8 +91,6 @@ matrix, as for GCP and Azure.
 ## Remaining work
 
 - Behavioral acceptance per matrix row, including real-cloud evidence.
-- The 16 deferred rows listed in `providers/PARITY_GAPS.md` (Client VPN, SNS
-  subscriptions, AWS Config, WorkSpaces, EMR and others).
 - Cloud Control handler behavior for other individual types (for example ECR
   contents) is taken from the official handler contract and is not
   independently verified. KMS keys (AWS managed keys, scheduled deletion),

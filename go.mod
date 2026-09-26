@@ -15,18 +15,20 @@ require (
 	github.com/alibabacloud-go/tea-roa v1.3.4
 	github.com/alibabacloud-go/vpc-20160428/v7 v7.2.4
 	github.com/aliyun/credentials-go v1.4.12
-	github.com/aws/aws-sdk-go-v2 v1.47.0
+	github.com/aws/aws-sdk-go-v2 v1.47.1
 	github.com/aws/aws-sdk-go-v2/config v1.32.34
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.33
 	github.com/aws/aws-sdk-go-v2/service/autoscaling v1.78.0
 	github.com/aws/aws-sdk-go-v2/service/backup v1.65.0
 	github.com/aws/aws-sdk-go-v2/service/cloudcontrol v1.32.3
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.76.0
+	github.com/aws/aws-sdk-go-v2/service/configservice v1.74.1
 	github.com/aws/aws-sdk-go-v2/service/databasemigrationservice v1.71.0
 	github.com/aws/aws-sdk-go-v2/service/docdb v1.56.0
 	github.com/aws/aws-sdk-go-v2/service/drs v1.50.0
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.318.1
 	github.com/aws/aws-sdk-go-v2/service/eks v1.99.0
+	github.com/aws/aws-sdk-go-v2/service/emr v1.70.1
 	github.com/aws/aws-sdk-go-v2/service/fsx v1.74.0
 	github.com/aws/aws-sdk-go-v2/service/kms v1.61.0
 	github.com/aws/aws-sdk-go-v2/service/opensearch v1.80.0
@@ -39,6 +41,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.38.3
 	github.com/aws/aws-sdk-go-v2/service/storagegateway v1.52.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.45.3
+	github.com/aws/aws-sdk-go-v2/service/wafv2 v1.83.1
+	github.com/aws/aws-sdk-go-v2/service/workspaces v1.81.1
 	github.com/aws/smithy-go v1.28.1
 	github.com/go-chi/chi/v5 v5.3.0
 	github.com/mattn/go-sqlite3 v1.14.22
@@ -75,8 +79,8 @@ require (
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.20 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.34 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.3 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.3 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.4 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.4 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.11.3 // indirect

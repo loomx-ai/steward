@@ -21,6 +21,11 @@ var kmsKeyARN = regexp.MustCompile(`^arn:aws(?:-[a-z]+)*:kms:([a-z0-9-]+):[0-9]{
 
 func kmsReferenceProperty(name string) bool {
 	lower := strings.ToLower(name)
+	// WorkSpaces names the customer managed key of its encrypted volumes
+	// without a KMS prefix.
+	if lower == "volumeencryptionkey" {
+		return true
+	}
 	if !strings.Contains(lower, "kms") {
 		return false
 	}

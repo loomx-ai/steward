@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	awsautoscaling "github.com/aws/aws-sdk-go-v2/service/autoscaling"
 	awsbackup "github.com/aws/aws-sdk-go-v2/service/backup"
+	awsconfigservice "github.com/aws/aws-sdk-go-v2/service/configservice"
 	awsdms "github.com/aws/aws-sdk-go-v2/service/databasemigrationservice"
 	dmstypes "github.com/aws/aws-sdk-go-v2/service/databasemigrationservice/types"
 	awsdocdb "github.com/aws/aws-sdk-go-v2/service/docdb"
@@ -22,6 +24,7 @@ import (
 	awsec2 "github.com/aws/aws-sdk-go-v2/service/ec2"
 	ec2types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	awseks "github.com/aws/aws-sdk-go-v2/service/eks"
+	awsemr "github.com/aws/aws-sdk-go-v2/service/emr"
 	awsfsx "github.com/aws/aws-sdk-go-v2/service/fsx"
 	awskms "github.com/aws/aws-sdk-go-v2/service/kms"
 	awsopensearch "github.com/aws/aws-sdk-go-v2/service/opensearch"
@@ -30,6 +33,8 @@ import (
 	awsdomains "github.com/aws/aws-sdk-go-v2/service/route53domains"
 	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	awsstoragegateway "github.com/aws/aws-sdk-go-v2/service/storagegateway"
+	awswafv2 "github.com/aws/aws-sdk-go-v2/service/wafv2"
+	awsworkspaces "github.com/aws/aws-sdk-go-v2/service/workspaces"
 	"github.com/aws/smithy-go/middleware"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
@@ -123,6 +128,11 @@ type NativeClients struct {
 	KMS            KMSNativeAPI
 	Backup         BackupNativeAPI
 	S3             S3NativeAPI
+	ClientVPN      ClientVPNNativeAPI
+	EMR            EMRNativeAPI
+	WorkSpaces     WorkSpacesNativeAPI
+	WAF            WAFNativeAPI
+	Config         ConfigNativeAPI
 }
 
 func newNativeClients(config awssdk.Config) *NativeClients {
@@ -133,6 +143,8 @@ func newNativeClients(config awssdk.Config) *NativeClients {
 		Organizations: awsorganizations.NewFromConfig(config), Lifecycle: awsec2.NewFromConfig(config),
 		AutoScaling: awsautoscaling.NewFromConfig(config), EKS: awseks.NewFromConfig(config),
 		KMS: awskms.NewFromConfig(config), Backup: awsbackup.NewFromConfig(config), S3: awss3.NewFromConfig(config),
+		ClientVPN: awsec2.NewFromConfig(config), EMR: awsemr.NewFromConfig(config), WorkSpaces: awsworkspaces.NewFromConfig(config),
+		WAF: awswafv2.NewFromConfig(config), Config: awsconfigservice.NewFromConfig(config),
 	}
 }
 
@@ -157,7 +169,10 @@ type nativeKind struct {
 	remove          func(context.Context, *NativeClients, string, map[string]any, string) (string, error)
 	statePath       string
 	deletingStates  []string
-	failedStates    []string
+	// absentStates are terminal states in which the service still returns the
+	// resource although it no longer exists as a deletable resource.
+	absentStates []string
+	failedStates []string
 	protection      *nativeProtection
 	precondition    func(map[string]any) (bool, string)
 }
@@ -241,7 +256,7 @@ var nativeKinds = map[string]nativeKind{
 	"AWS::EC2::Image": {
 		nativeType: "AWS::EC2::Image", nameField: "Name", service: "ec2", identity: "ImageId", statePath: "State",
 		listOperation: "com.amazonaws.ec2#DescribeImages", readOperation: "com.amazonaws.ec2#DescribeImages", deleteOperation: "com.amazonaws.ec2#DeregisterImage",
-		deletingStates: []string{"deregistered"}, failedStates: []string{"failed", "error"},
+		deletingStates: []string{"deregistered"}, absentStates: []string{"deregistered"}, failedStates: []string{"failed", "error"},
 		list: func(ctx context.Context, c *NativeClients, token string) (nativePage, error) {
 			input := &awsec2.DescribeImagesInput{Owners: []string{"self"}, IncludeDeprecated: awssdk.Bool(true), IncludeDisabled: awssdk.Bool(true), MaxResults: awssdk.Int32(1000)}
 			if token != "" {
@@ -698,6 +713,23 @@ func deriveNativeReferences(nativeType string, model map[string]any) {
 		if vpc := stringValue(nestedValue(model, "DBSubnetGroup", "VpcId")); vpc != "" {
 			model["vpc_id"] = vpc
 		}
+	case clientVPNEndpointType:
+		collectNativeReferences(model, "certificate_arns", "ServerCertificateArn", "AuthenticationOptions.MutualAuthentication.ClientRootCertificateChain")
+		if group := stringValue(nestedValue(model, "ConnectionLogOptions", "CloudwatchLogGroup")); group != "" {
+			model["log_group_name"] = group
+		}
+	case emrClusterType:
+		collectNativeReferences(model, "subnet_ids", "Ec2InstanceAttributes.Ec2SubnetId", "Ec2InstanceAttributes.RequestedEc2SubnetIds")
+		collectNativeReferences(model, "security_group_ids", "Ec2InstanceAttributes.EmrManagedMasterSecurityGroup", "Ec2InstanceAttributes.EmrManagedSlaveSecurityGroup",
+			"Ec2InstanceAttributes.ServiceAccessSecurityGroup", "Ec2InstanceAttributes.AdditionalMasterSecurityGroups", "Ec2InstanceAttributes.AdditionalSlaveSecurityGroups")
+		model["service_role_name"] = iamName(stringValue(model["ServiceRole"]))
+		model["instance_profile_name"] = iamName(stringValue(nestedValue(model, "Ec2InstanceAttributes", "IamInstanceProfile")))
+	case workspaceDirectoryType:
+		collectNativeReferences(model, "security_group_ids", "WorkspaceSecurityGroupId")
+	case webACLAssociationType:
+		if arn := stringValue(model["ResourceArn"]); strings.Contains(arn, ":loadbalancer/app/") {
+			model["load_balancer_arn"] = arn
+		}
 	case "AWS::DMS::ReplicationInstance":
 		if vpc := stringValue(nestedValue(model, "ReplicationSubnetGroup", "VpcId")); vpc != "" {
 			model["vpc_id"] = vpc
@@ -707,6 +739,41 @@ func deriveNativeReferences(nativeType string, model map[string]any) {
 			model["security_group_ids"] = values
 		}
 	}
+}
+
+// collectNativeReferences merges the values at paths into one sorted field,
+// keeping values the network normalization already found.
+func collectNativeReferences(model map[string]any, field string, paths ...string) {
+	values := map[string]bool{}
+	for _, value := range stringSliceValue(model[field]) {
+		values[value] = true
+	}
+	for _, path := range paths {
+		for _, value := range cloudControlNetworkValues(model, strings.Split(path, ".")) {
+			if value = strings.TrimSpace(value); value != "" {
+				values[value] = true
+			}
+		}
+	}
+	if len(values) == 0 {
+		return
+	}
+	result := make([]string, 0, len(values))
+	for value := range values {
+		result = append(result, value)
+	}
+	sort.Strings(result)
+	model[field] = result
+	if field == "subnet_ids" && len(result) == 1 {
+		model["vswitch_id"] = result[0]
+	}
+}
+
+// iamName returns the name of an IAM role or instance profile given by name
+// or ARN; paths are not part of the name.
+func iamName(value string) string {
+	value = strings.TrimSpace(value)
+	return value[strings.LastIndex(value, "/")+1:]
 }
 
 func nestedValue(model map[string]any, path ...string) any {
@@ -770,6 +837,9 @@ func (a *NativeAction) Preflight(ctx context.Context, request contracts.ActionRe
 	if matchesState(state, a.kind.deletingStates) {
 		return contracts.PreflightResult{Absent: true, Reason: "resource deletion is already in progress", Evidence: evidence}, nil
 	}
+	if matchesState(state, a.kind.absentStates) {
+		return contracts.PreflightResult{Absent: true, Reason: "resource no longer exists", Evidence: evidence}, nil
+	}
 	if a.kind.precondition != nil {
 		if allowed, reason := a.kind.precondition(model); !allowed {
 			return contracts.PreflightResult{Allowed: false, Reason: reason, Evidence: evidence}, nil
@@ -799,6 +869,9 @@ func (a *NativeAction) Execute(ctx context.Context, request contracts.ActionRequ
 	}
 	if matchesState(a.state(model), a.kind.deletingStates) {
 		return contracts.ActionResult{Data: map[string]any{"phase": "deleting"}, RetryAfter: nativeWait}, nil
+	}
+	if matchesState(a.state(model), a.kind.absentStates) {
+		return contracts.ActionResult{Data: map[string]any{"phase": "absent"}, RetryAfter: time.Second}, nil
 	}
 	if a.kind.precondition != nil {
 		if allowed, reason := a.kind.precondition(model); !allowed {
@@ -862,8 +935,9 @@ func (a *NativeAction) Readback(ctx context.Context, request contracts.ActionReq
 		return contracts.ReadbackResult{}, NormalizeError(err)
 	}
 	state := a.state(model)
-	// An AMI in the deregistered state is no longer a registered image.
-	if a.kind.nativeType == "AWS::EC2::Image" && strings.EqualFold(state, "deregistered") {
+	// For example, an AMI in the deregistered state is no longer a registered
+	// image and a terminated EMR cluster no longer runs.
+	if matchesState(state, a.kind.absentStates) {
 		return contracts.ReadbackResult{Exists: false, State: state, Data: map[string]any{"provider_request_id": requestID}}, nil
 	}
 	return contracts.ReadbackResult{Exists: true, State: state, Data: map[string]any{"provider_request_id": requestID, "properties": model}}, nil

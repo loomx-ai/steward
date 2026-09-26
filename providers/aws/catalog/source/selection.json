@@ -22,6 +22,10 @@
     "DescribeStacks",
     "DeleteStack"
    ],
+   "models/config-service/service/2014-11-12/config-service-2014-11-12.json": [
+    "DescribeConfigRules",
+    "DescribeConformancePackCompliance"
+   ],
    "models/database-migration-service/service/2016-01-01/database-migration-service-2016-01-01.json": [
     "DescribeReplicationInstances",
     "DeleteReplicationInstance"
@@ -56,7 +60,15 @@
     "ModifyNetworkInterfaceAttribute",
     "DescribeAddresses",
     "DescribeNatGateways",
-    "DescribeVolumes"
+    "DescribeVolumes",
+    "DescribeClientVpnEndpoints",
+    "DeleteClientVpnEndpoint",
+    "DescribeClientVpnTargetNetworks",
+    "DisassociateClientVpnTargetNetwork",
+    "DescribeClientVpnAuthorizationRules",
+    "RevokeClientVpnIngress",
+    "DescribeClientVpnRoutes",
+    "DeleteClientVpnRoute"
    ],
    "models/eks/service/2017-11-01/eks-2017-11-01.json": [
     "DescribeNodegroup"
@@ -64,6 +76,12 @@
    "models/elastic-load-balancing-v2/service/2015-12-01/elastic-load-balancing-v2-2015-12-01.json": [
     "DescribeLoadBalancerAttributes",
     "ModifyLoadBalancerAttributes"
+   ],
+   "models/emr/service/2009-03-31/emr-2009-03-31.json": [
+    "ListClusters",
+    "DescribeCluster",
+    "SetTerminationProtection",
+    "TerminateJobFlows"
    ],
    "models/fsx/service/2018-03-01/fsx-2018-03-01.json": [
     "DescribeFileSystems",
@@ -101,6 +119,18 @@
    ],
    "models/sts/service/2011-06-15/sts-2011-06-15.json": [
     "GetCallerIdentity"
+   ],
+   "models/wafv2/service/2019-07-29/wafv2-2019-07-29.json": [
+    "ListWebACLs",
+    "GetWebACL",
+    "ListResourcesForWebACL",
+    "GetWebACLForResource",
+    "DisassociateWebACL"
+   ],
+   "models/workspaces/service/2015-04-08/workspaces-2015-04-08.json": [
+    "DescribeWorkspaceDirectories",
+    "DeregisterWorkspaceDirectory",
+    "DescribeWorkspaces"
    ]
   }
  },
@@ -145,6 +175,15 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::ApiGateway::ApiKey",
+   "class": "api.key",
+   "displayName": "API Gateway API Key",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::ApiGateway::DomainName",
    "class": "network.api_domain",
    "displayName": "API Gateway Custom Domain",
@@ -157,6 +196,24 @@
    "nativeType": "AWS::ApiGateway::RestApi",
    "class": "api.gateway",
    "displayName": "API Gateway REST API",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ApiGateway::UsagePlan",
+   "class": "api.usage_plan",
+   "displayName": "API Gateway Usage Plan",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ApiGateway::UsagePlanKey",
+   "class": "api.usage_plan_key",
+   "displayName": "API Gateway Usage Plan Key",
    "scopeKinds": [
     "region"
    ],
@@ -370,6 +427,42 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::Config::ConfigRule",
+   "class": "governance.policy_rule",
+   "displayName": "AWS Config Rule",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Config::ConfigurationAggregator",
+   "class": "governance.aggregator",
+   "displayName": "AWS Config Aggregator",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Config::ConformancePack",
+   "class": "governance.policy_set",
+   "displayName": "AWS Config Conformance Pack",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Config::RemediationConfiguration",
+   "class": "governance.remediation",
+   "displayName": "AWS Config Remediation Configuration",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::DLM::LifecyclePolicy",
    "class": "storage.snapshot_policy",
    "displayName": "Data Lifecycle Manager Policy",
@@ -575,6 +668,42 @@
     "region"
    ],
    "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::EC2::ClientVpnAuthorizationRule",
+   "class": "network.vpn_server_rule",
+   "displayName": "Client VPN Authorization Rule",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
+  },
+  {
+   "nativeType": "AWS::EC2::ClientVpnEndpoint",
+   "class": "network.vpn_server",
+   "displayName": "Client VPN Endpoint",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
+  },
+  {
+   "nativeType": "AWS::EC2::ClientVpnRoute",
+   "class": "network.vpn_server_route",
+   "displayName": "Client VPN Route",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
+  },
+  {
+   "nativeType": "AWS::EC2::ClientVpnTargetNetworkAssociation",
+   "class": "network.vpn_server_association",
+   "displayName": "Client VPN Target Network Association",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
   },
   {
    "nativeType": "AWS::EC2::CustomerGateway",
@@ -1018,6 +1147,15 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::EMR::Cluster",
+   "class": "data.processing_cluster",
+   "displayName": "EMR Cluster",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
+  },
+  {
    "nativeType": "AWS::EMRServerless::Application",
    "class": "data.workspace",
    "displayName": "EMR Serverless Application",
@@ -1084,6 +1222,15 @@
    "nativeType": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "class": "network.target_group",
    "displayName": "Target Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ElasticLoadBalancingV2::TrustStore",
+   "class": "security.certificate",
+   "displayName": "Load Balancer Trust Store",
    "scopeKinds": [
     "region"
    ],
@@ -1594,6 +1741,15 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::ResourceGroups::Group",
+   "class": "observability.monitoring_group",
+   "displayName": "Resource Group",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::Route53::HealthCheck",
    "class": "dns.gtm_instance",
    "displayName": "Route 53 Health Check",
@@ -1635,6 +1791,15 @@
    "displayName": "S3 Bucket",
    "scopeKinds": [
     "global"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::SNS::Subscription",
+   "class": "messaging.subscription",
+   "displayName": "SNS Subscription",
+   "scopeKinds": [
+    "region"
    ],
    "cloudformation": true
   },
@@ -1844,6 +2009,33 @@
     "region"
    ],
    "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::WAFv2::WebACLAssociation",
+   "class": "security.protected_resource",
+   "displayName": "WAF Web ACL Association",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
+  },
+  {
+   "nativeType": "AWS::WorkSpaces::Workspace",
+   "class": "compute.virtual_desktop",
+   "displayName": "WorkSpaces Desktop",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::WorkSpaces::WorkspaceDirectory",
+   "class": "network.virtual_desktop_network",
+   "displayName": "WorkSpaces Directory",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": false
   },
   {
    "nativeType": "AWS::XRay::Group",

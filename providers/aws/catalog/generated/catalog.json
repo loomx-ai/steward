@@ -4,10 +4,10 @@
   "source": {
     "format": "smithy",
     "uri": "catalog/source/smithy.json",
-    "checksum": "89a1cfdac01344ff6c6d0655fc47c2c7d54e07f3e7fc3c8a2342bcb4ea6eb4cd",
+    "checksum": "aceb4d97fc7eb573f238aeded7a4526b7636c4431406b67c236fd84fe6f64582",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "0da6ec726bd5b447a6314b0ca17acad06cb6a78b8a2526e2536d0d3c96292dd0",
+  "content_checksum": "095c874c908e02681a11d0bcc269132e9d9da8df7fb2bddab99bbe618b4fb906",
   "operations": [
     {
       "id": "com.amazonaws.autoscaling#DescribeAutoScalingGroups",
@@ -296,6 +296,64 @@
       "source_format": "aws-smithy"
     },
     {
+      "id": "com.amazonaws.configservice#DescribeConfigRules",
+      "name": "DescribeConfigRules",
+      "service": "com.amazonaws.configservice",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "NextToken",
+        "output_token_path": "NextToken",
+        "items_path": "ConfigRules"
+      },
+      "call": {
+        "product": "Config Service",
+        "version": "2014-11-12",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://config.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.configservice#DescribeConformancePackCompliance",
+      "name": "DescribeConformancePackCompliance",
+      "service": "com.amazonaws.configservice",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "NextToken",
+        "output_token_path": "NextToken",
+        "items_path": "ConformancePackRuleComplianceList"
+      },
+      "call": {
+        "product": "Config Service",
+        "version": "2014-11-12",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://config.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
       "id": "com.amazonaws.databasemigrationservice#DeleteReplicationInstance",
       "name": "DeleteReplicationInstance",
       "service": "com.amazonaws.databasemigrationservice",
@@ -531,6 +589,54 @@
       "source_format": "aws-smithy"
     },
     {
+      "id": "com.amazonaws.ec2#DeleteClientVpnEndpoint",
+      "name": "DeleteClientVpnEndpoint",
+      "service": "com.amazonaws.ec2",
+      "method": "POST",
+      "path": "/",
+      "destructive": true,
+      "call": {
+        "product": "EC2",
+        "version": "2016-11-15",
+        "style": "aws-smithy",
+        "protocol": "ec2Query",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://ec2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.ec2#DeleteClientVpnRoute",
+      "name": "DeleteClientVpnRoute",
+      "service": "com.amazonaws.ec2",
+      "method": "POST",
+      "path": "/",
+      "destructive": true,
+      "call": {
+        "product": "EC2",
+        "version": "2016-11-15",
+        "style": "aws-smithy",
+        "protocol": "ec2Query",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://ec2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
       "id": "com.amazonaws.ec2#DeleteSnapshot",
       "name": "DeleteSnapshot",
       "service": "com.amazonaws.ec2",
@@ -585,6 +691,122 @@
       "method": "POST",
       "path": "/",
       "destructive": false,
+      "call": {
+        "product": "EC2",
+        "version": "2016-11-15",
+        "style": "aws-smithy",
+        "protocol": "ec2Query",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://ec2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.ec2#DescribeClientVpnAuthorizationRules",
+      "name": "DescribeClientVpnAuthorizationRules",
+      "service": "com.amazonaws.ec2",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "NextToken",
+        "output_token_path": "NextToken",
+        "items_path": "AuthorizationRules"
+      },
+      "call": {
+        "product": "EC2",
+        "version": "2016-11-15",
+        "style": "aws-smithy",
+        "protocol": "ec2Query",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://ec2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.ec2#DescribeClientVpnEndpoints",
+      "name": "DescribeClientVpnEndpoints",
+      "service": "com.amazonaws.ec2",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "NextToken",
+        "output_token_path": "NextToken",
+        "items_path": "ClientVpnEndpoints"
+      },
+      "call": {
+        "product": "EC2",
+        "version": "2016-11-15",
+        "style": "aws-smithy",
+        "protocol": "ec2Query",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://ec2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.ec2#DescribeClientVpnRoutes",
+      "name": "DescribeClientVpnRoutes",
+      "service": "com.amazonaws.ec2",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "NextToken",
+        "output_token_path": "NextToken",
+        "items_path": "Routes"
+      },
+      "call": {
+        "product": "EC2",
+        "version": "2016-11-15",
+        "style": "aws-smithy",
+        "protocol": "ec2Query",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://ec2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.ec2#DescribeClientVpnTargetNetworks",
+      "name": "DescribeClientVpnTargetNetworks",
+      "service": "com.amazonaws.ec2",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "NextToken",
+        "output_token_path": "NextToken",
+        "items_path": "ClientVpnTargetNetworks"
+      },
       "call": {
         "product": "EC2",
         "version": "2016-11-15",
@@ -984,6 +1206,30 @@
       "source_format": "aws-smithy"
     },
     {
+      "id": "com.amazonaws.ec2#DisassociateClientVpnTargetNetwork",
+      "name": "DisassociateClientVpnTargetNetwork",
+      "service": "com.amazonaws.ec2",
+      "method": "POST",
+      "path": "/",
+      "destructive": true,
+      "call": {
+        "product": "EC2",
+        "version": "2016-11-15",
+        "style": "aws-smithy",
+        "protocol": "ec2Query",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://ec2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
       "id": "com.amazonaws.ec2#ModifyInstanceAttribute",
       "name": "ModifyInstanceAttribute",
       "service": "com.amazonaws.ec2",
@@ -1014,6 +1260,30 @@
       "method": "POST",
       "path": "/",
       "destructive": false,
+      "call": {
+        "product": "EC2",
+        "version": "2016-11-15",
+        "style": "aws-smithy",
+        "protocol": "ec2Query",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://ec2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.ec2#RevokeClientVpnIngress",
+      "name": "RevokeClientVpnIngress",
+      "service": "com.amazonaws.ec2",
+      "method": "POST",
+      "path": "/",
+      "destructive": true,
       "call": {
         "product": "EC2",
         "version": "2016-11-15",
@@ -1098,6 +1368,107 @@
           "region"
         ],
         "body_type": "form",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.emr#DescribeCluster",
+      "name": "DescribeCluster",
+      "service": "com.amazonaws.emr",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "EMR",
+        "version": "2009-03-31",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://elasticmapreduce.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.emr#ListClusters",
+      "name": "ListClusters",
+      "service": "com.amazonaws.emr",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "Marker",
+        "output_token_path": "Marker",
+        "items_path": "Clusters"
+      },
+      "call": {
+        "product": "EMR",
+        "version": "2009-03-31",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://elasticmapreduce.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.emr#SetTerminationProtection",
+      "name": "SetTerminationProtection",
+      "service": "com.amazonaws.emr",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "EMR",
+        "version": "2009-03-31",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://elasticmapreduce.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.emr#TerminateJobFlows",
+      "name": "TerminateJobFlows",
+      "service": "com.amazonaws.emr",
+      "method": "POST",
+      "path": "/",
+      "destructive": true,
+      "call": {
+        "product": "EMR",
+        "version": "2009-03-31",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://elasticmapreduce.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
         "parameter_position": "body"
       },
       "source_uri": "catalog/source/smithy.json",
@@ -1586,6 +1957,208 @@
       },
       "source_uri": "catalog/source/smithy.json",
       "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.wafv2#DisassociateWebACL",
+      "name": "DisassociateWebACL",
+      "service": "com.amazonaws.wafv2",
+      "method": "POST",
+      "path": "/",
+      "destructive": true,
+      "call": {
+        "product": "WAFV2",
+        "version": "2019-07-29",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://wafv2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.wafv2#GetWebACL",
+      "name": "GetWebACL",
+      "service": "com.amazonaws.wafv2",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "WAFV2",
+        "version": "2019-07-29",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://wafv2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.wafv2#GetWebACLForResource",
+      "name": "GetWebACLForResource",
+      "service": "com.amazonaws.wafv2",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "WAFV2",
+        "version": "2019-07-29",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://wafv2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.wafv2#ListResourcesForWebACL",
+      "name": "ListResourcesForWebACL",
+      "service": "com.amazonaws.wafv2",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "WAFV2",
+        "version": "2019-07-29",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://wafv2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.wafv2#ListWebACLs",
+      "name": "ListWebACLs",
+      "service": "com.amazonaws.wafv2",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "call": {
+        "product": "WAFV2",
+        "version": "2019-07-29",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://wafv2.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.workspaces#DeregisterWorkspaceDirectory",
+      "name": "DeregisterWorkspaceDirectory",
+      "service": "com.amazonaws.workspaces",
+      "method": "POST",
+      "path": "/",
+      "destructive": true,
+      "call": {
+        "product": "WorkSpaces",
+        "version": "2015-04-08",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://workspaces.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.workspaces#DescribeWorkspaceDirectories",
+      "name": "DescribeWorkspaceDirectories",
+      "service": "com.amazonaws.workspaces",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "NextToken",
+        "output_token_path": "NextToken",
+        "items_path": "Directories"
+      },
+      "call": {
+        "product": "WorkSpaces",
+        "version": "2015-04-08",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://workspaces.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
+    },
+    {
+      "id": "com.amazonaws.workspaces#DescribeWorkspaces",
+      "name": "DescribeWorkspaces",
+      "service": "com.amazonaws.workspaces",
+      "method": "POST",
+      "path": "/",
+      "destructive": false,
+      "pagination": {
+        "input_token_path": "NextToken",
+        "output_token_path": "NextToken",
+        "items_path": "Workspaces"
+      },
+      "call": {
+        "product": "WorkSpaces",
+        "version": "2015-04-08",
+        "style": "aws-smithy",
+        "protocol": "awsJson1_1",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "https://workspaces.{region}.amazonaws.com",
+        "endpoint_parameters": [
+          "region"
+        ],
+        "body_type": "json",
+        "parameter_position": "body"
+      },
+      "source_uri": "catalog/source/smithy.json",
+      "source_format": "aws-smithy"
     }
   ],
   "resource_types": [
@@ -1622,6 +2195,14 @@
       ]
     },
     {
+      "native_type": "AWS::ApiGateway::ApiKey",
+      "class": "api.key",
+      "display_name": "API Gateway API Key",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::ApiGateway::DomainName",
       "class": "network.api_domain",
       "display_name": "API Gateway Custom Domain",
@@ -1633,6 +2214,22 @@
       "native_type": "AWS::ApiGateway::RestApi",
       "class": "api.gateway",
       "display_name": "API Gateway REST API",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ApiGateway::UsagePlan",
+      "class": "api.usage_plan",
+      "display_name": "API Gateway Usage Plan",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ApiGateway::UsagePlanKey",
+      "class": "api.usage_plan_key",
+      "display_name": "API Gateway Usage Plan Key",
       "scope_kinds": [
         "region"
       ]
@@ -1822,6 +2419,38 @@
       ]
     },
     {
+      "native_type": "AWS::Config::ConfigRule",
+      "class": "governance.policy_rule",
+      "display_name": "AWS Config Rule",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Config::ConfigurationAggregator",
+      "class": "governance.aggregator",
+      "display_name": "AWS Config Aggregator",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Config::ConformancePack",
+      "class": "governance.policy_set",
+      "display_name": "AWS Config Conformance Pack",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Config::RemediationConfiguration",
+      "class": "governance.remediation",
+      "display_name": "AWS Config Remediation Configuration",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::DLM::LifecyclePolicy",
       "class": "storage.snapshot_policy",
       "display_name": "Data Lifecycle Manager Policy",
@@ -2001,6 +2630,38 @@
       "native_type": "AWS::EC2::CapacityReservationFleet",
       "class": "compute.elasticity_assurance",
       "display_name": "EC2 Capacity Reservation Fleet",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::ClientVpnAuthorizationRule",
+      "class": "network.vpn_server_rule",
+      "display_name": "Client VPN Authorization Rule",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::ClientVpnEndpoint",
+      "class": "network.vpn_server",
+      "display_name": "Client VPN Endpoint",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::ClientVpnRoute",
+      "class": "network.vpn_server_route",
+      "display_name": "Client VPN Route",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::ClientVpnTargetNetworkAssociation",
+      "class": "network.vpn_server_association",
+      "display_name": "Client VPN Target Network Association",
       "scope_kinds": [
         "region"
       ]
@@ -2398,6 +3059,14 @@
       ]
     },
     {
+      "native_type": "AWS::EMR::Cluster",
+      "class": "data.processing_cluster",
+      "display_name": "EMR Cluster",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::EMRServerless::Application",
       "class": "data.workspace",
       "display_name": "EMR Serverless Application",
@@ -2457,6 +3126,14 @@
       "native_type": "AWS::ElasticLoadBalancingV2::TargetGroup",
       "class": "network.target_group",
       "display_name": "Target Group",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ElasticLoadBalancingV2::TrustStore",
+      "class": "security.certificate",
+      "display_name": "Load Balancer Trust Store",
       "scope_kinds": [
         "region"
       ]
@@ -2910,6 +3587,14 @@
       ]
     },
     {
+      "native_type": "AWS::ResourceGroups::Group",
+      "class": "observability.monitoring_group",
+      "display_name": "Resource Group",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::Route53::HealthCheck",
       "class": "dns.gtm_instance",
       "display_name": "Route 53 Health Check",
@@ -2947,6 +3632,14 @@
       "display_name": "S3 Bucket",
       "scope_kinds": [
         "global"
+      ]
+    },
+    {
+      "native_type": "AWS::SNS::Subscription",
+      "class": "messaging.subscription",
+      "display_name": "SNS Subscription",
+      "scope_kinds": [
+        "region"
       ]
     },
     {
@@ -3129,6 +3822,30 @@
       "native_type": "AWS::WAFv2::WebACL",
       "class": "security.web_acl",
       "display_name": "WAF Web ACL",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::WAFv2::WebACLAssociation",
+      "class": "security.protected_resource",
+      "display_name": "WAF Web ACL Association",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::WorkSpaces::Workspace",
+      "class": "compute.virtual_desktop",
+      "display_name": "WorkSpaces Desktop",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::WorkSpaces::WorkspaceDirectory",
+      "class": "network.virtual_desktop_network",
+      "display_name": "WorkSpaces Directory",
       "scope_kinds": [
         "region"
       ]

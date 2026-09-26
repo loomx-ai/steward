@@ -1,0 +1,46 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::WorkSpaces::WorkspaceDirectory
+  class: network.virtual_desktop_network
+presentation:
+  displayNames:
+    zh-CN: WorkSpaces 目录
+    en-US: WorkSpaces Directory
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: com.amazonaws.workspaces#DescribeWorkspaceDirectories
+    itemsPath: Directories
+    identityPath: DirectoryId
+    statePath: State
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+relationships:
+- type: uses
+  targetType: AWS::EC2::Subnet
+  targetIdPath: subnet_ids
+- type: uses
+  targetType: AWS::EC2::SecurityGroup
+  targetIdPath: security_group_ids
+actions:
+  delete:
+    operation: com.amazonaws.workspaces#DeregisterWorkspaceDirectory
+    parameters:
+      DirectoryId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: com.amazonaws.workspaces#DescribeWorkspaceDirectories
+      parameters:
+        DirectoryIds: resource.nativeIdsJson
+      itemsPath: Directories
+      identityPath: DirectoryId
+      statePath: State
+extensions:
+  hook: aws.product.resource

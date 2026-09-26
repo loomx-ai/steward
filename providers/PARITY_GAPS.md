@@ -6,7 +6,7 @@ not cloud feature acceptance. Dated sections below keep the row count that held
 when they were written.
 
 The matrix covers all 202 Alibaba Cloud specifications for GCP, Azure and AWS.
-The repository contains 205 GCP, 491 Azure and 194 AWS specifications; those
+The repository contains 205 GCP, 491 Azure and 212 AWS specifications; those
 counts do not prove equivalence. All 202 rows remain pending behavioral
 verification.
 
@@ -21,11 +21,11 @@ check verifies matrix consistency only. AWS progress and evidence are tracked in
 
 | Measure | GCP | Azure | AWS |
 | --- | --- | --- | --- |
-| Explicit native specifications | 205 | 491 | 194 |
-| Baseline rows with at least one existing mapped specification | 177/202 | 172/202 | 169/202 |
+| Explicit native specifications | 205 | 491 | 212 |
+| Baseline rows with at least one existing mapped specification | 177/202 | 172/202 | 185/202 |
 | Candidate types still without a specification | 7 | 5 | 0 |
 | Baseline rows affected by missing candidate specifications | 7 | 5 | 0 |
-| Empty mappings deferred as not yet modeled | 3 | 2 | 16 |
+| Empty mappings deferred as not yet modeled | 3 | 2 | 0 |
 | Empty mappings with a documented platform difference | 15 | 23 | 17 |
 
 These are registration/mapping measures, not functional completion percentages.
@@ -51,11 +51,10 @@ difference:
   policy constraints (Cloud Config aggregator, compliance pack and rule).
 - Azure: Azure Policy assignments and initiative assignments (Cloud Config rule
   and compliance pack).
-- AWS: Client VPN endpoints (three VPN rows), SNS subscriptions (two consumer
-  group rows and CloudMonitor contacts), AWS Config rules, conformance packs and
-  aggregators, WorkSpaces and their directories, EMR clusters, API Gateway usage
-  plans and API keys, Resource Groups, load balancer trust stores and WAF web ACL
-  associations.
+
+AWS has no open mapping: the 16 deferred rows were mapped on 2026-09-26 (Client
+VPN, SNS subscriptions, AWS Config, WorkSpaces, EMR, API Gateway usage plans and
+keys, Resource Groups, load balancer trust stores and WAF web ACL associations).
 
 ## Azure read-only registrations
 

@@ -107,7 +107,8 @@ func attachmentDocuments[T any](values []T) []any {
 
 func lifecycleFactKind(nativeType string) bool {
 	switch nativeType {
-	case "AWS::EC2::Instance", "AWS::EC2::NetworkInterface", "AWS::AutoScaling::AutoScalingGroup", "AWS::EKS::Nodegroup", "AWS::S3::Bucket":
+	case "AWS::EC2::Instance", "AWS::EC2::NetworkInterface", "AWS::AutoScaling::AutoScalingGroup", "AWS::EKS::Nodegroup", "AWS::S3::Bucket",
+		"AWS::Config::ConfigRule", "AWS::Config::ConformancePack":
 		return true
 	}
 	return false
@@ -133,6 +134,16 @@ func enrichLifecycleFacts(ctx context.Context, clients *NativeClients, items []c
 	}
 	if indexes := byType["AWS::AutoScaling::AutoScalingGroup"]; len(indexes) > 0 {
 		if err := enrichAutoScalingGroups(ctx, clients.AutoScaling, items, indexes); err != nil {
+			return err
+		}
+	}
+	if indexes := byType["AWS::Config::ConfigRule"]; len(indexes) > 0 {
+		if err := enrichConfigRules(ctx, clients.Config, items, indexes); err != nil {
+			return err
+		}
+	}
+	if indexes := byType["AWS::Config::ConformancePack"]; len(indexes) > 0 {
+		if err := enrichConformancePacks(ctx, clients.Config, items, indexes); err != nil {
 			return err
 		}
 	}
@@ -396,6 +407,9 @@ func (*Lifecycle) Contribute(_ context.Context, _ asset.ScopeID, assets []asset.
 		if err != nil {
 			return governance.Contribution{}, err
 		}
+	}
+	if err := contributeChildDependencies(&result, index, assets); err != nil {
+		return governance.Contribution{}, err
 	}
 	contributeKMSReferences(&result, assets)
 	contributeKMSPolicyAdministrators(&result, assets)
