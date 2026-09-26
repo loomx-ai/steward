@@ -2787,6 +2787,14 @@
         "Tables_Get",
         "Tables_ListByWorkspace"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/loadBalancer.json",
+      "operations": [
+        "LoadBalancerBackendAddressPools_Delete",
+        "LoadBalancerBackendAddressPools_Get",
+        "LoadBalancerBackendAddressPools_List"
+      ]
     }
   ],
   "resource_types": [
@@ -12157,6 +12165,24 @@
       ],
       "list_operations": [
         "Azure.Microsoft.OperationalInsights.Tables_ListByWorkspace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/loadBalancers/backendAddressPools",
+      "class": "network.target_group",
+      "display_name": "Load balancer backend pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "backendAddressPools",
+      "read_operations": [
+        "Azure.Microsoft.Network.LoadBalancerBackendAddressPools_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.LoadBalancerBackendAddressPools_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.LoadBalancerBackendAddressPools_List"
       ]
     }
   ]

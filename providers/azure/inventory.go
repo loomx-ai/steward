@@ -908,9 +908,11 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 			return
 		}
 		// Backend pools and similar embedded subresources resolve to their
-		// modeled ARM parent. Reverse child lists are excluded below.
+		// modeled ARM parent. Reverse child lists are excluded below. A backend
+		// pool is itself inventoried, but its members keep depending on the
+		// load balancer that forwards to them.
 		for {
-			if kind, known := findType(target); known {
+			if kind, known := findType(target); known && !strings.EqualFold(kind.NativeType, lbBackendPoolType) {
 				addReference(result, kind.NativeType, id)
 				break
 			}

@@ -836,6 +836,19 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 	if protectedAzureTags(object(raw["tags"])) {
 		return "azure_protected_tag"
 	}
+	// A pool that rules or network interfaces still use cannot be deleted
+	// without changing the load balancer or those interfaces first.
+	if kind.NativeType == lbBackendPoolType {
+		props := object(raw["properties"])
+		for _, field := range []string{"loadBalancingRules", "outboundRules", "inboundNatRules", "backendIPConfigurations"} {
+			if len(array(props[field])) > 0 {
+				return "azure_lb_backend_pool_in_use"
+			}
+		}
+		if len(object(props["outboundRule"])) > 0 {
+			return "azure_lb_backend_pool_in_use"
+		}
+	}
 	if kind.NativeType == logAnalyticsTableType {
 		switch logAnalyticsTableCreator(raw) {
 		case "CustomLog", "RestoredLogs", "SearchResults":

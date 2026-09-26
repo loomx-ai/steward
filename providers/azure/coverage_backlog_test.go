@@ -183,3 +183,50 @@ func TestCoverageKindsDeleteWithOperationAndFinalAbsence(t *testing.T) {
 		})
 	}
 }
+
+// Backend pools are listed through their load balancer; a pool that rules or
+// interfaces use is protected, and interface references still point at the
+// load balancer.
+func TestLoadBalancerBackendPoolsAreListedAndProtectedWhileInUse(t *testing.T) {
+	root := "/subscriptions/" + testSubscription
+	lb := nativeResource(lbType, "web", "eastus", map[string]any{"provisioningState": "Succeeded"})
+	pool := func(name string, props map[string]any) map[string]any {
+		props["provisioningState"] = "Succeeded"
+		return map[string]any{"id": text(lb["id"]) + "/backendAddressPools/" + name, "name": name, "properties": props}
+	}
+	idle := pool("idle", map[string]any{})
+	used := pool("used", map[string]any{"loadBalancingRules": []any{map[string]any{"id": text(lb["id"]) + "/loadBalancingRules/http"}}})
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		switch path := strings.ToLower(req.URL.Path); path {
+		case root + "/providers/microsoft.network/loadbalancers":
+			return jsonResponse(200, map[string]any{"value": []any{lb}}, nil), nil
+		case strings.ToLower(text(lb["id"])):
+			return jsonResponse(200, lb, nil), nil
+		case strings.ToLower(text(lb["id"]) + "/backendAddressPools"):
+			return jsonResponse(200, map[string]any{"value": []any{idle, used}}, nil), nil
+		case strings.ToLower(text(idle["id"])):
+			return jsonResponse(200, idle, nil), nil
+		case strings.ToLower(text(used["id"])):
+			return jsonResponse(200, used, nil), nil
+		case root + "/resourcegroups", root + "/providers/microsoft.authorization/locks":
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
+		t.Fatalf("unexpected request %s", req.URL)
+		return nil, nil
+	})
+	batch, err := r.List(context.Background(), productRequest(r, lbBackendPoolType))
+	if err != nil || len(batch.Items) != 2 {
+		t.Fatalf("batch=%+v err=%v", batch, err)
+	}
+	kind, _ := findType(lbBackendPoolType)
+	if protectionReason(kind, idle) != "" || protectionReason(kind, used) != "azure_lb_backend_pool_in_use" {
+		t.Fatal("backend pool use is not protected")
+	}
+	nic := references(nicType, resourceID(nicType, "nic"), map[string]any{"properties": map[string]any{"ipConfigurations": []any{map[string]any{"properties": map[string]any{"loadBalancerBackendAddressPools": []any{map[string]any{"id": text(idle["id"])}}}}}}})
+	if len(nic[lbType]) != 1 || len(nic[lbBackendPoolType]) != 0 {
+		t.Fatalf("interface references = %v", nic)
+	}
+	if !HasServiceCascade(lbType) {
+		t.Fatal("load balancer backend pool cascade is not registered")
+	}
+}

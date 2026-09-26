@@ -1380,7 +1380,10 @@ resources:
     resources:
     - compute.googleapis.com/RegionBackendService
   azure:
-    notes: Backend address pools are properties of Microsoft.Network/loadBalancers.
+    resources:
+    - Microsoft.Network/loadBalancers/backendAddressPools
+    notes: Load-balancing rules stay properties of the load balancer; a pool that rules or network
+      interfaces use cannot be deleted on its own.
   aws:
     resources:
     - AWS::ElasticLoadBalancingV2::TargetGroup
@@ -1583,7 +1586,10 @@ resources:
     resources:
     - compute.googleapis.com/RegionBackendService
   azure:
-    notes: Backend address pools are properties of Microsoft.Network/loadBalancers.
+    resources:
+    - Microsoft.Network/loadBalancers/backendAddressPools
+    notes: Load-balancing rules stay properties of the load balancer; a pool that rules or network
+      interfaces use cannot be deleted on its own.
   aws:
     resources:
     - AWS::ElasticLoadBalancingV2::TargetGroup

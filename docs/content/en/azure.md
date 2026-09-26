@@ -134,7 +134,7 @@ What to expect:
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 502 Azure resource types; 451 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 503 Azure resource types; 452 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -143,7 +143,7 @@ Steward recognizes 502 Azure resource types; 451 have native cleanup actions, in
 | [Azure Batch](#azure-batch) | Accounts, pools, nodes, jobs, schedules, tasks, applications, package versions, private endpoint connections and network perimeter views | Reviewed prerequisites and cascades; removing an exact node requeues its running tasks; perimeter views go with account cleanup |
 | [API Management](#api-management) | Services, workspaces, APIs and revisions, policies, products, subscriptions, portal content/configuration, credentials, notifications, associations, self-hosted gateway registrations and standalone workspace gateways | Reviewed cascades and ordered unlinks; fixed configurations go with their controller; service deletion uses soft-delete retention |
 | Virtual networks | VNets, subnets, NICs, network security groups, route tables, public IPs, public IP prefixes, NAT gateways | Supported, with [network occupant checks](#general-protections) |
-| Load balancing | Load balancers and Application Gateways | Supported |
+| Load balancing | Load balancers, their backend pools, and Application Gateways | Supported; a backend pool that load-balancing, NAT or outbound rules or network interfaces still use is protected, and pools are deleted with their load balancer |
 | Storage | Storage accounts and Blob containers | [Empty resources only](#general-protections) |
 | SQL | Logical servers, databases and elastic pools | Server cleanup includes its reviewed databases and pools; deleting `master` on its own is prohibited |
 | PostgreSQL / MySQL | Flexible servers | Supported |

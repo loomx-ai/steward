@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "150a7cb89dc812eadf6d5ee97e4a296e2e00520128ead64ef2d3dcf4cec962b0",
+    "checksum": "a7ab62a084bb0e6f0b2ff43ccfcb9f77b69ac5fc919d4c9b44fd8a0cf26b1e5e",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "63b50fc4c456c8ac1ff59caefa33d58dcd25327850302c6092da9be933f69fbb",
+  "content_checksum": "76e002715ec6c341c5254e512cf6da38c83458b88bff42e83564c8975808cbb8",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -116329,6 +116329,229 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
     },
     {
+      "id": "Azure.Microsoft.Network.LoadBalancerBackendAddressPools_Delete",
+      "name": "LoadBalancerBackendAddressPools_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/loadBalancers/{loadBalancerName}/backendAddressPools/{backendAddressPoolName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "backendAddressPoolName": {
+            "description": "The name of the backend address pool.",
+            "in": "path",
+            "name": "backendAddressPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "loadBalancerName": {
+            "description": "The name of the load balancer.",
+            "in": "path",
+            "name": "loadBalancerName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/loadBalancers/{loadBalancerName}/backendAddressPools/{backendAddressPoolName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/loadBalancer.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.LoadBalancerBackendAddressPools_Get",
+      "name": "LoadBalancerBackendAddressPools_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/loadBalancers/{loadBalancerName}/backendAddressPools/{backendAddressPoolName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "backendAddressPoolName": {
+            "description": "The name of the backend address pool.",
+            "in": "path",
+            "name": "backendAddressPoolName",
+            "required": true,
+            "type": "string"
+          },
+          "loadBalancerName": {
+            "description": "The name of the load balancer.",
+            "in": "path",
+            "name": "loadBalancerName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/SubResource"
+          }
+        ],
+        "description": "Pool of backend IP addresses.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the resource that is unique within the set of backend address pools used by the load balancer. This name can be used to access the resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/BackendAddressPoolPropertiesFormat",
+            "description": "Properties of load balancer backend address pool.",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "Type of the resource.",
+            "readOnly": true,
+            "type": "string"
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/loadBalancers/{loadBalancerName}/backendAddressPools/{backendAddressPoolName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/loadBalancer.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.LoadBalancerBackendAddressPools_List",
+      "name": "LoadBalancerBackendAddressPools_List",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/loadBalancers/{loadBalancerName}/backendAddressPools",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "loadBalancerName": {
+            "description": "The name of the load balancer.",
+            "in": "path",
+            "name": "loadBalancerName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response for ListBackendAddressPool API service call.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of backend address pools in a load balancer.",
+            "items": {
+              "$ref": "#/definitions/BackendAddressPool"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/loadBalancers/{loadBalancerName}/backendAddressPools",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/loadBalancer.json"
+    },
+    {
       "id": "Azure.Microsoft.Network.LoadBalancers_Delete",
       "name": "LoadBalancers_Delete",
       "service": "Microsoft.Network",
@@ -153957,6 +154180,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Network.LoadBalancers_ListAll"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/loadBalancers/backendAddressPools",
+      "class": "network.target_group",
+      "display_name": "Load balancer backend pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "backendAddressPools",
+        "read_operations": [
+          "Azure.Microsoft.Network.LoadBalancerBackendAddressPools_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.LoadBalancerBackendAddressPools_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.LoadBalancerBackendAddressPools_List"
         ]
       }
     },

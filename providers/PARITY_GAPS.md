@@ -6,7 +6,7 @@ not cloud feature acceptance. Dated sections below keep the row count that held
 when they were written.
 
 The matrix covers all 202 Alibaba Cloud specifications for GCP, Azure and AWS.
-The repository contains 217 GCP, 502 Azure and 213 AWS specifications; those
+The repository contains 217 GCP, 503 Azure and 213 AWS specifications; those
 counts do not prove equivalence. All 202 rows remain pending behavioral
 verification.
 
@@ -21,12 +21,12 @@ check verifies matrix consistency only. AWS progress and evidence are tracked in
 
 | Measure | GCP | Azure | AWS |
 | --- | --- | --- | --- |
-| Explicit native specifications | 217 | 502 | 213 |
-| Baseline rows with at least one existing mapped specification | 187/202 | 178/202 | 186/202 |
+| Explicit native specifications | 217 | 503 | 213 |
+| Baseline rows with at least one existing mapped specification | 187/202 | 180/202 | 186/202 |
 | Candidate types still without a specification | 0 | 0 | 0 |
 | Baseline rows affected by missing candidate specifications | 0 | 0 | 0 |
 | Empty mappings deferred as not yet modeled | 0 | 2 | 0 |
-| Empty mappings with a documented platform difference | 15 | 22 | 16 |
+| Empty mappings with a documented platform difference | 15 | 20 | 16 |
 
 These are registration/mapping measures, not functional completion percentages.
 A row can have both an implemented mapping and an absent candidate. None of the
@@ -88,6 +88,11 @@ accepted per requirement.
 | `ACS::CEN::TransitRouterMulticastDomain` | Azure | Azure virtual networks block multicast and broadcast traffic; Virtual WAN has no multicast domain resource. |
 | `ACS::RTC::Application` | GCP | No managed real-time communication application resource exists. |
 | `ACS::SMS::Template` | GCP | Identity Platform's SMS template is an output-only project configuration field without lifecycle. |
+| `ACS::SLS::LogStore` | Azure | Mapped to `Microsoft.OperationalInsights/workspaces/tables`: custom, restored and search-result tables have their own GET and DELETE. Built-in tables stay part of the workspace. |
+| `ACS::AliKafka::Topic`, `ConsumerGroup` | AWS | Topics mapped to `AWS::MSK::Topic`, which the MSK topic API and a Cloud Control handler now provide. MSK still has no consumer group API. |
+| `ACS::ApiGateway::App` | GCP | Mapped to `apikeys.googleapis.com/Key`; API keys identify calling applications and have their own lifecycle. |
+| `ACS::NLB::ServerGroup`, `ACS::SLB::VServerGroup` | Azure | Mapped to `Microsoft.Network/loadBalancers/backendAddressPools`, which has its own GET and DELETE. Load-balancing rules and Application Gateway listeners and pools remain gateway properties. |
+| Other platform differences | GCP, Azure, AWS | Reviewed on 2026-09-26 against the official API metadata; no new independent resource was found for the remaining rows. |
 
 ## Behavioral work remains separate
 

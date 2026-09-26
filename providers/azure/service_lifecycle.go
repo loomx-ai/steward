@@ -35,6 +35,8 @@ const (
 	hdinsightClusterType          = "Microsoft.HDInsight/clusters"
 	logAnalyticsTableType         = "Microsoft.OperationalInsights/workspaces/tables"
 	logAnalyticsTableCustomSuffix = "_CL"
+	lbType                        = "Microsoft.Network/loadBalancers"
+	lbBackendPoolType             = lbType + "/backendAddressPools"
 )
 
 // Native deletion semantics, not an inference from ARM path nesting.
@@ -118,6 +120,8 @@ var serviceCascadeRules = map[string][]string{
 	// https://learn.microsoft.com/rest/api/eventgrid/controlplane/topics/delete
 	eventGridTopicType:       {eventGridSubscriptionType},
 	eventGridSystemTopicType: {eventGridSystemSubscription},
+	// Backend pools are load balancer configuration and go with it.
+	lbType: {lbBackendPoolType},
 	// Without force, a host pool is deleted only after its session hosts.
 	avdHostPoolType: {avdSessionHostType},
 	networkWatcherType: {
