@@ -2734,6 +2734,59 @@
         "GetCertificate",
         "GetCertificates"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json",
+      "operations": [
+        "Namespaces_Delete",
+        "Namespaces_Get",
+        "Namespaces_ListBySubscription",
+        "SystemTopicEventSubscriptions_Delete",
+        "SystemTopicEventSubscriptions_Get",
+        "SystemTopicEventSubscriptions_ListBySystemTopic",
+        "SystemTopics_Delete",
+        "SystemTopics_Get",
+        "SystemTopics_ListBySubscription",
+        "TopicEventSubscriptions_Delete",
+        "TopicEventSubscriptions_Get",
+        "TopicEventSubscriptions_List",
+        "Topics_Delete",
+        "Topics_Get",
+        "Topics_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json",
+      "operations": [
+        "ApplicationGroups_Delete",
+        "ApplicationGroups_Get",
+        "ApplicationGroups_ListBySubscription",
+        "HostPools_Delete",
+        "HostPools_Get",
+        "HostPools_List",
+        "SessionHosts_Delete",
+        "SessionHosts_Get",
+        "SessionHosts_List",
+        "Workspaces_Delete",
+        "Workspaces_Get",
+        "Workspaces_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/hdinsight/resource-manager/Microsoft.HDInsight/HDInsight/stable/2021-06-01/cluster.json",
+      "operations": [
+        "Clusters_Delete",
+        "Clusters_Get",
+        "Clusters_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2025-02-01/Tables.json",
+      "operations": [
+        "Tables_Delete",
+        "Tables_Get",
+        "Tables_ListByWorkspace"
+      ]
     }
   ],
   "resource_types": [
@@ -11904,6 +11957,206 @@
       "delete_operations": [],
       "list_operations": [
         "Azure.Microsoft.Management.ManagementGroups_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventGrid/topics",
+      "class": "messaging.event_bus",
+      "display_name": "Event Grid topic",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "topics",
+      "read_operations": [
+        "Azure.Microsoft.EventGrid.Topics_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventGrid.Topics_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventGrid.Topics_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventGrid/topics/eventSubscriptions",
+      "class": "messaging.event_rule",
+      "display_name": "Event Grid topic event subscription",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "eventSubscriptions",
+      "read_operations": [
+        "Azure.Microsoft.EventGrid.TopicEventSubscriptions_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventGrid.TopicEventSubscriptions_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventGrid.TopicEventSubscriptions_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventGrid/systemTopics",
+      "class": "messaging.event_bus",
+      "display_name": "Event Grid system topic",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "systemTopics",
+      "read_operations": [
+        "Azure.Microsoft.EventGrid.SystemTopics_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventGrid.SystemTopics_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventGrid.SystemTopics_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventGrid/systemTopics/eventSubscriptions",
+      "class": "messaging.event_rule",
+      "display_name": "Event Grid system topic event subscription",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "eventSubscriptions",
+      "read_operations": [
+        "Azure.Microsoft.EventGrid.SystemTopicEventSubscriptions_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventGrid.SystemTopicEventSubscriptions_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventGrid.SystemTopicEventSubscriptions_ListBySystemTopic"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventGrid/namespaces",
+      "class": "messaging.event_bus",
+      "display_name": "Event Grid namespace",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "namespaces",
+      "read_operations": [
+        "Azure.Microsoft.EventGrid.Namespaces_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventGrid.Namespaces_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventGrid.Namespaces_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DesktopVirtualization/hostPools",
+      "class": "network.virtual_desktop_network",
+      "display_name": "Azure Virtual Desktop host pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "hostPools",
+      "read_operations": [
+        "Azure.Microsoft.DesktopVirtualization.HostPools_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DesktopVirtualization.HostPools_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DesktopVirtualization.HostPools_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DesktopVirtualization/hostPools/sessionHosts",
+      "class": "compute.virtual_desktop",
+      "display_name": "Azure Virtual Desktop session host",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "sessionHosts",
+      "read_operations": [
+        "Azure.Microsoft.DesktopVirtualization.SessionHosts_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DesktopVirtualization.SessionHosts_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DesktopVirtualization.SessionHosts_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DesktopVirtualization/applicationGroups",
+      "class": "compute.virtual_desktop_policy",
+      "display_name": "Azure Virtual Desktop application group",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "applicationGroups",
+      "read_operations": [
+        "Azure.Microsoft.DesktopVirtualization.ApplicationGroups_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DesktopVirtualization.ApplicationGroups_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DesktopVirtualization.ApplicationGroups_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DesktopVirtualization/workspaces",
+      "class": "compute.virtual_desktop_workspace",
+      "display_name": "Azure Virtual Desktop workspace",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "workspaces",
+      "read_operations": [
+        "Azure.Microsoft.DesktopVirtualization.Workspaces_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DesktopVirtualization.Workspaces_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DesktopVirtualization.Workspaces_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.HDInsight/clusters",
+      "class": "data.processing_cluster",
+      "display_name": "HDInsight cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "clusters",
+      "read_operations": [
+        "Azure.Microsoft.HDInsight.Clusters_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.HDInsight.Clusters_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.HDInsight.Clusters_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.OperationalInsights/workspaces/tables",
+      "class": "observability.log_store",
+      "display_name": "Log Analytics table",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "tables",
+      "read_operations": [
+        "Azure.Microsoft.OperationalInsights.Tables_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.OperationalInsights.Tables_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.OperationalInsights.Tables_ListByWorkspace"
       ]
     }
   ]

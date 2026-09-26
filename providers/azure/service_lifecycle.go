@@ -23,6 +23,20 @@ const vmExtensionType = vmType + "/extensions"
 
 const networkWatcherType = "Microsoft.Network/networkWatchers"
 
+const (
+	eventGridTopicType            = "Microsoft.EventGrid/topics"
+	eventGridSubscriptionType     = eventGridTopicType + "/eventSubscriptions"
+	eventGridSystemTopicType      = "Microsoft.EventGrid/systemTopics"
+	eventGridSystemSubscription   = eventGridSystemTopicType + "/eventSubscriptions"
+	avdHostPoolType               = "Microsoft.DesktopVirtualization/hostPools"
+	avdSessionHostType            = avdHostPoolType + "/sessionHosts"
+	avdApplicationGroupType       = "Microsoft.DesktopVirtualization/applicationGroups"
+	avdWorkspaceType              = "Microsoft.DesktopVirtualization/workspaces"
+	hdinsightClusterType          = "Microsoft.HDInsight/clusters"
+	logAnalyticsTableType         = "Microsoft.OperationalInsights/workspaces/tables"
+	logAnalyticsTableCustomSuffix = "_CL"
+)
+
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
@@ -100,6 +114,12 @@ var serviceCascadeRules = map[string][]string{
 	privateDNSLinkType:         {privateDNSZoneType + "/A", privateDNSZoneType + "/AAAA"},
 	// https://learn.microsoft.com/azure/azure-sql/database/logical-servers
 	sqlServerType: {sqlDatabaseType, "Microsoft.Sql/servers/elasticPools"},
+	// Deleting a topic deletes its event subscriptions.
+	// https://learn.microsoft.com/rest/api/eventgrid/controlplane/topics/delete
+	eventGridTopicType:       {eventGridSubscriptionType},
+	eventGridSystemTopicType: {eventGridSystemSubscription},
+	// Without force, a host pool is deleted only after its session hosts.
+	avdHostPoolType: {avdSessionHostType},
 	networkWatcherType: {
 		"Microsoft.Network/networkWatchers/flowLogs",
 		"Microsoft.Network/networkWatchers/connectionMonitors",
@@ -507,6 +527,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeWAFReferences(ctx, assets, &result); err != nil {
 		return result, err
 	}
+	contributeDesktopVirtualization(assets, &result)
 	aksMembers := managedGroupMembers(assets)
 	parents := slices.Clone(assets)
 	sort.SliceStable(parents, func(i, j int) bool {

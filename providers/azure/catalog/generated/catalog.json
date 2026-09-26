@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "fb2f22c4f25e241b26bc68e832459bcee4f39947a7d78364616846d45c41099a",
+    "checksum": "150a7cb89dc812eadf6d5ee97e4a296e2e00520128ead64ef2d3dcf4cec962b0",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "1bb0ef6931d181c3533ac72a80ddde831830c8c6966ca2dfbaebb5b234a29ed5",
+  "content_checksum": "63b50fc4c456c8ac1ff59caefa33d58dcd25327850302c6092da9be933f69fbb",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -76630,6 +76630,944 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7a636fbb260b428a0798320e9fe72ac62acdd1e3/specification/dataprotection/resource-manager/Microsoft.DataProtection/DataProtection/stable/2026-03-01/dataprotection.json"
     },
     {
+      "id": "Azure.Microsoft.DesktopVirtualization.ApplicationGroups_Delete",
+      "name": "ApplicationGroups_Delete",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/applicationGroups/{applicationGroupName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "applicationGroupName": {
+            "description": "The name of the application group",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 3,
+            "name": "applicationGroupName",
+            "pattern": "^[A-Za-z0-9@.\\-_ ]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/applicationGroups/{applicationGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
+      "id": "Azure.Microsoft.DesktopVirtualization.ApplicationGroups_Get",
+      "name": "ApplicationGroups_Get",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/applicationGroups/{applicationGroupName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "applicationGroupName": {
+            "description": "The name of the application group",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 3,
+            "name": "applicationGroupName",
+            "pattern": "^[A-Za-z0-9@.\\-_ ]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ResourceModelWithAllowedPropertySet"
+          }
+        ],
+        "description": "Represents a ApplicationGroup definition.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/ApplicationGroupProperties",
+            "description": "Detailed properties for ApplicationGroup",
+            "x-ms-client-flatten": true,
+            "x-nullable": false
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/systemData",
+            "description": "Metadata pertaining to creation and last modification of the resource."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/applicationGroups/{applicationGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
+      "id": "Azure.Microsoft.DesktopVirtualization.ApplicationGroups_ListBySubscription",
+      "name": "ApplicationGroups_ListBySubscription",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DesktopVirtualization/applicationGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "OData filter expression. Valid properties for filtering are applicationGroupType.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of ApplicationGroup definitions.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "List of ApplicationGroup definitions.",
+            "items": {
+              "$ref": "#/definitions/ApplicationGroup"
+            },
+            "type": "array"
+          }
+        },
+        "title": "ApplicationGroupList",
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DesktopVirtualization/applicationGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
+      "id": "Azure.Microsoft.DesktopVirtualization.HostPools_Delete",
+      "name": "HostPools_Delete",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/hostPools/{hostPoolName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "force": {
+            "description": "Force flag to delete sessionHost.",
+            "in": "query",
+            "name": "force",
+            "required": false,
+            "type": "boolean"
+          },
+          "hostPoolName": {
+            "description": "The name of the host pool within the specified resource group",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 3,
+            "name": "hostPoolName",
+            "pattern": "^[A-Za-z0-9@.\\-_ ]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/hostPools/{hostPoolName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
+      "id": "Azure.Microsoft.DesktopVirtualization.HostPools_Get",
+      "name": "HostPools_Get",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/hostPools/{hostPoolName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "hostPoolName": {
+            "description": "The name of the host pool within the specified resource group",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 3,
+            "name": "hostPoolName",
+            "pattern": "^[A-Za-z0-9@.\\-_ ]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ResourceModelWithAllowedPropertySet"
+          }
+        ],
+        "description": "Represents a HostPool definition.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/HostPoolProperties",
+            "description": "Detailed properties for HostPool",
+            "x-ms-client-flatten": true,
+            "x-nullable": false
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/systemData",
+            "description": "Metadata pertaining to creation and last modification of the resource."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/hostPools/{hostPoolName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
+      "id": "Azure.Microsoft.DesktopVirtualization.HostPools_List",
+      "name": "HostPools_List",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DesktopVirtualization/hostPools",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "initialSkip": {
+            "description": "Initial number of items to skip.",
+            "format": "int32",
+            "in": "query",
+            "name": "initialSkip",
+            "required": false,
+            "type": "integer"
+          },
+          "isDescending": {
+            "description": "Indicates whether the collection is descending.",
+            "in": "query",
+            "name": "isDescending",
+            "required": false,
+            "type": "boolean"
+          },
+          "pageSize": {
+            "description": "Number of items per page.",
+            "format": "int32",
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "type": "integer"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of HostPool definitions.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "List of HostPool definitions.",
+            "items": {
+              "$ref": "#/definitions/HostPool"
+            },
+            "type": "array"
+          }
+        },
+        "title": "HostPoolList",
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DesktopVirtualization/hostPools",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
+      "id": "Azure.Microsoft.DesktopVirtualization.SessionHosts_Delete",
+      "name": "SessionHosts_Delete",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/hostPools/{hostPoolName}/sessionHosts/{sessionHostName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "force": {
+            "description": "Force flag to force sessionHost deletion even when userSession exists.",
+            "in": "query",
+            "name": "force",
+            "required": false,
+            "type": "boolean"
+          },
+          "hostPoolName": {
+            "description": "The name of the host pool within the specified resource group",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 3,
+            "name": "hostPoolName",
+            "pattern": "^[A-Za-z0-9@.\\-_ ]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sessionHostName": {
+            "description": "The name of the session host within the specified host pool",
+            "in": "path",
+            "maxLength": 48,
+            "minLength": 3,
+            "name": "sessionHostName",
+            "pattern": "^[A-Za-z0-9@.\\-_ ]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/hostPools/{hostPoolName}/sessionHosts/{sessionHostName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
+      "id": "Azure.Microsoft.DesktopVirtualization.SessionHosts_Get",
+      "name": "SessionHosts_Get",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/hostPools/{hostPoolName}/sessionHosts/{sessionHostName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "hostPoolName": {
+            "description": "The name of the host pool within the specified resource group",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 3,
+            "name": "hostPoolName",
+            "pattern": "^[A-Za-z0-9@.\\-_ ]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sessionHostName": {
+            "description": "The name of the session host within the specified host pool",
+            "in": "path",
+            "maxLength": 48,
+            "minLength": 3,
+            "name": "sessionHostName",
+            "pattern": "^[A-Za-z0-9@.\\-_ ]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/Resource"
+          }
+        ],
+        "description": "Represents a SessionHost definition.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SessionHostProperties",
+            "description": "Detailed properties for SessionHost",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/systemData",
+            "description": "Metadata pertaining to creation and last modification of the resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/hostPools/{hostPoolName}/sessionHosts/{sessionHostName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
+      "id": "Azure.Microsoft.DesktopVirtualization.SessionHosts_List",
+      "name": "SessionHosts_List",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/hostPools/{hostPoolName}/sessionHosts",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "hostPoolName": {
+            "description": "The name of the host pool within the specified resource group",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 3,
+            "name": "hostPoolName",
+            "pattern": "^[A-Za-z0-9@.\\-_ ]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "initialSkip": {
+            "description": "Initial number of items to skip.",
+            "format": "int32",
+            "in": "query",
+            "name": "initialSkip",
+            "required": false,
+            "type": "integer"
+          },
+          "isDescending": {
+            "description": "Indicates whether the collection is descending.",
+            "in": "query",
+            "name": "isDescending",
+            "required": false,
+            "type": "boolean"
+          },
+          "pageSize": {
+            "description": "Number of items per page.",
+            "format": "int32",
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "type": "integer"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of SessionHost definitions.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "List of SessionHost definitions.",
+            "items": {
+              "$ref": "#/definitions/SessionHost"
+            },
+            "type": "array"
+          }
+        },
+        "title": "SessionHostList",
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/hostPools/{hostPoolName}/sessionHosts",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
+      "id": "Azure.Microsoft.DesktopVirtualization.Workspaces_Delete",
+      "name": "Workspaces_Delete",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/workspaces/{workspaceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 3,
+            "name": "workspaceName",
+            "pattern": "^[A-Za-z0-9@.\\-_ ]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/workspaces/{workspaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
+      "id": "Azure.Microsoft.DesktopVirtualization.Workspaces_Get",
+      "name": "Workspaces_Get",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/workspaces/{workspaceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace",
+            "in": "path",
+            "maxLength": 64,
+            "minLength": 3,
+            "name": "workspaceName",
+            "pattern": "^[A-Za-z0-9@.\\-_ ]*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ResourceModelWithAllowedPropertySet"
+          }
+        ],
+        "description": "Represents a Workspace definition.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/WorkspaceProperties",
+            "description": "Detailed properties for Workspace",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/systemData",
+            "description": "Metadata pertaining to creation and last modification of the resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/workspaces/{workspaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
+      "id": "Azure.Microsoft.DesktopVirtualization.Workspaces_ListBySubscription",
+      "name": "Workspaces_ListBySubscription",
+      "service": "Microsoft.DesktopVirtualization",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DesktopVirtualization/workspaces",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Workspace definitions.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "List of Workspace definitions.",
+            "items": {
+              "$ref": "#/definitions/Workspace"
+            },
+            "type": "array"
+          }
+        },
+        "title": "WorkspaceList",
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DesktopVirtualization",
+        "version": "2024-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DesktopVirtualization/workspaces",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/desktopvirtualization/resource-manager/Microsoft.DesktopVirtualization/DesktopVirtualization/stable/2024-04-03/desktopvirtualization.json"
+    },
+    {
       "id": "Azure.Microsoft.DocumentDB.CassandraClusters_Delete",
       "name": "CassandraClusters_Delete",
       "service": "Microsoft.DocumentDB",
@@ -89127,6 +90065,1109 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
     },
     {
+      "id": "Azure.Microsoft.EventGrid.Namespaces_Delete",
+      "name": "Namespaces_Delete",
+      "service": "Microsoft.EventGrid",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/namespaces/{namespaceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "namespaceName": {
+            "description": "Name of the namespace.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 3,
+            "name": "namespaceName",
+            "pattern": "^[a-zA-Z0-9-]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/namespaces/{namespaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.Namespaces_Get",
+      "name": "Namespaces_Get",
+      "service": "Microsoft.EventGrid",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/namespaces/{namespaceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "namespaceName": {
+            "description": "Name of the namespace.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 3,
+            "name": "namespaceName",
+            "pattern": "^[a-zA-Z0-9-]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Namespace resource.",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/IdentityInfo",
+            "description": "Identity information for the Namespace resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/NamespaceProperties",
+            "description": "Properties of the Namespace resource.",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/NamespaceSku",
+            "description": "Represents available Sku pricing tiers."
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/systemData",
+            "description": "The system metadata relating to the Event Grid resource.",
+            "readOnly": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/namespaces/{namespaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.Namespaces_ListBySubscription",
+      "name": "Namespaces_ListBySubscription",
+      "service": "Microsoft.EventGrid",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.EventGrid/namespaces",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "The query used to filter the search results using OData syntax. Filtering is permitted on the 'name' property only and with limited number of OData operations. These operations are: the 'contains' function as well as the following logical operations: not, and, or, eq (for equal), and ne (for not equal). No arithmetic operations are supported. The following is a valid filter example: $filter=contains(namE, 'PATTERN') and name ne 'PATTERN-1'. The following is not a valid filter example: $filter=location eq 'westus'.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "$top": {
+            "description": "The number of results to return per page for the list operation. Valid range for top parameter is 1 to 100. If not specified, the default number of results to be returned is 20 items per page.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the List Namespaces operation.",
+        "properties": {
+          "nextLink": {
+            "description": "A link for the next page of namespaces.",
+            "type": "string"
+          },
+          "value": {
+            "description": "A collection of namespaces.",
+            "items": {
+              "$ref": "#/definitions/Namespace"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.EventGrid/namespaces",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.SystemTopicEventSubscriptions_Delete",
+      "name": "SystemTopicEventSubscriptions_Delete",
+      "service": "Microsoft.EventGrid",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/systemTopics/{systemTopicName}/eventSubscriptions/{eventSubscriptionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "eventSubscriptionName": {
+            "description": "Name of the event subscription to be deleted.",
+            "in": "path",
+            "name": "eventSubscriptionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "systemTopicName": {
+            "description": "Name of the system topic.",
+            "in": "path",
+            "name": "systemTopicName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/systemTopics/{systemTopicName}/eventSubscriptions/{eventSubscriptionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.SystemTopicEventSubscriptions_Get",
+      "name": "SystemTopicEventSubscriptions_Get",
+      "service": "Microsoft.EventGrid",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/systemTopics/{systemTopicName}/eventSubscriptions/{eventSubscriptionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "eventSubscriptionName": {
+            "description": "Name of the event subscription to be found.",
+            "in": "path",
+            "name": "eventSubscriptionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "systemTopicName": {
+            "description": "Name of the system topic.",
+            "in": "path",
+            "name": "systemTopicName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/Resource"
+          }
+        ],
+        "description": "Event Subscription.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/EventSubscriptionProperties",
+            "description": "Properties of the event subscription.",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/systemData",
+            "description": "The system metadata relating to the Event Grid resource.",
+            "readOnly": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/systemTopics/{systemTopicName}/eventSubscriptions/{eventSubscriptionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.SystemTopicEventSubscriptions_ListBySystemTopic",
+      "name": "SystemTopicEventSubscriptions_ListBySystemTopic",
+      "service": "Microsoft.EventGrid",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/systemTopics/{systemTopicName}/eventSubscriptions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "The query used to filter the search results using OData syntax. Filtering is permitted on the 'name' property only and with limited number of OData operations. These operations are: the 'contains' function as well as the following logical operations: not, and, or, eq (for equal), and ne (for not equal). No arithmetic operations are supported. The following is a valid filter example: $filter=contains(namE, 'PATTERN') and name ne 'PATTERN-1'. The following is not a valid filter example: $filter=location eq 'westus'.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "$top": {
+            "description": "The number of results to return per page for the list operation. Valid range for top parameter is 1 to 100. If not specified, the default number of results to be returned is 20 items per page.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "systemTopicName": {
+            "description": "Name of the system topic.",
+            "in": "path",
+            "name": "systemTopicName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the List EventSubscriptions operation",
+        "properties": {
+          "nextLink": {
+            "description": "A link for the next page of event subscriptions",
+            "type": "string"
+          },
+          "value": {
+            "description": "A collection of EventSubscriptions",
+            "items": {
+              "$ref": "#/definitions/EventSubscription"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/systemTopics/{systemTopicName}/eventSubscriptions",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.SystemTopics_Delete",
+      "name": "SystemTopics_Delete",
+      "service": "Microsoft.EventGrid",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/systemTopics/{systemTopicName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "systemTopicName": {
+            "description": "Name of the system topic.",
+            "in": "path",
+            "name": "systemTopicName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/systemTopics/{systemTopicName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.SystemTopics_Get",
+      "name": "SystemTopics_Get",
+      "service": "Microsoft.EventGrid",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/systemTopics/{systemTopicName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "systemTopicName": {
+            "description": "Name of the system topic.",
+            "in": "path",
+            "name": "systemTopicName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/TrackedResource"
+          }
+        ],
+        "description": "EventGrid System Topic.",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/IdentityInfo",
+            "description": "Identity information for the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/SystemTopicProperties",
+            "description": "Properties of the system topic.",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/systemData",
+            "description": "The system metadata relating to the Event Grid resource.",
+            "readOnly": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/systemTopics/{systemTopicName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.SystemTopics_ListBySubscription",
+      "name": "SystemTopics_ListBySubscription",
+      "service": "Microsoft.EventGrid",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.EventGrid/systemTopics",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "The query used to filter the search results using OData syntax. Filtering is permitted on the 'name' property only and with limited number of OData operations. These operations are: the 'contains' function as well as the following logical operations: not, and, or, eq (for equal), and ne (for not equal). No arithmetic operations are supported. The following is a valid filter example: $filter=contains(namE, 'PATTERN') and name ne 'PATTERN-1'. The following is not a valid filter example: $filter=location eq 'westus'.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "$top": {
+            "description": "The number of results to return per page for the list operation. Valid range for top parameter is 1 to 100. If not specified, the default number of results to be returned is 20 items per page.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the List System topics operation.",
+        "properties": {
+          "nextLink": {
+            "description": "A link for the next page of topics.",
+            "type": "string"
+          },
+          "value": {
+            "description": "A collection of system Topics.",
+            "items": {
+              "$ref": "#/definitions/SystemTopic"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.EventGrid/systemTopics",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.TopicEventSubscriptions_Delete",
+      "name": "TopicEventSubscriptions_Delete",
+      "service": "Microsoft.EventGrid",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/topics/{topicName}/eventSubscriptions/{eventSubscriptionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "eventSubscriptionName": {
+            "description": "Name of the event subscription to be deleted.",
+            "in": "path",
+            "name": "eventSubscriptionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "topicName": {
+            "description": "Name of the topic.",
+            "in": "path",
+            "name": "topicName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/topics/{topicName}/eventSubscriptions/{eventSubscriptionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.TopicEventSubscriptions_Get",
+      "name": "TopicEventSubscriptions_Get",
+      "service": "Microsoft.EventGrid",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/topics/{topicName}/eventSubscriptions/{eventSubscriptionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "eventSubscriptionName": {
+            "description": "Name of the event subscription to be found.",
+            "in": "path",
+            "name": "eventSubscriptionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "topicName": {
+            "description": "Name of the topic.",
+            "in": "path",
+            "name": "topicName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/Resource"
+          }
+        ],
+        "description": "Event Subscription.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/EventSubscriptionProperties",
+            "description": "Properties of the event subscription.",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/systemData",
+            "description": "The system metadata relating to the Event Grid resource.",
+            "readOnly": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/topics/{topicName}/eventSubscriptions/{eventSubscriptionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.TopicEventSubscriptions_List",
+      "name": "TopicEventSubscriptions_List",
+      "service": "Microsoft.EventGrid",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/topics/{topicName}/eventSubscriptions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "The query used to filter the search results using OData syntax. Filtering is permitted on the 'name' property only and with limited number of OData operations. These operations are: the 'contains' function as well as the following logical operations: not, and, or, eq (for equal), and ne (for not equal). No arithmetic operations are supported. The following is a valid filter example: $filter=contains(namE, 'PATTERN') and name ne 'PATTERN-1'. The following is not a valid filter example: $filter=location eq 'westus'.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "$top": {
+            "description": "The number of results to return per page for the list operation. Valid range for top parameter is 1 to 100. If not specified, the default number of results to be returned is 20 items per page.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "topicName": {
+            "description": "Name of the topic.",
+            "in": "path",
+            "name": "topicName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the List EventSubscriptions operation",
+        "properties": {
+          "nextLink": {
+            "description": "A link for the next page of event subscriptions",
+            "type": "string"
+          },
+          "value": {
+            "description": "A collection of EventSubscriptions",
+            "items": {
+              "$ref": "#/definitions/EventSubscription"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/topics/{topicName}/eventSubscriptions",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.Topics_Delete",
+      "name": "Topics_Delete",
+      "service": "Microsoft.EventGrid",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/topics/{topicName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "topicName": {
+            "description": "Name of the topic.",
+            "in": "path",
+            "name": "topicName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/topics/{topicName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.Topics_Get",
+      "name": "Topics_Get",
+      "service": "Microsoft.EventGrid",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/topics/{topicName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group within the user's subscription.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "topicName": {
+            "description": "Name of the topic.",
+            "in": "path",
+            "name": "topicName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/TrackedResource"
+          }
+        ],
+        "description": "EventGrid Topic",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/IdentityInfo",
+            "description": "Identity information for the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/TopicProperties",
+            "description": "Properties of the topic.",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/systemData",
+            "description": "The system metadata relating to the Event Grid resource.",
+            "readOnly": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/topics/{topicName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventGrid.Topics_ListBySubscription",
+      "name": "Topics_ListBySubscription",
+      "service": "Microsoft.EventGrid",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.EventGrid/topics",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "The query used to filter the search results using OData syntax. Filtering is permitted on the 'name' property only and with limited number of OData operations. These operations are: the 'contains' function as well as the following logical operations: not, and, or, eq (for equal), and ne (for not equal). No arithmetic operations are supported. The following is a valid filter example: $filter=contains(namE, 'PATTERN') and name ne 'PATTERN-1'. The following is not a valid filter example: $filter=location eq 'westus'.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "$top": {
+            "description": "The number of results to return per page for the list operation. Valid range for top parameter is 1 to 100. If not specified, the default number of results to be returned is 20 items per page.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2025-02-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the List Topics operation",
+        "properties": {
+          "nextLink": {
+            "description": "A link for the next page of topics",
+            "type": "string"
+          },
+          "value": {
+            "description": "A collection of Topics",
+            "items": {
+              "$ref": "#/definitions/Topic"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.EventGrid",
+        "version": "2025-02-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.EventGrid/topics",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/eventgrid/resource-manager/Microsoft.EventGrid/EventGrid/stable/2025-02-15/EventGrid.json"
+    },
+    {
       "id": "Azure.Microsoft.EventHub.ApplicationGroup_Delete",
       "name": "ApplicationGroup_Delete",
       "service": "Microsoft.EventHub",
@@ -93036,6 +95077,211 @@
       },
       "source_uri": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/28e4d24f3547898328eb52c700f2beb869116cfe/openapi/v1.0/openapi.yaml",
       "source_format": "msgraph-openapi3"
+    },
+    {
+      "id": "Azure.Microsoft.HDInsight.Clusters_Delete",
+      "name": "Clusters_Delete",
+      "service": "Microsoft.HDInsight",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HDInsight/clusters/{clusterName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.HDInsight",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HDInsight/clusters/{clusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/hdinsight/resource-manager/Microsoft.HDInsight/HDInsight/stable/2021-06-01/cluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.HDInsight.Clusters_Get",
+      "name": "Clusters_Get",
+      "service": "Microsoft.HDInsight",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HDInsight/clusters/{clusterName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The HDInsight cluster.",
+        "properties": {
+          "etag": {
+            "description": "The ETag for the resource",
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "#/definitions/ClusterIdentity",
+            "description": "The identity of the cluster, if configured."
+          },
+          "properties": {
+            "$ref": "#/definitions/ClusterGetProperties",
+            "description": "The properties of the cluster."
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v2/types.json#/definitions/systemData",
+            "readOnly": true
+          },
+          "zones": {
+            "description": "The availability zones.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.HDInsight",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HDInsight/clusters/{clusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/hdinsight/resource-manager/Microsoft.HDInsight/HDInsight/stable/2021-06-01/cluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.HDInsight.Clusters_List",
+      "name": "Clusters_List",
+      "service": "Microsoft.HDInsight",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The List Cluster operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "The link (url) to the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of Clusters.",
+            "items": {
+              "$ref": "#/definitions/Cluster"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.HDInsight",
+        "version": "2021-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/hdinsight/resource-manager/Microsoft.HDInsight/HDInsight/stable/2021-06-01/cluster.json"
     },
     {
       "id": "Azure.Microsoft.HybridCompute.HybridIdentityMetadata_Get",
@@ -121980,6 +124226,244 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/dns/resource-manager/Microsoft.Network/Dns/stable/2018-05-01/dns.json"
     },
     {
+      "id": "Azure.Microsoft.OperationalInsights.Tables_Delete",
+      "name": "Tables_Delete",
+      "service": "Microsoft.OperationalInsights",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/tables/{tableName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "tableName": {
+            "description": "The name of the table.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 4,
+            "name": "tableName",
+            "pattern": "^[A-Za-z0-9-_]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 4,
+            "name": "workspaceName",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]+[A-Za-z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.OperationalInsights",
+        "version": "2025-02-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/tables/{tableName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2025-02-01/Tables.json"
+    },
+    {
+      "id": "Azure.Microsoft.OperationalInsights.Tables_Get",
+      "name": "Tables_Get",
+      "service": "Microsoft.OperationalInsights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/tables/{tableName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "tableName": {
+            "description": "The name of the table.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 4,
+            "name": "tableName",
+            "pattern": "^[A-Za-z0-9-_]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 4,
+            "name": "workspaceName",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]+[A-Za-z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v2/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Workspace data table definition.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/TableProperties",
+            "description": "Table's properties.",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v2/types.json#/definitions/systemData",
+            "readOnly": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.OperationalInsights",
+        "version": "2025-02-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/tables/{tableName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2025-02-01/Tables.json"
+    },
+    {
+      "id": "Azure.Microsoft.OperationalInsights.Tables_ListByWorkspace",
+      "name": "Tables_ListByWorkspace",
+      "service": "Microsoft.OperationalInsights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/tables",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The name of the workspace.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 4,
+            "name": "workspaceName",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]+[A-Za-z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list tables operation response.",
+        "properties": {
+          "value": {
+            "description": "A list of data tables.",
+            "items": {
+              "$ref": "#/definitions/Table"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.OperationalInsights",
+        "version": "2025-02-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/tables",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2025-02-01/Tables.json"
+    },
+    {
       "id": "Azure.Microsoft.OperationalInsights.Workspaces_Delete",
       "name": "Workspaces_Delete",
       "service": "Microsoft.OperationalInsights",
@@ -148385,6 +150869,86 @@
       }
     },
     {
+      "native_type": "Microsoft.DesktopVirtualization/applicationGroups",
+      "class": "compute.virtual_desktop_policy",
+      "display_name": "Azure Virtual Desktop application group",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "applicationGroups",
+        "read_operations": [
+          "Azure.Microsoft.DesktopVirtualization.ApplicationGroups_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DesktopVirtualization.ApplicationGroups_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DesktopVirtualization.ApplicationGroups_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DesktopVirtualization/hostPools",
+      "class": "network.virtual_desktop_network",
+      "display_name": "Azure Virtual Desktop host pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "hostPools",
+        "read_operations": [
+          "Azure.Microsoft.DesktopVirtualization.HostPools_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DesktopVirtualization.HostPools_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DesktopVirtualization.HostPools_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DesktopVirtualization/hostPools/sessionHosts",
+      "class": "compute.virtual_desktop",
+      "display_name": "Azure Virtual Desktop session host",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "sessionHosts",
+        "read_operations": [
+          "Azure.Microsoft.DesktopVirtualization.SessionHosts_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DesktopVirtualization.SessionHosts_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DesktopVirtualization.SessionHosts_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DesktopVirtualization/workspaces",
+      "class": "compute.virtual_desktop_workspace",
+      "display_name": "Azure Virtual Desktop workspace",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "workspaces",
+        "read_operations": [
+          "Azure.Microsoft.DesktopVirtualization.Workspaces_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DesktopVirtualization.Workspaces_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DesktopVirtualization.Workspaces_ListBySubscription"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.DocumentDB/cassandraClusters",
       "class": "data.cassandra_cluster",
       "display_name": "Managed Cassandra cluster",
@@ -149338,6 +151902,108 @@
       }
     },
     {
+      "native_type": "Microsoft.EventGrid/namespaces",
+      "class": "messaging.event_bus",
+      "display_name": "Event Grid namespace",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "namespaces",
+        "read_operations": [
+          "Azure.Microsoft.EventGrid.Namespaces_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.EventGrid.Namespaces_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.EventGrid.Namespaces_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.EventGrid/systemTopics",
+      "class": "messaging.event_bus",
+      "display_name": "Event Grid system topic",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "systemTopics",
+        "read_operations": [
+          "Azure.Microsoft.EventGrid.SystemTopics_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.EventGrid.SystemTopics_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.EventGrid.SystemTopics_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.EventGrid/systemTopics/eventSubscriptions",
+      "class": "messaging.event_rule",
+      "display_name": "Event Grid system topic event subscription",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "eventSubscriptions",
+        "read_operations": [
+          "Azure.Microsoft.EventGrid.SystemTopicEventSubscriptions_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.EventGrid.SystemTopicEventSubscriptions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.EventGrid.SystemTopicEventSubscriptions_ListBySystemTopic"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.EventGrid/topics",
+      "class": "messaging.event_bus",
+      "display_name": "Event Grid topic",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "topics",
+        "read_operations": [
+          "Azure.Microsoft.EventGrid.Topics_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.EventGrid.Topics_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.EventGrid.Topics_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.EventGrid/topics/eventSubscriptions",
+      "class": "messaging.event_rule",
+      "display_name": "Event Grid topic event subscription",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "eventSubscriptions",
+        "read_operations": [
+          "Azure.Microsoft.EventGrid.TopicEventSubscriptions_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.EventGrid.TopicEventSubscriptions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.EventGrid.TopicEventSubscriptions_List"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.EventHub/clusters",
       "class": "messaging.cluster",
       "display_name": "Event Hubs dedicated cluster",
@@ -149634,6 +152300,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Graph.users.user.ListUser"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.HDInsight/clusters",
+      "class": "data.processing_cluster",
+      "display_name": "HDInsight cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "clusters",
+        "read_operations": [
+          "Azure.Microsoft.HDInsight.Clusters_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.HDInsight.Clusters_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.HDInsight.Clusters_List"
         ]
       }
     },
@@ -152081,6 +154767,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.OperationalInsights.Workspaces_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.OperationalInsights/workspaces/tables",
+      "class": "observability.log_store",
+      "display_name": "Log Analytics table",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "tables",
+        "read_operations": [
+          "Azure.Microsoft.OperationalInsights.Tables_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.OperationalInsights.Tables_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.OperationalInsights.Tables_ListByWorkspace"
         ]
       }
     },

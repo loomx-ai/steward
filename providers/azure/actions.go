@@ -836,6 +836,13 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 	if protectedAzureTags(object(raw["tags"])) {
 		return "azure_protected_tag"
 	}
+	if kind.NativeType == logAnalyticsTableType {
+		switch logAnalyticsTableCreator(raw) {
+		case "CustomLog", "RestoredLogs", "SearchResults":
+		default:
+			return "azure_log_analytics_builtin_table"
+		}
+	}
 	if kind.NativeType == fleetGateType {
 		return "azure_fleet_gate_requires_update_run"
 	}

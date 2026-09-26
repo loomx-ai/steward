@@ -75,6 +75,9 @@ var servicePrerequisiteRules = map[string][]string{
 	capacityGroupType:       {capacityType},
 	vpnGatewayType:          {vpnConnectionType, vpnNATRuleType},
 	expressGatewayType:      {expressConnectionType},
+	// HostPools_Delete removes session hosts only with force; Steward deletes
+	// each registration first without disconnecting user sessions.
+	avdHostPoolType: {avdSessionHostType},
 }
 
 func servicePrerequisiteKind(parent, child string) bool {

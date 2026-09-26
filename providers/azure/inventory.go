@@ -958,6 +958,19 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	if nativeType == eventHubNamespaceType {
 		fields["clusterarmid"] = true
 	}
+	// Application groups name their host pool, workspaces their application
+	// groups, and session hosts their virtual machine.
+	switch nativeType {
+	case avdApplicationGroupType:
+		fields["hostpoolarmpath"] = true
+	case avdWorkspaceType:
+		fields["applicationgroupreferences"] = true
+	case avdSessionHostType:
+		fields["resourceid"] = true
+	case hdinsightClusterType:
+		// Storage accounts and the cluster's virtual network.
+		fields["resourceid"], fields["id"] = true, true
+	}
 	if nativeType == monitorScopedResourceType {
 		fields["linkedresourceid"] = true
 	}

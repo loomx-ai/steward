@@ -207,6 +207,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		} else if target.ParentID != "" && !strings.EqualFold(id, u.Path+"/"+last(id)) {
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product child belongs to another parent")
 		}
+		// Every workspace lists hundreds of built-in Azure Monitor tables. They
+		// are part of the workspace, not resources a user creates or deletes.
+		if kind.NativeType == logAnalyticsTableType && logAnalyticsTableCreator(raw) == "Microsoft" {
+			continue
+		}
 		readURL, err := c.resourceURL(kind, wireID)
 		if err != nil {
 			return contracts.InventoryBatch{}, err

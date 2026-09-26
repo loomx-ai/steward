@@ -134,7 +134,7 @@ What to expect:
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 491 Azure resource types; 440 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 502 Azure resource types; 451 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -172,6 +172,10 @@ Steward recognizes 491 Azure resource types; 440 have native cleanup actions, in
 | [Service Bus](#service-bus-and-event-hubs) | Namespaces, queues, topics, subscriptions, rules, authorization rules, recovery aliases, migration configurations and private endpoint connections | Native actions and reviewed namespace/entity cascades; migration cleanup aborts copying before deletion; paired recovery aliases are unpaired before deletion |
 | [Event Hubs](#service-bus-and-event-hubs) | Dedicated clusters, namespaces, event hubs, consumer groups, authorization rules, recovery aliases, schema/application groups and private endpoint connections | Cluster cleanup first deletes reviewed member namespaces; native namespace/event-hub cascades and paired-alias unpairing |
 | Operations and identity | Log Analytics workspaces and user-assigned managed identities | Supported |
+| Log Analytics tables | Custom, restored and search-result tables of each workspace | Supported; built-in Azure Monitor tables belong to the workspace and are not listed |
+| Event Grid | Custom topics, system topics, namespaces and topic event subscriptions | Deleting a topic deletes its event subscriptions; subscriptions can also be deleted on their own |
+| Azure Virtual Desktop | Host pools, session hosts, application groups and workspaces | Session hosts and the application groups of a host pool are deleted before the host pool; removing a session host keeps its virtual machine |
+| HDInsight | Clusters | Supported; storage accounts and the virtual network stay separate |
 | [Managed Grafana](#managed-grafana) | Workspaces, managed private endpoints, private endpoint connections and integration fabrics | Reviewed children are deleted before the workspace; each resource also has its own native action |
 | [Monitor workspace](#azure-monitor-workspace) | Workspace and its default ingestion managed group | Reviews every group member, unlinks external associations first, and verifies that the group and known resources are gone |
 | [Monitor data collection](#monitor-data-collection) | Rules, endpoints and associations on monitored resources | Reviewed associations are deleted before rules and endpoints; shared associations are deleted once |

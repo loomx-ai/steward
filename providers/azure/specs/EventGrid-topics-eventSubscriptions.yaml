@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.EventGrid/topics/eventSubscriptions
+  class: messaging.event_rule
+presentation:
+  displayNames:
+    en-US: Event Grid topic event subscription
+    zh-CN: 事件网格主题事件订阅
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.EventGrid.TopicEventSubscriptions_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      topicName: parent.normalized.arm_parameters.topicName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.EventGrid.TopicEventSubscriptions_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.EventGrid/topics
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: member_of
+  targetType: Microsoft.EventGrid/topics
+  targetIdPath: refs_microsoft_eventgrid_topics
+actions:
+  delete:
+    operation: Azure.Microsoft.EventGrid.TopicEventSubscriptions_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.EventGrid.TopicEventSubscriptions_Get
+      itemsPath: $
+      identityPath: id

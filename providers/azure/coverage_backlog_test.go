@@ -1,0 +1,185 @@
+package azure
+
+import (
+	"context"
+	"io"
+	"net/http"
+	"strings"
+	"testing"
+
+	"github.com/loomx-ai/steward/internal/app/governance"
+	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/graph"
+	"github.com/loomx-ai/steward/internal/provider/contracts"
+)
+
+// These subscription collections and API versions are the native ARM
+// contracts of the pinned Event Grid, Desktop Virtualization and HDInsight
+// specifications.
+func TestCoverageKindsListNativeSubscriptionCollections(t *testing.T) {
+	for nativeType, version := range map[string]string{
+		eventGridTopicType:               "2025-02-15",
+		eventGridSystemTopicType:         "2025-02-15",
+		"Microsoft.EventGrid/namespaces": "2025-02-15",
+		avdHostPoolType:                  "2024-04-03",
+		avdApplicationGroupType:          "2024-04-03",
+		avdWorkspaceType:                 "2024-04-03",
+		hdinsightClusterType:             "2021-06-01",
+	} {
+		t.Run(nativeType, func(t *testing.T) {
+			root := "/subscriptions/" + testSubscription
+			collection := root + "/providers/" + strings.ToLower(nativeType)
+			item := nativeResource(nativeType, "sample", "eastus", map[string]any{"provisioningState": "Succeeded"})
+			listed := false
+			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				path := strings.ToLower(req.URL.Path)
+				switch {
+				case req.Method != "GET":
+					t.Fatalf("mutation during inventory %s %s", req.Method, req.URL)
+				case path == collection:
+					if req.URL.Query().Get("api-version") != version {
+						t.Fatalf("wrong API version %s", req.URL)
+					}
+					listed = true
+					return jsonResponse(200, map[string]any{"value": []any{item}}, nil), nil
+				case path == strings.ToLower(text(item["id"])):
+					return jsonResponse(200, item, nil), nil
+				case path == root+"/resourcegroups" || path == root+"/providers/microsoft.authorization/locks":
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+				}
+				t.Fatalf("unexpected request %s", req.URL)
+				return nil, nil
+			})
+			batch, err := r.List(context.Background(), productRequest(r, nativeType))
+			if err != nil || !listed || !batch.Complete || len(batch.Items) != 1 || batch.Items[0].NativeID != strings.ToLower(text(item["id"])) {
+				t.Fatalf("batch=%+v listed=%v err=%v", batch, listed, err)
+			}
+		})
+	}
+}
+
+// Built-in Azure Monitor tables belong to the workspace and are not listed;
+// custom tables are, and are deletable.
+func TestLogAnalyticsTablesListOnlyUserTables(t *testing.T) {
+	root := "/subscriptions/" + testSubscription
+	workspace := nativeResource("Microsoft.OperationalInsights/workspaces", "logs", "eastus", map[string]any{"provisioningState": "Succeeded", "customerId": "0d6b6c3a-7d1e-4b5f-9a3c-2f1e8d7c6b5a"})
+	table := func(name, creator string) map[string]any {
+		return map[string]any{"id": text(workspace["id"]) + "/tables/" + name, "name": name, "properties": map[string]any{"provisioningState": "Succeeded", "schema": map[string]any{"name": name, "tableType": creator}}}
+	}
+	custom, builtin := table("Orders_CL", "CustomLog"), table("Heartbeat", "Microsoft")
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		switch path := strings.ToLower(req.URL.Path); path {
+		case root + "/providers/microsoft.operationalinsights/workspaces":
+			return jsonResponse(200, map[string]any{"value": []any{workspace}}, nil), nil
+		case strings.ToLower(text(workspace["id"])):
+			return jsonResponse(200, workspace, nil), nil
+		case strings.ToLower(text(workspace["id"]) + "/tables"):
+			return jsonResponse(200, map[string]any{"value": []any{custom, builtin}}, nil), nil
+		case strings.ToLower(text(custom["id"])):
+			return jsonResponse(200, custom, nil), nil
+		case root + "/resourcegroups", root + "/providers/microsoft.authorization/locks":
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
+		t.Fatalf("unexpected request %s", req.URL)
+		return nil, nil
+	})
+	batch, err := r.List(context.Background(), productRequest(r, logAnalyticsTableType))
+	if err != nil || len(batch.Items) != 1 || batch.Items[0].NativeID != strings.ToLower(text(custom["id"])) {
+		t.Fatalf("batch=%+v err=%v", batch, err)
+	}
+	kind, _ := findType(logAnalyticsTableType)
+	if reason := protectionReason(kind, builtin); reason != "azure_log_analytics_builtin_table" {
+		t.Fatalf("built-in table reason = %q", reason)
+	}
+	if reason := protectionReason(kind, custom); reason != "" {
+		t.Fatalf("custom table reason = %q", reason)
+	}
+}
+
+// A host pool with application groups cannot be deleted; the groups are
+// selected as prerequisites of the host pool that their hostPoolArmPath names.
+func TestDesktopVirtualizationApplicationGroupsPrecedeTheirHostPool(t *testing.T) {
+	pool := actionAsset(avdHostPoolType, "pool")
+	group := actionAsset(avdApplicationGroupType, "desktops")
+	group.Normalized = map[string]any{"properties": map[string]any{"hostPoolArmPath": resourceID(avdHostPoolType, "pool")}}
+	other := actionAsset(avdApplicationGroupType, "elsewhere")
+	other.Normalized = map[string]any{"properties": map[string]any{"hostPoolArmPath": resourceID(avdHostPoolType, "other")}}
+	result := governance.Contribution{}
+	contributeDesktopVirtualization([]asset.Asset{pool, group, other}, &result)
+	if len(result.Relationships) != 1 {
+		t.Fatalf("relationships = %+v", result.Relationships)
+	}
+	relationship := result.Relationships[0]
+	if relationship.SourceAssetID != pool.ID || relationship.TargetAssetID != group.ID || relationship.Type != graph.RelationshipDependsOn ||
+		relationship.Evidence[graph.RelationshipEvidenceRequiredDeletion] != true || relationship.Evidence[graph.RelationshipEvidenceDeletionOrder] != graph.DeletionOrderTargetBeforeSource {
+		t.Fatalf("relationship = %+v", relationship)
+	}
+	if !servicePrerequisiteKind(avdHostPoolType, avdSessionHostType) || !HasServiceCascade(eventGridTopicType) || !HasServiceCascade(eventGridSystemTopicType) {
+		t.Fatal("host pool prerequisites or Event Grid cascades are not registered")
+	}
+}
+
+func TestCoverageKindsDeleteWithOperationAndFinalAbsence(t *testing.T) {
+	for _, kind := range []string{hdinsightClusterType, eventGridTopicType, avdWorkspaceType} {
+		t.Run(kind, func(t *testing.T) {
+			value := actionAsset(kind, "sample")
+			id := value.Identity.NativeID
+			operation := apiURL("/subscriptions/"+testSubscription+"/providers/"+strings.Split(kind, "/")[0]+"/locations/eastus/operationResults/op-1", "2025-01-01")
+			deleted, deletes := false, 0
+			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				if response, handled := emptyMonitorIndexResponse(t, req); handled {
+					return response, nil
+				}
+				if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+					return response, nil
+				}
+				if strings.EqualFold(req.URL.String(), operation) {
+					deleted = true
+					return &http.Response{StatusCode: 204, Header: http.Header{}, Body: io.NopCloser(strings.NewReader(""))}, nil
+				}
+				switch path := strings.ToLower(req.URL.Path); path {
+				case id + "/eventsubscriptions":
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+				case id:
+					if req.Method == "DELETE" {
+						deletes++
+						return jsonResponse(202, map[string]any{}, http.Header{"Location": {operation}, "X-Ms-Request-Id": {"delete-request"}, "Retry-After": {"1"}}), nil
+					}
+					if deleted {
+						return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceNotFound"}}, nil), nil
+					}
+					raw := nativeResource(kind, "sample", "eastus", map[string]any{"provisioningState": "Succeeded"})
+					raw["id"] = id
+					return jsonResponse(200, raw, nil), nil
+				case "/subscriptions/" + testSubscription + "/resourcegroups/test":
+					return jsonResponse(200, map[string]any{"id": path}, nil), nil
+				case "/subscriptions/" + testSubscription + "/providers/microsoft.authorization/locks":
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+				}
+				t.Fatalf("unexpected %s %s", req.Method, req.URL)
+				return nil, nil
+			})
+			driver, err := r.ResolveAction(context.Background(), "connection", value)
+			if err != nil {
+				t.Fatal(err)
+			}
+			request := contracts.ActionRequest{Asset: value, Action: "delete", IdempotencyKey: "delete-key"}
+			result, err := driver.Execute(context.Background(), request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			done := false
+			for i := 0; i < 5 && !done; i++ {
+				wait, err := driver.Wait(context.Background(), request, result)
+				if err != nil {
+					t.Fatal(err)
+				}
+				done = wait.Done
+			}
+			readback, err := driver.Readback(context.Background(), request)
+			if !done || err != nil || readback.Exists || deletes != 1 {
+				t.Fatalf("done=%v readback=%+v deletes=%d err=%v", done, readback, deletes, err)
+			}
+		})
+	}
+}

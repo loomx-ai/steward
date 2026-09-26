@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.OperationalInsights/workspaces/tables
+  class: observability.log_store
+presentation:
+  displayNames:
+    en-US: Log Analytics table
+    zh-CN: Log Analytics 表
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.OperationalInsights.Tables_ListByWorkspace
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      workspaceName: parent.normalized.arm_parameters.workspaceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.OperationalInsights.Tables_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.OperationalInsights/workspaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  plan:
+    path: plan
+    type: string
+  retentionInDays:
+    path: retentionInDays
+    type: number
+  totalRetentionInDays:
+    path: totalRetentionInDays
+    type: number
+extensions:
+  hook: azure.resource
+relationships:
+- type: member_of
+  targetType: Microsoft.OperationalInsights/workspaces
+  targetIdPath: refs_microsoft_operationalinsights_workspaces
+actions:
+  delete:
+    operation: Azure.Microsoft.OperationalInsights.Tables_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.OperationalInsights.Tables_Get
+      itemsPath: $
+      identityPath: id

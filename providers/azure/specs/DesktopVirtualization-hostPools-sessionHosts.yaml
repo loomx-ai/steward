@@ -1,0 +1,71 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.DesktopVirtualization/hostPools/sessionHosts
+  class: compute.virtual_desktop
+presentation:
+  displayNames:
+    en-US: Azure Virtual Desktop session host
+    zh-CN: Azure 虚拟桌面会话主机
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.DesktopVirtualization.SessionHosts_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      hostPoolName: parent.normalized.arm_parameters.hostPoolName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.DesktopVirtualization.SessionHosts_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.DesktopVirtualization/hostPools
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  sessions:
+    path: sessions
+    type: number
+  status:
+    path: status
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: member_of
+  targetType: Microsoft.DesktopVirtualization/hostPools
+  targetIdPath: refs_microsoft_desktopvirtualization_hostpools
+- type: uses
+  targetType: Microsoft.Compute/virtualMachines
+  targetIdPath: refs_microsoft_compute_virtualmachines
+actions:
+  delete:
+    operation: Azure.Microsoft.DesktopVirtualization.SessionHosts_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.DesktopVirtualization.SessionHosts_Get
+      itemsPath: $
+      identityPath: id
