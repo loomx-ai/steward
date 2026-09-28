@@ -349,6 +349,15 @@ func (h *ResourceAction) Execute(ctx context.Context, request contracts.ActionRe
 		}
 		return result, nil
 	}
+	if cenPreDeleteCleanupType(h.nativeType) {
+		result, handled, err := h.advanceCENPreDeleteCleanup(ctx, request)
+		if err != nil {
+			return contracts.ActionResult{}, err
+		}
+		if handled {
+			return result, nil
+		}
+	}
 	if _, boundResource := privateLinkServiceResourceType(h.nativeType); boundResource {
 		result, handled, err := h.advancePrivateLinkServiceResourceCleanup(ctx, request)
 		if err != nil {
@@ -3347,6 +3356,38 @@ func (h *ResourceAction) Wait(ctx context.Context, request contracts.ActionReque
 				State: nextPhase, Data: cloneTopologyMap(next.Data),
 			}, nil
 		}
+	}
+	if cenPreDeleteCleanupType(h.nativeType) &&
+		strings.TrimSpace(stringValue(result.Data["phase"])) == cenPreDeletePhase {
+		next, handled, err := h.advanceCENPreDeleteCleanup(ctx, request)
+		if err != nil {
+			return contracts.WaitResult{}, err
+		}
+		if handled {
+			return contracts.WaitResult{
+				Done: false, RetryAfter: next.RetryAfter, State: cenPreDeletePhase,
+				Data: cloneTopologyMap(next.Data),
+			}, nil
+		}
+		operation, parameters, err := h.deleteInvocation(request)
+		if err != nil {
+			return contracts.WaitResult{}, err
+		}
+		deleted, err := h.provider.Invoke(ctx, contracts.Invocation{
+			ConnectionID: h.connectionID, Operation: operation,
+			Scope: map[string]string{"region": h.region}, Parameters: parameters,
+			IdempotencyKey: request.IdempotencyKey,
+		})
+		if isNotFound(err) {
+			return contracts.WaitResult{Done: true, State: "absent"}, nil
+		}
+		if err != nil {
+			return contracts.WaitResult{}, err
+		}
+		return contracts.WaitResult{
+			Done: true, State: "delete_requested",
+			Data: map[string]any{"phase": "delete_requested", "provider_request_id": deleted.RequestID},
+		}, nil
 	}
 	if _, boundResource := privateLinkServiceResourceType(h.nativeType); boundResource {
 		phase := strings.TrimSpace(stringValue(result.Data["phase"]))

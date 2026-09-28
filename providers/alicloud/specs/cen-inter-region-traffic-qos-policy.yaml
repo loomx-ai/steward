@@ -24,3 +24,21 @@ fields:
   state: TrafficQosPolicyStatus
   transitRouterId: TransitRouterId
   transitRouterAttachmentId: TransitRouterAttachmentId
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteCenInterRegionTrafficQosPolicy
+    parameters:
+      TrafficQosPolicyId: resource.nativeId
+      DryRun: false
+    idempotency: provider_token
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.CEN.ListCenInterRegionTrafficQosPolicies
+      parameters:
+        TransitRouterId: resource.normalized.transitRouterId
+        TrafficQosPolicyId: resource.nativeId
+      itemsPath: TrafficQosPolicies
+      identityPath: TrafficQosPolicyId
+      statePath: TrafficQosPolicyStatus

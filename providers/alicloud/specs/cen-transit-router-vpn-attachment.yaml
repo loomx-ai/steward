@@ -27,3 +27,23 @@ fields:
   cenId: CenId
   transitRouterId: TransitRouterId
   vpnId: VpnId
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteTransitRouterVpnAttachment
+    parameters:
+      TransitRouterAttachmentId: resource.nativeId
+      DryRun: false
+      Force: true
+    idempotency: provider_token
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.CEN.ListTransitRouterVpnAttachments
+      parameters:
+        TransitRouterId: resource.normalized.transitRouterId
+        TransitRouterAttachmentId: resource.nativeId
+        MaxResults: 20
+      itemsPath: TransitRouterAttachments
+      identityPath: TransitRouterAttachmentId
+      statePath: Status

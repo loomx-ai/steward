@@ -2907,6 +2907,30 @@
     }
    ]
   },
+  "Cbn@2017-09-12#ListTransitRouterMulticastGroups": {
+   "MaxResults": 20,
+   "NextToken": "FFmyTO70tTpLG6I3FmYAXGKPd****",
+   "RequestId": "FB3C4A16-0933-5850-9D43-0C3EA37BCBFB",
+   "TotalCount": 1,
+   "TransitRouterMulticastGroups": [
+    {
+     "GroupIpAddress": "239.XX.XX.2",
+     "GroupMember": true,
+     "GroupSource": false,
+     "MemberType": "Static",
+     "NetworkInterfaceId": "eni-p0weuda3lszwzjly****",
+     "PeerTransitRouterMulticastDomainId": "tr-mcast-domain-91wpg6wbhchjeq****",
+     "ResourceId": "vpc-p0w9alkte4w2htrqe****",
+     "ResourceOwnerId": 0,
+     "ResourceType": "VPC",
+     "SourceType": "Static",
+     "Status": "Registered",
+     "TransitRouterAttachmentId": "tr-attach-g3kz2k3u76amsk****",
+     "TransitRouterMulticastDomainId": "tr-mcast-domain-kx0vk0v7fz8kx4****",
+     "VSwitchId": "vsw-p0w9s2ig1jnwgrbzl****"
+    }
+   ]
+  },
   "Cbn@2017-09-12#ListTransitRouterPeerAttachments": {
    "MaxResults": 20,
    "NextToken": "dd20****",

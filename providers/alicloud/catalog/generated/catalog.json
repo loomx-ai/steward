@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "7d445e03a6cf9573e7e8ce82503d3b47592f79158faa3cde51831a6437dd5c1e",
+    "checksum": "61af0e65ae21ffce739865ca1ce479479b609fc99930401c79120f688db99366",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "d3fc29382f4f173b0ae837d9982ed9b33153ba4a587ebe2825eb8510b66b2c46",
+  "content_checksum": "eb51f3d96fc3f6dfc15dbefa4552cc7648e81be2a40434fe323156cf5a3fccfe",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -1413,6 +1413,48 @@
       }
     },
     {
+      "id": "AlibabaCloud.CEN.DeleteCenInterRegionTrafficQosPolicy",
+      "name": "DeleteCenInterRegionTrafficQosPolicy",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cen/inter-region-traffic-qos-policies/{TrafficQosPolicyId}",
+      "destructive": true,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CEN.DeleteCenInterRegionTrafficQosQueue",
+      "name": "DeleteCenInterRegionTrafficQosQueue",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cen/inter-region-traffic-qos-queues/{QosQueueId}",
+      "destructive": true,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
       "id": "AlibabaCloud.CEN.DeleteCenRouteMap",
       "name": "DeleteCenRouteMap",
       "service": "AlibabaCloud",
@@ -1430,6 +1472,48 @@
         "request_body_type": "formData",
         "body_type": "json",
         "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CEN.DeleteFlowlog",
+      "name": "DeleteFlowlog",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cen/flowlogs/{FlowLogId}",
+      "destructive": true,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CEN.DeleteTrafficMarkingPolicy",
+      "name": "DeleteTrafficMarkingPolicy",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cen/traffic-marking-policies/{TrafficMarkingPolicyId}",
+      "destructive": true,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
       }
     },
     {
@@ -1459,6 +1543,48 @@
       "service": "AlibabaCloud",
       "method": "DELETE",
       "path": "/cen/transit-router-cidrs/{TransitRouterCidrId}",
+      "destructive": true,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CEN.DeleteTransitRouterEcrAttachment",
+      "name": "DeleteTransitRouterEcrAttachment",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cen/transit-router-ecr-attachments/{TransitRouterAttachmentId}",
+      "destructive": true,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CEN.DeleteTransitRouterMulticastDomain",
+      "name": "DeleteTransitRouterMulticastDomain",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cen/transit-router-multicast-domains/{TransitRouterMulticastDomainId}",
       "destructive": true,
       "call": {
         "product": "Cbn",
@@ -1517,11 +1643,95 @@
       }
     },
     {
+      "id": "AlibabaCloud.CEN.DeleteTransitRouterVbrAttachment",
+      "name": "DeleteTransitRouterVbrAttachment",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cen/transit-router-vbr-attachments/{TransitRouterAttachmentId}",
+      "destructive": true,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
       "id": "AlibabaCloud.CEN.DeleteTransitRouterVpcAttachment",
       "name": "DeleteTransitRouterVpcAttachment",
       "service": "AlibabaCloud",
       "method": "DELETE",
       "path": "/cen/transit-router-vpc-attachments/{TransitRouterAttachmentId}",
+      "destructive": true,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CEN.DeleteTransitRouterVpnAttachment",
+      "name": "DeleteTransitRouterVpnAttachment",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cen/transit-router-vpn-attachments/{TransitRouterAttachmentId}",
+      "destructive": true,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CEN.DeregisterTransitRouterMulticastGroupMembers",
+      "name": "DeregisterTransitRouterMulticastGroupMembers",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cen/transit-router-multicast-domains/{TransitRouterMulticastDomainId}/group-members",
+      "destructive": true,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CEN.DeregisterTransitRouterMulticastGroupSources",
+      "name": "DeregisterTransitRouterMulticastGroupSources",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cen/transit-router-multicast-domains/{TransitRouterMulticastDomainId}/group-sources",
       "destructive": true,
       "call": {
         "product": "Cbn",
@@ -1698,6 +1908,27 @@
       }
     },
     {
+      "id": "AlibabaCloud.CEN.DisassociateTransitRouterMulticastDomain",
+      "name": "DisassociateTransitRouterMulticastDomain",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/cen/transit-router-multicast-domain-associations/{TransitRouterAttachmentId}",
+      "destructive": true,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
       "id": "AlibabaCloud.CEN.ListCenInterRegionTrafficQosPolicies",
       "name": "ListCenInterRegionTrafficQosPolicies",
       "service": "AlibabaCloud",
@@ -1803,6 +2034,26 @@
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/cen/transit-router-multicast-domains",
+      "destructive": false,
+      "call": {
+        "product": "Cbn",
+        "version": "2017-09-12",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "cbn.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.CEN.ListTransitRouterMulticastGroups",
+      "name": "ListTransitRouterMulticastGroups",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/cen/transit-router-multicast-domains/{TransitRouterMulticastDomainId}/groups",
       "destructive": false,
       "call": {
         "product": "Cbn",

@@ -4306,6 +4306,91 @@
      ],
      "risk_type": "none"
     },
+    "DeleteCenInterRegionTrafficQosPolicy": {
+     "deprecated": false,
+     "error_codes": [
+      "AssociationExist.TransitQosQueueExist",
+      "Forbidden.CDTServiceExpired",
+      "InvalidParameter",
+      "InvalidParameter.TrafficQosPolicyId",
+      "InvalidTransitQosId.NotFound",
+      "OperationFailed.NotSupportDeleteDefaultQueue",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "TrafficQosPolicyId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "DeleteCenInterRegionTrafficQosQueue": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.CDTServiceExpired",
+      "IncorrectStatus.TrafficQosPolicy",
+      "InvalidParameter",
+      "InvalidParameter.QosQueueId",
+      "InvalidTrafficQosQueueId.NotFound",
+      "MissingParam.TrafficQosPolicyQueueId",
+      "OperationFailed.NotSupportDeleteDefaultQueue",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "QosQueueId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
     "DeleteCenRouteMap": {
      "deprecated": false,
      "error_codes": [
@@ -4338,6 +4423,110 @@
       {
        "in": "query",
        "name": "RouteMapId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "DeleteFlowlog": {
+     "deprecated": false,
+     "error_codes": [
+      "IncorrectStatus.TrFlowlog",
+      "IncorrectStatus.flowlog",
+      "InvalidFlowlogId.NotFound",
+      "InvalidFlowlogId.exist",
+      "InvalidOperation.RelatedTrafficAnalyzerExists",
+      "InvalidParameter",
+      "InvalidParameter.CenId",
+      "InvalidParameter.FlowLogId",
+      "OperationUnsupported.action",
+      "ProjectOrLogstoreNotExist",
+      "QuotaExceeded.FlowlogCount",
+      "SourceProjectNotExist",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "CenId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "FlowLogId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": "none"
+    },
+    "DeleteTrafficMarkingPolicy": {
+     "deprecated": false,
+     "error_codes": [
+      "AssociationExist.TransitQosRuleExist",
+      "IncorrectStatus.TrafficMarkingPolicy",
+      "IncorrectStatus.TransitRouterInstance",
+      "InvalidParameter",
+      "InvalidParameter.TrafficMarkingPolicyId",
+      "InvalidTrafficMarkingPolicyId.NotFound",
+      "MissingParam.TrafficMarkingPolicyId",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "Force",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "TrafficMarkingPolicyId",
        "required": true,
        "type": "string"
       }
@@ -4456,6 +4645,105 @@
      ],
      "risk_type": "none"
     },
+    "DeleteTransitRouterEcrAttachment": {
+     "deprecated": false,
+     "error_codes": [
+      "IncorrectStatus.EcrResource",
+      "InvalidParameter",
+      "InvalidParameter.TransitRouterAttachmentId",
+      "InvalidTransitRouterAttachmentId.NotFound",
+      "OperationFailed.FlowLogExistOrNisOpened",
+      "OperationFailed.NotSupportForceDelete",
+      "OperationFailed.PrefixListExist",
+      "OperationFailed.RouteEntryExist",
+      "OperationFailed.RouteTableAssociationExist",
+      "OperationFailed.RouteTablePropagationExist",
+      "OperationUnsupported.TransitRouterType",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "Force",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "TransitRouterAttachmentId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "DeleteTransitRouterMulticastDomain": {
+     "deprecated": false,
+     "error_codes": [
+      "DryRunOperation",
+      "IncorrectStatus.Cen",
+      "IncorrectStatus.MulticastDomain",
+      "IncorrectStatus.TransitRouter",
+      "InstanceNotExist",
+      "InvalidOperation.MulticastDomainAssociationExist",
+      "InvalidOperation.MulticastDomainInGroup",
+      "InvalidOperation.MulticastGroupExist",
+      "InvalidParameter",
+      "InvalidParameter.TransitRouterMulticastDomainId",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "TransitRouterMulticastDomainId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
     "DeleteTransitRouterPeerAttachment": {
      "deprecated": false,
      "error_codes": [
@@ -4560,6 +4848,63 @@
      ],
      "risk_type": "none"
     },
+    "DeleteTransitRouterVbrAttachment": {
+     "deprecated": false,
+     "error_codes": [
+      "InstanceReferenced.VbrRouteEntry",
+      "InstanceReferenced.VpcRouteEntry",
+      "InvalidParameter",
+      "InvalidParameter.TransitRouterAttachmentId",
+      "InvalidTransitRouterAttachmentId.NotFound",
+      "OperationFailed.FlowLogExistOrNisOpened",
+      "OperationFailed.NotSupportForceDelete",
+      "OperationFailed.PrefixListExist",
+      "OperationFailed.RouteEntryExist",
+      "OperationFailed.RouteTableAssociationExist",
+      "OperationFailed.RouteTablePropagationExist",
+      "OperationFailed.VbrAttachedVbrHa",
+      "OperationFailed.VbrWithAllowPrefixes",
+      "OperationNotPermitted.AttachmentManagedByCloudService",
+      "OperationUnsupported.TransitRouterType",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "Force",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "TransitRouterAttachmentId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
     "DeleteTransitRouterVpcAttachment": {
      "deprecated": false,
      "error_codes": [
@@ -4610,6 +4955,177 @@
       {
        "in": "query",
        "name": "TransitRouterAttachmentId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "DeleteTransitRouterVpnAttachment": {
+     "deprecated": false,
+     "error_codes": [
+      "IncorrectStatus.ResourceStatus",
+      "InvalidParameter",
+      "InvalidTransitRouterAttachmentId.NotFound",
+      "OperationFailed.FlowLogExistOrNisOpened",
+      "OperationFailed.NotSupportForceDelete",
+      "OperationFailed.PrefixListExist",
+      "OperationFailed.RouteEntryExist",
+      "OperationFailed.RouteTableAssociationExist",
+      "OperationFailed.RouteTablePropagationExist",
+      "OperationUnsupported.TransitRouterType",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "Force",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "TransitRouterAttachmentId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DeregisterTransitRouterMulticastGroupMembers": {
+     "deprecated": false,
+     "error_codes": [
+      "DryRunOperation",
+      "IncorrectStatus.MulticastGroup",
+      "InvalidOperation.MulticastDomainStatus",
+      "InvalidParameter",
+      "InvalidParameter.ConnectPeerIds",
+      "InvalidParameter.PeerTransitRouterMulticastDomains",
+      "InvalidParameter.TransitRouterMulticastDomainId",
+      "InvalidTransitRouterMulticastDomainId.NotFound",
+      "OperationUnsupported.NotAllowedDeleteIgmpv2Member",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "GroupIpAddress",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NetworkInterfaceIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "PeerTransitRouterMulticastDomains",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "TransitRouterMulticastDomainId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "DeregisterTransitRouterMulticastGroupSources": {
+     "deprecated": false,
+     "error_codes": [
+      "DryRunOperation",
+      "IncorrectStatus.MulticastGroup",
+      "InvalidOperation.MulticastDomainStatus",
+      "InvalidParameter",
+      "InvalidParameter.ConnectPeerIds",
+      "InvalidParameter.TransitRouterMulticastDomainId",
+      "InvalidTransitRouterMulticastDomainId.NotFound",
+      "OperationUnsupported.NotAllowedDeleteIgmpv2Member",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "GroupIpAddress",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NetworkInterfaceIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "TransitRouterMulticastDomainId",
        "required": true,
        "type": "string"
       }
@@ -5309,6 +5825,65 @@
      ],
      "risk_type": "none"
     },
+    "DisassociateTransitRouterMulticastDomain": {
+     "deprecated": false,
+     "error_codes": [
+      "DryRunOperation",
+      "IllegalParam.AttachmentId",
+      "IncorrectStatus.Attachment",
+      "IncorrectStatus.MulticastDomain",
+      "InstanceStatusNotSupport",
+      "InvalidAttachmentId.NotFound",
+      "InvalidMulticastDomainId.NotFound",
+      "InvalidOperation.MulticastGroupExist",
+      "InvalidParameter",
+      "InvalidParameter.TransitRouterAttachmentId",
+      "InvalidParameter.TransitRouterMulticastDomainId",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "TransitRouterAttachmentId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "TransitRouterMulticastDomainId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "VSwitchIds",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
     "ListCenInterRegionTrafficQosPolicies": {
      "deprecated": false,
      "error_codes": [
@@ -5787,6 +6362,125 @@
       "TransitRouterMulticastDomains.TransitRouterMulticastDomainName"
      ],
      "risk_type": "none"
+    },
+    "ListTransitRouterMulticastGroups": {
+     "deprecated": false,
+     "error_codes": [
+      "IllegalParam.MaxResults",
+      "IllegalParam.NextToken",
+      "IllegalParam.TransitRouterAttachmentId",
+      "IllegalParam.TransitRouterMulticastDomainId",
+      "InvalidParameter",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "GroupIpAddress",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "IsGroupMember",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "IsGroupSource",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NetworkInterfaceIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PeerTransitRouterMulticastDomains",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "ResourceId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "TransitRouterAttachmentId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "TransitRouterMulticastDomainId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "VSwitchIds",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "MaxResults",
+      "NextToken",
+      "RequestId",
+      "TotalCount",
+      "TransitRouterMulticastGroups",
+      "TransitRouterMulticastGroups.GroupIpAddress",
+      "TransitRouterMulticastGroups.GroupMember",
+      "TransitRouterMulticastGroups.GroupSource",
+      "TransitRouterMulticastGroups.MemberType",
+      "TransitRouterMulticastGroups.NetworkInterfaceId",
+      "TransitRouterMulticastGroups.PeerTransitRouterMulticastDomainId",
+      "TransitRouterMulticastGroups.ResourceId",
+      "TransitRouterMulticastGroups.ResourceOwnerId",
+      "TransitRouterMulticastGroups.ResourceType",
+      "TransitRouterMulticastGroups.SourceType",
+      "TransitRouterMulticastGroups.Status",
+      "TransitRouterMulticastGroups.TransitRouterAttachmentId",
+      "TransitRouterMulticastGroups.TransitRouterMulticastDomainId",
+      "TransitRouterMulticastGroups.VSwitchId"
+     ],
+     "risk_type": ""
     },
     "ListTransitRouterPeerAttachments": {
      "deprecated": false,

@@ -69,7 +69,7 @@ For the complete workflow, follow [Your first inventory](./tutorials/first-inven
 
 ## Resource coverage
 
-Steward identifies 208 Alibaba Cloud resource types, 183 of which have a native cleanup action. Other types that Resource Center returns appear as read-only inventory. Every service API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
+Steward identifies 208 Alibaba Cloud resource types, 190 of which have a native cleanup action. Other types that Resource Center returns appear as read-only inventory. Every service API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
 
 Common types:
 
@@ -118,6 +118,7 @@ ECS instances, ACK clusters, Auto Scaling groups, ALB, NLB, and CLB instances, E
 | Container Registry namespaces | Deleting a namespace also deletes its repositories and images, so the task deletes each repository first. |
 | Simple Log Service projects | Deleting a project deletes all its logstores, including service-created `internal-` logstores. The task lists them as deleted with the project and confirms each one afterward. |
 | VPN gateways | SSL-VPN client certificates, SSL-VPN servers, and IPsec servers are deleted before their VPN gateway. |
+| Cloud Enterprise Network | Connections, route tables, flow logs, multicast domains, and traffic policies are deleted before their transit router, and transit routers before their CEN instance. Flow logs are deleted before the connection they record and before their Simple Log Service logstore. Deleting a VBR, VPN, ECR, or inter-region connection also removes its route table associations, route learning, and the routes that point to it; VBR connections managed by a cloud service are not deleted. A multicast domain's group sources, members, and vSwitch associations, a QoS policy's non-default queues, and a marking policy's classification rules are removed first; the task shows each of these before you confirm. |
 | CloudMonitor | Custom application groups, alert rules, alert contacts, and contact groups can be cleaned up. Application groups synchronized from another service, tags, or resource groups are recreated by their source, so they are not deleted directly. Alert rules that name a deleted contact or contact group stop notifying it. |
 | SAE | Applications are deleted before their namespace; each region's default namespace is kept. Application deletion is asynchronous; Steward waits up to 10 minutes to confirm it. |
 | Cloud Config | Rules and compliance packs are inventoried in `cn-shanghai` and `ap-southeast-1`. Deleting a compliance pack also deletes the rules it created, which the task confirms afterward; those rules cannot be deleted on their own. Aggregators are inventoried only. |

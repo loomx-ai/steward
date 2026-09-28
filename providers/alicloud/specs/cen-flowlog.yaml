@@ -26,3 +26,32 @@ fields:
   regionId: RegionId
   cenId: CenId
   transitRouterAttachmentId: TransitRouterAttachmentId
+  projectName: ProjectName
+  logStoreName: LogStoreName
+relationships:
+  - type: uses
+    targetType: ACS::SLS::Project
+    targetIdPath: projectName
+  - type: uses
+    targetType: ACS::SLS::LogStore
+    targetIdPath: logStoreRef
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteFlowlog
+    parameters:
+      RegionId: resource.normalized.regionId
+      CenId: resource.normalized.cenId
+      FlowLogId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.CEN.DescribeFlowlogs
+      parameters:
+        RegionId: resource.normalized.regionId
+        CenId: resource.normalized.cenId
+        FlowLogId: resource.nativeId
+      itemsPath: FlowLogs.FlowLog
+      identityPath: FlowLogId
+      statePath: Status

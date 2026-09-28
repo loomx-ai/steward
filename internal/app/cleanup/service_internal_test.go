@@ -378,3 +378,18 @@ func TestDeletionTimeoutInProgressKeepsWaiting(t *testing.T) {
 		t.Fatalf("in-progress timeout resume status = %s, want waiting", status)
 	}
 }
+
+func TestAppendSelectionWarningsDescribesCENPreDeleteRemovals(t *testing.T) {
+	want := map[string]plan.WarningCode{
+		"ACS::CEN::TransitRouterMulticastDomain": plan.WarningCENMulticastMembershipRemoval,
+		"ACS::CEN::InterRegionTrafficQosPolicy":  plan.WarningCENQosQueueRemoval,
+		"ACS::CEN::TrafficMarkingPolicy":         plan.WarningCENTrafficMatchRuleRemoval,
+	}
+	for nativeType, code := range want {
+		value := asset.Asset{ID: asset.AssetID(nativeType), Identity: asset.Identity{Provider: asset.ProviderAliCloud, NativeType: nativeType}}
+		warnings := appendSelectionWarnings(nil, plan.Input{Assets: []asset.Asset{value}}, plan.Result{Steps: []plan.CleanupTaskStep{{AssetID: value.ID}}})
+		if len(warnings) != 1 || warnings[0].Code != code || warnings[0].AssetID != value.ID {
+			t.Fatalf("%s warnings=%+v", nativeType, warnings)
+		}
+	}
+}

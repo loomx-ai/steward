@@ -27,3 +27,27 @@ fields:
   cenId: CenId
   transitRouterId: TransitRouterId
   vbrId: VbrId
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteTransitRouterVbrAttachment
+    parameters:
+      TransitRouterAttachmentId: resource.nativeId
+      DryRun: false
+      Force: true
+    preconditions:
+      - path: ManagedService
+        allowedValues: [""]
+        reason: a VBR connection managed by a cloud service is removed through that service
+    idempotency: provider_token
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.CEN.ListTransitRouterVbrAttachments
+      parameters:
+        TransitRouterId: resource.normalized.transitRouterId
+        TransitRouterAttachmentId: resource.nativeId
+        MaxResults: 20
+      itemsPath: TransitRouterAttachments
+      identityPath: TransitRouterAttachmentId
+      statePath: Status

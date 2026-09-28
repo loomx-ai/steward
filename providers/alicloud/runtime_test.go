@@ -2034,7 +2034,7 @@ func TestRuntimeSpecCoverageMatchesActionableResourceKinds(t *testing.T) {
 			)
 		}
 	}
-	if len(runtime.bundle.Specs) != 207 || productAPISpecs != 193 || actionableSpecs != 183 {
+	if len(runtime.bundle.Specs) != 207 || productAPISpecs != 193 || actionableSpecs != 190 {
 		t.Fatalf(
 			"specs=%d product-api=%d actionable=%d",
 			len(runtime.bundle.Specs),
@@ -2199,25 +2199,18 @@ func TestUnsupportedInstanceResourceAuditIsExplicit(t *testing.T) {
 		t.Fatal(err)
 	}
 	wantScanOnly := map[string]struct{}{
-		"ACS::Alidns::DnsGtmInstance":             {},
-		"ACS::Alidns::GtmInstance":                {},
-		"ACS::Bastionhost::Instance":              {},
-		CENFlowLogNativeType:                      {},
-		CENInterRegionTrafficQosPolicyNativeType:  {},
-		CENTrafficMarkingPolicyNativeType:         {},
-		CENTransitRouterECRAttachmentNativeType:   {},
-		CENTransitRouterMulticastDomainNativeType: {},
-		CENTransitRouterVBRAttachmentNativeType:   {},
-		CENTransitRouterVPNAttachmentNativeType:   {},
-		"ACS::CR::Instance":                       {},
-		"ACS::DataV::Workspace":                   {},
-		"ACS::EBS::DedicatedBlockStorageCluster":  {},
-		"ACS::ECS::ElasticityAssurance":           {},
-		"ACS::EmrServerlessSpark::Workspace":      {},
-		"ACS::RTC::Application":                   {},
-		"ACS::SDDP::Instance":                     {},
-		"ACS::SWAS::Instance":                     {},
-		"ACS::ThreatDetection::Instance":          {},
+		"ACS::Alidns::DnsGtmInstance":            {},
+		"ACS::Alidns::GtmInstance":               {},
+		"ACS::Bastionhost::Instance":             {},
+		"ACS::CR::Instance":                      {},
+		"ACS::DataV::Workspace":                  {},
+		"ACS::EBS::DedicatedBlockStorageCluster": {},
+		"ACS::ECS::ElasticityAssurance":          {},
+		"ACS::EmrServerlessSpark::Workspace":     {},
+		"ACS::RTC::Application":                  {},
+		"ACS::SDDP::Instance":                    {},
+		"ACS::SWAS::Instance":                    {},
+		"ACS::ThreatDetection::Instance":         {},
 		// Deployed APIs must be abolished in every stage before deletion.
 		"ACS::ApiGateway::Api": {},
 		// Removing a node shrinks its cluster; removing a member account

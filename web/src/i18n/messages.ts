@@ -964,6 +964,9 @@ const enUS = {
   "domain.managed_by_controller": "Managed by controller",
   "domain.pre_delete_image_visibility_change": "Pre-delete change",
   "domain.scaling_group_force_delete": "Force delete",
+  "domain.cen_multicast_membership_removal": "Pre-delete change",
+  "domain.cen_qos_queue_removal": "Pre-delete change",
+  "domain.cen_traffic_match_rule_removal": "Deleted with policy",
   "domain.lifecycle_conflict": "Lifecycle conflict",
   "domain.lifecycle_cycle": "Lifecycle cycle",
   "domain.lifecycle_confidence": "Insufficient lifecycle confidence",
@@ -1097,6 +1100,12 @@ const enUS = {
     "This public custom image will be changed to private before deletion.",
   "error.scaling_group_force_delete":
     "This scaling group contains {instance_count} instance(s). They will be released by force deletion.",
+  "error.cen_multicast_membership_removal":
+    "The group sources and members registered in this multicast domain, and its vSwitch associations, are removed before the domain is deleted.",
+  "error.cen_qos_queue_removal":
+    "The queues of this QoS policy other than its default queue are deleted before the policy.",
+  "error.cen_traffic_match_rule_removal":
+    "The traffic classification rules of this marking policy are deleted with it.",
   "error.arc_shared_license_removal":
     "Deleting this shared Arc ESU license removes its update entitlement after assignments are cleared; billing may continue for up to five calendar days.",
   "error.arc_machine_registration_removal":
@@ -2122,6 +2131,9 @@ const zhCN: MessageShape = {
   "domain.managed_by_controller": "由控制器管理",
   "domain.pre_delete_image_visibility_change": "删除前调整",
   "domain.scaling_group_force_delete": "强制删除",
+  "domain.cen_multicast_membership_removal": "删除前调整",
+  "domain.cen_qos_queue_removal": "删除前调整",
+  "domain.cen_traffic_match_rule_removal": "随策略删除",
   "domain.lifecycle_conflict": "生命周期冲突",
   "domain.lifecycle_cycle": "生命周期环",
   "domain.lifecycle_confidence": "生命周期置信度不足",
@@ -2246,6 +2258,12 @@ const zhCN: MessageShape = {
     "该公开自定义镜像会先自动转为私有镜像，再执行删除。",
   "error.scaling_group_force_delete":
     "该伸缩组仍包含 {instance_count} 个实例；强制删除时会一并释放。",
+  "error.cen_multicast_membership_removal":
+    "删除组播域前，会先移除其中注册的组播源和组播成员，并解除交换机关联。",
+  "error.cen_qos_queue_removal":
+    "删除 QoS 策略前，会先删除默认队列以外的所有队列。",
+  "error.cen_traffic_match_rule_removal":
+    "删除流量标记策略时，会一并删除其中的流分类规则。",
   "error.arc_shared_license_removal":
     "删除此共享 Arc ESU 许可证会在解除分配后移除更新权益；计费可能继续最多五个日历日。",
   "error.arc_machine_registration_removal":

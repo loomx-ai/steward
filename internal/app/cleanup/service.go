@@ -1983,6 +1983,17 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningAzureLocalGuestRemoval, value.ID) {
 				result = append(result, plan.Warning{Code: plan.WarningAzureLocalGuestRemoval, AssetID: value.ID, Message: "Deleting this Azure Local guest-management resource can interrupt guest management; verify the guest-side result separately.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
+		case "ACS::CEN::TransitRouterMulticastDomain", "ACS::CEN::InterRegionTrafficQosPolicy", "ACS::CEN::TrafficMarkingPolicy":
+			code, message := plan.WarningCENMulticastMembershipRemoval, "The group sources and members registered in this multicast domain, and its vSwitch associations, are removed before the domain is deleted."
+			switch value.Identity.NativeType {
+			case "ACS::CEN::InterRegionTrafficQosPolicy":
+				code, message = plan.WarningCENQosQueueRemoval, "The queues of this QoS policy other than its default queue are deleted before the policy."
+			case "ACS::CEN::TrafficMarkingPolicy":
+				code, message = plan.WarningCENTrafficMatchRuleRemoval, "The traffic classification rules of this marking policy are deleted with it."
+			}
+			if value.Identity.Provider == asset.ProviderAliCloud && !selectionWarningExists(result, code, value.ID) {
+				result = append(result, plan.Warning{Code: code, AssetID: value.ID, Message: message, Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
 		case "ACS::ECS::Image":
 			if !cleanupNormalizedBool(value.Normalized, "IsPublic") ||
 				selectionWarningExists(result, plan.WarningPublicImageMadePrivate, value.ID) {

@@ -81,6 +81,12 @@ func TestCENTopologyInventoryBuildsNestedRegionalModel(t *testing.T) {
 		routeMap.Normalized[NormalizedCENTransitRouterRouteTableIDField] != "vtb-a" {
 		t.Fatalf("CEN route map = %+v", routeMap)
 	}
+	// DeleteFlowlog fails with ProjectOrLogstoreNotExist once the logstore
+	// is gone, so the flow log records the logstore it uses.
+	flowLog := items[CENFlowLogNativeType+"|flowlog-a"]
+	if flowLog.Normalized["projectName"] != "flow-project" || flowLog.Normalized["logStoreRef"] != "flow-project/flow-logstore" {
+		t.Fatalf("CEN flow log = %+v", flowLog.Normalized)
+	}
 	if _, duplicated := items[CENChildInstanceAttachmentNativeType+"|cen-a/vpc-a"]; duplicated {
 		t.Fatal("legacy child instance duplicated an Enterprise Edition VPC attachment")
 	}
@@ -425,6 +431,7 @@ func cenTopologyResponses() map[string]contracts.InvocationResult {
 				"FlowLogs": map[string]any{"FlowLog": []any{map[string]any{
 					"FlowLogId": "flowlog-a", "RegionId": "cn-hangzhou",
 					"TransitRouterAttachmentId": "tr-attach-a", "Status": "Active",
+					"ProjectName": "flow-project", "LogStoreName": "flow-logstore",
 				}}},
 				"TotalCount": 1,
 			},

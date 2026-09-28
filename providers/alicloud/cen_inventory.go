@@ -613,8 +613,15 @@ func (c *cenTopologyCollector) collectFlowLogs(cenID string) error {
 			NormalizedCENInstanceIDField:                cenID,
 			NormalizedCENRegionIDField:                  firstNonEmptyCENScalar(recordRegion, c.region),
 			NormalizedCENTransitRouterAttachmentIDField: firstCENScalar(record, "TransitRouterAttachmentId", "AttachmentId"),
-			"name":  cenScalar(record, "FlowLogName"),
-			"state": cenScalar(record, "Status"),
+			"name":         cenScalar(record, "FlowLogName"),
+			"state":        cenScalar(record, "Status"),
+			"projectName":  cenScalar(record, "ProjectName"),
+			"logStoreName": cenScalar(record, "LogStoreName"),
+		}
+		// DeleteFlowlog fails with ProjectOrLogstoreNotExist once its
+		// logstore is gone, so the flow log must be deleted first.
+		if project, logStore := cenScalar(record, "ProjectName"), cenScalar(record, "LogStoreName"); project != "" && logStore != "" {
+			normalized["logStoreRef"] = project + "/" + logStore
 		}
 		if err := c.addItem(
 			CENFlowLogNativeType,

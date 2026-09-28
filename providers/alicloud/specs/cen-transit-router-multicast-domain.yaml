@@ -24,3 +24,21 @@ fields:
   state: Status
   createdAt: CreationTime
   transitRouterId: TransitRouterId
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteTransitRouterMulticastDomain
+    parameters:
+      TransitRouterMulticastDomainId: resource.nativeId
+      DryRun: false
+    idempotency: provider_token
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.CEN.ListTransitRouterMulticastDomains
+      parameters:
+        TransitRouterId: resource.normalized.transitRouterId
+        TransitRouterMulticastDomainId: resource.nativeId
+      itemsPath: TransitRouterMulticastDomains
+      identityPath: TransitRouterMulticastDomainId
+      statePath: Status

@@ -3476,6 +3476,13 @@
         "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/cen/transit-router-vbr-attachments/{TransitRouterAttachmentId}": {
+      "delete": {
+        "operationId": "CEN.DeleteTransitRouterVbrAttachment",
+        "x-operation-name": "DeleteTransitRouterVbrAttachment",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
     "/cen/transit-router-vpn-attachments": {
       "get": {
         "operationId": "CEN.ListTransitRouterVpnAttachments",
@@ -3483,11 +3490,25 @@
         "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/cen/transit-router-vpn-attachments/{TransitRouterAttachmentId}": {
+      "delete": {
+        "operationId": "CEN.DeleteTransitRouterVpnAttachment",
+        "x-operation-name": "DeleteTransitRouterVpnAttachment",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
     "/cen/transit-router-ecr-attachments": {
       "get": {
         "operationId": "CEN.ListTransitRouterEcrAttachments",
         "x-operation-name": "ListTransitRouterEcrAttachments",
         "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/cen/transit-router-ecr-attachments/{TransitRouterAttachmentId}": {
+      "delete": {
+        "operationId": "CEN.DeleteTransitRouterEcrAttachment",
+        "x-operation-name": "DeleteTransitRouterEcrAttachment",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
       }
     },
     "/cen/transit-router-peer-attachments": {
@@ -3574,6 +3595,13 @@
         "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/cen/flowlogs/{FlowLogId}": {
+      "delete": {
+        "operationId": "CEN.DeleteFlowlog",
+        "x-operation-name": "DeleteFlowlog",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
     "/cen/route-maps": {
       "get": {
         "operationId": "CEN.DescribeCenRouteMaps",
@@ -3614,11 +3642,46 @@
         "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/cen/transit-router-multicast-domains/{TransitRouterMulticastDomainId}": {
+      "delete": {
+        "operationId": "CEN.DeleteTransitRouterMulticastDomain",
+        "x-operation-name": "DeleteTransitRouterMulticastDomain",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/cen/transit-router-multicast-domains/{TransitRouterMulticastDomainId}/groups": {
+      "get": {
+        "operationId": "CEN.ListTransitRouterMulticastGroups",
+        "x-operation-name": "ListTransitRouterMulticastGroups",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/cen/transit-router-multicast-domains/{TransitRouterMulticastDomainId}/group-members": {
+      "delete": {
+        "operationId": "CEN.DeregisterTransitRouterMulticastGroupMembers",
+        "x-operation-name": "DeregisterTransitRouterMulticastGroupMembers",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/cen/transit-router-multicast-domains/{TransitRouterMulticastDomainId}/group-sources": {
+      "delete": {
+        "operationId": "CEN.DeregisterTransitRouterMulticastGroupSources",
+        "x-operation-name": "DeregisterTransitRouterMulticastGroupSources",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
     "/cen/transit-router-multicast-domain-associations": {
       "get": {
         "operationId": "CEN.ListTransitRouterMulticastDomainAssociations",
         "x-operation-name": "ListTransitRouterMulticastDomainAssociations",
         "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/cen/transit-router-multicast-domain-associations/{TransitRouterAttachmentId}": {
+      "delete": {
+        "operationId": "CEN.DisassociateTransitRouterMulticastDomain",
+        "x-operation-name": "DisassociateTransitRouterMulticastDomain",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
       }
     },
     "/cen/traffic-marking-policies": {
@@ -3628,11 +3691,32 @@
         "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/cen/traffic-marking-policies/{TrafficMarkingPolicyId}": {
+      "delete": {
+        "operationId": "CEN.DeleteTrafficMarkingPolicy",
+        "x-operation-name": "DeleteTrafficMarkingPolicy",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
     "/cen/inter-region-traffic-qos-policies": {
       "get": {
         "operationId": "CEN.ListCenInterRegionTrafficQosPolicies",
         "x-operation-name": "ListCenInterRegionTrafficQosPolicies",
         "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/cen/inter-region-traffic-qos-policies/{TrafficQosPolicyId}": {
+      "delete": {
+        "operationId": "CEN.DeleteCenInterRegionTrafficQosPolicy",
+        "x-operation-name": "DeleteCenInterRegionTrafficQosPolicy",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/cen/inter-region-traffic-qos-queues/{QosQueueId}": {
+      "delete": {
+        "operationId": "CEN.DeleteCenInterRegionTrafficQosQueue",
+        "x-operation-name": "DeleteCenInterRegionTrafficQosQueue",
+        "x-operation-call": {"product":"Cbn","version":"2017-09-12","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cbn.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
       }
     },
     "/cloud-sso/directories": {

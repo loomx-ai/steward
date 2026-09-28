@@ -875,7 +875,8 @@ resources:
   baseline:
     inventory_source: cen-topology
     scope: region
-    actions: []
+    actions:
+    - delete
   gcp:
     resources:
     - networkmanagement.googleapis.com/VpcFlowLogsConfig
@@ -911,7 +912,8 @@ resources:
   baseline:
     inventory_source: cen-topology
     scope: region
-    actions: []
+    actions:
+    - delete
   gcp:
     resources:
     - compute.googleapis.com/InterconnectAttachment
@@ -966,7 +968,8 @@ resources:
   baseline:
     inventory_source: cen-topology
     scope: region
-    actions: []
+    actions:
+    - delete
   gcp:
     resources:
     - compute.googleapis.com/InterconnectAttachment
@@ -1002,7 +1005,8 @@ resources:
   baseline:
     inventory_source: cen-topology
     scope: region
-    actions: []
+    actions:
+    - delete
   gcp:
     resources: *id007
   azure:
@@ -1017,7 +1021,8 @@ resources:
   baseline:
     inventory_source: cen-topology
     scope: region
-    actions: []
+    actions:
+    - delete
   gcp:
     resources:
     - networkservices.googleapis.com/MulticastDomain
@@ -1074,7 +1079,8 @@ resources:
   baseline:
     inventory_source: cen-topology
     scope: region
-    actions: []
+    actions:
+    - delete
   gcp:
     resources: *id007
   azure:
@@ -1107,7 +1113,8 @@ resources:
   baseline:
     inventory_source: cen-topology
     scope: region
-    actions: []
+    actions:
+    - delete
   gcp:
     resources: *id007
   azure:

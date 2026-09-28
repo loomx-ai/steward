@@ -2301,6 +2301,9 @@ export function cleanupResourceRows(
       [
         "pre_delete_image_visibility_change",
         "scaling_group_force_delete",
+        "cen_multicast_membership_removal",
+        "cen_qos_queue_removal",
+        "cen_traffic_match_rule_removal",
       ].includes(warning.code) &&
       warning.asset_id
     ) {

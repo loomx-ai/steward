@@ -24,3 +24,22 @@ fields:
   state: TrafficMarkingPolicyStatus
   transitRouterId: TransitRouterId
   priority: Priority
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteTrafficMarkingPolicy
+    parameters:
+      TrafficMarkingPolicyId: resource.nativeId
+      DryRun: false
+      Force: true
+    idempotency: provider_token
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.CEN.ListTrafficMarkingPolicies
+      parameters:
+        TransitRouterId: resource.normalized.transitRouterId
+        TrafficMarkingPolicyId: resource.nativeId
+      itemsPath: TrafficMarkingPolicies
+      identityPath: TrafficMarkingPolicyId
+      statePath: TrafficMarkingPolicyStatus
