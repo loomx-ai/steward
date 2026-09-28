@@ -4347,7 +4347,13 @@ resources:
   gcp:
     notes: Cloud VPN has no client-to-site server resource.
   azure:
-    notes: Point-to-site IPsec settings are properties of Microsoft.Network/virtualNetworkGateways.
+    resources:
+    - Microsoft.Network/vpnServerConfigurations
+    - Microsoft.Network/p2sVpnGateways
+    notes: >-
+      Virtual WAN point-to-site (IKEv2) is a VPN server configuration used by a hub's point-to-site gateway;
+      the gateway is deleted before the configuration and the hub. On a virtual network gateway the same
+      settings are properties of Microsoft.Network/virtualNetworkGateways.
   aws:
     resources:
     - AWS::EC2::ClientVpnEndpoint
@@ -4387,7 +4393,13 @@ resources:
   gcp:
     notes: Cloud VPN has no client-to-site server resource.
   azure:
-    notes: Point-to-site configuration is a property of Microsoft.Network/virtualNetworkGateways.
+    resources:
+    - Microsoft.Network/vpnServerConfigurations
+    - Microsoft.Network/p2sVpnGateways
+    notes: >-
+      Virtual WAN point-to-site (OpenVPN) is a VPN server configuration used by a hub's point-to-site gateway;
+      the gateway is deleted before the configuration and the hub. On a virtual network gateway the same
+      settings are properties of Microsoft.Network/virtualNetworkGateways.
   aws:
     resources:
     - AWS::EC2::ClientVpnEndpoint

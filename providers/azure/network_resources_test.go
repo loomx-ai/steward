@@ -50,6 +50,8 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 		{"Microsoft.Network/virtualNetworks/virtualNetworkPeerings", "Microsoft.Network/virtualNetworks/vnet/virtualNetworkPeerings/peer", "/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/vnet/virtualNetworkPeerings", "2024-05-01", "eastus"},
 		{"Microsoft.Network/virtualWans", "Microsoft.Network/virtualWans/wan", "/providers/Microsoft.Network/virtualWans", "2024-05-01", "eastus"},
 		{"Microsoft.Network/vpnGateways", "Microsoft.Network/vpnGateways/vpn", "/providers/Microsoft.Network/vpnGateways", "2024-05-01", "eastus"},
+		{"Microsoft.Network/p2sVpnGateways", "Microsoft.Network/p2sVpnGateways/p2s", "/providers/Microsoft.Network/p2sVpnGateways", "2024-05-01", "eastus"},
+		{"Microsoft.Network/vpnServerConfigurations", "Microsoft.Network/vpnServerConfigurations/config", "/providers/Microsoft.Network/vpnServerConfigurations", "2024-05-01", "eastus"},
 		{"Microsoft.Network/vpnGateways/vpnConnections", "Microsoft.Network/vpnGateways/vpn/vpnConnections/connection", "/resourceGroups/test/providers/Microsoft.Network/vpnGateways/vpn/vpnConnections", "2024-05-01", "eastus"},
 		{"Microsoft.Network/vpnGateways/natRules", "Microsoft.Network/vpnGateways/vpn/natRules/nat", "/resourceGroups/test/providers/Microsoft.Network/vpnGateways/vpn/natRules", "2024-05-01", "eastus"},
 		{"Microsoft.Storage/storageAccounts/fileServices/shares", "Microsoft.Storage/storageAccounts/storage/fileServices/default/shares/share", "/resourceGroups/test/providers/Microsoft.Storage/storageAccounts/storage/fileServices/default/shares", "2023-05-01", "eastus"},
@@ -192,6 +194,12 @@ func TestNativeNetworkReferencesAndSecretRedaction(t *testing.T) {
 	}
 	if len(refs["Microsoft.Network/virtualHubs/hubRouteTables"]) != 2 || !slices.Contains(refs["Microsoft.Network/loadBalancers"], strings.ToLower(resourceID("Microsoft.Network/loadBalancers", "lb"))) {
 		t.Fatalf("nested references=%v", refs)
+	}
+	p2s := references("Microsoft.Network/p2sVpnGateways", strings.ToLower(resourceID("Microsoft.Network/p2sVpnGateways", "p2s")), map[string]any{"properties": map[string]any{
+		"virtualHub": map[string]any{"id": resourceID("Microsoft.Network/virtualHubs", "hub")}, "vpnServerConfiguration": map[string]any{"id": resourceID("Microsoft.Network/vpnServerConfigurations", "config")},
+	}})
+	if len(p2s["Microsoft.Network/virtualHubs"]) != 1 || len(p2s["Microsoft.Network/vpnServerConfigurations"]) != 1 {
+		t.Fatalf("point-to-site gateway references=%v", p2s)
 	}
 	payload, _ := json.Marshal(safePayload(map[string]any{"properties": properties}))
 	if strings.Contains(string(payload), "sensitive") {

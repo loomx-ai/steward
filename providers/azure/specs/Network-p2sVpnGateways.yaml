@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/p2sVpnGateways
+  class: network.vpn_gateway
+presentation:
+  displayNames:
+    en-US: Virtual WAN point-to-site VPN gateway
+    zh-CN: 虚拟 WAN 点到站点 VPN 网关
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.P2sVpnGateways_List
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.P2sVpnGateways_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  vpnGatewayScaleUnit:
+    path: vpnGatewayScaleUnit
+    type: number
+  customDnsServers:
+    path: customDnsServers
+    type: array
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/virtualHubs
+  targetIdPath: refs_microsoft_network_virtualhubs
+- type: uses
+  targetType: Microsoft.Network/vpnServerConfigurations
+  targetIdPath: refs_microsoft_network_vpnserverconfigurations
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.P2sVpnGateways_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.P2sVpnGateways_Get
+      itemsPath: $
+      identityPath: id

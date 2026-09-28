@@ -134,7 +134,7 @@ What to expect:
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 526 Azure resource types; 473 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 528 Azure resource types; 475 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -169,7 +169,7 @@ Steward recognizes 526 Azure resource types; 473 have native cleanup actions, in
 | Containers | Container registries, Container Apps, [Container Instances](#container-instances) groups and AKS | AKS cleanup reviews its node resource group and known nested or externally managed descendants |
 | [Kubernetes Fleet Manager](#kubernetes-fleet-manager) | Fleets, AKS and Arc members, managed namespaces, update runs, strategies, auto-upgrade profiles, Gates and cross-cluster networks | Reviewed native children are deleted before the Fleet; networks disconnect first, update runs remove their Gates, and verified Hub resources follow the Fleet |
 | DNS and private endpoints | Public/private zones and records, private DNS links, private endpoints and DNS zone groups | Reviewed controller cascades include verified managed NICs and external DNS records; DNS system records cannot be deleted on their own |
-| Virtual WAN gateways | VPN/ExpressRoute gateways, connections, VPN NAT rules and links | Connection and NAT prerequisites are explicit; VPN links belong to their connection |
+| Virtual WAN gateways | VPN/ExpressRoute and point-to-site gateways, VPN server configurations, connections, VPN NAT rules and links | Connection and NAT prerequisites are explicit; VPN links belong to their connection; a point-to-site gateway is deleted before its server configuration and hub |
 | [Service Bus](#service-bus-and-event-hubs) | Namespaces, queues, topics, subscriptions, rules, authorization rules, recovery aliases, migration configurations and private endpoint connections | Native actions and reviewed namespace/entity cascades; migration cleanup aborts copying before deletion; paired recovery aliases are unpaired before deletion |
 | [Event Hubs](#service-bus-and-event-hubs) | Dedicated clusters, namespaces, event hubs, consumer groups, authorization rules, recovery aliases, schema/application groups and private endpoint connections | Cluster cleanup first deletes reviewed member namespaces; native namespace/event-hub cascades and paired-alias unpairing |
 | Operations and identity | Log Analytics workspaces and user-assigned managed identities | Supported |

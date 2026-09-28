@@ -476,6 +476,9 @@
         "NatRules_Delete",
         "NatRules_Get",
         "NatRules_ListByVpnGateway",
+        "P2sVpnGateways_Delete",
+        "P2sVpnGateways_Get",
+        "P2sVpnGateways_List",
         "RouteMaps_Delete",
         "RouteMaps_Get",
         "RouteMaps_List",
@@ -492,6 +495,9 @@
         "VpnGateways_Get",
         "VpnGateways_List",
         "VpnLinkConnections_ListByVpnConnection",
+        "VpnServerConfigurations_Delete",
+        "VpnServerConfigurations_Get",
+        "VpnServerConfigurations_List",
         "VpnSiteLinkConnections_Get"
       ]
     },
@@ -4098,6 +4104,44 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Network.VirtualWans_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/p2sVpnGateways",
+      "class": "network.vpn_gateway",
+      "display_name": "Virtual WAN point-to-site VPN gateway",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "p2sVpnGateways",
+      "read_operations": [
+        "Azure.Microsoft.Network.P2sVpnGateways_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.P2sVpnGateways_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.P2sVpnGateways_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/vpnServerConfigurations",
+      "class": "network.vpn_server",
+      "display_name": "Virtual WAN VPN server configuration",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "vpnServerConfigurations",
+      "read_operations": [
+        "Azure.Microsoft.Network.VpnServerConfigurations_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.VpnServerConfigurations_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.VpnServerConfigurations_List"
       ]
     },
     {

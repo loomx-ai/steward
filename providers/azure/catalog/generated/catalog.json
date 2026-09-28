@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "8bce45437491fa6a7ce4ad78d55053b9f3747658144f82da44a958eaafbd4182",
+    "checksum": "f18ca49ae6ea45a880529a5a4a8aea896607ff54e909d09e8f391de7657590e5",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "4db7b0a0b0a522f7760fa438514937b6e6d6b7fa1dbb7116fe734d0212e20133",
+  "content_checksum": "09ab3a5273f63dc9decdb5d7be90b385b6bfe0707a5d26fc4e16beea0893109b",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -122003,6 +122003,194 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/dnsresolver/resource-manager/Microsoft.Network/DnsResolver/stable/2025-05-01/openapi.json"
     },
     {
+      "id": "Azure.Microsoft.Network.P2sVpnGateways_Delete",
+      "name": "P2sVpnGateways_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/p2svpnGateways/{gatewayName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "gatewayName": {
+            "description": "The name of the gateway.",
+            "in": "path",
+            "name": "gatewayName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The resource group name of the P2SVpnGateway.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/p2svpnGateways/{gatewayName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.P2sVpnGateways_Get",
+      "name": "P2sVpnGateways_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/p2svpnGateways/{gatewayName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "gatewayName": {
+            "description": "The name of the gateway.",
+            "in": "path",
+            "name": "gatewayName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The resource group name of the P2SVpnGateway.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/Resource"
+          }
+        ],
+        "description": "P2SVpnGateway Resource.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/P2SVpnGatewayProperties",
+            "description": "Properties of the P2SVpnGateway.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "location"
+        ]
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/p2svpnGateways/{gatewayName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.P2sVpnGateways_List",
+      "name": "P2sVpnGateways_List",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Network/p2svpnGateways",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list P2SVpnGateways. It contains a list of P2SVpnGateways and a URL nextLink to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of operation list results if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of P2SVpnGateways.",
+            "items": {
+              "$ref": "#/definitions/P2SVpnGateway"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Network/p2svpnGateways",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
       "id": "Azure.Microsoft.Network.PacketCaptures_Delete",
       "name": "PacketCaptures_Delete",
       "service": "Microsoft.Network",
@@ -127496,6 +127684,195 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/vpnConnections/{connectionName}/vpnLinkConnections",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.VpnServerConfigurations_Delete",
+      "name": "VpnServerConfigurations_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnServerConfigurations/{vpnServerConfigurationName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The resource group name of the VpnServerConfiguration.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vpnServerConfigurationName": {
+            "description": "The name of the VpnServerConfiguration being deleted.",
+            "in": "path",
+            "name": "vpnServerConfigurationName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnServerConfigurations/{vpnServerConfigurationName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.VpnServerConfigurations_Get",
+      "name": "VpnServerConfigurations_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnServerConfigurations/{vpnServerConfigurationName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The resource group name of the VpnServerConfiguration.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vpnServerConfigurationName": {
+            "description": "The name of the VpnServerConfiguration being retrieved.",
+            "in": "path",
+            "name": "vpnServerConfigurationName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/Resource"
+          }
+        ],
+        "description": "VpnServerConfiguration Resource.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the resource that is unique within a resource group. This name can be used to access the resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/VpnServerConfigurationProperties",
+            "description": "Properties of the P2SVpnServer configuration.",
+            "x-ms-client-flatten": true
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnServerConfigurations/{vpnServerConfigurationName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.VpnServerConfigurations_List",
+      "name": "VpnServerConfigurations_List",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Network/vpnServerConfigurations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list all VpnServerConfigurations. It contains a list of VpnServerConfigurations and a URL nextLink to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of operation list results if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of VpnServerConfigurations.",
+            "items": {
+              "$ref": "#/definitions/VpnServerConfiguration"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Network/vpnServerConfigurations",
         "endpoint": "https://management.azure.com",
         "body_type": "json",
         "parameter_position": "query"
@@ -159819,6 +160196,27 @@
       }
     },
     {
+      "native_type": "Microsoft.Network/p2sVpnGateways",
+      "class": "network.vpn_gateway",
+      "display_name": "Virtual WAN point-to-site VPN gateway",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "p2sVpnGateways",
+        "read_operations": [
+          "Azure.Microsoft.Network.P2sVpnGateways_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.P2sVpnGateways_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.P2sVpnGateways_List"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.Network/privateDnsZones",
       "class": "dns.private_zone",
       "display_name": "Private DNS zone",
@@ -160436,6 +160834,27 @@
         ],
         "response_id_types": [
           "Microsoft.Network/vpnGateways/vpnConnections/VpnSiteLinkConnections"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/vpnServerConfigurations",
+      "class": "network.vpn_server",
+      "display_name": "Virtual WAN VPN server configuration",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "vpnServerConfigurations",
+        "read_operations": [
+          "Azure.Microsoft.Network.VpnServerConfigurations_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.VpnServerConfigurations_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.VpnServerConfigurations_List"
         ]
       }
     },

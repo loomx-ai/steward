@@ -946,7 +946,7 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 		"loadbalancerbackendaddresspools": true, "applicationgatewaybackendaddresspools": true, "loadbalancerfrontendipconfigurations": true,
 		"serverfarmid": true, "virtualnetworksubnetid": true, "subnetresourceid": true, "managedenvironmentid": true, "environmentid": true,
 		"elasticpoolid": true, "vnetsubnetid": true, "delegatedsubnetresourceid": true, "keyvaultid": true}
-	for _, field := range []string{"virtualmachinescaleset", "virtualnetworkgateway1", "virtualnetworkgateway2", "localnetworkgateway2", "peer", "expressroutecircuit", "expressroutecircuitpeering", "virtualhub", "virtualwan", "remotenetwork", "remotevirtualnetwork", "firewallpolicy", "basepolicy", "ddosprotectionplan", "host", "hostgroup", "capacityreservationgroup", "targetresourceid", "targetresource", "privatednszoneid", "privateendpoint", "storageid", "workspaceResourceId", "associatedroutetable", "routemap", "outboundroutemap", "inboundroutemap"} {
+	for _, field := range []string{"virtualmachinescaleset", "virtualnetworkgateway1", "virtualnetworkgateway2", "localnetworkgateway2", "peer", "expressroutecircuit", "expressroutecircuitpeering", "virtualhub", "virtualwan", "remotenetwork", "remotevirtualnetwork", "firewallpolicy", "basepolicy", "ddosprotectionplan", "host", "hostgroup", "capacityreservationgroup", "targetresourceid", "targetresource", "privatednszoneid", "privateendpoint", "storageid", "workspaceResourceId", "associatedroutetable", "routemap", "outboundroutemap", "inboundroutemap", "vpnserverconfiguration"} {
 		fields[strings.ToLower(field)] = true
 	}
 	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/packetCaptures") {

@@ -134,7 +134,7 @@ Steward 永远不会删除授予连接自身访问权的角色分配，见[通�
 
 ## 盘点与清理范围
 
-Steward 识别 526 类 Azure 资源，其中 473 类具有原生清理操作（包括 Batch 节点移除），执行时受下文保护约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 528 类 Azure 资源，其中 475 类具有原生清理操作（包括 Batch 节点移除），执行时受下文保护约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -169,7 +169,7 @@ Steward 识别 526 类 Azure 资源，其中 473 类具有原生清理操作（�
 | 容器 | 容器注册表、Container App、[Container Instances](#container-instances) 容器组、AKS | AKS 清理审查节点资源组及已知的嵌套、外部托管资源 |
 | [Kubernetes Fleet Manager](#kubernetes-fleet-manager) | Fleet、AKS 和 Arc 成员、托管命名空间、更新运行、策略、自动升级配置、Gate 与跨集群网络 | 先删除已审查的原生子资源，再删除 Fleet；跨集群网络先断开，更新运行负责所属 Gate，经核验的 Hub 资源随 Fleet 清理 |
 | DNS 与私有终结点 | 公有/私有 DNS 区域及记录、私有 DNS 链接、Private Endpoint 与 DNS 区域组 | 级联审查包含已验证的托管网卡和外部 DNS 记录；系统 DNS 记录不可单独删除 |
-| Virtual WAN 网关 | VPN/ExpressRoute 网关、连接、VPN NAT 规则及链路 | 显式编排连接和 NAT 的前置删除；VPN 链路由连接管理 |
+| Virtual WAN 网关 | VPN/ExpressRoute 与点到站点网关、VPN 服务器配置、连接、VPN NAT 规则及链路 | 显式编排连接和 NAT 的前置删除；VPN 链路由连接管理；点到站点网关先于其服务器配置和中心删除 |
 | [Service Bus](#service-bus-与-event-hubs) | 命名空间、队列、主题、订阅、规则、授权规则、灾难恢复别名、迁移配置、私有终结点连接 | 原生操作及已审查的命名空间/实体级联；迁移清理先中止复制再删除；配对别名先解除配对再删除 |
 | [Event Hubs](#service-bus-与-event-hubs) | 专用集群、命名空间、事件中心、消费者组、授权规则、灾难恢复别名、架构组/应用组、私有终结点连接 | 集群清理先删除已审查的成员命名空间；支持命名空间/事件中心级联及配对别名解除配对 |
 | 运维与身份 | Log Analytics 工作区、用户分配的托管身份 | 支持 |
