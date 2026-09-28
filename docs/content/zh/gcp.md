@@ -6,7 +6,7 @@ navTitle: "Google Cloud"
 
 本页说明如何连接 Google Cloud 项目、授予 Steward 所需权限、完成第一次扫描，以及各服务如何盘点和清理。
 
-每个连接对应一个项目。两个可选设置可以扩展范围：**防火墙范围**用于管理组织或文件夹中的层级防火墙策略，**组目录**用于管理 Cloud Identity 身份组。Steward 还会盘点一些不属于该项目的记录：凭证可见的账单账号中的预算、项目所属的组织，以及连接服务账号自身的 OS Login SSH 公钥。
+每个连接对应一个项目。两个可选设置可以扩展范围：**防火墙范围**用于管理组织或文件夹中的层级防火墙策略，**组目录**用于管理 Cloud Identity 身份组。Steward 还会盘点一些不属于该项目的记录：凭证可见的账单账号中的预算、项目所属的组织和文件夹，以及连接服务账号自身的 OS Login SSH 公钥。
 
 Steward 通过两种方式读取 Google Cloud：
 
@@ -126,7 +126,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | [Cloud TPU](#cloud-tpu) | 节点、排队资源和原生预留容量 | 节点与排队资源支持审查后清理；数据盘先解绑并保留；预留容量只读 |
 | [Batch](#batch) | 作业、任务记录 | 删除作业时取消运行中的工作，并核实已审查的任务、VM 和磁盘影响；任务不能单独删除 |
 | [Google Kubernetes Engine](#google-kubernetes-engine) | 集群、节点池 | 审查成员影响后，由原生控制器执行清理 |
-| Cloud Run | 服务 | 支持 |
+| Cloud Run | 服务与修订版本 | 支持；删除服务会同时删除其修订版本，正在承接流量的修订版本会被 API 拒绝删除 |
 | Artifact Registry | 仓库 | 支持 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
 | [Cloud Router](#cloud-router) | 路由器配置、NAT 影响和策略／命名集合前置步骤 | 审查后删除路由器，其中的 NAT 随之删除 |
@@ -150,7 +150,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Cloud KMS | 密钥环、密钥、版本、导入任务 | 删除满足条件的资源记录；导入任务只读 |
 | [Infrastructure Manager](#infrastructure-manager) | 部署组、部署、修订、资源记录、预览及变更／漂移记录 | 审查后清理部署组、部署与预览；子级元数据不能单独删除 |
 | [OS Login](#os-login-ssh-公钥) | 连接服务账号 OS Login 资料中的 SSH 公钥 | 支持 |
-| [Resource Manager](#resource-manager-组织) | 连接项目所属的组织 | 只读；公开的 v3 API 没有组织删除方法 |
+| [Resource Manager](#resource-manager-组织) | 连接项目所属的组织及其上级文件夹 | 只读；公开的 v3 API 没有组织删除方法，上级文件夹中还有其他项目 |
 | Secret Manager | 全局和地域级密钥 | 支持 |
 | Managed Service for Apache Kafka | 集群、主题与消费组 | 支持；删除集群会同时删除其主题和消费组 |
 | Eventarc | 消息总线、管道、注册与触发器 | 支持；由其他服务管理（带 `goog-managed-by` 标签）的触发器需通过该服务删除 |
@@ -718,11 +718,11 @@ Infrastructure Manager 使用部署的服务账号和源配置执行，两者必
 
 ### Resource Manager 组织
 
-**盘点：** 沿文件夹父级链发现的连接项目所属组织。读取失败或项目移动时，保留之前的组织记录。
+**盘点：** 沿项目的父级链发现的所属组织，以及两者之间的各级文件夹。项目连接看不到组织中的其他文件夹。读取失败或项目移动时，保留之前的记录。
 
 **权限：** 对每一级父文件夹和组织的 Resource Manager 读取权限。
 
-**清理：** 只读。公开的 v3 API 没有组织删除方法，发现项目所属组织也不代表获得组织级清理授权。参阅 Google 的[组织 API](https://docs.cloud.google.com/resource-manager/reference/rest/v3/organizations)和[独立组织生命周期指南](https://docs.cloud.google.com/resource-manager/docs/delete-standalone-org)。
+**清理：** 只读。公开的 v3 API 没有组织删除方法，上级文件夹中还有其他项目，发现它们也不代表获得组织或文件夹级清理授权。参阅 Google 的[组织 API](https://docs.cloud.google.com/resource-manager/reference/rest/v3/organizations)和[独立组织生命周期指南](https://docs.cloud.google.com/resource-manager/docs/delete-standalone-org)。
 
 ### Security Command Center
 

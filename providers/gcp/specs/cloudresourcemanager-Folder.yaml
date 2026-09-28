@@ -1,0 +1,41 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: cloudresourcemanager.googleapis.com/Folder
+  class: identity.folder
+presentation:
+  displayNames:
+    en-US: Resource Manager folder
+    zh-CN: Resource Manager 文件夹
+scope:
+  kind: global
+discovery:
+  source: organization-ancestry
+  list:
+    operation: cloudresourcemanager.folders.get
+    itemsPath: $
+    identityPath: name
+  detail:
+    operation: cloudresourcemanager.folders.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  parent:
+    path: parent
+    type: string
+  state:
+    path: state
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  updateTime:
+    path: updateTime
+    type: string

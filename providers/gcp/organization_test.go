@@ -318,3 +318,31 @@ func TestOrganizationCreatorWorkerPreservesEarlierAncestry(t *testing.T) {
 		now = now.Add(time.Minute)
 	}
 }
+
+func TestOrganizationAncestryInventoriesItsFoldersReadOnly(t *testing.T) {
+	s := newOrganizationScenario()
+	r := s.runtime(t)
+	kind := r.resourceKind(folderType)
+	request := organizationRequest(r)
+	request.ResourceKind = &kind
+	batch, err := r.List(context.Background(), request)
+	if err != nil || !batch.Complete || len(batch.Items) != 1 {
+		t.Fatalf("folder inventory: %+v %v", batch, err)
+	}
+	item := batch.Items[0]
+	if item.NativeID != "//cloudresourcemanager.googleapis.com/folders/456" || item.Name != "Platform" || item.Actionable == nil || *item.Actionable {
+		t.Fatalf("invalid native folder: %+v", item)
+	}
+	if _, present := item.Normalized["project_id"]; present || item.Normalized["_organization_project"] != "projects/123456" {
+		t.Fatal("project connection was represented as folder ownership")
+	}
+	value := asset.Asset{ID: "folder", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", Partition: "gcp", NativeType: folderType, NativeID: item.NativeID}, Normalized: item.Normalized}
+	if _, err := r.ResolveAction(context.Background(), "connection", value); err == nil {
+		t.Fatal("invented folder delete action")
+	}
+	s.project["parent"] = "organizations/123"
+	batch, err = r.List(context.Background(), request)
+	if err != nil || len(batch.Items) != 0 {
+		t.Fatalf("a project directly under its organization has no ancestor folder: %+v %v", batch, err)
+	}
+}

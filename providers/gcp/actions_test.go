@@ -34,7 +34,7 @@ func TestDeletionTracksNativeOperationsAndConfirmsAbsence(t *testing.T) {
 	for _, test := range []struct{ kind, name, operation string }{
 		{"compute.googleapis.com/Instance", "projects/sample-project/zones/us-central1-a/instances/web", "operation-1"},
 		{"sqladmin.googleapis.com/Instance", "projects/sample-project/instances/db", "operation-1"},
-		{"run.googleapis.com/Service", "projects/sample-project/locations/us-central1/services/web", "projects/sample-project/locations/us-central1/operations/operation-1"},
+		{"run.googleapis.com/Job", "projects/sample-project/locations/us-central1/jobs/web", "projects/sample-project/locations/us-central1/operations/operation-1"},
 		{"artifactregistry.googleapis.com/Repository", "projects/sample-project/locations/us-central1/repositories/artifacts", "projects/sample-project/locations/us-central1/operations/operation-1"},
 	} {
 		t.Run(test.kind, func(t *testing.T) {

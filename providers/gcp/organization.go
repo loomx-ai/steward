@@ -13,12 +13,17 @@ import (
 )
 
 const organizationType = "cloudresourcemanager.googleapis.com/Organization"
+
+// folderType covers only the folders above the connected project. Folders
+// elsewhere in the organization are not visible from a project connection.
+const folderType = "cloudresourcemanager.googleapis.com/Folder"
 const organizationInventorySource = "organization-ancestry"
 const resourceManagerHost = "cloudresourcemanager.googleapis.com"
 
 type organizationAncestry struct {
 	Project      map[string]any
 	Folders      []firewallContainer
+	FolderData   []map[string]any
 	Organization map[string]any
 }
 
@@ -57,11 +62,19 @@ func (c *client) organizationAncestry(ctx context.Context) (organizationAncestry
 		}
 		seen[parent] = true
 		if strings.HasPrefix(parent, "folders/") {
-			folder, err := c.firewallContainer(ctx, parent)
+			if !firewallContainerName(parent) {
+				return result, groupDenied("firewall_container_name_invalid")
+			}
+			data, err := c.request(ctx, "GET", "https://"+resourceManagerHost+"/v3/"+parent, nil)
+			if err != nil {
+				return result, err
+			}
+			folder, err := firewallContainerValue(parent, data)
 			if err != nil {
 				return result, err
 			}
 			result.Folders = append(result.Folders, folder)
+			result.FolderData = append(result.FolderData, data)
 			parent = folder.Parent
 			continue
 		}
@@ -104,7 +117,7 @@ func organizationIdentity(name string, data map[string]any) error {
 
 func (r *Runtime) listOrganization(ctx context.Context, c *client, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
 	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: true}
-	if request.Source != organizationInventorySource || request.ResourceKind == nil || (request.ResourceKind.NativeType != organizationType && request.ResourceKind.NativeType != securitySubscriptionType) || request.Cursor != "" || request.NetworkTarget != nil || request.Scope.Kind != asset.ScopeProject && request.Scope.Kind != asset.ScopeGlobal {
+	if request.Source != organizationInventorySource || request.ResourceKind == nil || (request.ResourceKind.NativeType != organizationType && request.ResourceKind.NativeType != securitySubscriptionType && request.ResourceKind.NativeType != folderType) || request.Cursor != "" || request.NetworkTarget != nil || request.Scope.Kind != asset.ScopeProject && request.Scope.Kind != asset.ScopeGlobal {
 		return batch, groupDenied("organization_inventory_scope_invalid")
 	}
 	if request.Scope.Kind == asset.ScopeGlobal && !slices.Contains([]string{"global", c.project + "/global", c.number + "/global"}, request.Scope.NativeID) {
@@ -130,6 +143,20 @@ func (r *Runtime) listOrganization(ctx context.Context, c *client, request contr
 	if !reflect.DeepEqual(first, second) {
 		return batch, groupDenied("organization_ancestry_changed")
 	}
+	if nativeType == folderType {
+		for _, data := range first.FolderData {
+			item, err := r.inventoryItem(c, map[string]any{"name": "//" + resourceManagerHost + "/" + text(data["name"]), "assetType": folderType, "resource": map[string]any{"data": data, "location": "global"}})
+			if err != nil {
+				return batch, err
+			}
+			delete(item.Normalized, "project_id")
+			delete(item.Normalized, "project_number")
+			item.Normalized["_inventory_source"] = organizationInventorySource
+			item.Normalized["_organization_project"] = first.Project["name"]
+			batch.Items = append(batch.Items, item)
+		}
+		return batch, nil
+	}
 	if first.Organization == nil {
 		return batch, nil
 	}
@@ -153,10 +180,11 @@ func (r *Runtime) listOrganization(ctx context.Context, c *client, request contr
 
 func organizationOperation(metadata providerMetadata, id, method string) (catalog.Operation, map[string]any, error) {
 	name := strings.TrimPrefix(id, "//"+resourceManagerHost+"/")
-	if method != "GET" || name == id || !strings.HasPrefix(name, "organizations/") || !firewallContainerName(name) {
+	collection := strings.Split(name, "/")[0]
+	if method != "GET" || name == id || collection != "organizations" && collection != "folders" || !firewallContainerName(name) {
 		return catalog.Operation{}, nil, groupDenied("organization_read_identity_invalid")
 	}
-	op, ok := metadata.catalog.Operation("cloudresourcemanager.organizations.get")
+	op, ok := metadata.catalog.Operation("cloudresourcemanager." + collection + ".get")
 	if !ok {
 		return catalog.Operation{}, nil, groupDenied("organization_read_method_missing")
 	}

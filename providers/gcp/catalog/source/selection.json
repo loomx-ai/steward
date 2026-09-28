@@ -280,7 +280,10 @@
         "run.projects.locations.operations.get",
         "run.projects.locations.services.delete",
         "run.projects.locations.services.get",
-        "run.projects.locations.services.list"
+        "run.projects.locations.services.list",
+        "run.projects.locations.services.revisions.delete",
+        "run.projects.locations.services.revisions.get",
+        "run.projects.locations.services.revisions.list"
       ]
     },
     {
@@ -1101,6 +1104,7 @@
     {
       "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3",
       "methods": [
+        "monitoring.projects.groups.delete",
         "monitoring.projects.groups.get",
         "monitoring.projects.groups.list",
         "monitoring.projects.groups.members.list"
@@ -1273,6 +1277,15 @@
       "methods": [
         "dataflow.projects.locations.jobs.get",
         "dataflow.projects.locations.jobs.list"
+      ]
+    },
+    {
+      "source_uri": "https://logging.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "logging.folders.sinks.get",
+        "logging.folders.sinks.list",
+        "logging.organizations.sinks.get",
+        "logging.organizations.sinks.list"
       ]
     }
   ],
@@ -1779,6 +1792,24 @@
       ],
       "list_operations": [
         "run.projects.locations.services.list"
+      ]
+    },
+    {
+      "native_type": "run.googleapis.com/Revision",
+      "collection": "revisions",
+      "class": "serverless.version",
+      "display_name": "Cloud Run revision",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "run.projects.locations.services.revisions.get"
+      ],
+      "delete_operations": [
+        "run.projects.locations.services.revisions.delete"
+      ],
+      "list_operations": [
+        "run.projects.locations.services.revisions.list"
       ]
     },
     {
@@ -4768,6 +4799,21 @@
       ]
     },
     {
+      "native_type": "cloudresourcemanager.googleapis.com/Folder",
+      "class": "identity.folder",
+      "collection": "folders",
+      "display_name": "Resource Manager folder",
+      "list_operations": [
+        "cloudresourcemanager.folders.get"
+      ],
+      "read_operations": [
+        "cloudresourcemanager.folders.get"
+      ],
+      "scope_kinds": [
+        "global"
+      ]
+    },
+    {
       "native_type": "cloudidentity.googleapis.com/Group",
       "collection": "groups",
       "class": "identity.group",
@@ -4960,6 +5006,42 @@
       ],
       "scope_kinds": [
         "global"
+      ]
+    },
+    {
+      "native_type": "billingbudgets.googleapis.com/Budget",
+      "collection": "budgets",
+      "class": "billing.budget",
+      "display_name": "Cloud Billing budget",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "billingbudgets.billingAccounts.budgets.get"
+      ],
+      "delete_operations": [
+        "billingbudgets.billingAccounts.budgets.delete"
+      ],
+      "list_operations": [
+        "billingbudgets.billingAccounts.budgets.list"
+      ]
+    },
+    {
+      "native_type": "monitoring.googleapis.com/Group",
+      "collection": "groups",
+      "class": "observability.resource_group",
+      "display_name": "Cloud Monitoring group",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "monitoring.projects.groups.get"
+      ],
+      "delete_operations": [
+        "monitoring.projects.groups.delete"
+      ],
+      "list_operations": [
+        "monitoring.projects.groups.list"
       ]
     },
     {

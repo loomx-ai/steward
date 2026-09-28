@@ -65,6 +65,7 @@ var serviceCascadeRules = map[string]serviceCascadeRule{
 	featureOnlineStoreType:                          {children: []string{"aiplatform.googleapis.com/FeatureView"}, forceParameter: "force"},
 	netappVolumeType:                                {children: []string{"netapp.googleapis.com/Snapshot"}, directChildren: []string{"netapp.googleapis.com/Snapshot"}},
 	"spanner.googleapis.com/Instance":               {children: []string{"spanner.googleapis.com/Database"}},
+	"run.googleapis.com/Service":                    {children: []string{"run.googleapis.com/Revision"}},
 	"alloydb.googleapis.com/Cluster":                {children: []string{"alloydb.googleapis.com/Instance"}, forceParameter: "force"},
 	"servicedirectory.googleapis.com/Namespace":     {children: []string{"servicedirectory.googleapis.com/Service"}},
 	"servicedirectory.googleapis.com/Service":       {children: []string{"servicedirectory.googleapis.com/Endpoint"}},

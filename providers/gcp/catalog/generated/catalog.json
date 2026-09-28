@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "8e8b314d37cb0425ad95e250542ff98ef50921d44e2c285fba9488c6c514d548",
+    "checksum": "0c6a96ebb8bcd4d9f007d3ca00314a530cbce42d1455bd33ad863b7281707d1c",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "6c192760ccc844e98346b466dcce961f731ab5862d7748e93f070ca096ea48e8",
+  "content_checksum": "cd3f034289327c18b862f1a1fb1dd721bc8019f462a1c54a895f176194d9c85d",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -116856,6 +116856,435 @@
       "source_uri": "https://run.googleapis.com/$discovery/rest?version=v2"
     },
     {
+      "id": "run.projects.locations.services.revisions.delete",
+      "name": "delete",
+      "service": "run",
+      "method": "DELETE",
+      "path": "/v2/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "etag": {
+            "description": "A system-generated fingerprint for this version of the resource. This may be used to detect modification conflict during updates.",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Required. The name of the Revision to delete. Format: projects/{project}/locations/{location}/services/{service}/revisions/{revision}",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/services/[^/]+/revisions/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "validateOnly": {
+            "description": "Indicates that the request should be validated without actually deleting any resources.",
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "GoogleLongrunningOperation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "GoogleRpcStatus",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "run",
+        "version": "v2",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v2/{name}",
+        "endpoint": "https://run.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://run.googleapis.com/$discovery/rest?version=v2"
+    },
+    {
+      "id": "run.projects.locations.services.revisions.get",
+      "name": "get",
+      "service": "run",
+      "method": "GET",
+      "path": "/v2/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The full name of the Revision. Format: projects/{project}/locations/{location}/services/{service}/revisions/{revision}",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/services/[^/]+/revisions/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A Revision is an immutable snapshot of code and configuration. A Revision references a container image. Revisions are only created by updates to its parent Service.",
+        "id": "GoogleCloudRunV2Revision",
+        "properties": {
+          "annotations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Output only. Unstructured key value map that may be set by external tools to store and arbitrary metadata. They are not queryable and should be preserved when modifying objects.",
+            "readOnly": true,
+            "type": "object"
+          },
+          "client": {
+            "description": "Output only. Arbitrary identifier for the API client.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "clientVersion": {
+            "description": "Output only. Arbitrary version identifier for the API client.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "conditions": {
+            "description": "Output only. The Condition of this Revision, containing its readiness status, and detailed error information in case it did not reach a serving state.",
+            "items": {
+              "$ref": "GoogleCloudRunV2Condition"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "containers": {
+            "description": "Holds the list which define the units of execution for this Revision.",
+            "items": {
+              "$ref": "GoogleCloudRunV2Container"
+            },
+            "type": "array"
+          },
+          "createTime": {
+            "description": "Output only. The creation time.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "creator": {
+            "description": "Output only. Email address of the authenticated creator.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "deleteTime": {
+            "description": "Output only. For a deleted resource, the deletion time. It is only populated as a response to a Delete request.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "encryptionKey": {
+            "description": "A reference to a customer managed encryption key (CMEK) to use to encrypt this container image. For more information, go to https://cloud.google.com/run/docs/securing/using-cmek",
+            "type": "string"
+          },
+          "encryptionKeyRevocationAction": {
+            "description": "The action to take if the encryption key is revoked.",
+            "enum": [
+              "ENCRYPTION_KEY_REVOCATION_ACTION_UNSPECIFIED",
+              "PREVENT_NEW",
+              "SHUTDOWN"
+            ],
+            "enumDescriptions": [
+              "Unspecified",
+              "Prevents the creation of new instances.",
+              "Shuts down existing instances, and prevents creation of new ones."
+            ],
+            "type": "string"
+          },
+          "encryptionKeyShutdownDuration": {
+            "description": "If encryption_key_revocation_action is SHUTDOWN, the duration before shutting down all instances. The minimum increment is 1 hour.",
+            "format": "google-duration",
+            "type": "string"
+          },
+          "etag": {
+            "description": "Output only. A system-generated fingerprint for this version of the resource. May be used to detect modification conflict during updates.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "executionEnvironment": {
+            "description": "The execution environment being used to host this Revision.",
+            "enum": [
+              "EXECUTION_ENVIRONMENT_UNSPECIFIED",
+              "EXECUTION_ENVIRONMENT_GEN1",
+              "EXECUTION_ENVIRONMENT_GEN2"
+            ],
+            "enumDescriptions": [
+              "Unspecified",
+              "Uses the First Generation environment.",
+              "Uses Second Generation environment."
+            ],
+            "type": "string"
+          },
+          "expireTime": {
+            "description": "Output only. For a deleted resource, the time after which it will be permamently deleted. It is only populated as a response to a Delete request.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "generation": {
+            "description": "Output only. A number that monotonically increases every time the user modifies the desired state.",
+            "format": "int64",
+            "readOnly": true,
+            "type": "string"
+          },
+          "gpuZonalRedundancyDisabled": {
+            "description": "Optional. Output only. True if GPU zonal redundancy is disabled on this revision.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Output only. Unstructured key value map that can be used to organize and categorize objects. User-provided labels are shared with Google's billing system, so they can be used to filter, or break down billing charges by team, component, environment, state, etc. For more information, visit https://cloud.google.com/resource-manager/docs/creating-managing-labels or https://cloud.google.com/run/docs/configuring/labels.",
+            "readOnly": true,
+            "type": "object"
+          },
+          "launchStage": {
+            "description": "The least stable launch stage needed to create this resource, as defined by [Google Cloud Platform Launch Stages](https://cloud.google.com/terms/launch-stages). Cloud Run supports `ALPHA`, `BETA`, and `GA`. Note that this value might not be what was used as input. For example, if ALPHA was provided as input in the parent resource, but only BETA and GA-level features are used, this field will be BETA.",
+            "enum": [
+              "LAUNCH_STAGE_UNSPECIFIED",
+              "UNIMPLEMENTED",
+              "PRELAUNCH",
+              "EARLY_ACCESS",
+              "ALPHA",
+              "BETA",
+              "GA",
+              "DEPRECATED"
+            ],
+            "enumDescriptions": [
+              "Do not use this default value.",
+              "The feature is not yet implemented. Users can not use it.",
+              "Prelaunch features are hidden from users and are only visible internally.",
+              "Early Access features are limited to a closed group of testers. To use these features, you must sign up in advance and sign a Trusted Tester agreement (which includes confidentiality provisions). These features may be unstable, changed in backward-incompatible ways, and are not guaranteed to be released.",
+              "Alpha is a limited availability test for releases before they are cleared for widespread use. By Alpha, all significant design issues are resolved and we are in the process of verifying functionality. Alpha customers need to apply for access, agree to applicable terms, and have their projects allowlisted. Alpha releases don't have to be feature complete, no SLAs are provided, and there are no technical support obligations, but they will be far enough along that customers can actually use them in test environments or for limited-use tests -- just like they would in normal production cases.",
+              "Beta is the point at which we are ready to open a release for any customer to use. There are no SLA or technical support obligations in a Beta release. Products will be complete from a feature perspective, but may have some open outstanding issues. Beta releases are suitable for limited production use cases.",
+              "GA features are open to all developers and are considered stable and fully qualified for production use.",
+              "Deprecated features are scheduled to be shut down and removed. For more information, see the \"Deprecation Policy\" section of our [Terms of Service](https://cloud.google.com/terms/) and the [Google Cloud Platform Subject to the Deprecation Policy](https://cloud.google.com/terms/deprecation) documentation."
+            ],
+            "type": "string"
+          },
+          "logUri": {
+            "description": "Output only. The Google Console URI to obtain logs for the Revision.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "maxInstanceRequestConcurrency": {
+            "description": "Sets the maximum number of requests that each serving instance can receive.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "name": {
+            "description": "Output only. The unique name of this Revision.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "nodeSelector": {
+            "$ref": "GoogleCloudRunV2NodeSelector",
+            "description": "The node selector for the revision."
+          },
+          "observedGeneration": {
+            "description": "Output only. The generation of this Revision currently serving traffic. See comments in `reconciling` for additional information on reconciliation process in Cloud Run.",
+            "format": "int64",
+            "readOnly": true,
+            "type": "string"
+          },
+          "reconciling": {
+            "description": "Output only. Indicates whether the resource's reconciliation is still in progress. See comments in `Service.reconciling` for additional information on reconciliation process in Cloud Run.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "satisfiesPzs": {
+            "description": "Output only. Reserved for future use.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "scaling": {
+            "$ref": "GoogleCloudRunV2RevisionScaling",
+            "description": "Scaling settings for this revision."
+          },
+          "scalingStatus": {
+            "$ref": "GoogleCloudRunV2RevisionScalingStatus",
+            "description": "Output only. The current effective scaling settings for the revision.",
+            "readOnly": true
+          },
+          "service": {
+            "description": "Output only. The name of the parent service.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "serviceAccount": {
+            "description": "Email address of the IAM service account associated with the revision of the service. The service account represents the identity of the running revision, and determines what permissions the revision has.",
+            "type": "string"
+          },
+          "serviceMesh": {
+            "$ref": "GoogleCloudRunV2ServiceMesh",
+            "description": "Enables service mesh connectivity."
+          },
+          "sessionAffinity": {
+            "description": "Enable session affinity.",
+            "type": "boolean"
+          },
+          "timeout": {
+            "description": "Max allowed time for an instance to respond to a request.",
+            "format": "google-duration",
+            "type": "string"
+          },
+          "uid": {
+            "description": "Output only. Server assigned unique identifier for the Revision. The value is a UUID4 string and guaranteed to remain unchanged until the resource is deleted.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The last-modified time.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "volumes": {
+            "description": "A list of Volumes to make available to containers.",
+            "items": {
+              "$ref": "GoogleCloudRunV2Volume"
+            },
+            "type": "array"
+          },
+          "vpcAccess": {
+            "$ref": "GoogleCloudRunV2VpcAccess",
+            "description": "VPC Access configuration for this Revision. For more information, visit https://cloud.google.com/run/docs/configuring/connecting-vpc."
+          },
+          "workloadIdentityConfig": {
+            "$ref": "GoogleCloudRunV2WorkloadIdentityConfig",
+            "description": "Optional. The Revision's workload identity settings."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "run",
+        "version": "v2",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v2/{name}",
+        "endpoint": "https://run.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://run.googleapis.com/$discovery/rest?version=v2"
+    },
+    {
+      "id": "run.projects.locations.services.revisions.list",
+      "name": "list",
+      "service": "run",
+      "method": "GET",
+      "path": "/v2/{parent}/revisions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "pageSize": {
+            "description": "Maximum number of revisions to return in this call.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "A page token received from a previous call to ListRevisions. All other parameters must match.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The Service from which the Revisions should be listed. To list all Revisions across Services, use \"-\" instead of Service name. Format: projects/{project}/locations/{location}/services/{service}",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/services/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "showDeleted": {
+            "description": "If true, returns deleted (but unexpired) resources along with active ones.",
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response message containing a list of Revisions.",
+        "id": "GoogleCloudRunV2ListRevisionsResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "A token indicating there are more items than page_size. Use it in the next ListRevisions request to continue.",
+            "type": "string"
+          },
+          "revisions": {
+            "description": "The resulting list of Revisions.",
+            "items": {
+              "$ref": "GoogleCloudRunV2Revision"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "revisions"
+      },
+      "call": {
+        "product": "run",
+        "version": "v2",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v2/{parent}/revisions",
+        "endpoint": "https://run.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://run.googleapis.com/$discovery/rest?version=v2"
+    },
+    {
       "id": "secretmanager.projects.locations.secrets.delete",
       "name": "delete",
       "service": "secretmanager",
@@ -126569,6 +126998,23 @@
       }
     },
     {
+      "native_type": "cloudresourcemanager.googleapis.com/Folder",
+      "class": "identity.folder",
+      "display_name": "Resource Manager folder",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "folders",
+        "read_operations": [
+          "cloudresourcemanager.folders.get"
+        ],
+        "list_operations": [
+          "cloudresourcemanager.folders.get"
+        ]
+      }
+    },
+    {
       "native_type": "cloudresourcemanager.googleapis.com/Organization",
       "class": "identity.resource_directory",
       "display_name": "Google Cloud organization",
@@ -130011,6 +130457,26 @@
         ],
         "list_operations": [
           "run.projects.locations.jobs.list"
+        ]
+      }
+    },
+    {
+      "native_type": "run.googleapis.com/Revision",
+      "class": "serverless.version",
+      "display_name": "Cloud Run revision",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "revisions",
+        "read_operations": [
+          "run.projects.locations.services.revisions.get"
+        ],
+        "delete_operations": [
+          "run.projects.locations.services.revisions.delete"
+        ],
+        "list_operations": [
+          "run.projects.locations.services.revisions.list"
         ]
       }
     },

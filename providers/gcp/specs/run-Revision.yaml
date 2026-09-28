@@ -1,0 +1,75 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: run.googleapis.com/Revision
+  class: serverless.version
+presentation:
+  displayNames:
+    en-US: Cloud Run revision
+    zh-CN: Cloud Run 修订版本
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    nativeType: run.googleapis.com/Service
+    source: product-api
+  list:
+    operation: run.projects.locations.services.revisions.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: revisions
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: run.projects.locations.services.revisions.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  etag:
+    path: etag
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  service:
+    path: service
+    type: string
+  launchStage:
+    path: launchStage
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: member_of
+  targetType: run.googleapis.com/Service
+  targetIdPath: refs_run_googleapis_com_Service
+actions:
+  delete:
+    operation: run.projects.locations.services.revisions.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: run.projects.locations.services.revisions.get
+      itemsPath: $
+      identityPath: name

@@ -6,7 +6,7 @@ navTitle: "Google Cloud"
 
 Use this page to connect a Google Cloud project, grant the permissions Steward needs, run a first scan, and look up how each service is inventoried and cleaned up.
 
-Each connection covers one project. Two optional settings extend it: a **Firewall scope** for hierarchical firewall policies in an organization or folder, and a **Group directory** for Cloud Identity groups. Steward also inventories some records outside the project: budgets in billing accounts the credential can see, the organization that contains the project, and the connection service account's OS Login SSH keys.
+Each connection covers one project. Two optional settings extend it: a **Firewall scope** for hierarchical firewall policies in an organization or folder, and a **Group directory** for Cloud Identity groups. Steward also inventories some records outside the project: budgets in billing accounts the credential can see, the organization and folders that contain the project, and the connection service account's OS Login SSH keys.
 
 Steward reads Google Cloud in two ways:
 
@@ -126,7 +126,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | [Cloud TPU](#cloud-tpu) | Nodes, queued resources and native reservations | Nodes and queued resources support reviewed cleanup; data disks are detached and kept; reservations are read-only |
 | [Batch](#batch) | Jobs and task records | Job cleanup cancels running work and verifies the reviewed task, VM and disk effects; tasks can't be deleted on their own |
 | [Google Kubernetes Engine](#google-kubernetes-engine) | Clusters and node pools | Native controller cleanup with reviewed member impacts |
-| Cloud Run | Services | Supported |
+| Cloud Run | Services and revisions | Supported; deleting a service deletes its revisions, and the API refuses to delete a revision that serves traffic |
 | Artifact Registry | Repositories | Supported |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
 | [Cloud Router](#cloud-router) | Router configuration, NAT impacts and policy/named-set prerequisites | Reviewed router deletion; its NATs are deleted with it |
@@ -150,7 +150,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Cloud KMS | Key rings, keys, versions and import jobs | Eligible resource records; import jobs are read-only |
 | [Infrastructure Manager](#infrastructure-manager) | Deployment groups, deployments, revisions, resource records, previews and change/drift records | Reviewed group, deployment and preview cleanup; child metadata can't be deleted on its own |
 | [OS Login](#os-login-ssh-public-keys) | SSH public keys in the connection service account's profile | Supported |
-| [Resource Manager](#resource-manager-organizations) | The organization that contains the connected project | Read-only; the public v3 API has no organization delete method |
+| [Resource Manager](#resource-manager-organizations) | The organization and the ancestor folders of the connected project | Read-only; the public v3 API has no organization delete method, and ancestor folders hold other projects |
 | Secret Manager | Global and regional secrets | Supported |
 | Managed Service for Apache Kafka | Clusters, topics and consumer groups | Supported; a cluster's topics and consumer groups are deleted with it |
 | Eventarc | Message buses, pipelines, enrollments and triggers | Supported; triggers that another service manages (labeled `goog-managed-by`) are removed through that service |
@@ -718,11 +718,11 @@ Deployment and deployment-group cleanup stops when a child resource still needs 
 
 ### Resource Manager organizations
 
-**Inventory.** The organization that contains the connected project, found through its folder ancestry. If a read fails or the project moves, Steward keeps the earlier organization record.
+**Inventory.** The organization that contains the connected project and the folders between them, found through the project's ancestry. Other folders in the organization aren't visible from a project connection. If a read fails or the project moves, Steward keeps the earlier records.
 
 **Permissions.** Resource Manager read access to every ancestor folder and the organization.
 
-**Cleanup.** Read-only. The public v3 API has no organization delete method, and finding the organization doesn't authorize organization-level cleanup. See Google's [Organization API](https://docs.cloud.google.com/resource-manager/reference/rest/v3/organizations) and [standalone organization lifecycle guide](https://docs.cloud.google.com/resource-manager/docs/delete-standalone-org).
+**Cleanup.** Read-only. The public v3 API has no organization delete method, ancestor folders also hold other projects, and finding them doesn't authorize organization- or folder-level cleanup. See Google's [Organization API](https://docs.cloud.google.com/resource-manager/reference/rest/v3/organizations) and [standalone organization lifecycle guide](https://docs.cloud.google.com/resource-manager/docs/delete-standalone-org).
 
 ### Security Command Center
 

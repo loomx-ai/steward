@@ -1472,8 +1472,9 @@ resources:
     scope: global
     actions: []
   gcp:
-    notes: cloudresourcemanager.googleapis.com/Folder is the equivalent and is not modeled yet; folders sit
-      above the project a connection is scoped to.
+    resources:
+    - cloudresourcemanager.googleapis.com/Folder
+    notes: A project connection sees only the folders above its project, read from its ancestry.
   azure:
     resources:
     - Microsoft.Management/managementGroups
@@ -2526,8 +2527,10 @@ resources:
     - delete
     parent_discovery: true
   gcp:
-    notes: run.googleapis.com/Revision is the equivalent for Cloud Run and Cloud Functions 2nd gen and
-      is not modeled yet.
+    resources:
+    - run.googleapis.com/Revision
+    notes: Revisions cover Cloud Run and Cloud Functions 2nd gen; deleting a service deletes its revisions,
+      and a revision that serves traffic is refused by the API.
   azure:
     notes: Azure Functions keep no immutable published versions.
   aws:

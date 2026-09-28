@@ -262,7 +262,7 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 	if kind.NativeType == securitySubscriptionType {
 		return securitySubscriptionOperation(metadata, nativeID, method)
 	}
-	if kind.NativeType == organizationType {
+	if kind.NativeType == organizationType || kind.NativeType == folderType {
 		return organizationOperation(metadata, nativeID, method)
 	}
 	if kind.NativeType == osLoginKeyType {

@@ -225,11 +225,13 @@ func TestDatabaseAndBrokerCascadesRequireReviewedNativeChildren(t *testing.T) {
 		{"alloydb.googleapis.com/Cluster", "alloydb.googleapis.com/Instance", p + "locations/us-central1/clusters/sql", "instances", p + "locations/us-central1/clusters/sql/instances/primary"},
 		{"managedkafka.googleapis.com/Cluster", "managedkafka.googleapis.com/Topic", p + "locations/us-central1/clusters/broker", "topics", p + "locations/us-central1/clusters/broker/topics/__remote_log_metadata"},
 		{"managedkafka.googleapis.com/Cluster", "managedkafka.googleapis.com/ConsumerGroup", p + "locations/us-central1/clusters/broker", "consumerGroups", p + "locations/us-central1/clusters/broker/consumerGroups/readers"},
+		// Deleting a Cloud Run service deletes all of its revisions.
+		{"run.googleapis.com/Service", "run.googleapis.com/Revision", p + "locations/us-central1/services/web", "revisions", p + "locations/us-central1/services/web/revisions/web-00001"},
 	} {
 		t.Run(test.parent+"/"+test.child, func(t *testing.T) {
 			host := strings.Split(test.parent, "/")[0]
 			version := "v1"
-			if host == "bigtableadmin.googleapis.com" {
+			if host == "bigtableadmin.googleapis.com" || host == "run.googleapis.com" {
 				version = "v2"
 			}
 			parent := asset.Asset{ID: "parent", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", NativeType: test.parent, NativeID: "//" + host + "/" + test.name}, Normalized: map[string]any{"name": test.name}, Capabilities: asset.CapabilitySet{asset.CapabilityActionable}}
@@ -252,7 +254,7 @@ func TestDatabaseAndBrokerCascadesRequireReviewedNativeChildren(t *testing.T) {
 					}
 					writes++
 					body = map[string]any{}
-					if host == "alloydb.googleapis.com" || host == "managedkafka.googleapis.com" {
+					if host == "alloydb.googleapis.com" || host == "managedkafka.googleapis.com" || host == "run.googleapis.com" {
 						body = map[string]any{"name": p + "locations/us-central1/operations/delete"}
 					}
 				case r.URL.Path == "/"+version+"/"+test.name:
