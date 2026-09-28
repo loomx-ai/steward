@@ -51733,6 +51733,98 @@
   },
   {
    "apis": {
+    "BindResolverRuleVpc": {
+     "deprecated": false,
+     "error_codes": [
+      "ZoneVpc.Zone.Repeated"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "update",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "Lang",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RuleId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Vpc",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DeleteResolverEndpoint": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "readAndWrite",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "EndpointId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Lang",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DeleteResolverRule": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "readAndWrite",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "Lang",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RuleId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
     "DeleteZone": {
      "deprecated": false,
      "error_codes": [],
@@ -51773,6 +51865,167 @@
       "ZoneId"
      ],
      "risk_type": ""
+    },
+    "DescribeResolverEndpoints": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "Keyword",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Lang",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "Status",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "VpcRegionId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Endpoints",
+      "Endpoints.CreateTime",
+      "Endpoints.CreateTimestamp",
+      "Endpoints.Id",
+      "Endpoints.IpConfigs",
+      "Endpoints.IpConfigs.AzId",
+      "Endpoints.IpConfigs.CidrBlock",
+      "Endpoints.IpConfigs.Ip",
+      "Endpoints.IpConfigs.VSwitchId",
+      "Endpoints.Name",
+      "Endpoints.SecurityGroupId",
+      "Endpoints.Status",
+      "Endpoints.UpdateTime",
+      "Endpoints.UpdateTimestamp",
+      "Endpoints.VpcId",
+      "Endpoints.VpcName",
+      "Endpoints.VpcRegionId",
+      "Endpoints.VpcRegionName",
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "TotalItems",
+      "TotalPages"
+     ],
+     "risk_type": ""
+    },
+    "DescribeResolverRules": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "EndpointId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Keyword",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Lang",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "NeedDetailAttributes",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "Rules",
+      "Rules.BindEdgeDnsClusters",
+      "Rules.BindEdgeDnsClusters.ClusterId",
+      "Rules.BindEdgeDnsClusters.ClusterName",
+      "Rules.BindEdgeDnsClusters.ClusterUserId",
+      "Rules.BindVpcs",
+      "Rules.BindVpcs.RegionId",
+      "Rules.BindVpcs.RegionName",
+      "Rules.BindVpcs.VpcId",
+      "Rules.BindVpcs.VpcName",
+      "Rules.BindVpcs.VpcType",
+      "Rules.BindVpcs.VpcUserId",
+      "Rules.CreateTime",
+      "Rules.CreateTimestamp",
+      "Rules.EndpointId",
+      "Rules.EndpointName",
+      "Rules.ForwardIps",
+      "Rules.ForwardIps.Ip",
+      "Rules.ForwardIps.Port",
+      "Rules.Id",
+      "Rules.Name",
+      "Rules.PriorityForwardConfigs",
+      "Rules.PriorityForwardConfigs.AlidnsServiceAddresses",
+      "Rules.PriorityForwardConfigs.CustomAddresses",
+      "Rules.PriorityForwardConfigs.EnableStatus",
+      "Rules.PriorityForwardConfigs.Priority",
+      "Rules.PriorityForwardConfigs.Protocol",
+      "Rules.Type",
+      "Rules.UpdateTime",
+      "Rules.UpdateTimestamp",
+      "Rules.ZoneName",
+      "TotalItems",
+      "TotalPages"
+     ],
+     "risk_type": "none"
     },
     "DescribeZones": {
      "deprecated": false,

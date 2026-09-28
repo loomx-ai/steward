@@ -276,3 +276,45 @@ func TestConfigAggregatorAbsenceIsProvenByACompleteListing(t *testing.T) {
 		t.Fatalf("readback=%+v err=%v", readback, err)
 	}
 }
+
+func TestResolverRuleIsUnboundFromItsVPCsBeforeDeletion(t *testing.T) {
+	t.Parallel()
+
+	// DeleteResolverRule fails while the rule is bound to a VPC, and
+	// BindResolverRuleVpc replaces the binding list (pvtz 2018-01-01).
+	bound := []any{map[string]any{"VpcId": "vpc-a", "RegionId": "cn-hangzhou"}}
+	provider := &scriptedProvider{}
+	provider.respond = func(invocation contracts.Invocation) (contracts.InvocationResult, error) {
+		switch invocation.Operation {
+		case "AlibabaCloud.PrivateZone.DescribeResolverRules":
+			return contracts.InvocationResult{Data: map[string]any{"TotalItems": 1, "Rules": []any{map[string]any{"Id": "hr-rule", "EndpointId": "hre-a", "BindVpcs": bound}}}}, nil
+		case "AlibabaCloud.PrivateZone.BindResolverRuleVpc":
+			if _, present := invocation.Parameters["Vpc"]; present {
+				t.Fatal("unbinding kept VPCs")
+			}
+			bound = nil
+			return contracts.InvocationResult{RequestID: "unbind"}, nil
+		case "AlibabaCloud.PrivateZone.DeleteResolverRule":
+			return contracts.InvocationResult{RequestID: "delete-rule"}, nil
+		}
+		t.Fatalf("unexpected call %s", invocation.Operation)
+		return contracts.InvocationResult{}, nil
+	}
+	hook, err := alicloud.NewActionHook(provider, "connection-a", "cn-hangzhou", "ACS::PrivateZone::ResolverRule")
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := contracts.ActionRequest{
+		Asset: asset.Asset{ID: "rule", Identity: asset.Identity{Provider: asset.ProviderAliCloud, NativeType: "ACS::PrivateZone::ResolverRule", NativeID: "hr-rule"},
+			Normalized: map[string]any{"endpointId": "hre-a"}},
+		Action: "delete", IdempotencyKey: "step-rule",
+	}
+	result, err := hook.Execute(context.Background(), request)
+	if err != nil || result.Data["phase"] != "pre_delete_cleanup" || len(provider.calls("AlibabaCloud.PrivateZone.DeleteResolverRule")) != 0 {
+		t.Fatalf("execute result=%+v err=%v calls=%+v", result, err, provider.invocations)
+	}
+	wait, err := hook.Wait(context.Background(), request, result)
+	if err != nil || !wait.Done || len(provider.calls("AlibabaCloud.PrivateZone.DeleteResolverRule")) != 1 {
+		t.Fatalf("wait=%+v err=%v", wait, err)
+	}
+}

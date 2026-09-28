@@ -386,6 +386,7 @@ func TestAppendSelectionWarningsDescribesAlibabaCloudPreDeleteRemovals(t *testin
 		"ACS::CEN::TrafficMarkingPolicy":         plan.WarningCENTrafficMatchRuleRemoval,
 		"ACS::ApiGateway::Api":                   plan.WarningAPIGatewayAPIAbolish,
 		"ACS::Config::Aggregator":                plan.WarningConfigAggregatorContentsLoss,
+		"ACS::PrivateZone::ResolverRule":         plan.WarningResolverRuleVPCUnbind,
 	}
 	for nativeType, code := range want {
 		value := asset.Asset{ID: asset.AssetID(nativeType), Identity: asset.Identity{Provider: asset.ProviderAliCloud, NativeType: nativeType}}

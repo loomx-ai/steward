@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::PrivateZone::ResolverEndpoint
+  class: network.dns_resolver_endpoint
+presentation:
+  consoleLinkTemplate: "https://dns.console.aliyun.com/#/privateZone/forward"
+  displayNames:
+    zh-CN: 内网 DNS 出站终端节点
+    en-US: PrivateZone Resolver Endpoint
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.PrivateZone.DescribeResolverEndpoints
+    parameters:
+      VpcRegionId: scope.location
+    itemsPath: Endpoints
+    identityPath: Id
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalItems
+      maxPageSize: 100
+fields:
+  name: Name
+  state: Status
+  createdAt: CreateTime
+  vpcId: VpcId
+  regionId: VpcRegionId
+  securityGroupId: SecurityGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.PrivateZone.DeleteResolverEndpoint
+    parameters:
+      EndpointId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.PrivateZone.DescribeResolverEndpoints
+      parameters:
+        VpcRegionId: resource.normalized.regionId
+        PageSize: 100
+      itemsPath: Endpoints
+      identityPath: Id
+      statePath: Status
+      pagination:
+        type: page-number
+        pageParameter: PageNumber
+        pageSizeParameter: PageSize
+        totalPath: TotalItems
+        maxPageSize: 100

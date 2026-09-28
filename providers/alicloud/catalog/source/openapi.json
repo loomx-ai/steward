@@ -2811,6 +2811,41 @@
         "x-operation-call": {"product":"Alidns","version":"2015-01-09","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"alidns.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/pvtz/resolver-endpoints": {
+      "get": {
+        "operationId": "PrivateZone.DescribeResolverEndpoints",
+        "x-operation-name": "DescribeResolverEndpoints",
+        "x-operation-call": {"product":"pvtz","version":"2018-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"pvtz.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/pvtz/resolver-endpoints/{EndpointId}": {
+      "delete": {
+        "operationId": "PrivateZone.DeleteResolverEndpoint",
+        "x-operation-name": "DeleteResolverEndpoint",
+        "x-operation-call": {"product":"pvtz","version":"2018-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"pvtz.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/pvtz/resolver-rules": {
+      "get": {
+        "operationId": "PrivateZone.DescribeResolverRules",
+        "x-operation-name": "DescribeResolverRules",
+        "x-operation-call": {"product":"pvtz","version":"2018-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"pvtz.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/pvtz/resolver-rules/{RuleId}": {
+      "delete": {
+        "operationId": "PrivateZone.DeleteResolverRule",
+        "x-operation-name": "DeleteResolverRule",
+        "x-operation-call": {"product":"pvtz","version":"2018-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"pvtz.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/pvtz/resolver-rules/{RuleId}/vpcs": {
+      "put": {
+        "operationId": "PrivateZone.BindResolverRuleVpc",
+        "x-operation-name": "BindResolverRuleVpc",
+        "x-operation-call": {"product":"pvtz","version":"2018-01-01","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"pvtz.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/private-zone/zones": {
       "get": {
         "operationId": "PrivateZone.DescribeZones",
@@ -4647,6 +4682,8 @@
     {"nativeType": "ACS::PAI::Service", "class": "ai.inference_service", "displayName": "PAI EAS Service", "scopeKinds": ["region"]},
     {"nativeType": "ACS::PrivateLink::VpcEndpoint", "class": "network.endpoint", "displayName": "PrivateLink Endpoint", "scopeKinds": ["region"]},
     {"nativeType": "ACS::PrivateLink::VpcEndpointService", "class": "network.endpoint_service", "displayName": "PrivateLink Endpoint Service", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::PrivateZone::ResolverEndpoint", "class": "network.dns_resolver_endpoint", "displayName": "PrivateZone Resolver Endpoint", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::PrivateZone::ResolverRule", "class": "network.dns_forwarding_rule", "displayName": "PrivateZone Forwarding Rule", "scopeKinds": ["region"]},
     {"nativeType": "ACS::PrivateZone::Zone", "class": "dns.private_zone", "displayName": "PrivateZone Zone", "scopeKinds": ["global"]},
     {"nativeType": "ACS::RAM::Group", "class": "identity.group", "displayName": "RAM Group", "scopeKinds": ["global"]},
     {"nativeType": "ACS::RAM::Policy", "class": "identity.policy", "displayName": "RAM Policy", "scopeKinds": ["global"]},

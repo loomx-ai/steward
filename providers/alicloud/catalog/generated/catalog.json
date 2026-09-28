@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "a27e2a6e99d292e5c87ead09596fa2e5fcf771a37e24c579aff681cf6a1da78c",
+    "checksum": "06d4ada586cfc5be54526d9ed65a2fe884ef6cc64749bec823a369e03315b9ed",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "5babec44b8ece95e728555be062028a7b39a2f99e4aa2cb79c4ac991e38ed269",
+  "content_checksum": "973f24d51740ca10088e2dda7a356e71dd29a30bbbd7379f4f9daea883d36102",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -9691,6 +9691,66 @@
       }
     },
     {
+      "id": "AlibabaCloud.PrivateZone.BindResolverRuleVpc",
+      "name": "BindResolverRuleVpc",
+      "service": "AlibabaCloud",
+      "method": "PUT",
+      "path": "/pvtz/resolver-rules/{RuleId}/vpcs",
+      "destructive": false,
+      "call": {
+        "product": "pvtz",
+        "version": "2018-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "pvtz.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.PrivateZone.DeleteResolverEndpoint",
+      "name": "DeleteResolverEndpoint",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/pvtz/resolver-endpoints/{EndpointId}",
+      "destructive": true,
+      "call": {
+        "product": "pvtz",
+        "version": "2018-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "pvtz.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.PrivateZone.DeleteResolverRule",
+      "name": "DeleteResolverRule",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/pvtz/resolver-rules/{RuleId}",
+      "destructive": true,
+      "call": {
+        "product": "pvtz",
+        "version": "2018-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "pvtz.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.PrivateZone.DeleteZone",
       "name": "DeleteZone",
       "service": "AlibabaCloud",
@@ -9709,6 +9769,46 @@
         "body_type": "json",
         "parameter_position": "query",
         "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.PrivateZone.DescribeResolverEndpoints",
+      "name": "DescribeResolverEndpoints",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/pvtz/resolver-endpoints",
+      "destructive": false,
+      "call": {
+        "product": "pvtz",
+        "version": "2018-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "pvtz.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.PrivateZone.DescribeResolverRules",
+      "name": "DescribeResolverRules",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/pvtz/resolver-rules",
+      "destructive": false,
+      "call": {
+        "product": "pvtz",
+        "version": "2018-01-01",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "pvtz.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
       }
     },
     {
@@ -13278,6 +13378,22 @@
       "native_type": "ACS::PrivateLink::VpcEndpointService",
       "class": "network.endpoint_service",
       "display_name": "PrivateLink Endpoint Service",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::PrivateZone::ResolverEndpoint",
+      "class": "network.dns_resolver_endpoint",
+      "display_name": "PrivateZone Resolver Endpoint",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::PrivateZone::ResolverRule",
+      "class": "network.dns_forwarding_rule",
+      "display_name": "PrivateZone Forwarding Rule",
       "scope_kinds": [
         "region"
       ]

@@ -12,6 +12,8 @@ const (
 	ECSPrefixListNativeType = "ACS::ECS::PrefixList"
 	VPCPrefixListNativeType = "ACS::VPC::PrefixList"
 	vpcFlowLogNativeType    = "ACS::VPC::FlowLog"
+	resolverEndpointType    = "ACS::PrivateZone::ResolverEndpoint"
+	resolverRuleType        = "ACS::PrivateZone::ResolverRule"
 	// NormalizedPrefixListAssociationsField lists the resources that still
 	// reference a prefix list, each as {resourceId, resourceType}.
 	NormalizedPrefixListAssociationsField = "associations"
@@ -97,6 +99,33 @@ func enrichVPCFlowLogs(items []contracts.InventoryItem) []contracts.InventoryIte
 		logStore := strings.TrimSpace(stringValue(items[index].Normalized["logStoreName"]))
 		if project != "" && logStore != "" {
 			items[index].Normalized["logStoreRef"] = project + "/" + logStore
+		}
+	}
+	return items
+}
+
+// enrichResolverNetworks records the vSwitches a resolver endpoint places its
+// IP addresses in and the VPCs a forwarding rule is bound to, both nested in
+// arrays a field path cannot address.
+func enrichResolverNetworks(items []contracts.InventoryItem) []contracts.InventoryItem {
+	collect := func(values []any, field string) []any {
+		ids := []any{}
+		seen := map[string]bool{}
+		for _, raw := range values {
+			record, _ := raw.(map[string]any)
+			if id := strings.TrimSpace(stringValue(record[field])); id != "" && !seen[id] {
+				seen[id] = true
+				ids = append(ids, id)
+			}
+		}
+		return ids
+	}
+	for index := range items {
+		switch items[index].NativeType {
+		case resolverEndpointType:
+			items[index].Normalized["vSwitchIds"] = collect(anySlice(items[index].Raw["IpConfigs"]), "VSwitchId")
+		case resolverRuleType:
+			items[index].Normalized["boundVpcIds"] = collect(anySlice(items[index].Raw["BindVpcs"]), "VpcId")
 		}
 	}
 	return items

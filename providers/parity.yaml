@@ -3449,6 +3449,51 @@ resources:
     resources:
     - AWS::DSQL::Cluster
   status: pending_verification
+- alicloud: ACS::PrivateZone::ResolverEndpoint
+  spec: providers/alicloud/specs/private-zone-resolver-endpoint.yaml
+  class: network.dns_resolver_endpoint
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - dns.googleapis.com/Policy
+    notes: Cloud DNS server policies place inbound forwarding addresses in the network and name alternative
+      name servers; there is no separate endpoint resource.
+  azure:
+    resources:
+    - Microsoft.Network/dnsResolvers
+    - Microsoft.Network/dnsResolvers/outboundEndpoints
+  aws:
+    notes: AWS::Route53Resolver::ResolverEndpoint is the equivalent and is not modeled yet.
+  status: pending_verification
+  notes: An outbound endpoint is deleted only after its forwarding rules. Its addresses occupy vSwitches, so it
+    is deleted before them.
+- alicloud: ACS::PrivateZone::ResolverRule
+  spec: providers/alicloud/specs/private-zone-resolver-rule.yaml
+  class: network.dns_forwarding_rule
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - dns.googleapis.com/ManagedZone
+    notes: Forwarding is a Cloud DNS managed zone with a forwarding configuration and bound networks.
+  azure:
+    resources:
+    - Microsoft.Network/dnsForwardingRulesets/forwardingRules
+    - Microsoft.Network/dnsForwardingRulesets/virtualNetworkLinks
+  aws:
+    resources:
+    - AWS::Route53Resolver::ResolverRule
+  status: pending_verification
+  notes: DeleteResolverRule fails while the rule is bound to a VPC; the bindings are removed first and the plan
+    announces it.
 - alicloud: ACS::PrivateZone::Zone
   spec: providers/alicloud/specs/private-zone.yaml
   class: dns.private_zone

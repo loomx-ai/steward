@@ -2307,6 +2307,7 @@ export function cleanupResourceRows(
         "api_gateway_api_abolish",
         "config_aggregator_contents_loss",
         "azure_policy_assignment_delete",
+        "resolver_rule_vpc_unbind",
       ].includes(warning.code) &&
       warning.asset_id
     ) {

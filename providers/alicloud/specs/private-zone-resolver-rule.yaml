@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::PrivateZone::ResolverRule
+  class: network.dns_forwarding_rule
+presentation:
+  consoleLinkTemplate: "https://dns.console.aliyun.com/#/privateZone/forward"
+  displayNames:
+    zh-CN: 内网 DNS 转发规则
+    en-US: PrivateZone Forwarding Rule
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    source: product-api
+    nativeType: ACS::PrivateZone::ResolverEndpoint
+  list:
+    operation: AlibabaCloud.PrivateZone.DescribeResolverRules
+    parameters:
+      EndpointId: parent.nativeId
+      NeedDetailAttributes: true
+    itemsPath: Rules
+    identityPath: Id
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalItems
+      maxPageSize: 100
+fields:
+  name: Name
+  createdAt: CreateTime
+  endpointId: EndpointId
+  zoneName: ZoneName
+  ruleType: Type
+relationships:
+  - type: member_of
+    targetType: ACS::PrivateZone::ResolverEndpoint
+    targetIdPath: endpointId
+  - type: uses
+    targetType: ACS::VPC::VPC
+    targetIdPath: boundVpcIds
+actions:
+  delete:
+    operation: AlibabaCloud.PrivateZone.DeleteResolverRule
+    parameters:
+      RuleId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.PrivateZone.DescribeResolverRules
+      parameters:
+        EndpointId: resource.normalized.endpointId
+        NeedDetailAttributes: true
+        PageSize: 100
+      itemsPath: Rules
+      identityPath: Id
+      pagination:
+        type: page-number
+        pageParameter: PageNumber
+        pageSizeParameter: PageSize
+        totalPath: TotalItems
+        maxPageSize: 100

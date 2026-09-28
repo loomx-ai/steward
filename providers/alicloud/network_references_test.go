@@ -58,7 +58,7 @@ func TestNetworkPreconditionsKeepManagedFlowLogsAndSharedPrefixLists(t *testing.
 
 	for _, test := range []struct {
 		nativeType, operation, itemsPath, identity, field, value string
-		allowed                                                bool
+		allowed                                                  bool
 	}{
 		// DeleteFlowLog: Forbidden.OperateManagedFlowLog for sls-managed logs.
 		{vpcFlowLogNativeType, "DescribeFlowLogs", "FlowLogs.FlowLog", "FlowLogId", "ServiceType", "sls", false},
@@ -102,4 +102,16 @@ func (*runtimeInvocationProvider) Provider() asset.Provider { return asset.Provi
 func (p *runtimeInvocationProvider) Invoke(_ context.Context, invocation contracts.Invocation) (contracts.InvocationResult, error) {
 	p.invocation = invocation
 	return p.result, nil
+}
+
+func TestResolverNetworksAreReadFromNestedArrays(t *testing.T) {
+	t.Parallel()
+
+	items := enrichResolverNetworks([]contracts.InventoryItem{
+		{NativeType: resolverEndpointType, Normalized: map[string]any{}, Raw: map[string]any{"IpConfigs": []any{map[string]any{"VSwitchId": "vsw-a"}, map[string]any{"VSwitchId": "vsw-b"}, map[string]any{"VSwitchId": "vsw-a"}}}},
+		{NativeType: resolverRuleType, Normalized: map[string]any{}, Raw: map[string]any{"BindVpcs": []any{map[string]any{"VpcId": "vpc-a"}}}},
+	})
+	if !reflect.DeepEqual(items[0].Normalized["vSwitchIds"], []any{"vsw-a", "vsw-b"}) || !reflect.DeepEqual(items[1].Normalized["boundVpcIds"], []any{"vpc-a"}) {
+		t.Fatalf("items = %+v", items)
+	}
 }

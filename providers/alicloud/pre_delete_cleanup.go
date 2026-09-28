@@ -19,6 +19,7 @@ const preDeleteCleanupPhase = "pre_delete_cleanup"
 const (
 	apiGatewayAPINativeType             = "ACS::ApiGateway::Api"
 	apiGatewayAbolishAPIOperation       = "AlibabaCloud.ApiGateway.AbolishApi"
+	resolverRuleBindVPCOperation        = "AlibabaCloud.PrivateZone.BindResolverRuleVpc"
 	cenDeleteQosQueueOperation          = "AlibabaCloud.CEN.DeleteCenInterRegionTrafficQosQueue"
 	cenListMulticastGroupsOperation     = "AlibabaCloud.CEN.ListTransitRouterMulticastGroups"
 	cenDeregisterGroupSourcesOperation  = "AlibabaCloud.CEN.DeregisterTransitRouterMulticastGroupSources"
@@ -31,7 +32,7 @@ const (
 )
 
 func preDeleteCleanupType(nativeType string) bool {
-	return nativeType == apiGatewayAPINativeType ||
+	return nativeType == apiGatewayAPINativeType || nativeType == resolverRuleType ||
 		nativeType == CENInterRegionTrafficQosPolicyNativeType ||
 		nativeType == CENTransitRouterMulticastDomainNativeType
 }
@@ -49,6 +50,9 @@ func (h *ResourceAction) advancePreDeleteCleanup(
 	}
 	if h.nativeType == apiGatewayAPINativeType {
 		return h.abolishDeployedAPI(ctx, request, resource)
+	}
+	if h.nativeType == resolverRuleType {
+		return h.unbindResolverRuleVPCs(ctx, request, resource)
 	}
 	if !strings.EqualFold(strings.TrimSpace(readback.State), "Active") {
 		return h.preDeleteWaiting(readback.State, ""), true, nil
@@ -300,4 +304,27 @@ func providerErrorCode(err error) string {
 		return strings.TrimSpace(providerError.Provider.Code)
 	}
 	return ""
+}
+
+// unbindResolverRuleVPCs removes every VPC binding of a forwarding rule;
+// DeleteResolverRule fails while the rule is bound. BindResolverRuleVpc
+// replaces the whole binding list, so a call without VPCs clears it.
+func (h *ResourceAction) unbindResolverRuleVPCs(
+	ctx context.Context,
+	request contracts.ActionRequest,
+	rule map[string]any,
+) (contracts.ActionResult, bool, error) {
+	if len(anySlice(rule["BindVpcs"])) == 0 {
+		return contracts.ActionResult{}, false, nil
+	}
+	result, err := h.provider.Invoke(ctx, contracts.Invocation{
+		ConnectionID: h.connectionID, Operation: resolverRuleBindVPCOperation,
+		Scope:          map[string]string{"region": h.region},
+		Parameters:     map[string]any{"RuleId": request.Asset.Identity.NativeID},
+		IdempotencyKey: request.IdempotencyKey + ":unbind-vpcs",
+	})
+	if err != nil && !isNotFound(err) {
+		return contracts.ActionResult{}, false, err
+	}
+	return h.preDeleteWaiting("Unbinding", result.RequestID), true, nil
 }

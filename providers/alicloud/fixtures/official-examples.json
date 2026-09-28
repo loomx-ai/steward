@@ -15681,6 +15681,94 @@
    "RequestId": "C458B1E8-1683-3645-B154-6BA32080EEA",
    "TotalNumber": 30
   },
+  "pvtz@2018-01-01#DescribeResolverEndpoints": {
+   "Endpoints": [
+    {
+     "CreateTime": "2020-07-13 10:36:26",
+     "CreateTimestamp": 1594607786000,
+     "Id": "hr****",
+     "IpConfigs": [
+      {
+       "AzId": "cn-zhangjiakou-a",
+       "CidrBlock": "172.16.XX.XX/24",
+       "Ip": "172.16.XX.XX",
+       "VSwitchId": "vsw-0jlgeyq4oazkh5xue****"
+      }
+     ],
+     "Name": "Endpoint-test",
+     "SecurityGroupId": "sg-0jld3m9yq7l2cw12****",
+     "Status": "SUCCESS",
+     "UpdateTime": "2020-07-13 10:38:24",
+     "UpdateTimestamp": 1594607904000,
+     "VpcId": "vpc-0jlxhpfnj5bfu0bsd****",
+     "VpcName": "vpc-test-name",
+     "VpcRegionId": "cn-zhangjiakou",
+     "VpcRegionName": "Hangzhou VPC test"
+    }
+   ],
+   "PageNumber": 1,
+   "PageSize": 2,
+   "RequestId": "83D1682B-B69A-4060-9FA8-2907C2A35600",
+   "TotalItems": 1,
+   "TotalPages": 1
+  },
+  "pvtz@2018-01-01#DescribeResolverRules": {
+   "PageNumber": 1,
+   "PageSize": 10,
+   "RequestId": "A10E03D7-808C-422D-9144-F8586C2E2297",
+   "Rules": [
+    {
+     "BindEdgeDnsClusters": [
+      {
+       "ClusterId": "",
+       "ClusterName": "",
+       "ClusterUserId": 0
+      }
+     ],
+     "BindVpcs": [
+      {
+       "RegionId": "cn-wulanchabu",
+       "RegionName": "China (Ulanqab)",
+       "VpcId": "vpc-0jl96awrjt75ezglc****",
+       "VpcName": "vpc-name-test",
+       "VpcType": "STANDARD",
+       "VpcUserId": "141339776561****"
+      }
+     ],
+     "CreateTime": "2020-07-13 10:51:44",
+     "CreateTimestamp": 1594608704000,
+     "EndpointId": "hr****",
+     "EndpointName": "Endpoint-test",
+     "ForwardIps": [
+      {
+       "Ip": "172.16.XX.XX",
+       "Port": 80
+      }
+     ],
+     "Id": "hr****",
+     "Name": "Forwarding rule-test",
+     "PriorityForwardConfigs": [
+      {
+       "AlidnsServiceAddresses": [
+        ""
+       ],
+       "CustomAddresses": [
+        ""
+       ],
+       "EnableStatus": "",
+       "Priority": 0,
+       "Protocol": ""
+      }
+     ],
+     "Type": "OUTBOUND",
+     "UpdateTime": "2020-07-13 10:51:44",
+     "UpdateTimestamp": 1594608704000,
+     "ZoneName": "example.com"
+    }
+   ],
+   "TotalItems": 1,
+   "TotalPages": 1
+  },
   "pvtz@2018-01-01#DescribeZones": {
    "PageNumber": 1,
    "PageSize": 20,

@@ -970,6 +970,7 @@ const enUS = {
   "domain.api_gateway_api_abolish": "Pre-delete change",
   "domain.config_aggregator_contents_loss": "Deleted with aggregator",
   "domain.azure_policy_assignment_delete": "Policy stops applying",
+  "domain.resolver_rule_vpc_unbind": "Pre-delete change",
   "domain.lifecycle_conflict": "Lifecycle conflict",
   "domain.lifecycle_cycle": "Lifecycle cycle",
   "domain.lifecycle_confidence": "Insufficient lifecycle confidence",
@@ -1115,6 +1116,8 @@ const enUS = {
     "Deleting this aggregator also deletes its rules, compliance packs and compliance results, which cannot be recovered. Member accounts keep their Cloud Config service-linked role.",
   "error.azure_policy_assignment_delete":
     "Deleting this policy assignment stops its policy from being evaluated and enforced, so resources it denied can be created again. Its system-assigned managed identity is deleted with it; role assignments granted to that identity remain and need separate cleanup.",
+  "error.resolver_rule_vpc_unbind":
+    "The VPCs bound to this forwarding rule are unbound before it is deleted; they stop forwarding its zone at once.",
   "error.arc_shared_license_removal":
     "Deleting this shared Arc ESU license removes its update entitlement after assignments are cleared; billing may continue for up to five calendar days.",
   "error.arc_machine_registration_removal":
@@ -2146,6 +2149,7 @@ const zhCN: MessageShape = {
   "domain.api_gateway_api_abolish": "删除前调整",
   "domain.config_aggregator_contents_loss": "随账号组删除",
   "domain.azure_policy_assignment_delete": "策略不再生效",
+  "domain.resolver_rule_vpc_unbind": "删除前调整",
   "domain.lifecycle_conflict": "生命周期冲突",
   "domain.lifecycle_cycle": "生命周期环",
   "domain.lifecycle_confidence": "生命周期置信度不足",
@@ -2282,6 +2286,8 @@ const zhCN: MessageShape = {
     "删除账号组会一并删除其中的规则、合规包和合规结果，且不可恢复。成员账号的配置审计服务关联角色会保留。",
   "error.azure_policy_assignment_delete":
     "删除此策略分配后，其策略不再评估和强制执行，之前被拒绝的资源可以再次创建。它的系统分配托管身份会随之删除；授予该身份的角色分配会保留，需要单独清理。",
+  "error.resolver_rule_vpc_unbind":
+    "删除转发规则前，会先解除它与各 VPC 的绑定；这些 VPC 会立即停止转发该域名。",
   "error.arc_shared_license_removal":
     "删除此共享 Arc ESU 许可证会在解除分配后移除更新权益；计费可能继续最多五个日历日。",
   "error.arc_machine_registration_removal":

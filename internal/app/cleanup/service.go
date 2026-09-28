@@ -1987,6 +1987,10 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningAzurePolicyAssignmentDelete, value.ID) {
 				result = append(result, plan.Warning{Code: plan.WarningAzurePolicyAssignmentDelete, AssetID: value.ID, Message: "Deleting this policy assignment stops its policy from being evaluated and enforced, so resources it denied can be created again. Its system-assigned managed identity is deleted with it; role assignments granted to that identity remain and need separate cleanup.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
+		case "ACS::PrivateZone::ResolverRule":
+			if value.Identity.Provider == asset.ProviderAliCloud && !selectionWarningExists(result, plan.WarningResolverRuleVPCUnbind, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningResolverRuleVPCUnbind, AssetID: value.ID, Message: "The VPCs bound to this forwarding rule are unbound before it is deleted; they stop forwarding its zone at once.", Evidence: map[string]any{"operation": "unbind_vpcs", "native_type": value.Identity.NativeType}})
+			}
 		case "ACS::ApiGateway::Api":
 			if value.Identity.Provider == asset.ProviderAliCloud && !selectionWarningExists(result, plan.WarningAPIGatewayAPIAbolish, value.ID) {
 				result = append(result, plan.Warning{Code: plan.WarningAPIGatewayAPIAbolish, AssetID: value.ID, Message: "This API is taken offline in every environment it is published to before it is deleted; callers lose access immediately.", Evidence: map[string]any{"operation": "abolish_api", "native_type": value.Identity.NativeType}})
