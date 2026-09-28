@@ -3051,8 +3051,9 @@ resources:
     resources:
     - secretmanager.googleapis.com/Secret
   azure:
-    unimplemented_resources:
+    resources:
     - Microsoft.KeyVault/vaults/secrets
+    notes: Inventory only. Secret deletion is a Key Vault data-plane soft delete that ARM does not expose.
   aws:
     resources:
     - AWS::SecretsManager::Secret
@@ -3489,10 +3490,13 @@ resources:
     resources:
     - notebooks.googleapis.com/Instance
   azure:
-    unimplemented_resources:
+    resources:
     - Microsoft.MachineLearningServices/workspaces/computes
+    notes: Attached computes are protected; compute instances and clusters are deleted with their underlying resources.
   aws:
-    notes: AWS::SageMaker::NotebookInstance is the equivalent and is not modeled yet.
+    resources:
+    - AWS::SageMaker::NotebookInstance
+    notes: The Cloud Control delete handler stops an in-service notebook instance before deleting it.
   status: pending_verification
   notes: Subscription instances are released when they expire and are not deleted.
 - alicloud: ACS::PAI::Service

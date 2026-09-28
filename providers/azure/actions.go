@@ -828,6 +828,9 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	}
 	return contracts.ReadbackResult{Exists: true, State: text(object(res.data["properties"])["provisioningState"])}, nil
 }
+
+const mlComputeType = "Microsoft.MachineLearningServices/workspaces/computes"
+
 func protectionReason(kind resourceType, raw map[string]any) string {
 	if kind.NativeType == cdnProfileType {
 		switch text(object(raw["properties"])["resourceState"]) {
@@ -850,6 +853,15 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 		}
 		if len(object(props["outboundRule"])) > 0 {
 			return "azure_lb_backend_pool_in_use"
+		}
+	}
+	// Deleting an attached compute would delete or detach a resource that
+	// lives outside the workspace; only managed compute instances and
+	// clusters are deleted with their underlying resources.
+	if kind.NativeType == mlComputeType {
+		props := object(raw["properties"])
+		if props["isAttachedCompute"] == true || text(props["computeType"]) != "ComputeInstance" && text(props["computeType"]) != "AmlCompute" {
+			return "azure_ml_attached_compute"
 		}
 	}
 	if kind.NativeType == logAnalyticsTableType {

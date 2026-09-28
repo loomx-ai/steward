@@ -4,10 +4,10 @@
   "source": {
     "format": "smithy",
     "uri": "catalog/source/smithy.json",
-    "checksum": "f0b66e0e13505d89e3b58f7c81b28f2fa2c25a1c49be509c5e8368e82f82760a",
+    "checksum": "da9d83bd4a4121c76c4eedf8fb9123ad9a89c29a07d96fc479359668c311ebdb",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "229ade59412d36f3ca9957b4070a7c2e1e444c557c19eab3e5c7d95de8f95dbd",
+  "content_checksum": "80296187c32730b61fdbecb0c5f4ad28a93cbe4dd719dbc00bd4b77e53163c85",
   "operations": [
     {
       "id": "com.amazonaws.acmpca#DeleteCertificateAuthority",
@@ -4298,6 +4298,14 @@
       "native_type": "AWS::SageMaker::Model",
       "class": "ai.model",
       "display_name": "SageMaker Model",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::SageMaker::NotebookInstance",
+      "class": "ai.notebook",
+      "display_name": "SageMaker Notebook Instance",
       "scope_kinds": [
         "region"
       ]

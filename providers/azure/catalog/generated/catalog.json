@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "9584a368d2bb60cfeff3c62cdc4263bfa5182134ee489c1b4a1041247e0cf8d1",
+    "checksum": "8bce45437491fa6a7ce4ad78d55053b9f3747658144f82da44a958eaafbd4182",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "c8ec8a2fa398bd0b3672fb12bc13e0c732027602498ed4b62b28de9638c57804",
+  "content_checksum": "4db7b0a0b0a522f7760fa438514937b6e6d6b7fa1dbb7116fe734d0212e20133",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -106054,6 +106054,165 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/keys.json"
     },
     {
+      "id": "Azure.Microsoft.KeyVault.Secrets_Get",
+      "name": "Secrets_Get",
+      "service": "Microsoft.KeyVault",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets/{secretName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the Resource Group to which the vault belongs.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "secretName": {
+            "description": "The name of the secret.",
+            "in": "path",
+            "name": "secretName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the vault.",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./keyvault.json#/definitions/Resource"
+          }
+        ],
+        "description": "Resource information with extended details.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SecretProperties",
+            "description": "Properties of the secret"
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.KeyVault",
+        "version": "2023-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets/{secretName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/secrets.json"
+    },
+    {
+      "id": "Azure.Microsoft.KeyVault.Secrets_List",
+      "name": "Secrets_List",
+      "service": "Microsoft.KeyVault",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$top": {
+            "description": "Maximum number of results to return.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "type": "integer"
+          },
+          "api-version": {
+            "enum": [
+              "2023-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the Resource Group to which the vault belongs.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vaultName": {
+            "description": "The name of the vault.",
+            "in": "path",
+            "name": "vaultName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of secrets",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of secrets.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of secrets.",
+            "items": {
+              "$ref": "#/definitions/Secret"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.KeyVault",
+        "version": "2023-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/secrets.json"
+    },
+    {
       "id": "Azure.Microsoft.KeyVault.Vaults_Delete",
       "name": "Vaults_Delete",
       "service": "Microsoft.KeyVault",
@@ -109671,6 +109830,289 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/logic/resource-manager/Microsoft.Logic/Logic/stable/2019-05-01/logic.json"
+    },
+    {
+      "id": "Azure.Microsoft.MachineLearningServices.Compute_Delete",
+      "name": "Compute_Delete",
+      "service": "Microsoft.MachineLearningServices",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/computes/{computeName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "computeName": {
+            "description": "Name of the Azure Machine Learning compute.",
+            "in": "path",
+            "name": "computeName",
+            "pattern": "^[a-zA-Z](?![a-zA-Z0-9-]*-\\d+$)[a-zA-Z0-9\\-]{2,23}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "underlyingResourceAction": {
+            "description": "Delete the underlying compute if 'Delete', or detach the underlying compute from workspace if 'Detach'.",
+            "enum": [
+              "Delete",
+              "Detach"
+            ],
+            "in": "query",
+            "name": "underlyingResourceAction",
+            "required": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UnderlyingResourceAction",
+              "values": [
+                {
+                  "name": "Delete",
+                  "value": "Delete"
+                },
+                {
+                  "name": "Detach",
+                  "value": "Detach"
+                }
+              ]
+            }
+          },
+          "workspaceName": {
+            "description": "Azure Machine Learning Workspace Name",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,32}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.MachineLearningServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/computes/{computeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/stable/2026-07-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.MachineLearningServices.Compute_Get",
+      "name": "Compute_Get",
+      "service": "Microsoft.MachineLearningServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/computes/{computeName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "computeName": {
+            "description": "Name of the Azure Machine Learning compute.",
+            "in": "path",
+            "name": "computeName",
+            "pattern": "^[a-zA-Z](?![a-zA-Z0-9-]*-\\d+$)[a-zA-Z0-9\\-]{2,23}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "Azure Machine Learning Workspace Name",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,32}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Machine Learning compute object wrapped into ARM resource envelope.",
+        "properties": {
+          "identity": {
+            "$ref": "../../../../../common-types/resource-management/v3/managedidentity.json#/definitions/ManagedServiceIdentity",
+            "description": "The identity of the resource."
+          },
+          "location": {
+            "description": "Specifies the location of the resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/Compute",
+            "description": "The resource-specific properties for this resource."
+          },
+          "sku": {
+            "$ref": "../../../../../common-types/resource-management/v3/types.json#/definitions/Sku",
+            "description": "The sku of the workspace.",
+            "x-nullable": true
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Contains resource tags defined as key/value pairs.",
+            "type": "object",
+            "x-nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.MachineLearningServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/computes/{computeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/stable/2026-07-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.MachineLearningServices.Compute_List",
+      "name": "Compute_List",
+      "service": "Microsoft.MachineLearningServices",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/computes",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$skip": {
+            "description": "Continuation token for pagination.",
+            "in": "query",
+            "name": "$skip",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "Azure Machine Learning Workspace Name",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,32}$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Paginated list of Machine Learning compute objects wrapped in ARM resource envelope.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The ComputeResource items on this page",
+            "items": {
+              "$ref": "#/definitions/ComputeResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.MachineLearningServices",
+        "version": "2026-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/computes",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/03dbadaf71d388f2eb3268562eb248f0aa593f91/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/stable/2026-07-01/openapi.json"
     },
     {
       "id": "Azure.Microsoft.MachineLearningServices.OnlineEndpoints_Delete",
@@ -158001,6 +158443,23 @@
       }
     },
     {
+      "native_type": "Microsoft.KeyVault/vaults/secrets",
+      "class": "security.secret",
+      "display_name": "Key Vault secret",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "secrets",
+        "read_operations": [
+          "Azure.Microsoft.KeyVault.Secrets_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.KeyVault.Secrets_List"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.Kusto/clusters",
       "class": "data.database_cluster",
       "display_name": "Data Explorer cluster",
@@ -158244,6 +158703,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.MachineLearningServices.Workspaces_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.MachineLearningServices/workspaces/computes",
+      "class": "ai.compute",
+      "display_name": "Machine Learning compute",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "computes",
+        "read_operations": [
+          "Azure.Microsoft.MachineLearningServices.Compute_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.MachineLearningServices.Compute_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.MachineLearningServices.Compute_List"
         ]
       }
     },

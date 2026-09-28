@@ -134,7 +134,7 @@ What to expect:
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 524 Azure resource types; 472 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 526 Azure resource types; 473 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -200,9 +200,9 @@ Steward recognizes 524 Azure resource types; 472 have native cleanup actions, in
 | [Budgets](#monitor-alerts-and-budgets) | Consumption and Cost Management budgets at subscription and resource-group scopes | Independent cleanup; notification action groups stay separate |
 | Management groups | The tenant's visible management group directory, with parent groups | Read-only; requires `Microsoft.Management/managementGroups/read` on the groups to inventory |
 | Service Fabric and Storage Sync | Service Fabric clusters and Storage Sync services | Supported |
-| Machine Learning | Workspaces and managed online endpoints | Endpoint cleanup; workspaces are read-only parents |
+| Machine Learning | Workspaces, managed online endpoints and computes | Endpoint cleanup; compute instances and clusters are deleted with their underlying resources, attached computes are protected; workspaces are read-only parents |
 | Purview and managed applications | Microsoft Purview accounts and managed applications | Read-only: deleting them also deletes their managed resource group, which is not yet reviewed as a cascade |
-| Key Vault keys | Keys listed through the ARM Keys API | Read-only: key deletion is a data-plane soft delete not exposed by ARM |
+| Key Vault keys and secrets | Keys and secrets listed through the ARM Keys and Secrets APIs | Read-only: key and secret deletion is a data-plane soft delete not exposed by ARM |
 | Microsoft Entra users and groups | Users and groups read through Microsoft Graph, with direct group members | Read-only: directory objects affect the whole tenant. Requires [Graph permissions](#data-plane-and-directory-access). Only display name, user principal name, account state, user type, group type flags and creation time are stored |
 | Key Vault certificates | Certificates read from each vault's data plane, with vault and managed-key references | Read-only: deletion also soft-deletes the managed key and secret. Requires [certificate data-plane access](#data-plane-and-directory-access) |
 | Site Recovery | Replication protected items in Recovery Services vaults, with fabric, protection container and vault references | Read-only: disabling replication removes recovery-side replicas and is not yet reviewed; requires `Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems/read` |

@@ -156,3 +156,12 @@ func TestRESTSQLVMNativeNamePattern(t *testing.T) {
 		}
 	}
 }
+
+func TestBindRESTEvaluatesMachineLearningComputeNameLookahead(t *testing.T) {
+	operation := Operation{ID: "Azure.Microsoft.MachineLearningServices.Compute_Get", Call: &OperationCall{Style: "azure-rest", Method: "GET", Endpoint: "https://management.azure.com", Path: "/computes/{computeName}", Version: "2026-07-01"}, InputSchema: map[string]any{"properties": map[string]any{"computeName": map[string]any{"type": "string", "in": "path", "required": true, "pattern": `^[a-zA-Z](?![a-zA-Z0-9-]*-\d+$)[a-zA-Z0-9\-]{2,23}$`}}}}
+	for name, valid := range map[string]bool{"notebook": true, "gpu-cluster": true, "cluster-01": false, "1cluster": false, "ab": false} {
+		if _, err := BindREST(operation, map[string]any{"computeName": name}); (err == nil) != valid {
+			t.Fatalf("%s: err = %v, want valid %v", name, err, valid)
+		}
+	}
+}

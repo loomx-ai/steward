@@ -134,7 +134,7 @@ Steward 永远不会删除授予连接自身访问权的角色分配，见[通�
 
 ## 盘点与清理范围
 
-Steward 识别 524 类 Azure 资源，其中 472 类具有原生清理操作（包括 Batch 节点移除），执行时受下文保护约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 526 类 Azure 资源，其中 473 类具有原生清理操作（包括 Batch 节点移除），执行时受下文保护约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -200,9 +200,9 @@ Steward 识别 524 类 Azure 资源，其中 472 类具有原生清理操作（�
 | [预算](#monitor-告警与预算) | 订阅及资源组范围的 Consumption、Cost Management 预算 | 独立清理，通知动作组保持独立 |
 | 管理组 | 租户中可见的管理组目录及其父级 | 只读；需要对要盘点的管理组具有 `Microsoft.Management/managementGroups/read` |
 | Service Fabric 与存储同步 | Service Fabric 群集与存储同步服务 | 支持 |
-| 机器学习 | 工作区与托管联机终结点 | 支持终结点清理；工作区作为只读父资源 |
+| 机器学习 | 工作区、托管联机终结点与计算 | 支持终结点清理；计算实例与计算群集连同底层资源删除，附加计算受保护；工作区作为只读父资源 |
 | Purview 与托管应用程序 | Microsoft Purview 账户与托管应用程序 | 只读：删除它们会同时删除托管资源组，该级联尚未纳入审查 |
-| Key Vault 密钥 | 通过 ARM 密钥 API 列出的密钥 | 只读：密钥删除是 ARM 未提供的数据面软删除 |
+| Key Vault 密钥与机密 | 通过 ARM 密钥与机密 API 列出的密钥和机密 | 只读：密钥与机密删除是 ARM 未提供的数据面软删除 |
 | Microsoft Entra 用户与组 | 通过 Microsoft Graph 读取的用户和组，含组的直接成员 | 只读：目录对象影响整个租户。需要 [Graph 权限](#数据面与目录权限)；仅保存显示名称、用户主体名称、账户状态、用户类型、组类型标记与创建时间 |
 | Key Vault 证书 | 从各保管库数据面读取的证书，含保管库与托管密钥引用 | 只读：删除会同时软删除托管密钥和机密。需要[证书数据面权限](#数据面与目录权限) |
 | Site Recovery | 恢复服务保管库中的复制保护项目，含复制结构、保护容器与保管库引用 | 只读：禁用复制会删除恢复端副本，尚未纳入审查；需要 `Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems/read` |

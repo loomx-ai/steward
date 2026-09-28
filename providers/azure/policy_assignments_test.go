@@ -1,6 +1,7 @@
 package azure
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 	"testing"
@@ -183,5 +184,23 @@ func TestIPGroupUsersAreDeletedFirstAndUnscannedUsersBlock(t *testing.T) {
 	}
 	if len(contribution.Unresolved) != 1 || !contribution.Unresolved[0].BlocksCleanup || contribution.Unresolved[0].NativeType != "Microsoft.Network/firewallPolicies" {
 		t.Fatalf("unresolved = %+v", contribution.Unresolved)
+	}
+}
+
+func TestAttachedMachineLearningComputeIsProtected(t *testing.T) {
+	kind := resourceType{NativeType: mlComputeType}
+	for properties, want := range map[string]string{
+		`{"computeType":"ComputeInstance","isAttachedCompute":false}`: "",
+		`{"computeType":"AmlCompute","isAttachedCompute":false}`:      "",
+		`{"computeType":"Kubernetes","isAttachedCompute":true}`:       "azure_ml_attached_compute",
+		`{"computeType":"VirtualMachine","isAttachedCompute":false}`:  "azure_ml_attached_compute",
+	} {
+		var props map[string]any
+		if err := json.Unmarshal([]byte(properties), &props); err != nil {
+			t.Fatal(err)
+		}
+		if got := protectionReason(kind, map[string]any{"properties": props}); got != want {
+			t.Fatalf("%s: reason = %q, want %q", properties, got, want)
+		}
 	}
 }

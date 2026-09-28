@@ -9,7 +9,7 @@ not cloud feature acceptance. Dated sections below keep the row count that held
 when they were written.
 
 The matrix covers all 221 Alibaba Cloud specifications for GCP, Azure and AWS.
-The repository contains 241 GCP, 524 Azure and 244 AWS specifications; those
+The repository contains 241 GCP, 526 Azure and 245 AWS specifications; those
 counts do not prove equivalence. All 221 rows remain pending behavioral
 verification.
 
@@ -24,11 +24,11 @@ check verifies matrix consistency only. AWS progress and evidence are tracked in
 
 | Measure | GCP | Azure | AWS |
 | --- | --- | --- | --- |
-| Explicit native specifications | 241 | 524 | 244 |
-| Baseline rows with at least one existing mapped specification | 200/221 | 191/221 | 202/221 |
-| Candidate types still without a specification | 0 | 2 | 0 |
-| Baseline rows affected by missing candidate specifications | 0 | 2 | 0 |
-| Empty mappings deferred as not yet modeled | 0 | 0 | 1 |
+| Explicit native specifications | 241 | 526 | 245 |
+| Baseline rows with at least one existing mapped specification | 200/221 | 193/221 | 203/221 |
+| Candidate types still without a specification | 0 | 0 | 0 |
+| Baseline rows affected by missing candidate specifications | 0 | 0 | 0 |
+| Empty mappings deferred as not yet modeled | 0 | 0 | 0 |
 | Empty mappings with a documented platform difference | 21 | 28 | 18 |
 
 These are registration/mapping measures, not functional completion percentages.
@@ -44,9 +44,10 @@ added that day were mapped as well: Lambda aliases, versions and event source
 mappings, Cloud Run revisions and ancestor Resource Manager folders. No mapping
 is deferred.
 
-Mappings opened by the 2026-09-29 additions and still to model: AWS SageMaker
-notebook instances (PAI-DSW), Azure Machine Learning compute (PAI-DSW) and
-Azure Key Vault secrets (KMS secrets).
+Mappings opened by the 2026-09-29 additions were modeled the same day: AWS
+SageMaker notebook instances (PAI-DSW), Azure Machine Learning compute
+(PAI-DSW, attached computes protected) and Azure Key Vault secrets (KMS
+secrets, read-only).
 
 Azure Policy assignments and initiative assignments were mapped on 2026-09-28
 with a native scope-aware inventory like Azure RBAC's: assignments inherited

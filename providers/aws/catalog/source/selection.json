@@ -2117,6 +2117,15 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::SageMaker::NotebookInstance",
+   "class": "ai.notebook",
+   "displayName": "SageMaker Notebook Instance",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::SageMaker::Endpoint",
    "class": "ai.inference_service",
    "displayName": "SageMaker Endpoint",

@@ -7600,6 +7600,14 @@
    ]
   },
   {
+   "nativeType": "AWS::SageMaker::NotebookInstance",
+   "class": "ai.notebook",
+   "displayName": "SageMaker Notebook Instance",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::Scheduler::Schedule",
    "class": "orchestration.schedule",
    "displayName": "EventBridge Scheduler Schedule",

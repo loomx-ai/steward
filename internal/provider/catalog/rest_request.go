@@ -172,6 +172,14 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 				}
 				pattern = "^" + strings.TrimSuffix(strings.TrimPrefix(pattern, "^((?!_)"), "(?<![.-]))$") + "$"
 			}
+			// Machine Learning compute names reject a trailing "-<digits>" with an
+			// ECMA-262 lookahead after the first character.
+			if guard := "(?![a-zA-Z0-9-]*-\\d+$)"; strings.HasPrefix(pattern, "^[a-zA-Z]"+guard) {
+				if regexp.MustCompile(`^.[a-zA-Z0-9-]*-\d+$`).MatchString(text) {
+					return RESTRequest{}, fmt.Errorf("parameter %q does not match its API pattern", name)
+				}
+				pattern = "^[a-zA-Z]" + strings.TrimPrefix(pattern, "^[a-zA-Z]"+guard)
+			}
 			// Redis Enterprise and Search names use bounded ECMA-262 lookaheads.
 			// The remaining native pattern accepts only ASCII characters.
 			for _, minimum := range []int{1, 2} {

@@ -191,6 +191,9 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
+				if kind.NativeType == mlComputeType {
+					parameters["underlyingResourceAction"] = "Delete" // Supplied by the specification.
+				}
 				if object(object(deletion.InputSchema["properties"])["If-Match"])["required"] == true {
 					if _, err := catalog.BindREST(deletion, parameters); err == nil {
 						t.Fatal("conditional delete accepted without its native ETag")

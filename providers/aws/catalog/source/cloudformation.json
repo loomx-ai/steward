@@ -16128,6 +16128,95 @@
     "/properties/ModelArn"
    ]
   },
+  "AWS::SageMaker::NotebookInstance": {
+   "member": "aws-sagemaker-notebookinstance.json",
+   "sha256": "0d57c14c243eb2a74e84fddc1b389d81d58fb6f326b429b3b9714cd932ee1bb5",
+   "primaryIdentifier": [
+    "/properties/NotebookInstanceArn"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "ec2:CreateNetworkInterface",
+      "ec2:CreateNetworkInterfacePermission",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DeleteNetworkInterfacePermission",
+      "ec2:DescribeDhcpOptions",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeVpcs",
+      "iam:PassRole",
+      "kms:CreateGrant",
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "sagemaker:AddTags",
+      "sagemaker:CreateNotebookInstance",
+      "sagemaker:DescribeNotebookInstance",
+      "sagemaker:ListTags"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "ec2:DeleteNetworkInterface",
+      "ec2:DeleteNetworkInterfacePermission",
+      "sagemaker:DeleteNotebookInstance",
+      "sagemaker:DescribeNotebookInstance",
+      "sagemaker:StopNotebookInstance"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "sagemaker:ListNotebookInstances"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "sagemaker:DescribeNotebookInstance",
+      "sagemaker:ListTags"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "ec2:DescribeDhcpOptions",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeVpcs",
+      "iam:PassRole",
+      "sagemaker:AddTags",
+      "sagemaker:DeleteTags",
+      "sagemaker:DescribeNotebookInstance",
+      "sagemaker:StartNotebookInstance",
+      "sagemaker:StopNotebookInstance",
+      "sagemaker:UpdateNotebookInstance"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AcceleratorTypes": "array",
+    "AdditionalCodeRepositories": "array",
+    "DefaultCodeRepository": "string",
+    "DirectInternetAccess": "string",
+    "InstanceMetadataServiceConfiguration": "$ref",
+    "InstanceType": "string",
+    "KmsKeyId": "string",
+    "LifecycleConfigName": "string",
+    "NotebookInstanceArn": "string",
+    "NotebookInstanceName": "string",
+    "PlatformIdentifier": "string",
+    "RoleArn": "string",
+    "RootAccess": "string",
+    "SecurityGroupIds": "array",
+    "SubnetId": "string",
+    "Tags": "array",
+    "VolumeSizeInGB": "integer"
+   },
+   "readOnlyProperties": [
+    "/properties/NotebookInstanceArn"
+   ]
+  },
   "AWS::Scheduler::Schedule": {
    "member": "aws-scheduler-schedule.json",
    "sha256": "cd4c95a62d6cfa0b9d7b2c12d04c361f6dd3947e84e59150ab3c32bf2afc2fe8",
