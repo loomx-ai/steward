@@ -128,6 +128,8 @@ func TestBatchEReferences(t *testing.T) {
 		{map[string]any{"name": location + "environments/airflow", "config": map[string]any{"dagGcsPrefix": "gs://us-central1-airflow-bucket/dags"}}, "storage.googleapis.com/Bucket", "//storage.googleapis.com/us-central1-airflow-bucket"},
 		{map[string]any{"name": location + "deliveryPipelines/app", "serialPipeline": map[string]any{"stages": []any{map[string]any{"targetId": "prod"}}}}, "clouddeploy.googleapis.com/Target", "//clouddeploy.googleapis.com/" + location + "targets/prod"},
 		{map[string]any{"name": location + "volumes/data", "storagePool": "pool"}, netappStoragePoolType, "//netapp.googleapis.com/" + location + "storagePools/pool"},
+		// A network firewall policy rule matching an address group keeps it in use.
+		{map[string]any{"name": "policy", "rules": []any{map[string]any{"match": map[string]any{"srcAddressGroups": []any{"projects/sample-project/locations/global/addressGroups/office"}}}}}, "networksecurity.googleapis.com/AddressGroup", "//networksecurity.googleapis.com/projects/sample-project/locations/global/addressGroups/office"},
 	} {
 		if refs := references(c, test.data); !slices.Equal(refs[test.target], []string{test.want}) {
 			t.Fatalf("%v: references = %v", test.data["name"], refs)

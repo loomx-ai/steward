@@ -637,6 +637,8 @@ func references(c *client, data map[string]any) map[string][]string {
 		"multicastGroupRange": "networkservices.googleapis.com/MulticastGroupRange", "multicastGroupRangeActivation": "networkservices.googleapis.com/MulticastGroupRangeActivation",
 		"multicastProducerAssociation": "networkservices.googleapis.com/MulticastProducerAssociation", "multicastConsumerAssociation": "networkservices.googleapis.com/MulticastConsumerAssociation", "placementPolicy": "compute.googleapis.com/ResourcePolicy",
 		"origin": "networkservices.googleapis.com/EdgeCacheOrigin", "failoverOrigin": "networkservices.googleapis.com/EdgeCacheOrigin", "keyset": "networkservices.googleapis.com/EdgeCacheKeyset", "signedRequestKeyset": "networkservices.googleapis.com/EdgeCacheKeyset", "edgeSslCertificates": "certificatemanager.googleapis.com/Certificate",
+		// Network firewall policy rules name the address groups they match.
+		"srcAddressGroups": "networksecurity.googleapis.com/AddressGroup", "destAddressGroups": "networksecurity.googleapis.com/AddressGroup",
 		"secretVersion": "secretmanager.googleapis.com/Secret", "secretAccessKeyVersion": "secretmanager.googleapis.com/Secret",
 		"authenticationTokenSecretVersion": "secretmanager.googleapis.com/Secret", "userPrivateKeySecretVersion": "secretmanager.googleapis.com/Secret", "npmrcEnvironmentVariablesSecretVersion": "secretmanager.googleapis.com/Secret",
 	} {

@@ -1,0 +1,65 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networksecurity.googleapis.com/AddressGroup
+  class: network.prefix_list
+presentation:
+  displayNames:
+    en-US: Cloud NGFW address group
+    zh-CN: Cloud NGFW 地址组
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: networksecurity.projects.locations.addressGroups.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: addressGroups
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networksecurity.projects.locations.addressGroups.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  type:
+    path: type
+    type: string
+  capacity:
+    path: capacity
+    type: number
+  purpose:
+    path: purpose
+    type: array
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: networksecurity.projects.locations.addressGroups.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networksecurity.projects.locations.addressGroups.get
+      itemsPath: $
+      identityPath: name

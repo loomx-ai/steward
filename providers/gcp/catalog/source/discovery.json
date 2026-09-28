@@ -104342,6 +104342,102 @@
     {
       "document": {
         "methods": {
+          "networksecurity.projects.locations.addressGroups.delete": {
+            "description": "Deletes a single address group.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}",
+            "httpMethod": "DELETE",
+            "id": "networksecurity.projects.locations.addressGroups.delete",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. A name of the AddressGroup to delete. Must be in the format `projects/*/locations/{location}/addressGroups/*`.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/addressGroups/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "requestId": {
+                "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "Operation"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "networksecurity.projects.locations.addressGroups.get": {
+            "description": "Gets details of a single address group.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}",
+            "httpMethod": "GET",
+            "id": "networksecurity.projects.locations.addressGroups.get",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. A name of the AddressGroup to get. Must be in the format `projects/*/locations/{location}/addressGroups/*`.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/addressGroups/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "AddressGroup"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "networksecurity.projects.locations.addressGroups.list": {
+            "description": "Lists address groups in a given project and location.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/addressGroups",
+            "httpMethod": "GET",
+            "id": "networksecurity.projects.locations.addressGroups.list",
+            "parameterOrder": [
+              "parent"
+            ],
+            "parameters": {
+              "pageSize": {
+                "description": "Maximum number of AddressGroups to return per call.",
+                "format": "int32",
+                "location": "query",
+                "type": "integer"
+              },
+              "pageToken": {
+                "description": "The value returned by the last `ListAddressGroupsResponse` Indicates that this is a continuation of a prior `ListAddressGroups` call, and that the system should return the next page of data.",
+                "location": "query",
+                "type": "string"
+              },
+              "parent": {
+                "description": "Required. The project and location from which the AddressGroups should be listed, specified in the format `projects/*/locations/{location}`.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "returnPartialSuccess": {
+                "description": "Optional. If true, allow partial responses for multi-regional Aggregated List requests.",
+                "location": "query",
+                "type": "boolean"
+              }
+            },
+            "path": "v1/{+parent}/addressGroups",
+            "response": {
+              "$ref": "ListAddressGroupsResponse"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
           "networksecurity.projects.locations.firewallEndpointAssociations.delete": {
             "description": "Deletes a single FirewallEndpointAssociation.",
             "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/firewallEndpointAssociations/{firewallEndpointAssociationsId}",
@@ -104618,9 +104714,91 @@
           }
         },
         "name": "networksecurity",
-        "revision": "20260824",
+        "revision": "20260910",
         "rootUrl": "https://networksecurity.googleapis.com/",
         "schemas": {
+          "AddressGroup": {
+            "description": "AddressGroup is a resource that specifies how a collection of IP/DNS used in Firewall Policy.",
+            "id": "AddressGroup",
+            "properties": {
+              "capacity": {
+                "description": "Required. Capacity of the Address Group",
+                "format": "int32",
+                "type": "integer"
+              },
+              "createTime": {
+                "description": "Output only. The timestamp when the resource was created.",
+                "format": "google-datetime",
+                "readOnly": true,
+                "type": "string"
+              },
+              "description": {
+                "description": "Optional. Free-text description of the resource.",
+                "type": "string"
+              },
+              "items": {
+                "description": "Optional. List of items.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "labels": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Optional. Set of label tags associated with the AddressGroup resource.",
+                "type": "object"
+              },
+              "name": {
+                "description": "Required. Name of the AddressGroup resource. It matches pattern `projects/*/locations/{location}/addressGroups/`.",
+                "type": "string"
+              },
+              "purpose": {
+                "description": "Optional. List of supported purposes of the Address Group.",
+                "items": {
+                  "enum": [
+                    "PURPOSE_UNSPECIFIED",
+                    "DEFAULT",
+                    "CLOUD_ARMOR"
+                  ],
+                  "enumDescriptions": [
+                    "Default value. Should never happen.",
+                    "Address Group is distributed to VMC, and is usable in Firewall Policies and other systems that rely on VMC.",
+                    "Address Group is usable in Cloud Armor."
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "selfLink": {
+                "description": "Output only. Server-defined fully-qualified URL for this resource.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "type": {
+                "description": "Required. The type of the Address Group. Possible values are \"IPv4\" or \"IPV6\".",
+                "enum": [
+                  "TYPE_UNSPECIFIED",
+                  "IPV4",
+                  "IPV6"
+                ],
+                "enumDescriptions": [
+                  "Default value.",
+                  "IP v4 ranges.",
+                  "IP v6 ranges."
+                ],
+                "type": "string"
+              },
+              "updateTime": {
+                "description": "Output only. The timestamp when the resource was updated.",
+                "format": "google-datetime",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
           "FirewallEndpoint": {
             "description": "Message describing Endpoint object.",
             "id": "FirewallEndpoint",
@@ -104814,6 +104992,31 @@
             },
             "type": "object"
           },
+          "ListAddressGroupsResponse": {
+            "description": "Response returned by the ListAddressGroups method.",
+            "id": "ListAddressGroupsResponse",
+            "properties": {
+              "addressGroups": {
+                "description": "List of AddressGroups resources.",
+                "items": {
+                  "$ref": "AddressGroup"
+                },
+                "type": "array"
+              },
+              "nextPageToken": {
+                "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+                "type": "string"
+              },
+              "unreachable": {
+                "description": "Locations that could not be reached.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
           "ListFirewallEndpointAssociationsResponse": {
             "description": "Message for response to listing Associations",
             "id": "ListFirewallEndpointAssociationsResponse",
@@ -104982,7 +105185,7 @@
         "servicePath": "",
         "version": "v1"
       },
-      "source_sha256": "99ea178610e2bce1f55f322f5dd0908a54ca1c4c1815c04a625240afee031679",
+      "source_sha256": "0711f5a683470589e44baf4838def49a02b01f45358e770db3b9d073fe62b0be",
       "source_uri": "https://networksecurity.googleapis.com/$discovery/rest?version=v1"
     },
     {
@@ -157872,6 +158075,26 @@
       },
       "scopeKinds": [
         "global"
+      ]
+    },
+    {
+      "class": "network.prefix_list",
+      "displayName": "Cloud NGFW address group",
+      "nativeType": "networksecurity.googleapis.com/AddressGroup",
+      "rest": {
+        "collection": "addressGroups",
+        "delete_operations": [
+          "networksecurity.projects.locations.addressGroups.delete"
+        ],
+        "list_operations": [
+          "networksecurity.projects.locations.addressGroups.list"
+        ],
+        "read_operations": [
+          "networksecurity.projects.locations.addressGroups.get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
       ]
     },
     {

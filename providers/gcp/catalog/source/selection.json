@@ -787,6 +787,9 @@
     {
       "source_uri": "https://networksecurity.googleapis.com/$discovery/rest?version=v1",
       "methods": [
+        "networksecurity.projects.locations.addressGroups.delete",
+        "networksecurity.projects.locations.addressGroups.get",
+        "networksecurity.projects.locations.addressGroups.list",
         "networksecurity.projects.locations.firewallEndpointAssociations.delete",
         "networksecurity.projects.locations.firewallEndpointAssociations.get",
         "networksecurity.projects.locations.firewallEndpointAssociations.list",
@@ -3560,6 +3563,24 @@
       ],
       "list_operations": [
         "networkmanagement.projects.locations.vpcFlowLogsConfigs.list"
+      ]
+    },
+    {
+      "native_type": "networksecurity.googleapis.com/AddressGroup",
+      "collection": "addressGroups",
+      "class": "network.prefix_list",
+      "display_name": "Cloud NGFW address group",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "networksecurity.projects.locations.addressGroups.get"
+      ],
+      "delete_operations": [
+        "networksecurity.projects.locations.addressGroups.delete"
+      ],
+      "list_operations": [
+        "networksecurity.projects.locations.addressGroups.list"
       ]
     },
     {

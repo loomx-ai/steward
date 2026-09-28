@@ -134,6 +134,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | [Cloud Router named sets](#named-sets) | Per-router prefix and community sets, CEL elements and fingerprint | Reviewed deletion after the policies that refer to them |
 | [Cloud NAT](#cloud-nat) | Per-router public and private NAT configurations, rules, subnet and address references | Independent removal; other NATs and the router are kept |
 | [Firewall policies](#firewall-policies) | Hierarchical policies within the configured firewall scope; global and regional network policies; native associations | Reviewed associations are removed before the policy is deleted; associations can also be removed on their own |
+| Cloud NGFW address groups | Project address groups in each scanned location | Supported; network firewall policies whose rules use a group are deleted before it |
 | Load balancing and addresses | Regional and global IP addresses and forwarding rules; regional and global backend services; health checks, including legacy HTTP(S) checks; target pools; network endpoint groups; URL maps; HTTP/HTTPS proxies; SSL certificates | Supported |
 | [BigQuery](#bigquery) | Datasets and tables | Supported |
 | [Bigtable](#bigtable) | Instances, clusters and tables | Supported; table deletion protection is honored |

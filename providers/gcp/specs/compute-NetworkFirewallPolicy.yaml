@@ -67,6 +67,9 @@ relationships:
 - type: depends_on
   targetType: compute.googleapis.com/Network
   targetIdPath: refs_compute_googleapis_com_Network
+- type: uses
+  targetType: networksecurity.googleapis.com/AddressGroup
+  targetIdPath: refs_networksecurity_googleapis_com_AddressGroup
 actions:
   delete:
     operation: compute.networkFirewallPolicies.delete

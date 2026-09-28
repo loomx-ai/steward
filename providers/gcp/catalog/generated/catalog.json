@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "0c6a96ebb8bcd4d9f007d3ca00314a530cbce42d1455bd33ad863b7281707d1c",
+    "checksum": "58f384fcae09176d5155c6d61293e257eef68afad71e8a166d2666e71a10b935",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "cd3f034289327c18b862f1a1fb1dd721bc8019f462a1c54a895f176194d9c85d",
+  "content_checksum": "e34f8bb4a8a7f5b0d0f90c328723fbfd9241d7566375a0d400f0da3167ebd582",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -109408,6 +109408,275 @@
       "source_uri": "https://networkmanagement.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "networksecurity.projects.locations.addressGroups.delete",
+      "name": "delete",
+      "service": "networksecurity",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. A name of the AddressGroup to delete. Must be in the format `projects/*/locations/{location}/addressGroups/*`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/addressGroups/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "requestId": {
+            "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "networksecurity",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://networksecurity.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "requestId"
+      },
+      "source_uri": "https://networksecurity.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "networksecurity.projects.locations.addressGroups.get",
+      "name": "get",
+      "service": "networksecurity",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. A name of the AddressGroup to get. Must be in the format `projects/*/locations/{location}/addressGroups/*`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/addressGroups/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "AddressGroup is a resource that specifies how a collection of IP/DNS used in Firewall Policy.",
+        "id": "AddressGroup",
+        "properties": {
+          "capacity": {
+            "description": "Required. Capacity of the Address Group",
+            "format": "int32",
+            "type": "integer"
+          },
+          "createTime": {
+            "description": "Output only. The timestamp when the resource was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "description": {
+            "description": "Optional. Free-text description of the resource.",
+            "type": "string"
+          },
+          "items": {
+            "description": "Optional. List of items.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Set of label tags associated with the AddressGroup resource.",
+            "type": "object"
+          },
+          "name": {
+            "description": "Required. Name of the AddressGroup resource. It matches pattern `projects/*/locations/{location}/addressGroups/`.",
+            "type": "string"
+          },
+          "purpose": {
+            "description": "Optional. List of supported purposes of the Address Group.",
+            "items": {
+              "enum": [
+                "PURPOSE_UNSPECIFIED",
+                "DEFAULT",
+                "CLOUD_ARMOR"
+              ],
+              "enumDescriptions": [
+                "Default value. Should never happen.",
+                "Address Group is distributed to VMC, and is usable in Firewall Policies and other systems that rely on VMC.",
+                "Address Group is usable in Cloud Armor."
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "selfLink": {
+            "description": "Output only. Server-defined fully-qualified URL for this resource.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "type": {
+            "description": "Required. The type of the Address Group. Possible values are \"IPv4\" or \"IPV6\".",
+            "enum": [
+              "TYPE_UNSPECIFIED",
+              "IPV4",
+              "IPV6"
+            ],
+            "enumDescriptions": [
+              "Default value.",
+              "IP v4 ranges.",
+              "IP v6 ranges."
+            ],
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The timestamp when the resource was updated.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "networksecurity",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://networksecurity.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://networksecurity.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "networksecurity.projects.locations.addressGroups.list",
+      "name": "list",
+      "service": "networksecurity",
+      "method": "GET",
+      "path": "/v1/{parent}/addressGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "pageSize": {
+            "description": "Maximum number of AddressGroups to return per call.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "The value returned by the last `ListAddressGroupsResponse` Indicates that this is a continuation of a prior `ListAddressGroups` call, and that the system should return the next page of data.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The project and location from which the AddressGroups should be listed, specified in the format `projects/*/locations/{location}`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "returnPartialSuccess": {
+            "description": "Optional. If true, allow partial responses for multi-regional Aggregated List requests.",
+            "location": "query",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response returned by the ListAddressGroups method.",
+        "id": "ListAddressGroupsResponse",
+        "properties": {
+          "addressGroups": {
+            "description": "List of AddressGroups resources.",
+            "items": {
+              "$ref": "AddressGroup"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+            "type": "string"
+          },
+          "unreachable": {
+            "description": "Locations that could not be reached.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "networksecurity",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/addressGroups",
+        "endpoint": "https://networksecurity.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://networksecurity.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
       "id": "networksecurity.projects.locations.firewallEndpointAssociations.delete",
       "name": "delete",
       "service": "networksecurity",
@@ -129960,6 +130229,26 @@
         ],
         "list_operations": [
           "networkmanagement.projects.locations.vpcFlowLogsConfigs.list"
+        ]
+      }
+    },
+    {
+      "native_type": "networksecurity.googleapis.com/AddressGroup",
+      "class": "network.prefix_list",
+      "display_name": "Cloud NGFW address group",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "addressGroups",
+        "read_operations": [
+          "networksecurity.projects.locations.addressGroups.get"
+        ],
+        "delete_operations": [
+          "networksecurity.projects.locations.addressGroups.delete"
+        ],
+        "list_operations": [
+          "networksecurity.projects.locations.addressGroups.list"
         ]
       }
     },

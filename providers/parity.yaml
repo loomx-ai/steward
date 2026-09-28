@@ -1299,8 +1299,10 @@ resources:
     actions:
     - delete
   gcp:
-    unimplemented_resources:
+    resources:
     - networksecurity.googleapis.com/AddressGroup
+    notes: Address groups are referenced by network firewall policy rules, as prefix lists are by security
+      group rules.
   azure:
     unimplemented_resources:
     - Microsoft.Network/ipGroups
