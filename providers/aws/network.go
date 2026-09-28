@@ -21,8 +21,8 @@ type NetworkListRequest struct {
 // tags or IAM policies, to establish network placement and deletion edges.
 func normalizeCloudControlNetwork(model map[string]any) {
 	fields := map[string][]string{
-		"vpc_id":             {"VpcId", "VpcConfig.VpcId", "ResourcesVpcConfig.VpcId", "VPCOptions.VPCId"},
-		"subnet_ids":         {"SubnetId", "SubnetIds", "Subnets", "VPCZoneIdentifier", "VpcConfig.SubnetIds", "ResourcesVpcConfig.SubnetIds", "VPCOptions.SubnetIds", "SubnetMappings.SubnetId", "NetworkInterfaces.SubnetId"},
+		"vpc_id":             {"VpcId", "VpcConfig.VpcId", "ResourcesVpcConfig.VpcId", "VPCOptions.VPCId", "HostVPCId"},
+		"subnet_ids":         {"SubnetId", "SubnetIds", "Subnets", "VPCZoneIdentifier", "VpcConfig.SubnetIds", "ResourcesVpcConfig.SubnetIds", "VPCOptions.SubnetIds", "SubnetMappings.SubnetId", "NetworkInterfaces.SubnetId", "IpAddresses.SubnetId"},
 		"security_group_ids": {"SecurityGroupIds", "SecurityGroups", "GroupSet", "VpcSecurityGroupIds", "VPCSecurityGroups", "VpcConfig.SecurityGroupIds", "ResourcesVpcConfig.SecurityGroupIds", "VPCOptions.SecurityGroupIds", "NetworkInterfaces.GroupSet"},
 		"zone_id":            {"AvailabilityZone"},
 	}

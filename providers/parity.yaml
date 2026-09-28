@@ -3467,7 +3467,8 @@ resources:
     - Microsoft.Network/dnsResolvers
     - Microsoft.Network/dnsResolvers/outboundEndpoints
   aws:
-    notes: AWS::Route53Resolver::ResolverEndpoint is the equivalent and is not modeled yet.
+    resources:
+    - AWS::Route53Resolver::ResolverEndpoint
   status: pending_verification
   notes: An outbound endpoint is deleted only after its forwarding rules. Its addresses occupy vSwitches, so it
     is deleted before them.
@@ -3491,6 +3492,7 @@ resources:
   aws:
     resources:
     - AWS::Route53Resolver::ResolverRule
+    - AWS::Route53Resolver::ResolverRuleAssociation
   status: pending_verification
   notes: DeleteResolverRule fails while the rule is bound to a VPC; the bindings are removed first and the plan
     announces it.

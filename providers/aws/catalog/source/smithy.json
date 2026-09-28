@@ -7496,9 +7496,25 @@
    ]
   },
   {
+   "nativeType": "AWS::Route53Resolver::ResolverEndpoint",
+   "class": "network.dns_resolver_endpoint",
+   "displayName": "Route 53 Resolver Endpoint",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::Route53Resolver::ResolverRule",
    "class": "dns.private_zone",
    "displayName": "Route 53 Resolver Rule",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Route53Resolver::ResolverRuleAssociation",
+   "class": "network.dns_forwarding_rule_association",
+   "displayName": "Route 53 Resolver Rule Association",
    "scopeKinds": [
     "region"
    ]

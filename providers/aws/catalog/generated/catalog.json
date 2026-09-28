@@ -4,10 +4,10 @@
   "source": {
     "format": "smithy",
     "uri": "catalog/source/smithy.json",
-    "checksum": "1127c74d124df2e87689708ff0239648599bfb7ca7649a915922fad6098ab3dd",
+    "checksum": "f0b66e0e13505d89e3b58f7c81b28f2fa2c25a1c49be509c5e8368e82f82760a",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "419a21693678d4f1df38d5ae6ee320981a9f9ecb74d1c7bb9228129ad50ff0c3",
+  "content_checksum": "229ade59412d36f3ca9957b4070a7c2e1e444c557c19eab3e5c7d95de8f95dbd",
   "operations": [
     {
       "id": "com.amazonaws.acmpca#DeleteCertificateAuthority",
@@ -4199,9 +4199,25 @@
       ]
     },
     {
+      "native_type": "AWS::Route53Resolver::ResolverEndpoint",
+      "class": "network.dns_resolver_endpoint",
+      "display_name": "Route 53 Resolver Endpoint",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::Route53Resolver::ResolverRule",
       "class": "dns.private_zone",
       "display_name": "Route 53 Resolver Rule",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Route53Resolver::ResolverRuleAssociation",
+      "class": "network.dns_forwarding_rule_association",
+      "display_name": "Route 53 Resolver Rule Association",
       "scope_kinds": [
         "region"
       ]

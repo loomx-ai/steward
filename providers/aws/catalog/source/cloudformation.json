@@ -15156,6 +15156,97 @@
     "/properties/NameServers"
    ]
   },
+  "AWS::Route53Resolver::ResolverEndpoint": {
+   "member": "aws-route53resolver-resolverendpoint.json",
+   "sha256": "30668c3b0ec960368c3b843dc6924c0a27887f7d764bcfec81c0d039e6767c1d",
+   "primaryIdentifier": [
+    "/properties/ResolverEndpointId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "ec2:CreateNetworkInterface",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeVpcs",
+      "route53resolver:CreateResolverEndpoint",
+      "route53resolver:GetResolverEndpoint",
+      "route53resolver:ListResolverEndpointIpAddresses",
+      "route53resolver:ListTagsForResource",
+      "route53resolver:TagResource",
+      "route53resolver:UntagResource"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeNetworkInterfaces",
+      "route53resolver:DeleteResolverEndpoint",
+      "route53resolver:GetResolverEndpoint"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "route53resolver:ListResolverEndpoints"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "route53resolver:GetResolverEndpoint",
+      "route53resolver:ListResolverEndpointIpAddresses",
+      "route53resolver:ListTagsForResource"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "ec2:AssignIpv6Addresses",
+      "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeVpcs",
+      "ec2:ModifyNetworkInterfaceAttribute",
+      "ec2:UnassignIpv6Addresses",
+      "route53resolver:AssociateResolverEndpointIpAddress",
+      "route53resolver:DisassociateResolverEndpointIpAddress",
+      "route53resolver:GetResolverEndpoint",
+      "route53resolver:ListResolverEndpointIpAddresses",
+      "route53resolver:ListTagsForResource",
+      "route53resolver:TagResource",
+      "route53resolver:UntagResource",
+      "route53resolver:UpdateResolverEndpoint"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "Arn": "string",
+    "Direction": "string",
+    "Dns64Enabled": "boolean",
+    "HostVPCId": "string",
+    "IpAddressCount": "string",
+    "IpAddresses": "array",
+    "Ipv6InternetAccessEnabled": "boolean",
+    "Name": "string",
+    "OutpostArn": "string",
+    "PreferredInstanceType": "string",
+    "Protocols": "array",
+    "ResolverEndpointId": "string",
+    "ResolverEndpointType": "string",
+    "RniEnhancedMetricsEnabled": "boolean",
+    "SecurityGroupIds": "array",
+    "Tags": "array",
+    "TargetNameServerMetricsEnabled": "boolean"
+   },
+   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/HostVPCId",
+    "/properties/IpAddressCount",
+    "/properties/ResolverEndpointId"
+   ]
+  },
   "AWS::Route53Resolver::ResolverRule": {
    "member": "aws-route53resolver-resolverrule.json",
    "sha256": "06359b03b2b3efdfd73e1564b0287fdabc779644a91d9a90f91402645930ff74",
@@ -15213,6 +15304,49 @@
    "readOnlyProperties": [
     "/properties/Arn",
     "/properties/ResolverRuleId"
+   ]
+  },
+  "AWS::Route53Resolver::ResolverRuleAssociation": {
+   "member": "aws-route53resolver-resolverruleassociation.json",
+   "sha256": "349cb81bc2f23f1e3f75a04123d54dd953581445e4fe8b3affea5b072baefbe3",
+   "primaryIdentifier": [
+    "/properties/ResolverRuleAssociationId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "ec2:DescribeVpcs",
+      "route53resolver:AssociateResolverRule",
+      "route53resolver:GetResolverRuleAssociation"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "route53resolver:DisassociateResolverRule",
+      "route53resolver:GetResolverRuleAssociation"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "ec2:DescribeVpcs",
+      "route53resolver:ListResolverRuleAssociations"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "route53resolver:GetResolverRuleAssociation"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "Name": "string",
+    "ResolverRuleAssociationId": "string",
+    "ResolverRuleId": "string",
+    "VPCId": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/ResolverRuleAssociationId"
    ]
   },
   "AWS::S3::Bucket": {

@@ -249,6 +249,11 @@ func cloudControlServiceManaged(nativeType, identifier string, properties map[st
 		if strings.HasPrefix(identifier[strings.LastIndex(identifier, "/")+1:], "__") {
 			return "kafka_internal_topic"
 		}
+	case "AWS::Route53Resolver::ResolverRule":
+		// Route 53 Resolver defines the Internet Resolver system rule itself.
+		if strings.HasPrefix(identifier, "rslvr-autodefined-rr-") || stringValue(properties["RuleType"]) == "SYSTEM" && stringValue(properties["OwnerId"]) == "Route 53 Resolver" {
+			return "route53_resolver_autodefined_rule"
+		}
 	case "AWS::ResourceGroups::Group":
 		// Group names beginning with "AWS" or "aws" are reserved for groups
 		// that AWS services create, such as AppRegistry application groups.

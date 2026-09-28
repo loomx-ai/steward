@@ -339,3 +339,34 @@ func TestLambdaAliasesAndVersionsFollowTheirFunction(t *testing.T) {
 		}
 	}
 }
+
+func TestResolverRuleAssociationsAndRulesPrecedeTheirParents(t *testing.T) {
+	// DeleteResolverRule fails while a VPC association exists; an outbound
+	// endpoint that rules use cannot be deleted either.
+	scope := asset.Scope{Kind: asset.ScopeRegion, NativeID: "us-east-1"}
+	endpoint, err := cloudControlItem(CloudControlResource{Identifier: "rslvr-out-1", Properties: `{"ResolverEndpointId":"rslvr-out-1","HostVPCId":"vpc-1","IpAddresses":[{"SubnetId":"subnet-a"},{"SubnetId":"subnet-b"}],"SecurityGroupIds":["sg-1"]}`}, asset.ResourceKind{NativeType: "AWS::Route53Resolver::ResolverEndpoint"}, scope)
+	if err != nil || endpoint.Normalized["vpc_id"] != "vpc-1" || strings.Join(stringSliceValue(endpoint.Normalized["subnet_ids"]), ",") != "subnet-a,subnet-b" {
+		t.Fatalf("endpoint = %+v, %v", endpoint.Normalized, err)
+	}
+	system, err := cloudControlItem(CloudControlResource{Identifier: "rslvr-autodefined-rr-internet-resolver", Properties: `{"RuleType":"SYSTEM"}`}, asset.ResourceKind{NativeType: "AWS::Route53Resolver::ResolverRule"}, scope)
+	if err != nil || system.Actionable == nil || *system.Actionable {
+		t.Fatalf("autodefined rule actionable = %+v, %v", system.Actionable, err)
+	}
+	contribution, err := NewLifecycle().Contribute(context.Background(), "scope", []asset.Asset{
+		awsAsset("endpoint", "AWS::Route53Resolver::ResolverEndpoint", "rslvr-out-1", nil),
+		awsAsset("rule", "AWS::Route53Resolver::ResolverRule", "rslvr-rr-1", map[string]any{"ResolverEndpointId": "rslvr-out-1"}),
+		awsAsset("association", "AWS::Route53Resolver::ResolverRuleAssociation", "rslvr-rrassoc-1", map[string]any{"ResolverRuleId": "rslvr-rr-1"}),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	required := map[string]bool{}
+	for _, relationship := range contribution.Relationships {
+		if relationship.Type == graph.RelationshipDependsOn && relationship.Evidence[graph.RelationshipEvidenceRequiredDeletion] == true {
+			required[string(relationship.SourceAssetID)+">"+string(relationship.TargetAssetID)] = relationship.Evidence[graph.RelationshipEvidenceAutomaticSelection].(bool)
+		}
+	}
+	if len(required) != 2 || required["rule>association"] != true || required["endpoint>rule"] != false {
+		t.Fatalf("required = %v", required)
+	}
+}

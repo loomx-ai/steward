@@ -80,6 +80,12 @@ var childDependencies = []childDependency{
 	// DeleteUserPool fails while the pool has a domain; the domain only
 	// serves the pool's managed login pages.
 	{parentType: "AWS::Cognito::UserPool", childType: cognitoUserPoolDomain, field: "UserPoolId", kind: "aws_cognito_user_pool_domain", mode: childRequired, automatic: true},
+	// DeleteResolverRule fails while the rule is associated with a VPC; the
+	// association only applies the rule to that VPC.
+	{parentType: "AWS::Route53Resolver::ResolverRule", childType: "AWS::Route53Resolver::ResolverRuleAssociation", field: "ResolverRuleId", kind: "aws_route53_resolver_rule_association", mode: childRequired, automatic: true},
+	// An outbound endpoint that forwarding rules use cannot be deleted; the
+	// rules change DNS resolution, so they are never selected implicitly.
+	{parentType: "AWS::Route53Resolver::ResolverEndpoint", childType: "AWS::Route53Resolver::ResolverRule", field: "ResolverEndpointId", kind: "aws_route53_resolver_endpoint_rule", mode: childRequired},
 	// DeleteFunction deletes all of the function's versions and aliases.
 	{parentType: "AWS::Lambda::Function", childType: "AWS::Lambda::Alias", field: "function_name", kind: "aws_lambda_alias", mode: childCascade},
 	{parentType: "AWS::Lambda::Function", childType: "AWS::Lambda::Version", field: "function_name", kind: "aws_lambda_version", mode: childCascade},
