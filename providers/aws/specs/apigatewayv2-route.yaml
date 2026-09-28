@@ -1,0 +1,49 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::ApiGatewayV2::Route
+  class: network.api_operation
+presentation:
+  displayNames:
+    zh-CN: API Gateway V2 路由
+    en-US: API Gateway V2 Route
+scope:
+  kind: region
+discovery:
+  source: cloud-control
+  parent:
+    source: cloud-control
+    nativeType: AWS::ApiGatewayV2::Api
+  list:
+    operation: com.amazonaws.cloudcontrol#ListResources
+    parameters:
+      TypeName: AWS::ApiGatewayV2::Route
+      ResourceModel.ApiId: parent.nativeId
+    itemsPath: ResourceDescriptions
+    identityPath: Identifier
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  detail:
+    operation: com.amazonaws.cloudcontrol#GetResource
+    itemsPath: ResourceDescription
+    identityPath: Identifier
+relationships:
+- type: member_of
+  targetType: AWS::ApiGatewayV2::Api
+  targetIdPath: ApiId
+- type: uses
+  targetType: AWS::ApiGatewayV2::Integration
+  targetIdPath: integration_id
+actions:
+  delete:
+    operation: com.amazonaws.cloudcontrol#DeleteResource
+    idempotency: provider_token
+    waiter: cloud_control_terminal
+    readback: cloud_control_absent
+extensions:
+  hook: aws.cloudcontrol.resource

@@ -85,7 +85,7 @@ Steward 使用连接中的凭证读取一个 AWS 账号。每个已支持的资�
 | 容器与无服务器 | EKS 集群、托管节点组、Fargate 配置文件与插件；ECS 集群、服务与任务定义；ECR 仓库与拉取缓存规则；Lambda 函数、别名、版本与事件源映射；App Runner |
 | 网络 | VPC、子网、CIDR 块、路由表、安全组、网络 ACL、网卡、弹性 IP，互联网、仅出口、NAT 与虚拟私有网关，客户网关、VPN 连接、Client VPN 端点及其目标网络、授权规则与路由、托管前缀列表、IPAM 及其范围与池、VPC 对等连接、终端节点与终端节点服务、流日志、DHCP 选项集 |
 | 中转与混合网络 | 中转网关及其路由表、VPC/对等/Connect 挂载、组播域及其关联、成员与源；Direct Connect 连接、链路聚合组、网关、网关关联与虚拟接口；Cloud WAN 全球网络与核心网络；Global Accelerator 加速器、侦听器与终端节点组 |
-| 负载均衡、边缘与 DNS | 应用/网络/网关负载均衡器及其侦听器、目标组与信任存储、传统负载均衡器、CloudFront 分配、WAF Web ACL 及其关联、Shield Advanced 防护、Route 53 托管区域、运行状况检查、Resolver 规则与注册域名、API Gateway API、自定义域名、使用计划、使用计划密钥与 API 密钥、AppSync GraphQL API、Amplify 应用、VPC Lattice |
+| 负载均衡、边缘与 DNS | 应用/网络/网关负载均衡器及其侦听器、目标组与信任存储、传统负载均衡器、CloudFront 分配、WAF Web ACL 及其关联、Shield Advanced 防护、Route 53 托管区域、运行状况检查、Resolver 规则与注册域名、API Gateway API、HTTP/WebSocket API 集成与路由、自定义域名、使用计划、使用计划密钥与 API 密钥、AppSync GraphQL API、Amplify 应用、VPC Lattice |
 | 存储与备份 | S3 存储桶、EBS 卷与快照、Data Lifecycle Manager 策略、EFS 文件系统、挂载目标与接入点、FSx 文件系统、Storage Gateway、Transfer Family 服务器、AWS Backup 备份库、备份计划与资源分配、弹性灾难恢复源服务器 |
 | 数据库与分析 | RDS 与 Aurora、RDS 代理、Aurora DSQL、DynamoDB、DocumentDB 与 DocumentDB 弹性集群、Neptune 与 Neptune Analytics、Keyspaces、ElastiCache、MemoryDB、Timestream、OpenSearch Service 与 Serverless、Redshift 与 Redshift Serverless、Glue 数据库、Athena 工作组、EMR 集群、EMR Serverless、Kinesis、Data Firehose 流、Apache Flink 托管服务、DMS、MSK 集群与主题、Amazon MQ、DataZone、QuickSight 控制面板与数据集 |
 | 消息与应用 | SQS、SNS 主题与订阅、EventBridge 事件总线与规则、EventBridge Scheduler 计划与计划组、Step Functions、Apache Airflow 托管工作流、CodePipeline、CodeBuild 项目、Cloud Map 命名空间与服务、AppRegistry 应用程序、Pinpoint 短信模板、IVS 频道与实时舞台、Kendra 索引、Bedrock 智能体、知识库、数据源、防护栏与预置吞吐量、SageMaker 终端节点、终端节点配置、模型、笔记本实例与 HyperPod 集群、AWS PCS 与 Batch 计算环境 |
@@ -104,6 +104,7 @@ Steward 使用连接中的凭证读取一个 AWS 账号。每个已支持的资�
 | 组播关联、成员与源 | 按组播域 |
 | IAM Identity Center 组 | 按实例 |
 | API Gateway 使用计划密钥 | 按使用计划 |
+| API Gateway HTTP/WebSocket API 集成与路由 | 按 API |
 | MSK 主题 | 按 MSK 预置集群 |
 | Bedrock 知识库数据源 | 按知识库 |
 | Cognito 用户池域 | 按用户池 |
@@ -138,7 +139,7 @@ Steward 根据资源模型（例如资源所属的 VPC、子网与安全组）�
 | 弹性 IP | 只有在使用它的 NAT 网关或实例删除后，才会释放地址。 |
 | 必须先删的子资源 | Client VPN 端点要在解除全部目标网络关联之后删除，Config 规则要在删除其修正配置之后删除，Route 53 Resolver 规则要在解除其 VPC 关联之后删除，这些子资源会自动加入任务。WorkSpaces 目录要在其云桌面全部终止后才能注销，信任存储要在使用它的侦听器删除后才能删除，Resolver 终端节点要在使用它的转发规则删除后才能删除；Steward 不会替你选中这些资源，未选中时任务会被阻断。 |
 | 随父资源删除 | 删除 MSK 集群会删除其主题，删除 Lambda 函数会删除其别名和版本，删除 SNS 主题会删除其订阅，删除 Client VPN 端点会删除其授权规则与手动添加的路由，删除使用计划会删除其密钥。任务会把它们列为随父资源删除。 |
-| 其他前置条件 | IPAM 的私有范围在 IPAM 之前删除，并自动加入任务；IPAM 池、知识库数据源和 Elastic Beanstalk 环境会阻断其所属范围、池、知识库或应用程序的删除，直到你选中它们；Cognito 用户池域在用户池之前删除。删除计划组会同时删除其中的计划。引用托管前缀列表的安全组、置放群组中的实例，会先于前缀列表或置放群组删除。Lambda 别名先于它指向的版本删除，事件源映射先于其函数删除；删除函数不会删除它的事件源映射。 |
+| 其他前置条件 | IPAM 的私有范围在 IPAM 之前删除，并自动加入任务；IPAM 池、知识库数据源和 Elastic Beanstalk 环境会阻断其所属范围、池、知识库或应用程序的删除，直到你选中它们；Cognito 用户池域在用户池之前删除。删除计划组会同时删除其中的计划。引用托管前缀列表的安全组、置放群组中的实例，会先于前缀列表或置放群组删除。Lambda 别名先于它指向的版本删除，事件源映射先于其函数删除；删除函数不会删除它的事件源映射。HTTP API 路由先于其指向的集成删除，删除 API 会同时删除其路由与集成；WebSocket API 的路由与集成带有 Cloud Control 无法列举的响应，只随 API 一起删除。 |
 | 只能经父资源删除 | 合规包部署的规则、Elastic Beanstalk 环境的 CloudFormation 栈、Client VPN 子网关联自动添加的路由、EMR 集群的实例，只能通过对应的合规包、关联或集群删除。 |
 | CloudFormation | Steward 读取栈资源和处理后的模板，识别归属与 `DeletionPolicy`。`Retain` 或 `RetainExceptOnCreate` 资源按保留资源处理；启用终止保护的栈会阻止删除。 |
 

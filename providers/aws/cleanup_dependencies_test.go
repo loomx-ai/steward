@@ -370,3 +370,30 @@ func TestResolverRuleAssociationsAndRulesPrecedeTheirParents(t *testing.T) {
 		t.Fatalf("required = %v", required)
 	}
 }
+
+func TestAPIGatewayV2RoutesAndIntegrationsFollowTheirAPIProtocol(t *testing.T) {
+	route, err := cloudControlItem(CloudControlResource{Identifier: "http|r1", Properties: `{"ApiId":"http","RouteId":"r1","Target":"integrations/i1"}`}, asset.ResourceKind{NativeType: "AWS::ApiGatewayV2::Route"}, asset.Scope{Kind: asset.ScopeRegion, NativeID: "us-east-1"})
+	if err != nil || route.Normalized["integration_id"] != "http|i1" {
+		t.Fatalf("route = %+v, %v", route.Normalized, err)
+	}
+	contribution, err := NewLifecycle().Contribute(context.Background(), "scope", []asset.Asset{
+		awsAsset("http", "AWS::ApiGatewayV2::Api", "http", map[string]any{"ProtocolType": "HTTP"}),
+		awsAsset("ws", "AWS::ApiGatewayV2::Api", "ws", map[string]any{"ProtocolType": "WEBSOCKET"}),
+		awsAsset("http-integration", "AWS::ApiGatewayV2::Integration", "http|i1", map[string]any{"ApiId": "http"}),
+		awsAsset("ws-route", "AWS::ApiGatewayV2::Route", "ws|r2", map[string]any{"ApiId": "ws"}),
+		awsAsset("orphan", "AWS::ApiGatewayV2::Integration", "gone|i3", map[string]any{"ApiId": "gone"}),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	direct := map[string]bool{}
+	for _, binding := range contribution.Bindings {
+		direct[string(binding.ControllerAssetID)+">"+string(binding.ManagedAssetID)] = binding.DirectCleanupAllowed
+	}
+	if len(direct) != 2 || direct["http>http-integration"] != true || direct["ws>ws-route"] != false {
+		t.Fatalf("bindings = %v", direct)
+	}
+	if len(contribution.Unresolved) != 1 || contribution.Unresolved[0].ControllerID != "orphan" || !contribution.Unresolved[0].BlocksCleanup {
+		t.Fatalf("unresolved = %+v", contribution.Unresolved)
+	}
+}

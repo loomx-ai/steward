@@ -140,7 +140,11 @@ resources:
     resources:
     - Microsoft.ApiManagement/service/backends
   aws:
-    notes: API Gateway integrations are properties of the API, not standalone resources.
+    resources:
+    - AWS::ApiGatewayV2::Integration
+    notes: >-
+      HTTP API integrations are deleted after the routes that target them. WebSocket integrations carry
+      integration responses Cloud Control cannot list, so they are deleted only with their API.
   status: pending_verification
 - alicloud: ACS::AckOne::Cluster
   spec: providers/alicloud/specs/ack-one-cluster.yaml

@@ -182,8 +182,39 @@ func contributeChildDependencies(result *governance.Contribution, index assetInd
 			}
 		case CloudFormationStackNativeType:
 			contributeBeanstalkStack(result, assets, child)
+		case "AWS::ApiGatewayV2::Integration", "AWS::ApiGatewayV2::Route":
+			if err := contributeAPIGatewayV2Child(result, index, child); err != nil {
+				return err
+			}
 		}
 	}
+	return nil
+}
+
+// contributeAPIGatewayV2Child binds an integration or route to its API.
+// DeleteApi removes both. WebSocket integrations and routes carry integration
+// and route responses that Cloud Control cannot list, so they are removed only
+// with their API; an API outside the scan leaves the child unverified.
+func contributeAPIGatewayV2Child(result *governance.Contribution, index assetIndex, child asset.Asset) error {
+	apiID := strings.TrimSpace(stringValue(child.Normalized["ApiId"]))
+	api, found, err := index.find(child, "AWS::ApiGatewayV2::Api", apiID)
+	if err != nil {
+		return err
+	}
+	if !found {
+		result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{
+			BlocksCleanup: true, Provider: asset.ProviderAWS, ConnectionID: child.Identity.ConnectionID,
+			NativeType: "AWS::ApiGatewayV2::Api", NativeID: apiID, ControllerID: child.ID, Relationship: graph.RelationshipMemberOf,
+			Evidence: map[string]any{"source": dependencyEvidenceSource, "lifecycle_kind": "aws_apigatewayv2_api", "field": "ApiId"},
+		})
+		return nil
+	}
+	mode := childCascade
+	if strings.EqualFold(stringValue(api.Normalized["ProtocolType"]), "WEBSOCKET") {
+		mode = childManaged
+	}
+	kind := "aws_apigatewayv2_" + strings.ToLower(strings.TrimPrefix(child.Identity.NativeType, "AWS::ApiGatewayV2::"))
+	addChildDependency(result, kind, mode, false, api, child, map[string]any{"field": "ApiId"})
 	return nil
 }
 

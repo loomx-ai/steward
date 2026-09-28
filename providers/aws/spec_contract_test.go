@@ -34,7 +34,7 @@ var derivedReferenceFields = map[string]bool{
 	"network_interface_ids": true, "snapshot_ids": true, "rule_group_arns": true,
 	"cluster_name": true, "service_id": true, "trust_store_arn": true, "rest_api_ids": true,
 	"prefix_list_ids": true, "knowledge_base_ids": true, "guardrail_arn": true, "schedule_group_name": true,
-	"function_name": true, "version_arns": true,
+	"function_name": true, "version_arns": true, "integration_id": true,
 }
 
 // knownCloudControlDefects lists specifications that still route through a

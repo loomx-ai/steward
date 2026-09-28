@@ -9,7 +9,7 @@ not cloud feature acceptance. Dated sections below keep the row count that held
 when they were written.
 
 The matrix covers all 221 Alibaba Cloud specifications for GCP, Azure and AWS.
-The repository contains 241 GCP, 526 Azure and 245 AWS specifications; those
+The repository contains 241 GCP, 526 Azure and 247 AWS specifications; those
 counts do not prove equivalence. All 221 rows remain pending behavioral
 verification.
 
@@ -24,12 +24,12 @@ check verifies matrix consistency only. AWS progress and evidence are tracked in
 
 | Measure | GCP | Azure | AWS |
 | --- | --- | --- | --- |
-| Explicit native specifications | 241 | 526 | 245 |
-| Baseline rows with at least one existing mapped specification | 200/221 | 193/221 | 203/221 |
+| Explicit native specifications | 241 | 526 | 247 |
+| Baseline rows with at least one existing mapped specification | 200/221 | 193/221 | 204/221 |
 | Candidate types still without a specification | 0 | 0 | 0 |
 | Baseline rows affected by missing candidate specifications | 0 | 0 | 0 |
 | Empty mappings deferred as not yet modeled | 0 | 0 | 0 |
-| Empty mappings with a documented platform difference | 21 | 28 | 18 |
+| Empty mappings with a documented platform difference | 21 | 28 | 17 |
 
 These are registration/mapping measures, not functional completion percentages.
 A row can have both an implemented mapping and an absent candidate. None of the

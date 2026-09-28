@@ -281,6 +281,24 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::ApiGatewayV2::Integration",
+   "class": "network.api_backend",
+   "displayName": "API Gateway V2 Integration",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::ApiGatewayV2::Route",
+   "class": "network.api_operation",
+   "displayName": "API Gateway V2 Route",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::AppRunner::Service",
    "class": "serverless.service",
    "displayName": "App Runner Service",

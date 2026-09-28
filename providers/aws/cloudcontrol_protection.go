@@ -168,6 +168,13 @@ func deriveCloudControlReferences(nativeType string, model map[string]any) {
 			}
 			model["version_arns"] = versions
 		}
+	case "AWS::ApiGatewayV2::Route":
+		// A route targets "integrations/{IntegrationId}"; the integration's
+		// identifier is "ApiId|IntegrationId".
+		api := strings.TrimSpace(stringValue(model["ApiId"]))
+		if id, ok := strings.CutPrefix(strings.TrimSpace(stringValue(model["Target"])), "integrations/"); ok && api != "" && id != "" {
+			model["integration_id"] = api + "|" + id
+		}
 	case "AWS::EC2::VPCEndpoint":
 		name := strings.TrimSpace(stringValue(model["ServiceName"]))
 		if index := strings.LastIndex(name, "."); index >= 0 && strings.HasPrefix(name[index+1:], "vpce-svc-") {

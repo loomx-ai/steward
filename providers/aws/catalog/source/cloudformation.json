@@ -1032,6 +1032,148 @@
     "/properties/RegionalHostedZoneId"
    ]
   },
+  "AWS::ApiGatewayV2::Integration": {
+   "member": "aws-apigatewayv2-integration.json",
+   "sha256": "89d7bd8ff1499e04fcaca24fcd93ee43937c5e570f94a63fe6a262c16cb99e39",
+   "primaryIdentifier": [
+    "/properties/ApiId",
+    "/properties/IntegrationId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "apigateway:POST",
+      "iam:PassRole"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "apigateway:DELETE",
+      "apigateway:GET"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "apigateway:GET"
+     ],
+     "handlerSchema": {
+      "properties": {
+       "ApiId": {
+        "$ref": "resource-schema.json#/properties/ApiId"
+       }
+      },
+      "required": [
+       "ApiId"
+      ]
+     }
+    },
+    "read": {
+     "permissions": [
+      "apigateway:GET"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "apigateway:GET",
+      "apigateway:PATCH",
+      "apigateway:PUT",
+      "iam:PassRole"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "ApiId": "string",
+    "ConnectionId": "string",
+    "ConnectionType": "string",
+    "ContentHandlingStrategy": "string",
+    "CredentialsArn": "string",
+    "Description": "string",
+    "IntegrationId": "string",
+    "IntegrationMethod": "string",
+    "IntegrationSubtype": "string",
+    "IntegrationType": "string",
+    "IntegrationUri": "string",
+    "PassthroughBehavior": "string",
+    "PayloadFormatVersion": "string",
+    "RequestParameters": "object",
+    "RequestTemplates": "object",
+    "ResponseParameters": "object",
+    "TemplateSelectionExpression": "string",
+    "TimeoutInMillis": "integer",
+    "TlsConfig": "$ref"
+   },
+   "readOnlyProperties": [
+    "/properties/IntegrationId"
+   ]
+  },
+  "AWS::ApiGatewayV2::Route": {
+   "member": "aws-apigatewayv2-route.json",
+   "sha256": "f075f5f6e7eecf451c179b4a7aa997daa5dd8273ebf20dfe1a938c73b0eebf99",
+   "primaryIdentifier": [
+    "/properties/ApiId",
+    "/properties/RouteId"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "apigateway:POST"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "apigateway:DELETE",
+      "apigateway:GET"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "apigateway:GET"
+     ],
+     "handlerSchema": {
+      "properties": {
+       "ApiId": {
+        "$ref": "resource-schema.json#/properties/ApiId"
+       }
+      },
+      "required": [
+       "ApiId"
+      ]
+     }
+    },
+    "read": {
+     "permissions": [
+      "apigateway:GET"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "apigateway:GET",
+      "apigateway:PATCH",
+      "apigateway:PUT"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "ApiId": "string",
+    "ApiKeyRequired": "boolean",
+    "AuthorizationScopes": "array",
+    "AuthorizationType": "string",
+    "AuthorizerId": "string",
+    "ModelSelectionExpression": "string",
+    "OperationName": "string",
+    "RequestModels": "object",
+    "RequestParameters": "object",
+    "RouteId": "string",
+    "RouteKey": "string",
+    "RouteResponseSelectionExpression": "string",
+    "Target": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/RouteId"
+   ]
+  },
   "AWS::AppRunner::Service": {
    "member": "aws-apprunner-service.json",
    "sha256": "b5abe79966e334d82a6dcb0e3f57902ea6a2faef514736f476613978dfc98f38",

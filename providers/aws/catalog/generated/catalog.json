@@ -4,10 +4,10 @@
   "source": {
     "format": "smithy",
     "uri": "catalog/source/smithy.json",
-    "checksum": "da9d83bd4a4121c76c4eedf8fb9123ad9a89c29a07d96fc479359668c311ebdb",
+    "checksum": "35a2cdc0c9df08b18dc81ea5fd38ed9fd67f5b68808939f02d2a93f2ee5defa0",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "80296187c32730b61fdbecb0c5f4ad28a93cbe4dd719dbc00bd4b77e53163c85",
+  "content_checksum": "d055aa89ac2166e1fe23099913c44dc8164db5ecee3ec2318477a20c105608e2",
   "operations": [
     {
       "id": "com.amazonaws.acmpca#DeleteCertificateAuthority",
@@ -2642,6 +2642,22 @@
       "native_type": "AWS::ApiGatewayV2::DomainName",
       "class": "network.api_domain",
       "display_name": "API Gateway V2 Custom Domain",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ApiGatewayV2::Integration",
+      "class": "network.api_backend",
+      "display_name": "API Gateway V2 Integration",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ApiGatewayV2::Route",
+      "class": "network.api_operation",
+      "display_name": "API Gateway V2 Route",
       "scope_kinds": [
         "region"
       ]
