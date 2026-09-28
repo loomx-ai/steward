@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "07650faa426d103f91b4fa7468d10d8b88cce2fc2d6249430339515b553e43d4",
+    "checksum": "9584a368d2bb60cfeff3c62cdc4263bfa5182134ee489c1b4a1041247e0cf8d1",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "35bc7b0a031718c560d693b3bbbf3d56c36023a8711dd26b9113c6e54181b882",
+  "content_checksum": "c8ec8a2fa398bd0b3672fb12bc13e0c732027602498ed4b62b28de9638c57804",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -118803,6 +118803,198 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/7e7a9372bd1e8b88a00db8f100c0ba84a05b6e1c/specification/dnsresolver/resource-manager/Microsoft.Network/DnsResolver/stable/2025-05-01/openapi.json"
     },
     {
+      "id": "Azure.Microsoft.Network.IpGroups_Delete",
+      "name": "IpGroups_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/ipGroups/{ipGroupsName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "ipGroupsName": {
+            "description": "The name of the ipGroups.",
+            "in": "path",
+            "name": "ipGroupsName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/ipGroups/{ipGroupsName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/ipGroups.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.IpGroups_Get",
+      "name": "IpGroups_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/ipGroups/{ipGroupsName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "Expands resourceIds (of Firewalls/Network Security Groups etc.) back referenced by the IpGroups resource.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "ipGroupsName": {
+            "description": "The name of the ipGroups.",
+            "in": "path",
+            "name": "ipGroupsName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/Resource"
+          }
+        ],
+        "description": "The IpGroups resource information.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/IpGroupPropertiesFormat",
+            "description": "Properties of the IpGroups.",
+            "x-ms-client-flatten": true
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/ipGroups/{ipGroupsName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/ipGroups.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.IpGroups_List",
+      "name": "IpGroups_List",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Network/ipGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response for the ListIpGroups API service call.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of IpGroups information resources.",
+            "items": {
+              "$ref": "#/definitions/IpGroup"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Network/ipGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/ipGroups.json"
+    },
+    {
       "id": "Azure.Microsoft.Network.LoadBalancerBackendAddressPools_Delete",
       "name": "LoadBalancerBackendAddressPools_Delete",
       "service": "Microsoft.Network",
@@ -158914,6 +159106,27 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Network.Policies_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/ipGroups",
+      "class": "network.prefix_list",
+      "display_name": "IP group",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "ipGroups",
+        "read_operations": [
+          "Azure.Microsoft.Network.IpGroups_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.IpGroups_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.IpGroups_List"
         ]
       }
     },

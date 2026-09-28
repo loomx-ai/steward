@@ -125,6 +125,7 @@ func NewResourceAttachments() *ResourceAttachments { return &ResourceAttachments
 
 func (*ResourceAttachments) Contribute(_ context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
+	contributeIPGroupUsers(&result, assets)
 	aksMembers := managedGroupMembers(assets)
 	for _, controller := range assets {
 		if controller.Identity.Provider != asset.ProviderAzure || (controller.Identity.NativeType != vmType && controller.Identity.NativeType != nicType) {
@@ -330,4 +331,42 @@ func vmRetentionApplied(subscription string, request contracts.ActionRequest, pr
 		}
 	}
 	return false, nil
+}
+
+const ipGroupType = "Microsoft.Network/ipGroups"
+
+// ipGroupUserTypes are the reverse reference lists an IP group's native GET
+// returns. IpGroups_Delete fails while a firewall or firewall policy rule
+// still uses the group, so each user is deleted before it; a user that was
+// not scanned blocks the group's cleanup.
+var ipGroupUserTypes = map[string]string{"firewalls": "Microsoft.Network/azureFirewalls", "firewallPolicies": "Microsoft.Network/firewallPolicies"}
+
+func contributeIPGroupUsers(result *governance.Contribution, assets []asset.Asset) {
+	for _, group := range assets {
+		if group.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(group.Identity.NativeType, ipGroupType) {
+			continue
+		}
+		for field, userType := range ipGroupUserTypes {
+			for _, value := range array(group.Normalized[field]) {
+				id := strings.ToLower(text(object(value)["id"]))
+				if id == "" {
+					continue
+				}
+				evidence := map[string]any{"source": "azure:ip-group-users", "field": field, "instance_id": id}
+				var user *asset.Asset
+				for i := range assets {
+					candidate := &assets[i]
+					if candidate.Identity.Provider == group.Identity.Provider && candidate.Identity.ConnectionID == group.Identity.ConnectionID && candidate.Identity.Partition == group.Identity.Partition && strings.EqualFold(candidate.Identity.NativeType, userType) && strings.EqualFold(candidate.Identity.NativeID, id) {
+						user = candidate
+						break
+					}
+				}
+				if user == nil {
+					result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: group.Identity.Provider, ConnectionID: group.Identity.ConnectionID, NativeType: userType, NativeID: id, ControllerID: group.ID, Relationship: graph.RelationshipUses, Evidence: evidence})
+					continue
+				}
+				result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: user.ID, TargetAssetID: group.ID, Type: graph.RelationshipUses, Source: "azure:ip-group-users", Evidence: evidence, Confidence: 1})
+			}
+		}
+	}
 }

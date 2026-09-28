@@ -289769,6 +289769,247 @@
       "dependency": false,
       "document": {
         "definitions": {
+          "IpGroup": {
+            "allOf": [
+              {
+                "$ref": "./network.json#/definitions/Resource"
+              }
+            ],
+            "description": "The IpGroups resource information.",
+            "properties": {
+              "etag": {
+                "description": "A unique read-only string that changes whenever the resource is updated.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/IpGroupPropertiesFormat",
+                "description": "Properties of the IpGroups.",
+                "x-ms-client-flatten": true
+              }
+            }
+          },
+          "IpGroupListResult": {
+            "description": "Response for the ListIpGroups API service call.",
+            "properties": {
+              "nextLink": {
+                "description": "URL to get the next set of results.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The list of IpGroups information resources.",
+                "items": {
+                  "$ref": "#/definitions/IpGroup"
+                },
+                "type": "array"
+              }
+            }
+          },
+          "IpGroupPropertiesFormat": {
+            "description": "The IpGroups property information.",
+            "properties": {
+              "firewallPolicies": {
+                "description": "List of references to Firewall Policies resources that this IpGroups is associated with.",
+                "items": {
+                  "$ref": "./network.json#/definitions/SubResource"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "firewalls": {
+                "description": "List of references to Firewall resources that this IpGroups is associated with.",
+                "items": {
+                  "$ref": "./network.json#/definitions/SubResource"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "ipAddresses": {
+                "description": "IpAddresses/IpAddressPrefixes in the IpGroups resource.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "provisioningState": {
+                "$ref": "./network.json#/definitions/ProvisioningState",
+                "description": "The provisioning state of the IpGroups resource.",
+                "readOnly": true
+              }
+            }
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "The Microsoft Azure Network management API provides a RESTful set of web services that interact with Microsoft Azure Networks service to manage your network resources. The API has entities that capture the relationship between an end user and the Microsoft Azure Networks service.",
+          "title": "NetworkManagementClient",
+          "version": "2024-05-01"
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/providers/Microsoft.Network/ipGroups": {
+            "get": {
+              "description": "Gets all IpGroups in a subscription.",
+              "operationId": "IpGroups_List",
+              "parameters": [
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns a list of ipGroups resources.",
+                  "schema": {
+                    "$ref": "#/definitions/IpGroupListResult"
+                  }
+                },
+                "default": {
+                  "description": "Unexpected error.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "IpGroups"
+              ],
+              "x-ms-examples": {
+                "List_IpGroups": {
+                  "$ref": "./examples/IpGroupsListBySubscription.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/ipGroups/{ipGroupsName}": {
+            "delete": {
+              "description": "Deletes the specified ipGroups.",
+              "operationId": "IpGroups_Delete",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the ipGroups.",
+                  "in": "path",
+                  "name": "ipGroupsName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Delete successful."
+                },
+                "202": {
+                  "description": "Accepted and the operation will complete asynchronously."
+                },
+                "204": {
+                  "description": "Delete successful."
+                },
+                "default": {
+                  "description": "Unexpected error.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "IpGroups"
+              ],
+              "x-ms-examples": {
+                "Delete_IpGroups": {
+                  "$ref": "./examples/IpGroupsDelete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Gets the specified ipGroups.",
+              "operationId": "IpGroups_Get",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the ipGroups.",
+                  "in": "path",
+                  "name": "ipGroupsName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "description": "Expands resourceIds (of Firewalls/Network Security Groups etc.) back referenced by the IpGroups resource.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns the resulting IpGroups resource.",
+                  "schema": {
+                    "$ref": "#/definitions/IpGroup"
+                  }
+                },
+                "default": {
+                  "description": "Unexpected error.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "IpGroups"
+              ],
+              "x-ms-examples": {
+                "Get_IpGroups": {
+                  "$ref": "./examples/IpGroupsGet.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "b9a80e6fefca77ab0e6522e5e8b7ccf19a4eb8b320272cb5575ca5ccff79b306",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/ipGroups.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
           "BackendAddressPool": {
             "allOf": [
               {
@@ -321559,6 +321800,27 @@
         ],
         "read_operations": [
           "Azure.Microsoft.Network.NatGateways_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "network.prefix_list",
+      "displayName": "IP group",
+      "nativeType": "Microsoft.Network/ipGroups",
+      "rest": {
+        "collection": "ipGroups",
+        "delete_operations": [
+          "Azure.Microsoft.Network.IpGroups_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.IpGroups_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.IpGroups_Get"
         ]
       },
       "scopeKinds": [

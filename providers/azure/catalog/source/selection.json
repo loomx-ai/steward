@@ -2909,6 +2909,14 @@
         "PolicyAssignments_Get",
         "PolicyAssignments_List"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/ipGroups.json",
+      "operations": [
+        "IpGroups_Delete",
+        "IpGroups_Get",
+        "IpGroups_List"
+      ]
     }
   ],
   "resource_types": [
@@ -3176,6 +3184,25 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Network.NatGateways_ListAll"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/ipGroups",
+      "class": "network.prefix_list",
+      "display_name": "IP group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "ipGroups",
+      "read_operations": [
+        "Azure.Microsoft.Network.IpGroups_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.IpGroups_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.IpGroups_List"
       ]
     },
     {

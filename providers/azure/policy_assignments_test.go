@@ -166,3 +166,22 @@ func TestPolicyAssignmentActionRefusesManagementGroupScope(t *testing.T) {
 		t.Fatal("a management-group assignment could be deleted from a subscription connection")
 	}
 }
+
+func TestIPGroupUsersAreDeletedFirstAndUnscannedUsersBlock(t *testing.T) {
+	root := "/subscriptions/" + testSubscription + "/resourcegroups/net/providers/microsoft.network/"
+	group := asset.Asset{ID: "group", Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeType: ipGroupType, NativeID: root + "ipgroups/office"}, Normalized: map[string]any{
+		"firewalls":        []any{map[string]any{"id": root + "azureFirewalls/edge"}},
+		"firewallPolicies": []any{map[string]any{"id": root + "firewallPolicies/unscanned"}},
+	}}
+	firewall := asset.Asset{ID: "firewall", Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeType: "Microsoft.Network/azureFirewalls", NativeID: root + "azurefirewalls/edge"}}
+	contribution, err := NewResourceAttachments().Contribute(t.Context(), "scope", []asset.Asset{group, firewall})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(contribution.Relationships) != 1 || contribution.Relationships[0].SourceAssetID != "firewall" || contribution.Relationships[0].TargetAssetID != "group" {
+		t.Fatalf("relationships = %+v", contribution.Relationships)
+	}
+	if len(contribution.Unresolved) != 1 || !contribution.Unresolved[0].BlocksCleanup || contribution.Unresolved[0].NativeType != "Microsoft.Network/firewallPolicies" {
+		t.Fatalf("unresolved = %+v", contribution.Unresolved)
+	}
+}

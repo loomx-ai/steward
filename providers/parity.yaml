@@ -1304,8 +1304,10 @@ resources:
     notes: Address groups are referenced by network firewall policy rules, as prefix lists are by security
       group rules.
   azure:
-    unimplemented_resources:
+    resources:
     - Microsoft.Network/ipGroups
+    notes: IP groups are referenced by Azure Firewall and firewall policy rules; network security groups take
+      address prefixes directly.
   aws:
     resources:
     - AWS::EC2::PrefixList
