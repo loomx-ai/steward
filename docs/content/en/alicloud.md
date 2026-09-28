@@ -69,7 +69,7 @@ For the complete workflow, follow [Your first inventory](./tutorials/first-inven
 
 ## Resource coverage
 
-Steward identifies 214 Alibaba Cloud resource types, 198 of which have a native cleanup action. Other types that Resource Center returns appear as read-only inventory. Every service API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
+Steward identifies 217 Alibaba Cloud resource types, 201 of which have a native cleanup action. Other types that Resource Center returns appear as read-only inventory. Every service API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
 
 Common types:
 
@@ -77,7 +77,7 @@ Common types:
 | --- | --- |
 | Compute and applications | ECS instances, disks, and network interfaces; Function Compute 2.0 and 3.0; SAE; EMR; Elastic Desktop Service |
 | Networking | VPCs, vSwitches, security groups, NAT gateways, EIPs, high-availability virtual IPs, flow logs, prefix lists, and PrivateZone resolver endpoints and forwarding rules |
-| Load balancing | ALB, NLB, and CLB instances with their listeners and server groups |
+| Load balancing | ALB, NLB, CLB, and gateway load balancer instances with their listeners and server groups |
 | Databases | RDS, Redis, PolarDB |
 | Messaging and events | Kafka, RocketMQ, and RabbitMQ with their topics and consumer groups; EventBridge |
 | Storage, logs, and images | OSS, Simple Log Service, Container Registry |
@@ -115,7 +115,7 @@ ECS instances, ACK clusters, Auto Scaling groups, ALB, NLB, and CLB instances, E
 | High-availability virtual IPs, flow logs, and prefix lists | A high-availability virtual IP and a flow log are deleted before their vSwitch or VPC; a flow log also before its Simple Log Service logstore. Flow logs created from the Simple Log Service console, and prefix lists shared by another account, are not deleted. Security groups and route tables that reference a prefix list are deleted first; a route that still points to a virtual IP, or an EIP still bound to it, makes the deletion fail. |
 | PrivateZone forwarding | Forwarding rules are unbound from their VPCs and deleted before their outbound endpoint, and endpoints before the vSwitches, security group, and VPC they use; the task shows the unbinding before you confirm. |
 | OSS buckets | Objects, versions, retention settings, and other provider conditions can prevent deletion. Follow the review findings and the OSS response. |
-| ALB, NLB, and CLB instances | Listeners and CLB virtual server groups are deleted first, each as its own step. Server groups, CLB access control lists, and certificates are independent resources: the provider rejects deleting one that a listener or forwarding rule still uses. Server groups managed by an ALB Ingress controller are not deleted directly. |
+| ALB, NLB, CLB, and gateway load balancer instances | Listeners and CLB virtual server groups are deleted first, each as its own step. A gateway load balancer is first removed from the PrivateLink endpoint service that serves it, and is deleted before the vSwitches its interfaces use. Server groups, CLB access control lists, and certificates are independent resources: the provider rejects deleting one that a listener or forwarding rule still uses. Server groups managed by an ALB Ingress controller are not deleted directly. |
 | Kafka, RocketMQ 4.0, and RocketMQ 5.0 instances | Topics and consumer groups are deleted first, each as its own step, confirmed while the instance can still be queried. RocketMQ 4.0 topics are deleted only when this account owns them, never when another account authorized them. Deleting a topic discards its messages. |
 | Container Registry namespaces | Deleting a namespace also deletes its repositories and images, so the task deletes each repository first. |
 | Simple Log Service projects | Deleting a project deletes all its logstores, including service-created `internal-` logstores. The task lists them as deleted with the project and confirms each one afterward. |

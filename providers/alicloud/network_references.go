@@ -104,9 +104,9 @@ func enrichVPCFlowLogs(items []contracts.InventoryItem) []contracts.InventoryIte
 	return items
 }
 
-// enrichResolverNetworks records the vSwitches a resolver endpoint places its
-// IP addresses in and the VPCs a forwarding rule is bound to, both nested in
-// arrays a field path cannot address.
+// enrichResolverNetworks records the vSwitches a resolver endpoint or gateway
+// load balancer places its addresses in and the VPCs a forwarding rule is
+// bound to, all nested in arrays a field path cannot address.
 func enrichResolverNetworks(items []contracts.InventoryItem) []contracts.InventoryItem {
 	collect := func(values []any, field string) []any {
 		ids := []any{}
@@ -126,6 +126,9 @@ func enrichResolverNetworks(items []contracts.InventoryItem) []contracts.Invento
 			items[index].Normalized["vSwitchIds"] = collect(anySlice(items[index].Raw["IpConfigs"]), "VSwitchId")
 		case resolverRuleType:
 			items[index].Normalized["boundVpcIds"] = collect(anySlice(items[index].Raw["BindVpcs"]), "VpcId")
+		case gwlbLoadBalancerNativeType:
+			// Its zone mappings place service-managed interfaces in vSwitches.
+			items[index].Normalized["vSwitchIds"] = collect(anySlice(items[index].Raw["ZoneMappings"]), "VSwitchId")
 		}
 	}
 	return items

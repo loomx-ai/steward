@@ -1050,6 +1050,48 @@
         "x-operation-call": {"product":"Nlb","version":"2022-04-30","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"nlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
       }
     },
+    "/gwlb/load-balancers": {
+      "get": {
+        "operationId": "GWLB.ListLoadBalancers",
+        "x-operation-name": "ListLoadBalancers",
+        "x-operation-call": {"product":"gwlb","version":"2024-04-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"gwlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/gwlb/load-balancers/{LoadBalancerId}": {
+      "delete": {
+        "operationId": "GWLB.DeleteLoadBalancer",
+        "x-operation-name": "DeleteLoadBalancer",
+        "x-operation-call": {"product":"gwlb","version":"2024-04-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"gwlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/gwlb/listeners": {
+      "get": {
+        "operationId": "GWLB.ListListeners",
+        "x-operation-name": "ListListeners",
+        "x-operation-call": {"product":"gwlb","version":"2024-04-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"gwlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/gwlb/listeners/{ListenerId}": {
+      "delete": {
+        "operationId": "GWLB.DeleteListener",
+        "x-operation-name": "DeleteListener",
+        "x-operation-call": {"product":"gwlb","version":"2024-04-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"gwlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/gwlb/server-groups": {
+      "get": {
+        "operationId": "GWLB.ListServerGroups",
+        "x-operation-name": "ListServerGroups",
+        "x-operation-call": {"product":"gwlb","version":"2024-04-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"gwlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/gwlb/server-groups/{ServerGroupId}": {
+      "delete": {
+        "operationId": "GWLB.DeleteServerGroup",
+        "x-operation-name": "DeleteServerGroup",
+        "x-operation-call": {"product":"gwlb","version":"2024-04-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"gwlb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
     "/nlb/listeners": {
       "get": {
         "operationId": "NLB.ListListeners",
@@ -4648,7 +4690,9 @@
     {"nativeType": "ACS::FC::Version", "class": "serverless.version", "displayName": "Function Compute Service Version", "scopeKinds": ["region"]},
     {"nativeType": "ACS::FC3::Function", "class": "serverless.function", "displayName": "Function Compute 3.0 Function", "scopeKinds": ["region"]},
     {"nativeType": "ACS::FC3::Trigger", "class": "serverless.trigger", "displayName": "Function Compute 3.0 Trigger", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::GWLB::Listener", "class": "network.load_balancer_listener", "displayName": "Gateway Load Balancer Listener", "scopeKinds": ["region"]},
     {"nativeType": "ACS::GWLB::LoadBalancer", "class": "network.load_balancer", "displayName": "Gateway Load Balancer", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::GWLB::ServerGroup", "class": "network.target_group", "displayName": "Gateway Load Balancer Server Group", "scopeKinds": ["region"]},
     {"nativeType": "ACS::HBase::Cluster", "class": "database.wide_column", "displayName": "HBase Cluster", "scopeKinds": ["region"]},
     {"nativeType": "ACS::HBR::Vault", "class": "storage.backup_vault", "displayName": "Cloud Backup Vault", "scopeKinds": ["region"]},
     {"nativeType": "ACS::HBR::HanaInstance", "class": "storage.backup_source", "displayName": "SAP HANA Backup Instance", "scopeKinds": ["region"]},

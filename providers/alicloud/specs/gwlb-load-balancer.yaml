@@ -1,0 +1,82 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::GWLB::LoadBalancer
+  class: network.load_balancer
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/gwlb/{regionId}/gwlbs/{nativeId}"
+  displayNames:
+    zh-CN: 网关型负载均衡
+    en-US: Gateway Load Balancer
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.GWLB.ListLoadBalancers
+    itemsPath: LoadBalancers
+    identityPath: LoadBalancerId
+    statePath: LoadBalancerStatus
+    supportedRegions:
+      - ap-northeast-1
+      - ap-southeast-1
+      - ap-southeast-3
+      - ap-southeast-7
+      - ap-southeast-8
+      - cn-beijing
+      - cn-chengdu
+      - cn-hangzhou
+      - cn-hongkong
+      - cn-shanghai
+      - cn-shenzhen
+      - cn-wulanchabu
+      - eu-central-1
+      - eu-west-1
+      - me-central-1
+      - me-east-1
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: LoadBalancerName
+  state: LoadBalancerStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+  businessStatus: LoadBalancerBusinessStatus
+  resourceGroupId: ResourceGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.GWLB.DeleteLoadBalancer
+    parameters:
+      LoadBalancerId: resource.nativeId
+      DryRun: false
+    idempotency: provider_token
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.GWLB.ListLoadBalancers
+      parameters:
+        LoadBalancerIds: resources.nativeIds
+        MaxResults: 100
+      itemsPath: LoadBalancers
+      identityPath: LoadBalancerId
+      statePath: LoadBalancerStatus
+      pagination:
+        type: token
+        tokenParameter: NextToken
+        tokenPath: NextToken
+        pageSizeParameter: MaxResults
+        maxPageSize: 100

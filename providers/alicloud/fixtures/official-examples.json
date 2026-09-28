@@ -14671,6 +14671,114 @@
    "RequestId": "53EA07B7-FC2A-521B-AB7C-27**********",
    "TotalRecordCount": 1
   },
+  "gwlb@2024-04-15#ListListeners": {
+   "Listeners": [
+    {
+     "ListenerDescription": "listener-description",
+     "ListenerId": "lsn-vu7folhh5ntm8u****",
+     "ListenerStatus": "Running",
+     "LoadBalancerId": "gwlb-uf6hbeh795xlqln7g****",
+     "ServerGroupId": "sgp-5yapcb422i51ru****",
+     "Tags": [
+      {
+       "Key": "testKey",
+       "Value": "testValue"
+      }
+     ],
+     "TcpIdleTimeout": 350
+    }
+   ],
+   "MaxResults": 20,
+   "NextToken": "5c281c0a0d6bfb6355ed088c2108aca8e0b5e8707e68****",
+   "RequestId": "7DBFC67C-A272-5952-8287-6C3EBE4E04D9",
+   "TotalCount": 8
+  },
+  "gwlb@2024-04-15#ListLoadBalancers": {
+   "LoadBalancers": [
+    {
+     "AddressIpVersion": "IPv4",
+     "CreateTime": "2024-08-05T18:24:07Z",
+     "LoadBalancerBusinessStatus": "Normal",
+     "LoadBalancerId": "gwlb-9njtjmqt7zfcqm****",
+     "LoadBalancerName": "testGwlbName",
+     "LoadBalancerStatus": "Active",
+     "ResourceGroupId": "rg-aek26jasguy****",
+     "Tags": [
+      {
+       "Key": "testTagKey",
+       "Value": "testTagValue"
+      }
+     ],
+     "VpcId": "vpc-uf6eg0vndlsa84n7r****",
+     "ZoneMappings": [
+      {
+       "LoadBalancerAddresses": [
+        {
+         "EniId": "eni-bp17qv9zbzyqy629****",
+         "PrivateIpv4Address": "192.168.XX.XX"
+        }
+       ],
+       "VSwitchId": "vsw-2zemule5dz7okwqfv****",
+       "ZoneId": "cn-hangzhou-g"
+      }
+     ]
+    }
+   ],
+   "MaxResults": 20,
+   "NextToken": "CAESGgoSChAKDGNvbXBsZXRlVGltZRABCgQiAggAGAAiQAoJAIldD2UAAAAACjMDLgAAADFTNzMyZDMwMzAzMDY5NzQzNDM0NmI3NzM2NjUzNzc4NzM2YTc0NjYzOTYz****",
+   "RequestId": "378A80E9-4262-5D8E-8D62-0969E52D7358",
+   "TotalCount": 100
+  },
+  "gwlb@2024-04-15#ListServerGroups": {
+   "MaxResults": 20,
+   "NextToken": "FFmyTO70tTpLG6I3FmYAXGKPd****",
+   "RequestId": "54B48E3D-DF70-471B-AA93-08E683A1B45",
+   "ServerGroups": [
+    {
+     "ConnectionDrainConfig": {
+      "ConnectionDrainEnabled": false,
+      "ConnectionDrainTimeout": 300
+     },
+     "CreateTime": "2024-08-05T18:24:07Z",
+     "HealthCheckConfig": {
+      "HealthCheckConnectPort": 80,
+      "HealthCheckConnectTimeout": 5,
+      "HealthCheckDomain": "$SERVER_IP",
+      "HealthCheckEnabled": true,
+      "HealthCheckExp": "",
+      "HealthCheckHttpCode": [
+       "http_2xx"
+      ],
+      "HealthCheckInterval": 10,
+      "HealthCheckPath": "/test/index.html",
+      "HealthCheckProtocol": "TCP",
+      "HealthCheckReq": "",
+      "HealthyThreshold": 2,
+      "UnhealthyThreshold": 2
+     },
+     "Protocol": "GENEVE",
+     "RelatedLoadBalancerIds": [
+      "gwlb-cp6prgqy40hols****"
+     ],
+     "ResourceGroupId": "rg-atstuj3rtop****",
+     "Scheduler": "5TCH",
+     "ServerCount": 2,
+     "ServerFailoverMode": "NoRebalance",
+     "ServerGroupId": "sgp-atstuj3rtoptyui****",
+     "ServerGroupName": "testServerGroupName",
+     "ServerGroupStatus": "Available",
+     "ServerGroupType": "Instance",
+     "Tags": [
+      {
+       "Key": "testTagKey",
+       "Value": "testTagValue"
+      }
+     ],
+     "VpcId": "vpc-bp15zckdt37pq72zv****"
+    }
+   ],
+   "TotalCount": 1
+  },
   "hbr@2017-09-08#DescribeHanaInstances": {
    "Code": "200",
    "Hanas": {

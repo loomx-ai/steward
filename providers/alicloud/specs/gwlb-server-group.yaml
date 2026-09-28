@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::GWLB::ServerGroup
+  class: network.target_group
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/gwlb/{regionId}/server-groups/{nativeId}"
+  displayNames:
+    zh-CN: 网关型负载均衡服务器组
+    en-US: Gateway Load Balancer Server Group
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.GWLB.ListServerGroups
+    itemsPath: ServerGroups
+    identityPath: ServerGroupId
+    statePath: ServerGroupStatus
+    supportedRegions:
+      - ap-northeast-1
+      - ap-southeast-1
+      - ap-southeast-3
+      - ap-southeast-7
+      - ap-southeast-8
+      - cn-beijing
+      - cn-chengdu
+      - cn-hangzhou
+      - cn-hongkong
+      - cn-shanghai
+      - cn-shenzhen
+      - cn-wulanchabu
+      - eu-central-1
+      - eu-west-1
+      - me-central-1
+      - me-east-1
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: ServerGroupName
+  state: ServerGroupStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+  serverGroupType: ServerGroupType
+  serverCount: ServerCount
+  resourceGroupId: ResourceGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: AlibabaCloud.GWLB.DeleteServerGroup
+    parameters:
+      ServerGroupId: resource.nativeId
+      DryRun: false
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.GWLB.ListServerGroups
+      parameters:
+        ServerGroupIds: resources.nativeIds
+        MaxResults: 100
+      itemsPath: ServerGroups
+      identityPath: ServerGroupId
+      statePath: ServerGroupStatus
+      pagination:
+        type: token
+        tokenParameter: NextToken
+        tokenPath: NextToken
+        pageSizeParameter: MaxResults
+        maxPageSize: 100

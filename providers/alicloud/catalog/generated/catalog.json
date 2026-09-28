@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "06d4ada586cfc5be54526d9ed65a2fe884ef6cc64749bec823a369e03315b9ed",
+    "checksum": "654fb49cf0cbeb7fd4f2c2bafd70b0b4457698e679bb31d5bca8b760e2fd2513",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "973f24d51740ca10088e2dda7a356e71dd29a30bbbd7379f4f9daea883d36102",
+  "content_checksum": "979370d1e34d7f85ca427845b319863891612151e8faacbc32675811a86a3f7d",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -6989,6 +6989,129 @@
       }
     },
     {
+      "id": "AlibabaCloud.GWLB.DeleteListener",
+      "name": "DeleteListener",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/gwlb/listeners/{ListenerId}",
+      "destructive": true,
+      "call": {
+        "product": "gwlb",
+        "version": "2024-04-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "gwlb.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.GWLB.DeleteLoadBalancer",
+      "name": "DeleteLoadBalancer",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/gwlb/load-balancers/{LoadBalancerId}",
+      "destructive": true,
+      "call": {
+        "product": "gwlb",
+        "version": "2024-04-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "gwlb.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.GWLB.DeleteServerGroup",
+      "name": "DeleteServerGroup",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/gwlb/server-groups/{ServerGroupId}",
+      "destructive": true,
+      "call": {
+        "product": "gwlb",
+        "version": "2024-04-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "gwlb.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.GWLB.ListListeners",
+      "name": "ListListeners",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/gwlb/listeners",
+      "destructive": false,
+      "call": {
+        "product": "gwlb",
+        "version": "2024-04-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "gwlb.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.GWLB.ListLoadBalancers",
+      "name": "ListLoadBalancers",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/gwlb/load-balancers",
+      "destructive": false,
+      "call": {
+        "product": "gwlb",
+        "version": "2024-04-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "gwlb.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.GWLB.ListServerGroups",
+      "name": "ListServerGroups",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/gwlb/server-groups",
+      "destructive": false,
+      "call": {
+        "product": "gwlb",
+        "version": "2024-04-15",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "gwlb.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.GetPrometheusInstance",
       "name": "GetPrometheusInstance",
       "service": "AlibabaCloud",
@@ -13087,9 +13210,25 @@
       ]
     },
     {
+      "native_type": "ACS::GWLB::Listener",
+      "class": "network.load_balancer_listener",
+      "display_name": "Gateway Load Balancer Listener",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::GWLB::LoadBalancer",
       "class": "network.load_balancer",
       "display_name": "Gateway Load Balancer",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::GWLB::ServerGroup",
+      "class": "network.target_group",
+      "display_name": "Gateway Load Balancer Server Group",
       "scope_kinds": [
         "region"
       ]

@@ -1021,6 +1021,7 @@ func TestAlibabaTopologyRelationships(t *testing.T) {
 		"asset-slb|member_of|asset-vpc":                          {},
 		"asset-alb|member_of|asset-vpc":                          {},
 		"asset-nlb|member_of|asset-vpc":                          {},
+		"asset-gwlb|member_of|asset-vpc":                         {},
 		"asset-nat|member_of|asset-vpc":                          {},
 		"asset-endpoint-service|depends_on|asset-slb":            {},
 		"asset-endpoint-service|depends_on|asset-alb":            {},

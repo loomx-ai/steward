@@ -2663,6 +2663,66 @@ resources:
       permissions and source-service notification settings, not separate resources.
   status: pending_verification
   notes: DeleteFunction fails with FunctionNotEmpty while the function has triggers.
+- alicloud: ACS::GWLB::Listener
+  spec: providers/alicloud/specs/gwlb-listener.yaml
+  class: network.load_balancer_listener
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: Third-party appliance insertion uses network firewall policies with security profile groups; there
+      is no gateway load balancer listener.
+  azure:
+    notes: A gateway load balancer is a Microsoft.Network/loadBalancers resource with the Gateway SKU; its
+      rules are properties of the load balancer.
+  aws:
+    resources:
+    - AWS::ElasticLoadBalancingV2::Listener
+  status: pending_verification
+- alicloud: ACS::GWLB::LoadBalancer
+  spec: providers/alicloud/specs/gwlb-load-balancer.yaml
+  class: network.load_balancer
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: Google Cloud inserts third-party appliances with network firewall policies and security profile
+      groups, not a gateway load balancer.
+  azure:
+    resources:
+    - Microsoft.Network/loadBalancers
+    notes: Gateway load balancers are load balancers with the Gateway SKU.
+  aws:
+    resources:
+    - AWS::ElasticLoadBalancingV2::LoadBalancer
+    notes: Gateway Load Balancers are Elastic Load Balancing v2 load balancers of type gateway.
+  status: pending_verification
+  notes: DeleteLoadBalancer fails with ResourceAlreadyAssociated.GwlbeAssociated while a PrivateLink endpoint
+    service serves the load balancer, so it is detached from the service first.
+- alicloud: ACS::GWLB::ServerGroup
+  spec: providers/alicloud/specs/gwlb-server-group.yaml
+  class: network.target_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: Appliance backends are instance groups behind an internal load balancer; there is no gateway server
+      group.
+  azure:
+    resources:
+    - Microsoft.Network/loadBalancers/backendAddressPools
+  aws:
+    resources:
+    - AWS::ElasticLoadBalancingV2::TargetGroup
+  status: pending_verification
+  notes: DeleteServerGroup fails with ResourceInUse.ServerGroup while a listener uses the group, so listeners
+    are deleted first.
 - alicloud: ACS::Ga::Accelerator
   spec: providers/alicloud/specs/ga-accelerator.yaml
   class: network.global_accelerator

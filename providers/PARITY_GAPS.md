@@ -3,13 +3,14 @@
 Scope snapshot: 2026-09-28, after the 2026-09-19 Alibaba Cloud expansion grew
 the baseline from 159 to 202 specifications; Function Compute children, Function
 Compute 3.0, Resource Directory folders and VPC network types (virtual IPs, flow
-logs, prefix lists) and PrivateZone forwarding grew it to 214. This is a repository scope audit,
+logs, prefix lists), PrivateZone forwarding and gateway load balancers grew it
+to 217. This is a repository scope audit,
 not cloud feature acceptance. Dated sections below keep the row count that held
 when they were written.
 
-The matrix covers all 214 Alibaba Cloud specifications for GCP, Azure and AWS.
+The matrix covers all 217 Alibaba Cloud specifications for GCP, Azure and AWS.
 The repository contains 241 GCP, 524 Azure and 244 AWS specifications; those
-counts do not prove equivalence. All 214 rows remain pending behavioral
+counts do not prove equivalence. All 217 rows remain pending behavioral
 verification.
 
 `go test ./providers` runs in CI. It detects invalid YAML, omitted or duplicated
@@ -24,15 +25,15 @@ check verifies matrix consistency only. AWS progress and evidence are tracked in
 | Measure | GCP | Azure | AWS |
 | --- | --- | --- | --- |
 | Explicit native specifications | 241 | 524 | 244 |
-| Baseline rows with at least one existing mapped specification | 196/214 | 188/214 | 197/214 |
+| Baseline rows with at least one existing mapped specification | 196/217 | 190/217 | 200/217 |
 | Candidate types still without a specification | 0 | 0 | 0 |
 | Baseline rows affected by missing candidate specifications | 0 | 0 | 0 |
 | Empty mappings deferred as not yet modeled | 0 | 0 | 0 |
-| Empty mappings with a documented platform difference | 18 | 26 | 17 |
+| Empty mappings with a documented platform difference | 21 | 27 | 17 |
 
 These are registration/mapping measures, not functional completion percentages.
 A row can have both an implemented mapping and an absent candidate. None of the
-214 rows has a closed, requirement-by-requirement behavioral acceptance record.
+217 rows has a closed, requirement-by-requirement behavioral acceptance record.
 
 ## Open mapping backlog
 
