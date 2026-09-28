@@ -1,0 +1,77 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::PAI::DswInstance
+  class: ai.notebook
+presentation:
+  consoleLinkTemplate: "https://pai.console.aliyun.com/?regionId={regionId}#/dsw"
+  displayNames:
+    zh-CN: PAI-DSW 实例
+    en-US: PAI-DSW Instance
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.PAI.ListDswInstances
+    itemsPath: Instances
+    identityPath: InstanceId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: InstanceName
+  state: Status
+  createdAt: GmtCreateTime
+  updatedAt: GmtModifiedTime
+  paymentType: PaymentType
+  workspaceId: WorkspaceId
+  acceleratorType: AcceleratorType
+  ecsSpec: EcsSpec
+  resourceId: ResourceId
+  vpcId: UserVpc.VpcId
+  vSwitchId: UserVpc.VSwitchId
+  securityGroupId: UserVpc.SecurityGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.PAI.DeleteDswInstance
+    parameters:
+      InstanceId: resource.nativeId
+    preconditions:
+      - path: PaymentType
+        allowedValues: [PayAsYouGo]
+        reason: subscription instances are released when they expire
+    idempotency: readback
+    waiter: absent
+    pollIntervalSeconds: 10
+    deletionCheckTimeoutSeconds: 1200
+    read:
+      operation: AlibabaCloud.PAI.ListDswInstances
+      parameters:
+        InstanceId: resource.nativeId
+        PageSize: 100
+      itemsPath: Instances
+      identityPath: InstanceId
+      statePath: Status
+      pagination:
+        type: page-number
+        pageParameter: PageNumber
+        pageSizeParameter: PageSize
+        totalPath: TotalCount
+        maxPageSize: 100

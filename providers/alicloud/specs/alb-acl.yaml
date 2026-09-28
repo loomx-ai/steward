@@ -1,0 +1,60 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ALB::Acl
+  class: network.acl
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/alb/{regionId}/acls/{nativeId}"
+  displayNames:
+    zh-CN: ALB 访问控制
+    en-US: ALB Access Control List
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ALB.ListAcls
+    itemsPath: Acls
+    identityPath: AclId
+    statePath: AclStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: AclName
+  state: AclStatus
+  createdAt: CreateTime
+  addressIpVersion: AddressIPVersion
+  configManagedEnabled: ConfigManagedEnabled
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.ALB.DeleteAcl
+    parameters:
+      AclId: resource.nativeId
+      DryRun: false
+    preconditions:
+      - path: ConfigManagedEnabled
+        allowedValues: ["false", ""]
+        reason: an access control list managed by an ALB Ingress controller is recreated by the controller and must be removed through it
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ALB.ListAcls
+      parameters:
+        AclIds: resources.nativeIds
+        MaxResults: 100
+      itemsPath: Acls
+      identityPath: AclId
+      statePath: AclStatus
+      pagination:
+        type: token
+        tokenParameter: NextToken
+        tokenPath: NextToken
+        pageSizeParameter: MaxResults
+        maxPageSize: 100

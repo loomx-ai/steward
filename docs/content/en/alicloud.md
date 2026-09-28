@@ -69,19 +69,20 @@ For the complete workflow, follow [Your first inventory](./tutorials/first-inven
 
 ## Resource coverage
 
-Steward identifies 217 Alibaba Cloud resource types, 201 of which have a native cleanup action. Other types that Resource Center returns appear as read-only inventory. Every service API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
+Steward identifies 221 Alibaba Cloud resource types, 205 of which have a native cleanup action. Other types that Resource Center returns appear as read-only inventory. Every service API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
 
 Common types:
 
 | Category | Resource types |
 | --- | --- |
-| Compute and applications | ECS instances, disks, and network interfaces; Function Compute 2.0 and 3.0; SAE; EMR; Elastic Desktop Service |
+| Compute and applications | ECS instances, disks, and network interfaces; Function Compute 2.0 and 3.0; SAE; EMR; Elastic Desktop Service; PAI-EAS services and PAI-DSW instances |
 | Networking | VPCs, vSwitches, security groups, NAT gateways, EIPs, high-availability virtual IPs, flow logs, prefix lists, and PrivateZone resolver endpoints and forwarding rules |
 | Load balancing | ALB, NLB, CLB, and gateway load balancer instances with their listeners and server groups |
 | Databases | RDS, Redis, PolarDB |
 | Messaging and events | Kafka, RocketMQ, and RabbitMQ with their topics and consumer groups; EventBridge |
 | Storage, logs, and images | OSS, Simple Log Service, Container Registry |
 | Monitoring and governance | CloudMonitor, Cloud Config, Resource Directory members and folders (read-only) |
+| Security | KMS keys and secrets, SSL certificates, WAF and Cloud Firewall instances |
 
 What a scan finds depends on the supported types, the regions you select, and the current identity's permissions.
 
@@ -115,7 +116,7 @@ ECS instances, ACK clusters, Auto Scaling groups, ALB, NLB, and CLB instances, E
 | High-availability virtual IPs, flow logs, and prefix lists | A high-availability virtual IP and a flow log are deleted before their vSwitch or VPC; a flow log also before its Simple Log Service logstore. Flow logs created from the Simple Log Service console, and prefix lists shared by another account, are not deleted. Security groups and route tables that reference a prefix list are deleted first; a route that still points to a virtual IP, or an EIP still bound to it, makes the deletion fail. |
 | PrivateZone forwarding | Forwarding rules are unbound from their VPCs and deleted before their outbound endpoint, and endpoints before the vSwitches, security group, and VPC they use; the task shows the unbinding before you confirm. |
 | OSS buckets | Objects, versions, retention settings, and other provider conditions can prevent deletion. Follow the review findings and the OSS response. |
-| ALB, NLB, CLB, and gateway load balancer instances | Listeners and CLB virtual server groups are deleted first, each as its own step. A gateway load balancer is first removed from the PrivateLink endpoint service that serves it, and is deleted before the vSwitches its interfaces use. Server groups, CLB access control lists, and certificates are independent resources: the provider rejects deleting one that a listener or forwarding rule still uses. Server groups managed by an ALB Ingress controller are not deleted directly. |
+| ALB, NLB, CLB, and gateway load balancer instances | Listeners and CLB virtual server groups are deleted first, each as its own step. A gateway load balancer is first removed from the PrivateLink endpoint service that serves it, and is deleted before the vSwitches its interfaces use. Server groups, ALB and CLB access control lists, and certificates are independent resources: the provider rejects deleting one that a listener or forwarding rule still uses, so listeners that use an ALB access control list are deleted first. Server groups managed by an ALB Ingress controller are not deleted directly. |
 | Kafka, RocketMQ 4.0, and RocketMQ 5.0 instances | Topics and consumer groups are deleted first, each as its own step, confirmed while the instance can still be queried. RocketMQ 4.0 topics are deleted only when this account owns them, never when another account authorized them. Deleting a topic discards its messages. |
 | Container Registry namespaces | Deleting a namespace also deletes its repositories and images, so the task deletes each repository first. |
 | Simple Log Service projects | Deleting a project deletes all its logstores, including service-created `internal-` logstores. The task lists them as deleted with the project and confirms each one afterward. |
@@ -125,7 +126,9 @@ ECS instances, ACK clusters, Auto Scaling groups, ALB, NLB, and CLB instances, E
 | SAE | Applications are deleted before their namespace; each region's default namespace is kept. Application deletion is asynchronous; Steward waits up to 10 minutes to confirm it. |
 | Cloud Config | Rules and compliance packs are inventoried in `cn-shanghai` and `ap-southeast-1`. Deleting a compliance pack also deletes the rules it created, which the task confirms afterward; those rules cannot be deleted on their own. Deleting an aggregator also deletes its rules, compliance packs, and compliance results, which cannot be recovered; the task says so before you confirm. |
 | Elastic Desktop Service | Only pay-as-you-go desktops outside desktop pools are cleaned up; subscription desktops are released when they expire. An office network is deleted only after all its desktops are released. System policies are kept. |
-| API Gateway | An API is taken offline in every environment it is published to, then deleted; the task shows this before you confirm. |
+| API Gateway | An API is taken offline in every environment it is published to, then deleted; the task shows this before you confirm. An API group is deleted after its APIs. |
+| KMS secrets | Deletion is scheduled with a 7-day recovery window, as KMS keys are; the secret counts as deleted once the window starts. Secrets owned by a cloud service are not deleted, and a secret is deleted before the KMS key that encrypts it. |
+| PAI-DSW instances | Only pay-as-you-go instances are deleted; subscription instances are released when they expire. An instance with a VPC connection is deleted before its vSwitch and security group. |
 | EventBridge | Event rules are deleted before their event bus. |
 | Function Compute | FC 2.0: triggers are deleted before their function, aliases before the versions they route to, and functions, aliases and versions before their service. FC 3.0 functions are inventoried on their own; their triggers are deleted first, and a function locked by another product is not deleted. Provisioned-instance settings are not inventoried: a service or alias that still has them fails to delete, and Steward does not retry. |
 | RabbitMQ | Only pay-as-you-go instances are deleted; subscription instances are released when they expire. |

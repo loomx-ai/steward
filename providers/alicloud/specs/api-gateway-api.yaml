@@ -33,6 +33,10 @@ fields:
   apiPath: ApiPath
   apiMethod: ApiMethod
   visibility: Visibility
+relationships:
+  - type: member_of
+    targetType: ACS::ApiGateway::Group
+    targetIdPath: groupId
 actions:
   delete:
     operation: AlibabaCloud.ApiGateway.DeleteApi

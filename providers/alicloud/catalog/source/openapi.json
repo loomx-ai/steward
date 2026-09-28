@@ -578,6 +578,20 @@
         "x-operation-call": {"product":"NAS","version":"2017-06-26","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"nas.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/pai/dsw-instances": {
+      "get": {
+        "operationId": "PAI.ListDswInstances",
+        "x-operation-name": "ListInstances",
+        "x-operation-call": {"product":"pai-dsw","version":"2022-01-01","style":"ROA","protocol":"HTTPS","method":"GET","path":"/api/v2/instances","endpoint":"pai-dsw.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/pai/dsw-instances/{InstanceId}": {
+      "delete": {
+        "operationId": "PAI.DeleteDswInstance",
+        "x-operation-name": "DeleteInstance",
+        "x-operation-call": {"product":"pai-dsw","version":"2022-01-01","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/api/v2/instances/{InstanceId}","endpoint":"pai-dsw.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/pai/services": {
       "get": {
         "operationId": "PAI.ListServices",
@@ -1007,6 +1021,27 @@
         "operationId": "ALB.DeleteListener",
         "x-operation-name": "DeleteListener",
         "x-operation-call": {"product":"ALB","version":"2020-06-16","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"alb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/alb/acls": {
+      "get": {
+        "operationId": "ALB.ListAcls",
+        "x-operation-name": "ListAcls",
+        "x-operation-call": {"product":"ALB","version":"2020-06-16","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"alb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/alb/acls/{AclId}": {
+      "delete": {
+        "operationId": "ALB.DeleteAcl",
+        "x-operation-name": "DeleteAcl",
+        "x-operation-call": {"product":"ALB","version":"2020-06-16","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"alb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/alb/acls/{AclId}/relations": {
+      "get": {
+        "operationId": "ALB.ListAclRelations",
+        "x-operation-name": "ListAclRelations",
+        "x-operation-call": {"product":"ALB","version":"2020-06-16","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"alb.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
     "/alb/server-groups": {
@@ -3889,6 +3924,27 @@
         "x-operation-call": {"product":"cloudsso","version":"2021-05-15","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"cloudsso.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/kms/secrets": {
+      "get": {
+        "operationId": "KMS.ListSecrets",
+        "x-operation-name": "ListSecrets",
+        "x-operation-call": {"product":"Kms","version":"2016-01-20","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"kms.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/kms/secrets/{SecretName}": {
+      "get": {
+        "operationId": "KMS.DescribeSecret",
+        "x-operation-name": "DescribeSecret",
+        "x-operation-call": {"product":"Kms","version":"2016-01-20","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"kms.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/kms/secrets/{SecretName}/deletion": {
+      "delete": {
+        "operationId": "KMS.DeleteSecret",
+        "x-operation-name": "DeleteSecret",
+        "x-operation-call": {"product":"Kms","version":"2016-01-20","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"kms.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/kms/keys": {
       "get": {
         "operationId": "KMS.ListKeys",
@@ -3947,6 +4003,20 @@
         "operationId": "HBR.DeleteHanaInstance",
         "x-operation-name": "DeleteHanaInstance",
         "x-operation-call": {"product":"hbr","version":"2017-09-08","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"hbr.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/api-gateway/groups": {
+      "get": {
+        "operationId": "ApiGateway.DescribeApiGroups",
+        "x-operation-name": "DescribeApiGroups",
+        "x-operation-call": {"product":"CloudAPI","version":"2016-07-14","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"apigateway.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/api-gateway/groups/{GroupId}": {
+      "delete": {
+        "operationId": "ApiGateway.DeleteApiGroup",
+        "x-operation-name": "DeleteApiGroup",
+        "x-operation-call": {"product":"CloudAPI","version":"2016-07-14","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"apigateway.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
     "/api-gateway/apis": {
@@ -4572,6 +4642,7 @@
     {"nativeType": "ACS::ActionTrail::Trail", "class": "security.audit_trail", "displayName": "ActionTrail Trail", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ADB::DBCluster", "class": "database.analytics", "displayName": "AnalyticDB Cluster", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ADB::DBClusterLakeVersion", "class": "database.analytics", "displayName": "AnalyticDB Lakehouse Cluster", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::ALB::Acl", "class": "network.acl", "displayName": "ALB Access Control List", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ALB::Listener", "class": "network.load_balancer_listener", "displayName": "ALB Listener", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ALB::LoadBalancer", "class": "network.load_balancer", "displayName": "Application Load Balancer", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ALB::ServerGroup", "class": "network.target_group", "displayName": "ALB Server Group", "scopeKinds": ["region"]},
@@ -4583,6 +4654,7 @@
     {"nativeType": "ACS::APIG::Service", "class": "network.api_backend", "displayName": "Cloud-native API Gateway Service", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ApiGateway::Api", "class": "network.api", "displayName": "API Gateway API", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ApiGateway::App", "class": "api.application", "displayName": "API Gateway App", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::ApiGateway::Group", "class": "network.api_group", "displayName": "API Gateway API Group", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ApiGateway::Instance", "class": "network.api_gateway", "displayName": "API Gateway Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::BPStudio::Application", "class": "application.architecture", "displayName": "CADT Application", "scopeKinds": ["global"]},
     {"nativeType": "ACS::Bastionhost::Instance", "class": "security.bastion_host", "displayName": "Bastionhost Instance", "scopeKinds": ["region"]},
@@ -4698,6 +4770,7 @@
     {"nativeType": "ACS::HBR::HanaInstance", "class": "storage.backup_source", "displayName": "SAP HANA Backup Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::Hologram::Instance", "class": "database.analytics", "displayName": "Hologres Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::Lindorm::Instance", "class": "database.wide_column", "displayName": "Lindorm Instance", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::KMS::Secret", "class": "security.secret", "displayName": "KMS Secret", "scopeKinds": ["region"]},
     {"nativeType": "ACS::KMS::Key", "class": "security.encryption_key", "displayName": "KMS Key", "scopeKinds": ["region"]},
     {"nativeType": "ACS::Live::Domain", "class": "media.live_domain", "displayName": "ApsaraVideo Live Domain", "scopeKinds": ["global"]},
     {"nativeType": "ACS::MSE::Cluster", "class": "middleware.registry", "displayName": "Microservices Registry Cluster", "scopeKinds": ["region"]},
@@ -4723,6 +4796,7 @@
     {"nativeType": "ACS::Ons::Instance", "class": "messaging.broker", "displayName": "RocketMQ 4.0 Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::PolarDB::Application", "class": "application.database", "displayName": "PolarDB Application", "scopeKinds": ["region"]},
     {"nativeType": "ACS::PolarDB::DBCluster", "class": "database.relational", "displayName": "PolarDB Cluster", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::PAI::DswInstance", "class": "ai.notebook", "displayName": "PAI-DSW Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::PAI::Service", "class": "ai.inference_service", "displayName": "PAI EAS Service", "scopeKinds": ["region"]},
     {"nativeType": "ACS::PrivateLink::VpcEndpoint", "class": "network.endpoint", "displayName": "PrivateLink Endpoint", "scopeKinds": ["region"]},
     {"nativeType": "ACS::PrivateLink::VpcEndpointService", "class": "network.endpoint_service", "displayName": "PrivateLink Endpoint Service", "scopeKinds": ["region"]},

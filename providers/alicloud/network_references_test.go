@@ -63,6 +63,9 @@ func TestNetworkPreconditionsKeepManagedFlowLogsAndSharedPrefixLists(t *testing.
 		// DeleteFlowLog: Forbidden.OperateManagedFlowLog for sls-managed logs.
 		{vpcFlowLogNativeType, "DescribeFlowLogs", "FlowLogs.FlowLog", "FlowLogId", "ServiceType", "sls", false},
 		{vpcFlowLogNativeType, "DescribeFlowLogs", "FlowLogs.FlowLog", "FlowLogId", "ServiceType", "", true},
+		// Subscription PAI-DSW instances are released when they expire.
+		{"ACS::PAI::DswInstance", "AlibabaCloud.PAI.ListDswInstances", "Instances", "InstanceId", "PaymentType", "Subscription", false},
+		{"ACS::PAI::DswInstance", "AlibabaCloud.PAI.ListDswInstances", "Instances", "InstanceId", "PaymentType", "PayAsYouGo", true},
 		// DeleteVpcPrefixList: OperationDenied.DeleteShareResource.
 		{VPCPrefixListNativeType, "ListPrefixLists", "PrefixLists", "PrefixListId", "ShareType", "Shared", false},
 		{VPCPrefixListNativeType, "ListPrefixLists", "PrefixLists", "PrefixListId", "ShareType", "", true},
@@ -113,5 +116,47 @@ func TestResolverNetworksAreReadFromNestedArrays(t *testing.T) {
 	})
 	if !reflect.DeepEqual(items[0].Normalized["vSwitchIds"], []any{"vsw-a", "vsw-b"}) || !reflect.DeepEqual(items[1].Normalized["boundVpcIds"], []any{"vpc-a"}) {
 		t.Fatalf("items = %+v", items)
+	}
+}
+
+func TestSecretsInTheirDeletionWindowAreAbsent(t *testing.T) {
+	t.Parallel()
+
+	// DeleteSecret schedules deletion with a 7-30 day recovery window, and
+	// DescribeSecret then reports PlannedDeleteTime (Kms 2016-01-20).
+	for planned, exists := range map[string]bool{"": true, "2026-10-06T00:00:00Z": false} {
+		record := map[string]any{"SecretName": "db-password"}
+		if planned != "" {
+			record["PlannedDeleteTime"] = planned
+		}
+		provider := &runtimeInvocationProvider{result: contracts.InvocationResult{Data: record}}
+		hook, err := NewActionHook(provider, "connection-a", "cn-hangzhou", "ACS::KMS::Secret")
+		if err != nil {
+			t.Fatal(err)
+		}
+		readback, err := hook.Readback(context.Background(), contracts.ActionRequest{
+			Asset:  asset.Asset{ID: "s", Identity: asset.Identity{Provider: asset.ProviderAliCloud, NativeType: "ACS::KMS::Secret", NativeID: "db-password"}},
+			Action: "delete", IdempotencyKey: "step-s",
+		})
+		if err != nil || readback.Exists != exists {
+			t.Fatalf("planned %q readback=%+v err=%v", planned, readback, err)
+		}
+	}
+}
+
+func TestALBAclListenersAreReadAtScanTime(t *testing.T) {
+	t.Parallel()
+
+	runtime, _ := encryptionKeyRuntime(t, func(invocation contracts.Invocation) (contracts.InvocationResult, error) {
+		if invocation.Operation != "AlibabaCloud.ALB.ListAclRelations" || !reflect.DeepEqual(invocation.Parameters["AclIds"], []string{"acl-a"}) {
+			return contracts.InvocationResult{}, errors.New("unexpected call " + invocation.Operation)
+		}
+		return contracts.InvocationResult{Data: map[string]any{"AclRelations": []any{map[string]any{"AclId": "acl-a", "RelatedListeners": []any{
+			map[string]any{"ListenerId": "lsn-a", "LoadBalancerId": "alb-a"},
+		}}}}}, nil
+	})
+	items, err := runtime.enrichPrefixListAssociations(context.Background(), encryptionKeyRequest("product-api"), []contracts.InventoryItem{{NativeType: ALBAclNativeType, NativeID: "acl-a", Normalized: map[string]any{}}})
+	if err != nil || !reflect.DeepEqual(items[0].Normalized[NormalizedPrefixListAssociationsField], []any{map[string]any{"resourceId": "lsn-a", "resourceType": "listener"}}) {
+		t.Fatalf("items = %+v err=%v", items, err)
 	}
 }

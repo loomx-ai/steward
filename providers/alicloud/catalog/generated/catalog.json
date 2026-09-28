@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "654fb49cf0cbeb7fd4f2c2bafd70b0b4457698e679bb31d5bca8b760e2fd2513",
+    "checksum": "81f1174363976fcb77a04d9add4d31ef407bd55516680a5b351c1181cfd69dff",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "979370d1e34d7f85ca427845b319863891612151e8faacbc32675811a86a3f7d",
+  "content_checksum": "d93817a217409ae4a1487cddd0b9243b86e27945c9d652f2afb4e37f34e0dd02",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -57,6 +57,30 @@
         "request_body_type": "formData",
         "body_type": "json",
         "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ALB.DeleteAcl",
+      "name": "DeleteAcl",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/alb/acls/{AclId}",
+      "destructive": true,
+      "call": {
+        "product": "ALB",
+        "version": "2020-06-16",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "alb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou-finance": "alb.cn-hangzhou.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
       }
     },
     {
@@ -153,6 +177,52 @@
         "body_type": "json",
         "parameter_position": "query",
         "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ALB.ListAclRelations",
+      "name": "ListAclRelations",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/alb/acls/{AclId}/relations",
+      "destructive": false,
+      "call": {
+        "product": "ALB",
+        "version": "2020-06-16",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "alb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou-finance": "alb.cn-hangzhou.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ALB.ListAcls",
+      "name": "ListAcls",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/alb/acls",
+      "destructive": false,
+      "call": {
+        "product": "ALB",
+        "version": "2020-06-16",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "alb.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou-finance": "alb.cn-hangzhou.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
       }
     },
     {
@@ -1114,6 +1184,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.ApiGateway.DeleteApiGroup",
+      "name": "DeleteApiGroup",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/api-gateway/groups/{GroupId}",
+      "destructive": true,
+      "call": {
+        "product": "CloudAPI",
+        "version": "2016-07-14",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "apigateway.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.ApiGateway.DeleteApp",
       "name": "DeleteApp",
       "service": "AlibabaCloud",
@@ -1140,6 +1230,26 @@
       "method": "DELETE",
       "path": "/api-gateway/instances/{InstanceId}",
       "destructive": true,
+      "call": {
+        "product": "CloudAPI",
+        "version": "2016-07-14",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "apigateway.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ApiGateway.DescribeApiGroups",
+      "name": "DescribeApiGroups",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/api-gateway/groups",
+      "destructive": false,
       "call": {
         "product": "CloudAPI",
         "version": "2016-07-14",
@@ -7372,6 +7482,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.KMS.DeleteSecret",
+      "name": "DeleteSecret",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/kms/secrets/{SecretName}/deletion",
+      "destructive": true,
+      "call": {
+        "product": "Kms",
+        "version": "2016-01-20",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "kms.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.KMS.DescribeKey",
       "name": "DescribeKey",
       "service": "AlibabaCloud",
@@ -7392,11 +7522,51 @@
       }
     },
     {
+      "id": "AlibabaCloud.KMS.DescribeSecret",
+      "name": "DescribeSecret",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/kms/secrets/{SecretName}",
+      "destructive": false,
+      "call": {
+        "product": "Kms",
+        "version": "2016-01-20",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "kms.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.KMS.ListKeys",
       "name": "ListKeys",
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/kms/keys",
+      "destructive": false,
+      "call": {
+        "product": "Kms",
+        "version": "2016-01-20",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "kms.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.KMS.ListSecrets",
+      "name": "ListSecrets",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/kms/secrets",
       "destructive": false,
       "call": {
         "product": "Kms",
@@ -9305,6 +9475,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.PAI.DeleteDswInstance",
+      "name": "DeleteInstance",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/pai/dsw-instances/{InstanceId}",
+      "destructive": true,
+      "call": {
+        "product": "pai-dsw",
+        "version": "2022-01-01",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/api/v2/instances/{InstanceId}",
+        "endpoint": "pai-dsw.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.PAI.DeleteService",
       "name": "DeleteService",
       "service": "AlibabaCloud",
@@ -9319,6 +9509,26 @@
         "method": "DELETE",
         "path": "/api/v2/services/{ClusterId}/{ServiceName}",
         "endpoint": "pai-eas.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.PAI.ListDswInstances",
+      "name": "ListInstances",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/pai/dsw-instances",
+      "destructive": false,
+      "call": {
+        "product": "pai-dsw",
+        "version": "2022-01-01",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/api/v2/instances",
+        "endpoint": "pai-dsw.{region}.aliyuncs.com",
         "request_body_type": "json",
         "body_type": "json",
         "parameter_position": "query"
@@ -12274,6 +12484,14 @@
       ]
     },
     {
+      "native_type": "ACS::ALB::Acl",
+      "class": "network.acl",
+      "display_name": "ALB Access Control List",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::ALB::Listener",
       "class": "network.load_balancer_listener",
       "display_name": "ALB Listener",
@@ -12437,6 +12655,14 @@
       "native_type": "ACS::ApiGateway::App",
       "class": "api.application",
       "display_name": "API Gateway App",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::ApiGateway::Group",
+      "class": "network.api_group",
+      "display_name": "API Gateway API Group",
       "scope_kinds": [
         "region"
       ]
@@ -13298,6 +13524,14 @@
       ]
     },
     {
+      "native_type": "ACS::KMS::Secret",
+      "class": "security.secret",
+      "display_name": "KMS Secret",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::Lindorm::Instance",
       "class": "database.wide_column",
       "display_name": "Lindorm Instance",
@@ -13477,6 +13711,14 @@
       "native_type": "ACS::OpenSearch::AppGroup",
       "class": "search.application",
       "display_name": "OpenSearch Application",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::PAI::DswInstance",
+      "class": "ai.notebook",
+      "display_name": "PAI-DSW Instance",
       "scope_kinds": [
         "region"
       ]

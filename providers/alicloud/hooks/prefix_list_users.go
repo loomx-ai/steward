@@ -19,10 +19,12 @@ var prefixListUserTypes = map[string]map[string]string{
 	// Transit router route tables are ordered by the CEN topology from their
 	// own prefix list associations.
 	alicloud.VPCPrefixListNativeType: {"vpcroutetable": routeTableNativeType},
+	alicloud.ALBAclNativeType:        {"listener": "ACS::ALB::Listener"},
 }
 
-// PrefixListUsers orders the security groups and route tables that reference
-// a prefix list before the list, which cannot be deleted while referenced.
+// PrefixListUsers orders the security groups, route tables and listeners that
+// reference a prefix list or an ALB access control list before the list, which
+// cannot be deleted while referenced.
 type PrefixListUsers struct{}
 
 func NewPrefixListUsers() *PrefixListUsers { return &PrefixListUsers{} }

@@ -1,5 +1,45 @@
 {
  "examples": {
+  "ALB@2020-06-16#ListAclRelations": {
+   "AclRelations": [
+    {
+     "AclId": "acl-hp34s2h0xx1ht4nwo****",
+     "RelatedListeners": [
+      {
+       "ListenerId": "lsn-bpn0kn908w4nbw****",
+       "ListenerPort": 80,
+       "ListenerProtocol": "HTTPS",
+       "LoadBalancerId": "alb-bp1b6c719dfa08ex****",
+       "Status": "Associated"
+      }
+     ]
+    }
+   ],
+   "RequestId": "593B0448-D13E-4C56-AC0D-FDF0******"
+  },
+  "ALB@2020-06-16#ListAcls": {
+   "Acls": [
+    {
+     "AclId": "acl-hp34s2h0xx1ht4nwo****",
+     "AclName": "test-acl",
+     "AclStatus": "Available",
+     "AddressIPVersion": "IPv4",
+     "ConfigManagedEnabled": false,
+     "CreateTime": "2023-02-15T07:37:33Z",
+     "ResourceGroupId": "rg-atstuj3rtopty****",
+     "Tags": [
+      {
+       "Key": "env",
+       "Value": "product"
+      }
+     ]
+    }
+   ],
+   "MaxResults": 20,
+   "NextToken": "FFmyTO70t****",
+   "RequestId": "593B0448-D13E-4C56-AC0D-FDF******",
+   "TotalCount": 10
+  },
   "ALB@2020-06-16#ListListeners": {
    "Listeners": [
     {
@@ -3256,6 +3296,40 @@
    "PageNumber": 1,
    "PageSize": 20,
    "RequestId": "BDA62CE4-3477-439A-B52E-D2D7C829D7C1",
+   "TotalCount": 2
+  },
+  "CloudAPI@2016-07-14#DescribeApiGroups": {
+   "ApiGroupAttributes": {
+    "ApiGroupAttribute": [
+     {
+      "BasePath": "/v2/",
+      "BillingStatus": "NORMAL",
+      "CreatedTime": "2016-08-01T08:45:15Z",
+      "Description": "TrafficInformations.",
+      "GroupId": "be6d2abcc0dd4f749fc2d2edd6567164",
+      "GroupName": "Traffic",
+      "HttpsPolicy": "HTTPS2_TLS1_0",
+      "IllegalStatus": "NORMAL",
+      "InstanceId": "apigateway-cn-v6419k43245xx",
+      "InstanceType": "VPC_SHARED",
+      "ModifiedTime": "2016-08-01T08:45:15Z",
+      "RegionId": "cn-hangzhou",
+      "SubDomain": "be6d2abcc0dd4f749fc2d2edd6567164-cn-hangzhou.alicloudapi.com",
+      "Tags": {
+       "TagInfo": [
+        {
+         "Key": "key",
+         "Value": "value"
+        }
+       ]
+      },
+      "TrafficLimit": 500
+     }
+    ]
+   },
+   "PageNumber": 1,
+   "PageSize": 10,
+   "RequestId": "D6E46F10-F26C-4AA0-BB69-FE2743D9AE62",
    "TotalCount": 2
   },
   "CloudAPI@2016-07-14#DescribeApis": {
@@ -7717,6 +7791,31 @@
    },
    "RequestId": "f1fdfa9d-bd49-418b-942f-8f3e3ec00a4f"
   },
+  "Kms@2016-01-20#DescribeSecret": {
+   "Arn": "acs:kms:cn-hangzhou:154035569884****:secret/secret001",
+   "AutomaticRotation": "Enabled",
+   "CreateTime": "2024-02-21T15:39:26Z",
+   "DKMSInstanceId": "kst-bjj62d8f5e0sgtx8h****",
+   "Description": "userinfo",
+   "EncryptionKeyId": "key-hzz63ca8cbe3hefht****",
+   "ExtendedConfig": "{\\\"AccountName\\\":\\\"kms\\\",\\\"Database\\\":\\\"kmsdata\\\",\\\"AccountPrivilege\\\":\\\"RoleReadOnly\\\",\\\"CloneAccountName\\\":\\\"kms_clone\\\",\\\"CustomData\\\":{},\\\"InstanceId\\\":\\\"pc-bp134f7hnijoey****\\\",\\\"RegionId\\\":\\\"cn-hangzhou\\\",\\\"SecretSubType\\\":\\\"DoubleUsers\\\"}\"",
+   "LastRotationDate": "2022-07-05T08:22:03Z",
+   "NextRotationDate": "2024-07-06T18:22:03Z",
+   "PlannedDeleteTime": "2025-03-21T15:45:12Z",
+   "RequestId": "93348dfb-3627-4417-8d90-487a76a909c9",
+   "RotationInterval": "3153600s",
+   "SecretName": "secret001",
+   "SecretType": "Rds",
+   "Tags": {
+    "Tag": [
+     {
+      "TagKey": "key1",
+      "TagValue": "val1"
+     }
+    ]
+   },
+   "UpdateTime": "2024-02-21T15:39:26Z"
+  },
   "Kms@2016-01-20#ListKeys": {
    "Keys": {
     "Key": [
@@ -7730,6 +7829,32 @@
    "PageSize": 10,
    "RequestId": "8252db58-2036-408c-a3d5-56e656dc2551",
    "TotalCount": 3
+  },
+  "Kms@2016-01-20#ListSecrets": {
+   "PageNumber": 1,
+   "PageSize": 2,
+   "RequestId": "6a6287a0-ff34-4780-a790-fdfca900557f",
+   "SecretList": {
+    "Secret": [
+     {
+      "CreateTime": "2024-07-17T07:59:05Z",
+      "OwingService": "alb",
+      "PlannedDeleteTime": "2024-08-17T07:59:05Z",
+      "SecretName": "secret001",
+      "SecretType": "Generic",
+      "Tags": {
+       "Tag": [
+        {
+         "TagKey": "key1",
+         "TagValue": "val1"
+        }
+       ]
+      },
+      "UpdateTime": "2024-07-17T07:59:05Z"
+     }
+    ]
+   },
+   "TotalCount": 55
   },
   "MaxCompute@2022-01-04#GetProject": {
    "data": {
@@ -15452,6 +15577,233 @@
    "MaxResults": 10,
    "NextToken": "-",
    "RequestId": "12067D53-56A9-561B-ADD6-61429D207117"
+  },
+  "pai-dsw@2022-01-01#ListInstances": {
+   "Code": "null",
+   "HttpStatusCode": 0,
+   "Instances": [
+    {
+     "AcceleratorType": "CPU",
+     "Accessibility": "PRIVATE",
+     "AccumulatedRunningTimeInMs": 3600000,
+     "Affinity": {
+      "CPU": {
+       "Enable": true
+      }
+     },
+     "CloudDisks": [
+      {
+       "Capacity": "30Gi",
+       "MountPath": "/mmt/workspace",
+       "Path": "/workspace",
+       "SubType": "rootfs"
+      }
+     ],
+     "CredentialConfig": {
+      "AliyunEnvRoleKey": "0",
+      "Configs": [
+       {
+        "Key": "0",
+        "Roles": [
+         {
+          "AssumeRoleFor": "123******",
+          "Policy": "{}",
+          "RoleArn": "acs:ram::123******:role/****",
+          "RoleType": "service",
+          "UserInfo": {
+           "AccessKeyId": "LT********",
+           "Id": "456******",
+           "SecurityToken": "********",
+           "Type": "S"
+          }
+         }
+        ],
+        "Type": "Role"
+       }
+      ],
+      "Enable": true
+     },
+     "Datasets": [
+      {
+       "DatasetId": "d-vsqjvsjp4orp5l206u",
+       "DatasetVersion": "v1",
+       "Dynamic": false,
+       "MountAccess": "RW",
+       "MountPath": "/mnt/data",
+       "OptionType": "FastReadWrite",
+       "Options": "{\n  \"fs.oss.download.thread.concurrency\": \"10\",\n  \"fs.oss.upload.thread.concurrency\": \"10\",\n  \"fs.jindo.args\": \"-oattr_timeout=3 -oentry_timeout=0 -onegative_timeout=0 -oauto_cache -ono_symlink\"\n}",
+       "RoleArn": "",
+       "Uri": "oss://bucket-name.oss-cn-shanghai-internal.aliyuncs.com/data/path/"
+      }
+     ],
+     "Driver": "535.54.03",
+     "DynamicMount": {
+      "Enable": true,
+      "MountPoints": [
+       {
+        "Options": "{}",
+        "RootPath": "/mnt/dynamic/"
+       }
+      ]
+     },
+     "EcsSpec": "ecs.c6.large",
+     "EnvironmentVariables": {
+      "key": "MAAS"
+     },
+     "GmtCreateTime": "2021-01-12T14:36:01Z",
+     "GmtModifiedTime": "2021-01-12T14:36:01Z",
+     "IdleInstanceCuller": {
+      "CpuPercentThreshold": 20,
+      "GpuPercentThreshold": 10,
+      "IdleTimeInMinutes": 30,
+      "InstanceId": "dsw-730xxxxxxxxxx",
+      "MaxIdleTimeInMinutes": 60
+     },
+     "ImageAuth": "aGFyYm9yYWlAeGltYWxheWE6KioqKioq",
+     "ImageId": "image-05cefd0be2exxxx",
+     "ImageName": "py36_cpu_tf1.12_ubuntu",
+     "ImageUrl": "registry.cn-shanghai.aliyuncs.com/pai_product/tensorflow:py36_cpu_tf1.12_ubuntu",
+     "InstanceId": "dsw-730xxxxxxxxxx",
+     "InstanceName": "training_data",
+     "InstanceShutdownTimer": {
+      "DueTime": "2021-01-12T14:36:01Z",
+      "GmtCreateTime": "2021-01-12T14:36:01Z",
+      "GmtModifiedTime": "2021-01-12T14:36:01Z",
+      "InstanceId": "dsw-730xxxxxxxxxx",
+      "RemainingTimeInMs": 3600000
+     },
+     "InstanceSnapshotList": [
+      {
+       "GmtCreateTime": "2021-01-12T14:36:01Z",
+       "GmtModifiedTime": "2021-01-12T14:36:01Z",
+       "ImageId": "image-05cefd0be2exxxx",
+       "ImageName": "py36_cpu_tf1.12_ubuntu",
+       "ImageUrl": "registry.cn-shanghai.aliyuncs.com/pai_product/tensorflow:py36_cpu_tf1.12_ubuntu",
+       "ReasonCode": "Internal Error",
+       "ReasonMessage": "ImagePullBackOff",
+       "RepositoryUrl": "https://cr.console.aliyun.com/repository/cn-hangzhou/zouxu/kf/images",
+       "Status": "Pushing"
+      }
+     ],
+     "InstanceUrl": "https://dsw-cn-shanghai.data.aliyun.com/notebook.htm?instance=39772#/",
+     "JupyterlabUrl": "https://dsw-gateway-cn-shanghai.aliyun.com/dsw-39772/lab/",
+     "Labels": [
+      {
+       "Key": "stsTokenOwner",
+       "Value": "123xxxxxxxx"
+      }
+     ],
+     "LatestSnapshot": {
+      "GmtCreateTime": "2021-01-12T14:36:01Z",
+      "GmtModifiedTime": "2021-01-12T14:36:01Z",
+      "ImageId": "image-05cefd0be2exxxx",
+      "ImageName": "py36_cpu_tf1.12_ubuntu",
+      "ImageUrl": "registry.cn-shanghai.aliyuncs.com/pai_product/tensorflow:py36_cpu_tf1.12_ubuntu",
+      "ReasonCode": "Internal Error",
+      "ReasonMessage": "ImagePullBackOff",
+      "RepositoryUrl": "https://cr.console.aliyun.com/repository/cn-hangzhou/zouxu/kf/images",
+      "Status": "Pushing"
+     },
+     "OversoldInfo": "",
+     "OversoldType": "",
+     "PaymentType": "PayAsYouGo",
+     "Priority": 1,
+     "ReasonCode": "Internal Error",
+     "ReasonMessage": "ImagePullBackOff",
+     "RequestedResource": {
+      "CPU": "32",
+      "GPU": "4",
+      "GPUType": "NVIDIA A10",
+      "Memory": "32",
+      "SharedMemory": "32"
+     },
+     "ResourceId": "dsw-123456789",
+     "ResourceName": "resource_group",
+     "ServiceConfig": {
+      "CodeServerAuth": "",
+      "CodeServerPassword": "",
+      "JupyterServerAuth": "",
+      "JupyterServerPassword": ""
+     },
+     "Status": "Running",
+     "Tags": [
+      {
+       "TagKey": "tag1",
+       "TagValue": "value1"
+      }
+     ],
+     "TenantId": "",
+     "TerminalUrl": "https://dsw-gateway-cn-shanghai.aliyun.com/dsw-39772/tty/",
+     "UserId": "1612285282502324",
+     "UserMetricsEndpoints": [
+      {
+       "Path": "",
+       "Port": 0
+      }
+     ],
+     "UserName": "测试用户",
+     "UserVpc": {
+      "BandwidthLimit": {
+       "EgressRate": "",
+       "EgressWhitelists": [
+        ""
+       ],
+       "IngressRate": "",
+       "IngressWhitelists": [
+        ""
+       ]
+      },
+      "DefaultRoute": "eth0 | eth1",
+      "ExtendedCIDRs": [
+       "192.168.0.1/24"
+      ],
+      "ForwardInfos": [
+       {
+        "AccessType": [
+         "intranet"
+        ],
+        "ConnectInfo": {
+         "Internet": {
+          "Endpoint": "47.111.119.114",
+          "Port": "22"
+         },
+         "Intranet": {
+          "Endpoint": "dsw-notebook-22-urz3u6cnu0uts7ej9r.dsw-5cc6083084818f60.dsw.pai.alibaba.com",
+          "Port": "22"
+         },
+         "Message": "DNAT and privateZone are both ready.",
+         "Phase": "Ready"
+        },
+        "ContainerName": "dsw-notebook",
+        "EipAllocationId": "eip-25877c70gddh****",
+        "Enable": true,
+        "ExternalPort": "1024",
+        "ForwardPort": "22",
+        "Name": "ssh",
+        "NatGatewayId": "ngw-bp1uewa15k4iy5770****",
+        "NlbGatewayId": "",
+        "SSHPublicKey": "ssh-rsa AAAAB3****************************\n"
+       }
+      ],
+      "Ip": "",
+      "SecurityGroupId": "sg-xxxxxx",
+      "VSwitchId": "vsw-xxxxx",
+      "VpcId": "vpc-xxxxx"
+     },
+     "WebIDEUrl": "https://dsw-gateway-cn-shanghai.aliyun.com/dsw-39772/ide/",
+     "WorkspaceId": "40823",
+     "WorkspaceName": "training_data",
+     "WorkspaceSource": "d-123456789"
+    }
+   ],
+   "Message": "\"XXX\"",
+   "MigrationOptions": {
+    "test": "test",
+    "test2": 1
+   },
+   "RequestId": "E7D55162-4489-1619-AAF5-3F97D5FCA948",
+   "Success": true,
+   "TotalCount": 35
   },
   "polardb@2017-08-01#DescribeApplicationAttribute": {
    "ApplicationId": "pa-**************",

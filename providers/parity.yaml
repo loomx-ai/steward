@@ -29,6 +29,27 @@ resources:
     - AWS::EKS::FargateProfile
     - AWS::EKS::Addon
   status: pending_verification
+- alicloud: ACS::ALB::Acl
+  spec: providers/alicloud/specs/alb-acl.yaml
+  class: network.acl
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/SecurityPolicy
+    notes: Cloud Armor security policies carry IP allow and deny rules for backend services.
+  azure:
+    notes: Application Gateway restricts listener access with network security groups and WAF policy custom
+      rules; there is no listener ACL resource.
+  aws:
+    notes: Elastic Load Balancing restricts listener access with security groups; there is no listener ACL
+      resource.
+  status: pending_verification
+  notes: DeleteAcl fails with ResourceInUse.Acl while a listener uses the ACL, so those listeners are deleted
+    first. ACLs managed by an ALB Ingress controller are not deleted.
 - alicloud: ACS::ALB::Listener
   spec: providers/alicloud/specs/alb-listener.yaml
   class: network.load_balancer_listener
@@ -374,6 +395,26 @@ resources:
     - AWS::ApiGateway::UsagePlanKey
   status: pending_verification
   notes: Deleting an app also removes its API authorizations; neither can be restored.
+- alicloud: ACS::ApiGateway::Group
+  spec: providers/alicloud/specs/api-gateway-group.yaml
+  class: network.api_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - apigateway.googleapis.com/Api
+  azure:
+    resources:
+    - Microsoft.ApiManagement/service/apis
+  aws:
+    resources:
+    - AWS::ApiGateway::RestApi
+  status: pending_verification
+  notes: An API group is the collection other clouds call an API. DeleteApiGroup refuses a group that still
+    has APIs, so its APIs are deleted first.
 - alicloud: ACS::ApiGateway::Instance
   spec: providers/alicloud/specs/api-gateway-instance.yaml
   class: network.api_gateway
@@ -2997,6 +3038,27 @@ resources:
     verification:
     - TestMotoKMSAndBackupGuards
   status: pending_verification
+- alicloud: ACS::KMS::Secret
+  spec: providers/alicloud/specs/kms-secret.yaml
+  class: security.secret
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    enrichment: true
+  gcp:
+    resources:
+    - secretmanager.googleapis.com/Secret
+  azure:
+    unimplemented_resources:
+    - Microsoft.KeyVault/vaults/secrets
+  aws:
+    resources:
+    - AWS::SecretsManager::Secret
+  status: pending_verification
+  notes: DeleteSecret schedules deletion with a 7-day recovery window, as for KMS keys. Secrets owned by a
+    cloud service are not deleted.
 - alicloud: ACS::Lindorm::Instance
   spec: providers/alicloud/specs/lindorm-instance.yaml
   class: database.wide_column
@@ -3415,6 +3477,24 @@ resources:
     verification:
     - TestMotoS3BucketGuard
   status: pending_verification
+- alicloud: ACS::PAI::DswInstance
+  spec: providers/alicloud/specs/pai-dsw-instance.yaml
+  class: ai.notebook
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - notebooks.googleapis.com/Instance
+  azure:
+    unimplemented_resources:
+    - Microsoft.MachineLearningServices/workspaces/computes
+  aws:
+    notes: AWS::SageMaker::NotebookInstance is the equivalent and is not modeled yet.
+  status: pending_verification
+  notes: Subscription instances are released when they expire and are not deleted.
 - alicloud: ACS::PAI::Service
   spec: providers/alicloud/specs/pai-service.yaml
   class: ai.inference_service

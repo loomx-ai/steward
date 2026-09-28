@@ -21,6 +21,10 @@ func TestPrefixListUsersAreDeletedBeforeTheList(t *testing.T) {
 		scoped("vpc-list", alicloud.VPCPrefixListNativeType, "pl-vpc", map[string]any{alicloud.NormalizedPrefixListAssociationsField: []any{
 			map[string]any{"resourceId": "vtb-a", "resourceType": "vpcRouteTable"},
 		}}),
+		scoped("acl", alicloud.ALBAclNativeType, "acl-a", map[string]any{alicloud.NormalizedPrefixListAssociationsField: []any{
+			map[string]any{"resourceId": "lsn-a", "resourceType": "listener"},
+		}}),
+		scoped("listener", "ACS::ALB::Listener", "lsn-a", nil),
 		scoped("group", securityGroupNativeType, "sg-a", nil),
 		scoped("table", routeTableNativeType, "vtb-a", nil),
 	}
@@ -35,7 +39,7 @@ func TestPrefixListUsersAreDeletedBeforeTheList(t *testing.T) {
 		}
 		edges[string(relationship.SourceAssetID)+">"+string(relationship.TargetAssetID)] = true
 	}
-	if len(edges) != 2 || !edges["group>ecs-list"] || !edges["table>vpc-list"] {
+	if len(edges) != 3 || !edges["group>ecs-list"] || !edges["table>vpc-list"] || !edges["listener>acl"] {
 		t.Fatalf("edges = %v", edges)
 	}
 }

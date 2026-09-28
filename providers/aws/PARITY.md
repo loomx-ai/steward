@@ -21,9 +21,9 @@ authoritative Cloud Control inventory could never succeed.
 | Measure | AWS |
 | --- | --- |
 | Explicit specifications | 244 (221 Cloud Control, 22 product API, 1 CloudFormation stack) |
-| Parity rows with an implemented mapping | 200/217 |
-| Rows deferred as not yet modeled | 0 |
-| Rows with a documented platform difference instead of a mapping | 17 |
+| Parity rows with an implemented mapping | 202/221 |
+| Rows deferred as not yet modeled | 1 |
+| Rows with a documented platform difference instead of a mapping | 18 |
 | Candidate types without a specification | 0 |
 | Pinned official operations | 98 from 28 Smithy models |
 | Pinned CloudFormation resource schemas | 229 |

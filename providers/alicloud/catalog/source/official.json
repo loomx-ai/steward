@@ -2,6 +2,46 @@
  "products": [
   {
    "apis": {
+    "DeleteAcl": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.Acl",
+      "IncorrectStatus.Acl",
+      "ResourceInUse.Acl",
+      "ResourceNotFound.Acl"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AclId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "JobId",
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
     "DeleteListener": {
      "deprecated": false,
      "error_codes": [
@@ -169,6 +209,107 @@
      "path": "",
      "response_paths": [
       "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "ListAclRelations": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.Acl",
+      "ResourceNotFound.Acl"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AclIds",
+       "required": true,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "AclRelations",
+      "AclRelations.AclId",
+      "AclRelations.RelatedListeners",
+      "AclRelations.RelatedListeners.ListenerId",
+      "AclRelations.RelatedListeners.ListenerPort",
+      "AclRelations.RelatedListeners.ListenerProtocol",
+      "AclRelations.RelatedListeners.LoadBalancerId",
+      "AclRelations.RelatedListeners.Status",
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "ListAcls": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.Acl"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AclIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "AclNames",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Acls",
+      "Acls.AclId",
+      "Acls.AclName",
+      "Acls.AclStatus",
+      "Acls.AddressIPVersion",
+      "Acls.ConfigManagedEnabled",
+      "Acls.CreateTime",
+      "Acls.ResourceGroupId",
+      "Acls.Tags",
+      "Acls.Tags.Key",
+      "Acls.Tags.Value",
+      "MaxResults",
+      "NextToken",
+      "RequestId",
+      "TotalCount"
      ],
      "risk_type": ""
     },
@@ -7936,6 +8077,34 @@
      ],
      "risk_type": ""
     },
+    "DeleteApiGroup": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "GroupId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
     "DeleteApp": {
      "deprecated": false,
      "error_codes": [],
@@ -7989,6 +8158,99 @@
      "path": "",
      "response_paths": [
       "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DescribeApiGroups": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "BasePath",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "EnableTagAuth",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "GroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "GroupName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "InstanceId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "Sort",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "ApiGroupAttributes",
+      "ApiGroupAttributes.ApiGroupAttribute",
+      "ApiGroupAttributes.ApiGroupAttribute.BasePath",
+      "ApiGroupAttributes.ApiGroupAttribute.BillingStatus",
+      "ApiGroupAttributes.ApiGroupAttribute.CreatedTime",
+      "ApiGroupAttributes.ApiGroupAttribute.Description",
+      "ApiGroupAttributes.ApiGroupAttribute.GroupId",
+      "ApiGroupAttributes.ApiGroupAttribute.GroupName",
+      "ApiGroupAttributes.ApiGroupAttribute.HttpsPolicy",
+      "ApiGroupAttributes.ApiGroupAttribute.IllegalStatus",
+      "ApiGroupAttributes.ApiGroupAttribute.InstanceId",
+      "ApiGroupAttributes.ApiGroupAttribute.InstanceType",
+      "ApiGroupAttributes.ApiGroupAttribute.ModifiedTime",
+      "ApiGroupAttributes.ApiGroupAttribute.RegionId",
+      "ApiGroupAttributes.ApiGroupAttribute.SubDomain",
+      "ApiGroupAttributes.ApiGroupAttribute.Tags",
+      "ApiGroupAttributes.ApiGroupAttribute.Tags.TagInfo",
+      "ApiGroupAttributes.ApiGroupAttribute.Tags.TagInfo.Key",
+      "ApiGroupAttributes.ApiGroupAttribute.Tags.TagInfo.Value",
+      "ApiGroupAttributes.ApiGroupAttribute.TrafficLimit",
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "TotalCount"
      ],
      "risk_type": ""
     },
@@ -21396,6 +21658,48 @@
   },
   {
    "apis": {
+    "DeleteSecret": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.ResourceNotFound",
+      "InternalFailure",
+      "InvalidAccessKeyId.NotFound",
+      "InvalidParameter",
+      "Rejected.ResourceInDeleteWindow"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ForceDeleteWithoutRecovery",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RecoveryWindowInDays",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SecretName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "PlannedDeleteTime",
+      "RequestId",
+      "SecretName"
+     ],
+     "risk_type": ""
+    },
     "DescribeKey": {
      "deprecated": false,
      "error_codes": [
@@ -21444,6 +21748,58 @@
      ],
      "risk_type": ""
     },
+    "DescribeSecret": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.NoPermission",
+      "Forbidden.ResourceNotFound",
+      "IllegalTimestamp",
+      "InvalidAccessKeyId.NotFound",
+      "InvalidParameter"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "FetchTags",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SecretName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Arn",
+      "AutomaticRotation",
+      "CreateTime",
+      "DKMSInstanceId",
+      "Description",
+      "EncryptionKeyId",
+      "ExtendedConfig",
+      "LastRotationDate",
+      "NextRotationDate",
+      "PlannedDeleteTime",
+      "RequestId",
+      "RotationInterval",
+      "SecretName",
+      "SecretType",
+      "Tags",
+      "Tags.Tag",
+      "Tags.Tag.TagKey",
+      "Tags.Tag.TagValue",
+      "UpdateTime"
+     ],
+     "risk_type": ""
+    },
     "ListKeys": {
      "deprecated": false,
      "error_codes": [],
@@ -21481,6 +21837,67 @@
       "PageNumber",
       "PageSize",
       "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": ""
+    },
+    "ListSecrets": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.NoPermission",
+      "Forbidden.ResourceNotFound",
+      "InternalFailure",
+      "InvalidAccessKeyId.NotFound",
+      "InvalidParameter"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "FetchTags",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Filters",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "SecretList",
+      "SecretList.Secret",
+      "SecretList.Secret.CreateTime",
+      "SecretList.Secret.OwingService",
+      "SecretList.Secret.PlannedDeleteTime",
+      "SecretList.Secret.SecretName",
+      "SecretList.Secret.SecretType",
+      "SecretList.Secret.Tags",
+      "SecretList.Secret.Tags.Tag",
+      "SecretList.Secret.Tags.Tag.TagKey",
+      "SecretList.Secret.Tags.Tag.TagValue",
+      "SecretList.Secret.UpdateTime",
       "TotalCount"
      ],
      "risk_type": ""
@@ -51278,6 +51695,487 @@
    "source_uri": "https://api.aliyun.com/meta/v1/products/oos/versions/2019-06-01/api-docs.json",
    "style": "RPC",
    "version": "2019-06-01"
+  },
+  {
+   "apis": {
+    "DeleteInstance": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "delete"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "path",
+       "name": "InstanceId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "/api/v2/instances/{InstanceId}",
+     "response_paths": [
+      "Code",
+      "HttpStatusCode",
+      "InstanceId",
+      "Message",
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": "none"
+    },
+    "ListInstances": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AcceleratorType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Accessibility",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "CreateTimeAfter",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "CreateTimeBefore",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "CreateUserId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "GpuType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ImageName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "InstanceId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "InstanceName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Labels",
+       "required": false,
+       "type": "object"
+      },
+      {
+       "in": "query",
+       "name": "MaxCpu",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MaxGpu",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MaxGpuMemory",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MaxMemory",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MinCpu",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MinGpu",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MinGpuMemory",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MinMemory",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Order",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "OversoldInfo",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "OversoldType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PaymentType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "SortBy",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Status",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "WorkspaceId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/api/v2/instances",
+     "response_paths": [
+      "Code",
+      "HttpStatusCode",
+      "Instances",
+      "Instances.AcceleratorType",
+      "Instances.Accessibility",
+      "Instances.AccumulatedRunningTimeInMs",
+      "Instances.Affinity",
+      "Instances.Affinity.CPU",
+      "Instances.Affinity.CPU.Enable",
+      "Instances.CloudDisks",
+      "Instances.CloudDisks.Capacity",
+      "Instances.CloudDisks.MountPath",
+      "Instances.CloudDisks.Path",
+      "Instances.CloudDisks.SubType",
+      "Instances.CredentialConfig",
+      "Instances.CredentialConfig.AliyunEnvRoleKey",
+      "Instances.CredentialConfig.Configs",
+      "Instances.CredentialConfig.Configs.Key",
+      "Instances.CredentialConfig.Configs.Roles",
+      "Instances.CredentialConfig.Configs.Roles.AssumeRoleFor",
+      "Instances.CredentialConfig.Configs.Roles.Policy",
+      "Instances.CredentialConfig.Configs.Roles.RoleArn",
+      "Instances.CredentialConfig.Configs.Roles.RoleType",
+      "Instances.CredentialConfig.Configs.Roles.UserInfo",
+      "Instances.CredentialConfig.Configs.Roles.UserInfo.AccessKeyId",
+      "Instances.CredentialConfig.Configs.Roles.UserInfo.Id",
+      "Instances.CredentialConfig.Configs.Roles.UserInfo.SecurityToken",
+      "Instances.CredentialConfig.Configs.Roles.UserInfo.Type",
+      "Instances.CredentialConfig.Configs.Type",
+      "Instances.CredentialConfig.Enable",
+      "Instances.Datasets",
+      "Instances.Datasets.DatasetId",
+      "Instances.Datasets.DatasetVersion",
+      "Instances.Datasets.Dynamic",
+      "Instances.Datasets.MountAccess",
+      "Instances.Datasets.MountPath",
+      "Instances.Datasets.OptionType",
+      "Instances.Datasets.Options",
+      "Instances.Datasets.RoleArn",
+      "Instances.Datasets.Uri",
+      "Instances.Driver",
+      "Instances.DynamicMount",
+      "Instances.DynamicMount.Enable",
+      "Instances.DynamicMount.MountPoints",
+      "Instances.DynamicMount.MountPoints.Options",
+      "Instances.DynamicMount.MountPoints.RootPath",
+      "Instances.EcsSpec",
+      "Instances.EnvironmentVariables",
+      "Instances.GmtCreateTime",
+      "Instances.GmtModifiedTime",
+      "Instances.IdleInstanceCuller",
+      "Instances.IdleInstanceCuller.CpuPercentThreshold",
+      "Instances.IdleInstanceCuller.GpuPercentThreshold",
+      "Instances.IdleInstanceCuller.IdleTimeInMinutes",
+      "Instances.IdleInstanceCuller.InstanceId",
+      "Instances.IdleInstanceCuller.MaxIdleTimeInMinutes",
+      "Instances.ImageAuth",
+      "Instances.ImageId",
+      "Instances.ImageName",
+      "Instances.ImageUrl",
+      "Instances.InstanceId",
+      "Instances.InstanceName",
+      "Instances.InstanceShutdownTimer",
+      "Instances.InstanceShutdownTimer.DueTime",
+      "Instances.InstanceShutdownTimer.GmtCreateTime",
+      "Instances.InstanceShutdownTimer.GmtModifiedTime",
+      "Instances.InstanceShutdownTimer.InstanceId",
+      "Instances.InstanceShutdownTimer.RemainingTimeInMs",
+      "Instances.InstanceSnapshotList",
+      "Instances.InstanceSnapshotList.GmtCreateTime",
+      "Instances.InstanceSnapshotList.GmtModifiedTime",
+      "Instances.InstanceSnapshotList.ImageId",
+      "Instances.InstanceSnapshotList.ImageName",
+      "Instances.InstanceSnapshotList.ImageUrl",
+      "Instances.InstanceSnapshotList.ReasonCode",
+      "Instances.InstanceSnapshotList.ReasonMessage",
+      "Instances.InstanceSnapshotList.RepositoryUrl",
+      "Instances.InstanceSnapshotList.Status",
+      "Instances.InstanceUrl",
+      "Instances.JupyterlabUrl",
+      "Instances.Labels",
+      "Instances.Labels.Key",
+      "Instances.Labels.Value",
+      "Instances.LatestSnapshot",
+      "Instances.LatestSnapshot.GmtCreateTime",
+      "Instances.LatestSnapshot.GmtModifiedTime",
+      "Instances.LatestSnapshot.ImageId",
+      "Instances.LatestSnapshot.ImageName",
+      "Instances.LatestSnapshot.ImageUrl",
+      "Instances.LatestSnapshot.ReasonCode",
+      "Instances.LatestSnapshot.ReasonMessage",
+      "Instances.LatestSnapshot.RepositoryUrl",
+      "Instances.LatestSnapshot.Status",
+      "Instances.OversoldInfo",
+      "Instances.OversoldType",
+      "Instances.PaymentType",
+      "Instances.Priority",
+      "Instances.ReasonCode",
+      "Instances.ReasonMessage",
+      "Instances.RequestedResource",
+      "Instances.RequestedResource.CPU",
+      "Instances.RequestedResource.GPU",
+      "Instances.RequestedResource.GPUType",
+      "Instances.RequestedResource.Memory",
+      "Instances.RequestedResource.SharedMemory",
+      "Instances.ResourceId",
+      "Instances.ResourceName",
+      "Instances.ServiceConfig",
+      "Instances.ServiceConfig.CodeServerAuth",
+      "Instances.ServiceConfig.CodeServerPassword",
+      "Instances.ServiceConfig.JupyterServerAuth",
+      "Instances.ServiceConfig.JupyterServerPassword",
+      "Instances.Status",
+      "Instances.Tags",
+      "Instances.Tags.TagKey",
+      "Instances.Tags.TagValue",
+      "Instances.TenantId",
+      "Instances.TerminalUrl",
+      "Instances.UserId",
+      "Instances.UserMetricsEndpoints",
+      "Instances.UserMetricsEndpoints.Path",
+      "Instances.UserMetricsEndpoints.Port",
+      "Instances.UserName",
+      "Instances.UserVpc",
+      "Instances.UserVpc.BandwidthLimit",
+      "Instances.UserVpc.BandwidthLimit.EgressRate",
+      "Instances.UserVpc.BandwidthLimit.EgressWhitelists",
+      "Instances.UserVpc.BandwidthLimit.IngressRate",
+      "Instances.UserVpc.BandwidthLimit.IngressWhitelists",
+      "Instances.UserVpc.DefaultRoute",
+      "Instances.UserVpc.ExtendedCIDRs",
+      "Instances.UserVpc.ForwardInfos",
+      "Instances.UserVpc.ForwardInfos.AccessType",
+      "Instances.UserVpc.ForwardInfos.ConnectInfo",
+      "Instances.UserVpc.ForwardInfos.ConnectInfo.Internet",
+      "Instances.UserVpc.ForwardInfos.ConnectInfo.Internet.Endpoint",
+      "Instances.UserVpc.ForwardInfos.ConnectInfo.Internet.Port",
+      "Instances.UserVpc.ForwardInfos.ConnectInfo.Intranet",
+      "Instances.UserVpc.ForwardInfos.ConnectInfo.Intranet.Endpoint",
+      "Instances.UserVpc.ForwardInfos.ConnectInfo.Intranet.Port",
+      "Instances.UserVpc.ForwardInfos.ConnectInfo.Message",
+      "Instances.UserVpc.ForwardInfos.ConnectInfo.Phase",
+      "Instances.UserVpc.ForwardInfos.ContainerName",
+      "Instances.UserVpc.ForwardInfos.EipAllocationId",
+      "Instances.UserVpc.ForwardInfos.Enable",
+      "Instances.UserVpc.ForwardInfos.ExternalPort",
+      "Instances.UserVpc.ForwardInfos.ForwardPort",
+      "Instances.UserVpc.ForwardInfos.Name",
+      "Instances.UserVpc.ForwardInfos.NatGatewayId",
+      "Instances.UserVpc.ForwardInfos.NlbGatewayId",
+      "Instances.UserVpc.ForwardInfos.SSHPublicKey",
+      "Instances.UserVpc.Ip",
+      "Instances.UserVpc.SecurityGroupId",
+      "Instances.UserVpc.VSwitchId",
+      "Instances.UserVpc.VpcId",
+      "Instances.WebIDEUrl",
+      "Instances.WorkspaceId",
+      "Instances.WorkspaceName",
+      "Instances.WorkspaceSource",
+      "Message",
+      "MigrationOptions",
+      "RequestId",
+      "Success",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    }
+   },
+   "endpoints": [
+    {
+     "endpoint": "pai-dsw.ap-northeast-1.aliyuncs.com",
+     "region": "ap-northeast-1"
+    },
+    {
+     "endpoint": "pai-dsw.ap-northeast-2.aliyuncs.com",
+     "region": "ap-northeast-2"
+    },
+    {
+     "endpoint": "pai-dsw.ap-south-1.aliyuncs.com",
+     "region": "ap-south-1"
+    },
+    {
+     "endpoint": "pai-dsw.ap-southeast-1.aliyuncs.com",
+     "region": "ap-southeast-1"
+    },
+    {
+     "endpoint": "pai-dsw.ap-southeast-3.aliyuncs.com",
+     "region": "ap-southeast-3"
+    },
+    {
+     "endpoint": "pai-dsw.ap-southeast-5.aliyuncs.com",
+     "region": "ap-southeast-5"
+    },
+    {
+     "endpoint": "pai-dsw.ap-southeast-7.aliyuncs.com",
+     "region": "ap-southeast-7"
+    },
+    {
+     "endpoint": "pai-dsw.ap-southeast-8.aliyuncs.com",
+     "region": "ap-southeast-8"
+    },
+    {
+     "endpoint": "pai-dsw.cn-beijing.aliyuncs.com",
+     "region": "cn-beijing"
+    },
+    {
+     "endpoint": "pai-dsw.cn-chengdu.aliyuncs.com",
+     "region": "cn-chengdu"
+    },
+    {
+     "endpoint": "pai-dsw.cn-guangzhou.aliyuncs.com",
+     "region": "cn-guangzhou"
+    },
+    {
+     "endpoint": "pai-dsw.cn-hangzhou.aliyuncs.com",
+     "region": "cn-hangzhou"
+    },
+    {
+     "endpoint": "pai-dsw.cn-hongkong.aliyuncs.com",
+     "region": "cn-hongkong"
+    },
+    {
+     "endpoint": "pai-dsw.cn-shanghai.aliyuncs.com",
+     "region": "cn-shanghai"
+    },
+    {
+     "endpoint": "pai-dsw.cn-shanghai-finance-1.aliyuncs.com",
+     "region": "cn-shanghai-finance-1"
+    },
+    {
+     "endpoint": "pai-dsw.cn-shenzhen.aliyuncs.com",
+     "region": "cn-shenzhen"
+    },
+    {
+     "endpoint": "pai-dsw.cn-wulanchabu.aliyuncs.com",
+     "region": "cn-wulanchabu"
+    },
+    {
+     "endpoint": "pai-dsw.eu-central-1.aliyuncs.com",
+     "region": "eu-central-1"
+    },
+    {
+     "endpoint": "pai-dsw.me-central-1.aliyuncs.com",
+     "region": "me-central-1"
+    },
+    {
+     "endpoint": "pai-dsw.me-east-1.aliyuncs.com",
+     "region": "me-east-1"
+    },
+    {
+     "endpoint": "pai-dsw.us-east-1.aliyuncs.com",
+     "region": "us-east-1"
+    },
+    {
+     "endpoint": "pai-dsw.us-southeast-1.aliyuncs.com",
+     "region": "us-southeast-1"
+    },
+    {
+     "endpoint": "pai-dsw.us-west-1.aliyuncs.com",
+     "region": "us-west-1"
+    }
+   ],
+   "product": "pai-dsw",
+   "source_sha256": "9df9606745bab507e94342cf48da22b4a4619d6d25b86dc78612421344504521",
+   "source_uri": "https://api.aliyun.com/meta/v1/products/pai-dsw/versions/2022-01-01/api-docs.json",
+   "style": "ROA",
+   "version": "2022-01-01"
   },
   {
    "apis": {

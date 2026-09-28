@@ -36,6 +36,8 @@ const actionReadbackInterval = 2 * time.Second
 
 const KMSDeletionScheduledState = "scheduled_deletion"
 
+const kmsSecretNativeType = "ACS::KMS::Secret"
+
 const (
 	slsGetProjectOperation                     = "AlibabaCloud.SLS.GetProject"
 	slsUpdateProjectOperation                  = "AlibabaCloud.SLS.UpdateProject"
@@ -4075,6 +4077,11 @@ func (h *ResourceAction) readDetails(
 	}
 	if !exists {
 		return contracts.ReadbackResult{Exists: false, State: "absent", Data: result.Data}, result, nil, nil
+	}
+	// DeleteSecret schedules the deletion; a secret in its recovery window is
+	// deleted unless someone restores it, as a KMS key pending deletion is.
+	if h.nativeType == kmsSecretNativeType && strings.TrimSpace(stringValue(resource["PlannedDeleteTime"])) != "" {
+		return contracts.ReadbackResult{Exists: false, State: KMSDeletionScheduledState, Data: result.Data}, result, resource, nil
 	}
 	state := stringValue(valueAtPath(resource, read.StatePath))
 	return contracts.ReadbackResult{Exists: true, State: state, Data: result.Data}, result, resource, nil
