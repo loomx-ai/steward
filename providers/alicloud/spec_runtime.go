@@ -125,6 +125,9 @@ func (r *Runtime) listProductAPI(
 	if compiled.Definition.Discovery.Parent != nil {
 		return r.listFanoutProductAPI(ctx, request, compiled)
 	}
+	if compiled.ResourceKind.NativeType == resourceDirectoryFolderNativeType {
+		return r.listResourceDirectoryFolders(ctx, request, compiled)
+	}
 	api := networkScopedProductAPI(*list, compiled.ResourceKind.NativeType, request.NetworkTarget)
 	region, err := productAPIRegion(request)
 	if err != nil {

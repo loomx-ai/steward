@@ -29406,6 +29406,58 @@
       "TotalCount"
      ],
      "risk_type": ""
+    },
+    "ListFoldersForParent": {
+     "deprecated": false,
+     "error_codes": [
+      "EntityNotExists.Folder",
+      "EntityNotExists.ResourceDirectory",
+      "InvalidParameter.ParentFolderId"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "ParentFolderId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "QueryKeyword",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Folders",
+      "Folders.Folder",
+      "Folders.Folder.CreateTime",
+      "Folders.Folder.FolderId",
+      "Folders.Folder.FolderName",
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": ""
     }
    },
    "endpoints": [

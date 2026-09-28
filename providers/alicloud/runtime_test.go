@@ -1937,7 +1937,7 @@ func TestRuntimeExposesInstanceAndModeledSubresourceKindsWithCatalogIcons(t *tes
 		t.Fatal("Alibaba Cloud runtime does not expose resource kind metadata")
 	}
 	kinds, revision := runtime.ResourceKinds()
-	if len(kinds) != 207 || revision == "" {
+	if len(kinds) != 208 || revision == "" {
 		t.Fatalf("resource kinds = %d revision = %q", len(kinds), revision)
 	}
 
@@ -1966,8 +1966,9 @@ func TestRuntimeExposesInstanceAndModeledSubresourceKindsWithCatalogIcons(t *tes
 		oss.BundleRevision != revision {
 		t.Fatalf("OSS resource kind = %+v revision = %q", oss, revision)
 	}
-	if _, found := findRuntimeResourceKind(kinds, "ACS::ResourceManager::Folder"); found {
-		t.Fatal("an unmodeled subresource must not be exposed as a resource kind")
+	folder, found := findRuntimeResourceKind(kinds, "ACS::ResourceManager::Folder")
+	if !found || folder.Capabilities.Has(asset.CapabilityActionable) {
+		t.Fatalf("read-only resource directory folder kind = %+v found=%t", folder, found)
 	}
 	listener, found := findRuntimeResourceKind(kinds, "ACS::ALB::Listener")
 	if !found || listener.Icon == "" || !listener.Capabilities.Has(asset.CapabilityActionable) {
@@ -2034,7 +2035,7 @@ func TestRuntimeSpecCoverageMatchesActionableResourceKinds(t *testing.T) {
 			)
 		}
 	}
-	if len(runtime.bundle.Specs) != 207 || productAPISpecs != 193 || actionableSpecs != 192 {
+	if len(runtime.bundle.Specs) != 208 || productAPISpecs != 194 || actionableSpecs != 192 {
 		t.Fatalf(
 			"specs=%d product-api=%d actionable=%d",
 			len(runtime.bundle.Specs),
@@ -2215,6 +2216,9 @@ func TestUnsupportedInstanceResourceAuditIsExplicit(t *testing.T) {
 		// cannot be undone.
 		"ACS::Eflo::Node":               {},
 		"ACS::ResourceManager::Account": {},
+		// A folder is a node of the organization tree; removing it moves
+		// nothing, but it is kept for account placement and control policies.
+		"ACS::ResourceManager::Folder": {},
 		// DeleteDefenseResource exists, but the official ResourceOrigin
 		// descriptions contradict each other, so objects that access
 		// management recreates cannot be told apart from custom ones.

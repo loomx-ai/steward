@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "7492481aaa043947a566aea6be394f40961950aa61f82d68ac2d1f53ada8485b",
+    "checksum": "9dc1e603558359382406f99918ae23ea6ca1743b394c078cd85b4801692839d9",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "fe0f19a47cbc929866f50d4f9f176157fb5cadeffc3780a0033983eb07d62cf1",
+  "content_checksum": "f7e03beaeaa118af27b01545666b43bb5538a8a674b09d01b09b6bb1261c12df",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -10527,6 +10527,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.ResourceManager.ListFoldersForParent",
+      "name": "ListFoldersForParent",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/resource-manager/folders",
+      "destructive": false,
+      "call": {
+        "product": "ResourceManager",
+        "version": "2020-03-31",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "resourcemanager.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.RocketMQ.DeleteConsumerGroup",
       "name": "DeleteConsumerGroup",
       "service": "AlibabaCloud",
@@ -13132,6 +13152,14 @@
       "native_type": "ACS::ResourceManager::Account",
       "class": "identity.member_account",
       "display_name": "Resource Directory Member",
+      "scope_kinds": [
+        "global"
+      ]
+    },
+    {
+      "native_type": "ACS::ResourceManager::Folder",
+      "class": "identity.folder",
+      "display_name": "Resource Directory Folder",
       "scope_kinds": [
         "global"
       ]

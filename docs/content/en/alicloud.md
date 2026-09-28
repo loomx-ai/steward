@@ -81,7 +81,7 @@ Common types:
 | Databases | RDS, Redis, PolarDB |
 | Messaging and events | Kafka, RocketMQ, and RabbitMQ with their topics and consumer groups; EventBridge |
 | Storage, logs, and images | OSS, Simple Log Service, Container Registry |
-| Monitoring and governance | CloudMonitor, Cloud Config |
+| Monitoring and governance | CloudMonitor, Cloud Config, Resource Directory members and folders (read-only) |
 
 What a scan finds depends on the supported types, the regions you select, and the current identity's permissions.
 

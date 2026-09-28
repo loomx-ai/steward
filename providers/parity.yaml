@@ -1452,6 +1452,26 @@ resources:
     - AWS::Organizations::Account
   status: pending_verification
   notes: Inventory only; removing a member account cannot be undone.
+- alicloud: ACS::ResourceManager::Folder
+  spec: providers/alicloud/specs/resource-manager-folder.yaml
+  class: identity.folder
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions: []
+  gcp:
+    notes: cloudresourcemanager.googleapis.com/Folder is the equivalent and is not modeled yet; folders sit
+      above the project a connection is scoped to.
+  azure:
+    resources:
+    - Microsoft.Management/managementGroups
+  aws:
+    resources:
+    - AWS::Organizations::OrganizationalUnit
+  status: pending_verification
+  notes: Inventory only. ListFoldersForParent returns one level, so the tree is walked from the root folder.
+    Folders place member accounts and carry control policies; DeleteFolder needs an empty folder and
+    folder deletion is not offered.
 - alicloud: ACS::RocketMQ::ConsumerGroup
   spec: providers/alicloud/specs/rocketmq-consumer-group.yaml
   class: messaging.consumer_group

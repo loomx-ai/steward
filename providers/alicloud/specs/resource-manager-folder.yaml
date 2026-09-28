@@ -1,0 +1,39 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ResourceManager::Folder
+  class: identity.folder
+presentation:
+  consoleLinkTemplate: "https://resourcemanager.console.aliyun.com/resource-directory/folders/{nativeId}"
+  displayNames:
+    zh-CN: 资源目录资源夹
+    en-US: Resource Directory Folder
+  icon: application
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ResourceManager.ListFoldersForParent
+    itemsPath: Folders.Folder
+    identityPath: FolderId
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: FolderName
+  createdAt: CreateTime
+  folderId: FolderId
+  parentFolderId: _parentFolderId
+  resourceDirectoryId: _resourceDirectoryId
+relationships:
+  - type: member_of
+    targetType: ACS::ResourceManager::ResourceDirectory
+    targetIdPath: resourceDirectoryId
+  - type: member_of
+    targetType: ACS::ResourceManager::Folder
+    targetIdPath: parentFolderId

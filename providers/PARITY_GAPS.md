@@ -1,14 +1,14 @@
 # Provider parity implementation gaps
 
 Scope snapshot: 2026-09-28, after the 2026-09-19 Alibaba Cloud expansion grew
-the baseline from 159 to 202 specifications and Function Compute children and
-Function Compute 3.0 grew it to 207. This is a repository scope audit,
+the baseline from 159 to 202 specifications; Function Compute children, Function
+Compute 3.0 and Resource Directory folders grew it to 208. This is a repository scope audit,
 not cloud feature acceptance. Dated sections below keep the row count that held
 when they were written.
 
-The matrix covers all 207 Alibaba Cloud specifications for GCP, Azure and AWS.
+The matrix covers all 208 Alibaba Cloud specifications for GCP, Azure and AWS.
 The repository contains 238 GCP, 522 Azure and 239 AWS specifications; those
-counts do not prove equivalence. All 207 rows remain pending behavioral
+counts do not prove equivalence. All 208 rows remain pending behavioral
 verification.
 
 `go test ./providers` runs in CI. It detects invalid YAML, omitted or duplicated
@@ -23,15 +23,15 @@ check verifies matrix consistency only. AWS progress and evidence are tracked in
 | Measure | GCP | Azure | AWS |
 | --- | --- | --- | --- |
 | Explicit native specifications | 238 | 522 | 239 |
-| Baseline rows with at least one existing mapped specification | 190/207 | 181/207 | 187/207 |
+| Baseline rows with at least one existing mapped specification | 190/208 | 182/208 | 188/208 |
 | Candidate types still without a specification | 0 | 0 | 0 |
 | Baseline rows affected by missing candidate specifications | 0 | 0 | 0 |
-| Empty mappings deferred as not yet modeled | 1 | 2 | 4 |
+| Empty mappings deferred as not yet modeled | 2 | 2 | 4 |
 | Empty mappings with a documented platform difference | 16 | 24 | 16 |
 
 These are registration/mapping measures, not functional completion percentages.
 A row can have both an implemented mapping and an absent candidate. None of the
-207 rows has a closed, requirement-by-requirement behavioral acceptance record.
+208 rows has a closed, requirement-by-requirement behavioral acceptance record.
 
 ## Open mapping backlog
 
@@ -46,7 +46,8 @@ specification, and the AWS deferred rows were mapped. Still open:
 - AWS: Lambda aliases, versions and event source mappings (Function Compute
   aliases, versions and triggers). Deleting a Lambda function removes its
   versions and aliases, so the mapping needs that cascade in the plan.
-- GCP: Cloud Run revisions (Function Compute versions).
+- GCP: Cloud Run revisions (Function Compute versions) and Resource Manager
+  folders (Resource Directory folders).
 
 GCP security posture deployments (Cloud Config compliance pack) exist only at
 organization scope, so a project connection cannot list or delete them; the row

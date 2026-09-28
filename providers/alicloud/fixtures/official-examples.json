@@ -9635,6 +9635,21 @@
    "RequestId": "7B8A4E7D-6CFF-471D-84DF-195A7A241ECB",
    "TotalCount": 2
   },
+  "ResourceManager@2020-03-31#ListFoldersForParent": {
+   "Folders": {
+    "Folder": [
+     {
+      "CreateTime": "2015-01-23T12:33:18Z",
+      "FolderId": "rd-evic31****",
+      "FolderName": "project-1"
+     }
+    ]
+   },
+   "PageNumber": 1,
+   "PageSize": 5,
+   "RequestId": "7B8A4E7D-6CFF-471D-84DF-195A7A241ECB",
+   "TotalCount": 2
+  },
   "RocketMQ@2022-08-01#GetConsumerGroup": {
    "code": "InvalidConsumerGroupId",
    "data": {
