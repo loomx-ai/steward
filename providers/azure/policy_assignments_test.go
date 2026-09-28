@@ -18,7 +18,7 @@ type policyAssignmentFixture struct {
 func policyAssignmentBody(scope, name, assignmentType string, metadata map[string]any) map[string]any {
 	return map[string]any{
 		"id": scope + "/providers/Microsoft.Authorization/policyAssignments/" + name, "name": name,
-		"type": "Microsoft.Authorization/policyAssignments",
+		"type":     "Microsoft.Authorization/policyAssignments",
 		"identity": map[string]any{"type": "SystemAssigned", "principalId": "3f2504e0-4f89-41d3-9a0c-0305e82c3301"},
 		"properties": map[string]any{
 			"displayName": name, "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/deny-public-ip",

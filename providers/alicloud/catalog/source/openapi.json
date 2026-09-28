@@ -1651,6 +1651,66 @@
         "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
       }
     },
+    "/vpc/ha-vips": {
+      "get": {
+        "operationId": "DescribeHaVips",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/vpc/ha-vips/{HaVipId}": {
+      "delete": {
+        "operationId": "DeleteHaVip",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/vpc/flow-logs": {
+      "get": {
+        "operationId": "DescribeFlowLogs",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/vpc/flow-logs/{FlowLogId}": {
+      "delete": {
+        "operationId": "DeleteFlowLog",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/vpc/prefix-lists": {
+      "get": {
+        "operationId": "ListPrefixLists",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/vpc/prefix-lists/{PrefixListId}": {
+      "delete": {
+        "operationId": "DeleteVpcPrefixList",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
+      }
+    },
+    "/vpc/prefix-lists/{PrefixListId}/associations": {
+      "get": {
+        "operationId": "GetVpcPrefixListAssociations",
+        "x-operation-call": {"product":"Vpc","version":"2016-04-28","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"vpc.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/ecs/prefix-lists": {
+      "get": {
+        "operationId": "DescribePrefixLists",
+        "x-operation-call": {"product":"Ecs","version":"2014-05-26","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ecs.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/ecs/prefix-lists/{PrefixListId}": {
+      "delete": {
+        "operationId": "DeletePrefixList",
+        "x-operation-call": {"product":"Ecs","version":"2014-05-26","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ecs.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/ecs/prefix-lists/{PrefixListId}/associations": {
+      "get": {
+        "operationId": "DescribePrefixListAssociations",
+        "x-operation-call": {"product":"Ecs","version":"2014-05-26","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"ecs.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/vpc/network-acls": {
       "get": {
         "operationId": "DescribeNetworkAcls",
@@ -4630,6 +4690,10 @@
     {"nativeType": "ACS::VPC::PeerConnection", "class": "network.peer_connection", "displayName": "VPC Peer Connection", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VPC::RouterInterface", "class": "network.peer_connection", "displayName": "Express Connect Router Interface", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VPC::RouteTable", "class": "network.route_table", "displayName": "Route Table", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::ECS::PrefixList", "class": "network.prefix_list", "displayName": "ECS Prefix List", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::VPC::FlowLog", "class": "observability.flow_log", "displayName": "VPC Flow Log", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::VPC::HaVip", "class": "network.ip_address", "displayName": "High-availability Virtual IP", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::VPC::PrefixList", "class": "network.prefix_list", "displayName": "VPC Prefix List", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VPC::VPC", "class": "network.vpc", "displayName": "VPC", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VPC::VSwitch", "class": "network.subnet", "displayName": "VSwitch", "scopeKinds": ["region"]},
     {"nativeType": "ACS::VPN::CustomerGateway", "class": "network.customer_gateway", "displayName": "Customer Gateway", "scopeKinds": ["region"]},

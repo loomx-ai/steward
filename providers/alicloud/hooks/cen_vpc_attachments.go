@@ -20,7 +20,7 @@ const (
 	vbrNativeType            = "ACS::ExpressConnect::VirtualBorderRouter"
 	vpnConnectionNativeType  = "ACS::VPN::VpnConnection"
 	ecrNativeType            = "ACS::ExpressConnectRouter::ExpressConnectRouter"
-	prefixListNativeType     = "ACS::ECS::PrefixList"
+	prefixListNativeType     = alicloud.VPCPrefixListNativeType
 )
 
 // CENTopology constructs the CEN topology that Resource Center does not expose

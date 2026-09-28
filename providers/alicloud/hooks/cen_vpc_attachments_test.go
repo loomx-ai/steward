@@ -237,7 +237,7 @@ func TestCENTopologyConnectsRouteTablesAcrossResourceCenterScopes(t *testing.T) 
 	}
 	vpc := asset.Asset{ID: "vpc", Identity: identity("ACS::VPC::VPC", "vpc-a")}
 	prefixList := asset.Asset{
-		ID: "prefix-list", Identity: identity("ACS::ECS::PrefixList", "pl-a"),
+		ID: "prefix-list", Identity: identity("ACS::VPC::PrefixList", "pl-a"),
 	}
 	bandwidthPackage := asset.Asset{
 		ID: "bandwidth-package",

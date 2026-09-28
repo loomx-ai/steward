@@ -1,0 +1,65 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::PrefixList
+  class: network.prefix_list
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpc/{regionId}/prefixlists"
+  displayNames:
+    zh-CN: VPC 前缀列表
+    en-US: VPC Prefix List
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: ListPrefixLists
+    parameters:
+      RegionId: scope.location
+    itemsPath: PrefixLists
+    identityPath: PrefixListId
+    statePath: PrefixListStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: PrefixListName
+  state: PrefixListStatus
+  createdAt: CreationTime
+  ipVersion: IpVersion
+  prefixListType: PrefixListType
+  shareType: ShareType
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: DeleteVpcPrefixList
+    parameters:
+      RegionId: scope.location
+      PrefixListId: resource.nativeId
+      DryRun: false
+    preconditions:
+      - path: ShareType
+        allowedValues: [""]
+        reason: a prefix list shared by another account is deleted by its owner
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: ListPrefixLists
+      parameters:
+        RegionId: scope.location
+        PrefixListIds: resources.nativeIds
+        MaxResults: 100
+      itemsPath: PrefixLists
+      identityPath: PrefixListId
+      statePath: PrefixListStatus
+      pagination:
+        type: token
+        tokenParameter: NextToken
+        tokenPath: NextToken
+        pageSizeParameter: MaxResults
+        maxPageSize: 100

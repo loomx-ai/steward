@@ -98,6 +98,11 @@ func (r *Runtime) EnrichInventoryBatch(
 	enriched = enrichNLBInventoryTopology(enriched)
 	enriched = enrichALBListenerServerGroups(enriched)
 	enriched = enrichFCAliasVersions(enriched)
+	enriched = enrichVPCFlowLogs(enriched)
+	enriched, err = r.enrichPrefixListAssociations(ctx, request, enriched)
+	if err != nil {
+		return nil, err
+	}
 	enriched, err = r.enrichEncryptionKeys(ctx, request, enriched)
 	if err != nil {
 		return nil, err

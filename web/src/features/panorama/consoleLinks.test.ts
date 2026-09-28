@@ -794,7 +794,7 @@ describe("cloudConsoleURL", () => {
       return spec.nativeType && spec.template && url ? [] : [spec.name];
     });
 
-    expect(alicloudSpecs).toHaveLength(208);
+    expect(alicloudSpecs).toHaveLength(212);
     expect(invalid).toEqual([]);
   });
 

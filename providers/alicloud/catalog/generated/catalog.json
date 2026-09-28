@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "9dc1e603558359382406f99918ae23ea6ca1743b394c078cd85b4801692839d9",
+    "checksum": "a27e2a6e99d292e5c87ead09596fa2e5fcf771a37e24c579aff681cf6a1da78c",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "f7e03beaeaa118af27b01545666b43bb5538a8a674b09d01b09b6bb1261c12df",
+  "content_checksum": "5babec44b8ece95e728555be062028a7b39a2f99e4aa2cb79c4ac991e38ed269",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -3750,6 +3750,47 @@
       }
     },
     {
+      "id": "AlibabaCloud.DeleteFlowLog",
+      "name": "DeleteFlowLog",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/vpc/flow-logs/{FlowLogId}",
+      "destructive": true,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.DeleteHaVip",
+      "name": "DeleteHaVip",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/vpc/ha-vips/{HaVipId}",
+      "destructive": true,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
       "id": "AlibabaCloud.DeleteImage",
       "name": "DeleteImage",
       "service": "AlibabaCloud",
@@ -3952,6 +3993,30 @@
       "service": "AlibabaCloud",
       "method": "DELETE",
       "path": "/ecs/network-interfaces/{NetworkInterfaceId}",
+      "destructive": true,
+      "call": {
+        "product": "Ecs",
+        "version": "2014-05-26",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ecs.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou-finance": "ecs.aliyuncs.com",
+          "cn-north-2-gov-1": "ecs.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.DeletePrefixList",
+      "name": "DeletePrefixList",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/ecs/prefix-lists/{PrefixListId}",
       "destructive": true,
       "call": {
         "product": "Ecs",
@@ -4198,6 +4263,27 @@
         "method": "POST",
         "path": "/",
         "endpoint": "vpcpeer.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
+      }
+    },
+    {
+      "id": "AlibabaCloud.DeleteVpcPrefixList",
+      "name": "DeleteVpcPrefixList",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/vpc/prefix-lists/{PrefixListId}",
+      "destructive": true,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
         "request_body_type": "formData",
         "body_type": "json",
         "parameter_position": "query",
@@ -4506,6 +4592,46 @@
       }
     },
     {
+      "id": "AlibabaCloud.DescribeFlowLogs",
+      "name": "DescribeFlowLogs",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/vpc/flow-logs",
+      "destructive": false,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.DescribeHaVips",
+      "name": "DescribeHaVips",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/vpc/ha-vips",
+      "destructive": false,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.DescribeImageSharePermission",
       "name": "DescribeImageSharePermission",
       "service": "AlibabaCloud",
@@ -4687,6 +4813,54 @@
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/ecs/network-interfaces",
+      "destructive": false,
+      "call": {
+        "product": "Ecs",
+        "version": "2014-05-26",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ecs.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou-finance": "ecs.aliyuncs.com",
+          "cn-north-2-gov-1": "ecs.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.DescribePrefixListAssociations",
+      "name": "DescribePrefixListAssociations",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/ecs/prefix-lists/{PrefixListId}/associations",
+      "destructive": false,
+      "call": {
+        "product": "Ecs",
+        "version": "2014-05-26",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "ecs.{region}.aliyuncs.com",
+        "endpoint_overrides": {
+          "cn-hangzhou-finance": "ecs.aliyuncs.com",
+          "cn-north-2-gov-1": "ecs.aliyuncs.com"
+        },
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.DescribePrefixLists",
+      "name": "DescribePrefixLists",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/ecs/prefix-lists",
       "destructive": false,
       "call": {
         "product": "Ecs",
@@ -6835,6 +7009,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.GetVpcPrefixListAssociations",
+      "name": "GetVpcPrefixListAssociations",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/vpc/prefix-lists/{PrefixListId}/associations",
+      "destructive": false,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.HBR.DeleteHanaInstance",
       "name": "DeleteHanaInstance",
       "service": "AlibabaCloud",
@@ -7280,6 +7474,26 @@
       "service": "AlibabaCloud",
       "method": "GET",
       "path": "/vpc/nat-ips",
+      "destructive": false,
+      "call": {
+        "product": "Vpc",
+        "version": "2016-04-28",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "vpc.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ListPrefixLists",
+      "name": "ListPrefixLists",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/vpc/prefix-lists",
       "destructive": false,
       "call": {
         "product": "Vpc",
@@ -12549,6 +12763,14 @@
       ]
     },
     {
+      "native_type": "ACS::ECS::PrefixList",
+      "class": "network.prefix_list",
+      "display_name": "ECS Prefix List",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::ECS::SecurityGroup",
       "class": "network.security_group",
       "display_name": "ECS Security Group",
@@ -13349,9 +13571,25 @@
       ]
     },
     {
+      "native_type": "ACS::VPC::FlowLog",
+      "class": "observability.flow_log",
+      "display_name": "VPC Flow Log",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::VPC::GatewayEndpoint",
       "class": "network.endpoint",
       "display_name": "VPC Gateway Endpoint",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::VPC::HaVip",
+      "class": "network.ip_address",
+      "display_name": "High-availability Virtual IP",
       "scope_kinds": [
         "region"
       ]
@@ -13392,6 +13630,14 @@
       "native_type": "ACS::VPC::PeerConnection",
       "class": "network.peer_connection",
       "display_name": "VPC Peer Connection",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::VPC::PrefixList",
+      "class": "network.prefix_list",
+      "display_name": "VPC Prefix List",
       "scope_kinds": [
         "region"
       ]

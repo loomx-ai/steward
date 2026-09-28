@@ -6287,6 +6287,44 @@
    "RequestId": "473469C7-AA6F-4DC5-B3DB-A3DC0DE3C83E",
    "TotalCount": 2
   },
+  "Ecs@2014-05-26#DescribePrefixListAssociations": {
+   "NextToken": "AAAAAdDWBF2****",
+   "PrefixListAssociations": {
+    "PrefixListAssociation": [
+     {
+      "ResourceId": "sg-bp11ujym6xsff6l0****",
+      "ResourceType": "securitygroup"
+     }
+    ]
+   },
+   "RequestId": "38793DB8-A4B2-4AEC-BFD3-111234E9188D"
+  },
+  "Ecs@2014-05-26#DescribePrefixLists": {
+   "NextToken": "AAAAAdDWBF2****",
+   "PrefixLists": {
+    "PrefixList": [
+     {
+      "AddressFamily": "IPv4",
+      "AssociationCount": 1,
+      "CreationTime": "2021-02-20T07:11Z",
+      "Description": "This is description.",
+      "MaxEntries": 20,
+      "PrefixListId": "pl-x1j1k5ykzqlixdcy****",
+      "PrefixListName": "PrefixListNameSample",
+      "ResourceGroupId": "rg-bp67acfmxazb4p****\n",
+      "Tags": {
+       "Tag": [
+        {
+         "TagKey": "TestValue\n",
+         "TagValue": "TestKey"
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "RequestId": "38793DB8-A4B2-4AEC-BFD3-111234E9188D"
+  },
   "Ecs@2014-05-26#DescribeSecurityGroups": {
    "NextToken": "e71d8a535bd9cc11",
    "PageNumber": 1,
@@ -10682,6 +10720,94 @@
    "RequestId": "4EC47282-1B74-4534-BD0E-403F3EE64CAF",
    "TotalCount": 1
   },
+  "Vpc@2016-04-28#DescribeFlowLogs": {
+   "FlowLogs": {
+    "FlowLog": [
+     {
+      "AggregationInterval": 10,
+      "BusinessStatus": "Normal",
+      "CreationTime": "2022-01-21T03:08:50Z",
+      "Description": "Description",
+      "FlowLogDeliverErrorMessage": "UnavaliableTarget",
+      "FlowLogDeliverStatus": "FAILED",
+      "FlowLogId": "fl-bp1f6qqhsrc2c12ta****",
+      "FlowLogName": "myFlowlog",
+      "IpVersion": "IPv4",
+      "LogFormat": "",
+      "LogStoreName": "FlowLogStore",
+      "ProjectName": "FlowLogProject",
+      "RegionId": "cn-hangzhou",
+      "ResourceGroupId": "rg-bp67acfmxazb4ph****",
+      "ResourceId": "eni-askldfas****",
+      "ResourceType": "NetworkInterface",
+      "ServiceType": "sls",
+      "Status": "Active",
+      "Tags": {
+       "Tag": [
+        {
+         "Key": "FinanceDept",
+         "Value": "FinanceJoshua"
+        }
+       ]
+      },
+      "TrafficPath": {
+       "TrafficPathList": [
+        "all"
+       ]
+      },
+      "TrafficType": "All"
+     }
+    ]
+   },
+   "PageNumber": "1",
+   "PageSize": "20",
+   "RequestId": "F7DDDC17-FA06-4AC2-8F35-59D2470FCFC1",
+   "Success": "true",
+   "TotalCount": "1"
+  },
+  "Vpc@2016-04-28#DescribeHaVips": {
+   "HaVips": {
+    "HaVip": [
+     {
+      "AssociatedEipAddresses": {
+       "associatedEipAddresse": [
+        "121.12.XX.XX"
+       ]
+      },
+      "AssociatedInstanceType": "EcsInstance",
+      "AssociatedInstances": {
+       "associatedInstance": [
+        "i-bp145q7glnuzdvzu21****"
+       ]
+      },
+      "ChargeType": "none",
+      "CreateTime": "2021-07-03T14:25:26Z",
+      "Description": "My HaVip",
+      "HaVipId": "havip-bp149uyvut73dpld****",
+      "IpAddress": "192.168.24.5",
+      "MasterInstanceId": "i-bp145q7glnuzdvz****",
+      "Name": "test",
+      "RegionId": "cn-hangzhou",
+      "ResourceGroupId": "rg-bp67acfmxazb4ph****",
+      "Status": "Available",
+      "Tags": {
+       "Tag": [
+        {
+         "Key": "FinanceDept",
+         "Value": "FinanceJoshua"
+        }
+       ]
+      },
+      "VSwitchId": "vsw-bp1pkt1fba8e824ez****",
+      "VpcId": "vpc-bp1kcm36tevkpms97****"
+     }
+    ]
+   },
+   "PageNumber": 1,
+   "PageSize": 10,
+   "RequestId": "33E480C5-B46F-4CA5-B6FD-D77C746E86AB",
+   "TotalCount": 1
+  },
   "Vpc@2016-04-28#DescribeIpv6Gateways": {
    "Ipv6Gateways": {
     "Ipv6Gateway": [
@@ -11478,6 +11604,26 @@
      }
     ]
    }
+  },
+  "Vpc@2016-04-28#GetVpcPrefixListAssociations": {
+   "Count": 1,
+   "NextToken": "FFmyTO70tTpLG6I3FmYAXGKPd****",
+   "PrefixListAssociation": [
+    {
+     "CidrList": "192.168.0.0/16",
+     "OwnerId": "153460731706****",
+     "PrefixListId": "pl-0b7hwu67****",
+     "Reason": "failed",
+     "RegionId": "cn-hangzhou",
+     "ResourceId": "vtb-bp1drpcfz9srr393h****",
+     "ResourceType": "vpcRouteTable",
+     "ResourceUid": "132193271328****",
+     "Status": "Success",
+     "SuppressedList": "192.124.0.0/16"
+    }
+   ],
+   "RequestId": "4EC47282-1B74-4534-BD0E-403F3EE64CAF",
+   "TotalCount": 1
   },
   "Vpc@2016-04-28#ListDhcpOptionsSets": {
    "DhcpOptionsSets": [

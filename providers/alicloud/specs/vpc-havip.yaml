@@ -1,0 +1,71 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::HaVip
+  class: network.ip_address
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpc/{regionId}/havips"
+  displayNames:
+    zh-CN: 高可用虚拟 IP
+    en-US: High-availability Virtual IP
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeHaVips
+    parameters:
+      RegionId: scope.location
+    itemsPath: HaVips.HaVip
+    identityPath: HaVipId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  createdAt: CreateTime
+  ipAddress: IpAddress
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+  masterInstanceId: MasterInstanceId
+  associatedInstanceType: AssociatedInstanceType
+  chargeType: ChargeType
+  resourceGroupId: ResourceGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: member_of
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+actions:
+  delete:
+    operation: DeleteHaVip
+    parameters:
+      RegionId: scope.location
+      HaVipId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: DescribeHaVips
+      parameters:
+        RegionId: scope.location
+        Filter.1.Key: HaVipId
+        Filter.1.Value.1: resource.nativeId
+        PageSize: 10
+      itemsPath: HaVips.HaVip
+      identityPath: HaVipId
+      statePath: Status
+      pagination:
+        type: page-number
+        pageParameter: PageNumber
+        pageSizeParameter: PageSize
+        totalPath: TotalCount
+        maxPageSize: 50

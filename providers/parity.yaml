@@ -1290,6 +1290,26 @@ resources:
     - AWS::ECR::Repository
   status: pending_verification
   notes: Inventory only. cr 2018-12-01 has no instance deletion API (checked 2026-09-28).
+- alicloud: ACS::ECS::PrefixList
+  spec: providers/alicloud/specs/ecs-prefix-list.yaml
+  class: network.prefix_list
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    unimplemented_resources:
+    - networksecurity.googleapis.com/AddressGroup
+  azure:
+    unimplemented_resources:
+    - Microsoft.Network/ipGroups
+  aws:
+    resources:
+    - AWS::EC2::PrefixList
+  status: pending_verification
+  notes: DeletePrefixList fails with NotAllowed.AssociationExist while a security group references the list, so
+    the referencing security groups are deleted first.
 - alicloud: ACS::EMR::Cluster
   spec: providers/alicloud/specs/emr-cluster.yaml
   class: data.processing_cluster
@@ -1659,6 +1679,64 @@ resources:
   status: pending_verification
   notes: Deleting a project deletes its logstores, including service-created internal logstores; each
     is then confirmed absent.
+- alicloud: ACS::VPC::FlowLog
+  spec: providers/alicloud/specs/vpc-flow-log.yaml
+  class: observability.flow_log
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - networkmanagement.googleapis.com/VpcFlowLogsConfig
+  azure:
+    resources:
+    - Microsoft.Network/networkWatchers/flowLogs
+  aws:
+    resources:
+    - AWS::EC2::FlowLog
+  status: pending_verification
+  notes: DeleteFlowLog fails with ProjectOrLogstoreNotExist once its logstore is gone and with
+    Forbidden.OperateManagedFlowLog for flow logs managed from Simple Log Service, which are not deleted.
+- alicloud: ACS::VPC::HaVip
+  spec: providers/alicloud/specs/vpc-havip.yaml
+  class: network.ip_address
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: Compute Engine moves internal addresses with alias IP ranges or internal passthrough load balancers;
+      there is no floating virtual IP resource.
+  azure:
+    notes: Floating IP is a property of a load-balancing rule; there is no high-availability virtual IP resource.
+  aws:
+    notes: EC2 moves secondary private IP addresses between network interfaces; there is no high-availability
+      virtual IP resource.
+  status: pending_verification
+  notes: DeleteHaVip fails while a route entry points to the virtual IP or an EIP is bound to it; those
+    failures are not retried.
+- alicloud: ACS::VPC::PrefixList
+  spec: providers/alicloud/specs/vpc-prefix-list.yaml
+  class: network.prefix_list
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    notes: VPC routes take destination ranges directly; Google Cloud has no route prefix list resource.
+  azure:
+    notes: Route tables take address prefixes or service tags directly; Azure has no route prefix list
+      resource.
+  aws:
+    resources:
+    - AWS::EC2::PrefixList
+  status: pending_verification
+  notes: VPC and transit router route tables that reference the list are deleted first. Prefix lists shared by
+    another account are not deleted.
 - alicloud: ACS::VPN::CustomerGateway
   spec: providers/alicloud/specs/customer-gateway.yaml
   class: network.customer_gateway

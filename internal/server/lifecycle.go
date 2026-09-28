@@ -177,6 +177,7 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 			alihooks.NewServiceManagedNetworks(),
 			alihooks.NewARMSEnvironments(),
 			alihooks.NewConfigurationTopology(),
+			alihooks.NewPrefixListUsers(),
 		)
 		if len(controllerRegions) == 0 {
 			return contributors, nil

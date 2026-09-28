@@ -18,6 +18,7 @@ var officialExampleGaps = map[string]string{
 	"Oss@2019-05-17#GetBucketInfo":         "OSS publishes XML response examples only.",
 	"Vpc@2016-04-28#ListIpv4Gateways":      "The portal publishes no response example.",
 	"Vpc@2016-04-28#DescribeIpv6Addresses": "The portal publishes no response example.",
+	"Vpc@2016-04-28#ListPrefixLists":       "The portal publishes no response example.",
 	"OpenSearch@2017-12-25#ListAppGroups":  "The JSON example leaves id blank; the XML example of the same operation carries 110116134.",
 }
 

@@ -14032,6 +14032,38 @@
      ],
      "risk_type": "none"
     },
+    "DeletePrefixList": {
+     "deprecated": false,
+     "error_codes": [
+      "InvalidPrefixListId.NotFound",
+      "InvalidRegionId.NotFound",
+      "NotAllowed.AssociationExist"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "PrefixListId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
     "DeleteSecurityGroup": {
      "deprecated": false,
      "error_codes": [
@@ -16067,6 +16099,139 @@
       "PageSize",
       "RequestId",
       "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "DescribePrefixListAssociations": {
+     "deprecated": false,
+     "error_codes": [
+      "InvalidParameter",
+      "InvalidPrefixListId.NotFound",
+      "InvalidRegionId.NotFound",
+      "NotSupported.ResourceType"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PrefixListId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "NextToken",
+      "PrefixListAssociations",
+      "PrefixListAssociations.PrefixListAssociation",
+      "PrefixListAssociations.PrefixListAssociation.ResourceId",
+      "PrefixListAssociations.PrefixListAssociation.ResourceType",
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
+    "DescribePrefixLists": {
+     "deprecated": false,
+     "error_codes": [
+      "InvalidParameter",
+      "InvalidRegionId.NotFound",
+      "LimitExceed.PrefixListId"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "AddressFamily",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PrefixListId",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "PrefixListName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tag",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "NextToken",
+      "PrefixLists",
+      "PrefixLists.PrefixList",
+      "PrefixLists.PrefixList.AddressFamily",
+      "PrefixLists.PrefixList.AssociationCount",
+      "PrefixLists.PrefixList.CreationTime",
+      "PrefixLists.PrefixList.Description",
+      "PrefixLists.PrefixList.MaxEntries",
+      "PrefixLists.PrefixList.PrefixListId",
+      "PrefixLists.PrefixList.PrefixListName",
+      "PrefixLists.PrefixList.ResourceGroupId",
+      "PrefixLists.PrefixList.Tags",
+      "PrefixLists.PrefixList.Tags.Tag",
+      "PrefixLists.PrefixList.Tags.Tag.TagKey",
+      "PrefixLists.PrefixList.Tags.Tag.TagValue",
+      "RequestId"
      ],
      "risk_type": "none"
     },
@@ -32632,6 +32797,91 @@
      ],
      "risk_type": "none"
     },
+    "DeleteFlowLog": {
+     "deprecated": false,
+     "error_codes": [
+      "FlowLogNumberOverLimit",
+      "Forbidden.OperateManagedFlowLog",
+      "IncorrectStatus.flowlog",
+      "InvalidHdMonitorStatus",
+      "InvalidInstanceId",
+      "InvalidInstanceId.NotFound",
+      "InvalidRegionId.NotFound",
+      "InvalidResourceId.NotFound",
+      "InvalidStatus",
+      "ParameterInvalid",
+      "ProjectOrLogstoreNotExist",
+      "SourceProjectNotExist",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "FlowLogId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId",
+      "Success"
+     ],
+     "risk_type": "none"
+    },
+    "DeleteHaVip": {
+     "deprecated": false,
+     "error_codes": [
+      "DependencyViolation.HaVipAssociatedWithEIP",
+      "DependencyViolation.HaVipReferedByRouteEntry",
+      "Forbidden.HaVip",
+      "IncorrectHaVipStatus",
+      "IncorrectStatus",
+      "InvalidHaVipId.NotFound",
+      "InvalidRegionId.NotFound"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "HaVipId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
     "DeleteIpsecServer": {
      "deprecated": false,
      "error_codes": [
@@ -33437,6 +33687,53 @@
      ],
      "risk_type": ""
     },
+    "DeleteVpcPrefixList": {
+     "deprecated": false,
+     "error_codes": [
+      "DependencyViolation.PrefixListRelation",
+      "DependencyViolation.ShareResource",
+      "IncorrectStatus.PrefixList",
+      "IncorrectStatus.SystemPrefixList",
+      "OperationDenied.DeleteShareResource",
+      "ResourceNotFound.PrefixList\t"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "DryRun",
+       "required": false,
+       "type": "boolean"
+      },
+      {
+       "in": "query",
+       "name": "PrefixListId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
     "DeleteVpnConnection": {
      "deprecated": false,
      "error_codes": [
@@ -34012,6 +34309,232 @@
       "TotalCount"
      ],
      "risk_type": "none"
+    },
+    "DescribeFlowLogs": {
+     "deprecated": false,
+     "error_codes": [
+      "InvalidInstanceId",
+      "InvalidRegionId.NotFound",
+      "ParameterInvalid",
+      "ProjectOrLogstoreNotExist",
+      "SourceProjectNotExist",
+      "Unauthorized"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "Description",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "FlowLogId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "FlowLogName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "LogStoreName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "ProjectName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Status",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tags",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "TrafficType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "VpcId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "FlowLogs",
+      "FlowLogs.FlowLog",
+      "FlowLogs.FlowLog.AggregationInterval",
+      "FlowLogs.FlowLog.BusinessStatus",
+      "FlowLogs.FlowLog.CreationTime",
+      "FlowLogs.FlowLog.Description",
+      "FlowLogs.FlowLog.FlowLogDeliverErrorMessage",
+      "FlowLogs.FlowLog.FlowLogDeliverStatus",
+      "FlowLogs.FlowLog.FlowLogId",
+      "FlowLogs.FlowLog.FlowLogName",
+      "FlowLogs.FlowLog.IpVersion",
+      "FlowLogs.FlowLog.LogFormat",
+      "FlowLogs.FlowLog.LogStoreName",
+      "FlowLogs.FlowLog.ProjectName",
+      "FlowLogs.FlowLog.RegionId",
+      "FlowLogs.FlowLog.ResourceGroupId",
+      "FlowLogs.FlowLog.ResourceId",
+      "FlowLogs.FlowLog.ResourceType",
+      "FlowLogs.FlowLog.ServiceType",
+      "FlowLogs.FlowLog.Status",
+      "FlowLogs.FlowLog.Tags",
+      "FlowLogs.FlowLog.Tags.Tag",
+      "FlowLogs.FlowLog.Tags.Tag.Key",
+      "FlowLogs.FlowLog.Tags.Tag.Value",
+      "FlowLogs.FlowLog.TrafficPath",
+      "FlowLogs.FlowLog.TrafficPath.TrafficPathList",
+      "FlowLogs.FlowLog.TrafficType",
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "Success",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "DescribeHaVips": {
+     "deprecated": false,
+     "error_codes": [
+      "Forbidden.HaVip",
+      "InvalidFilterKey.ValueNotSupported",
+      "InvalidRegionId.NotFound"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "Filter",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "PageNumber",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "PageSize",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tags",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "HaVips",
+      "HaVips.HaVip",
+      "HaVips.HaVip.AssociatedEipAddresses",
+      "HaVips.HaVip.AssociatedEipAddresses.associatedEipAddresse",
+      "HaVips.HaVip.AssociatedInstanceType",
+      "HaVips.HaVip.AssociatedInstances",
+      "HaVips.HaVip.AssociatedInstances.associatedInstance",
+      "HaVips.HaVip.ChargeType",
+      "HaVips.HaVip.CreateTime",
+      "HaVips.HaVip.Description",
+      "HaVips.HaVip.HaVipId",
+      "HaVips.HaVip.IpAddress",
+      "HaVips.HaVip.MasterInstanceId",
+      "HaVips.HaVip.Name",
+      "HaVips.HaVip.RegionId",
+      "HaVips.HaVip.ResourceGroupId",
+      "HaVips.HaVip.Status",
+      "HaVips.HaVip.Tags",
+      "HaVips.HaVip.Tags.Tag",
+      "HaVips.HaVip.Tags.Tag.Key",
+      "HaVips.HaVip.Tags.Tag.Value",
+      "HaVips.HaVip.VSwitchId",
+      "HaVips.HaVip.VpcId",
+      "PageNumber",
+      "PageSize",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": ""
     },
     "DescribeIpv6Addresses": {
      "deprecated": false,
@@ -35937,6 +36460,62 @@
      ],
      "risk_type": "none"
     },
+    "GetVpcPrefixListAssociations": {
+     "deprecated": false,
+     "error_codes": [
+      "IllegalParam.NextToken"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PrefixListId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "Count",
+      "NextToken",
+      "PrefixListAssociation",
+      "PrefixListAssociation.CidrList",
+      "PrefixListAssociation.OwnerId",
+      "PrefixListAssociation.PrefixListId",
+      "PrefixListAssociation.Reason",
+      "PrefixListAssociation.RegionId",
+      "PrefixListAssociation.ResourceId",
+      "PrefixListAssociation.ResourceType",
+      "PrefixListAssociation.ResourceUid",
+      "PrefixListAssociation.Status",
+      "PrefixListAssociation.SuppressedList",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
     "ListDhcpOptionsSets": {
      "deprecated": false,
      "error_codes": [
@@ -36308,6 +36887,87 @@
       "NatIps.NatIpName",
       "NatIps.NatIpStatus",
       "NextToken",
+      "RequestId",
+      "TotalCount"
+     ],
+     "risk_type": "none"
+    },
+    "ListPrefixLists": {
+     "deprecated": false,
+     "error_codes": [
+      "IllegalParam.NextToken"
+     ],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "MaxResults",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "NextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "PrefixListIds",
+       "required": false,
+       "type": "array"
+      },
+      {
+       "in": "query",
+       "name": "PrefixListName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "RegionId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "ResourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "Tags",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "MaxResults",
+      "NextToken",
+      "PrefixLists",
+      "PrefixLists.CidrBlocks",
+      "PrefixLists.CreationTime",
+      "PrefixLists.IpVersion",
+      "PrefixLists.MaxEntries",
+      "PrefixLists.OwnerId",
+      "PrefixLists.PrefixListDescription",
+      "PrefixLists.PrefixListId",
+      "PrefixLists.PrefixListName",
+      "PrefixLists.PrefixListStatus",
+      "PrefixLists.PrefixListType",
+      "PrefixLists.RegionId",
+      "PrefixLists.ResourceGroupId",
+      "PrefixLists.ShareType",
+      "PrefixLists.Status",
+      "PrefixLists.Tags",
+      "PrefixLists.Tags.Key",
+      "PrefixLists.Tags.Value",
       "RequestId",
       "TotalCount"
      ],

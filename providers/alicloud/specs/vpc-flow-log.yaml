@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::FlowLog
+  class: observability.flow_log
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpc/{regionId}/flowlogs"
+  displayNames:
+    zh-CN: VPC 流日志
+    en-US: VPC Flow Log
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeFlowLogs
+    parameters:
+      RegionId: scope.location
+    itemsPath: FlowLogs.FlowLog
+    identityPath: FlowLogId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: FlowLogName
+  state: Status
+  createdAt: CreationTime
+  resourceType: ResourceType
+  resourceId: ResourceId
+  projectName: ProjectName
+  logStoreName: LogStoreName
+  serviceType: ServiceType
+  resourceGroupId: ResourceGroupId
+relationships:
+  - type: attached_to
+    targetType: ACS::VPC::VPC
+    targetIdPath: resourceId
+  - type: attached_to
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: resourceId
+  - type: attached_to
+    targetType: ACS::ECS::NetworkInterface
+    targetIdPath: resourceId
+  - type: uses
+    targetType: ACS::SLS::Project
+    targetIdPath: projectName
+  - type: uses
+    targetType: ACS::SLS::LogStore
+    targetIdPath: logStoreRef
+actions:
+  delete:
+    operation: DeleteFlowLog
+    parameters:
+      RegionId: scope.location
+      FlowLogId: resource.nativeId
+    preconditions:
+      - path: ServiceType
+        allowedValues: [""]
+        reason: a flow log created from the Simple Log Service console is managed there and cannot be deleted through VPC
+    idempotency: readback
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: DescribeFlowLogs
+      parameters:
+        RegionId: scope.location
+        FlowLogId: resource.nativeId
+        PageSize: 50
+      itemsPath: FlowLogs.FlowLog
+      identityPath: FlowLogId
+      statePath: Status
+      pagination:
+        type: page-number
+        pageParameter: PageNumber
+        pageSizeParameter: PageSize
+        totalPath: TotalCount
+        maxPageSize: 50
