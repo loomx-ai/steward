@@ -2453,7 +2453,8 @@ resources:
     notes: Azure Functions have no alias resource; deployment slots are separate app instances, not
       pointers to published versions.
   aws:
-    notes: AWS::Lambda::Alias is the equivalent and is not modeled yet.
+    resources:
+    - AWS::Lambda::Alias
   status: pending_verification
   notes: DeleteServiceVersion fails with VersionAlreadyInUse while an alias routes to the version, so
     aliases, including additional-weight routes, are deleted first.
@@ -2509,9 +2510,10 @@ resources:
   azure:
     notes: Azure Functions triggers are bindings in the function configuration, not ARM resources.
   aws:
-    notes: AWS::Lambda::EventSourceMapping is the equivalent for poll-based triggers and is not modeled
-      yet. Push-based triggers are Lambda resource-policy permissions and source-service notification
-      settings.
+    resources:
+    - AWS::Lambda::EventSourceMapping
+    notes: Event source mappings cover poll-based triggers. Push-based triggers are Lambda resource-policy
+      permissions and source-service notification settings, not separate resources.
   status: pending_verification
   notes: DeleteFunction fails with FunctionNotEmpty while the function has triggers.
 - alicloud: ACS::FC::Version
@@ -2529,7 +2531,8 @@ resources:
   azure:
     notes: Azure Functions keep no immutable published versions.
   aws:
-    notes: AWS::Lambda::Version is the equivalent and is not modeled yet.
+    resources:
+    - AWS::Lambda::Version
   status: pending_verification
   notes: DeleteService fails with ServiceNotEmpty while the service has functions, versions or aliases.
 - alicloud: ACS::FC3::Function
@@ -2569,9 +2572,10 @@ resources:
   azure:
     notes: Azure Functions triggers are bindings in the function configuration, not ARM resources.
   aws:
-    notes: AWS::Lambda::EventSourceMapping is the equivalent for poll-based triggers and is not modeled
-      yet. Push-based triggers are Lambda resource-policy permissions and source-service notification
-      settings.
+    resources:
+    - AWS::Lambda::EventSourceMapping
+    notes: Event source mappings cover poll-based triggers. Push-based triggers are Lambda resource-policy
+      permissions and source-service notification settings, not separate resources.
   status: pending_verification
   notes: DeleteFunction fails with FunctionNotEmpty while the function has triggers.
 - alicloud: ACS::Ga::Accelerator

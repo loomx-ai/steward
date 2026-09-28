@@ -150,10 +150,42 @@ func deriveCloudControlReferences(nativeType string, model map[string]any) {
 			group = "default"
 		}
 		model["schedule_group_name"] = group
+	case "AWS::Lambda::Alias", "AWS::Lambda::Version", "AWS::Lambda::EventSourceMapping":
+		// FunctionName may be a name, a partial ARN or a full ARN, with a
+		// qualifier; the function's identifier is its name.
+		if name := lambdaFunctionName(stringValue(model["FunctionName"])); name != "" {
+			model["function_name"] = name
+		}
+		// A version an alias routes to cannot be deleted before the alias.
+		if nativeType == "AWS::Lambda::Alias" {
+			arn := stringValue(model["AliasArn"])
+			function := arn[:max(strings.LastIndex(arn, ":"), 0)]
+			versions := []any{}
+			for _, version := range append([]string{stringValue(model["FunctionVersion"])}, cloudControlNetworkValues(model, []string{"RoutingConfig", "AdditionalVersionWeights", "FunctionVersion"})...) {
+				if version = strings.TrimSpace(version); function != "" && version != "" && version != "$LATEST" {
+					versions = append(versions, function+":"+version)
+				}
+			}
+			model["version_arns"] = versions
+		}
 	case "AWS::EC2::VPCEndpoint":
 		name := strings.TrimSpace(stringValue(model["ServiceName"]))
 		if index := strings.LastIndex(name, "."); index >= 0 && strings.HasPrefix(name[index+1:], "vpce-svc-") {
 			model["service_id"] = name[index+1:]
 		}
 	}
+}
+
+// lambdaFunctionName reduces a Lambda FunctionName reference to the function
+// name: "my-function", "123456789012:function:my-function" or
+// "arn:aws:lambda:us-west-2:123456789012:function:my-function:PROD".
+func lambdaFunctionName(reference string) string {
+	reference = strings.TrimSpace(reference)
+	if index := strings.Index(reference, "function:"); index >= 0 {
+		reference = reference[index+len("function:"):]
+	}
+	if index := strings.Index(reference, ":"); index >= 0 {
+		reference = reference[:index]
+	}
+	return reference
 }

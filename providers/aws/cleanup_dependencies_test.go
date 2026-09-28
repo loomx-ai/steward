@@ -307,3 +307,35 @@ func TestCommonProductServiceManagedResourcesAreProtected(t *testing.T) {
 		t.Fatalf("prefix lists = %v", model["prefix_list_ids"])
 	}
 }
+
+func TestLambdaAliasesAndVersionsFollowTheirFunction(t *testing.T) {
+	// FunctionName may be an ARN with a qualifier; an alias routes to its
+	// version and to the versions of its additional weights.
+	function := "arn:aws:lambda:us-east-1:123456789012:function:orders"
+	alias, err := cloudControlItem(CloudControlResource{Identifier: function + ":live", Properties: `{"AliasArn":"` + function + `:live","FunctionName":"` + function + `","FunctionVersion":"3","RoutingConfig":{"AdditionalVersionWeights":[{"FunctionVersion":"2","FunctionWeight":0.1}]}}`}, asset.ResourceKind{NativeType: "AWS::Lambda::Alias"}, asset.Scope{Kind: asset.ScopeRegion, NativeID: "us-east-1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if alias.Normalized["function_name"] != "orders" || strings.Join(stringSliceValue(alias.Normalized["version_arns"]), ",") != function+":3,"+function+":2" {
+		t.Fatalf("alias references = %+v", alias.Normalized)
+	}
+	for reference, want := range map[string]string{"orders": "orders", "123456789012:function:orders": "orders", function + ":$LATEST": "orders"} {
+		if got := lambdaFunctionName(reference); got != want {
+			t.Errorf("lambdaFunctionName(%q) = %q", reference, got)
+		}
+	}
+	// DeleteFunction deletes the function's versions and aliases with it.
+	contribution, err := NewLifecycle().Contribute(context.Background(), "scope", []asset.Asset{
+		awsAsset("function", "AWS::Lambda::Function", "orders", nil),
+		awsAsset("alias", "AWS::Lambda::Alias", function+":live", map[string]any{"function_name": "orders"}),
+		awsAsset("version", "AWS::Lambda::Version", function+":3", map[string]any{"function_name": "orders"}),
+	})
+	if err != nil || len(contribution.Bindings) != 2 {
+		t.Fatalf("contribution = %+v, %v", contribution, err)
+	}
+	for _, binding := range contribution.Bindings {
+		if binding.ControllerAssetID != "function" || binding.CleanupPolicy != graph.CleanupDelegate || !binding.DirectCleanupAllowed {
+			t.Fatalf("binding = %+v", binding)
+		}
+	}
+}

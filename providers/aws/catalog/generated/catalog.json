@@ -4,10 +4,10 @@
   "source": {
     "format": "smithy",
     "uri": "catalog/source/smithy.json",
-    "checksum": "e0a3e8787c43570540ad815cfd7b3138ea9f4fcad09203167e0774b05074ff76",
+    "checksum": "1127c74d124df2e87689708ff0239648599bfb7ca7649a915922fad6098ab3dd",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "bbd3e07c9bd1738d55bf50a07f9077951cb7e81c224e02ebe34e1fc67ff24077",
+  "content_checksum": "419a21693678d4f1df38d5ae6ee320981a9f9ecb74d1c7bb9228129ad50ff0c3",
   "operations": [
     {
       "id": "com.amazonaws.acmpca#DeleteCertificateAuthority",
@@ -3855,9 +3855,33 @@
       ]
     },
     {
+      "native_type": "AWS::Lambda::Alias",
+      "class": "serverless.alias",
+      "display_name": "Lambda Alias",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Lambda::EventSourceMapping",
+      "class": "serverless.trigger",
+      "display_name": "Lambda Event Source Mapping",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::Lambda::Function",
       "class": "compute.function",
       "display_name": "Lambda Function",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Lambda::Version",
+      "class": "serverless.version",
+      "display_name": "Lambda Version",
       "scope_kinds": [
         "region"
       ]

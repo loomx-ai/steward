@@ -1,7 +1,7 @@
 {
  "source": {
   "uri": "https://schema.cloudformation.us-east-1.amazonaws.com/CloudformationSchema.zip",
-  "sha256": "aec5281692a60e9414e2f95be16a0e894da81dcac8758be0d8177a37f9d96278"
+  "sha256": "4230e400203ca8d590e223e2a58fce0996fdaa3a767d823422bb0cd875cd0065"
  },
  "types": {
   "AWS::ACMPCA::CertificateAuthority": {
@@ -11423,6 +11423,162 @@
     "/properties/Arn"
    ]
   },
+  "AWS::Lambda::Alias": {
+   "member": "aws-lambda-alias.json",
+   "sha256": "058c16fec7392075d832685f7f40b9c519fe855bddbd1f5f767c70fd53a6ebdb",
+   "primaryIdentifier": [
+    "/properties/AliasArn"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "lambda:CreateAlias",
+      "lambda:GetProvisionedConcurrencyConfig",
+      "lambda:PutProvisionedConcurrencyConfig"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "lambda:DeleteAlias",
+      "lambda:GetAlias"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "lambda:ListAliases"
+     ],
+     "handlerSchema": {
+      "properties": {
+       "FunctionName": {
+        "$ref": "resource-schema.json#/properties/FunctionName"
+       }
+      },
+      "required": [
+       "FunctionName"
+      ]
+     }
+    },
+    "read": {
+     "permissions": [
+      "lambda:GetAlias",
+      "lambda:GetProvisionedConcurrencyConfig"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "codedeploy:CreateDeployment",
+      "codedeploy:GetDeployment",
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeploymentGroup",
+      "codedeploy:StopDeployment",
+      "lambda:DeleteProvisionedConcurrencyConfig",
+      "lambda:GetAlias",
+      "lambda:GetProvisionedConcurrencyConfig",
+      "lambda:PutProvisionedConcurrencyConfig",
+      "lambda:UpdateAlias"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "AliasArn": "string",
+    "Description": "string",
+    "FunctionName": "string",
+    "FunctionVersion": "string",
+    "Name": "string",
+    "ProvisionedConcurrencyConfig": "$ref",
+    "RoutingConfig": "$ref"
+   },
+   "readOnlyProperties": [
+    "/properties/AliasArn"
+   ]
+  },
+  "AWS::Lambda::EventSourceMapping": {
+   "member": "aws-lambda-eventsourcemapping.json",
+   "sha256": "208cde747dfe297087b3132252c7b8c7bfd0f5f89ba301105d2db887daef5608",
+   "primaryIdentifier": [
+    "/properties/Id"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:GenerateDataKey",
+      "lambda:CreateEventSourceMapping",
+      "lambda:GetEventSourceMapping",
+      "lambda:TagResource"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "kms:Decrypt",
+      "lambda:DeleteEventSourceMapping",
+      "lambda:GetEventSourceMapping"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "lambda:ListEventSourceMappings"
+     ]
+    },
+    "read": {
+     "permissions": [
+      "kms:Decrypt",
+      "lambda:GetEventSourceMapping",
+      "lambda:ListTags"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:GenerateDataKey",
+      "lambda:GetEventSourceMapping",
+      "lambda:TagResource",
+      "lambda:UntagResource",
+      "lambda:UpdateEventSourceMapping"
+     ]
+    }
+   },
+   "taggable": true,
+   "properties": {
+    "AmazonManagedKafkaEventSourceConfig": "$ref",
+    "BatchSize": "integer",
+    "BisectBatchOnFunctionError": "boolean",
+    "DestinationConfig": "$ref",
+    "DocumentDBEventSourceConfig": "$ref",
+    "Enabled": "boolean",
+    "EventSourceArn": "string",
+    "EventSourceMappingArn": "string",
+    "FilterCriteria": "$ref",
+    "FunctionName": "string",
+    "FunctionResponseTypes": "array",
+    "Id": "string",
+    "KmsKeyArn": "string",
+    "LoggingConfig": "$ref",
+    "MaximumBatchingWindowInSeconds": "integer",
+    "MaximumRecordAgeInSeconds": "integer",
+    "MaximumRetryAttempts": "integer",
+    "MetricsConfig": "$ref",
+    "ParallelizationFactor": "integer",
+    "ProvisionedPollerConfig": "$ref",
+    "Queues": "array",
+    "ScalingConfig": "$ref",
+    "SelfManagedEventSource": "$ref",
+    "SelfManagedKafkaEventSourceConfig": "$ref",
+    "SourceAccessConfigurations": "array",
+    "StartingPosition": "string",
+    "StartingPositionTimestamp": "number",
+    "Tags": "array",
+    "Topics": "array",
+    "TumblingWindowInSeconds": "integer"
+   },
+   "readOnlyProperties": [
+    "/properties/EventSourceMappingArn",
+    "/properties/Id"
+   ]
+  },
   "AWS::Lambda::Function": {
    "member": "aws-lambda-function.json",
    "sha256": "dc32878aba8a4aa61621bb65d7b88266152a751c876550b5e566dc0245c99652",
@@ -11558,6 +11714,81 @@
     "/properties/SnapStartResponse",
     "/properties/SnapStartResponse/ApplyOn",
     "/properties/SnapStartResponse/OptimizationStatus"
+   ]
+  },
+  "AWS::Lambda::Version": {
+   "member": "aws-lambda-version.json",
+   "sha256": "585acd545d5ed8361ff14c8de97a4caf0eda663596c92abedbee27fbf523b91e",
+   "primaryIdentifier": [
+    "/properties/FunctionArn"
+   ],
+   "handlers": {
+    "create": {
+     "permissions": [
+      "lambda:GetFunctionConfiguration",
+      "lambda:GetProvisionedConcurrencyConfig",
+      "lambda:GetRuntimeManagementConfig",
+      "lambda:ListVersionsByFunction",
+      "lambda:PublishVersion",
+      "lambda:PutFunctionScalingConfig",
+      "lambda:PutProvisionedConcurrencyConfig",
+      "lambda:PutRuntimeManagementConfig"
+     ]
+    },
+    "delete": {
+     "permissions": [
+      "lambda:DeleteFunction",
+      "lambda:GetFunctionConfiguration"
+     ]
+    },
+    "list": {
+     "permissions": [
+      "lambda:ListVersionsByFunction"
+     ],
+     "handlerSchema": {
+      "properties": {
+       "FunctionName": {
+        "description": "The name of the Lambda function, version, or alias.",
+        "type": "string",
+        "pattern": "^(arn:(aws[a-zA-Z-]*)?:lambda:)?((eusc-)?[a-z]{2}((-gov)|(-iso([a-z]?)))?-[a-z]+-\\d{1}:)?(\\d{12}:)?(function:)?([a-zA-Z0-9-_]+)(:(\\$LATEST|[a-zA-Z0-9-_]+))?$",
+        "minLength": 1,
+        "maxLength": 140
+       }
+      },
+      "required": [
+       "FunctionName"
+      ]
+     }
+    },
+    "read": {
+     "permissions": [
+      "lambda:GetFunctionConfiguration",
+      "lambda:GetFunctionScalingConfig",
+      "lambda:GetProvisionedConcurrencyConfig",
+      "lambda:GetRuntimeManagementConfig"
+     ]
+    },
+    "update": {
+     "permissions": [
+      "lambda:GetFunctionConfiguration",
+      "lambda:PutFunctionScalingConfig"
+     ]
+    }
+   },
+   "taggable": false,
+   "properties": {
+    "CodeSha256": "string",
+    "Description": "string",
+    "FunctionArn": "string",
+    "FunctionName": "string",
+    "FunctionScalingConfig": "$ref",
+    "ProvisionedConcurrencyConfig": "$ref",
+    "RuntimePolicy": "$ref",
+    "Version": "string"
+   },
+   "readOnlyProperties": [
+    "/properties/FunctionArn",
+    "/properties/Version"
    ]
   },
   "AWS::Lightsail::Instance": {

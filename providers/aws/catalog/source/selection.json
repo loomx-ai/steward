@@ -1649,6 +1649,33 @@
    "cloudformation": true
   },
   {
+   "nativeType": "AWS::Lambda::Alias",
+   "class": "serverless.alias",
+   "displayName": "Lambda Alias",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Lambda::EventSourceMapping",
+   "class": "serverless.trigger",
+   "displayName": "Lambda Event Source Mapping",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
+   "nativeType": "AWS::Lambda::Version",
+   "class": "serverless.version",
+   "displayName": "Lambda Version",
+   "scopeKinds": [
+    "region"
+   ],
+   "cloudformation": true
+  },
+  {
    "nativeType": "AWS::Lightsail::Instance",
    "class": "compute.simple_server",
    "displayName": "Lightsail Instance",

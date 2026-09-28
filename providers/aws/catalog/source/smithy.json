@@ -7152,9 +7152,33 @@
    ]
   },
   {
+   "nativeType": "AWS::Lambda::Alias",
+   "class": "serverless.alias",
+   "displayName": "Lambda Alias",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Lambda::EventSourceMapping",
+   "class": "serverless.trigger",
+   "displayName": "Lambda Event Source Mapping",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
    "nativeType": "AWS::Lambda::Function",
    "class": "compute.function",
    "displayName": "Lambda Function",
+   "scopeKinds": [
+    "region"
+   ]
+  },
+  {
+   "nativeType": "AWS::Lambda::Version",
+   "class": "serverless.version",
+   "displayName": "Lambda Version",
    "scopeKinds": [
     "region"
    ]

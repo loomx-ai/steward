@@ -80,6 +80,9 @@ var childDependencies = []childDependency{
 	// DeleteUserPool fails while the pool has a domain; the domain only
 	// serves the pool's managed login pages.
 	{parentType: "AWS::Cognito::UserPool", childType: cognitoUserPoolDomain, field: "UserPoolId", kind: "aws_cognito_user_pool_domain", mode: childRequired, automatic: true},
+	// DeleteFunction deletes all of the function's versions and aliases.
+	{parentType: "AWS::Lambda::Function", childType: "AWS::Lambda::Alias", field: "function_name", kind: "aws_lambda_alias", mode: childCascade},
+	{parentType: "AWS::Lambda::Function", childType: "AWS::Lambda::Version", field: "function_name", kind: "aws_lambda_version", mode: childCascade},
 	// A usage plan's keys are removed with the plan.
 	{parentType: "AWS::ApiGateway::UsagePlan", childType: "AWS::ApiGateway::UsagePlanKey", field: "UsagePlanId", kind: "aws_api_gateway_usage_plan_key", mode: childCascade},
 	// DeleteTrustStore fails while a listener's mutual TLS configuration uses

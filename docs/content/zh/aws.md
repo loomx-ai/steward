@@ -82,7 +82,7 @@ Steward 使用连接中的凭证读取一个 AWS 账号。每个已支持的资�
 | 类别 | 资源类型 |
 | --- | --- |
 | 计算 | EC2 实例、AMI、启动模板、专用主机、容量预留与容量预留队列、Auto Scaling 组、Lightsail 实例、密钥对、Instance Connect 终端节点、置放群组、WorkSpaces 云桌面与 WorkSpaces 目录、Elastic Beanstalk 应用程序与环境 |
-| 容器与无服务器 | EKS 集群、托管节点组、Fargate 配置文件与插件；ECS 集群、服务与任务定义；ECR 仓库与拉取缓存规则；Lambda；App Runner |
+| 容器与无服务器 | EKS 集群、托管节点组、Fargate 配置文件与插件；ECS 集群、服务与任务定义；ECR 仓库与拉取缓存规则；Lambda 函数、别名、版本与事件源映射；App Runner |
 | 网络 | VPC、子网、CIDR 块、路由表、安全组、网络 ACL、网卡、弹性 IP，互联网、仅出口、NAT 与虚拟私有网关，客户网关、VPN 连接、Client VPN 端点及其目标网络、授权规则与路由、托管前缀列表、IPAM 及其范围与池、VPC 对等连接、终端节点与终端节点服务、流日志、DHCP 选项集 |
 | 中转与混合网络 | 中转网关及其路由表、VPC/对等/Connect 挂载、组播域及其关联、成员与源；Direct Connect 连接、链路聚合组、网关、网关关联与虚拟接口；Cloud WAN 全球网络与核心网络；Global Accelerator 加速器、侦听器与终端节点组 |
 | 负载均衡、边缘与 DNS | 应用/网络/网关负载均衡器及其侦听器、目标组与信任存储、传统负载均衡器、CloudFront 分配、WAF Web ACL 及其关联、Shield Advanced 防护、Route 53 托管区域、运行状况检查、Resolver 规则与注册域名、API Gateway API、自定义域名、使用计划、使用计划密钥与 API 密钥、AppSync GraphQL API、Amplify 应用、VPC Lattice |
@@ -137,8 +137,8 @@ Steward 根据资源模型（例如资源所属的 VPC、子网与安全组）�
 | 服务托管网卡 | NAT 网关、VPC 终端节点、负载均衡器、EFS 挂载目标或 Lambda 创建的网卡属于对应服务，不能直接删除。 |
 | 弹性 IP | 只有在使用它的 NAT 网关或实例删除后，才会释放地址。 |
 | 必须先删的子资源 | Client VPN 端点要在解除全部目标网络关联之后删除，Config 规则要在删除其修正配置之后删除，这两类子资源会自动加入任务。WorkSpaces 目录要在其云桌面全部终止后才能注销，信任存储要在使用它的侦听器删除后才能删除；Steward 不会替你选中这些资源，未选中时任务会被阻断。 |
-| 随父资源删除 | 删除 MSK 集群会删除其主题，删除 SNS 主题会删除其订阅，删除 Client VPN 端点会删除其授权规则与手动添加的路由，删除使用计划会删除其密钥。任务会把它们列为随父资源删除。 |
-| 其他前置条件 | IPAM 的私有范围在 IPAM 之前删除，并自动加入任务；IPAM 池、知识库数据源和 Elastic Beanstalk 环境会阻断其所属范围、池、知识库或应用程序的删除，直到你选中它们；Cognito 用户池域在用户池之前删除。删除计划组会同时删除其中的计划。引用托管前缀列表的安全组、置放群组中的实例，会先于前缀列表或置放群组删除。 |
+| 随父资源删除 | 删除 MSK 集群会删除其主题，删除 Lambda 函数会删除其别名和版本，删除 SNS 主题会删除其订阅，删除 Client VPN 端点会删除其授权规则与手动添加的路由，删除使用计划会删除其密钥。任务会把它们列为随父资源删除。 |
+| 其他前置条件 | IPAM 的私有范围在 IPAM 之前删除，并自动加入任务；IPAM 池、知识库数据源和 Elastic Beanstalk 环境会阻断其所属范围、池、知识库或应用程序的删除，直到你选中它们；Cognito 用户池域在用户池之前删除。删除计划组会同时删除其中的计划。引用托管前缀列表的安全组、置放群组中的实例，会先于前缀列表或置放群组删除。Lambda 别名先于它指向的版本删除，事件源映射先于其函数删除；删除函数不会删除它的事件源映射。 |
 | 只能经父资源删除 | 合规包部署的规则、Elastic Beanstalk 环境的 CloudFormation 栈、Client VPN 子网关联自动添加的路由、EMR 集群的实例，只能通过对应的合规包、关联或集群删除。 |
 | CloudFormation | Steward 读取栈资源和处理后的模板，识别归属与 `DeletionPolicy`。`Retain` 或 `RetainExceptOnCreate` 资源按保留资源处理；启用终止保护的栈会阻止删除。 |
 
