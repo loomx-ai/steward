@@ -2034,7 +2034,7 @@ func TestRuntimeSpecCoverageMatchesActionableResourceKinds(t *testing.T) {
 			)
 		}
 	}
-	if len(runtime.bundle.Specs) != 207 || productAPISpecs != 193 || actionableSpecs != 190 {
+	if len(runtime.bundle.Specs) != 207 || productAPISpecs != 193 || actionableSpecs != 192 {
 		t.Fatalf(
 			"specs=%d product-api=%d actionable=%d",
 			len(runtime.bundle.Specs),
@@ -2211,15 +2211,13 @@ func TestUnsupportedInstanceResourceAuditIsExplicit(t *testing.T) {
 		"ACS::SDDP::Instance":                    {},
 		"ACS::SWAS::Instance":                    {},
 		"ACS::ThreatDetection::Instance":         {},
-		// Deployed APIs must be abolished in every stage before deletion.
-		"ACS::ApiGateway::Api": {},
 		// Removing a node shrinks its cluster; removing a member account
 		// cannot be undone.
 		"ACS::Eflo::Node":               {},
 		"ACS::ResourceManager::Account": {},
-		// Deleting an aggregator is reported by an ambiguous invalid-ID code.
-		"ACS::Config::Aggregator": {},
-		// Protected objects synchronized from cloud products return with them.
+		// DeleteDefenseResource exists, but the official ResourceOrigin
+		// descriptions contradict each other, so objects that access
+		// management recreates cannot be told apart from custom ones.
 		"ACS::WAFV3::DefenseResource": {},
 	}
 	wantDirectoryOnly := map[string]struct{}{}

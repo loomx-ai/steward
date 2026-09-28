@@ -33,3 +33,25 @@ fields:
   apiPath: ApiPath
   apiMethod: ApiMethod
   visibility: Visibility
+actions:
+  delete:
+    operation: AlibabaCloud.ApiGateway.DeleteApi
+    parameters:
+      GroupId: resource.normalized.groupId
+      ApiId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ApiGateway.DescribeApis
+      parameters:
+        GroupId: resource.normalized.groupId
+        ApiId: resource.nativeId
+        PageSize: 100
+      itemsPath: ApiSummarys.ApiSummary
+      identityPath: ApiId
+      pagination:
+        type: page-number
+        pageParameter: PageNumber
+        pageSizeParameter: PageSize
+        totalPath: TotalCount
+        maxPageSize: 100

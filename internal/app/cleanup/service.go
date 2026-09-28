@@ -1983,6 +1983,14 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningAzureLocalGuestRemoval, value.ID) {
 				result = append(result, plan.Warning{Code: plan.WarningAzureLocalGuestRemoval, AssetID: value.ID, Message: "Deleting this Azure Local guest-management resource can interrupt guest management; verify the guest-side result separately.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
+		case "ACS::ApiGateway::Api":
+			if value.Identity.Provider == asset.ProviderAliCloud && !selectionWarningExists(result, plan.WarningAPIGatewayAPIAbolish, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningAPIGatewayAPIAbolish, AssetID: value.ID, Message: "This API is taken offline in every environment it is published to before it is deleted; callers lose access immediately.", Evidence: map[string]any{"operation": "abolish_api", "native_type": value.Identity.NativeType}})
+			}
+		case "ACS::Config::Aggregator":
+			if value.Identity.Provider == asset.ProviderAliCloud && !selectionWarningExists(result, plan.WarningConfigAggregatorContentsLoss, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningConfigAggregatorContentsLoss, AssetID: value.ID, Message: "Deleting this aggregator also deletes its rules, compliance packs and compliance results, which cannot be recovered. Member accounts keep their Cloud Config service-linked role.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
 		case "ACS::CEN::TransitRouterMulticastDomain", "ACS::CEN::InterRegionTrafficQosPolicy", "ACS::CEN::TrafficMarkingPolicy":
 			code, message := plan.WarningCENMulticastMembershipRemoval, "The group sources and members registered in this multicast domain, and its vSwitch associations, are removed before the domain is deleted."
 			switch value.Identity.NativeType {

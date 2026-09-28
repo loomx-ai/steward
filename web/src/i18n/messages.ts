@@ -967,6 +967,8 @@ const enUS = {
   "domain.cen_multicast_membership_removal": "Pre-delete change",
   "domain.cen_qos_queue_removal": "Pre-delete change",
   "domain.cen_traffic_match_rule_removal": "Deleted with policy",
+  "domain.api_gateway_api_abolish": "Pre-delete change",
+  "domain.config_aggregator_contents_loss": "Deleted with aggregator",
   "domain.lifecycle_conflict": "Lifecycle conflict",
   "domain.lifecycle_cycle": "Lifecycle cycle",
   "domain.lifecycle_confidence": "Insufficient lifecycle confidence",
@@ -1106,6 +1108,10 @@ const enUS = {
     "The queues of this QoS policy other than its default queue are deleted before the policy.",
   "error.cen_traffic_match_rule_removal":
     "The traffic classification rules of this marking policy are deleted with it.",
+  "error.api_gateway_api_abolish":
+    "This API is taken offline in every environment it is published to before it is deleted; callers lose access immediately.",
+  "error.config_aggregator_contents_loss":
+    "Deleting this aggregator also deletes its rules, compliance packs and compliance results, which cannot be recovered. Member accounts keep their Cloud Config service-linked role.",
   "error.arc_shared_license_removal":
     "Deleting this shared Arc ESU license removes its update entitlement after assignments are cleared; billing may continue for up to five calendar days.",
   "error.arc_machine_registration_removal":
@@ -2134,6 +2140,8 @@ const zhCN: MessageShape = {
   "domain.cen_multicast_membership_removal": "删除前调整",
   "domain.cen_qos_queue_removal": "删除前调整",
   "domain.cen_traffic_match_rule_removal": "随策略删除",
+  "domain.api_gateway_api_abolish": "删除前调整",
+  "domain.config_aggregator_contents_loss": "随账号组删除",
   "domain.lifecycle_conflict": "生命周期冲突",
   "domain.lifecycle_cycle": "生命周期环",
   "domain.lifecycle_confidence": "生命周期置信度不足",
@@ -2264,6 +2272,10 @@ const zhCN: MessageShape = {
     "删除 QoS 策略前，会先删除默认队列以外的所有队列。",
   "error.cen_traffic_match_rule_removal":
     "删除流量标记策略时，会一并删除其中的流分类规则。",
+  "error.api_gateway_api_abolish":
+    "删除 API 前，会先在它发布的每个环境中下线；调用方会立即无法访问。",
+  "error.config_aggregator_contents_loss":
+    "删除账号组会一并删除其中的规则、合规包和合规结果，且不可恢复。成员账号的配置审计服务关联角色会保留。",
   "error.arc_shared_license_removal":
     "删除此共享 Arc ESU 许可证会在解除分配后移除更新权益；计费可能继续最多五个日历日。",
   "error.arc_machine_registration_removal":

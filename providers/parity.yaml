@@ -336,7 +336,8 @@ resources:
   baseline:
     inventory_source: product-api
     scope: region
-    actions: []
+    actions:
+    - delete
   gcp:
     resources:
     - apigateway.googleapis.com/Api
@@ -347,8 +348,7 @@ resources:
     resources:
     - AWS::ApiGateway::RestApi
   status: pending_verification
-  notes: Inventory only. A deployed API must be abolished in every stage before DeleteApi accepts it;
-    that preparation is not implemented yet.
+  notes: A deployed API is abolished in every stage before DeleteApi, and the plan announces it.
 - alicloud: ACS::ApiGateway::App
   spec: providers/alicloud/specs/api-gateway-app.yaml
   class: api.application
@@ -617,7 +617,8 @@ resources:
   baseline:
     inventory_source: product-api
     scope: region
-    actions: []
+    actions:
+    - delete
   gcp:
     resources:
     - cloudasset.googleapis.com/Feed
@@ -629,8 +630,9 @@ resources:
     resources:
     - AWS::Config::ConfigurationAggregator
   status: pending_verification
-  notes: Inventory only; GetAggregator reports a missing aggregator with the same code as a malformed ID,
-    so deletion could not be confirmed.
+  notes: DeleteAggregators also deletes the aggregator's rules, compliance packs and compliance results;
+    the plan announces it. GetAggregator reports a missing aggregator with the same code as a malformed
+    ID, so readback confirms absence from a complete ListAggregators listing.
 - alicloud: ACS::Config::CompliancePack
   spec: providers/alicloud/specs/config-compliance-pack.yaml
   class: governance.policy_set
@@ -4140,20 +4142,6 @@ resources:
     notes: CloudFront distributions carry their web ACL as a distribution property rather than an
       association.
   status: pending_verification
-  notes: Inventory only; protected objects synchronized from cloud products return with their product.
-evidence:
-  azure_vnet_multicast: https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-faq
-  gcp_identity_platform_sms_template: https://docs.cloud.google.com/identity-platform/docs/reference/rest/v2/Config
-  aws_cloudformation_schemas: https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/supported-resources.html
-  aws_api_models: https://github.com/aws/api-models-aws
-  aws_elastic_inference_eol: https://aws.amazon.com/machine-learning/elastic-inference/faqs/
-  gcp_asset_types: https://docs.cloud.google.com/asset-inventory/docs/asset-types
-  gcp_api_directory: https://www.googleapis.com/discovery/v1/apis
-  azure_api_sources: https://github.com/Azure/azure-rest-api-specs
-  gcp_kms_deletion: https://docs.cloud.google.com/kms/docs/delete-kms-resources
-  gcp_multicast: https://docs.cloud.google.com/vpc/docs/multicast/overview
-  gcp_organization_lifetime: https://docs.cloud.google.com/resource-manager/docs/delete-org
-  gcp_deployment_manager_retirement: https://docs.cloud.google.com/deployment-manager/docs/deprecations
-  azure_deployment_history: https://learn.microsoft.com/en-us/rest/api/resources/deployments/delete
-  azure_deployment_stacks: https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deployment-stacks
-  azure_media_retirement: https://learn.microsoft.com/en-us/lifecycle/end-of-support/end-of-support-2024
+  notes: Inventory only. DeleteDefenseResource exists, but the official ResourceOrigin descriptions
+    contradict each other (custom is user-defined in CreateDefenseResource and created by access management
+    in DescribeDefenseResource), so protected objects that access management recreates cannot be told apart.

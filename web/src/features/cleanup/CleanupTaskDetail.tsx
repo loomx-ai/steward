@@ -2304,6 +2304,8 @@ export function cleanupResourceRows(
         "cen_multicast_membership_removal",
         "cen_qos_queue_removal",
         "cen_traffic_match_rule_removal",
+        "api_gateway_api_abolish",
+        "config_aggregator_contents_loss",
       ].includes(warning.code) &&
       warning.asset_id
     ) {

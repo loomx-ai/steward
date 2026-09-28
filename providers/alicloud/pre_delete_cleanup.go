@@ -9,13 +9,16 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-// cenPreDeletePhase marks a CEN deletion that is still removing contents the
-// provider requires to be gone first: non-default QoS queues of an
-// inter-region traffic QoS policy, and the group sources, group members and
-// vSwitch associations of a multicast domain.
-const cenPreDeletePhase = "cen_pre_delete_cleanup"
+// preDeleteCleanupPhase marks a deletion that is still removing contents the
+// provider requires to be gone first: an API Gateway API's deployments in
+// each environment, the non-default queues of a CEN inter-region traffic QoS
+// policy, and the group sources, group members and vSwitch associations of a
+// CEN multicast domain. Each removal is announced in the plan.
+const preDeleteCleanupPhase = "pre_delete_cleanup"
 
 const (
+	apiGatewayAPINativeType             = "ACS::ApiGateway::Api"
+	apiGatewayAbolishAPIOperation       = "AlibabaCloud.ApiGateway.AbolishApi"
 	cenDeleteQosQueueOperation          = "AlibabaCloud.CEN.DeleteCenInterRegionTrafficQosQueue"
 	cenListMulticastGroupsOperation     = "AlibabaCloud.CEN.ListTransitRouterMulticastGroups"
 	cenDeregisterGroupSourcesOperation  = "AlibabaCloud.CEN.DeregisterTransitRouterMulticastGroupSources"
@@ -27,15 +30,16 @@ const (
 	cenMulticastListPageSafetyThreshold = 1000
 )
 
-func cenPreDeleteCleanupType(nativeType string) bool {
-	return nativeType == CENInterRegionTrafficQosPolicyNativeType ||
+func preDeleteCleanupType(nativeType string) bool {
+	return nativeType == apiGatewayAPINativeType ||
+		nativeType == CENInterRegionTrafficQosPolicyNativeType ||
 		nativeType == CENTransitRouterMulticastDomainNativeType
 }
 
-// advanceCENPreDeleteCleanup performs one round of the removals a CEN resource
-// needs before its own deletion. handled is false once nothing remains, and
-// the caller then deletes the resource.
-func (h *ResourceAction) advanceCENPreDeleteCleanup(
+// advancePreDeleteCleanup performs one round of the removals a resource needs
+// before its own deletion. handled is false once nothing remains, and the
+// caller then deletes the resource.
+func (h *ResourceAction) advancePreDeleteCleanup(
 	ctx context.Context,
 	request contracts.ActionRequest,
 ) (contracts.ActionResult, bool, error) {
@@ -43,8 +47,11 @@ func (h *ResourceAction) advanceCENPreDeleteCleanup(
 	if err != nil || !readback.Exists {
 		return contracts.ActionResult{}, false, err
 	}
+	if h.nativeType == apiGatewayAPINativeType {
+		return h.abolishDeployedAPI(ctx, request, resource)
+	}
 	if !strings.EqualFold(strings.TrimSpace(readback.State), "Active") {
-		return h.cenPreDeleteWaiting(readback.State, ""), true, nil
+		return h.preDeleteWaiting(readback.State, ""), true, nil
 	}
 	if h.nativeType == CENInterRegionTrafficQosPolicyNativeType {
 		return h.deleteCENQosQueues(ctx, request, resource)
@@ -52,10 +59,47 @@ func (h *ResourceAction) advanceCENPreDeleteCleanup(
 	return h.clearCENMulticastDomain(ctx, request)
 }
 
-func (h *ResourceAction) cenPreDeleteWaiting(state, requestID string) contracts.ActionResult {
+// abolishDeployedAPI takes the API offline in every environment it runs in.
+// DeleteApi refuses an API that still runs in an environment.
+func (h *ResourceAction) abolishDeployedAPI(
+	ctx context.Context,
+	request contracts.ActionRequest,
+	api map[string]any,
+) (contracts.ActionResult, bool, error) {
+	requestID := ""
+	var stages []string
+	for _, raw := range anySlice(valueAtPath(api, "DeployedInfos.DeployedInfo")) {
+		deployment, _ := raw.(map[string]any)
+		stage := strings.TrimSpace(stringValue(deployment["StageName"]))
+		if stage == "" || !strings.EqualFold(strings.TrimSpace(stringValue(deployment["DeployedStatus"])), "DEPLOYED") {
+			continue
+		}
+		result, err := h.provider.Invoke(ctx, contracts.Invocation{
+			ConnectionID: h.connectionID, Operation: apiGatewayAbolishAPIOperation,
+			Scope: map[string]string{"region": h.region},
+			Parameters: map[string]any{
+				"GroupId": stringValue(api["GroupId"]), "ApiId": request.Asset.Identity.NativeID, "StageName": stage,
+			},
+			IdempotencyKey: request.IdempotencyKey + ":abolish:" + stage,
+		})
+		if err != nil && !isNotFound(err) {
+			return contracts.ActionResult{}, false, err
+		}
+		requestID = result.RequestID
+		stages = append(stages, stage)
+	}
+	if len(stages) == 0 {
+		return contracts.ActionResult{}, false, nil
+	}
+	waiting := h.preDeleteWaiting("Abolishing", requestID)
+	waiting.Data["abolished_stages"] = stages
+	return waiting, true, nil
+}
+
+func (h *ResourceAction) preDeleteWaiting(state, requestID string) contracts.ActionResult {
 	return contracts.ActionResult{
 		ProviderRequestID: requestID,
-		Data:              map[string]any{"phase": cenPreDeletePhase, "state": state},
+		Data:              map[string]any{"phase": preDeleteCleanupPhase, "state": state},
 		RetryAfter:        h.pollInterval(),
 	}
 }
@@ -89,7 +133,7 @@ func (h *ResourceAction) deleteCENQosQueues(
 		if err != nil {
 			return contracts.ActionResult{}, false, err
 		}
-		waiting := h.cenPreDeleteWaiting("Modifying", result.RequestID)
+		waiting := h.preDeleteWaiting("Modifying", result.RequestID)
 		waiting.Data["deleted_qos_queue_id"] = queueID
 		return waiting, true, nil
 	}
@@ -114,7 +158,7 @@ func (h *ResourceAction) clearCENMulticastDomain(
 	for _, group := range groups {
 		status := strings.TrimSpace(stringValue(group["Status"]))
 		if !strings.EqualFold(status, "Registered") {
-			return h.cenPreDeleteWaiting(status, ""), true, nil
+			return h.preDeleteWaiting(status, ""), true, nil
 		}
 		address := strings.TrimSpace(stringValue(group["GroupIpAddress"]))
 		if byGroup[address] == nil {
@@ -170,7 +214,7 @@ func (h *ResourceAction) clearCENMulticastDomain(
 		}
 	}
 	if len(addresses) > 0 {
-		return h.cenPreDeleteWaiting("Deregistering", requestID), true, nil
+		return h.preDeleteWaiting("Deregistering", requestID), true, nil
 	}
 
 	associations, err := h.cenListAll(ctx, cenListMulticastAssociationsOp, domainID, "TransitRouterMulticastAssociations")
@@ -181,7 +225,7 @@ func (h *ResourceAction) clearCENMulticastDomain(
 	for _, association := range associations {
 		status := strings.TrimSpace(stringValue(association["Status"]))
 		if !strings.EqualFold(status, "Associated") {
-			return h.cenPreDeleteWaiting(status, ""), true, nil
+			return h.preDeleteWaiting(status, ""), true, nil
 		}
 		attachmentID := strings.TrimSpace(stringValue(association["TransitRouterAttachmentId"]))
 		if vSwitchID := strings.TrimSpace(stringValue(association["VSwitchId"])); attachmentID != "" && vSwitchID != "" {
@@ -209,7 +253,7 @@ func (h *ResourceAction) clearCENMulticastDomain(
 		requestID = result.RequestID
 	}
 	if len(attachments) > 0 {
-		return h.cenPreDeleteWaiting("Dissociating", requestID), true, nil
+		return h.preDeleteWaiting("Dissociating", requestID), true, nil
 	}
 	return contracts.ActionResult{}, false, nil
 }

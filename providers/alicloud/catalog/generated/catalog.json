@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "61af0e65ae21ffce739865ca1ce479479b609fc99930401c79120f688db99366",
+    "checksum": "7492481aaa043947a566aea6be394f40961950aa61f82d68ac2d1f53ada8485b",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "eb51f3d96fc3f6dfc15dbefa4552cc7648e81be2a40434fe323156cf5a3fccfe",
+  "content_checksum": "fe0f19a47cbc929866f50d4f9f176157fb5cadeffc3780a0033983eb07d62cf1",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -1068,6 +1068,46 @@
         "method": "POST",
         "path": "/",
         "endpoint": "alidns.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ApiGateway.AbolishApi",
+      "name": "AbolishApi",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/api-gateway/apis/{ApiId}/stages/{StageName}",
+      "destructive": true,
+      "call": {
+        "product": "CloudAPI",
+        "version": "2016-07-14",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "apigateway.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.ApiGateway.DeleteApi",
+      "name": "DeleteApi",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/api-gateway/apis/{ApiId}",
+      "destructive": true,
+      "call": {
+        "product": "CloudAPI",
+        "version": "2016-07-14",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "apigateway.{region}.aliyuncs.com",
         "request_body_type": "formData",
         "body_type": "json",
         "parameter_position": "query"
@@ -2854,6 +2894,27 @@
         "request_body_type": "formData",
         "body_type": "json",
         "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.Config.DeleteAggregators",
+      "name": "DeleteAggregators",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/config/aggregators/{AggregatorId}",
+      "destructive": true,
+      "call": {
+        "product": "Config",
+        "version": "2020-09-07",
+        "style": "RPC",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/",
+        "endpoint": "config.{region}.aliyuncs.com",
+        "request_body_type": "formData",
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "ClientToken"
       }
     },
     {

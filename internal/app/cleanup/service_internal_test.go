@@ -379,11 +379,13 @@ func TestDeletionTimeoutInProgressKeepsWaiting(t *testing.T) {
 	}
 }
 
-func TestAppendSelectionWarningsDescribesCENPreDeleteRemovals(t *testing.T) {
+func TestAppendSelectionWarningsDescribesAlibabaCloudPreDeleteRemovals(t *testing.T) {
 	want := map[string]plan.WarningCode{
 		"ACS::CEN::TransitRouterMulticastDomain": plan.WarningCENMulticastMembershipRemoval,
 		"ACS::CEN::InterRegionTrafficQosPolicy":  plan.WarningCENQosQueueRemoval,
 		"ACS::CEN::TrafficMarkingPolicy":         plan.WarningCENTrafficMatchRuleRemoval,
+		"ACS::ApiGateway::Api":                   plan.WarningAPIGatewayAPIAbolish,
+		"ACS::Config::Aggregator":                plan.WarningConfigAggregatorContentsLoss,
 	}
 	for nativeType, code := range want {
 		value := asset.Asset{ID: asset.AssetID(nativeType), Identity: asset.Identity{Provider: asset.ProviderAliCloud, NativeType: nativeType}}

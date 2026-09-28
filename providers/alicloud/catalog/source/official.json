@@ -7874,6 +7874,68 @@
   },
   {
    "apis": {
+    "AbolishApi": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "update",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ApiId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "GroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "StageName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
+    "DeleteApi": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get",
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "ApiId",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "GroupId",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "RequestId"
+     ],
+     "risk_type": ""
+    },
     "DeleteApp": {
      "deprecated": false,
      "error_codes": [],
@@ -9713,6 +9775,45 @@
   },
   {
    "apis": {
+    "DeleteAggregators": {
+     "deprecated": false,
+     "error_codes": [
+      "AccountNotExisted",
+      "AggregatorMemberNoPermission",
+      "Invalid.AggregatorIds.Empty",
+      "Invalid.AggregatorIds.SizeExceed",
+      "NoPermission",
+      "ServiceUnavailable"
+     ],
+     "methods": [
+      "post"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "formData",
+       "name": "AggregatorIds",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "formData",
+       "name": "ClientToken",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "",
+     "response_paths": [
+      "OperateAggregatorsResult",
+      "OperateAggregatorsResult.OperateAggregators",
+      "OperateAggregatorsResult.OperateAggregators.AggregatorId",
+      "OperateAggregatorsResult.OperateAggregators.ErrorCode",
+      "OperateAggregatorsResult.OperateAggregators.Success",
+      "RequestId"
+     ],
+     "risk_type": "none"
+    },
     "DeleteCompliancePacks": {
      "deprecated": false,
      "error_codes": [

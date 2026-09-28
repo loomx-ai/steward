@@ -349,8 +349,8 @@ func (h *ResourceAction) Execute(ctx context.Context, request contracts.ActionRe
 		}
 		return result, nil
 	}
-	if cenPreDeleteCleanupType(h.nativeType) {
-		result, handled, err := h.advanceCENPreDeleteCleanup(ctx, request)
+	if preDeleteCleanupType(h.nativeType) {
+		result, handled, err := h.advancePreDeleteCleanup(ctx, request)
 		if err != nil {
 			return contracts.ActionResult{}, err
 		}
@@ -3357,15 +3357,15 @@ func (h *ResourceAction) Wait(ctx context.Context, request contracts.ActionReque
 			}, nil
 		}
 	}
-	if cenPreDeleteCleanupType(h.nativeType) &&
-		strings.TrimSpace(stringValue(result.Data["phase"])) == cenPreDeletePhase {
-		next, handled, err := h.advanceCENPreDeleteCleanup(ctx, request)
+	if preDeleteCleanupType(h.nativeType) &&
+		strings.TrimSpace(stringValue(result.Data["phase"])) == preDeleteCleanupPhase {
+		next, handled, err := h.advancePreDeleteCleanup(ctx, request)
 		if err != nil {
 			return contracts.WaitResult{}, err
 		}
 		if handled {
 			return contracts.WaitResult{
-				Done: false, RetryAfter: next.RetryAfter, State: cenPreDeletePhase,
+				Done: false, RetryAfter: next.RetryAfter, State: preDeleteCleanupPhase,
 				Data: cloneTopologyMap(next.Data),
 			}, nil
 		}

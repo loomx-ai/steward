@@ -3812,6 +3812,20 @@
         "x-operation-call": {"product":"CloudAPI","version":"2016-07-14","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"apigateway.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
       }
     },
+    "/api-gateway/apis/{ApiId}": {
+      "delete": {
+        "operationId": "ApiGateway.DeleteApi",
+        "x-operation-name": "DeleteApi",
+        "x-operation-call": {"product":"CloudAPI","version":"2016-07-14","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"apigateway.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/api-gateway/apis/{ApiId}/stages/{StageName}": {
+      "delete": {
+        "operationId": "ApiGateway.AbolishApi",
+        "x-operation-name": "AbolishApi",
+        "x-operation-call": {"product":"CloudAPI","version":"2016-07-14","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"apigateway.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
     "/api-gateway/apps": {
       "get": {
         "operationId": "ApiGateway.DescribeAppAttributes",
@@ -4218,6 +4232,13 @@
         "operationId": "Config.ListAggregators",
         "x-operation-name": "ListAggregators",
         "x-operation-call": {"product":"Config","version":"2020-09-07","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"config.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/config/aggregators/{AggregatorId}": {
+      "delete": {
+        "operationId": "Config.DeleteAggregators",
+        "x-operation-name": "DeleteAggregators",
+        "x-operation-call": {"product":"Config","version":"2020-09-07","style":"RPC","protocol":"HTTPS","method":"POST","path":"/","endpoint":"config.{region}.aliyuncs.com","request_body_type":"formData","body_type":"json","parameter_position":"query","idempotency_parameter":"ClientToken"}
       }
     },
     "/ecd/desktops": {

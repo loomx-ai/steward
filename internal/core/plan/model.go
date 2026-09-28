@@ -153,6 +153,8 @@ const (
 	WarningCENMulticastMembershipRemoval WarningCode = "cen_multicast_membership_removal"
 	WarningCENQosQueueRemoval            WarningCode = "cen_qos_queue_removal"
 	WarningCENTrafficMatchRuleRemoval    WarningCode = "cen_traffic_match_rule_removal"
+	WarningAPIGatewayAPIAbolish          WarningCode = "api_gateway_api_abolish"
+	WarningConfigAggregatorContentsLoss  WarningCode = "config_aggregator_contents_loss"
 	WarningArcMachineRegistrationRemoval WarningCode = "arc_machine_registration_removal"
 	WarningArcExtensionRemoval           WarningCode = "arc_extension_removal"
 	WarningElasticSanGroupDelete         WarningCode = "elastic_san_group_delete"

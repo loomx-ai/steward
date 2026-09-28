@@ -81,7 +81,7 @@ func TestCENQosPolicyDeletesNonDefaultQueuesFirst(t *testing.T) {
 	}
 	request := cenActionRequest(alicloud.CENInterRegionTrafficQosPolicyNativeType, "qos-a")
 	result, err := hook.Execute(context.Background(), request)
-	if err != nil || result.Data["phase"] != "cen_pre_delete_cleanup" || result.Data["deleted_qos_queue_id"] != "qos-queue-a" {
+	if err != nil || result.Data["phase"] != "pre_delete_cleanup" || result.Data["deleted_qos_queue_id"] != "qos-queue-a" {
 		t.Fatalf("execute result=%+v err=%v", result, err)
 	}
 	if deletes := provider.calls("AlibabaCloud.CEN.DeleteCenInterRegionTrafficQosPolicy"); len(deletes) != 0 {
@@ -139,7 +139,7 @@ func TestCENMulticastDomainRemovesGroupsThenAssociationsBeforeDeletion(t *testin
 	}
 	request := cenActionRequest(alicloud.CENTransitRouterMulticastDomainNativeType, "tr-mcast-domain-a")
 	result, err := hook.Execute(context.Background(), request)
-	if err != nil || result.Data["phase"] != "cen_pre_delete_cleanup" {
+	if err != nil || result.Data["phase"] != "pre_delete_cleanup" {
 		t.Fatalf("execute result=%+v err=%v", result, err)
 	}
 	sources := provider.calls("AlibabaCloud.CEN.DeregisterTransitRouterMulticastGroupSources")
@@ -153,7 +153,7 @@ func TestCENMulticastDomainRemovesGroupsThenAssociationsBeforeDeletion(t *testin
 		t.Fatal("vSwitches disassociated while group members remain")
 	}
 	wait, err := hook.Wait(context.Background(), request, result)
-	if err != nil || wait.Done || wait.State != "cen_pre_delete_cleanup" {
+	if err != nil || wait.Done || wait.State != "pre_delete_cleanup" {
 		t.Fatalf("disassociation wait=%+v err=%v", wait, err)
 	}
 	disassociations := provider.calls("AlibabaCloud.CEN.DisassociateTransitRouterMulticastDomain")
@@ -192,5 +192,87 @@ func TestCENVBRAttachmentManagedByCloudServiceIsNotDeleted(t *testing.T) {
 		if err != nil || preflight.Allowed != allowed {
 			t.Fatalf("managed service %q preflight=%+v err=%v", managedService, preflight, err)
 		}
+	}
+}
+
+func TestAPIGatewayAPIIsAbolishedInEveryDeployedStageBeforeDeletion(t *testing.T) {
+	t.Parallel()
+
+	// DeleteApi refuses an API that still runs in an environment; AbolishApi
+	// takes it offline per StageName (CloudAPI 2016-07-14).
+	deployed := []any{
+		map[string]any{"StageName": "RELEASE", "DeployedStatus": "DEPLOYED"},
+		map[string]any{"StageName": "PRE", "DeployedStatus": "NONDEPLOYED"},
+		map[string]any{"StageName": "TEST", "DeployedStatus": "DEPLOYED"},
+	}
+	provider := &scriptedProvider{}
+	provider.respond = func(invocation contracts.Invocation) (contracts.InvocationResult, error) {
+		switch invocation.Operation {
+		case "AlibabaCloud.ApiGateway.DescribeApis":
+			return contracts.InvocationResult{Data: map[string]any{"TotalCount": 1, "ApiSummarys": map[string]any{"ApiSummary": []any{map[string]any{
+				"ApiId": "api-a", "GroupId": "group-a", "DeployedInfos": map[string]any{"DeployedInfo": deployed},
+			}}}}}, nil
+		case "AlibabaCloud.ApiGateway.AbolishApi":
+			return contracts.InvocationResult{RequestID: "abolish"}, nil
+		case "AlibabaCloud.ApiGateway.DeleteApi":
+			return contracts.InvocationResult{RequestID: "delete-api"}, nil
+		}
+		t.Fatalf("unexpected call %s", invocation.Operation)
+		return contracts.InvocationResult{}, nil
+	}
+	hook, err := alicloud.NewActionHook(provider, "connection-a", "cn-hangzhou", "ACS::ApiGateway::Api")
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := contracts.ActionRequest{
+		Asset: asset.Asset{
+			ID:         "api-a",
+			Identity:   asset.Identity{Provider: asset.ProviderAliCloud, NativeType: "ACS::ApiGateway::Api", NativeID: "api-a"},
+			Normalized: map[string]any{"groupId": "group-a"},
+		},
+		Action: "delete", IdempotencyKey: "step-api-a",
+	}
+	result, err := hook.Execute(context.Background(), request)
+	if err != nil || result.Data["phase"] != "pre_delete_cleanup" {
+		t.Fatalf("execute result=%+v err=%v", result, err)
+	}
+	abolished := provider.calls("AlibabaCloud.ApiGateway.AbolishApi")
+	if len(abolished) != 2 || abolished[0].Parameters["StageName"] != "RELEASE" || abolished[1].Parameters["StageName"] != "TEST" ||
+		abolished[0].Parameters["GroupId"] != "group-a" || len(provider.calls("AlibabaCloud.ApiGateway.DeleteApi")) != 0 {
+		t.Fatalf("abolish calls = %+v", provider.invocations)
+	}
+	deployed = nil
+	wait, err := hook.Wait(context.Background(), request, result)
+	if err != nil || !wait.Done || wait.State != "delete_requested" {
+		t.Fatalf("wait=%+v err=%v", wait, err)
+	}
+	deletes := provider.calls("AlibabaCloud.ApiGateway.DeleteApi")
+	if len(deletes) != 1 || deletes[0].Parameters["GroupId"] != "group-a" || deletes[0].Parameters["ApiId"] != "api-a" {
+		t.Fatalf("delete calls = %+v", deletes)
+	}
+}
+
+func TestConfigAggregatorAbsenceIsProvenByACompleteListing(t *testing.T) {
+	t.Parallel()
+
+	// GetAggregator answers Invalid.AggregatorId.Value for both a malformed
+	// and a deleted aggregator, so readback lists every aggregator instead.
+	provider := &scriptedProvider{respond: func(contracts.Invocation) (contracts.InvocationResult, error) {
+		return contracts.InvocationResult{Data: map[string]any{"AggregatorsResult": map[string]any{
+			"Aggregators": []any{map[string]any{"AggregatorId": "ca-other", "AggregatorStatus": 1}},
+		}}}, nil
+	}}
+	hook, err := alicloud.NewActionHook(provider, "connection-a", "cn-shanghai", "ACS::Config::Aggregator")
+	if err != nil {
+		t.Fatal(err)
+	}
+	readback, err := hook.Readback(context.Background(), contracts.ActionRequest{
+		Asset: asset.Asset{ID: "ca-a", Identity: asset.Identity{
+			Provider: asset.ProviderAliCloud, NativeType: "ACS::Config::Aggregator", NativeID: "ca-a",
+		}},
+		Action: "delete", IdempotencyKey: "step-ca-a",
+	})
+	if err != nil || readback.Exists {
+		t.Fatalf("readback=%+v err=%v", readback, err)
 	}
 }

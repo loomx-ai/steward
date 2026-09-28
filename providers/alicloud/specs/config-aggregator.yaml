@@ -34,3 +34,23 @@ fields:
   aggregatorType: AggregatorType
   accountCount: AggregatorAccountCount
   folderId: FolderId
+actions:
+  delete:
+    operation: AlibabaCloud.Config.DeleteAggregators
+    parameters:
+      AggregatorIds: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Config.ListAggregators
+      parameters:
+        MaxResults: 100
+      itemsPath: AggregatorsResult.Aggregators
+      identityPath: AggregatorId
+      statePath: AggregatorStatus
+      pagination:
+        type: token
+        tokenParameter: NextToken
+        tokenPath: AggregatorsResult.NextToken
+        pageSizeParameter: MaxResults
+        maxPageSize: 100
