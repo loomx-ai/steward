@@ -2306,6 +2306,7 @@ export function cleanupResourceRows(
         "cen_traffic_match_rule_removal",
         "api_gateway_api_abolish",
         "config_aggregator_contents_loss",
+        "azure_policy_assignment_delete",
       ].includes(warning.code) &&
       warning.asset_id
     ) {

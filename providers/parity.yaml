@@ -648,7 +648,10 @@ resources:
       (organizations/{organization}/locations/global/postureDeployments); a project connection
       cannot list or delete them.
   azure:
-    notes: Azure Policy initiative assignments are not modeled yet.
+    resources:
+    - Microsoft.Authorization/policyAssignments
+    notes: Initiative (policy set) assignments; assignments inherited from management groups are not owned
+      by a subscription connection and are left out.
   aws:
     resources:
     - AWS::Config::ConformancePack
@@ -670,7 +673,10 @@ resources:
     notes: Policies set directly on the project; deleting one restores the inherited policy. Folder
       and organization policies are outside a project connection.
   azure:
-    notes: Azure Policy assignments are not modeled yet.
+    resources:
+    - Microsoft.Authorization/policyAssignments
+    notes: Assignments inherited from management groups are not owned by a subscription connection and are
+      left out; system-managed and Defender for Cloud assignments stay protected.
   aws:
     resources:
     - AWS::Config::ConfigRule

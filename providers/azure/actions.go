@@ -57,6 +57,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if rbacResourceKind(kind.NativeType) != "" {
 		return newRBACAction(c, id, value)
 	}
+	if policyAssignmentKind(kind.NativeType) {
+		return newPolicyAssignmentAction(c, id, value)
+	}
 	if kind.NativeType == diagnosticSettingsType {
 		return newDiagnosticAction(c, id, value)
 	}

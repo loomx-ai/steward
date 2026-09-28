@@ -134,7 +134,7 @@ What to expect:
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 522 Azure resource types; 470 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 523 Azure resource types; 471 have native cleanup actions, including Batch node removal, subject to the protections below. Other ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -194,6 +194,7 @@ Steward recognizes 522 Azure resource types; 470 have native cleanup actions, in
 | [Azure Monitor workbooks](#workbooks) | Shared workbooks, private workbooks and workbook templates | Independent cleanup with full-content and revision checks; referenced storage and identities stay separate |
 | [Azure Monitor alerts](#monitor-alerts-and-budgets) | Metric, activity-log, scheduled-query, smart-detector, Prometheus and processing rules; action groups and web tests | Independent cleanup; reviewed referencing rules must precede a shared Monitor destination |
 | [Azure RBAC](#azure-rbac) | Custom and built-in role definitions; subscription, resource-group and resource role assignments | Independent deletion of eligible custom roles and assignments; built-in and shared-scope roles, PIM-managed assignments and the connection's own assignments stay protected |
+| [Azure Policy](#azure-policy) | Policy and initiative assignments at subscription, resource-group and resource scopes | Independent deletion; system-managed and Defender for Cloud assignments and locked scopes stay protected |
 | [Diagnostic settings](#diagnostic-settings) | Resource and subscription settings, including separate Blob, File, Queue and Table service scopes | Deleted before a referenced source, destination or ancestor; destinations stay separate resources |
 | [Budgets](#monitor-alerts-and-budgets) | Consumption and Cost Management budgets at subscription and resource-group scopes | Independent cleanup; notification action groups stay separate |
 | Management groups | The tenant's visible management group directory, with parent groups | Read-only; requires `Microsoft.Management/managementGroups/read` on the groups to inventory |
@@ -1027,6 +1028,21 @@ See Microsoft's [diagnostic settings guide](https://learn.microsoft.com/en-us/az
 **Limits.** Deleting PIM schedules and administering tenant or management-group RBAC are not implemented.
 
 See Microsoft's [custom-role deletion requirements](https://learn.microsoft.com/en-us/azure/role-based-access-control/custom-roles-rest#delete-a-custom-role) and [managed identity maintenance](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/managed-identity-best-practice-recommendations#maintenance).
+
+### Azure Policy
+
+**Inventory.** Policy and initiative assignments at the subscription and at resource-group and resource scopes, in global inventory, from the native `PolicyAssignments_List` API. Assignments inherited from management groups are not managed by this connection and are left out.
+
+**Permissions.** `Microsoft.Authorization/policyAssignments/read` and management-lock reads. Deleting an assignment needs `Microsoft.Authorization/policyAssignments/delete` at its scope.
+
+**Cleanup.**
+
+- Deleting an assignment stops its policy from being evaluated and enforced, so resources it denied can be created again. The task says so before you confirm.
+- The assignment's system-assigned managed identity is deleted with it. Role assignments granted to that identity remain and need separate cleanup.
+- **Protected:** assignments of type `System` or `SystemHidden`, the Defender for Cloud assignment (`assignedBy` is `Security Center`), and assignments under a management lock.
+- A native DELETE only acknowledges the request; completion requires the assignment's own GET to report it absent. An assignment recreated under the same name has a new `instanceId`, and Steward stops instead of deleting it.
+
+See Microsoft's [policy assignment structure](https://learn.microsoft.com/en-us/azure/governance/policy/concepts/assignment-structure).
 
 ### Defender for Cloud
 

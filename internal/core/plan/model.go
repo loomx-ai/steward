@@ -155,6 +155,7 @@ const (
 	WarningCENTrafficMatchRuleRemoval    WarningCode = "cen_traffic_match_rule_removal"
 	WarningAPIGatewayAPIAbolish          WarningCode = "api_gateway_api_abolish"
 	WarningConfigAggregatorContentsLoss  WarningCode = "config_aggregator_contents_loss"
+	WarningAzurePolicyAssignmentDelete   WarningCode = "azure_policy_assignment_delete"
 	WarningArcMachineRegistrationRemoval WarningCode = "arc_machine_registration_removal"
 	WarningArcExtensionRemoval           WarningCode = "arc_extension_removal"
 	WarningElasticSanGroupDelete         WarningCode = "elastic_san_group_delete"

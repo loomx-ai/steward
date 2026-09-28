@@ -2901,6 +2901,14 @@
         "Workspaces_Get",
         "Workspaces_ListBySubscription"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/resources/resource-manager/Microsoft.Authorization/policy/stable/2025-01-01/policyAssignments.json",
+      "operations": [
+        "PolicyAssignments_Delete",
+        "PolicyAssignments_Get",
+        "PolicyAssignments_List"
+      ]
     }
   ],
   "resource_types": [
@@ -12629,6 +12637,24 @@
       "delete_operations": [],
       "list_operations": [
         "Azure.Microsoft.Databricks.Workspaces_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Authorization/policyAssignments",
+      "class": "governance.policy_assignment",
+      "display_name": "Azure Policy assignment",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "policyAssignments",
+      "read_operations": [
+        "Azure.Microsoft.Authorization.PolicyAssignments_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Authorization.PolicyAssignments_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Authorization.PolicyAssignments_List"
       ]
     }
   ]

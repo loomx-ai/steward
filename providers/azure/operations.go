@@ -291,6 +291,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		}
 		return c.defenderOperation(scope, last(nativeID), method)
 	}
+	if policyAssignmentKind(kind.NativeType) {
+		return c.policyAssignmentOperation(nativeID, method)
+	}
 	if rbacResourceKind(kind.NativeType) != "" {
 		id, _, typ, err := rbacResourceID(nativeID)
 		wire, wireErr := c.rbacWireID(nativeID)

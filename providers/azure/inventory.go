@@ -244,6 +244,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		request.Source = diagnosticInventorySource
 		return r.listDiagnosticSettings(ctx, c, request)
 	}
+	if request.ResourceKind != nil && policyAssignmentKind(request.ResourceKind.NativeType) {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = productInventorySource
+		return r.listPolicyAssignments(ctx, c, request)
+	}
 	if request.ResourceKind != nil && rbacResourceKind(request.ResourceKind.NativeType) != "" {
 		if request.Source == inventorySource {
 			return contracts.InventoryBatch{Complete: true}, nil

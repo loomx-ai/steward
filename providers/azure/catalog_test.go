@@ -125,6 +125,13 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				if budget, _ := monitorBudgetKind(kind.NativeType); budget != "" && match[1] == "scope" {
 					value = "subscriptions/" + testSubscription
 				}
+				if policyAssignmentKind(kind.NativeType) {
+					if match[1] == "scope" {
+						value = "subscriptions/" + testSubscription
+					} else {
+						value = "stewardtest"
+					}
+				}
 				if rbacResourceKind(kind.NativeType) != "" {
 					if match[1] == "scope" {
 						value = "subscriptions/" + testSubscription

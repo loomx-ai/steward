@@ -16,7 +16,7 @@ func monitorARMTarget(value asset.Asset) bool {
 	}
 	// Legacy component records retain case-sensitive opaque selectors. They are
 	// not ARM scope resources, even though their service URL includes a component.
-	if rbacResourceKind(value.Identity.NativeType) != "" {
+	if rbacResourceKind(value.Identity.NativeType) != "" || policyAssignmentKind(value.Identity.NativeType) {
 		return false
 	}
 	// A Data Factory node is a self-hosted runtime registration. Its native

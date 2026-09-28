@@ -395,3 +395,11 @@ func TestAppendSelectionWarningsDescribesAlibabaCloudPreDeleteRemovals(t *testin
 		}
 	}
 }
+
+func TestAppendSelectionWarningsDescribesAzurePolicyAssignmentDeletion(t *testing.T) {
+	value := asset.Asset{ID: "policy", Identity: asset.Identity{Provider: asset.ProviderAzure, NativeType: "Microsoft.Authorization/policyAssignments"}}
+	warnings := appendSelectionWarnings(nil, plan.Input{Assets: []asset.Asset{value}}, plan.Result{Steps: []plan.CleanupTaskStep{{AssetID: value.ID}}})
+	if len(warnings) != 1 || warnings[0].Code != plan.WarningAzurePolicyAssignmentDelete {
+		t.Fatalf("warnings=%+v", warnings)
+	}
+}

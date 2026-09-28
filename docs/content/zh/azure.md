@@ -134,7 +134,7 @@ Steward 永远不会删除授予连接自身访问权的角色分配，见[通�
 
 ## 盘点与清理范围
 
-Steward 识别 522 类 Azure 资源，其中 470 类具有原生清理操作（包括 Batch 节点移除），执行时受下文保护约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 523 类 Azure 资源，其中 471 类具有原生清理操作（包括 Batch 节点移除），执行时受下文保护约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -194,6 +194,7 @@ Steward 识别 522 类 Azure 资源，其中 470 类具有原生清理操作（�
 | [Azure Monitor 工作簿](#工作簿) | 共享工作簿、私有工作簿及工作簿模板 | 独立清理并核对完整内容和历史版本；引用的存储和身份保持独立 |
 | [Azure Monitor 告警](#monitor-告警与预算) | 指标、活动日志、计划查询、智能检测、Prometheus 和处理规则；动作组与 Web 测试 | 独立清理；引用规则须经审查并先于共享 Monitor 目标删除 |
 | [Azure RBAC](#azure-rbac) | 自定义和内置角色定义；订阅、资源组及资源范围的角色分配 | 符合条件的自定义角色与分配可独立删除；内置或跨范围共享角色、PIM 管理的分配及连接自身的分配保持受保护 |
+| [Azure Policy](#azure-policy) | 订阅、资源组及资源范围的策略分配和计划（initiative）分配 | 可独立删除；系统托管和 Defender for Cloud 的分配以及被锁定范围内的分配保持受保护 |
 | [诊断设置](#诊断设置) | 资源和订阅级设置，包括 Blob、File、Queue、Table 各自的服务范围 | 在其引用的源、目标或祖先之前删除；目标资源保持独立 |
 | [预算](#monitor-告警与预算) | 订阅及资源组范围的 Consumption、Cost Management 预算 | 独立清理，通知动作组保持独立 |
 | 管理组 | 租户中可见的管理组目录及其父级 | 只读；需要对要盘点的管理组具有 `Microsoft.Management/managementGroups/read` |
@@ -1027,6 +1028,21 @@ Azure DocumentDB 原名 MongoDB vCore。
 **限制。** 尚未实现 PIM 计划删除，也不支持租户或管理组级的 RBAC 管理。
 
 参阅[自定义角色删除要求](https://learn.microsoft.com/en-us/azure/role-based-access-control/custom-roles-rest#delete-a-custom-role)和[托管身份维护](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/managed-identity-best-practice-recommendations#maintenance)。
+
+### Azure Policy
+
+**盘点。** 订阅、资源组和资源范围的策略分配与计划（initiative）分配，显示在全局清单，来自原生 `PolicyAssignments_List` API。继承自管理组的分配不由当前连接管理，不会列出。
+
+**权限。** `Microsoft.Authorization/policyAssignments/read` 以及管理锁的读取权限。删除分配需要在其范围拥有 `Microsoft.Authorization/policyAssignments/delete`。
+
+**清理。**
+
+- 删除分配后，其策略不再评估和强制执行，之前被拒绝的资源可以再次创建。确认执行前任务会提示这一点。
+- 分配的系统分配托管身份会随之删除。授予该身份的角色分配会保留，需要单独清理。
+- **受保护：** 类型为 `System` 或 `SystemHidden` 的分配、Defender for Cloud 的分配（`assignedBy` 为 `Security Center`），以及受管理锁保护的分配。
+- 原生 DELETE 只表示请求已受理；分配自身的 GET 报告不存在后才算完成。同名重建的分配会有新的 `instanceId`，Steward 会停止而不是删除它。
+
+参见微软的[策略分配结构](https://learn.microsoft.com/zh-cn/azure/governance/policy/concepts/assignment-structure)。
 
 ### Defender for Cloud
 

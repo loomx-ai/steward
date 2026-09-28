@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "53d3e57827aa15b87531b7ee56cb9989e45d5d08a1060268a22f2730ac42695b",
+    "checksum": "07650faa426d103f91b4fa7468d10d8b88cce2fc2d6249430339515b553e43d4",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "617afff4d93182a8109af8458d362e65147a6c8f7ff3ff542ea8dca55f08f529",
+  "content_checksum": "35bc7b0a031718c560d693b3bbbf3d56c36023a8711dd26b9113c6e54181b882",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -34136,6 +34136,286 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/07a27fbba41f8597cdfe0f866fcbf9f7c37390f4/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-DenyAssignmentCalls.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.PolicyAssignments_Delete",
+      "name": "PolicyAssignments_Delete",
+      "service": "Microsoft.Authorization",
+      "method": "DELETE",
+      "path": "/{scope}/providers/Microsoft.Authorization/policyAssignments/{policyAssignmentName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "policyAssignmentName": {
+            "description": "The name of the policy assignment to delete.",
+            "in": "path",
+            "name": "policyAssignmentName",
+            "pattern": "^[^\u003c\u003e%\u0026:\\?/]*[^\u003c\u003e%\u0026:\\?/ ]+$",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the policy assignment. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'), resource group (format: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}', or resource (format: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/[{parentResourcePath}/]{resourceType}/{resourceName}'",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The policy assignment.",
+        "properties": {
+          "id": {
+            "description": "The ID of the policy assignment.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "#/definitions/Identity",
+            "description": "The managed identity associated with the policy assignment."
+          },
+          "location": {
+            "description": "The location of the policy assignment. Only required when utilizing managed identity.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the policy assignment.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/PolicyAssignmentProperties",
+            "description": "Properties for the policy assignment.",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/systemData",
+            "description": "The system metadata relating to this resource.",
+            "readOnly": true
+          },
+          "type": {
+            "description": "The type of the policy assignment.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2025-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/{scope}/providers/Microsoft.Authorization/policyAssignments/{policyAssignmentName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/resources/resource-manager/Microsoft.Authorization/policy/stable/2025-01-01/policyAssignments.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.PolicyAssignments_Get",
+      "name": "PolicyAssignments_Get",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Authorization/policyAssignments/{policyAssignmentName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "Comma-separated list of additional properties to be included in the response. Supported values are 'LatestDefinitionVersion, EffectiveDefinitionVersion'.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2025-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "policyAssignmentName": {
+            "description": "The name of the policy assignment to get.",
+            "in": "path",
+            "name": "policyAssignmentName",
+            "pattern": "^[^\u003c\u003e%\u0026:\\?/]*[^\u003c\u003e%\u0026:\\?/ ]+$",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the policy assignment. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'), resource group (format: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}', or resource (format: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/[{parentResourcePath}/]{resourceType}/{resourceName}'",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The policy assignment.",
+        "properties": {
+          "id": {
+            "description": "The ID of the policy assignment.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "#/definitions/Identity",
+            "description": "The managed identity associated with the policy assignment."
+          },
+          "location": {
+            "description": "The location of the policy assignment. Only required when utilizing managed identity.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the policy assignment.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/PolicyAssignmentProperties",
+            "description": "Properties for the policy assignment.",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/systemData",
+            "description": "The system metadata relating to this resource.",
+            "readOnly": true
+          },
+          "type": {
+            "description": "The type of the policy assignment.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2025-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Authorization/policyAssignments/{policyAssignmentName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/resources/resource-manager/Microsoft.Authorization/policy/stable/2025-01-01/policyAssignments.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.PolicyAssignments_List",
+      "name": "PolicyAssignments_List",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/policyAssignments",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "Comma-separated list of additional properties to be included in the response. Supported values are 'LatestDefinitionVersion, EffectiveDefinitionVersion'.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "$filter": {
+            "description": "The filter to apply on the operation. Valid values for $filter are: 'atScope()', 'atExactScope()' or 'policyDefinitionId eq '{value}''. If $filter is not provided, no filtering is performed. If $filter=atScope() is provided, the returned list only includes all policy assignments that apply to the scope, which is everything in the unfiltered list except those applied to sub scopes contained within the given scope. If $filter=atExactScope() is provided, the returned list only includes all policy assignments that at the given scope. If $filter=policyDefinitionId eq '{value}' is provided, the returned list includes all policy assignments of the policy definition whose id is {value}.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          },
+          "$top": {
+            "description": "Maximum number of records to return. When the $top filter is not provided, it will return 500 records.",
+            "format": "int32",
+            "in": "query",
+            "maximum": 1000,
+            "minimum": 1,
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2025-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of policy assignments.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to use for getting the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "An array of policy assignments.",
+            "items": {
+              "$ref": "#/definitions/PolicyAssignment"
+            },
+            "type": "array",
+            "x-ms-identifiers": []
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2025-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/policyAssignments",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/resources/resource-manager/Microsoft.Authorization/policy/stable/2025-01-01/policyAssignments.json"
     },
     {
       "id": "Azure.Microsoft.Authorization.RoleAssignmentSchedules_Get",
@@ -152378,6 +152658,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.AppConfiguration.ConfigurationStores_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Authorization/policyAssignments",
+      "class": "governance.policy_assignment",
+      "display_name": "Azure Policy assignment",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "policyAssignments",
+        "read_operations": [
+          "Azure.Microsoft.Authorization.PolicyAssignments_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Authorization.PolicyAssignments_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Authorization.PolicyAssignments_List"
         ]
       }
     },
