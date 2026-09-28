@@ -53,6 +53,12 @@ actions:
       operation: AlibabaCloud.FC.ListServices
       parameters:
         prefix: resource.nativeId
-        limit: 1
+        limit: 100
       itemsPath: services
       identityPath: serviceName
+      pagination:
+        type: token
+        tokenParameter: nextToken
+        tokenPath: nextToken
+        pageSizeParameter: limit
+        maxPageSize: 100

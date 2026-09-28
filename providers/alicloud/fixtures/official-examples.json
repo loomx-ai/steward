@@ -97,7 +97,7 @@
      "LoadBalancerName": "alb-instance-test",
      "LoadBalancerOperationLocks": [
       {
-       "LockReason": "",
+       "LockReason": "账号欠费",
        "LockType": "FinancialLocked"
       }
      ],
@@ -3909,7 +3909,7 @@
       "CreationTime": "2022-01-02T07:43:59Z",
       "CurrentKernelVersion": "5.0.5-20220721143518_0",
       "DBInstanceClass": "dds.mongo.mid",
-      "DBInstanceDescription": "Test database",
+      "DBInstanceDescription": "测试数据库",
       "DBInstanceId": "dds-bp11483712c1****",
       "DBInstanceOrderStatus": "all_completed",
       "DBInstanceReleaseProtection": false,
@@ -4048,7 +4048,7 @@
       "ChargeType": "PrePaid",
       "CreationTime": "2021-03-25T02:18:00Z",
       "DBInstanceClass": "dds.mongo.mid",
-      "DBInstanceDescription": "Test database",
+      "DBInstanceDescription": "测试数据库",
       "DBInstanceId": "dds-bp18b0934e70****",
       "DBInstanceStatus": "Running",
       "DBInstanceStorage": 20,
@@ -4794,7 +4794,7 @@
      {
       "SaleSkuCode": "",
       "SignName": "",
-      "SkuName": "",
+      "SkuName": "验证码-标准",
       "SkuStatus": 0
      }
     ]
@@ -6829,6 +6829,33 @@
    "Success": true,
    "TotalCount": 2
   },
+  "FC-Open@2021-04-06#ListAliases": {
+   "aliases": [
+    {
+     "additionalVersionWeight": {
+      "key": 1
+     },
+     "aliasName": "test",
+     "createdTime": "2016-08-15T16:06:05.000+0000",
+     "description": "这是一个示例别名",
+     "lastModifiedTime": "2016-08-15T16:06:05.000+0000",
+     "resolvePolicy": "Random",
+     "routePolicy": {
+      "condition": "AND",
+      "policyItems": [
+       {
+        "key": "x-test-uid",
+        "operator": "=",
+        "type": "Header",
+        "value": "11111"
+       }
+      ]
+     },
+     "versionId": "1"
+    }
+   ],
+   "nextToken": "8bj81uI8n****"
+  },
   "FC-Open@2021-04-06#ListFunctions": {
    "functions": [
     {
@@ -6913,6 +6940,18 @@
    ],
    "nextToken": "8bj81uI8n****"
   },
+  "FC-Open@2021-04-06#ListServiceVersions": {
+   "direction": "BACKWARD",
+   "nextToken": "eJhojW7N****",
+   "versions": [
+    {
+     "createdTime": "2020-03-16T06:23:50Z",
+     "description": "test_description",
+     "lastModifiedTime": "2020-07-15T06:12:31Z",
+     "versionId": "1"
+    }
+   ]
+  },
   "FC-Open@2021-04-06#ListServices": {
    "nextToken": "caeba0****be03f84eb48b699f0a4883",
    "services": [
@@ -6968,6 +7007,298 @@
       ],
       "vpcId": "vpc-***"
      }
+    }
+   ]
+  },
+  "FC-Open@2021-04-06#ListTriggers": {
+   "nextToken": "f-trigger",
+   "triggers": [
+    {
+     "createdTime": "2022-10-20T02:52:03Z",
+     "description": "trigger for test",
+     "domainName": "demo-service-demo-function-jkhksh",
+     "invocationRole": "acs:ram::123456xxxx:role/fc-test",
+     "lastModifiedTime": "2022-10-20T03:17:09Z",
+     "qualifier": "LATEST",
+     "sourceArn": "acs:oss:cn-shanghai:123456xxxx:mybucket",
+     "triggerConfig": "{\"events\": [\"oss:ObjectCreated:*\"], \"filter\": {\"key\": {\"prefix\": \"/prefix\", \"suffix\": \".zip\"}}}",
+     "triggerId": "3e270f2f-cef2-421a-bc86-ff4e8088****",
+     "triggerName": "demoTrigger",
+     "triggerType": "oss",
+     "urlInternet": "https://svc-func-xxxxxxxx.cn-hangzhou.fcapp.run",
+     "urlIntranet": "https://svc-func-xxxxxxxx.cn-hangzhou-vpc.fcapp.run"
+    }
+   ]
+  },
+  "FC@2023-03-30#ListFunctions": {
+   "functions": [
+    {
+     "codeChecksum": "2825179536350****",
+     "codeSize": 412,
+     "cpu": 1,
+     "createdTime": "2023-04-01T08:15:27Z",
+     "customContainerConfig": {
+      "accelerationInfo": {
+       "status": "Ready"
+      },
+      "accelerationType": "Default",
+      "acrInstanceId": "cri-xxxxxxxxxx",
+      "command": [
+       "arg1"
+      ],
+      "entrypoint": [
+       "/code/bootstrap"
+      ],
+      "healthCheckConfig": {
+       "failureThreshold": 1,
+       "httpGetUrl": "/ready",
+       "initialDelaySeconds": 1,
+       "periodSeconds": 1,
+       "successThreshold": 2,
+       "timeoutSeconds": 2
+      },
+      "image": "registry-vpc.cn-hangzhou.aliyuncs.com/fc-demo/helloworld:v1beta1",
+      "port": 9000,
+      "registryConfig": {
+       "authConfig": {
+        "password": "abc***",
+        "userName": "admin"
+       },
+       "certConfig": {
+        "insecure": true,
+        "rootCaCertBase64": "cm9vdF9jYV9jZXJ0"
+       },
+       "networkConfig": {
+        "securityGroupId": "sg-xxxxxxxxxxxxxx",
+        "vSwitchId": "vsw-xxxxxxxxxxxxxx",
+        "vpcId": "vpc-xxxxxxxxxxxxxx"
+       }
+      },
+      "resolvedImageUri": "stand-sh-registry-vpc.cn-shanghai.cr.aliyuncs.com/fc-demo2/springboot-helloworld@sha256:68d1****0d64d6"
+     },
+     "customDNS": {
+      "dnsOptions": [
+       {
+        "name": "ndots",
+        "value": "2"
+       }
+      ],
+      "nameServers": [
+       "8.8.x.x"
+      ],
+      "searches": [
+       "ns1.svc.cluster-domain.example"
+      ]
+     },
+     "customRuntimeConfig": {
+      "args": [
+       "arg1"
+      ],
+      "command": [
+       "/code/bootstrap"
+      ],
+      "healthCheckConfig": {
+       "failureThreshold": 1,
+       "httpGetUrl": "/ready",
+       "initialDelaySeconds": 1,
+       "periodSeconds": 1,
+       "successThreshold": 2,
+       "timeoutSeconds": 2
+      },
+      "port": 9000
+     },
+     "description": "my function",
+     "disableInjectCredentials": "Env",
+     "disableOndemand": true,
+     "diskSize": 512,
+     "enableLongLiving": true,
+     "environmentVariables": {
+      "key": "value1"
+     },
+     "functionArn": "acs:fc:cn-shanghai:123:functions/functionName",
+     "functionId": "aa715851-1c20-4b89-a8fb-***",
+     "functionName": "my-function-1",
+     "gpuConfig": {
+      "gpuMemorySize": 2048,
+      "gpuType": "fc.gpu.tesla.1"
+     },
+     "handler": "index.handler",
+     "idleTimeout": 100,
+     "instanceConcurrency": 1,
+     "instanceIsolationMode": "",
+     "instanceLifecycleConfig": {
+      "initializer": {
+       "command": [
+        "curl -X POST 'http://localhost:9000/preWarm"
+       ],
+       "handler": "index.initializer",
+       "timeout": 10
+      },
+      "preStop": {
+       "command": [
+        "curl -X POST 'http://localhost:9000/preWarm"
+       ],
+       "handler": "index.initializer",
+       "timeout": 10
+      }
+     },
+     "internetAccess": true,
+     "invocationRestriction": {
+      "disable": true,
+      "lastModifiedTime": "",
+      "reason": ""
+     },
+     "juiceFsConfig": {
+      "envs": {
+       "key": ""
+      },
+      "mountPoints": [
+       {
+        "args": [
+         ""
+        ],
+        "mountDir": "",
+        "remoteDir": "",
+        "token": "",
+        "volumeName": ""
+       }
+      ]
+     },
+     "lastModifiedTime": "2023-05-01T08:15:27Z",
+     "lastUpdateStatus": "InProgress",
+     "lastUpdateStatusReason": "The system is currently processing the acceleration optimization for the image.",
+     "lastUpdateStatusReasonCode": "ImageOptimizing",
+     "layers": [
+      {
+       "arn": "acs:fc:cn-beijing:186824xxxxxx:layers/fc_layer/versions/1",
+       "size": 421
+      }
+     ],
+     "lockInfo": {
+      "lockedAt": "2025-04-05T10:00:00Z",
+      "lockedBy": "AgentRun",
+      "lockedResources": [
+       ""
+      ]
+     },
+     "logConfig": {
+      "enableInstanceMetrics": true,
+      "enableLlmMetrics": true,
+      "enableRequestMetrics": true,
+      "logBeginRule": "DefaultRegex",
+      "logstore": "test-logstore",
+      "project": "test-project"
+     },
+     "memorySize": 512,
+     "microSandboxConfig": {
+      "acrInstanceId": "",
+      "image": "",
+      "osType": "",
+      "readyCommand": "",
+      "registryConfig": {
+       "authConfig": {
+        "password": "abc***",
+        "userName": "admin"
+       },
+       "certConfig": {
+        "insecure": true,
+        "rootCaCertBase64": "cm9vdF9jYV9jZXJ0"
+       },
+       "networkConfig": {
+        "securityGroupId": "sg-xxxxxxxxxxxxxx",
+        "vSwitchId": "vsw-xxxxxxxxxxxxxx",
+        "vpcId": "vpc-xxxxxxxxxxxxxx"
+       }
+      },
+      "startCommand": ""
+     },
+     "nasConfig": {
+      "groupId": 100,
+      "mountPoints": [
+       {
+        "enableTLS": true,
+        "mountDir": "/home/test",
+        "serverAddr": "***-uni85.cn-hangzhou.nas.com:/"
+       }
+      ],
+      "userId": 100
+     },
+     "ossMountConfig": {
+      "mountPoints": [
+       {
+        "bucketName": "my-bucket",
+        "bucketPath": "/my-dir",
+        "endpoint": "http://oss-cn-shanghai.aliyuncs.com",
+        "mountDir": "/mnt/dir",
+        "readOnly": true
+       }
+      ]
+     },
+     "polarFsConfig": {
+      "groupId": 0,
+      "mountPoints": [
+       {
+        "instanceId": "",
+        "mountDir": "",
+        "readOnly": true,
+        "remoteDir": ""
+       }
+      ],
+      "userId": 0
+     },
+     "resourceGroupId": "",
+     "role": "acs:ram::188077086902****:role/fc-test",
+     "runtime": "python3.10",
+     "sessionAffinity": "MCP_SSE",
+     "sessionAffinityConfig": "{\\\"sseEndpointPath\\\":\\\"/sse\\\", \\\"sessionConcurrencyPerInstance\\\":20}",
+     "state": "Pending",
+     "stateReason": "Function creating",
+     "stateReasonCode": "Creating",
+     "tags": [
+      {
+       "Key": "k1",
+       "Value": "v1"
+      }
+     ],
+     "timeout": 60,
+     "tracingConfig": {
+      "params": {
+       "key": "http://tracing-analysis-dc-hz.aliyuncs.com/adapt_xxx/api/otlp/traces"
+      },
+      "type": "Jaeger"
+     },
+     "vpcConfig": {
+      "role": "acs:ram::188077086902****:role/fc-test",
+      "securityGroupId": "sg-bp18hj1wtxgy3b0***",
+      "vSwitchIds": [
+       "vsw-bp1ozpcrdc6r****"
+      ],
+      "vpcId": "vpc-***"
+     }
+    }
+   ],
+   "nextToken": "next_function_name"
+  },
+  "FC@2023-03-30#ListTriggers": {
+   "nextToken": "next_token",
+   "triggers": [
+    {
+     "createdTime": "2020-08-20T02:28:21Z",
+     "description": "test_description",
+     "httpTrigger": {
+      "urlInternet": "https://svc-func-xxxxxxxx.cn-hangzhou.fcapp.run",
+      "urlIntranet": "https://svc-func-xxxxxxxx.cn-hangzhou-vpc.fcapp.run"
+     },
+     "invocationRole": "acs:ram::151641468453****:role/my-role",
+     "lastModifiedTime": "2020-04-23T06:32:43Z",
+     "qualifier": "LATEST",
+     "sourceArn": "acs:oss:cn-hangzhou:151641468453****:my-bucket",
+     "status": "OK",
+     "targetArn": "acs:oss:cn-hangzhou:151641468453****:my-bucket",
+     "triggerConfig": "{\n      \"events\": [\n            \"oss:ObjectCreated:*\"\n      ],\n      \"filter\": {\n            \"key\": {\n                  \"prefix\": \"/prefix\",\n                  \"suffix\": \".zip\"\n            }\n      }\n}",
+     "triggerId": "546959b5-ce1a-4991-8891-df7a02b25086",
+     "triggerName": "defaultTrigger",
+     "triggerType": "http"
     }
    ]
   },
@@ -7092,6 +7423,7 @@
    "Engine": "hbaseue",
    "ExpireTime": "2022-02-24T00:00:00",
    "ExpireTimeUTC": "2022-02-23T16:00:00Z",
+   "InitialRootPassword": "LFuVlAvSKsbo",
    "InstanceId": "ld-bp150tns0sjxs****",
    "InstanceName": "testhbase",
    "IsDeletionProtection": false,
@@ -7121,6 +7453,12 @@
    "RegionId": "cn-hangzhou",
    "RequestId": "3F429923-B6F6-52C5-9C2A-5B8A8C6BBA66",
    "ResourceGroupId": "rg-acfmyiu4ekp****",
+   "SingleZoneRiskAlert": {
+    "ConfirmDate": "2026-09-01",
+    "DispositionType": "NO_SET：未设置\nPLAN_MIGRATION：计划迁移Lindorm多可用区版\nEXTERNAL_BIZ_HA：业务自行容灾",
+    "NeedAlert": false,
+    "PlannedCompletionDate": "2027-01-01"
+   },
    "Status": "ACTIVATION",
    "Tags": {
     "Tag": [
@@ -7407,6 +7745,7 @@
     },
     "securityProperties": {
      "enableDownloadPrivilege": false,
+     "enableNamespacePrivilege": true,
      "labelSecurity": false,
      "objectCreatorHasAccessPermission": true,
      "objectCreatorHasGrantPermission": true,
@@ -7655,6 +7994,12 @@
      {
       "AccessPointCount": "1",
       "AutoSnapshotPolicyId": "sp-extreme-09npwxadu1eqvw****",
+      "AutoUpgradeConfig": {
+       "capacityUsedRatio": 80,
+       "enabled": true,
+       "step": 100,
+       "time": 30
+      },
       "Bandwidth": 150,
       "Capacity": 100,
       "ChargeType": "PayAsYouGo",
@@ -8255,45 +8600,45 @@
    "requestId": "0A6EB64B-B4C8-CF02-810F-E660812972FF",
    "result": {
     "beaconAppCreated": 0,
-    "chargeType": "",
-    "chargingWay": 0,
-    "commodityCode": "",
+    "chargeType": "POSTPAY",
+    "chargingWay": 1,
+    "commodityCode": "opensearch",
     "components": [
      {
       "code": "",
       "value": ""
      }
     ],
-    "created": 0,
-    "currentVersion": "",
-    "description": "",
-    "domain": "",
+    "created": 1575442875,
+    "currentVersion": "110116134",
+    "description": "\"xxx\"",
+    "domain": "\"\"",
     "domainName": "",
     "elasticLcu": 0,
-    "engineType": "",
+    "engineType": "ha3",
     "hasPendingQuotaReviewTask": 0,
-    "id": "",
+    "id": "110116134",
     "inDebt": true,
-    "instanceId": "",
-    "lockMode": "",
-    "name": "",
-    "produced": 0,
+    "instanceId": "\"xxx\"",
+    "lockMode": "Unlock",
+    "name": "os_function_test_v1",
+    "produced": 1,
     "quota": {
-     "computeResource": 0,
-     "docSize": 0,
-     "spec": ""
+     "computeResource": 20,
+     "docSize": 1,
+     "spec": "opensearch.share.common"
     },
     "resourceGroupId": "",
-    "status": "",
+    "status": "normal",
     "switchedTime": 0,
     "tags": [
      {
-      "key": "",
-      "value": ""
+      "key": "foo",
+      "value": "bar"
      }
     ],
-    "type": "",
-    "updated": 0,
+    "type": "enhanced",
+    "updated": 1578916076,
     "versions": [
      ""
     ],
@@ -12604,6 +12949,7 @@
      "TrafficState": "standalone",
      "UpdateTime": "2021-01-29T11:13:20Z",
      "Weight": 100,
+     "WorkloadType": "",
      "WorkspaceId": "123445"
     }
    ],
@@ -12849,6 +13195,8 @@
      ],
      "Progress": "100%",
      "ProtocolType": "ASP",
+     "ReservePoolId": "rp-xxx",
+     "ReservePoolName": "reserve-pool",
      "ResourceGroups": [
       {
        "Id": "rg-4hsvzbbmqdzu3s****",
@@ -12880,6 +13228,7 @@
      ],
      "VolumeEncryptionEnabled": false,
      "VolumeEncryptionKey": "08c33a6f-4e0a-4a1b-a3fa-7ddfa1d4****",
+     "ZoneId": "cn-hangzhou-i",
      "ZoneType": "AvailabilityZone"
     }
    ],
@@ -13237,7 +13586,7 @@
    "RequestId": "473469C7-AA6F-4DC5-B3DB-A3DC0DE3****"
   },
   "eflo-controller@2022-12-15#DescribeCluster": {
-   "ClusterDescription": "Test cluster",
+   "ClusterDescription": "测试集群",
    "ClusterId": "i116913051662373010974",
    "ClusterName": "Eflo-YJ-Test-Cluster",
    "ClusterType": "AckEdgePro",
@@ -13310,7 +13659,7 @@
   "eflo-controller@2022-12-15#ListClusters": {
    "Clusters": [
     {
-     "ClusterDescription": "Test cluster",
+     "ClusterDescription": "测试集群",
      "ClusterId": "i137590131672134915401",
      "ClusterName": "cnp_test_cluster",
      "ClusterType": "AckEdgePro",

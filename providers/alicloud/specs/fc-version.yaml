@@ -2,13 +2,13 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: alicloud
-  nativeType: ACS::FC::Function
-  class: serverless.function
+  nativeType: ACS::FC::Version
+  class: serverless.version
 presentation:
-  consoleLinkTemplate: "https://fcnext.console.aliyun.com/{regionId}/services/{parentId}/functions"
+  consoleLinkTemplate: "https://fcnext.console.aliyun.com/{regionId}/services/{serviceName}/version"
   displayNames:
-    zh-CN: 函数计算函数
-    en-US: Function Compute Function
+    zh-CN: 函数计算服务版本
+    en-US: Function Compute Service Version
   icon: application
 scope:
   kind: region
@@ -18,11 +18,11 @@ discovery:
     source: resource-center
     nativeType: ACS::FC::Service
   list:
-    operation: AlibabaCloud.FC.ListFunctions
+    operation: AlibabaCloud.FC.ListServiceVersions
     parameters:
       serviceName: parent.nativeId
-    itemsPath: functions
-    identityPath: functionId
+    itemsPath: versions
+    identityPath: _parent.nativeId+versionId
     pagination:
       type: token
       tokenParameter: nextToken
@@ -30,41 +30,33 @@ discovery:
       pageSizeParameter: limit
       maxPageSize: 100
 fields:
-  name: functionName
+  name: versionId
   createdAt: createdTime
   updatedAt: lastModifiedTime
   serviceName: _parent.nativeId
-  functionId: functionId
-  functionName: functionName
+  versionId: versionId
   description: description
-  runtime: runtime
-  handler: handler
-  timeout: timeout
-  memorySize: memorySize
-  cpu: cpu
-  diskSize: diskSize
-  instanceType: instanceType
-  instanceConcurrency: instanceConcurrency
 relationships:
   - type: member_of
     targetType: ACS::FC::Service
     targetIdPath: serviceName
 actions:
   delete:
-    operation: AlibabaCloud.FC.DeleteFunction
+    operation: AlibabaCloud.FC.DeleteServiceVersion
     parameters:
       serviceName: resource.normalized.serviceName
-      functionName: resource.normalized.functionName
+      versionId: resource.normalized.versionId
     idempotency: readback
     waiter: absent
     read:
-      operation: AlibabaCloud.FC.ListFunctions
+      operation: AlibabaCloud.FC.ListServiceVersions
       parameters:
         serviceName: resource.normalized.serviceName
-        prefix: resource.normalized.functionName
+        startKey: resource.normalized.versionId
+        direction: FORWARD
         limit: 100
-      itemsPath: functions
-      identityPath: functionId
+      itemsPath: versions
+      identityPath: versionId
       pagination:
         type: token
         tokenParameter: nextToken

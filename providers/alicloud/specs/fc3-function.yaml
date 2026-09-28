@@ -2,27 +2,25 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: alicloud
-  nativeType: ACS::FC::Function
+  nativeType: ACS::FC3::Function
   class: serverless.function
 presentation:
-  consoleLinkTemplate: "https://fcnext.console.aliyun.com/{regionId}/services/{parentId}/functions"
+  consoleLinkTemplate: "https://fcnext.console.aliyun.com/{regionId}/functions/{functionName}"
   displayNames:
-    zh-CN: 函数计算函数
-    en-US: Function Compute Function
+    zh-CN: 函数计算 3.0 函数
+    en-US: Function Compute 3.0 Function
   icon: application
 scope:
   kind: region
 discovery:
   source: product-api
-  parent:
-    source: resource-center
-    nativeType: ACS::FC::Service
   list:
-    operation: AlibabaCloud.FC.ListFunctions
+    operation: AlibabaCloud.FC3.ListFunctions
     parameters:
-      serviceName: parent.nativeId
+      fcVersion: v3
     itemsPath: functions
     identityPath: functionId
+    statePath: state
     pagination:
       type: token
       tokenParameter: nextToken
@@ -31,11 +29,12 @@ discovery:
       maxPageSize: 100
 fields:
   name: functionName
+  state: state
   createdAt: createdTime
   updatedAt: lastModifiedTime
-  serviceName: _parent.nativeId
   functionId: functionId
   functionName: functionName
+  functionArn: functionArn
   description: description
   runtime: runtime
   handler: handler
@@ -43,28 +42,43 @@ fields:
   memorySize: memorySize
   cpu: cpu
   diskSize: diskSize
-  instanceType: instanceType
   instanceConcurrency: instanceConcurrency
+  role: role
+  resourceGroupId: resourceGroupId
+  lockedBy: lockInfo.lockedBy
+  vpcId: vpcConfig.vpcId
+  vSwitchIds: vpcConfig.vSwitchIds
+  securityGroupId: vpcConfig.securityGroupId
 relationships:
   - type: member_of
-    targetType: ACS::FC::Service
-    targetIdPath: serviceName
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupId
 actions:
   delete:
-    operation: AlibabaCloud.FC.DeleteFunction
+    operation: AlibabaCloud.FC3.DeleteFunction
     parameters:
-      serviceName: resource.normalized.serviceName
       functionName: resource.normalized.functionName
+    preconditions:
+      - path: lockInfo.lockedBy
+        allowedValues: [""]
+        reason: a function locked by another product is managed by that product and must be removed through it
     idempotency: readback
     waiter: absent
     read:
-      operation: AlibabaCloud.FC.ListFunctions
+      operation: AlibabaCloud.FC3.ListFunctions
       parameters:
-        serviceName: resource.normalized.serviceName
+        fcVersion: v3
         prefix: resource.normalized.functionName
         limit: 100
       itemsPath: functions
       identityPath: functionId
+      statePath: state
       pagination:
         type: token
         tokenParameter: nextToken

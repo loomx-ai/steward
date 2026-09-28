@@ -2,13 +2,13 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: alicloud
-  nativeType: ACS::FC::Function
-  class: serverless.function
+  nativeType: ACS::FC::Alias
+  class: serverless.alias
 presentation:
-  consoleLinkTemplate: "https://fcnext.console.aliyun.com/{regionId}/services/{parentId}/functions"
+  consoleLinkTemplate: "https://fcnext.console.aliyun.com/{regionId}/services/{serviceName}/alias"
   displayNames:
-    zh-CN: 函数计算函数
-    en-US: Function Compute Function
+    zh-CN: 函数计算别名
+    en-US: Function Compute Alias
   icon: application
 scope:
   kind: region
@@ -18,11 +18,11 @@ discovery:
     source: resource-center
     nativeType: ACS::FC::Service
   list:
-    operation: AlibabaCloud.FC.ListFunctions
+    operation: AlibabaCloud.FC.ListAliases
     parameters:
       serviceName: parent.nativeId
-    itemsPath: functions
-    identityPath: functionId
+    itemsPath: aliases
+    identityPath: _parent.nativeId+aliasName
     pagination:
       type: token
       tokenParameter: nextToken
@@ -30,41 +30,36 @@ discovery:
       pageSizeParameter: limit
       maxPageSize: 100
 fields:
-  name: functionName
+  name: aliasName
   createdAt: createdTime
   updatedAt: lastModifiedTime
   serviceName: _parent.nativeId
-  functionId: functionId
-  functionName: functionName
+  aliasName: aliasName
+  versionId: versionId
   description: description
-  runtime: runtime
-  handler: handler
-  timeout: timeout
-  memorySize: memorySize
-  cpu: cpu
-  diskSize: diskSize
-  instanceType: instanceType
-  instanceConcurrency: instanceConcurrency
 relationships:
   - type: member_of
     targetType: ACS::FC::Service
     targetIdPath: serviceName
+  - type: uses
+    targetType: ACS::FC::Version
+    targetIdPath: versionRefs
 actions:
   delete:
-    operation: AlibabaCloud.FC.DeleteFunction
+    operation: AlibabaCloud.FC.DeleteAlias
     parameters:
       serviceName: resource.normalized.serviceName
-      functionName: resource.normalized.functionName
+      aliasName: resource.normalized.aliasName
     idempotency: readback
     waiter: absent
     read:
-      operation: AlibabaCloud.FC.ListFunctions
+      operation: AlibabaCloud.FC.ListAliases
       parameters:
         serviceName: resource.normalized.serviceName
-        prefix: resource.normalized.functionName
+        prefix: resource.normalized.aliasName
         limit: 100
-      itemsPath: functions
-      identityPath: functionId
+      itemsPath: aliases
+      identityPath: aliasName
       pagination:
         type: token
         tokenParameter: nextToken

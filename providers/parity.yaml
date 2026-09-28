@@ -2393,13 +2393,33 @@ resources:
     - AWS::DirectConnect::TransitVirtualInterface
     - AWS::DirectConnect::PublicVirtualInterface
   status: pending_verification
+- alicloud: ACS::FC::Alias
+  spec: providers/alicloud/specs/fc-alias.yaml
+  class: serverless.alias
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    notes: Cloud Run traffic tags and splits are properties of the service, not separate resources.
+  azure:
+    notes: Azure Functions have no alias resource; deployment slots are separate app instances, not
+      pointers to published versions.
+  aws:
+    notes: AWS::Lambda::Alias is the equivalent and is not modeled yet.
+  status: pending_verification
+  notes: DeleteServiceVersion fails with VersionAlreadyInUse while an alias routes to the version, so
+    aliases, including additional-weight routes, are deleted first.
 - alicloud: ACS::FC::Function
   spec: providers/alicloud/specs/fc-function.yaml
   class: serverless.function
   baseline:
     inventory_source: product-api
     scope: region
-    actions: []
+    actions:
+    - delete
     parent_discovery: true
   gcp:
     resources:
@@ -2429,6 +2449,86 @@ resources:
     resources:
     - AWS::AppRunner::Service
   status: pending_verification
+- alicloud: ACS::FC::Trigger
+  spec: providers/alicloud/specs/fc-trigger.yaml
+  class: serverless.trigger
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - eventarc.googleapis.com/Trigger
+  azure:
+    notes: Azure Functions triggers are bindings in the function configuration, not ARM resources.
+  aws:
+    notes: AWS::Lambda::EventSourceMapping is the equivalent for poll-based triggers and is not modeled
+      yet. Push-based triggers are Lambda resource-policy permissions and source-service notification
+      settings.
+  status: pending_verification
+  notes: DeleteFunction fails with FunctionNotEmpty while the function has triggers.
+- alicloud: ACS::FC::Version
+  spec: providers/alicloud/specs/fc-version.yaml
+  class: serverless.version
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    notes: run.googleapis.com/Revision is the equivalent for Cloud Run and Cloud Functions 2nd gen and
+      is not modeled yet.
+  azure:
+    notes: Azure Functions keep no immutable published versions.
+  aws:
+    notes: AWS::Lambda::Version is the equivalent and is not modeled yet.
+  status: pending_verification
+  notes: DeleteService fails with ServiceNotEmpty while the service has functions, versions or aliases.
+- alicloud: ACS::FC3::Function
+  spec: providers/alicloud/specs/fc3-function.yaml
+  class: serverless.function
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - cloudfunctions.googleapis.com/CloudFunction
+  azure:
+    resources:
+    - Microsoft.Web/sites/functions
+  aws:
+    resources:
+    - AWS::Lambda::Function
+  status: pending_verification
+  notes: Resource Center has no Function Compute 3.0 type; the native type follows ROS
+    ALIYUN::FC3::Function. The list uses fcVersion=v3 so FC 2.0 functions are not listed twice.
+    Functions locked by another product are not deleted. Aliases, versions and custom domains do not
+    block DeleteFunction and are not modeled.
+- alicloud: ACS::FC3::Trigger
+  spec: providers/alicloud/specs/fc3-trigger.yaml
+  class: serverless.trigger
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - eventarc.googleapis.com/Trigger
+  azure:
+    notes: Azure Functions triggers are bindings in the function configuration, not ARM resources.
+  aws:
+    notes: AWS::Lambda::EventSourceMapping is the equivalent for poll-based triggers and is not modeled
+      yet. Push-based triggers are Lambda resource-policy permissions and source-service notification
+      settings.
+  status: pending_verification
+  notes: DeleteFunction fails with FunctionNotEmpty while the function has triggers.
 - alicloud: ACS::Ga::Accelerator
   spec: providers/alicloud/specs/ga-accelerator.yaml
   class: network.global_accelerator

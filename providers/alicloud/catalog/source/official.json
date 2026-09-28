@@ -709,7 +709,7 @@
     }
    ],
    "product": "ALB",
-   "source_sha256": "7f734c6efdcc9303d998773b37d6116109674923d5c4bf85a454d615208704ac",
+   "source_sha256": "d5fa2b25655043df6a6fa9077625c5bf677e182fa172b132821ff8ea9a2148ab",
    "source_uri": "https://api.aliyun.com/meta/v1/products/ALB/versions/2020-06-16/api-docs.json",
    "style": "RPC",
    "version": "2020-06-16"
@@ -1939,7 +1939,7 @@
     }
    ],
    "product": "APIG",
-   "source_sha256": "dba500edf8533c78814bccc56d2108706a56837fe9b97050fcd85b772cec08df",
+   "source_sha256": "fe117c3c8772e89f3cf26ee5415bcafff05018650e972d57846515409f4bf397",
    "source_uri": "https://api.aliyun.com/meta/v1/products/APIG/versions/2024-03-27/api-docs.json",
    "style": "ROA",
    "version": "2024-03-27"
@@ -2860,7 +2860,7 @@
     }
    ],
    "product": "ARMS",
-   "source_sha256": "d8de25fc4300c244fe6ffcd2dc54ed9d1f719793e319d54284ed4e0b6069d94a",
+   "source_sha256": "aa0f619dee2d316d2754fce26cf00f5246c80d6e212461b4eeb3fb8cf9cb7182",
    "source_uri": "https://api.aliyun.com/meta/v1/products/ARMS/versions/2019-08-08/api-docs.json",
    "style": "RPC",
    "version": "2019-08-08"
@@ -3392,7 +3392,7 @@
     }
    ],
    "product": "Alidns",
-   "source_sha256": "0f3607dcc6b0256547b7718c1ccc17b90a80ee1545485d7eaca274b9a7a58ecc",
+   "source_sha256": "e0927b6f44dc1f3b6807021ed73fc29cd42b1a881a85e72d9d7edec1025744ba",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Alidns/versions/2015-01-09/api-docs.json",
    "style": "RPC",
    "version": "2015-01-09"
@@ -4236,7 +4236,7 @@
     }
    ],
    "product": "CS",
-   "source_sha256": "f661875bf0b72dc14ef5cc056110c29de24560e8d2b8133155e1ae8319d2f120",
+   "source_sha256": "ba66aba4c05c7af369ee809b56474109345e927359175add7067624e22beaf01",
    "source_uri": "https://api.aliyun.com/meta/v1/products/CS/versions/2015-12-15/api-docs.json",
    "style": "ROA",
    "version": "2015-12-15"
@@ -4363,6 +4363,7 @@
       "OperationFailed.CCNAttached",
       "OperationFailed.CloudRouteExist",
       "OperationFailed.DeleteTransitRouter",
+      "OperationFailed.ExistCapacityReservation",
       "OperationFailed.FlowLogExist",
       "OperationFailed.FlowLogExistOrNisOpened",
       "OperationFailed.MulticastDomainExist",
@@ -6911,7 +6912,7 @@
     }
    ],
    "product": "Cbn",
-   "source_sha256": "29f1cc1c62194965cdbcf28b52d7d9652f209f7e009b34cf3a414b83d6b4c7a2",
+   "source_sha256": "67c2a15265617d8cb8d5a8c9409ae823919d443f10c2724d6f2fe2f89db36004",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Cbn/versions/2017-09-12/api-docs.json",
    "style": "RPC",
    "version": "2017-09-12"
@@ -7902,7 +7903,7 @@
     }
    ],
    "product": "Cloudfw",
-   "source_sha256": "82343f590f4b4a786d76b4bf251a93581342b92e18331bf3e864f27bc799951d",
+   "source_sha256": "faaeaf418d66de5e5ac9e14c5bcd21f35cf688478206d9722cd301aed46e2c50",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Cloudfw/versions/2017-12-07/api-docs.json",
    "style": "RPC",
    "version": "2017-12-07"
@@ -8634,7 +8635,7 @@
     }
    ],
    "product": "Cms",
-   "source_sha256": "23cd90542bf92fcb50f38659617ab1e6a816457b857108ce2645e9bfdfa3e757",
+   "source_sha256": "6a426b68a3f86b0ae68422aa7ed5d89f17fe23069e8311cfc61166b0d1a1d453",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Cms/versions/2019-01-01/api-docs.json",
    "style": "RPC",
    "version": "2019-01-01"
@@ -9011,7 +9012,7 @@
     }
    ],
    "product": "Cms",
-   "source_sha256": "2961a9085866a8fe7fa2ac9fc0817b4d909faef76e81b8ce958bd77da3889b8f",
+   "source_sha256": "898355cc712d676994015f4fcd7c79b7e12d637d3875f8703add02d6162a44b6",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Cms/versions/2024-03-30/api-docs.json",
    "style": "ROA",
    "version": "2024-03-30"
@@ -10218,7 +10219,7 @@
     }
    ],
    "product": "Dds",
-   "source_sha256": "716adb6d528de856bd772cc00b622556f6ce6e998e332a3dcf85329aaf8817cc",
+   "source_sha256": "01d9199040ef9c7a16e12ae7a12522e97092c14d420d2a080f1bdf9764b772f3",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Dds/versions/2015-12-01/api-docs.json",
    "style": "RPC",
    "version": "2015-12-01"
@@ -11568,7 +11569,7 @@
     }
    ],
    "product": "Dts",
-   "source_sha256": "029021138dd0f5d82877719183dab36ad07f149e2ea4edab37ac7de6f7fbc4f9",
+   "source_sha256": "0eaab0f397ed28b416fb9414a7157149666ba695d45c8c40dbdc8ba4c129452c",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Dts/versions/2020-01-01/api-docs.json",
    "style": "RPC",
    "version": "2020-01-01"
@@ -11775,7 +11776,7 @@
     }
    ],
    "product": "Dysmsapi",
-   "source_sha256": "abf42875649d9c0d7c5f51d47dab15f710bc707d439638176a8aadb7e141466d",
+   "source_sha256": "44f5cadcfe26ecd46926af2512e9697890600b2e947afa9fca4a5f9419dba5fc",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Dysmsapi/versions/2017-05-25/api-docs.json",
    "style": "RPC",
    "version": "2017-05-25"
@@ -12313,7 +12314,7 @@
     }
    ],
    "product": "ESA",
-   "source_sha256": "681e9cc914a0a3b942d0657998628d92e5f149ac7bfb9030613a914cb2e07164",
+   "source_sha256": "af5c30023c04412215cc5808393ddad8f916b47451d14c923ea5b66de40c2ea0",
    "source_uri": "https://api.aliyun.com/meta/v1/products/ESA/versions/2024-09-10/api-docs.json",
    "style": "RPC",
    "version": "2024-09-10"
@@ -16394,7 +16395,7 @@
     }
    ],
    "product": "Ecs",
-   "source_sha256": "f1c1ebeaf40bf575f5a9402e01c792319641d02ec1ad16f114940d321f67c852",
+   "source_sha256": "f3cdeb8bc24402ae43be7d7382c3a6e4324417734f039d21f52acb432f5e0ef6",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Ecs/versions/2014-05-26/api-docs.json",
    "style": "RPC",
    "version": "2014-05-26"
@@ -16971,7 +16972,7 @@
     }
    ],
    "product": "Emr",
-   "source_sha256": "c5041973ca0e85cf7061c7af6da3ed486d3046565d8ec736c12d76456079daef",
+   "source_sha256": "65fd09b2c172f489ce7e63153b899caea44b00794384cae2a70ed59f012328fd",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Emr/versions/2021-03-20/api-docs.json",
    "style": "RPC",
    "version": "2021-03-20"
@@ -17454,7 +17455,7 @@
     }
    ],
    "product": "Ens",
-   "source_sha256": "56998b0f227ff568331a0f0c2ea2ff06ade6d79a2677d246b29e363ffb3ad470",
+   "source_sha256": "1d454d3f642c59a66c78da98195932b46d69bfd1de7e4de81c9522e1011bf423",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Ens/versions/2017-11-10/api-docs.json",
    "style": "RPC",
    "version": "2017-11-10"
@@ -18281,13 +18282,566 @@
     }
    ],
    "product": "ExpressConnectRouter",
-   "source_sha256": "40125a23031353ccb41d77915366169ef1c85e9e094ea31ed856178251ea7f63",
+   "source_sha256": "61bb0ab0071f01ed51a8b21dd0c64fb76becb5bad3666f6258c9b3c4f59cdc6a",
    "source_uri": "https://api.aliyun.com/meta/v1/products/ExpressConnectRouter/versions/2023-09-01/api-docs.json",
    "style": "RPC",
    "version": "2023-09-01"
   },
   {
    "apis": {
+    "DeleteFunction": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "delete"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "path",
+       "name": "functionName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "/2023-03-30/functions/{functionName}",
+     "response_paths": [],
+     "risk_type": "high"
+    },
+    "DeleteTrigger": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "delete"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "path",
+       "name": "functionName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "triggerName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "/2023-03-30/functions/{functionName}/triggers/{triggerName}",
+     "response_paths": [],
+     "risk_type": ""
+    },
+    "ListFunctions": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "query",
+       "name": "description",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "fcVersion",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "functionName",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "gpuType",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "limit",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "nextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "prefix",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "resourceGroupId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "runtime",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "tags",
+       "required": false,
+       "type": "array"
+      }
+     ],
+     "path": "/2023-03-30/functions",
+     "response_paths": [
+      "functions",
+      "functions.codeChecksum",
+      "functions.codeSize",
+      "functions.cpu",
+      "functions.createdTime",
+      "functions.customContainerConfig",
+      "functions.customContainerConfig.accelerationInfo",
+      "functions.customContainerConfig.accelerationInfo.status",
+      "functions.customContainerConfig.accelerationType",
+      "functions.customContainerConfig.acrInstanceId",
+      "functions.customContainerConfig.command",
+      "functions.customContainerConfig.entrypoint",
+      "functions.customContainerConfig.healthCheckConfig",
+      "functions.customContainerConfig.healthCheckConfig.failureThreshold",
+      "functions.customContainerConfig.healthCheckConfig.httpGetUrl",
+      "functions.customContainerConfig.healthCheckConfig.initialDelaySeconds",
+      "functions.customContainerConfig.healthCheckConfig.periodSeconds",
+      "functions.customContainerConfig.healthCheckConfig.successThreshold",
+      "functions.customContainerConfig.healthCheckConfig.timeoutSeconds",
+      "functions.customContainerConfig.image",
+      "functions.customContainerConfig.port",
+      "functions.customContainerConfig.registryConfig",
+      "functions.customContainerConfig.registryConfig.authConfig",
+      "functions.customContainerConfig.registryConfig.authConfig.password",
+      "functions.customContainerConfig.registryConfig.authConfig.userName",
+      "functions.customContainerConfig.registryConfig.certConfig",
+      "functions.customContainerConfig.registryConfig.certConfig.insecure",
+      "functions.customContainerConfig.registryConfig.certConfig.rootCaCertBase64",
+      "functions.customContainerConfig.registryConfig.networkConfig",
+      "functions.customContainerConfig.registryConfig.networkConfig.securityGroupId",
+      "functions.customContainerConfig.registryConfig.networkConfig.vSwitchId",
+      "functions.customContainerConfig.registryConfig.networkConfig.vpcId",
+      "functions.customContainerConfig.resolvedImageUri",
+      "functions.customDNS",
+      "functions.customDNS.dnsOptions",
+      "functions.customDNS.dnsOptions.name",
+      "functions.customDNS.dnsOptions.value",
+      "functions.customDNS.nameServers",
+      "functions.customDNS.searches",
+      "functions.customRuntimeConfig",
+      "functions.customRuntimeConfig.args",
+      "functions.customRuntimeConfig.command",
+      "functions.customRuntimeConfig.healthCheckConfig",
+      "functions.customRuntimeConfig.healthCheckConfig.failureThreshold",
+      "functions.customRuntimeConfig.healthCheckConfig.httpGetUrl",
+      "functions.customRuntimeConfig.healthCheckConfig.initialDelaySeconds",
+      "functions.customRuntimeConfig.healthCheckConfig.periodSeconds",
+      "functions.customRuntimeConfig.healthCheckConfig.successThreshold",
+      "functions.customRuntimeConfig.healthCheckConfig.timeoutSeconds",
+      "functions.customRuntimeConfig.port",
+      "functions.description",
+      "functions.disableInjectCredentials",
+      "functions.disableOndemand",
+      "functions.diskSize",
+      "functions.enableLongLiving",
+      "functions.environmentVariables",
+      "functions.functionArn",
+      "functions.functionId",
+      "functions.functionName",
+      "functions.gpuConfig",
+      "functions.gpuConfig.gpuMemorySize",
+      "functions.gpuConfig.gpuType",
+      "functions.handler",
+      "functions.idleTimeout",
+      "functions.instanceConcurrency",
+      "functions.instanceIsolationMode",
+      "functions.instanceLifecycleConfig",
+      "functions.instanceLifecycleConfig.initializer",
+      "functions.instanceLifecycleConfig.initializer.command",
+      "functions.instanceLifecycleConfig.initializer.handler",
+      "functions.instanceLifecycleConfig.initializer.timeout",
+      "functions.instanceLifecycleConfig.preStop",
+      "functions.instanceLifecycleConfig.preStop.command",
+      "functions.instanceLifecycleConfig.preStop.handler",
+      "functions.instanceLifecycleConfig.preStop.timeout",
+      "functions.internetAccess",
+      "functions.invocationRestriction",
+      "functions.invocationRestriction.disable",
+      "functions.invocationRestriction.lastModifiedTime",
+      "functions.invocationRestriction.reason",
+      "functions.juiceFsConfig",
+      "functions.juiceFsConfig.envs",
+      "functions.juiceFsConfig.mountPoints",
+      "functions.juiceFsConfig.mountPoints.args",
+      "functions.juiceFsConfig.mountPoints.mountDir",
+      "functions.juiceFsConfig.mountPoints.remoteDir",
+      "functions.juiceFsConfig.mountPoints.token",
+      "functions.juiceFsConfig.mountPoints.volumeName",
+      "functions.lastModifiedTime",
+      "functions.lastUpdateStatus",
+      "functions.lastUpdateStatusReason",
+      "functions.lastUpdateStatusReasonCode",
+      "functions.layers",
+      "functions.layers.arn",
+      "functions.layers.size",
+      "functions.lockInfo",
+      "functions.lockInfo.lockedAt",
+      "functions.lockInfo.lockedBy",
+      "functions.lockInfo.lockedResources",
+      "functions.logConfig",
+      "functions.logConfig.enableInstanceMetrics",
+      "functions.logConfig.enableLlmMetrics",
+      "functions.logConfig.enableRequestMetrics",
+      "functions.logConfig.logBeginRule",
+      "functions.logConfig.logstore",
+      "functions.logConfig.project",
+      "functions.memorySize",
+      "functions.microSandboxConfig",
+      "functions.microSandboxConfig.acrInstanceId",
+      "functions.microSandboxConfig.image",
+      "functions.microSandboxConfig.osType",
+      "functions.microSandboxConfig.readyCommand",
+      "functions.microSandboxConfig.registryConfig",
+      "functions.microSandboxConfig.registryConfig.authConfig",
+      "functions.microSandboxConfig.registryConfig.authConfig.password",
+      "functions.microSandboxConfig.registryConfig.authConfig.userName",
+      "functions.microSandboxConfig.registryConfig.certConfig",
+      "functions.microSandboxConfig.registryConfig.certConfig.insecure",
+      "functions.microSandboxConfig.registryConfig.certConfig.rootCaCertBase64",
+      "functions.microSandboxConfig.registryConfig.networkConfig",
+      "functions.microSandboxConfig.registryConfig.networkConfig.securityGroupId",
+      "functions.microSandboxConfig.registryConfig.networkConfig.vSwitchId",
+      "functions.microSandboxConfig.registryConfig.networkConfig.vpcId",
+      "functions.microSandboxConfig.startCommand",
+      "functions.nasConfig",
+      "functions.nasConfig.groupId",
+      "functions.nasConfig.mountPoints",
+      "functions.nasConfig.mountPoints.enableTLS",
+      "functions.nasConfig.mountPoints.mountDir",
+      "functions.nasConfig.mountPoints.serverAddr",
+      "functions.nasConfig.userId",
+      "functions.ossMountConfig",
+      "functions.ossMountConfig.mountPoints",
+      "functions.ossMountConfig.mountPoints.bucketName",
+      "functions.ossMountConfig.mountPoints.bucketPath",
+      "functions.ossMountConfig.mountPoints.endpoint",
+      "functions.ossMountConfig.mountPoints.mountDir",
+      "functions.ossMountConfig.mountPoints.readOnly",
+      "functions.polarFsConfig",
+      "functions.polarFsConfig.groupId",
+      "functions.polarFsConfig.mountPoints",
+      "functions.polarFsConfig.mountPoints.instanceId",
+      "functions.polarFsConfig.mountPoints.mountDir",
+      "functions.polarFsConfig.mountPoints.readOnly",
+      "functions.polarFsConfig.mountPoints.remoteDir",
+      "functions.polarFsConfig.userId",
+      "functions.resourceGroupId",
+      "functions.role",
+      "functions.runtime",
+      "functions.sessionAffinity",
+      "functions.sessionAffinityConfig",
+      "functions.state",
+      "functions.stateReason",
+      "functions.stateReasonCode",
+      "functions.tags",
+      "functions.tags.Key",
+      "functions.tags.Value",
+      "functions.timeout",
+      "functions.tracingConfig",
+      "functions.tracingConfig.params",
+      "functions.tracingConfig.type",
+      "functions.vpcConfig",
+      "functions.vpcConfig.role",
+      "functions.vpcConfig.securityGroupId",
+      "functions.vpcConfig.vSwitchIds",
+      "functions.vpcConfig.vpcId",
+      "nextToken"
+     ],
+     "risk_type": "none"
+    },
+    "ListTriggers": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "list",
+     "parameters": [
+      {
+       "in": "path",
+       "name": "functionName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "limit",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "nextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "prefix",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/2023-03-30/functions/{functionName}/triggers",
+     "response_paths": [
+      "nextToken",
+      "triggers",
+      "triggers.createdTime",
+      "triggers.description",
+      "triggers.httpTrigger",
+      "triggers.httpTrigger.urlInternet",
+      "triggers.httpTrigger.urlIntranet",
+      "triggers.invocationRole",
+      "triggers.lastModifiedTime",
+      "triggers.qualifier",
+      "triggers.sourceArn",
+      "triggers.status",
+      "triggers.targetArn",
+      "triggers.triggerConfig",
+      "triggers.triggerId",
+      "triggers.triggerName",
+      "triggers.triggerType"
+     ],
+     "risk_type": ""
+    }
+   },
+   "endpoints": [
+    {
+     "endpoint": "fcv3.ap-northeast-1.aliyuncs.com",
+     "region": "ap-northeast-1"
+    },
+    {
+     "endpoint": "fcv3.ap-northeast-2.aliyuncs.com",
+     "region": "ap-northeast-2"
+    },
+    {
+     "endpoint": "fcv3.ap-south-1.aliyuncs.com",
+     "region": "ap-south-1"
+    },
+    {
+     "endpoint": "fcv3.ap-southeast-1.aliyuncs.com",
+     "region": "ap-southeast-1"
+    },
+    {
+     "endpoint": "fcv3.ap-southeast-2.aliyuncs.com",
+     "region": "ap-southeast-2"
+    },
+    {
+     "endpoint": "fcv3.ap-southeast-3.aliyuncs.com",
+     "region": "ap-southeast-3"
+    },
+    {
+     "endpoint": "fcv3.ap-southeast-5.aliyuncs.com\t",
+     "region": "ap-southeast-5"
+    },
+    {
+     "endpoint": "fcv3.ap-southeast-7.aliyuncs.com",
+     "region": "ap-southeast-7"
+    },
+    {
+     "endpoint": "fcv3.cn-beijing.aliyuncs.com",
+     "region": "cn-beijing"
+    },
+    {
+     "endpoint": "fcv3.cn-chengdu.aliyuncs.com",
+     "region": "cn-chengdu"
+    },
+    {
+     "endpoint": "fcv3.cn-hangzhou.aliyuncs.com",
+     "region": "cn-hangzhou"
+    },
+    {
+     "endpoint": "cn-hangzhou-finance.fc.aliyuncs.com",
+     "region": "cn-hangzhou-finance"
+    },
+    {
+     "endpoint": "cn-heyuan-acdr-1.fc.aliyuncs.com",
+     "region": "cn-heyuan-acdr-1"
+    },
+    {
+     "endpoint": "fcv3.cn-hongkong.aliyuncs.com",
+     "region": "cn-hongkong"
+    },
+    {
+     "endpoint": "fcv3.cn-huhehaote.aliyuncs.com",
+     "region": "cn-huhehaote"
+    },
+    {
+     "endpoint": "fcv3.cn-qingdao.aliyuncs.com",
+     "region": "cn-qingdao"
+    },
+    {
+     "endpoint": "fcv3.cn-shanghai.aliyuncs.com",
+     "region": "cn-shanghai"
+    },
+    {
+     "endpoint": "cn-shanghai-finance-1.fc.aliyuncs.com",
+     "region": "cn-shanghai-finance-1"
+    },
+    {
+     "endpoint": "fcv3.cn-shenzhen.aliyuncs.com",
+     "region": "cn-shenzhen"
+    },
+    {
+     "endpoint": "fcv3.cn-wulanchabu.aliyuncs.com",
+     "region": "cn-wulanchabu"
+    },
+    {
+     "endpoint": "fcv3.cn-zhangjiakou.aliyuncs.com",
+     "region": "cn-zhangjiakou"
+    },
+    {
+     "endpoint": "fcv3.eu-central-1.aliyuncs.com",
+     "region": "eu-central-1"
+    },
+    {
+     "endpoint": "fcv3.eu-west-1.aliyuncs.com",
+     "region": "eu-west-1"
+    },
+    {
+     "endpoint": "me-central-1.fc.aliyuncs.com",
+     "region": "me-central-1"
+    },
+    {
+     "endpoint": "fcv3.us-east-1.aliyuncs.com",
+     "region": "us-east-1"
+    },
+    {
+     "endpoint": "fcv3.us-west-1.aliyuncs.com",
+     "region": "us-west-1"
+    }
+   ],
+   "product": "FC",
+   "source_sha256": "5c3461e61f2c9ee4d26decfa0a657e98f2c726563ce4407325dec6982104425b",
+   "source_uri": "https://api.aliyun.com/meta/v1/products/FC/versions/2023-03-30/api-docs.json",
+   "style": "ROA",
+   "version": "2023-03-30"
+  },
+  {
+   "apis": {
+    "DeleteAlias": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "delete"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "header",
+       "name": "If-Match",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Account-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Date",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Trace-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "aliasName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "serviceName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "/2021-04-06/services/{serviceName}/aliases/{aliasName}",
+     "response_paths": [],
+     "risk_type": ""
+    },
+    "DeleteFunction": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "delete"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "header",
+       "name": "If-Match",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Account-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Date",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Trace-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "functionName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "serviceName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "/2021-04-06/services/{serviceName}/functions/{functionName}",
+     "response_paths": [],
+     "risk_type": ""
+    },
     "DeleteService": {
      "deprecated": false,
      "error_codes": [],
@@ -18329,6 +18883,182 @@
      ],
      "path": "/2021-04-06/services/{serviceName}",
      "response_paths": [],
+     "risk_type": ""
+    },
+    "DeleteServiceVersion": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "delete"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "header",
+       "name": "X-Fc-Account-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Date",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Trace-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "serviceName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "versionId",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "/2021-04-06/services/{serviceName}/versions/{versionId}",
+     "response_paths": [],
+     "risk_type": ""
+    },
+    "DeleteTrigger": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "delete"
+     ],
+     "operation_type": "delete",
+     "parameters": [
+      {
+       "in": "header",
+       "name": "If-Match",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Account-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Date",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Trace-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "functionName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "serviceName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "triggerName",
+       "required": true,
+       "type": "string"
+      }
+     ],
+     "path": "/2021-04-06/services/{serviceName}/functions/{functionName}/triggers/{triggerName}",
+     "response_paths": [],
+     "risk_type": ""
+    },
+    "ListAliases": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "header",
+       "name": "X-Fc-Account-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Date",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Trace-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "limit",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "nextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "prefix",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "serviceName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "startKey",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/2021-04-06/services/{serviceName}/aliases",
+     "response_paths": [
+      "aliases",
+      "aliases.additionalVersionWeight",
+      "aliases.aliasName",
+      "aliases.createdTime",
+      "aliases.description",
+      "aliases.lastModifiedTime",
+      "aliases.resolvePolicy",
+      "aliases.routePolicy",
+      "aliases.routePolicy.condition",
+      "aliases.routePolicy.policyItems",
+      "aliases.routePolicy.policyItems.key",
+      "aliases.routePolicy.policyItems.operator",
+      "aliases.routePolicy.policyItems.type",
+      "aliases.routePolicy.policyItems.value",
+      "aliases.versionId",
+      "nextToken"
+     ],
      "risk_type": ""
     },
     "ListFunctions": {
@@ -18454,6 +19184,75 @@
      ],
      "risk_type": ""
     },
+    "ListServiceVersions": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "header",
+       "name": "X-Fc-Account-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Date",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Trace-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "direction",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "limit",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "nextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "serviceName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "startKey",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/2021-04-06/services/{serviceName}/versions",
+     "response_paths": [
+      "direction",
+      "nextToken",
+      "versions",
+      "versions.createdTime",
+      "versions.description",
+      "versions.lastModifiedTime",
+      "versions.versionId"
+     ],
+     "risk_type": ""
+    },
     "ListServices": {
      "deprecated": false,
      "error_codes": [],
@@ -18547,6 +19346,89 @@
       "services.vpcConfig.vpcId"
      ],
      "risk_type": "none"
+    },
+    "ListTriggers": {
+     "deprecated": false,
+     "error_codes": [],
+     "methods": [
+      "get"
+     ],
+     "operation_type": "get",
+     "parameters": [
+      {
+       "in": "header",
+       "name": "X-Fc-Account-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Date",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "header",
+       "name": "X-Fc-Trace-Id",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "functionName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "limit",
+       "required": false,
+       "type": "integer"
+      },
+      {
+       "in": "query",
+       "name": "nextToken",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "prefix",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "path",
+       "name": "serviceName",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "in": "query",
+       "name": "startKey",
+       "required": false,
+       "type": "string"
+      }
+     ],
+     "path": "/2021-04-06/services/{serviceName}/functions/{functionName}/triggers",
+     "response_paths": [
+      "nextToken",
+      "triggers",
+      "triggers.createdTime",
+      "triggers.description",
+      "triggers.domainName",
+      "triggers.invocationRole",
+      "triggers.lastModifiedTime",
+      "triggers.qualifier",
+      "triggers.sourceArn",
+      "triggers.triggerConfig",
+      "triggers.triggerId",
+      "triggers.triggerName",
+      "triggers.triggerType",
+      "triggers.urlInternet",
+      "triggers.urlIntranet"
+     ],
+     "risk_type": ""
     }
    },
    "endpoints": [
@@ -18999,6 +19881,7 @@
       "Engine",
       "ExpireTime",
       "ExpireTimeUTC",
+      "InitialRootPassword",
       "InstanceId",
       "InstanceName",
       "IsDeletionProtection",
@@ -19025,6 +19908,11 @@
       "RegionId",
       "RequestId",
       "ResourceGroupId",
+      "SingleZoneRiskAlert",
+      "SingleZoneRiskAlert.ConfirmDate",
+      "SingleZoneRiskAlert.DispositionType",
+      "SingleZoneRiskAlert.NeedAlert",
+      "SingleZoneRiskAlert.PlannedCompletionDate",
       "Status",
       "Tags",
       "Tags.Tag",
@@ -19036,7 +19924,7 @@
       "VswitchId",
       "ZoneId"
      ],
-     "risk_type": ""
+     "risk_type": "none"
     },
     "DescribeInstances": {
      "deprecated": false,
@@ -19280,7 +20168,7 @@
     }
    ],
    "product": "HBase",
-   "source_sha256": "4f7e1e7bab027a46199d1609472db7c9c213bbaf6e94031c5d5f39f000c26ef5",
+   "source_sha256": "353c4461c3b0c25f8f4c15369460db928c2d479199c6bf410b3e8b7a779517b8",
    "source_uri": "https://api.aliyun.com/meta/v1/products/HBase/versions/2019-01-01/api-docs.json",
    "style": "RPC",
    "version": "2019-01-01"
@@ -19541,7 +20429,7 @@
     }
    ],
    "product": "Hologram",
-   "source_sha256": "4ad7ea0acfb22ad4e878a6ac2197f91d2b619de3cd30dd502da91d81bba9791b",
+   "source_sha256": "fcab16753c9acc9c0d920059a6940e5c197618cb8bdbea5376e9132974b92139",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Hologram/versions/2022-06-01/api-docs.json",
    "style": "ROA",
    "version": "2022-06-01"
@@ -19988,6 +20876,7 @@
       "data.saleTag.resourceType",
       "data.securityProperties",
       "data.securityProperties.enableDownloadPrivilege",
+      "data.securityProperties.enableNamespacePrivilege",
       "data.securityProperties.labelSecurity",
       "data.securityProperties.objectCreatorHasAccessPermission",
       "data.securityProperties.objectCreatorHasGrantPermission",
@@ -20235,7 +21124,7 @@
     }
    ],
    "product": "MaxCompute",
-   "source_sha256": "a6c3a43425c1e721055aaf9fd58b8278e78a528cded31ecc598bbc7d20dfa635",
+   "source_sha256": "e3a1bf2687ae5f38b143043ba748b41c5f18dd34a9105a48f4d3e178a7dc2df8",
    "source_uri": "https://api.aliyun.com/meta/v1/products/MaxCompute/versions/2022-01-04/api-docs.json",
    "style": "ROA",
    "version": "2022-01-04"
@@ -20847,6 +21736,11 @@
       "FileSystems.FileSystem",
       "FileSystems.FileSystem.AccessPointCount",
       "FileSystems.FileSystem.AutoSnapshotPolicyId",
+      "FileSystems.FileSystem.AutoUpgradeConfig",
+      "FileSystems.FileSystem.AutoUpgradeConfig.capacityUsedRatio",
+      "FileSystems.FileSystem.AutoUpgradeConfig.enabled",
+      "FileSystems.FileSystem.AutoUpgradeConfig.step",
+      "FileSystems.FileSystem.AutoUpgradeConfig.time",
       "FileSystems.FileSystem.Bandwidth",
       "FileSystems.FileSystem.Capacity",
       "FileSystems.FileSystem.ChargeType",
@@ -21224,7 +22118,7 @@
     }
    ],
    "product": "NAS",
-   "source_sha256": "a4a7f55de050ead932459857f90bb26537d8322a93245a350d0533d079f09fa6",
+   "source_sha256": "35b272016b27a91c087ea38d753199bafa54608aa2c2664afc781021aaeb516e",
    "source_uri": "https://api.aliyun.com/meta/v1/products/NAS/versions/2017-06-26/api-docs.json",
    "style": "RPC",
    "version": "2017-06-26"
@@ -22682,7 +23576,7 @@
     }
    ],
    "product": "Ons",
-   "source_sha256": "a6c587d9b4ff51efae42d32ba13de370e6aece9d562971f738cfde1260772a85",
+   "source_sha256": "44eaa781cc377592ad7505579d009c78fffc23e03b0000cb3a71fb7c3d0a5632",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Ons/versions/2019-02-14/api-docs.json",
    "style": "RPC",
    "version": "2019-02-14"
@@ -22764,16 +23658,13 @@
       "result.domainName",
       "result.elasticLcu",
       "result.engineType",
-      "result.expireOn",
       "result.hasPendingQuotaReviewTask",
       "result.id",
       "result.inDebt",
       "result.instanceId",
       "result.lockMode",
-      "result.lockedByExpiration",
       "result.name",
       "result.produced",
-      "result.projectId",
       "result.quota",
       "result.quota.computeResource",
       "result.quota.docSize",
@@ -22862,7 +23753,7 @@
     }
    ],
    "product": "OpenSearch",
-   "source_sha256": "a95b70c17a09544a7909e906e3c7435a5e68cb0d50e717cbffc2836532c4ac95",
+   "source_sha256": "a422a112303e27b525db316178e1b3ad13dc4592ce0a975fd44413a70a9d5165",
    "source_uri": "https://api.aliyun.com/meta/v1/products/OpenSearch/versions/2017-12-25/api-docs.json",
    "style": "ROA",
    "version": "2017-12-25"
@@ -23568,7 +24459,7 @@
     }
    ],
    "product": "Oss",
-   "source_sha256": "1613e8cd10a67a96dcca97704a93f205d39129a25db1d58052c43d30a689ec93",
+   "source_sha256": "2099ba11b7f57145bd2ece85680ad9aad679daeed64196900f2985231b2288c3",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Oss/versions/2019-05-17/api-docs.json",
    "style": "ROA",
    "version": "2019-05-17"
@@ -24564,7 +25455,7 @@
     }
    ],
    "product": "Privatelink",
-   "source_sha256": "2ae210d43f11c3805a175664e92784cdfc63f5a41536d8090d741f61f78f3ee4",
+   "source_sha256": "ae5f979c9f569cf1930806384f51332e60a4e843673bdf28feb01933bd0edfe7",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Privatelink/versions/2020-04-15/api-docs.json",
    "style": "RPC",
    "version": "2020-04-15"
@@ -25160,7 +26051,7 @@
     }
    ],
    "product": "R-kvstore",
-   "source_sha256": "bec5c2b5925f59d2bc42420edea2add28f9eb10f354920271d99ac392ee14587",
+   "source_sha256": "3518774bddc21f5776a83e7355f30aaa097859cca633a20ad08d3f76173c34b6",
    "source_uri": "https://api.aliyun.com/meta/v1/products/R-kvstore/versions/2015-01-01/api-docs.json",
    "style": "RPC",
    "version": "2015-01-01"
@@ -26089,7 +26980,7 @@
     }
    ],
    "product": "ROS",
-   "source_sha256": "faec245028c4b6006e717788c8b9aff7fd514e5259bd0bbd6ae3c53bddfe1608",
+   "source_sha256": "6ea015bbc2a8ad081f756eb1502c1305384acdbe66e3b6c3bf019be0b72703b9",
    "source_uri": "https://api.aliyun.com/meta/v1/products/ROS/versions/2019-09-10/api-docs.json",
    "style": "RPC",
    "version": "2019-09-10"
@@ -27609,7 +28500,7 @@
     }
    ],
    "product": "Rds",
-   "source_sha256": "534b0da8b640402e51176dfefa5d065fe3cbd1e6476a1df88ce749f659befd49",
+   "source_sha256": "6b6b555e7404c7182be08005349d396a2237c9380c4b248bc9d179af28b792f5",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Rds/versions/2014-08-15/api-docs.json",
    "style": "RPC",
    "version": "2014-08-15"
@@ -28489,7 +29380,7 @@
     }
    ],
    "product": "RocketMQ",
-   "source_sha256": "272b7f0475f898f378d0329a007eea71eb8c3a46600e1a706bd600ee361ed129",
+   "source_sha256": "f0feb43dd195bf7223a71be50dd97148fa152060ffae68f77384a3ea33b5a047",
    "source_uri": "https://api.aliyun.com/meta/v1/products/RocketMQ/versions/2022-08-01/api-docs.json",
    "style": "ROA",
    "version": "2022-08-01"
@@ -28758,7 +29649,7 @@
     }
    ],
    "product": "SWAS-OPEN",
-   "source_sha256": "012ee413a69cfadaa7c4a94c3aa661c5060c211e938db39d82bb222d0705f9ca",
+   "source_sha256": "59db1a68f1c6367a3dd5339e0feb8bac320b29ca8fe4ba1a1eebc674c4615a06",
    "source_uri": "https://api.aliyun.com/meta/v1/products/SWAS-OPEN/versions/2020-06-01/api-docs.json",
    "style": "RPC",
    "version": "2020-06-01"
@@ -28997,7 +29888,7 @@
     }
    ],
    "product": "Sas",
-   "source_sha256": "3ae1d91d575351cdafd05891ff416f4e1c1ffd6218f574a6a390c10e0e46b02a",
+   "source_sha256": "f9afb05ef698fee6f42513b1a2316f725f9ce9e5450ad8ebbf61921f38a3ef82",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Sas/versions/2018-12-03/api-docs.json",
    "style": "RPC",
    "version": "2018-12-03"
@@ -30096,7 +30987,7 @@
     }
    ],
    "product": "Slb",
-   "source_sha256": "0f75863085b3735c85c78f37dc49fe464cb9f76074b48406f00c4fd19076a8a0",
+   "source_sha256": "902fcd73a2db4cb68543646abfed05d6ce2556428bdc4add7a248220bc5f45d5",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Slb/versions/2014-05-15/api-docs.json",
    "style": "RPC",
    "version": "2014-05-15"
@@ -30543,7 +31434,7 @@
     }
    ],
    "product": "Sls",
-   "source_sha256": "155ee28845641285ef6ef20fe25d440dd5eb6490f4e421ac40d70ce270552987",
+   "source_sha256": "d5d294bf9645325bcec86f33a63cddf21319f524865cbc7e79db4a04486cb767",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Sls/versions/2020-12-30/api-docs.json",
    "style": "ROA",
    "version": "2020-12-30"
@@ -34744,12 +35635,6 @@
        "name": "RegionId",
        "required": true,
        "type": "string"
-      },
-      {
-       "in": "query",
-       "name": "RegionId",
-       "required": true,
-       "type": "string"
       }
      ],
      "path": "",
@@ -34926,7 +35811,7 @@
     }
    ],
    "product": "Vpc",
-   "source_sha256": "d7f6237896992206a21f86667c02401c2e208d9731fbc6918fbef27fab314b49",
+   "source_sha256": "62541935ae8b83bb468eea30c3462b76399855fcaf236a17488923f082f49a30",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Vpc/versions/2016-04-28/api-docs.json",
    "style": "RPC",
    "version": "2016-04-28"
@@ -35404,7 +36289,7 @@
     }
    ],
    "product": "Yundun-bastionhost",
-   "source_sha256": "2f0bd6970ebbe9dcaf7b9ef00d77d5b52b8bb5d5b0fbbba9202a95eee2d0beb4",
+   "source_sha256": "03bcbd6b804f7ce8c48c024d42dca8eec1997eb84d6c44ba042de955970fc38c",
    "source_uri": "https://api.aliyun.com/meta/v1/products/Yundun-bastionhost/versions/2019-12-09/api-docs.json",
    "style": "RPC",
    "version": "2019-12-09"
@@ -35694,7 +36579,7 @@
     }
    ],
    "product": "adb",
-   "source_sha256": "46dcedcefdbc31d50fe1ba4b727a4ef4466922f6411f37482fa57fec365b6b2a",
+   "source_sha256": "012328b45c874e9e9c92acef373da4f451a76f5c213ca89138249738bbf560d8",
    "source_uri": "https://api.aliyun.com/meta/v1/products/adb/versions/2019-03-15/api-docs.json",
    "style": "RPC",
    "version": "2019-03-15"
@@ -38361,6 +39246,10 @@
      "region": "na-south-1"
     },
     {
+     "endpoint": "alikafka.sa-east-1.aliyuncs.com",
+     "region": "sa-east-1"
+    },
+    {
      "endpoint": "alikafka.us-east-1.aliyuncs.com",
      "region": "us-east-1"
     },
@@ -38374,7 +39263,7 @@
     }
    ],
    "product": "alikafka",
-   "source_sha256": "500729bd2d74b8f7688b026c3e862799fa06badf3b0b06fa738a8fde9d26f0e7",
+   "source_sha256": "efd4ca647e3f90779f7b988271048639f12f36b1b76f3cefda5e2c575a0d5d1f",
    "source_uri": "https://api.aliyun.com/meta/v1/products/alikafka/versions/2019-09-16/api-docs.json",
    "style": "RPC",
    "version": "2019-09-16"
@@ -38630,7 +39519,7 @@
     }
    ],
    "product": "amqp-open",
-   "source_sha256": "f75435d8b59f48ddb0ed61e85c9a51b8c763363d1adcf9b1b79b7698ebcd7a20",
+   "source_sha256": "c0fa50e9ded0cad1104417cc9ee1547c282822fe45495535b691f4d6464e072e",
    "source_uri": "https://api.aliyun.com/meta/v1/products/amqp-open/versions/2019-12-12/api-docs.json",
    "style": "RPC",
    "version": "2019-12-12"
@@ -38876,7 +39765,7 @@
     }
    ],
    "product": "cas",
-   "source_sha256": "b9ea941d0789a0a72e97b3da00198ef452678c3b0fcbfe6b603f23f0958c152a",
+   "source_sha256": "e5d9d105d30f03d04e991ae2d6d01753dd06a7805487ac3a9838b8d974973413",
    "source_uri": "https://api.aliyun.com/meta/v1/products/cas/versions/2020-04-07/api-docs.json",
    "style": "RPC",
    "version": "2020-04-07"
@@ -39146,7 +40035,7 @@
     }
    ],
    "product": "clickhouse",
-   "source_sha256": "da068e126b1d06142958a5c93b554efc3abf6d8da669b343c09ec64c39586a7b",
+   "source_sha256": "7b9824423f9081c7a1e0c59010a36f1748655dae7f1dae2c6c70ad22481361ca",
    "source_uri": "https://api.aliyun.com/meta/v1/products/clickhouse/versions/2019-11-11/api-docs.json",
    "style": "RPC",
    "version": "2019-11-11"
@@ -39414,7 +40303,7 @@
     }
    ],
    "product": "clickhouse",
-   "source_sha256": "87e7bd4bba23ef222710cccd2f8f4d2fa052f7fdf86b118b3bd08ea78875d7e7",
+   "source_sha256": "4ce33e6e679ae54c869b5a963280fc5d90d3b312e00bf534c1166af3a59168ec",
    "source_uri": "https://api.aliyun.com/meta/v1/products/clickhouse/versions/2023-05-22/api-docs.json",
    "style": "RPC",
    "version": "2023-05-22"
@@ -40295,7 +41184,7 @@
     }
    ],
    "product": "cr",
-   "source_sha256": "22beea444e767ffc2222feb3f935779c77cd308bcc8559ee7ebc28eee03874e2",
+   "source_sha256": "75353bc73dd3a9ffa9f1207c8439c4065070c5b63f9b8758552be9e61d69027a",
    "source_uri": "https://api.aliyun.com/meta/v1/products/cr/versions/2018-12-01/api-docs.json",
    "style": "RPC",
    "version": "2018-12-01"
@@ -40496,7 +41385,7 @@
     }
    ],
    "product": "datahub",
-   "source_sha256": "4b9364ff9d1b228c2386fb0dc1eeec541128e0657159cccf2d48fa0aa9a94369",
+   "source_sha256": "ca6396b9d114b9f586a1d7427977bfb8d96d8da49d0ae9fa26f02c94eface731",
    "source_uri": "https://api.aliyun.com/meta/v1/products/datahub/versions/2024-06-20/api-docs.json",
    "style": "RPC",
    "version": "2024-06-20"
@@ -40991,7 +41880,7 @@
     }
    ],
    "product": "dataworks-public",
-   "source_sha256": "42d55605ea742b8e12f002bd40bbb9cb1688e58dcb17afd57629d3ea3ad7fc32",
+   "source_sha256": "274beabd11e0e89e4cbce8a99c1d81d96b4bbaa8bce3287a43354273974ceef6",
    "source_uri": "https://api.aliyun.com/meta/v1/products/dataworks-public/versions/2024-05-18/api-docs.json",
    "style": "RPC",
    "version": "2024-05-18"
@@ -41688,7 +42577,7 @@
     }
    ],
    "product": "ddosbgp",
-   "source_sha256": "11ffee58caefd62aa1c1f7be03615438d46d1d8ed80ac0f5ff40a2da7373981b",
+   "source_sha256": "b33f3fc5ec0d63f2c002d1bfb46d9b87cb01fb43e0b50b6ff882df0d56dc9e6a",
    "source_uri": "https://api.aliyun.com/meta/v1/products/ddosbgp/versions/2018-07-20/api-docs.json",
    "style": "RPC",
    "version": "2018-07-20"
@@ -42392,7 +43281,7 @@
     }
    ],
    "product": "eas",
-   "source_sha256": "b1eb392b46ffa3b4ad47b6d8de6bc8f2071f16c23b9e9c8814cd6c1a83b06ee5",
+   "source_sha256": "beba86e4c61d230461e119c8814ea85ec231e6649168a2db329dd679b3b5aeb5",
    "source_uri": "https://api.aliyun.com/meta/v1/products/eas/versions/2021-07-01/api-docs.json",
    "style": "ROA",
    "version": "2021-07-01"
@@ -43332,6 +44221,12 @@
       },
       {
        "in": "query",
+       "name": "ReservePoolId",
+       "required": false,
+       "type": "string"
+      },
+      {
+       "in": "query",
        "name": "ResourceGroupId",
        "required": false,
        "type": "string"
@@ -43450,6 +44345,8 @@
       "Desktops.PolicyGroupNameList",
       "Desktops.Progress",
       "Desktops.ProtocolType",
+      "Desktops.ReservePoolId",
+      "Desktops.ReservePoolName",
       "Desktops.ResourceGroups",
       "Desktops.ResourceGroups.Id",
       "Desktops.ResourceGroups.Name",
@@ -43472,6 +44369,7 @@
       "Desktops.Tags.Value",
       "Desktops.VolumeEncryptionEnabled",
       "Desktops.VolumeEncryptionKey",
+      "Desktops.ZoneId",
       "Desktops.ZoneType",
       "NextToken",
       "PageNumber",
@@ -43998,7 +44896,7 @@
     }
    ],
    "product": "ecd",
-   "source_sha256": "88e767329ce94f8c3b3cf8efe87fa835de052808af25d10879b7335687079f4f",
+   "source_sha256": "3f73d94baa097c023aac54082b0b7cc2b08a2023d39c43cbe87d13d6faae6f3c",
    "source_uri": "https://api.aliyun.com/meta/v1/products/ecd/versions/2020-09-30/api-docs.json",
    "style": "RPC",
    "version": "2020-09-30"
@@ -44291,7 +45189,7 @@
     }
    ],
    "product": "eflo-controller",
-   "source_sha256": "9c9b57d0c3128881d602a25255ed4a632100e3991af56958ac1d8883dd1a28fb",
+   "source_sha256": "1b23dab155d0f1fb5c8d06c964b0a649027206457cd9bc64426f9630478f6ffa",
    "source_uri": "https://api.aliyun.com/meta/v1/products/eflo-controller/versions/2022-12-15/api-docs.json",
    "style": "RPC",
    "version": "2022-12-15"
@@ -44915,7 +45813,7 @@
     }
    ],
    "product": "elasticsearch",
-   "source_sha256": "cbcafb9b101e27071192200605bc95e3c1a68556557d0fe4da4b79e7761f9d42",
+   "source_sha256": "2de24110d0ef4e7c54366247772d116f4249f9c378cea9350ad7dba202195e96",
    "source_uri": "https://api.aliyun.com/meta/v1/products/elasticsearch/versions/2017-06-13/api-docs.json",
    "style": "ROA",
    "version": "2017-06-13"
@@ -45101,7 +45999,7 @@
     }
    ],
    "product": "emr-serverless-spark",
-   "source_sha256": "0cbe82dcb6c4ba89e695c1aef2469706df307f083c47b59ac92e2ab268defd49",
+   "source_sha256": "7e805514c181e464bd534d15b288ce9130b5c57b7fd9a1d62e774dcfdc0fe93b",
    "source_uri": "https://api.aliyun.com/meta/v1/products/emr-serverless-spark/versions/2023-08-08/api-docs.json",
    "style": "ROA",
    "version": "2023-08-08"
@@ -45803,7 +46701,7 @@
     }
    ],
    "product": "foasconsole",
-   "source_sha256": "86db870cb053bc92f9ff8f462de50a0bdff9ce7c0532166f39ca19c77c7bf9d1",
+   "source_sha256": "a60d8c10f9e6a37b55a9e44ea1d6573fd76bce677f1d8a002f1e1084210a0de3",
    "source_uri": "https://api.aliyun.com/meta/v1/products/foasconsole/versions/2021-10-28/api-docs.json",
    "style": "RPC",
    "version": "2021-10-28"
@@ -46086,7 +46984,7 @@
     }
    ],
    "product": "gpdb",
-   "source_sha256": "77686be0a8e78586e18c4d61bfe6e3ff6ce73880cd05ae7ee299ca45ce072702",
+   "source_sha256": "27d6f30742454a70d0ca3659814ace2356b3a42c99c594fc271cf0788b6979bb",
    "source_uri": "https://api.aliyun.com/meta/v1/products/gpdb/versions/2016-05-03/api-docs.json",
    "style": "RPC",
    "version": "2016-05-03"
@@ -48074,7 +48972,7 @@
     }
    ],
    "product": "mse",
-   "source_sha256": "4bfe1ccaf2b9d49f60851fccf5a4226ee8436b47e56b48e1fcf2cdba986b5db3",
+   "source_sha256": "b305033839d284ca50a37a63787df47bb39f261c242ae5fa1af3c8da41785ec9",
    "source_uri": "https://api.aliyun.com/meta/v1/products/mse/versions/2019-05-31/api-docs.json",
    "style": "RPC",
    "version": "2019-05-31"
@@ -48388,7 +49286,7 @@
     }
    ],
    "product": "oos",
-   "source_sha256": "34ac1d23cf6b7940e55efbeeab3892370f9a5ca8323546a8583730ec1ea8e1ea",
+   "source_sha256": "ddbe4637798cd1c98f020e56fe711f55cb12532db3a0fab3d3e08ee58b7dea01",
    "source_uri": "https://api.aliyun.com/meta/v1/products/oos/versions/2019-06-01/api-docs.json",
    "style": "RPC",
    "version": "2019-06-01"
@@ -49044,7 +49942,7 @@
     }
    ],
    "product": "polardb",
-   "source_sha256": "239ae1daa5b473abc3dcc6a4dfce5bac427199c26adfc569e8d5f92a46958bb8",
+   "source_sha256": "5ba51024acd6c4c9d3cb2eafff640e9cee1f344e98f57268ca5ca83287fbb4a6",
    "source_uri": "https://api.aliyun.com/meta/v1/products/polardb/versions/2017-08-01/api-docs.json",
    "style": "RPC",
    "version": "2017-08-01"
@@ -49321,7 +50219,7 @@
     }
    ],
    "product": "polardbx",
-   "source_sha256": "77fcc07ea89bbc0025a27005e449eee841d24e1d14b362c065b44811d305d9af",
+   "source_sha256": "e99716d737d0fb6baf1294b7880acc7e54c1275cab8ba1f6878fe02869657f22",
    "source_uri": "https://api.aliyun.com/meta/v1/products/polardbx/versions/2020-02-02/api-docs.json",
    "style": "RPC",
    "version": "2020-02-02"
@@ -50520,7 +51418,7 @@
     }
    ],
    "product": "selectdb",
-   "source_sha256": "4295bd0440ca3246f79e8fbcac17f690edfb08bb13bfd560d6ab2889999f5922",
+   "source_sha256": "757061bf5ba316276ed02ddc03e439a8ff4a3c934b7c66758a3213895f7aa5ba",
    "source_uri": "https://api.aliyun.com/meta/v1/products/selectdb/versions/2023-05-22/api-docs.json",
    "style": "RPC",
    "version": "2023-05-22"
@@ -50842,7 +51740,7 @@
     }
    ],
    "product": "sgw",
-   "source_sha256": "82695f88f4d5308af81bda93d8468be98e325b366be1fb4ca3703258dc261676",
+   "source_sha256": "aa53c610af8a1122ffc78bf4ba1eb01c1fd8e0d53af82de59fe585007396416b",
    "source_uri": "https://api.aliyun.com/meta/v1/products/sgw/versions/2018-05-11/api-docs.json",
    "style": "RPC",
    "version": "2018-05-11"
@@ -51100,7 +51998,7 @@
     }
    ],
    "product": "waf-openapi",
-   "source_sha256": "482e24228c10a9d1c007226a7fdde9b0380fa36ca6cb27fad2979740b013f441",
+   "source_sha256": "7a6101ae0575f4f4239dbd8c4f44e734cb57eb4c7ecf62263208a69677a0b08b",
    "source_uri": "https://api.aliyun.com/meta/v1/products/waf-openapi/versions/2021-10-01/api-docs.json",
    "style": "RPC",
    "version": "2021-10-01"

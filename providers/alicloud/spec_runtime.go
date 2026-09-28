@@ -16,11 +16,12 @@ import (
 )
 
 type specParameterContext struct {
-	region     string
-	parentID   string
-	nativeID   string
-	nativeIDs  []string
-	normalized map[string]any
+	region           string
+	parentID         string
+	parentNormalized map[string]any
+	nativeID         string
+	nativeIDs        []string
+	normalized       map[string]any
 }
 
 func resolveSpecParameters(parameters map[string]any, context specParameterContext) (map[string]any, error) {
@@ -81,6 +82,15 @@ func resolveSpecParameters(parameters map[string]any, context specParameterConte
 			}
 			resolved[name] = len(context.nativeIDs)
 		default:
+			if strings.HasPrefix(text, "parent.normalized.") {
+				path := strings.TrimPrefix(text, "parent.normalized.")
+				resolvedValue := valueAtPath(context.parentNormalized, path)
+				if resolvedValue == nil {
+					return nil, fmt.Errorf("spec parameter %q requires normalized parent field %q", name, path)
+				}
+				resolved[name] = resolvedValue
+				continue
+			}
 			if strings.HasPrefix(text, "resource.normalized.") {
 				path := strings.TrimPrefix(text, "resource.normalized.")
 				resolvedValue := valueAtPath(context.normalized, path)
@@ -144,6 +154,7 @@ func (r *Runtime) listProductAPI(
 		request,
 		region,
 		"",
+		nil,
 	)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
@@ -358,6 +369,7 @@ func inventoryItemsFromProductAPI(
 	request contracts.InventoryRequest,
 	region string,
 	parentID string,
+	parentNormalized map[string]any,
 ) ([]contracts.InventoryItem, error) {
 	list := compiled.Definition.Discovery.List
 	items := make([]contracts.InventoryItem, 0, len(rawItems))
@@ -372,7 +384,7 @@ func inventoryItemsFromProductAPI(
 			)
 		}
 		if strings.TrimSpace(parentID) != "" {
-			resource["_parent"] = map[string]any{"nativeId": parentID}
+			resource["_parent"] = map[string]any{"nativeId": parentID, "normalized": parentNormalized}
 		}
 		if request.Scope.Kind == asset.ScopeRegion && !productAPIResourceMatchesRegion(resource, region) {
 			continue
@@ -501,12 +513,12 @@ func (r *Runtime) listFanoutProductAPI(
 		)
 	}
 	for cursor.ParentIndex < len(parents) {
-		parentID := parents[cursor.ParentIndex]
+		parent := parents[cursor.ParentIndex]
 		page, pageErr := r.invokeProductAPIPage(
 			ctx,
 			request,
 			*compiled.Definition.Discovery.List,
-			specParameterContext{region: region, parentID: parentID},
+			specParameterContext{region: region, parentID: parent.id, parentNormalized: parent.normalized},
 			cursor.ChildCursor,
 			request.Limit,
 		)
@@ -518,7 +530,8 @@ func (r *Runtime) listFanoutProductAPI(
 			compiled,
 			request,
 			region,
-			parentID,
+			parent.id,
+			parent.normalized,
 		)
 		if itemErr != nil {
 			return contracts.InventoryBatch{}, itemErr
@@ -543,33 +556,94 @@ func (r *Runtime) listFanoutProductAPI(
 	return contracts.InventoryBatch{Complete: true}, nil
 }
 
+// fanoutParent is one parent a child list fans out over. normalized is set
+// only when the parent comes from its own product API specification.
+type fanoutParent struct {
+	id         string
+	normalized map[string]any
+}
+
+func fanoutParentIDs(ids []string, err error) ([]fanoutParent, error) {
+	if err != nil {
+		return nil, err
+	}
+	result := make([]fanoutParent, len(ids))
+	for index, id := range ids {
+		result[index] = fanoutParent{id: id}
+	}
+	return result, nil
+}
+
 func (r *Runtime) collectFanoutParents(
 	ctx context.Context,
 	request contracts.InventoryRequest,
 	parent spec.ParentDiscoverySpec,
 	region string,
-) ([]string, error) {
+) ([]fanoutParent, error) {
 	switch strings.TrimSpace(parent.Source) {
 	case "":
-		return r.collectDirectProductAPIParents(
+		return fanoutParentIDs(r.collectDirectProductAPIParents(
 			ctx,
 			request,
 			parent.ProductAPISpec,
 			region,
-		)
+		))
 	case "resource-center":
-		return r.collectResourceCenterParents(
+		return fanoutParentIDs(r.collectResourceCenterParents(
 			ctx,
 			request,
 			parent.NativeType,
 			region,
-		)
+		))
+	case "product-api":
+		return r.collectSpecParents(ctx, request, parent.NativeType)
 	default:
 		return nil, fmt.Errorf(
 			"Alibaba Cloud product API fanout parent source %q is unsupported",
 			parent.Source,
 		)
 	}
+}
+
+// collectSpecParents lists a parent through its own product API
+// specification, which may itself fan out over a grandparent, so children can
+// address the parent by its normalized fields.
+func (r *Runtime) collectSpecParents(
+	ctx context.Context,
+	request contracts.InventoryRequest,
+	nativeType string,
+) ([]fanoutParent, error) {
+	var compiled *spec.CompiledSpec
+	for index := range r.bundle.Specs {
+		if r.bundle.Specs[index].ResourceKind.NativeType == strings.TrimSpace(nativeType) {
+			compiled = &r.bundle.Specs[index]
+			break
+		}
+	}
+	if compiled == nil || compiled.Definition.Discovery.List == nil {
+		return nil, fmt.Errorf("Alibaba Cloud fanout parent %q has no product API specification", nativeType)
+	}
+	parentRequest := request
+	parentRequest.ResourceKind = &compiled.ResourceKind
+	parentRequest.Cursor = ""
+	var result []fanoutParent
+	for pageNumber := 0; pageNumber < 1000; pageNumber++ {
+		batch, err := r.listProductAPI(ctx, parentRequest, *compiled)
+		if err != nil {
+			return nil, err
+		}
+		for _, item := range batch.Items {
+			result = append(result, fanoutParent{id: item.NativeID, normalized: item.Normalized})
+		}
+		if batch.Complete || batch.NextCursor == "" {
+			return result, nil
+		}
+		if batch.NextCursor == parentRequest.Cursor {
+			return nil, fmt.Errorf("Alibaba Cloud fanout parent %q returned a repeated cursor", nativeType)
+		}
+		parentRequest.Cursor = batch.NextCursor
+	}
+	return nil, fmt.Errorf("Alibaba Cloud fanout parent %q exceeded 1000 pages", nativeType)
 }
 
 func (r *Runtime) collectDirectProductAPIParents(

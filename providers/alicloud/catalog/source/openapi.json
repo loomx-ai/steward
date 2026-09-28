@@ -2895,6 +2895,83 @@
         "x-operation-call": {"product":"FC-Open","version":"2021-04-06","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/2021-04-06/services/{serviceName}","endpoint":"{accountId}.{region}.fc.aliyuncs.com","endpoint_parameters":["accountId"],"request_body_type":"json","body_type":"none","parameter_position":"query"}
       }
     },
+    "/fc/services/{serviceName}/functions/{functionName}": {
+      "delete": {
+        "operationId": "FC.DeleteFunction",
+        "x-operation-name": "DeleteFunction",
+        "x-operation-call": {"product":"FC-Open","version":"2021-04-06","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/2021-04-06/services/{serviceName}/functions/{functionName}","endpoint":"fc.{region}.aliyuncs.com","request_body_type":"json","body_type":"none","parameter_position":"query"}
+      }
+    },
+    "/fc/services/{serviceName}/functions/{functionName}/triggers": {
+      "get": {
+        "operationId": "FC.ListTriggers",
+        "x-operation-name": "ListTriggers",
+        "x-operation-call": {"product":"FC-Open","version":"2021-04-06","style":"ROA","protocol":"HTTPS","method":"GET","path":"/2021-04-06/services/{serviceName}/functions/{functionName}/triggers","endpoint":"fc.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/fc/services/{serviceName}/functions/{functionName}/triggers/{triggerName}": {
+      "delete": {
+        "operationId": "FC.DeleteTrigger",
+        "x-operation-name": "DeleteTrigger",
+        "x-operation-call": {"product":"FC-Open","version":"2021-04-06","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/2021-04-06/services/{serviceName}/functions/{functionName}/triggers/{triggerName}","endpoint":"fc.{region}.aliyuncs.com","request_body_type":"json","body_type":"none","parameter_position":"query"}
+      }
+    },
+    "/fc/services/{serviceName}/aliases": {
+      "get": {
+        "operationId": "FC.ListAliases",
+        "x-operation-name": "ListAliases",
+        "x-operation-call": {"product":"FC-Open","version":"2021-04-06","style":"ROA","protocol":"HTTPS","method":"GET","path":"/2021-04-06/services/{serviceName}/aliases","endpoint":"fc.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/fc/services/{serviceName}/aliases/{aliasName}": {
+      "delete": {
+        "operationId": "FC.DeleteAlias",
+        "x-operation-name": "DeleteAlias",
+        "x-operation-call": {"product":"FC-Open","version":"2021-04-06","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/2021-04-06/services/{serviceName}/aliases/{aliasName}","endpoint":"fc.{region}.aliyuncs.com","request_body_type":"json","body_type":"none","parameter_position":"query"}
+      }
+    },
+    "/fc/services/{serviceName}/versions": {
+      "get": {
+        "operationId": "FC.ListServiceVersions",
+        "x-operation-name": "ListServiceVersions",
+        "x-operation-call": {"product":"FC-Open","version":"2021-04-06","style":"ROA","protocol":"HTTPS","method":"GET","path":"/2021-04-06/services/{serviceName}/versions","endpoint":"fc.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/fc/services/{serviceName}/versions/{versionId}": {
+      "delete": {
+        "operationId": "FC.DeleteServiceVersion",
+        "x-operation-name": "DeleteServiceVersion",
+        "x-operation-call": {"product":"FC-Open","version":"2021-04-06","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/2021-04-06/services/{serviceName}/versions/{versionId}","endpoint":"fc.{region}.aliyuncs.com","request_body_type":"json","body_type":"none","parameter_position":"query"}
+      }
+    },
+    "/fc3/functions": {
+      "get": {
+        "operationId": "FC3.ListFunctions",
+        "x-operation-name": "ListFunctions",
+        "x-operation-call": {"product":"FC","version":"2023-03-30","style":"ROA","protocol":"HTTPS","method":"GET","path":"/2023-03-30/functions","endpoint":"fcv3.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/fc3/functions/{functionName}": {
+      "delete": {
+        "operationId": "FC3.DeleteFunction",
+        "x-operation-name": "DeleteFunction",
+        "x-operation-call": {"product":"FC","version":"2023-03-30","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/2023-03-30/functions/{functionName}","endpoint":"fcv3.{region}.aliyuncs.com","request_body_type":"json","body_type":"none","parameter_position":"query"}
+      }
+    },
+    "/fc3/functions/{functionName}/triggers": {
+      "get": {
+        "operationId": "FC3.ListTriggers",
+        "x-operation-name": "ListTriggers",
+        "x-operation-call": {"product":"FC","version":"2023-03-30","style":"ROA","protocol":"HTTPS","method":"GET","path":"/2023-03-30/functions/{functionName}/triggers","endpoint":"fcv3.{region}.aliyuncs.com","request_body_type":"json","body_type":"json","parameter_position":"query"}
+      }
+    },
+    "/fc3/functions/{functionName}/triggers/{triggerName}": {
+      "delete": {
+        "operationId": "FC3.DeleteTrigger",
+        "x-operation-name": "DeleteTrigger",
+        "x-operation-call": {"product":"FC","version":"2023-03-30","style":"ROA","protocol":"HTTPS","method":"DELETE","path":"/2023-03-30/functions/{functionName}/triggers/{triggerName}","endpoint":"fcv3.{region}.aliyuncs.com","request_body_type":"json","body_type":"none","parameter_position":"query"}
+      }
+    },
     "/ros/stack-groups": {
       "get": {
         "operationId": "ROS.ListStackGroups",
@@ -4357,8 +4434,13 @@
     {"nativeType": "ACS::Eflo::Cluster", "class": "compute.lingjun_cluster", "displayName": "Intelligent Computing Lingjun Cluster", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ECP::Instance", "class": "compute.cloud_phone", "displayName": "Elastic Cloud Phone Instance", "scopeKinds": ["region"]},
     {"nativeType": "ACS::ENS::Instance", "class": "compute.edge_instance", "displayName": "ENS Instance", "scopeKinds": ["global"]},
+    {"nativeType": "ACS::FC::Alias", "class": "serverless.alias", "displayName": "Function Compute Alias", "scopeKinds": ["region"]},
     {"nativeType": "ACS::FC::Function", "class": "serverless.function", "displayName": "Function Compute Function", "scopeKinds": ["region"]},
     {"nativeType": "ACS::FC::Service", "class": "serverless.service", "displayName": "Function Compute Service", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::FC::Trigger", "class": "serverless.trigger", "displayName": "Function Compute Trigger", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::FC::Version", "class": "serverless.version", "displayName": "Function Compute Service Version", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::FC3::Function", "class": "serverless.function", "displayName": "Function Compute 3.0 Function", "scopeKinds": ["region"]},
+    {"nativeType": "ACS::FC3::Trigger", "class": "serverless.trigger", "displayName": "Function Compute 3.0 Trigger", "scopeKinds": ["region"]},
     {"nativeType": "ACS::GWLB::LoadBalancer", "class": "network.load_balancer", "displayName": "Gateway Load Balancer", "scopeKinds": ["region"]},
     {"nativeType": "ACS::HBase::Cluster", "class": "database.wide_column", "displayName": "HBase Cluster", "scopeKinds": ["region"]},
     {"nativeType": "ACS::HBR::Vault", "class": "storage.backup_vault", "displayName": "Cloud Backup Vault", "scopeKinds": ["region"]},

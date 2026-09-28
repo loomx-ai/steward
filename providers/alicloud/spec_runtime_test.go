@@ -178,6 +178,7 @@ func TestProductAPISkipsFreeCloudFirewallWithoutInstanceID(t *testing.T) {
 		contracts.InventoryRequest{},
 		"cn-hangzhou",
 		"",
+		nil,
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -236,6 +237,7 @@ func TestProductAPIRegionShardDropsCrossRegionRecords(t *testing.T) {
 		contracts.InventoryRequest{Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: "cn-hangzhou"}},
 		"cn-hangzhou",
 		"",
+		nil,
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -249,6 +251,7 @@ func TestProductAPIRegionShardDropsCrossRegionRecords(t *testing.T) {
 		contracts.InventoryRequest{Scope: asset.Scope{Kind: asset.ScopeGlobal, NativeID: "global"}},
 		"cn-hangzhou",
 		"",
+		nil,
 	)
 	if err != nil || len(globalItems) != 3 {
 		t.Fatalf("global product API items = %+v, err=%v", globalItems, err)
@@ -287,6 +290,7 @@ func TestInventoryItemsAcceptTypedProductAPIResource(t *testing.T) {
 		contracts.InventoryRequest{},
 		"cn-hangzhou",
 		"",
+		nil,
 	)
 	if err != nil {
 		t.Fatal(err)

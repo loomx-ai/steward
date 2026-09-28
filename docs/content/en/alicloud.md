@@ -69,13 +69,13 @@ For the complete workflow, follow [Your first inventory](./tutorials/first-inven
 
 ## Resource coverage
 
-Steward identifies 203 Alibaba Cloud resource types, 177 of which have a native cleanup action. Other types that Resource Center returns appear as read-only inventory. Every service API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
+Steward identifies 208 Alibaba Cloud resource types, 183 of which have a native cleanup action. Other types that Resource Center returns appear as read-only inventory. Every service API call is pinned to the official metadata published at api.aliyun.com, and each list and read response path is checked against the official response schema and example. Coverage is still growing and does not yet include every Alibaba Cloud product.
 
 Common types:
 
 | Category | Resource types |
 | --- | --- |
-| Compute and applications | ECS instances, disks, and network interfaces; SAE; EMR; Elastic Desktop Service |
+| Compute and applications | ECS instances, disks, and network interfaces; Function Compute 2.0 and 3.0; SAE; EMR; Elastic Desktop Service |
 | Networking | VPCs, vSwitches, security groups, NAT gateways, EIPs |
 | Load balancing | ALB, NLB, and CLB instances with their listeners and server groups |
 | Databases | RDS, Redis, PolarDB |
@@ -123,6 +123,7 @@ ECS instances, ACK clusters, Auto Scaling groups, ALB, NLB, and CLB instances, E
 | Cloud Config | Rules and compliance packs are inventoried in `cn-shanghai` and `ap-southeast-1`. Deleting a compliance pack also deletes the rules it created, which the task confirms afterward; those rules cannot be deleted on their own. Aggregators are inventoried only. |
 | Elastic Desktop Service | Only pay-as-you-go desktops outside desktop pools are cleaned up; subscription desktops are released when they expire. An office network is deleted only after all its desktops are released. System policies are kept. |
 | EventBridge | Event rules are deleted before their event bus. |
+| Function Compute | FC 2.0: triggers are deleted before their function, aliases before the versions they route to, and functions, aliases and versions before their service. FC 3.0 functions are inventoried on their own; their triggers are deleted first, and a function locked by another product is not deleted. Provisioned-instance settings are not inventoried: a service or alias that still has them fails to delete, and Steward does not retry. |
 | RabbitMQ | Only pay-as-you-go instances are deleted; subscription instances are released when they expire. |
 | EMR clusters | Only pay-as-you-go clusters are cleaned up. Release protection is turned off first. The cluster counts as deleted once it reports `TERMINATED`; Steward waits up to 10 minutes. |
 | Clusters, resource stacks, and other managed resources | Review the controller and the objects it manages to understand the full effect. |

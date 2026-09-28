@@ -97,6 +97,7 @@ func (r *Runtime) EnrichInventoryBatch(
 	}
 	enriched = enrichNLBInventoryTopology(enriched)
 	enriched = enrichALBListenerServerGroups(enriched)
+	enriched = enrichFCAliasVersions(enriched)
 	enriched, err = r.enrichEncryptionKeys(ctx, request, enriched)
 	if err != nil {
 		return nil, err

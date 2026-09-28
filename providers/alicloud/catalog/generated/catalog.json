@@ -4,10 +4,10 @@
   "source": {
     "format": "openapi",
     "uri": "catalog/source/openapi.json",
-    "checksum": "9d9261e4bbd1776795150f696c7060b7e924e78bdaf22ed9e3263d1346271334",
+    "checksum": "7d445e03a6cf9573e7e8ce82503d3b47592f79158faa3cde51831a6437dd5c1e",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "8494f56c06a51646fea357a2ab4af091d96da2fd038a44e2694b9a8c817821bc",
+  "content_checksum": "d3fc29382f4f173b0ae837d9982ed9b33153ba4a587ebe2825eb8510b66b2c46",
   "operations": [
     {
       "id": "AlibabaCloud.ADB.DeleteDBCluster",
@@ -6026,6 +6026,46 @@
       }
     },
     {
+      "id": "AlibabaCloud.FC.DeleteAlias",
+      "name": "DeleteAlias",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/fc/services/{serviceName}/aliases/{aliasName}",
+      "destructive": true,
+      "call": {
+        "product": "FC-Open",
+        "version": "2021-04-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/2021-04-06/services/{serviceName}/aliases/{aliasName}",
+        "endpoint": "fc.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "none",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.FC.DeleteFunction",
+      "name": "DeleteFunction",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/fc/services/{serviceName}/functions/{functionName}",
+      "destructive": true,
+      "call": {
+        "product": "FC-Open",
+        "version": "2021-04-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/2021-04-06/services/{serviceName}/functions/{functionName}",
+        "endpoint": "fc.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "none",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.FC.DeleteService",
       "name": "DeleteService",
       "service": "AlibabaCloud",
@@ -6045,6 +6085,66 @@
         ],
         "request_body_type": "json",
         "body_type": "none",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.FC.DeleteServiceVersion",
+      "name": "DeleteServiceVersion",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/fc/services/{serviceName}/versions/{versionId}",
+      "destructive": true,
+      "call": {
+        "product": "FC-Open",
+        "version": "2021-04-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/2021-04-06/services/{serviceName}/versions/{versionId}",
+        "endpoint": "fc.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "none",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.FC.DeleteTrigger",
+      "name": "DeleteTrigger",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/fc/services/{serviceName}/functions/{functionName}/triggers/{triggerName}",
+      "destructive": true,
+      "call": {
+        "product": "FC-Open",
+        "version": "2021-04-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/2021-04-06/services/{serviceName}/functions/{functionName}/triggers/{triggerName}",
+        "endpoint": "fc.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "none",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.FC.ListAliases",
+      "name": "ListAliases",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/fc/services/{serviceName}/aliases",
+      "destructive": false,
+      "call": {
+        "product": "FC-Open",
+        "version": "2021-04-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/2021-04-06/services/{serviceName}/aliases",
+        "endpoint": "fc.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
         "parameter_position": "query"
       }
     },
@@ -6069,6 +6169,26 @@
       }
     },
     {
+      "id": "AlibabaCloud.FC.ListServiceVersions",
+      "name": "ListServiceVersions",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/fc/services/{serviceName}/versions",
+      "destructive": false,
+      "call": {
+        "product": "FC-Open",
+        "version": "2021-04-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/2021-04-06/services/{serviceName}/versions",
+        "endpoint": "fc.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
       "id": "AlibabaCloud.FC.ListServices",
       "name": "ListServices",
       "service": "AlibabaCloud",
@@ -6083,6 +6203,106 @@
         "method": "GET",
         "path": "/2021-04-06/services",
         "endpoint": "fc.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.FC.ListTriggers",
+      "name": "ListTriggers",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/fc/services/{serviceName}/functions/{functionName}/triggers",
+      "destructive": false,
+      "call": {
+        "product": "FC-Open",
+        "version": "2021-04-06",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/2021-04-06/services/{serviceName}/functions/{functionName}/triggers",
+        "endpoint": "fc.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.FC3.DeleteFunction",
+      "name": "DeleteFunction",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/fc3/functions/{functionName}",
+      "destructive": true,
+      "call": {
+        "product": "FC",
+        "version": "2023-03-30",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/2023-03-30/functions/{functionName}",
+        "endpoint": "fcv3.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "none",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.FC3.DeleteTrigger",
+      "name": "DeleteTrigger",
+      "service": "AlibabaCloud",
+      "method": "DELETE",
+      "path": "/fc3/functions/{functionName}/triggers/{triggerName}",
+      "destructive": true,
+      "call": {
+        "product": "FC",
+        "version": "2023-03-30",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/2023-03-30/functions/{functionName}/triggers/{triggerName}",
+        "endpoint": "fcv3.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "none",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.FC3.ListFunctions",
+      "name": "ListFunctions",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/fc3/functions",
+      "destructive": false,
+      "call": {
+        "product": "FC",
+        "version": "2023-03-30",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/2023-03-30/functions",
+        "endpoint": "fcv3.{region}.aliyuncs.com",
+        "request_body_type": "json",
+        "body_type": "json",
+        "parameter_position": "query"
+      }
+    },
+    {
+      "id": "AlibabaCloud.FC3.ListTriggers",
+      "name": "ListTriggers",
+      "service": "AlibabaCloud",
+      "method": "GET",
+      "path": "/fc3/functions/{functionName}/triggers",
+      "destructive": false,
+      "call": {
+        "product": "FC",
+        "version": "2023-03-30",
+        "style": "ROA",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/2023-03-30/functions/{functionName}/triggers",
+        "endpoint": "fcv3.{region}.aliyuncs.com",
         "request_body_type": "json",
         "body_type": "json",
         "parameter_position": "query"
@@ -12149,6 +12369,30 @@
       ]
     },
     {
+      "native_type": "ACS::FC3::Function",
+      "class": "serverless.function",
+      "display_name": "Function Compute 3.0 Function",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::FC3::Trigger",
+      "class": "serverless.trigger",
+      "display_name": "Function Compute 3.0 Trigger",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::FC::Alias",
+      "class": "serverless.alias",
+      "display_name": "Function Compute Alias",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "ACS::FC::Function",
       "class": "serverless.function",
       "display_name": "Function Compute Function",
@@ -12160,6 +12404,22 @@
       "native_type": "ACS::FC::Service",
       "class": "serverless.service",
       "display_name": "Function Compute Service",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::FC::Trigger",
+      "class": "serverless.trigger",
+      "display_name": "Function Compute Trigger",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "ACS::FC::Version",
+      "class": "serverless.version",
+      "display_name": "Function Compute Service Version",
       "scope_kinds": [
         "region"
       ]

@@ -4065,6 +4065,18 @@ func readbackIdentity(value asset.Asset) string {
 			return name
 		}
 	}
+	// Function Compute aliases and versions are unique within their service,
+	// and FC answers with the alias name or version ID alone.
+	switch value.Identity.NativeType {
+	case "ACS::FC::Alias":
+		if name := strings.TrimSpace(stringValue(value.Normalized["aliasName"])); name != "" {
+			return name
+		}
+	case "ACS::FC::Version":
+		if id := strings.TrimSpace(stringValue(value.Normalized["versionId"])); id != "" {
+			return id
+		}
+	}
 	if value.Identity.NativeType == CENChildInstanceAttachmentNativeType {
 		if childInstanceID := strings.TrimSpace(
 			stringValue(value.Normalized["childInstanceId"]),
@@ -4222,10 +4234,18 @@ func readbackResource(
 // page, or a filter may match loosely.
 var errReadbackNoMatch = errors.New("Alibaba Cloud readback returned resources but none matched native ID")
 
-// completeReadbackListing reports whether a readback that declares a total
-// returned every record in one response, so a missing resource is absent.
+// completeReadbackListing reports whether a readback returned every matching
+// record in one response, so a missing resource is absent: either a declared
+// total fits the page, or a token-paginated filter returned no next token.
 func completeReadbackListing(data map[string]any, read spec.ProductAPISpec) bool {
-	if read.Pagination == nil || strings.TrimSpace(read.Pagination.TotalPath) == "" {
+	if read.Pagination == nil {
+		return false
+	}
+	if read.Pagination.Type == "token" && strings.TrimSpace(read.Pagination.TokenPath) != "" &&
+		strings.TrimSpace(read.Pagination.TotalPath) == "" {
+		return strings.TrimSpace(stringValue(valueAtPath(data, read.Pagination.TokenPath))) == ""
+	}
+	if strings.TrimSpace(read.Pagination.TotalPath) == "" {
 		return false
 	}
 	total, ok := integerValue(valueAtPath(data, read.Pagination.TotalPath))

@@ -1937,7 +1937,7 @@ func TestRuntimeExposesInstanceAndModeledSubresourceKindsWithCatalogIcons(t *tes
 		t.Fatal("Alibaba Cloud runtime does not expose resource kind metadata")
 	}
 	kinds, revision := runtime.ResourceKinds()
-	if len(kinds) != 202 || revision == "" {
+	if len(kinds) != 207 || revision == "" {
 		t.Fatalf("resource kinds = %d revision = %q", len(kinds), revision)
 	}
 
@@ -2034,7 +2034,7 @@ func TestRuntimeSpecCoverageMatchesActionableResourceKinds(t *testing.T) {
 			)
 		}
 	}
-	if len(runtime.bundle.Specs) != 202 || productAPISpecs != 188 || actionableSpecs != 177 {
+	if len(runtime.bundle.Specs) != 207 || productAPISpecs != 193 || actionableSpecs != 183 {
 		t.Fatalf(
 			"specs=%d product-api=%d actionable=%d",
 			len(runtime.bundle.Specs),
@@ -2214,7 +2214,6 @@ func TestUnsupportedInstanceResourceAuditIsExplicit(t *testing.T) {
 		"ACS::EBS::DedicatedBlockStorageCluster":  {},
 		"ACS::ECS::ElasticityAssurance":           {},
 		"ACS::EmrServerlessSpark::Workspace":      {},
-		"ACS::FC::Function":                       {},
 		"ACS::RTC::Application":                   {},
 		"ACS::SDDP::Instance":                     {},
 		"ACS::SWAS::Instance":                     {},
