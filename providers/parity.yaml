@@ -276,6 +276,7 @@ resources:
     resources:
     - AWS::Route53::HealthCheck
   status: pending_verification
+  notes: Inventory only. Alidns 2015-01-09 has no GTM instance deletion API (checked 2026-09-28).
 - alicloud: ACS::Alidns::Domain
   spec: providers/alicloud/specs/alidns-domain.yaml
   class: dns.zone
@@ -309,6 +310,7 @@ resources:
     resources:
     - AWS::Route53::HealthCheck
   status: pending_verification
+  notes: Inventory only. Alidns 2015-01-09 has no GTM instance deletion API (checked 2026-09-28).
 - alicloud: ACS::AliKafka::Instance
   spec: providers/alicloud/specs/alikafka-instance.yaml
   class: messaging.broker
@@ -775,6 +777,7 @@ resources:
     resources:
     - AWS::EC2::InstanceConnectEndpoint
   status: pending_verification
+  notes: Inventory only. Yundun-bastionhost 2019-12-09 has no instance deletion API (checked 2026-09-28).
 - alicloud: ACS::BPStudio::Application
   spec: providers/alicloud/specs/bpstudio-application.yaml
   class: application.architecture
@@ -1280,6 +1283,7 @@ resources:
     resources:
     - AWS::ECR::Repository
   status: pending_verification
+  notes: Inventory only. cr 2018-12-01 has no instance deletion API (checked 2026-09-28).
 - alicloud: ACS::EMR::Cluster
   spec: providers/alicloud/specs/emr-cluster.yaml
   class: data.processing_cluster
@@ -1315,7 +1319,8 @@ resources:
   aws:
     notes: Lingjun nodes have no direct counterpart.
   status: pending_verification
-  notes: Inventory only; removing a node shrinks its cluster.
+  notes: Inventory only. The listed nodes belong to a cluster. DeleteNode releases only pay-as-you-go nodes,
+    and removing a cluster node needs ShrinkCluster, which changes the cluster.
 - alicloud: ACS::EventBridge::EventBus
   spec: providers/alicloud/specs/eventbridge-event-bus.yaml
   class: messaging.event_bus
@@ -1451,7 +1456,8 @@ resources:
     resources:
     - AWS::Organizations::Account
   status: pending_verification
-  notes: Inventory only; removing a member account cannot be undone.
+  notes: Inventory only. DeleteAccount deletes every resource and all data of a resource account, and
+    RemoveCloudAccount ends the management account's control; neither can be undone.
 - alicloud: ACS::ResourceManager::Folder
   spec: providers/alicloud/specs/resource-manager-folder.yaml
   class: identity.folder
@@ -1697,7 +1703,9 @@ resources:
   azure:
     resources:
     - Microsoft.Synapse/workspaces
-  notes: Native workspace and compute inventory is implemented; reviewed cleanup and full Synapse child scope remain pending.
+  notes: Inventory only. DataV publishes no workspace API; workspaces come from Resource Center. Native
+    workspace and compute inventory is implemented; reviewed cleanup and full Synapse child scope remain
+    pending.
   aws:
     resources:
     - AWS::QuickSight::Dashboard
@@ -1994,14 +2002,13 @@ resources:
   aws:
     notes: EBS exposes no dedicated block storage cluster; dedicated capacity exists only as AWS Outposts hardware, which is not an account-deletable resource.
   status: pending_verification
-  notes: GCP now inventories native Hyperdisk Storage Pools with capacity/performance usage and
-    native paginated disk members and reviewed Balanced/Throughput pool cleanup after
-    explicit local disk deletion or a selected controller that verifies managed disk
-    absence. Exapools and foreign-project members require
-    external cleanup. Pooled
-    capacity is not proof of Alibaba's exclusive physical-resource isolation. Azure supports
-    native Elastic SAN inventory and ordered cleanup of non-retained boundaries; retained
-    group purge and retained-boundary cleanup still require verification.
+  notes: Inventory only. ebs 2021-07-30 has no dedicated block storage cluster deletion API (checked
+    2026-09-28). GCP now inventories native Hyperdisk Storage Pools with capacity/performance usage and native
+    paginated disk members and reviewed Balanced/Throughput pool cleanup after explicit local disk deletion or
+    a selected controller that verifies managed disk absence. Exapools and foreign-project members require
+    external cleanup. Pooled capacity is not proof of Alibaba's exclusive physical-resource isolation. Azure
+    supports native Elastic SAN inventory and ordered cleanup of non-retained boundaries; retained group purge
+    and retained-boundary cleanup still require verification.
 - alicloud: ACS::EBS::DiskReplicaGroup
   spec: providers/alicloud/specs/ebs-disk-replica-group.yaml
   class: storage.replica_group
@@ -2220,6 +2227,7 @@ resources:
     resources:
     - AWS::EC2::CapacityReservationFleet
   status: pending_verification
+  notes: Inventory only. Ecs 2014-05-26 has no elasticity assurance deletion API (checked 2026-09-28).
 - alicloud: ACS::Elasticsearch::Instance
   spec: providers/alicloud/specs/elasticsearch-instance.yaml
   class: database.search
@@ -2275,7 +2283,9 @@ resources:
   azure:
     resources:
     - Microsoft.Synapse/workspaces
-  notes: Native workspace and compute inventory is implemented; reviewed cleanup and full Synapse child scope remain pending.
+  notes: Inventory only. emr-serverless-spark 2023-08-08 has no workspace deletion API (checked 2026-09-28).
+    Native workspace and compute inventory is implemented; reviewed cleanup and full Synapse child scope
+    remain pending.
   aws:
     resources:
     - AWS::EMRServerless::Application
@@ -3710,7 +3720,8 @@ resources:
     resources:
     - AWS::IVS::Stage
   status: pending_verification
-  notes: An unrelated media processing API is not substituted for an RTC application.
+  notes: Inventory only. rtc 2018-01-11 has no application deletion API (checked 2026-09-28). An unrelated
+    media processing API is not substituted for an RTC application.
 - alicloud: ACS::SCDN::Domain
   spec: providers/alicloud/specs/scdn-domain.yaml
   class: network.cdn_domain
@@ -3748,6 +3759,7 @@ resources:
     - AWS::Macie::Session
     - AWS::Macie::CustomDataIdentifier
   status: pending_verification
+  notes: Inventory only. Sddp 2019-01-03 has no instance deletion API (checked 2026-09-28).
 - alicloud: ACS::ECS::SecurityGroup
   spec: providers/alicloud/specs/security-group.yaml
   class: network.security_group
@@ -3900,6 +3912,7 @@ resources:
     resources:
     - AWS::Lightsail::Instance
   status: pending_verification
+  notes: Inventory only. SWAS-OPEN 2020-06-01 has no instance deletion or release API (checked 2026-09-28).
 - alicloud: ACS::OTS::Instance
   spec: providers/alicloud/specs/tablestore-instance.yaml
   class: database.nosql
@@ -3943,19 +3956,21 @@ resources:
     - AWS::SecurityHub::Hub
   status: pending_verification
   notes: >-
-    Azure reads native Defender protection tiers, sub-plans, trial and enablement times,
-    extension status, coverage and resource-level inheritance, matching the read-only
-    DescribeVersionConfig baseline. GCP now reads project Security Center Management service and module enablement through native
-    locations/list/detail APIs, including intended versus effective state and update time.
-    Service scans use non-authoritative visibility semantics: empty location or service lists
-    preserve previous observations, while later detail reads update state. Native organization subscriptions additionally expose current tier, latest subscription type
-    (including trial and pay-as-you-go), and start/end times through verified selected-project
-    ancestry. Project and ancestor-organization billingMetadata now preserve the tier explicitly configured at each native
-    location without inferring inherited entitlement or trial history. Project trial history,
-    automatic cluster inventory, verified GKE identity mapping and independent behavior verification remain pending.
-    Known native cluster service GET is supported, with response identity and settings validation. Ancestor folder
-    and organization service settings are separately inventoried through a verified project parent
-    chain at project-visible locations; arbitrary organization location/project enumeration is not claimed.
+    Inventory only. Sas 2018-12-03 has no instance deletion API (checked 2026-09-28). Azure reads native
+    Defender protection tiers, sub-plans, trial and enablement times, extension status, coverage and
+    resource-level inheritance, matching the read-only DescribeVersionConfig baseline. GCP now reads
+    project Security Center Management service and module enablement through native locations/list/detail
+    APIs, including intended versus effective state and update time. Service scans use non-authoritative
+    visibility semantics: empty location or service lists preserve previous observations, while later
+    detail reads update state. Native organization subscriptions additionally expose current tier, latest
+    subscription type (including trial and pay-as-you-go), and start/end times through verified
+    selected-project ancestry. Project and ancestor-organization billingMetadata now preserve the tier
+    explicitly configured at each native location without inferring inherited entitlement or trial
+    history. Project trial history, automatic cluster inventory, verified GKE identity mapping and
+    independent behavior verification remain pending. Known native cluster service GET is supported, with
+    response identity and settings validation. Ancestor folder and organization service settings are
+    separately inventoried through a verified project parent chain at project-visible locations; arbitrary
+    organization location/project enumeration is not claimed.
 - alicloud: ACS::TSDB::Instance
   spec: providers/alicloud/specs/tsdb-instance.yaml
   class: database.timeseries
