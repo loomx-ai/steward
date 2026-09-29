@@ -28,13 +28,7 @@ Steward 是 LoomX 的开源多云资源盘点、依赖可视化与清理审查�
 
 你可以在浏览器中使用 [Steward Cloud](https://steward.console.loomx.ai)，也可以[自行安装 Steward](https://loomx.ai/steward/docs/latest/zh/installation/)。
 
-https://github.com/user-attachments/assets/19e8fce1-accc-425a-8f40-e344a3b2ffbd
-
-<p align="center">
-  <a href="https://loomx.ai/steward/docs/latest/zh/topology/"><img src="docs/assets/relationships-zh.png" alt="Steward 资源全景：阿里云示例 VPC 中的云实例、负载均衡、安全组及其依赖关系" width="960"></a>
-  <br>
-  <sub>资源全景 · 阿里云示例数据</sub>
-</p>
+https://github.com/user-attachments/assets/e4f56157-647e-4818-a810-e0d43b61c4b8
 
 ## Steward 能做什么
 

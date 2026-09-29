@@ -28,13 +28,7 @@ Steward by LoomX is an open-source tool for multi-cloud resource inventory, depe
 
 Get started in your browser with [Steward Cloud](https://steward.console.loomx.ai), or [install Steward](https://loomx.ai/steward/docs/latest/en/installation/) to run it yourself.
 
-https://github.com/user-attachments/assets/d7e8c8e9-43b3-46f5-b006-bf8c952c968f
-
-<p align="center">
-  <a href="https://loomx.ai/steward/docs/latest/en/topology/"><img src="docs/assets/relationships-en.png" alt="Steward resource panorama showing instances, a load balancer, a security group, and their relationships in a sample AWS VPC" width="960"></a>
-  <br>
-  <sub>Resource panorama · AWS sample data</sub>
-</p>
+https://github.com/user-attachments/assets/06459e30-90d9-4e3a-82c5-e12f64e55939
 
 ## What Steward does
 
