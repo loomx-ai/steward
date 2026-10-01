@@ -45,7 +45,7 @@ In the screenshots, `api-01` is a name and `i-demo-api01` is the native resource
 
 ## Reading scan results
 
-Inventory shows what the last scan saw, not a live view of the cloud. Each resource has a **last seen** time: when a scan last observed it. If you change something in the cloud console after a scan, Steward shows the earlier state until you scan that scope again. Reloading the browser does not rescan.
+Inventory shows what the last scan saw, not a live view of the cloud. Each resource has a **last seen** time: when a scan last observed it. If you change something in the cloud console after a scan, Steward shows the earlier state until you scan that scope again. Reloading the browser does not rescan; turn on [scheduled scans](./schedules.md) to refresh the inventory on a schedule, and open any scan to see which resources it added, removed or modified.
 
 To know how complete an inventory is, check two things:
 

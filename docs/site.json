@@ -36,7 +36,7 @@
     },
     {
       "label": {"en": "Documentation", "zh": "使用文档"},
-      "items": ["guides", "connections", "oidc", "scans", "resources", "topology", "cleanup"]
+      "items": ["guides", "connections", "oidc", "scans", "schedules", "resources", "topology", "cleanup"]
     },
     {
       "label": {"en": "Cloud platforms", "zh": "云平台"},

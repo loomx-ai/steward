@@ -61,6 +61,8 @@ Steward needs both the database and the credential encryption key to read stored
 - **PostgreSQL:** use your database's own backup tools, and keep the `STEWARD_CREDENTIAL_MASTER_KEY` value with the backup.
 - If you keep the database or key somewhere else, include those locations as well.
 
-To restore, put the original database and the original key back in place. A different key cannot decrypt the stored credentials.
+To restore, put the original database and the original key back in place. A different key cannot decrypt the stored credentials or the notification channels' webhook addresses.
+
+[Scheduled scans](./schedules.md) run only while the server runs, so a long-running deployment is what keeps them on time.
 
 [Configuration reference →](./configuration.md) · [Troubleshooting →](./troubleshooting.md)

@@ -1,6 +1,6 @@
 ---
 title: "Scanning"
-description: "Choose a scan scope, read scan progress and failed items, and know when to scan again before inventory or cleanup."
+description: "Choose a scan scope, read scan progress, failed items and resource changes, and know when to scan again before inventory or cleanup."
 navTitle: "Scanning"
 ---
 
@@ -47,6 +47,23 @@ To fix it, read the log for the failed item, correct the reported permission, cr
 
 While a scan runs, you can **Pause**, **Resume**, or **Cancel scan**, depending on its state. Canceling stops the scan but keeps completed results and logs; it does not undo data already discovered.
 
+<span id="changes"></span>
+
+## Review what a scan changed
+
+**Resource changes** on a scan's detail page lists what the scan found different from before:
+
+| Change | Meaning |
+| --- | --- |
+| **Added** | A resource seen for the first time, or one that had disappeared and is back. |
+| **Removed** | A resource that a successful read confirmed is gone. Failed items never produce removals. |
+| **Modified** | Its name, state, location, tags or configuration changed. **What changed** shows each attribute before and after. |
+
+- Filter by change type, or search by name or resource ID. Click a resource's name to open it.
+- Only attributes you can see in the console are compared. Counters, timestamps and other raw provider fields that change on every read do not count as modifications.
+- On a connection's first scan, every resource is **Added**.
+- The **Changes** column in **Scan tasks** and in a [scheduled scan's runs](./schedules.md#runs) shows `+added −removed ~modified` and links to the list.
+
 <span id="freshness"></span>
 
 ## When to scan again
@@ -56,6 +73,8 @@ While a scan runs, you can **Pause**, **Resume**, or **Cancel scan**, depending 
 - When a resource's last-seen time is older than changes you know about. Verify it before acting on it.
 
 To rescan one region from **Resource Panorama**, right-click it and choose **Rescan**. Steward creates a new scan for that region and opens its details.
+
+To stop relying on manual scans, turn on [scheduled scans](./schedules.md). Resource pages show the active connection's last complete scan at the top right.
 
 <aside class="docs-note">An unscanned region or resource type is not evidence of an empty scope. With incomplete coverage, dependencies can be missing from the relationship graph and from cleanup tasks.</aside>
 

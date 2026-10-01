@@ -1,6 +1,6 @@
 ---
 title: "配置参考"
-description: "监听地址、数据库、登录方式、角色、扫描并发、OIDC 和版本检查相关的环境变量及默认值。"
+description: "监听地址、数据库、登录方式、角色、扫描并发、定时扫描、OIDC 和版本检查相关的环境变量及默认值。"
 navTitle: "配置参考"
 ---
 
@@ -21,6 +21,7 @@ Steward 通过环境变量配置。`steward server start` 也以命令行参数�
 | `STEWARD_DB_DSN` | SQLite 文件路径或 PostgreSQL 连接串 | 数据目录中的 `steward.db` |
 | `STEWARD_DB_MAX_CONNS` | PostgreSQL 连接池上限，正整数。应低于数据库角色的连接数限制。 | 不限制 |
 | `STEWARD_SCAN_CONCURRENCY` | 同时执行的扫描项数量，正整数 | `4` |
+| `STEWARD_PUBLIC_URL` | 访问 Steward 的地址，例如 `https://steward.example.com`。设置后，[失败通知](./schedules.md#notifications)中会附带扫描详情链接 | — |
 
 [OIDC 云连接](./oidc.md)使用 `STEWARD_OIDC_ISSUER_URL`、`STEWARD_OIDC_WORKSPACE_ID` 和 `STEWARD_OIDC_SIGNING_KEY_FILE`。
 
@@ -33,10 +34,20 @@ Steward 通过环境变量配置。`steward server start` 也以命令行参数�
 | 角色 | 权限 |
 | --- | --- |
 | `viewer` | 查看云连接、扫描、资源清单、资源关系、清理任务和审计记录 |
-| `operator` | 在 viewer 基础上，可以发起和控制扫描、标记资源，以及创建、执行、暂停和恢复清理任务 |
-| `admin` | 在 operator 基础上，可以添加、重命名、验证、替换凭证和删除云连接 |
+| `operator` | 在 viewer 基础上，可以发起和控制扫描、管理定时扫描、标记资源，以及创建、执行、暂停和恢复清理任务 |
+| `admin` | 在 operator 基础上，可以添加、重命名、验证、替换凭证和删除云连接，以及修改定时扫描的全局设置和通知渠道 |
 
 本机模式下始终是 admin。
+
+<span id="schedules"></span>
+
+## 定时扫描
+
+[定时扫描](./schedules.md)由服务进程自行调度，不需要额外配置：
+
+- 两次运行至少间隔 1 小时；Steward Cloud 上至少间隔 6 小时。
+- 使用 PostgreSQL 运行多个 Steward 实例时，同一个计划时间点只会由一个实例发起扫描。
+- 通知渠道的 Webhook 地址可以是内网地址；Steward Cloud 上只能发送到公网地址。
 
 ## 版本检查
 

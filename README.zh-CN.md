@@ -34,6 +34,7 @@ https://github.com/user-attachments/assets/e4f56157-647e-4818-a810-e0d43b61c4b8
 
 - **[云资源盘点](https://loomx.ai/steward/docs/latest/zh/resources/)。** 了解各个云账号中正在运行的资源，找到需要关注的资产。
 - **[资源关系](https://loomx.ai/steward/docs/latest/zh/topology/)。** 直观探索资源之间的连接，在变更前看清共享依赖。
+- **[定时扫描](https://loomx.ai/steward/docs/latest/zh/schedules/)。** 按计划自动盘点，查看每次扫描新增、消失和修改了哪些资源，扫描失败时通知到飞书、钉钉、企业微信或 Slack。
 - **[受控清理](https://loomx.ai/steward/docs/latest/zh/cleanup/)。** 执行前审查影响，执行后跟踪每一次清理的结果。
 
 <a name="快速开始"></a>

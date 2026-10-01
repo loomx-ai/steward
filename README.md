@@ -34,6 +34,7 @@ https://github.com/user-attachments/assets/06459e30-90d9-4e3a-82c5-e12f64e55939
 
 - **[Cloud inventory](https://loomx.ai/steward/docs/latest/en/resources/).** Discover what is running across your cloud accounts and find the resources that need attention.
 - **[Resource relationships](https://loomx.ai/steward/docs/latest/en/topology/).** Explore how resources connect and understand shared dependencies before making changes.
+- **[Scheduled scans](https://loomx.ai/steward/docs/latest/en/schedules/).** Keep the inventory current on a schedule, see which resources each scan added, removed or modified, and hear about failed scans in Slack, Feishu, DingTalk or WeCom.
 - **[Reviewed cleanup](https://loomx.ai/steward/docs/latest/en/cleanup/).** Review the impact before execution, then follow the results of each cleanup.
 
 <a name="quick-start"></a>

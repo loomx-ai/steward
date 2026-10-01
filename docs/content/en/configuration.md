@@ -1,6 +1,6 @@
 ---
 title: "Configuration reference"
-description: "Environment variables for the listen address, database, sign-in, roles, scan concurrency, OIDC, and release checks, with their defaults."
+description: "Environment variables for the listen address, database, sign-in, roles, scan concurrency, scheduled scans, OIDC, and release checks, with their defaults."
 navTitle: "Configuration"
 ---
 
@@ -21,6 +21,7 @@ Steward is configured with environment variables. `steward server start` also ac
 | `STEWARD_DB_DSN` | SQLite file path or PostgreSQL connection string | `steward.db` in the data directory |
 | `STEWARD_DB_MAX_CONNS` | PostgreSQL connection pool limit, a positive integer. Keep it below the database role's connection limit. | Unlimited |
 | `STEWARD_SCAN_CONCURRENCY` | Number of scan items run at the same time, a positive integer | `4` |
+| `STEWARD_PUBLIC_URL` | The address people use to open Steward, such as `https://steward.example.com`. [Failure notifications](./schedules.md#notifications) link to the scan when it is set | — |
 
 [OIDC connections](./oidc.md) use `STEWARD_OIDC_ISSUER_URL`, `STEWARD_OIDC_WORKSPACE_ID`, and `STEWARD_OIDC_SIGNING_KEY_FILE`.
 
@@ -33,10 +34,20 @@ The command line uses Chinese when `LC_ALL`, `LC_MESSAGES`, or `LANG` selects a 
 | Role | Can do |
 | --- | --- |
 | `viewer` | Read connections, scans, inventory, relationships, cleanup tasks, and audit events |
-| `operator` | Everything a viewer can, plus start and control scans, mark resources, and create, execute, pause, and resume cleanup tasks |
-| `admin` | Everything an operator can, plus add, rename, validate, replace credentials for, and delete cloud connections |
+| `operator` | Everything a viewer can, plus start and control scans, manage scheduled scans, mark resources, and create, execute, pause, and resume cleanup tasks |
+| `admin` | Everything an operator can, plus add, rename, validate, replace credentials for, and delete cloud connections, and change scheduled-scan settings and notification channels |
 
 In local mode you are always an admin.
+
+<span id="schedules"></span>
+
+## Scheduled scans
+
+The server schedules [scheduled scans](./schedules.md) itself; there is nothing to configure:
+
+- Runs must be at least one hour apart, and six hours apart on Steward Cloud.
+- When several Steward instances share a PostgreSQL database, only one of them starts the scan for each planned time.
+- Notification webhooks may point at private addresses; on Steward Cloud they can only reach public ones.
 
 ## Release checks
 
