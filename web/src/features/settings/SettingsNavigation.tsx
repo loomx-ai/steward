@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 
-export type SettingsSection = "general" | "connections" | "account";
+export type SettingsSection =
+  "general" | "connections" | "schedules" | "notifications" | "account";
 
 export function SettingsNavigation({
   value,
@@ -11,7 +12,13 @@ export function SettingsNavigation({
   onValueChange: (value: SettingsSection) => void;
   labels: Record<SettingsSection, string>;
 }) {
-  const items: SettingsSection[] = ["general", "connections", "account"];
+  const items: SettingsSection[] = [
+    "general",
+    "connections",
+    "schedules",
+    "notifications",
+    "account",
+  ];
   return (
     <nav
       aria-label={labels.general}

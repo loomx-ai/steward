@@ -31,6 +31,16 @@ const cleanupSelectionMock = vi.hoisted(() => ({
   requestConnectionChange: vi.fn(),
 }));
 
+vi.mock("@/features/schedules/useScheduleOverview", () => ({
+  useScheduleOverview: () => ({ data: [] }),
+}));
+
+vi.mock("@/features/schedules/Freshness", () => ({
+  FreshnessIndicator: () => null,
+  ConnectionFreshness: () => null,
+  PausedSchedulesBanner: () => null,
+}));
+
 vi.mock("@/auth/AuthProvider", () => ({
   useAuth: () => ({
     principal: { subject: "local-admin", roles: ["admin"] },

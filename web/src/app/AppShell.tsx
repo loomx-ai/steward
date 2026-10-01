@@ -9,6 +9,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { InspectorSheet } from "@/components/patterns/InspectorSheet";
 import { CleanupSelectionProvider } from "@/features/panorama/CleanupSelectionContext";
+import {
+  FreshnessIndicator,
+  PausedSchedulesBanner,
+} from "@/features/schedules/Freshness";
 import { AppHeader } from "./AppHeader";
 import { AppSidebar } from "./AppSidebar";
 import { CommandMenu } from "./CommandMenu";
@@ -44,7 +48,7 @@ function ShellFrame() {
         onSearch={() => setCommandOpen(true)}
       />
       <SidebarInset className="min-w-0 overflow-hidden">
-        <AppHeader />
+        <AppHeader status={<FreshnessIndicator />} />
         <main className="min-h-0 min-w-0 flex-1 overflow-auto bg-background">
           <ConnectionBoundary />
         </main>
@@ -94,6 +98,7 @@ function ConnectionBoundary() {
   if (!activeConnection) return <ConnectionGate />;
   return (
     <RouteErrorBoundary key={location.pathname}>
+      <PausedSchedulesBanner />
       <Outlet />
     </RouteErrorBoundary>
   );

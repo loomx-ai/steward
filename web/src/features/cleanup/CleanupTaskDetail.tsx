@@ -69,6 +69,7 @@ import {
 } from "@/components/domain/resourceKindLabel";
 import { ResourceKindPicker } from "@/components/domain/ResourceKindPicker";
 import { StateBadge } from "@/components/domain/StateBadge";
+import { CompleteScanPrompt } from "@/features/schedules/CompleteScanPrompt";
 import { PageLayout } from "@/components/patterns/PageLayout";
 import { PageToolbar } from "@/components/patterns/PageToolbar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -751,6 +752,13 @@ export function CleanupTaskDetail() {
   const executionBlockers = (aggregate.task.blockers ?? []).filter(
     (blocker) => blocker.code !== "scan_coverage_incomplete",
   );
+  const needsCompleteScan =
+    !["executing", "completed", "succeeded"].includes(aggregate.task.status) &&
+    (aggregate.task.blockers ?? []).some(
+      (blocker) =>
+        blocker.code === "scan_coverage_incomplete" ||
+        blocker.code === "dependent_scan_incomplete",
+    );
   const legacyCoverageAdvisoryTask =
     aggregate.task.status === "draft" &&
     scanCoverageAdvisories.length > 0 &&
@@ -1002,6 +1010,10 @@ export function CleanupTaskDetail() {
           messageForCode={messageForCode}
           t={t}
         />
+
+        {needsCompleteScan && (
+          <CompleteScanPrompt connectionID={aggregate.task.connection_id} />
+        )}
 
         <dl className="grid gap-x-16 gap-y-3 md:grid-cols-2">
           <Fact label={t("cleanup.taskId")} mono>

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   PageHeaderActionsTarget,
@@ -14,7 +15,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 
-export function AppHeader() {
+export function AppHeader({ status }: { status?: ReactNode }) {
   const { t } = useLocale();
   const { isMobile } = useSidebar();
   const location = useLocation();
@@ -94,6 +95,7 @@ export function AppHeader() {
         )}
         <PageHeaderNavigationTarget />
       </div>
+      {status}
       <PageHeaderActionsTarget ariaLabel={t("common.actions")} />
     </header>
   );

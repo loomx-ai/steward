@@ -5,6 +5,8 @@ import type { SettingsSection } from "./SettingsNavigation";
 const settingsSections: SettingsSection[] = [
   "general",
   "connections",
+  "schedules",
+  "notifications",
   "account",
 ];
 

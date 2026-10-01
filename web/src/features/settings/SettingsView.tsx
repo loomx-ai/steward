@@ -64,6 +64,8 @@ import {
 } from "./ConnectionEditor";
 import { ConnectionValidationError } from "./ConnectionValidationError";
 import { ConnectionRegions } from "./ConnectionRegions";
+import { NotificationSettings } from "./NotificationSettings";
+import { ScheduleSettings } from "./ScheduleSettings";
 import { SettingsNavigation, type SettingsSection } from "./SettingsNavigation";
 
 export function SettingsView({
@@ -223,6 +225,8 @@ export function SettingsView({
           labels={{
             general: t("settings.general"),
             connections: t("settings.cloudConnections"),
+            schedules: t("settings.scanSchedules"),
+            notifications: t("settings.notifications"),
             account: t("settings.account"),
           }}
         />
@@ -561,6 +565,10 @@ export function SettingsView({
               )}
             </SettingsGroup>
           )}
+
+          {section === "schedules" && <ScheduleSettings />}
+
+          {section === "notifications" && <NotificationSettings />}
 
           {section === "account" && (
             <SettingsGroup title={t("settings.account")}>

@@ -3,6 +3,8 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/auth/AuthProvider";
 import { useActiveConnection } from "@/connections/ActiveConnectionProvider";
 import { useCleanupSelection } from "@/features/panorama/CleanupSelectionContext";
+import { ConnectionFreshness } from "@/features/schedules/Freshness";
+import { useScheduleOverview } from "@/features/schedules/useScheduleOverview";
 import { useLocale } from "@/i18n/LocaleProvider";
 import type { MessageKey } from "@/i18n/messages";
 import { Button } from "@/components/ui/button";
@@ -55,6 +57,7 @@ export function AppSidebar({
   const location = useLocation();
   const { connections, activeConnectionID, loading } = useActiveConnection();
   const { requestConnectionChange } = useCleanupSelection();
+  const overview = useScheduleOverview();
   const { t } = useLocale();
   const { isMobile, setOpenMobile } = useSidebar();
   const subject =
@@ -146,7 +149,18 @@ export function AppSidebar({
               </SelectTrigger>
               <SelectContent>
                 {connections.map((connection) => (
-                  <SelectItem key={connection.id} value={connection.id}>
+                  <SelectItem
+                    key={connection.id}
+                    value={connection.id}
+                    className="min-w-72"
+                    description={
+                      <ConnectionFreshness
+                        overview={overview.data?.find(
+                          (item) => item.connection_id === connection.id,
+                        )}
+                      />
+                    }
+                  >
                     {connection.name} · {connection.provider}
                   </SelectItem>
                 ))}

@@ -497,6 +497,8 @@ it("switches the settings category through a compact secondary navigation", asyn
       labels={{
         general: "General",
         connections: "Cloud connections",
+        schedules: "Scheduled scans",
+        notifications: "Notifications",
         account: "Account",
       }}
     />,
