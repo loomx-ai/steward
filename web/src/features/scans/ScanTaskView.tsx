@@ -25,6 +25,9 @@ import { useRequiredConnection } from "@/connections/ActiveConnectionProvider";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { formatDuration } from "@/lib/formatDuration";
 import { compareRegionIDs } from "@/lib/regionOrder";
+import { ChangeCountsLink } from "@/features/schedules/ScheduleChanges";
+import { ScanChanges } from "./ScanChanges";
+import { ScanRequester } from "./ScansView";
 import { ScanTargetCard, scanTargetTitle } from "./ScanTargetCard";
 import { ScanTaskEvents } from "./ScanTaskEvents";
 import { scanStatusLabel } from "./scanStatus";
@@ -124,7 +127,7 @@ export function ScanTaskView() {
                   />
                 </Fact>
                 <Fact label={t("common.requestedBy")}>
-                  {value.requested_by}
+                  <ScanRequester task={value} />
                 </Fact>
                 <Fact label={t("scans.targetProgress")}>
                   {value.progress.completed} / {value.progress.total}
@@ -146,6 +149,9 @@ export function ScanTaskView() {
                 </Fact>
                 <Fact label={t("scans.duration")}>
                   {formatDuration(value.duration_ms)}
+                </Fact>
+                <Fact label={t("scans.changes")}>
+                  <ChangeCountsLink counts={value.changes} scanID={value.id} />
                 </Fact>
               </dl>
               <section className="space-y-3">
@@ -187,6 +193,14 @@ export function ScanTaskView() {
                   ))}
                 </div>
               </section>
+              {value.changes && (
+                <ScanChanges
+                  connectionID={connection.id}
+                  scanID={value.id}
+                  provider={connection.provider}
+                  counts={value.changes}
+                />
+              )}
               <ScanTaskEvents
                 connectionID={connection.id}
                 scanID={value.id}

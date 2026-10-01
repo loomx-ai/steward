@@ -4,14 +4,15 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Play, RefreshCw, Search } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Clock, Play, RefreshCw, Search } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import {
   listConnectionRegions,
   listProviderCatalog,
   listScans,
 } from "@/api/client";
+import type { ScanTask } from "@/api/types";
 import { AsyncState } from "@/components/domain/AsyncState";
 import { CursorPagination } from "@/components/domain/CursorPagination";
 import { DataTableShell } from "@/components/domain/DataTableShell";
@@ -35,7 +36,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRequiredConnection } from "@/connections/ActiveConnectionProvider";
+import { ChangeCountsLink } from "@/features/schedules/ScheduleChanges";
+import { SchedulesTab } from "@/features/schedules/SchedulesTab";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { useCursorPagination } from "@/hooks/useCursorPagination";
 import { formatDuration } from "@/lib/formatDuration";
@@ -43,6 +47,7 @@ import { CreateScanDialog } from "./CreateScanDialog";
 import { scanStatusLabel } from "./scanStatus";
 
 const allStatuses = "__all__";
+const allSources = "__all__";
 const scanStatuses = [
   "pending",
   "running",
@@ -84,20 +89,74 @@ export function filterScanTasks(
 
 export function ScansView() {
   const connection = useRequiredConnection();
+  const { t } = useLocale();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get("tab") === "schedules" ? "schedules" : "tasks";
+  return (
+    <PageLayout mode="list" className="pt-0">
+      <Tabs
+        value={tab}
+        onValueChange={(value) =>
+          setSearchParams(
+            (current) => {
+              const next = new URLSearchParams(current);
+              if (value === "schedules") next.set("tab", "schedules");
+              else next.delete("tab");
+              return next;
+            },
+            { replace: true },
+          )
+        }
+        className="gap-4"
+      >
+        <TabsList variant="line">
+          <TabsTrigger value="tasks">{t("scans.tabs.tasks")}</TabsTrigger>
+          <TabsTrigger value="schedules">
+            {t("scans.tabs.schedules")}
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="tasks">
+          <ScanTasksTab />
+        </TabsContent>
+        <TabsContent value="schedules">
+          <SchedulesTab connection={connection} />
+        </TabsContent>
+      </Tabs>
+    </PageLayout>
+  );
+}
+
+function ScanTasksTab() {
+  const connection = useRequiredConnection();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { formatDate, formatError, formatNumber, label, t } = useLocale();
   const [formOpen, setFormOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState(allStatuses);
+  const [source, setSource] = useState(allSources);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const pagination = useCursorPagination(
-    `${connection.id}:${search}:${status}`,
+    `${connection.id}:${search}:${status}:${source}`,
   );
   const scans = useQuery({
-    queryKey: ["scans", connection.id, pagination.cursor, pagination.pageSize],
+    queryKey: [
+      "scans",
+      connection.id,
+      pagination.cursor,
+      pagination.pageSize,
+      source,
+    ],
     queryFn: ({ signal }) =>
-      listScans(connection.id, pagination.cursor, pagination.pageSize, signal),
+      listScans(
+        connection.id,
+        pagination.cursor,
+        pagination.pageSize,
+        signal,
+        source === allSources
+          ? {}
+          : { source: source as "manual" | "scheduled" },
+      ),
     placeholderData: keepPreviousData,
   });
   const regions = useQuery({
@@ -116,10 +175,11 @@ export function ScansView() {
     () => filterScanTasks(sourceRows, { search, status }),
     [search, sourceRows, status],
   );
-  const hasFilters = search.trim().length > 0 || status !== allStatuses;
+  const hasFilters =
+    search.trim().length > 0 || status !== allStatuses || source !== allSources;
   const supportingError = formOpen ? (regions.error ?? catalog.error) : null;
   return (
-    <PageLayout mode="list" className="pt-0">
+    <>
       <div className="space-y-4">
         {supportingError && (
           <Alert variant="destructive">
@@ -162,6 +222,25 @@ export function ScansView() {
                       )}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+              <Select value={source} onValueChange={setSource}>
+                <SelectTrigger
+                  className="h-11 w-full self-start sm:h-9 sm:w-36"
+                  aria-label={t("scans.sourceFilter")}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent align="start">
+                  <SelectItem value={allSources}>
+                    {t("scans.source.all")}
+                  </SelectItem>
+                  <SelectItem value="manual">
+                    {t("scans.source.manual")}
+                  </SelectItem>
+                  <SelectItem value="scheduled">
+                    {t("scans.source.scheduled")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <div className="ml-auto flex w-full items-center gap-2 sm:w-auto">
@@ -243,6 +322,7 @@ export function ScansView() {
                   <TableHead>{t("common.status")}</TableHead>
                   <TableHead>{t("scans.scope")}</TableHead>
                   <TableHead>{t("scans.resources")}</TableHead>
+                  <TableHead>{t("scans.changes")}</TableHead>
                   <TableHead>{t("common.requestedBy")}</TableHead>
                   <TableHead>{t("common.created")}</TableHead>
                   <TableHead>{t("scans.duration")}</TableHead>
@@ -277,7 +357,15 @@ export function ScansView() {
                     <TableCell>
                       {formatNumber(task.progress.resource_count)}
                     </TableCell>
-                    <TableCell>{task.requested_by}</TableCell>
+                    <TableCell>
+                      <ChangeCountsLink
+                        counts={task.changes}
+                        scanID={task.id}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <ScanRequester task={task} />
+                    </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {formatDate(task.created_at)}
                     </TableCell>
@@ -307,6 +395,35 @@ export function ScansView() {
           navigate(`/scans/${encodeURIComponent(id)}`);
         }}
       />
-    </PageLayout>
+    </>
+  );
+}
+
+// ScanRequester shows the person who started a scan, or the schedule that
+// started it with a link to that schedule.
+export function ScanRequester({
+  task,
+}: {
+  task: Pick<ScanTask, "requested_by" | "schedule_id" | "schedule_name">;
+}) {
+  const { t } = useLocale();
+  if (!task.schedule_id) return <>{task.requested_by}</>;
+  const name =
+    task.schedule_name === undefined
+      ? t("scans.scheduleFallback")
+      : task.schedule_name || t("schedules.defaultName");
+  return (
+    <Link
+      to={`/scans/schedules/${encodeURIComponent(task.schedule_id)}`}
+      className="inline-flex max-w-56 items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs hover:bg-muted"
+    >
+      <Clock className="size-3 shrink-0 text-muted-foreground" />
+      <span className="truncate">{name}</span>
+      {task.requested_by !== "scheduler" && (
+        <span className="shrink-0 text-muted-foreground">
+          · {task.requested_by}
+        </span>
+      )}
+    </Link>
   );
 }

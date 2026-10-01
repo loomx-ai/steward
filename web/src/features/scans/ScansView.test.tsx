@@ -129,6 +129,7 @@ it("loads scan creation options only after opening the dialog", async () => {
     "",
     20,
     expect.any(AbortSignal),
+    {},
   );
   expect(listConnectionRegions).not.toHaveBeenCalled();
   expect(listProviderCatalog).not.toHaveBeenCalled();
@@ -183,12 +184,14 @@ it("replaces the current scan page when navigating forward and back", async () =
     "",
     20,
     expect.any(AbortSignal),
+    {},
   );
   expect(listScans).toHaveBeenCalledWith(
     connection.id,
     "cursor-2",
     20,
     expect.any(AbortSignal),
+    {},
   );
 });
 
@@ -214,6 +217,7 @@ it("changes the scan page size and restarts at the first page", async () => {
       "",
       100,
       expect.any(AbortSignal),
+      {},
     ),
   );
   expect(await screen.findByText("scan-page-1")).toBeVisible();
@@ -252,6 +256,7 @@ it("refreshes the current scan page from the toolbar", async () => {
     "",
     20,
     expect.any(AbortSignal),
+    {},
   );
 
   finishRefresh();

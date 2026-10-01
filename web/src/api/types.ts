@@ -427,6 +427,9 @@ export interface ScanTask {
   finished_at?: string;
   paused_at?: string;
   canceled_at?: string;
+  schedule_id?: string;
+  schedule_name?: string;
+  changes?: ChangeCounts;
   target_progress: ScanTargetProgress[];
   progress: {
     completed: number;
@@ -721,4 +724,164 @@ export interface AuditEvent {
   evidence?: Record<string, unknown>;
   request_id?: string;
   created_at: string;
+}
+
+export interface ChangeCounts {
+  added: number;
+  removed: number;
+  modified: number;
+}
+
+export type AssetChangeType = "added" | "removed" | "modified";
+
+export interface FieldChange {
+  path: string;
+  before: unknown;
+  after: unknown;
+}
+
+export interface AssetChange {
+  id: string;
+  connection_id: string;
+  scan_task_id: string;
+  asset_id: string;
+  change_type: AssetChangeType;
+  resource_kind_id: string;
+  native_type: string;
+  native_id: string;
+  name?: string;
+  location?: string;
+  fields?: FieldChange[];
+  changed_at: string;
+}
+
+export type FrequencyKind = "hourly" | "daily" | "weekly" | "monthly" | "cron";
+
+export interface ScheduleFrequency {
+  kind: FrequencyKind;
+  every_hours?: number;
+  time?: string;
+  weekdays?: number[];
+  month_day?: number;
+  cron?: string;
+  timezone: string;
+}
+
+export interface ScheduleRules {
+  overlap: "skip" | "wait";
+  missed: "catch_up" | "skip";
+  retry_failed_targets: boolean;
+  pause_after_failures: number;
+}
+
+export interface ScheduleScope {
+  scope_mode: ScanScopeMode;
+  region_ids?: string[];
+  network_targets?: NonNullable<CreateScanInput["network_targets"]>;
+  resource_kind_ids?: string[];
+}
+
+export interface ScheduleRun {
+  id: string;
+  schedule_id: string;
+  connection_id: string;
+  planned_at: string;
+  trigger: "schedule" | "catch_up" | "manual";
+  outcome: "starting" | "started" | "skipped" | "failed_to_start";
+  skip_reason?: "overlap" | "missed";
+  blocking_scan_id?: string;
+  error?: string;
+  error_code?: string;
+  scan_task_id?: string;
+  actor: string;
+  auto_retried: boolean;
+  failed_items?: number;
+  failure_summary?: string;
+  settled: boolean;
+  final_status?: string;
+  created_at: string;
+  scan?: ScanTask;
+}
+
+export interface ScanSchedule {
+  id: string;
+  connection_id: string;
+  name: string;
+  enabled: boolean;
+  scope: ScheduleScope;
+  frequency: ScheduleFrequency;
+  rules: ScheduleRules;
+  next_run_at?: string;
+  pause_reason?: "consecutive_failures" | "connection_removed";
+  pause_detail?: string;
+  paused_at?: string;
+  consecutive_failures: number;
+  created_by: string;
+  updated_by: string;
+  created_at: string;
+  updated_at: string;
+  last_run?: ScheduleRun;
+}
+
+export interface ScheduleInput {
+  name: string;
+  enabled?: boolean;
+  scope: ScheduleScope;
+  frequency: ScheduleFrequency;
+  rules?: ScheduleRules;
+}
+
+export interface SchedulePreview {
+  next_runs: string[];
+  min_interval_seconds: number;
+}
+
+export interface ConnectionScheduleOverview {
+  connection_id: string;
+  connection_name: string;
+  provider: string;
+  status: string;
+  schedules: ScanSchedule[];
+  last_complete_scan_at?: string;
+}
+
+export interface ScheduleSettings {
+  default_schedule_enabled: boolean;
+  retention_days: number;
+  default_timezone?: string;
+  updated_by?: string;
+  updated_at?: string;
+  min_interval_seconds: number;
+}
+
+export type NotificationChannelType =
+  "webhook" | "slack" | "feishu" | "dingtalk" | "wecom";
+
+export type NotificationEvent =
+  "scan_failed" | "scan_partial" | "schedule_paused";
+
+export interface NotificationChannel {
+  id: string;
+  name: string;
+  type: NotificationChannelType;
+  enabled: boolean;
+  events: NotificationEvent[];
+  language: "zh" | "en";
+  target: string;
+  has_signing_secret: boolean;
+  last_delivery?: { at: string; ok: boolean; error?: string };
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NotificationChannelInput {
+  name: string;
+  type: NotificationChannelType;
+  enabled?: boolean;
+  events: NotificationEvent[];
+  language: "zh" | "en";
+  url?: string;
+  signing_secret?: string;
+  clear_signing_secret?: boolean;
 }

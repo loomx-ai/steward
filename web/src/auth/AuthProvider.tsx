@@ -159,6 +159,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+// useOptionalAuth returns null outside an AuthProvider, for components that
+// also render in isolation.
+export function useOptionalAuth() {
+  return useContext(AuthContext);
+}
+
 export function useAuth() {
   const value = useContext(AuthContext);
   if (!value) throw new Error("useAuth must be used inside AuthProvider");

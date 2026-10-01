@@ -6,6 +6,7 @@ import { RequireAuth } from "./auth/AuthProvider";
 import { AssetsView } from "./features/assets/AssetsView";
 import { ScansView } from "./features/scans/ScansView";
 import { ScanTaskView } from "./features/scans/ScanTaskView";
+import { ScheduleDetail } from "./features/schedules/ScheduleDetail";
 import { CleanupView } from "./features/cleanup/CleanupView";
 import { CleanupTaskDetail } from "./features/cleanup/CleanupTaskDetail";
 import { FindingsView } from "./features/findings/FindingsView";
@@ -52,6 +53,7 @@ export function AppRoutes() {
           <Route path="assets" element={<AssetsView />} />
           <Route path="assets/:id" element={<AssetDetail />} />
           <Route path="scans" element={<ScansView />} />
+          <Route path="scans/schedules/:id" element={<ScheduleDetail />} />
           <Route path="scans/:id" element={<ScanTaskView />} />
           <Route path="cleanup" element={<CleanupView />} />
           <Route path="cleanup/new" element={<CleanupView />} />

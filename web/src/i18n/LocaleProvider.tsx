@@ -75,6 +75,7 @@ interface LocaleContextValue {
   formatError: (error: unknown) => string;
   formatDate: (value: string | Date) => string;
   formatTime: (value: string | Date) => string;
+  formatRelative: (value: string | Date) => string;
   formatNumber: (value: number) => string;
 }
 
@@ -209,6 +210,10 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     () => new Intl.NumberFormat(locale),
     [locale],
   );
+  const relativeFormatter = useMemo(
+    () => new Intl.RelativeTimeFormat(locale, { numeric: "auto" }),
+    [locale],
+  );
   const value = useMemo<LocaleContextValue>(
     () => ({
       locale,
@@ -226,6 +231,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
         const parts = dateTimeParts(dateTimeFormatter, date);
         return `${parts.hour}:${parts.minute}:${parts.second}`;
       },
+      formatRelative: (date) => formatRelativeTime(relativeFormatter, date),
       formatNumber: (number) => numberFormatter.format(number),
     }),
     [
@@ -238,6 +244,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       formatError,
       dateTimeFormatter,
       numberFormatter,
+      relativeFormatter,
     ],
   );
   return (
@@ -249,6 +256,28 @@ export function useLocale(): LocaleContextValue {
   const value = useContext(LocaleContext);
   if (!value) throw new Error("useLocale must be used inside LocaleProvider");
   return value;
+}
+
+const relativeUnits: Array<[Intl.RelativeTimeFormatUnit, number]> = [
+  ["day", 86_400_000],
+  ["hour", 3_600_000],
+  ["minute", 60_000],
+];
+
+// formatRelativeTime says how far a time is from now in the largest whole
+// unit, such as "3 hours ago" or "in 2 days".
+export function formatRelativeTime(
+  formatter: Intl.RelativeTimeFormat,
+  value: string | Date,
+  now = Date.now(),
+) {
+  const difference = new Date(value).getTime() - now;
+  for (const [unit, size] of relativeUnits) {
+    if (Math.abs(difference) >= size) {
+      return formatter.format(Math.trunc(difference / size), unit);
+    }
+  }
+  return formatter.format(0, "minute");
 }
 
 function dateTimeParts(formatter: Intl.DateTimeFormat, value: string | Date) {

@@ -1,5 +1,16 @@
 import type {
   ActionAttempt,
+  AssetChange,
+  AssetChangeType,
+  ConnectionScheduleOverview,
+  NotificationChannel,
+  NotificationChannelInput,
+  ScanSchedule,
+  ScheduleFrequency,
+  ScheduleInput,
+  SchedulePreview,
+  ScheduleRun,
+  ScheduleSettings,
   Asset,
   AuditEvent,
   CloudConnection,
@@ -381,10 +392,194 @@ export function listScans(
   cursor = "",
   limit = 100,
   signal?: AbortSignal,
+  filters: { source?: "manual" | "scheduled" } = {},
 ): Promise<Page<ScanTask>> {
   return request<Page<ScanTask>>(
-    scopedPath(listPath("/api/scans", cursor, limit), connectionID),
+    scopedPath(listPath("/api/scans", cursor, limit, filters), connectionID),
     { signal },
+  );
+}
+
+export function listScanChanges(
+  connectionID: string,
+  scanID: string,
+  options: {
+    type?: AssetChangeType;
+    query?: string;
+    cursor?: string;
+    limit?: number;
+  } = {},
+): Promise<Page<AssetChange>> {
+  return request<Page<AssetChange>>(
+    scopedPath(
+      listPath(
+        `/api/scans/${encodeURIComponent(scanID)}/changes`,
+        options.cursor,
+        options.limit,
+        { change_type: options.type, q: options.query?.trim() },
+      ),
+      connectionID,
+    ),
+  );
+}
+
+export function listSchedules(connectionID: string): Promise<ScanSchedule[]> {
+  return request<ScanSchedule[]>(
+    scopedPath("/api/scan-schedules", connectionID),
+  );
+}
+
+export function getSchedule(
+  connectionID: string,
+  id: string,
+): Promise<ScanSchedule> {
+  return request<ScanSchedule>(
+    scopedPath(`/api/scan-schedules/${encodeURIComponent(id)}`, connectionID),
+  );
+}
+
+export function createSchedule(
+  connectionID: string,
+  input: ScheduleInput,
+): Promise<ScanSchedule> {
+  return request<ScanSchedule>(
+    scopedPath("/api/scan-schedules", connectionID),
+    { method: "POST", body: JSON.stringify(input) },
+  );
+}
+
+export function updateSchedule(
+  connectionID: string,
+  id: string,
+  input: ScheduleInput,
+): Promise<ScanSchedule> {
+  return request<ScanSchedule>(
+    scopedPath(`/api/scan-schedules/${encodeURIComponent(id)}`, connectionID),
+    { method: "PUT", body: JSON.stringify(input) },
+  );
+}
+
+export function setScheduleEnabled(
+  connectionID: string,
+  id: string,
+  enabled: boolean,
+): Promise<ScanSchedule> {
+  return request<ScanSchedule>(
+    scopedPath(
+      `/api/scan-schedules/${encodeURIComponent(id)}/${enabled ? "enable" : "disable"}`,
+      connectionID,
+    ),
+    { method: "POST" },
+  );
+}
+
+export function deleteSchedule(
+  connectionID: string,
+  id: string,
+): Promise<void> {
+  return request<void>(
+    scopedPath(`/api/scan-schedules/${encodeURIComponent(id)}`, connectionID),
+    { method: "DELETE" },
+  );
+}
+
+export function runSchedule(
+  connectionID: string,
+  id: string,
+): Promise<ScheduleRun> {
+  return request<ScheduleRun>(
+    scopedPath(
+      `/api/scan-schedules/${encodeURIComponent(id)}/run`,
+      connectionID,
+    ),
+    { method: "POST" },
+  );
+}
+
+export function listScheduleRuns(
+  connectionID: string,
+  id: string,
+  cursor = "",
+  limit = 20,
+): Promise<Page<ScheduleRun>> {
+  return request<Page<ScheduleRun>>(
+    scopedPath(
+      listPath(
+        `/api/scan-schedules/${encodeURIComponent(id)}/runs`,
+        cursor,
+        limit,
+      ),
+      connectionID,
+    ),
+  );
+}
+
+export function previewSchedule(
+  connectionID: string,
+  frequency: ScheduleFrequency,
+  signal?: AbortSignal,
+): Promise<SchedulePreview> {
+  return request<SchedulePreview>(
+    scopedPath("/api/scan-schedules/preview", connectionID),
+    { method: "POST", body: JSON.stringify({ frequency }), signal },
+  );
+}
+
+export function getScheduleOverview(): Promise<ConnectionScheduleOverview[]> {
+  return request<ConnectionScheduleOverview[]>("/api/scan-schedule-overview");
+}
+
+export function getScheduleSettings(): Promise<ScheduleSettings> {
+  return request<ScheduleSettings>("/api/scan-schedule-settings");
+}
+
+export function updateScheduleSettings(
+  input: Pick<
+    ScheduleSettings,
+    "default_schedule_enabled" | "retention_days" | "default_timezone"
+  >,
+): Promise<ScheduleSettings> {
+  return request<ScheduleSettings>("/api/scan-schedule-settings", {
+    method: "PUT",
+    body: JSON.stringify(input),
+  });
+}
+
+export function listNotificationChannels(): Promise<NotificationChannel[]> {
+  return request<NotificationChannel[]>("/api/notification-channels");
+}
+
+export function createNotificationChannel(
+  input: NotificationChannelInput,
+): Promise<NotificationChannel> {
+  return request<NotificationChannel>("/api/notification-channels", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateNotificationChannel(
+  id: string,
+  input: NotificationChannelInput,
+): Promise<NotificationChannel> {
+  return request<NotificationChannel>(
+    `/api/notification-channels/${encodeURIComponent(id)}`,
+    { method: "PUT", body: JSON.stringify(input) },
+  );
+}
+
+export function deleteNotificationChannel(id: string): Promise<void> {
+  return request<void>(`/api/notification-channels/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+}
+
+export function testNotificationChannel(
+  id: string,
+): Promise<NotificationChannel> {
+  return request<NotificationChannel>(
+    `/api/notification-channels/${encodeURIComponent(id)}/test`,
+    { method: "POST" },
   );
 }
 

@@ -41,7 +41,9 @@ type ScanTaskProjection struct {
 	DurationMS     *int64               `json:"duration_ms,omitempty"`
 	Changes        asset.ChangeCounts   `json:"changes"`
 	// ScheduleName is the current name of the schedule that started the scan.
-	ScheduleName string    `json:"schedule_name,omitempty"`
+	// It is absent when that schedule was deleted and empty for an unnamed
+	// default schedule.
+	ScheduleName *string   `json:"schedule_name,omitempty"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 

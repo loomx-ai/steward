@@ -75,7 +75,9 @@ func (a *API) listScans(response http.ResponseWriter, request *http.Request) {
 		// provider plan. Resolve that on the detail route, not once per list row.
 		projection := inventory.ProjectScanTaskListItem(item, now)
 		projection.Changes = changes[item.ScanRun.ID]
-		projection.ScheduleName = names[schedule.ID(item.ScanRun.ScheduleID)]
+		if name, ok := names[schedule.ID(item.ScanRun.ScheduleID)]; ok {
+			projection.ScheduleName = &name
+		}
 		items = append(items, projection)
 	}
 	writeJSON(response, http.StatusOK, persistence.Page[inventory.ScanTaskProjection]{Items: items, NextCursor: page.NextCursor})
@@ -220,7 +222,7 @@ func (a *API) projectScanTask(
 	if task.ScheduleID != "" {
 		value, err := a.dependencies.Repositories.Schedules().GetSchedule(ctx, schedule.ID(task.ScheduleID))
 		if err == nil {
-			projection.ScheduleName = value.Name
+			projection.ScheduleName = &value.Name
 		}
 	}
 	if a.dependencies.ScanControls == nil {
