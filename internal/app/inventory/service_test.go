@@ -21,6 +21,7 @@ type inventoryRepository struct {
 	observations map[asset.AssetID][]asset.Observation
 	shards       map[asset.ScanShardID]asset.ScanShard
 	runs         map[asset.ScanRunID]asset.ScanRun
+	changes      map[string]asset.AssetChange
 	events       []string
 }
 
@@ -32,6 +33,7 @@ func newInventoryRepository() *inventoryRepository {
 		observations: make(map[asset.AssetID][]asset.Observation),
 		shards:       make(map[asset.ScanShardID]asset.ScanShard),
 		runs:         make(map[asset.ScanRunID]asset.ScanRun),
+		changes:      make(map[string]asset.AssetChange),
 	}
 }
 
@@ -275,6 +277,51 @@ func (r *inventoryRepository) AppendObservation(_ context.Context, observation a
 	r.events = append(r.events, "observation:"+string(observation.AssetID))
 	r.observations[observation.AssetID] = append(r.observations[observation.AssetID], observation)
 	return nil
+}
+func (r *inventoryRepository) GetObservation(_ context.Context, id asset.ObservationID) (asset.Observation, error) {
+	for _, values := range r.observations {
+		for _, value := range values {
+			if value.ID == id {
+				return value, nil
+			}
+		}
+	}
+	return asset.Observation{}, persistence.ErrNotFound
+}
+func (r *inventoryRepository) RecordAssetChange(_ context.Context, change asset.AssetChange) error {
+	key := string(change.ScanTaskID) + "/" + string(change.AssetID)
+	if existing, ok := r.changes[key]; ok {
+		merged, keep := asset.MergeAssetChange(existing, change)
+		if !keep {
+			delete(r.changes, key)
+			return nil
+		}
+		change = merged
+	}
+	r.changes[key] = change
+	return nil
+}
+func (r *inventoryRepository) ListAssetChanges(_ context.Context, options persistence.AssetChangeListOptions) (persistence.Page[asset.AssetChange], error) {
+	var page persistence.Page[asset.AssetChange]
+	for _, change := range r.changes {
+		if change.ScanTaskID == options.ScanTaskID && (options.Type == "" || change.Type == options.Type) {
+			page.Items = append(page.Items, change)
+		}
+	}
+	return page, nil
+}
+func (r *inventoryRepository) CountAssetChanges(_ context.Context, ids []asset.ScanTaskID) (map[asset.ScanTaskID]asset.ChangeCounts, error) {
+	result := map[asset.ScanTaskID]asset.ChangeCounts{}
+	for _, id := range ids {
+		for _, change := range r.changes {
+			if change.ScanTaskID == id {
+				counts := result[id]
+				counts.Add(change.Type, 1)
+				result[id] = counts
+			}
+		}
+	}
+	return result, nil
 }
 func (r *inventoryRepository) ListObservations(_ context.Context, id asset.AssetID) ([]asset.Observation, error) {
 	return append([]asset.Observation(nil), r.observations[id]...), nil
@@ -1055,5 +1102,57 @@ func TestProjectionPreservesNativeFieldsAndDisplayMetadata(t *testing.T) {
 	}
 	if len(repository.assets) != 1 {
 		t.Fatal("projection absent")
+	}
+}
+
+func TestScansRecordAddedModifiedAndRemovedAssets(t *testing.T) {
+	repository := newInventoryRepository()
+	repository.scopes["scope-1"] = asset.Scope{ID: "scope-1", ConnectionID: "connection-1", Kind: asset.ScopeRegion, NativeID: "cn-hangzhou"}
+	connection := asset.CloudConnection{ID: "connection-1", Provider: asset.ProviderAliCloud, Partition: "aliyun"}
+	kind := asset.ResourceKind{ID: "kind-1", Provider: asset.ProviderAliCloud, NativeType: "ACS::ECS::Instance", Capabilities: asset.CapabilitySet{asset.CapabilityIndexed}, BundleRevision: "bundle-1"}
+	item := func(id, state string) contracts.InventoryItem {
+		return contracts.InventoryItem{NativeType: kind.NativeType, NativeID: id, ResourceKind: kind, Name: id, State: state, Raw: map[string]any{"InstanceId": id, "Seq": state}}
+	}
+	scan := func(run asset.ScanRunID, at time.Time, items ...contracts.InventoryItem) {
+		t.Helper()
+		repository.runs[run] = asset.ScanRun{ID: run, ConnectionID: connection.ID}
+		service := inventory.NewService(repository, inventory.WithClock(func() time.Time { return at }))
+		shard := asset.ScanShard{ID: asset.ScanShardID("shard-" + run), ScanRunID: run, Provider: asset.ProviderAliCloud, ScopeID: "scope-1", ResourceKindID: kind.ID, Source: "product-api", Authoritative: true}
+		if err := service.ProjectBatch(context.Background(), &shard, connection, contracts.InventoryBatch{Items: items}, inventory.ProjectionOptions{ObservedAt: at, Priority: 100}); err != nil {
+			t.Fatal(err)
+		}
+		if err := service.FinishShard(context.Background(), &shard, asset.ShardSucceeded, ""); err != nil {
+			t.Fatal(err)
+		}
+	}
+	changes := func(run asset.ScanRunID) map[string]asset.AssetChange {
+		page, _ := repository.ListAssetChanges(context.Background(), persistence.AssetChangeListOptions{ScanTaskID: run})
+		result := map[string]asset.AssetChange{}
+		for _, change := range page.Items {
+			result[change.NativeID] = change
+		}
+		return result
+	}
+	start := time.Date(2026, 10, 1, 3, 0, 0, 0, time.UTC)
+
+	scan("run-1", start, item("i-1", "Running"), item("i-2", "Running"))
+	if got := changes("run-1"); len(got) != 2 || got["i-1"].Type != asset.ChangeAdded || got["i-2"].Type != asset.ChangeAdded {
+		t.Fatalf("first scan changes = %+v", got)
+	}
+
+	scan("run-2", start.Add(time.Hour), item("i-1", "Stopped"))
+	got := changes("run-2")
+	if len(got) != 2 || got["i-2"].Type != asset.ChangeRemoved {
+		t.Fatalf("second scan changes = %+v", got)
+	}
+	modified := got["i-1"]
+	if modified.Type != asset.ChangeModified || len(modified.Fields) != 1 || modified.Fields[0].Path != "state" || modified.Fields[0].Before != "Running" || modified.Fields[0].After != "Stopped" {
+		t.Fatalf("modified change = %+v", modified)
+	}
+
+	// Raw-only differences are not user-visible changes.
+	scan("run-3", start.Add(2*time.Hour), contracts.InventoryItem{NativeType: kind.NativeType, NativeID: "i-1", ResourceKind: kind, Name: "i-1", State: "Stopped", Raw: map[string]any{"InstanceId": "i-1", "Seq": "other"}}, item("i-2", "Running"))
+	if got := changes("run-3"); len(got) != 1 || got["i-2"].Type != asset.ChangeAdded {
+		t.Fatalf("third scan changes = %+v", got)
 	}
 }

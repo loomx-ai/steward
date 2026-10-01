@@ -297,15 +297,14 @@ func (s *Service) projectItem(ctx context.Context, repository persistence.Invent
 		ObservedAt: options.ObservedAt, Source: shard.Source, SchemaRevision: schemaRevision(options.SchemaRevision, kind.BundleRevision),
 		Normalized: normalized, Raw: raw, ContentHash: contentHash, Authoritative: shard.Authoritative, Priority: options.Priority,
 	}
-	observations, err := repository.ListObservations(ctx, projected.ID)
-	if err != nil {
-		return err
-	}
 	var current *asset.Observation
-	for index := range observations {
-		if observations[index].ID == projected.CurrentObservationID {
-			current = &observations[index]
-			break
+	if !isNew && projected.CurrentObservationID != "" {
+		value, err := repository.GetObservation(ctx, projected.CurrentObservationID)
+		if err != nil && !errors.Is(err, persistence.ErrNotFound) {
+			return err
+		}
+		if err == nil {
+			current = &value
 		}
 	}
 	// Observation append deliberately precedes current-projection mutation in
@@ -315,6 +314,8 @@ func (s *Service) projectItem(ctx context.Context, repository persistence.Invent
 		return err
 	}
 	if isNew || shouldProject(observation, current) {
+		before := projected
+		reappeared := !isNew && projected.ClosedAt != nil
 		projected.Identity = identity
 		projected.ScopeID = scopeID
 		projected.ResourceKindID = kind.ID
@@ -334,8 +335,28 @@ func (s *Service) projectItem(ctx context.Context, repository persistence.Invent
 		if err := repository.PutAsset(ctx, projected); err != nil {
 			return err
 		}
+		switch {
+		case isNew || reappeared:
+			return s.recordChange(ctx, repository, asset.ChangeAdded, projected, shard.ScanRunID, observation.ObservedAt, nil)
+		default:
+			if fields := asset.DiffAssets(before, projected); len(fields) > 0 {
+				return s.recordChange(ctx, repository, asset.ChangeModified, projected, shard.ScanRunID, observation.ObservedAt, fields)
+			}
+		}
 	}
 	return nil
+}
+
+func (s *Service) recordChange(ctx context.Context, repository persistence.InventoryRepository, changeType asset.ChangeType, value asset.Asset, scanTaskID asset.ScanTaskID, at time.Time, fields []asset.FieldChange) error {
+	change := asset.NewAssetChange(value)
+	// Change rows are keyed by scan and asset; their own ID never needs the
+	// injected sequence that tests use to pin asset and observation IDs.
+	change.ID = idgen.MustNew("chg")
+	change.Type = changeType
+	change.ScanTaskID = scanTaskID
+	change.ChangedAt = at
+	change.Fields = fields
+	return repository.RecordAssetChange(ctx, change)
 }
 
 func migrateUnscopedAliCloudOSSBucket(
@@ -593,9 +614,12 @@ func (s *Service) FinishShard(ctx context.Context, shard *asset.ScanShard, statu
 				if err := repository.PutAsset(ctx, projected); err != nil {
 					return err
 				}
+				if err := s.recordChange(ctx, repository, asset.ChangeRemoved, projected, updatedShard.ScanRunID, finishedAt, nil); err != nil {
+					return err
+				}
 			}
 		}
-		if err := closeConfirmedAbsentAssets(ctx, repository, updatedShard, confirmedAbsent, finishedAt); err != nil {
+		if err := s.closeConfirmedAbsentAssets(ctx, repository, updatedShard, confirmedAbsent, finishedAt); err != nil {
 			return err
 		}
 		return repository.PutScanShard(ctx, updatedShard)

@@ -39,6 +39,7 @@ type ScanTaskProjection struct {
 	Progress       ScanOverallProgress  `json:"progress"`
 	AllowedActions []string             `json:"allowed_actions"`
 	DurationMS     *int64               `json:"duration_ms,omitempty"`
+	Changes        asset.ChangeCounts   `json:"changes"`
 	UpdatedAt      time.Time            `json:"updated_at"`
 }
 

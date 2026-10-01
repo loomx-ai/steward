@@ -54,11 +54,22 @@ func (a *API) listScans(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	now := time.Now().UTC()
+	ids := make([]asset.ScanTaskID, 0, len(page.Items))
+	for _, item := range page.Items {
+		ids = append(ids, item.ScanRun.ID)
+	}
+	changes, err := a.dependencies.Repositories.Inventory().CountAssetChanges(request.Context(), ids)
+	if err != nil {
+		repositoryError(response, err)
+		return
+	}
 	items := make([]inventory.ScanTaskProjection, 0, len(page.Items))
 	for _, item := range page.Items {
 		// A succeeded task's dynamic retry eligibility depends on the current
 		// provider plan. Resolve that on the detail route, not once per list row.
-		items = append(items, inventory.ProjectScanTaskListItem(item, now))
+		projection := inventory.ProjectScanTaskListItem(item, now)
+		projection.Changes = changes[item.ScanRun.ID]
+		items = append(items, projection)
 	}
 	writeJSON(response, http.StatusOK, persistence.Page[inventory.ScanTaskProjection]{Items: items, NextCursor: page.NextCursor})
 }
@@ -194,6 +205,11 @@ func (a *API) projectScanTask(
 		return inventory.ScanTaskProjection{}, err
 	}
 	projection = inventory.ApplyScanTiming(projection, jobs, time.Now().UTC())
+	changes, err := a.dependencies.Repositories.Inventory().CountAssetChanges(ctx, []asset.ScanTaskID{task.ID})
+	if err != nil {
+		return inventory.ScanTaskProjection{}, err
+	}
+	projection.Changes = changes[task.ID]
 	if a.dependencies.ScanControls == nil {
 		return projection, nil
 	}
@@ -214,6 +230,35 @@ func containsScanAction(actions []string, expected string) bool {
 		}
 	}
 	return false
+}
+
+func (a *API) scanChanges(response http.ResponseWriter, request *http.Request) {
+	task, err := a.dependencies.Repositories.Inventory().GetScanRun(request.Context(), asset.ScanTaskID(chi.URLParam(request, "id")))
+	if err == nil && task.ConnectionID != selectedConnectionID(request) {
+		err = persistence.ErrNotFound
+	}
+	if err != nil {
+		repositoryError(response, err)
+		return
+	}
+	changeType := asset.ChangeType(strings.TrimSpace(request.URL.Query().Get("change_type")))
+	if changeType != "" && !changeType.Valid() {
+		writeAPIError(response, http.StatusBadRequest, APIError{Code: "scan.change_type_invalid", Message: "change_type must be added, removed or modified"})
+		return
+	}
+	limit, _ := strconv.Atoi(request.URL.Query().Get("limit"))
+	page, err := a.dependencies.Repositories.Inventory().ListAssetChanges(request.Context(), persistence.AssetChangeListOptions{
+		ScanTaskID: task.ID, Type: changeType, Query: request.URL.Query().Get("q"),
+		Limit: limit, Cursor: request.URL.Query().Get("cursor"),
+	})
+	if err != nil {
+		repositoryError(response, err)
+		return
+	}
+	if page.Items == nil {
+		page.Items = []asset.AssetChange{}
+	}
+	writeJSON(response, http.StatusOK, page)
 }
 
 func (a *API) scanLogs(response http.ResponseWriter, request *http.Request) {

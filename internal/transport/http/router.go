@@ -103,6 +103,7 @@ func NewRouter(dependencies Dependencies) http.Handler {
 			router.Post("/scans/{id}/resume", requireRole(RoleOperator, api.resumeScan))
 			router.Post("/scans/{id}/cancel", requireRole(RoleOperator, api.cancelScan))
 			router.Post("/scans/{id}/retry", requireRole(RoleOperator, api.retryScan))
+			router.Get("/scans/{id}/changes", requireRole(RoleViewer, api.scanChanges))
 			router.Get("/scans/{id}/logs", requireRole(RoleViewer, api.scanLogs))
 			router.Get("/scans/{id}/events", requireRole(RoleViewer, api.scanEvents))
 			router.Get("/scan-targets/vpcs", requireRole(RoleViewer, api.listVPCTargets))

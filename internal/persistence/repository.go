@@ -39,6 +39,14 @@ type ListOptions struct {
 	IncludeClosed   bool
 }
 
+type AssetChangeListOptions struct {
+	Limit      int
+	Cursor     string
+	ScanTaskID asset.ScanTaskID
+	Type       asset.ChangeType
+	Query      string
+}
+
 type CleanupLogFilter struct {
 	ResourceID      string
 	ResourceKindIDs []asset.ResourceKindID
@@ -149,7 +157,13 @@ type InventoryRepository interface {
 	ListAssetsByIDs(context.Context, []asset.AssetID) ([]asset.Asset, error)
 	ListAssets(context.Context, ListOptions) (Page[asset.Asset], error)
 	AppendObservation(context.Context, asset.Observation) error
+	GetObservation(context.Context, asset.ObservationID) (asset.Observation, error)
 	ListObservations(context.Context, asset.AssetID) ([]asset.Observation, error)
+	// RecordAssetChange merges the change into any change already recorded for
+	// the same asset in the same scan.
+	RecordAssetChange(context.Context, asset.AssetChange) error
+	ListAssetChanges(context.Context, AssetChangeListOptions) (Page[asset.AssetChange], error)
+	CountAssetChanges(context.Context, []asset.ScanTaskID) (map[asset.ScanTaskID]asset.ChangeCounts, error)
 	ListActiveAssets(context.Context, asset.ScopeID, asset.ResourceKindID) ([]asset.Asset, error)
 	ListActiveAssetsByScopes(context.Context, asset.ConnectionID, []asset.ScopeID, asset.ResourceKindID) ([]asset.Asset, error)
 	ListActiveAssetsByConnection(context.Context, asset.ConnectionID, asset.ResourceKindID) ([]asset.Asset, error)

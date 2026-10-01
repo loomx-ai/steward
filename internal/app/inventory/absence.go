@@ -32,7 +32,7 @@ func confirmedAbsentAssets(batch contracts.InventoryBatch, reconcileKnown bool, 
 // Called within FinishShard's transaction. A later scan may have refreshed or
 // recreated an asset while this worker was reading: that newer observation must
 // survive even when the worker's original native read found nothing.
-func closeConfirmedAbsentAssets(ctx context.Context, repository persistence.InventoryRepository, shard asset.ScanShard, known []asset.Asset, finishedAt time.Time) error {
+func (s *Service) closeConfirmedAbsentAssets(ctx context.Context, repository persistence.InventoryRepository, shard asset.ScanShard, known []asset.Asset, finishedAt time.Time) error {
 	if len(known) == 0 {
 		return nil
 	}
@@ -66,6 +66,9 @@ func closeConfirmedAbsentAssets(ctx context.Context, repository persistence.Inve
 		}
 		current.ClosedAt = &finishedAt
 		if err := repository.PutAsset(ctx, current); err != nil {
+			return err
+		}
+		if err := s.recordChange(ctx, repository, asset.ChangeRemoved, current, shard.ScanRunID, finishedAt, nil); err != nil {
 			return err
 		}
 	}
