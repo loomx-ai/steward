@@ -16,6 +16,7 @@ import (
 	"github.com/loomx-ai/steward/internal/app/cleanup"
 	connectionapp "github.com/loomx-ai/steward/internal/app/connection"
 	"github.com/loomx-ai/steward/internal/app/inventory"
+	"github.com/loomx-ai/steward/internal/app/notification"
 	regionapp "github.com/loomx-ai/steward/internal/app/region"
 	"github.com/loomx-ai/steward/internal/app/scheduling"
 	topologyapp "github.com/loomx-ai/steward/internal/app/topology"
@@ -1731,8 +1732,12 @@ func terminalRouterWithOAuthFlows(t *testing.T, validator connectionapp.Validato
 	if err != nil {
 		t.Fatal(err)
 	}
+	notifications, err := notification.NewService(repositories, vault, notification.Options{AllowPrivateNetworks: true})
+	if err != nil {
+		t.Fatal(err)
+	}
 	return repositories, httptransport.NewRouter(httptransport.Dependencies{
-		Repositories: repositories, CleanupTasks: planner, Connections: connections, Regions: mustRegionService(t, repositories), RegionRefreshes: regionQueue, Scans: scanCreator, ScanControls: scanControls, Schedules: schedules, NetworkTargets: bundles, Topology: topologyapp.NewService(repositories, bundles, topologyapp.WithClock(func() time.Time { return now })), Bundles: bundles, Providers: bundles, OAuthFlows: oauthFlows, Authenticator: authenticator, SSEPollInterval: time.Millisecond,
+		Repositories: repositories, CleanupTasks: planner, Connections: connections, Regions: mustRegionService(t, repositories), RegionRefreshes: regionQueue, Scans: scanCreator, ScanControls: scanControls, Schedules: schedules, Notifications: notifications, NetworkTargets: bundles, Topology: topologyapp.NewService(repositories, bundles, topologyapp.WithClock(func() time.Time { return now })), Bundles: bundles, Providers: bundles, OAuthFlows: oauthFlows, Authenticator: authenticator, SSEPollInterval: time.Millisecond,
 	})
 }
 

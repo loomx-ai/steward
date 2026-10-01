@@ -15,6 +15,7 @@ import (
 	connectionapp "github.com/loomx-ai/steward/internal/app/connection"
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/app/inventory"
+	"github.com/loomx-ai/steward/internal/app/notification"
 	regionapp "github.com/loomx-ai/steward/internal/app/region"
 	"github.com/loomx-ai/steward/internal/app/scheduling"
 	topologyapp "github.com/loomx-ai/steward/internal/app/topology"
@@ -50,6 +51,9 @@ type Config struct {
 	AuthMode            string
 	CredentialMasterKey string
 	CredentialSource    contracts.CredentialSource
+	// PublicURL is the address people use to open Steward; notifications
+	// link to it.
+	PublicURL string
 }
 
 func Run(ctx context.Context, config Config) error {
@@ -142,7 +146,13 @@ func Run(ctx context.Context, config Config) error {
 	if authMode == "cloud" {
 		minInterval = scheduling.CloudMinInterval
 	}
-	schedules, err := scheduling.NewService(repositories, scanCreator, scanControls, scheduling.Options{MinInterval: minInterval})
+	notifications, err := notification.NewService(repositories, vault, notification.Options{
+		AllowPrivateNetworks: authMode != "cloud", PublicURL: config.PublicURL,
+	})
+	if err != nil {
+		return err
+	}
+	schedules, err := scheduling.NewService(repositories, scanCreator, scanControls, scheduling.Options{MinInterval: minInterval, Notifier: notifications})
 	if err != nil {
 		return err
 	}
@@ -179,7 +189,7 @@ func Run(ctx context.Context, config Config) error {
 	}
 	apiHandler := httptransport.NewRouter(httptransport.Dependencies{
 		WorkloadIdentity: oidc,
-		Repositories:     repositories, CleanupTasks: planner, Connections: connectionService, Regions: regionService, RegionRefreshes: regionQueue, Scans: scanCreator, ScanControls: scanControls, Schedules: schedules, NetworkTargets: registry, Topology: topologyService, Bundles: registry, Providers: registry, OAuthFlows: oauthFlows, Authenticator: authenticator,
+		Repositories:     repositories, CleanupTasks: planner, Connections: connectionService, Regions: regionService, RegionRefreshes: regionQueue, Scans: scanCreator, ScanControls: scanControls, Schedules: schedules, Notifications: notifications, NetworkTargets: registry, Topology: topologyService, Bundles: registry, Providers: registry, OAuthFlows: oauthFlows, Authenticator: authenticator,
 		SSEPollInterval: config.PollInterval,
 		AuthMode:        authMode,
 	})

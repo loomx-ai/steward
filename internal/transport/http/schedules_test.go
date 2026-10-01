@@ -104,3 +104,29 @@ func TestScheduleRoutesCreateRunAndReport(t *testing.T) {
 		t.Fatalf("deleted get status=%d", response.Code)
 	}
 }
+
+func TestNotificationChannelRoutesAreAdminOnlyAndHideAddresses(t *testing.T) {
+	_, router := terminalRouter(t)
+	call := func(method, path, token, body string) *httptest.ResponseRecorder {
+		request := httptest.NewRequest(method, path, bytes.NewBufferString(body))
+		request.Header.Set("Authorization", "Bearer "+token)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+		return response
+	}
+	body := `{"name":"ops","type":"slack","language":"en","url":"https://hooks.slack.com/services/T000/B000/secretvalue","events":["scan_failed"]}`
+	if response := call(http.MethodPost, "/api/notification-channels", "operator-token", body); response.Code != http.StatusForbidden {
+		t.Fatalf("operator create status=%d", response.Code)
+	}
+	response := call(http.MethodPost, "/api/notification-channels", "admin-token", body)
+	if response.Code != http.StatusCreated || bytes.Contains(response.Body.Bytes(), []byte("secretvalue")) || !bytes.Contains(response.Body.Bytes(), []byte(`"target":"https://hooks.slack.com/…alue"`)) {
+		t.Fatalf("create status=%d body=%s", response.Code, response.Body.String())
+	}
+	response = call(http.MethodGet, "/api/notification-channels", "viewer-token", "")
+	if response.Code != http.StatusOK || bytes.Contains(response.Body.Bytes(), []byte("secretvalue")) || bytes.Contains(response.Body.Bytes(), []byte("sealed")) {
+		t.Fatalf("list status=%d body=%s", response.Code, response.Body.String())
+	}
+	if response := call(http.MethodPost, "/api/notification-channels", "admin-token", `{"name":"x","type":"pager","url":"https://example.com","events":["scan_failed"]}`); response.Code != http.StatusBadRequest {
+		t.Fatalf("invalid type status=%d", response.Code)
+	}
+}

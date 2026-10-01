@@ -134,3 +134,31 @@ func (v *Vault) OIDCTrust(ctx context.Context, id asset.ConnectionID) (workloadi
 func associatedData(connectionID asset.ConnectionID, provider asset.Provider, credentialType asset.CredentialType) []byte {
 	return []byte(fmt.Sprintf("steward\x00credential\x00%d\x00%s\x00%s\x00%s", EnvelopeVersion, connectionID, provider, credentialType))
 }
+
+// SealSecret encrypts a workspace secret that is not a cloud credential, such
+// as a notification webhook address. The purpose binds the ciphertext to the
+// record that owns it, so it cannot be moved to another record.
+func (v *Vault) SealSecret(purpose string, plaintext string) (string, error) {
+	nonce := make([]byte, v.aead.NonceSize())
+	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+		return "", fmt.Errorf("generate secret nonce: %w", err)
+	}
+	sealed := v.aead.Seal(nonce, nonce, []byte(plaintext), secretAssociatedData(purpose))
+	return base64.StdEncoding.EncodeToString(sealed), nil
+}
+
+func (v *Vault) OpenSecret(purpose string, sealed string) (string, error) {
+	raw, err := base64.StdEncoding.DecodeString(sealed)
+	if err != nil || len(raw) < v.aead.NonceSize() {
+		return "", fmt.Errorf("%w: invalid secret envelope", ErrUnavailable)
+	}
+	plaintext, err := v.aead.Open(nil, raw[:v.aead.NonceSize()], raw[v.aead.NonceSize():], secretAssociatedData(purpose))
+	if err != nil {
+		return "", fmt.Errorf("%w: decrypt failed", ErrUnavailable)
+	}
+	return string(plaintext), nil
+}
+
+func secretAssociatedData(purpose string) []byte {
+	return []byte(fmt.Sprintf("steward\x00secret\x00%d\x00%s", EnvelopeVersion, purpose))
+}

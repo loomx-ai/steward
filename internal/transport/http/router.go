@@ -16,6 +16,7 @@ import (
 	"github.com/loomx-ai/steward/internal/app/cleanup"
 	connectionapp "github.com/loomx-ai/steward/internal/app/connection"
 	"github.com/loomx-ai/steward/internal/app/inventory"
+	"github.com/loomx-ai/steward/internal/app/notification"
 	regionapp "github.com/loomx-ai/steward/internal/app/region"
 	"github.com/loomx-ai/steward/internal/app/scheduling"
 	topologyapp "github.com/loomx-ai/steward/internal/app/topology"
@@ -53,6 +54,7 @@ type Dependencies struct {
 	Scans            *inventory.Creator
 	ScanControls     *inventory.ControlService
 	Schedules        *scheduling.Service
+	Notifications    *notification.Service
 	NetworkTargets   NetworkTargetDirectory
 	RegionRefreshes  connectionapp.RegionRefreshQueue
 	Topology         *topologyapp.Service
@@ -98,6 +100,11 @@ func NewRouter(dependencies Dependencies) http.Handler {
 		router.Get("/scan-schedule-overview", requireRole(RoleViewer, api.scheduleOverview))
 		router.Get("/scan-schedule-settings", requireRole(RoleViewer, api.getScheduleSettings))
 		router.Put("/scan-schedule-settings", requireRole(RoleAdmin, api.updateScheduleSettings))
+		router.Get("/notification-channels", requireRole(RoleViewer, api.listNotificationChannels))
+		router.Post("/notification-channels", requireRole(RoleAdmin, api.createNotificationChannel))
+		router.Put("/notification-channels/{id}", requireRole(RoleAdmin, api.updateNotificationChannel))
+		router.Delete("/notification-channels/{id}", requireRole(RoleAdmin, api.deleteNotificationChannel))
+		router.Post("/notification-channels/{id}/test", requireRole(RoleAdmin, api.testNotificationChannel))
 		router.Group(func(router chi.Router) {
 			router.Use(api.requireConnectionContext)
 			router.Get("/scopes", requireRole(RoleViewer, api.listScopes))

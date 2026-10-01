@@ -111,6 +111,7 @@ func newServerStartCommand(version string) *cobra.Command {
 				ScanConcurrency:     scanConcurrency,
 				DBMaxConns:          dbMaxConns,
 				CredentialMasterKey: os.Getenv("STEWARD_CREDENTIAL_MASTER_KEY"),
+				PublicURL:           os.Getenv("STEWARD_PUBLIC_URL"),
 				OIDC:                workloadidentity.Config{IssuerURL: os.Getenv("STEWARD_OIDC_ISSUER_URL"), WorkspaceID: os.Getenv("STEWARD_OIDC_WORKSPACE_ID"), SigningKeyFile: os.Getenv("STEWARD_OIDC_SIGNING_KEY_FILE")},
 				AuthTokens:          bindings,
 				AuthMode:            authMode,
