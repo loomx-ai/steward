@@ -27,6 +27,7 @@ const (
 type ScanCreationRequest struct {
 	ConnectionID    asset.ConnectionID
 	RequestedBy     string
+	ScheduleID      string
 	ScopeMode       asset.ScanScopeMode
 	RegionMode      RegionMode
 	RegionIDs       []string
@@ -183,7 +184,7 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 
 	run := asset.ScanRun{
 		ID: asset.ScanRunID(c.entityID("scn")), ConnectionID: connection.ID, Status: asset.ScanPending,
-		ScopeMode: scopeMode, RequestedBy: strings.TrimSpace(request.RequestedBy), CreatedAt: now,
+		ScopeMode: scopeMode, RequestedBy: strings.TrimSpace(request.RequestedBy), ScheduleID: request.ScheduleID, CreatedAt: now,
 		Targets: make([]asset.ScanTarget, 0, len(regions)+1), ResourceKindIDs: append([]asset.ResourceKindID(nil), request.ResourceKindIDs...),
 	}
 	shards := make([]asset.ScanShard, 0)
@@ -387,7 +388,7 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 		return repositories.Audits().AppendAuditEvent(ctx, execution.AuditEvent{
 			ID: execution.AuditEventID(c.entityID("aud")), ConnectionID: connection.ID, Actor: run.RequestedBy,
 			Action: "inventory.scan.create", TargetType: "scan_run", TargetID: string(run.ID), Result: "accepted",
-			Evidence: map[string]any{"target_count": len(run.Targets), "region_count": len(regions), "shard_count": len(shards), "scope_mode": scopeMode}, CreatedAt: now,
+			Evidence: scanCreationEvidence(run, len(regions), len(shards)), CreatedAt: now,
 		})
 	})
 	if err != nil {
@@ -999,4 +1000,12 @@ func containsScopeKind(values []asset.ScopeKind, expected asset.ScopeKind) bool 
 
 func scanRequestError(code, message string, details map[string]any) error {
 	return &ScanRequestError{Code: code, Message: message, Details: details}
+}
+
+func scanCreationEvidence(run asset.ScanRun, regionCount, shardCount int) map[string]any {
+	evidence := map[string]any{"target_count": len(run.Targets), "region_count": regionCount, "shard_count": shardCount, "scope_mode": run.ScopeMode}
+	if run.ScheduleID != "" {
+		evidence["schedule_id"] = run.ScheduleID
+	}
+	return evidence
 }

@@ -364,6 +364,7 @@ func openScanReadModelTestDB(t *testing.T, configuredLogger logger.Interface) *g
 			duration_recorded BOOLEAN NOT NULL DEFAULT FALSE,
 			duration_active BOOLEAN NOT NULL DEFAULT FALSE,
 			duration_calculated_at TIMESTAMP,
+			schedule_id TEXT,
 			created_at TIMESTAMP NOT NULL,
 			updated_at TIMESTAMP NOT NULL,
 			payload TEXT NOT NULL

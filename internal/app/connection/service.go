@@ -41,6 +41,15 @@ type Service struct {
 	validator    Validator
 	regionQueue  RegionRefreshQueue
 	now          func() time.Time
+	onValidated  ValidationHook
+}
+
+// ValidationHook runs after a connection passes validation. first is true the
+// first time the connection ever passes.
+type ValidationHook func(ctx context.Context, id asset.ConnectionID, first bool)
+
+func (s *Service) OnValidated(hook ValidationHook) {
+	s.onValidated = hook
 }
 
 type CredentialSummary struct {
@@ -342,6 +351,7 @@ func (s *Service) Validate(ctx context.Context, id asset.ConnectionID, actor str
 	if !matches {
 		return View{}, s.recordValidationFailure(ctx, value, expectedUpdatedAt, currentCredential, actor, ErrIdentityMismatch)
 	}
+	firstValidation := value.Principal == ""
 	value.Partition = identity.Partition
 	value.TenantID = identity.TenantID
 	value.Principal = identity.Principal
@@ -401,6 +411,9 @@ func (s *Service) Validate(ctx context.Context, id asset.ConnectionID, actor str
 	result := view(current, sealed)
 	if current.Status == asset.ConnectionActive {
 		result.RegionRefresh = s.enqueueRegionRefresh(ctx, current.ID)
+		if s.onValidated != nil {
+			s.onValidated(ctx, current.ID, firstValidation)
+		}
 	}
 	return result, nil
 }

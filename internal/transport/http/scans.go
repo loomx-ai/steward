@@ -16,6 +16,7 @@ import (
 	"github.com/loomx-ai/steward/internal/app/inventory"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/core/schedule"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -63,12 +64,18 @@ func (a *API) listScans(response http.ResponseWriter, request *http.Request) {
 		repositoryError(response, err)
 		return
 	}
+	names, err := a.scheduleNames(request.Context(), selectedConnectionID(request))
+	if err != nil {
+		repositoryError(response, err)
+		return
+	}
 	items := make([]inventory.ScanTaskProjection, 0, len(page.Items))
 	for _, item := range page.Items {
 		// A succeeded task's dynamic retry eligibility depends on the current
 		// provider plan. Resolve that on the detail route, not once per list row.
 		projection := inventory.ProjectScanTaskListItem(item, now)
 		projection.Changes = changes[item.ScanRun.ID]
+		projection.ScheduleName = names[schedule.ID(item.ScanRun.ScheduleID)]
 		items = append(items, projection)
 	}
 	writeJSON(response, http.StatusOK, persistence.Page[inventory.ScanTaskProjection]{Items: items, NextCursor: page.NextCursor})
@@ -210,6 +217,12 @@ func (a *API) projectScanTask(
 		return inventory.ScanTaskProjection{}, err
 	}
 	projection.Changes = changes[task.ID]
+	if task.ScheduleID != "" {
+		value, err := a.dependencies.Repositories.Schedules().GetSchedule(ctx, schedule.ID(task.ScheduleID))
+		if err == nil {
+			projection.ScheduleName = value.Name
+		}
+	}
 	if a.dependencies.ScanControls == nil {
 		return projection, nil
 	}
@@ -230,6 +243,18 @@ func containsScanAction(actions []string, expected string) bool {
 		}
 	}
 	return false
+}
+
+func (a *API) scheduleNames(ctx context.Context, connectionID asset.ConnectionID) (map[schedule.ID]string, error) {
+	values, err := a.dependencies.Repositories.Schedules().ListSchedules(ctx, connectionID)
+	if err != nil {
+		return nil, err
+	}
+	names := make(map[schedule.ID]string, len(values))
+	for _, value := range values {
+		names[value.ID] = value.Name
+	}
+	return names, nil
 }
 
 func (a *API) scanChanges(response http.ResponseWriter, request *http.Request) {

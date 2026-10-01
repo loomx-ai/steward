@@ -11,6 +11,7 @@ import (
 	"github.com/loomx-ai/steward/internal/core/graph"
 	"github.com/loomx-ai/steward/internal/core/plan"
 	"github.com/loomx-ai/steward/internal/core/resourcequery"
+	"github.com/loomx-ai/steward/internal/core/schedule"
 )
 
 var (
@@ -37,6 +38,9 @@ type ListOptions struct {
 	VPCID           string
 	SearchOrder     bool
 	IncludeClosed   bool
+	// ScanSource narrows scans to "manual" or "scheduled" ones.
+	ScanSource string
+	ScheduleID string
 }
 
 type AssetChangeListOptions struct {
@@ -255,6 +259,42 @@ type JobRepository interface {
 	ListCleanupLogsBefore(context.Context, asset.ConnectionID, plan.CleanupTaskID, CleanupLogFilter, time.Time, string, int) (plan.CleanupTask, []execution.JobLog, error)
 }
 
+type ScheduleRepository interface {
+	CreateSchedule(context.Context, schedule.ScanSchedule) error
+	GetSchedule(context.Context, schedule.ID) (schedule.ScanSchedule, error)
+	// UpdateSchedule replaces the schedule only while its revision is still the
+	// expected one, so two servers cannot both claim the same planned time.
+	UpdateSchedule(context.Context, schedule.ScanSchedule, uint64) (schedule.ScanSchedule, error)
+	DeleteSchedule(context.Context, schedule.ID) error
+	ListSchedules(context.Context, asset.ConnectionID) ([]schedule.ScanSchedule, error)
+	ListDueSchedules(context.Context, time.Time, int) ([]schedule.ScanSchedule, error)
+
+	CreateRun(context.Context, schedule.Run) error
+	UpdateRun(context.Context, schedule.Run) error
+	GetRun(context.Context, schedule.RunID) (schedule.Run, error)
+	ListRuns(context.Context, schedule.ID, ListOptions) (Page[schedule.Run], error)
+	ListUnsettledRuns(context.Context, int) ([]schedule.Run, error)
+	LatestRuns(context.Context, []schedule.ID) (map[schedule.ID]schedule.Run, error)
+	DeleteRunsBefore(context.Context, time.Time) error
+
+	// FindBlockingScan returns a scan of the connection that is still doing
+	// work. A paused scan does not block: it may stay paused indefinitely.
+	FindBlockingScan(context.Context, asset.ConnectionID) (asset.ScanRun, error)
+	ListScanSummaries(context.Context, []asset.ScanTaskID) ([]ScanRunListItem, error)
+	// LatestCompleteScan is the newest succeeded scan of every enabled region
+	// plus global resources and all resource types.
+	LatestCompleteScan(context.Context, asset.ConnectionID) (asset.ScanRun, error)
+	// ListExpiredScheduledScans lists finished scans started by schedules
+	// before the cutoff, except each schedule's latest succeeded scan.
+	ListExpiredScheduledScans(context.Context, time.Time, int) ([]asset.ScanTaskID, error)
+	// DeleteScan removes a finished scan with its targets, jobs, logs, changes
+	// and the observations that later scans have superseded.
+	DeleteScan(context.Context, asset.ScanTaskID) error
+
+	GetSetting(context.Context, string) (string, error)
+	PutSetting(context.Context, string, string, time.Time) error
+}
+
 type Repositories interface {
 	Connections() ConnectionRepository
 	Credentials() CredentialRepository
@@ -266,5 +306,6 @@ type Repositories interface {
 	Executions() ExecutionRepository
 	Audits() AuditRepository
 	Jobs() JobRepository
+	Schedules() ScheduleRepository
 	WithTx(context.Context, func(Repositories) error) error
 }

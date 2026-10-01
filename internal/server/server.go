@@ -16,6 +16,7 @@ import (
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/app/inventory"
 	regionapp "github.com/loomx-ai/steward/internal/app/region"
+	"github.com/loomx-ai/steward/internal/app/scheduling"
 	topologyapp "github.com/loomx-ai/steward/internal/app/topology"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
@@ -137,6 +138,24 @@ func Run(ctx context.Context, config Config) error {
 	if err != nil {
 		return err
 	}
+	minInterval := scheduling.SelfHostedMinInterval
+	if authMode == "cloud" {
+		minInterval = scheduling.CloudMinInterval
+	}
+	schedules, err := scheduling.NewService(repositories, scanCreator, scanControls, scheduling.Options{MinInterval: minInterval})
+	if err != nil {
+		return err
+	}
+	connectionService.OnValidated(func(ctx context.Context, id asset.ConnectionID, first bool) {
+		if err := schedules.ConnectionValidated(ctx, id, first); err != nil {
+			slog.Error("scheduled scans could not follow a validated connection", "connection_id", id, "error", err)
+		}
+	})
+	go func() {
+		if err := schedules.Run(ctx); err != nil && !errors.Is(err, context.Canceled) {
+			slog.Error("scan scheduler stopped", "error", err)
+		}
+	}()
 	// Browser OAuth completes on a loopback callback, which a hosted cloud server cannot receive.
 	oauthFlows := map[asset.Provider]contracts.OAuthFlowService{}
 	if authMode != "cloud" {
@@ -160,7 +179,7 @@ func Run(ctx context.Context, config Config) error {
 	}
 	apiHandler := httptransport.NewRouter(httptransport.Dependencies{
 		WorkloadIdentity: oidc,
-		Repositories:     repositories, CleanupTasks: planner, Connections: connectionService, Regions: regionService, RegionRefreshes: regionQueue, Scans: scanCreator, ScanControls: scanControls, NetworkTargets: registry, Topology: topologyService, Bundles: registry, Providers: registry, OAuthFlows: oauthFlows, Authenticator: authenticator,
+		Repositories:     repositories, CleanupTasks: planner, Connections: connectionService, Regions: regionService, RegionRefreshes: regionQueue, Scans: scanCreator, ScanControls: scanControls, Schedules: schedules, NetworkTargets: registry, Topology: topologyService, Bundles: registry, Providers: registry, OAuthFlows: oauthFlows, Authenticator: authenticator,
 		SSEPollInterval: config.PollInterval,
 		AuthMode:        authMode,
 	})

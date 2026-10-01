@@ -40,7 +40,9 @@ type ScanTaskProjection struct {
 	AllowedActions []string             `json:"allowed_actions"`
 	DurationMS     *int64               `json:"duration_ms,omitempty"`
 	Changes        asset.ChangeCounts   `json:"changes"`
-	UpdatedAt      time.Time            `json:"updated_at"`
+	// ScheduleName is the current name of the schedule that started the scan.
+	ScheduleName string    `json:"schedule_name,omitempty"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 func ProjectScanTask(task asset.ScanTask, shards []asset.ScanShard) ScanTaskProjection {

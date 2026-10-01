@@ -36,6 +36,7 @@ func (s *Store) CleanupTasks() persistence.CleanupTaskRepository { return s }
 func (s *Store) Executions() persistence.ExecutionRepository     { return s }
 func (s *Store) Audits() persistence.AuditRepository             { return s }
 func (s *Store) Jobs() persistence.JobRepository                 { return s }
+func (s *Store) Schedules() persistence.ScheduleRepository       { return s }
 
 func (s *Store) WithTx(ctx context.Context, fn func(persistence.Repositories) error) error {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -132,6 +133,7 @@ type scanRunRow struct {
 	DurationRecorded     bool       `gorm:"column:duration_recorded"`
 	DurationActive       bool       `gorm:"column:duration_active"`
 	DurationCalculatedAt *time.Time `gorm:"column:duration_calculated_at"`
+	ScheduleID           *string    `gorm:"column:schedule_id"`
 	CreatedAt            time.Time  `gorm:"column:created_at"`
 	UpdatedAt            time.Time  `gorm:"column:updated_at"`
 	Payload              string     `gorm:"column:payload"`
@@ -1074,7 +1076,7 @@ func (s *Store) CreateScanRun(ctx context.Context, run asset.ScanRun) error {
 	row := scanRunRow{
 		ID: string(run.ID), ConnectionID: string(run.ConnectionID), Status: string(run.Status),
 		ScopeMode: string(run.ScopeMode), RetryGeneration: run.RetryGeneration, ControlVersion: run.ControlVersion,
-		CreatedAt: run.CreatedAt, UpdatedAt: scanTaskUpdatedAt(run), Payload: payload,
+		ScheduleID: optionalString(run.ScheduleID), CreatedAt: run.CreatedAt, UpdatedAt: scanTaskUpdatedAt(run), Payload: payload,
 	}
 	return mapCreateError(s.db.WithContext(ctx).Table("scan_tasks").Create(&row).Error)
 }
@@ -1088,7 +1090,7 @@ func (s *Store) PutScanRun(ctx context.Context, run asset.ScanRun) error {
 	row := scanRunRow{
 		ID: string(run.ID), ConnectionID: string(run.ConnectionID), Status: string(run.Status),
 		ScopeMode: string(run.ScopeMode), RetryGeneration: run.RetryGeneration, ControlVersion: run.ControlVersion,
-		CreatedAt: run.CreatedAt, UpdatedAt: scanTaskUpdatedAt(run), Payload: payload,
+		ScheduleID: optionalString(run.ScheduleID), CreatedAt: run.CreatedAt, UpdatedAt: scanTaskUpdatedAt(run), Payload: payload,
 	}
 	db := s.db.WithContext(ctx)
 	return db.Transaction(func(tx *gorm.DB) error {
@@ -1153,6 +1155,15 @@ func (s *Store) ListScanRunListItems(ctx context.Context, options persistence.Li
 	query := s.db.WithContext(ctx).Table("scan_tasks")
 	if options.ConnectionID != "" {
 		query = query.Where("connection_id = ?", string(options.ConnectionID))
+	}
+	switch options.ScanSource {
+	case "manual":
+		query = query.Where("schedule_id IS NULL")
+	case "scheduled":
+		query = query.Where("schedule_id IS NOT NULL")
+	}
+	if options.ScheduleID != "" {
+		query = query.Where("schedule_id = ?", options.ScheduleID)
 	}
 	if options.Cursor != "" {
 		createdAt, id, err := decodeCursor(options.Cursor)
@@ -2028,6 +2039,13 @@ func (s *Store) ListAssetIDsObservedByTarget(ctx context.Context, connectionID a
 		result[index] = asset.AssetID(id)
 	}
 	return result, nil
+}
+
+func optionalString(value string) *string {
+	if value == "" {
+		return nil
+	}
+	return &value
 }
 
 func encode[T any](value T) (string, error) {

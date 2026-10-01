@@ -13,6 +13,7 @@ import (
 	"github.com/loomx-ai/steward/internal/core/finding"
 	"github.com/loomx-ai/steward/internal/core/graph"
 	"github.com/loomx-ai/steward/internal/core/plan"
+	"github.com/loomx-ai/steward/internal/core/schedule"
 	"github.com/loomx-ai/steward/internal/persistence"
 )
 
@@ -20,6 +21,141 @@ type Factory func(t *testing.T) persistence.Repositories
 
 func Run(t *testing.T, factory Factory) {
 	t.Helper()
+	t.Run("scan schedules claim runs and trim history", func(t *testing.T) {
+		repositories := factory(t)
+		ctx := context.Background()
+		now := time.Date(2026, 10, 1, 12, 0, 0, 0, time.UTC)
+		schedules := repositories.Schedules()
+		due := now.Add(-time.Minute)
+		later := now.Add(time.Hour)
+		for _, value := range []schedule.ScanSchedule{
+			{ID: "sch-due", ConnectionID: "con-1", Enabled: true, NextRunAt: &due, CreatedAt: now, UpdatedAt: now},
+			{ID: "sch-later", ConnectionID: "con-1", Enabled: true, NextRunAt: &later, CreatedAt: now.Add(time.Second), UpdatedAt: now},
+			{ID: "sch-off", ConnectionID: "con-2", Enabled: false, NextRunAt: &due, CreatedAt: now, UpdatedAt: now},
+		} {
+			if err := schedules.CreateSchedule(ctx, value); err != nil {
+				t.Fatal(err)
+			}
+		}
+		dueList, err := schedules.ListDueSchedules(ctx, now, 10)
+		if err != nil || len(dueList) != 1 || dueList[0].ID != "sch-due" || dueList[0].Revision != 1 {
+			t.Fatalf("due = %#v, %v", dueList, err)
+		}
+		claimed := dueList[0]
+		claimed.NextRunAt = &later
+		if saved, err := schedules.UpdateSchedule(ctx, claimed, 1); err != nil || saved.Revision != 2 {
+			t.Fatalf("claim = %#v, %v", saved, err)
+		}
+		if _, err := schedules.UpdateSchedule(ctx, claimed, 1); !errors.Is(err, persistence.ErrConflict) {
+			t.Fatalf("second claim error = %v", err)
+		}
+		if listed, err := schedules.ListSchedules(ctx, "con-1"); err != nil || len(listed) != 2 || listed[0].ID != "sch-due" {
+			t.Fatalf("connection schedules = %#v, %v", listed, err)
+		}
+
+		for _, run := range []schedule.Run{
+			{ID: "srn-1", ScheduleID: "sch-due", ConnectionID: "con-1", PlannedAt: due, Outcome: schedule.OutcomeSkipped, Settled: true, CreatedAt: now.AddDate(0, 0, -40)},
+			{ID: "srn-2", ScheduleID: "sch-due", ConnectionID: "con-1", PlannedAt: due, Outcome: schedule.OutcomeStarted, ScanTaskID: "scn-old", CreatedAt: now.AddDate(0, 0, -39)},
+			{ID: "srn-3", ScheduleID: "sch-due", ConnectionID: "con-1", PlannedAt: due, Outcome: schedule.OutcomeStarted, ScanTaskID: "scn-new", CreatedAt: now},
+		} {
+			if err := schedules.CreateRun(ctx, run); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if unsettled, err := schedules.ListUnsettledRuns(ctx, 10); err != nil || len(unsettled) != 2 {
+			t.Fatalf("unsettled = %#v, %v", unsettled, err)
+		}
+		latest, err := schedules.LatestRuns(ctx, []schedule.ID{"sch-due", "sch-later"})
+		if err != nil || len(latest) != 1 || latest["sch-due"].ID != "srn-3" {
+			t.Fatalf("latest = %#v, %v", latest, err)
+		}
+
+		for _, scan := range []asset.ScanRun{
+			{ID: "scn-old", ScheduleID: "sch-due", Status: asset.ScanSucceeded, ScopeMode: asset.ScanAllActiveRegions, CreatedAt: now.AddDate(0, 0, -39)},
+			{ID: "scn-old-failed", ScheduleID: "sch-due", Status: asset.ScanFailed, ScopeMode: asset.ScanAllActiveRegions, CreatedAt: now.AddDate(0, 0, -38)},
+			{ID: "scn-new", ScheduleID: "sch-due", Status: asset.ScanSucceeded, ScopeMode: asset.ScanAllActiveRegions, CreatedAt: now.AddDate(0, 0, -35)},
+			{ID: "scn-running", Status: asset.ScanRunning, ScopeMode: asset.ScanSelectedRegions, CreatedAt: now},
+			{ID: "scn-paused", Status: asset.ScanPaused, ScopeMode: asset.ScanSelectedRegions, CreatedAt: now.Add(time.Second)},
+		} {
+			scan.ConnectionID = "con-1"
+			if err := repositories.Inventory().CreateScanRun(ctx, scan); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if blocking, err := schedules.FindBlockingScan(ctx, "con-1"); err != nil || blocking.ID != "scn-running" {
+			t.Fatalf("blocking = %#v, %v", blocking, err)
+		}
+		if _, err := schedules.FindBlockingScan(ctx, "con-2"); !errors.Is(err, persistence.ErrNotFound) {
+			t.Fatalf("idle connection blocking error = %v", err)
+		}
+		if complete, err := schedules.LatestCompleteScan(ctx, "con-1"); err != nil || complete.ID != "scn-new" {
+			t.Fatalf("latest complete = %#v, %v", complete, err)
+		}
+		summaries, err := schedules.ListScanSummaries(ctx, []asset.ScanTaskID{"scn-new", "scn-missing"})
+		if err != nil || len(summaries) != 1 || summaries[0].ScanRun.ID != "scn-new" {
+			t.Fatalf("summaries = %#v, %v", summaries, err)
+		}
+		scheduled, err := repositories.Inventory().ListScanRunListItems(ctx, persistence.ListOptions{ConnectionID: "con-1", ScanSource: "scheduled"})
+		if err != nil || len(scheduled.Items) != 3 {
+			t.Fatalf("scheduled scans = %#v, %v", scheduled, err)
+		}
+		manual, err := repositories.Inventory().ListScanRunListItems(ctx, persistence.ListOptions{ConnectionID: "con-1", ScanSource: "manual"})
+		if err != nil || len(manual.Items) != 2 {
+			t.Fatalf("manual scans = %#v, %v", manual, err)
+		}
+
+		expired, err := schedules.ListExpiredScheduledScans(ctx, now.AddDate(0, 0, -30), 10)
+		if err != nil || len(expired) != 2 || expired[0] != "scn-old" || expired[1] != "scn-old-failed" {
+			t.Fatalf("expired = %#v, %v", expired, err)
+		}
+		if err := repositories.Inventory().RecordAssetChange(ctx, asset.AssetChange{ID: "chg-old", ConnectionID: "con-1", ScanTaskID: "scn-old", AssetID: "ast-1", Type: asset.ChangeAdded, ResourceKindID: "kind", ChangedAt: now}); err != nil {
+			t.Fatal(err)
+		}
+		for _, id := range expired {
+			if err := schedules.DeleteScan(ctx, id); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if err := schedules.DeleteScan(ctx, "scn-running"); !errors.Is(err, persistence.ErrConflict) {
+			t.Fatalf("deleting an active scan error = %v", err)
+		}
+		if _, err := repositories.Inventory().GetScanRun(ctx, "scn-old"); !errors.Is(err, persistence.ErrNotFound) {
+			t.Fatalf("expired scan remains: %v", err)
+		}
+		if counts, _ := repositories.Inventory().CountAssetChanges(ctx, []asset.ScanTaskID{"scn-old"}); counts["scn-old"] != (asset.ChangeCounts{}) {
+			t.Fatalf("expired scan changes remain: %#v", counts)
+		}
+		if err := schedules.DeleteRunsBefore(ctx, now.AddDate(0, 0, -30)); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := schedules.GetRun(ctx, "srn-1"); !errors.Is(err, persistence.ErrNotFound) {
+			t.Fatalf("old skipped run remains: %v", err)
+		}
+		if _, err := schedules.GetRun(ctx, "srn-2"); !errors.Is(err, persistence.ErrNotFound) {
+			t.Fatalf("run of a deleted scan remains: %v", err)
+		}
+		if _, err := schedules.GetRun(ctx, "srn-3"); err != nil {
+			t.Fatalf("recent run removed: %v", err)
+		}
+
+		if _, err := schedules.GetSetting(ctx, "key"); !errors.Is(err, persistence.ErrNotFound) {
+			t.Fatalf("missing setting error = %v", err)
+		}
+		for _, payload := range []string{`{"a":1}`, `{"a":2}`} {
+			if err := schedules.PutSetting(ctx, "key", payload, now); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if payload, err := schedules.GetSetting(ctx, "key"); err != nil || payload != `{"a":2}` {
+			t.Fatalf("setting = %q, %v", payload, err)
+		}
+		if err := schedules.DeleteSchedule(ctx, "sch-due"); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := schedules.GetRun(ctx, "srn-3"); !errors.Is(err, persistence.ErrNotFound) {
+			t.Fatalf("runs of a deleted schedule remain: %v", err)
+		}
+	})
 	t.Run("asset changes merge per scan and asset", func(t *testing.T) {
 		repositories := factory(t)
 		ctx := context.Background()

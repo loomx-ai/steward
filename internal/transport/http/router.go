@@ -17,6 +17,7 @@ import (
 	connectionapp "github.com/loomx-ai/steward/internal/app/connection"
 	"github.com/loomx-ai/steward/internal/app/inventory"
 	regionapp "github.com/loomx-ai/steward/internal/app/region"
+	"github.com/loomx-ai/steward/internal/app/scheduling"
 	topologyapp "github.com/loomx-ai/steward/internal/app/topology"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
@@ -51,6 +52,7 @@ type Dependencies struct {
 	Regions          *regionapp.Service
 	Scans            *inventory.Creator
 	ScanControls     *inventory.ControlService
+	Schedules        *scheduling.Service
 	NetworkTargets   NetworkTargetDirectory
 	RegionRefreshes  connectionapp.RegionRefreshQueue
 	Topology         *topologyapp.Service
@@ -93,6 +95,9 @@ func NewRouter(dependencies Dependencies) http.Handler {
 		router.Patch("/connections/{id}/regions/{region_id}", requireRole(RoleAdmin, api.patchConnectionRegion))
 		router.Delete("/connections/{id}/regions/{region_id}", requireRole(RoleAdmin, api.excludeConnectionRegion))
 		router.Post("/connections/{id}/regions/{region_id}/restore", requireRole(RoleAdmin, api.restoreConnectionRegion))
+		router.Get("/scan-schedule-overview", requireRole(RoleViewer, api.scheduleOverview))
+		router.Get("/scan-schedule-settings", requireRole(RoleViewer, api.getScheduleSettings))
+		router.Put("/scan-schedule-settings", requireRole(RoleAdmin, api.updateScheduleSettings))
 		router.Group(func(router chi.Router) {
 			router.Use(api.requireConnectionContext)
 			router.Get("/scopes", requireRole(RoleViewer, api.listScopes))
@@ -106,6 +111,16 @@ func NewRouter(dependencies Dependencies) http.Handler {
 			router.Get("/scans/{id}/changes", requireRole(RoleViewer, api.scanChanges))
 			router.Get("/scans/{id}/logs", requireRole(RoleViewer, api.scanLogs))
 			router.Get("/scans/{id}/events", requireRole(RoleViewer, api.scanEvents))
+			router.Get("/scan-schedules", requireRole(RoleViewer, api.listSchedules))
+			router.Post("/scan-schedules", requireRole(RoleOperator, api.createSchedule))
+			router.Post("/scan-schedules/preview", requireRole(RoleViewer, api.previewSchedule))
+			router.Get("/scan-schedules/{id}", requireRole(RoleViewer, api.getSchedule))
+			router.Put("/scan-schedules/{id}", requireRole(RoleOperator, api.updateSchedule))
+			router.Delete("/scan-schedules/{id}", requireRole(RoleOperator, api.deleteSchedule))
+			router.Post("/scan-schedules/{id}/enable", requireRole(RoleOperator, api.enableSchedule))
+			router.Post("/scan-schedules/{id}/disable", requireRole(RoleOperator, api.disableSchedule))
+			router.Post("/scan-schedules/{id}/run", requireRole(RoleOperator, api.runSchedule))
+			router.Get("/scan-schedules/{id}/runs", requireRole(RoleViewer, api.listScheduleRuns))
 			router.Get("/scan-targets/vpcs", requireRole(RoleViewer, api.listVPCTargets))
 			router.Get("/scan-targets/vswitches", requireRole(RoleViewer, api.listVSwitchTargets))
 			router.Get("/assets", requireRole(RoleViewer, api.listAssets))
@@ -291,6 +306,8 @@ func pageOptions(request *http.Request) persistence.ListOptions {
 		VPCID:         strings.TrimSpace(request.URL.Query().Get("vpc_id")),
 		SearchOrder:   strings.TrimSpace(request.URL.Query().Get("order")) == "panorama-search",
 		IncludeClosed: strings.TrimSpace(request.URL.Query().Get("include_closed")) == "true",
+		ScanSource:    strings.TrimSpace(request.URL.Query().Get("source")),
+		ScheduleID:    strings.TrimSpace(request.URL.Query().Get("schedule_id")),
 	}
 }
 

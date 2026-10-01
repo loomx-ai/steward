@@ -324,11 +324,13 @@ type ScanTarget struct {
 }
 
 type ScanTask struct {
-	ID               ScanTaskID       `json:"id"`
-	ConnectionID     ConnectionID     `json:"connection_id"`
-	Status           ScanStatus       `json:"status"`
-	ScopeMode        ScanScopeMode    `json:"scope_mode"`
-	RequestedBy      string           `json:"requested_by"`
+	ID           ScanTaskID    `json:"id"`
+	ConnectionID ConnectionID  `json:"connection_id"`
+	Status       ScanStatus    `json:"status"`
+	ScopeMode    ScanScopeMode `json:"scope_mode"`
+	RequestedBy  string        `json:"requested_by"`
+	// ScheduleID names the schedule that started the scan, if any.
+	ScheduleID       string           `json:"schedule_id,omitempty"`
 	Targets          []ScanTarget     `json:"targets"`
 	ResourceKindIDs  []ResourceKindID `json:"resource_kind_ids,omitempty"`
 	RetryGeneration  int              `json:"retry_generation"`
@@ -343,6 +345,12 @@ type ScanTask struct {
 }
 
 type ScanRun = ScanTask
+
+// Terminal reports whether the scan has stopped for good: it will not start
+// more work unless someone retries it.
+func (s ScanStatus) Terminal() bool {
+	return s == ScanSucceeded || s == ScanPartial || s == ScanFailed || s == ScanCanceled
+}
 
 type ScanShard struct {
 	ID              ScanShardID    `json:"id"`
