@@ -25,6 +25,16 @@ func TestDiffAssetsReportsUserVisibleAttributes(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("DiffAssets() = %#v, want %#v", got, want)
 	}
+	stored := Asset{Normalized: map[string]any{"price": float64(1.5), "sizes": []any{float64(100)}}}
+	scanned := Asset{Normalized: map[string]any{"price": json.Number("1.50"), "sizes": []any{json.Number("1e2")}}}
+	if changes := DiffAssets(stored, scanned); len(changes) != 0 {
+		t.Fatalf("equal numbers in different JSON forms produced changes: %#v", changes)
+	}
+	bookkeeping := Asset{Normalized: map[string]any{"updatedAt": "a", "etag": "1", "lastReportedAt": "x", "_inventory_source": "product-api", "meta": map[string]any{"labelFingerprint": "f1", "updateTime": "t1"}}}
+	refreshed := Asset{Normalized: map[string]any{"updatedAt": "b", "etag": "2", "lastReportedAt": "y", "_inventory_source": "resource-center", "meta": map[string]any{"labelFingerprint": "f2", "updateTime": "t2"}}}
+	if changes := DiffAssets(bookkeeping, refreshed); len(changes) != 0 {
+		t.Fatalf("bookkeeping fields produced changes: %#v", changes)
+	}
 	if changes := DiffAssets(before, before); len(changes) != 0 {
 		t.Fatalf("identical assets produced changes: %#v", changes)
 	}

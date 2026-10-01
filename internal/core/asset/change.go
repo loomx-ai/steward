@@ -3,7 +3,9 @@ package asset
 import (
 	"encoding/json"
 	"maps"
+	"regexp"
 	"slices"
+	"strings"
 	"time"
 )
 
@@ -160,9 +162,23 @@ func MergeAssetChange(existing, next AssetChange) (merged AssetChange, keep bool
 	return next, true
 }
 
+// volatileAttribute matches bookkeeping fields that change without the
+// resource changing in a way a person cares about: update times, entity tags,
+// fingerprints and which inventory source reported the resource.
+var volatileAttribute = regexp.MustCompile(`(?i)^(_inventory_source|etag|.*fingerprint|updated(at|time|date)?|update(d)?(time|date)|last.*(reported|modified|updated|seen|sync|synced|refresh|refreshed).*|modif(ied|y)(at|time|date)?)$`)
+
+func isVolatile(path string) bool {
+	return volatileAttribute.MatchString(path[strings.LastIndex(path, ".")+1:])
+}
+
 func comparableAttributes(value Asset) map[string]string {
 	result := map[string]string{}
 	flattenValue(result, "", map[string]any(value.Normalized), 0)
+	for path := range result {
+		if isVolatile(path) {
+			delete(result, path)
+		}
+	}
 	for path, attribute := range map[string]string{"name": value.Name, "state": value.State, "location": value.Location} {
 		delete(result, path)
 		if attribute != "" {
@@ -197,9 +213,10 @@ func flattenValue(result map[string]string, prefix string, value any, depth int)
 	result[prefix] = canonicalValue(value)
 }
 
-// canonicalValue gives a stable comparison form across JSON round trips: a
-// freshly scanned json.Number and a stored float64 of the same value compare
-// equal.
+// canonicalValue gives a stable comparison form across JSON round trips. A
+// freshly scanned json.Number such as 1.50 and the float64 1.5 read back from
+// storage must compare equal, including inside arrays and objects, so the
+// value goes through the same decode a stored asset does.
 func canonicalValue(value any) string {
 	if value == nil {
 		return ""
@@ -207,6 +224,12 @@ func canonicalValue(value any) string {
 	payload, err := json.Marshal(value)
 	if err != nil {
 		return ""
+	}
+	var decoded any
+	if err := json.Unmarshal(payload, &decoded); err == nil {
+		if normalized, err := json.Marshal(decoded); err == nil {
+			return string(normalized)
+		}
 	}
 	return string(payload)
 }
