@@ -298,8 +298,18 @@ func (c *client) loadManagedGroup(ctx context.Context, id string, data map[strin
 	if err != nil {
 		return result, err
 	}
+	var vmIDs []string
+	for _, member := range members {
+		// Members failing the checks below never need their VM read.
+		if nativeID, err := c.computeID(text(member["instance"]), instanceType); err == nil && text(member["currentAction"]) == "NONE" && text(member["id"]) != "" {
+			vmIDs = append(vmIDs, nativeID)
+		}
+	}
+	vms, err := c.computeReads(ctx, instanceType, vmIDs)
+	if err != nil {
+		return result, err
+	}
 	seen, names := map[string]bool{}, map[string]bool{}
-	vmKind, _ := findType(instanceType)
 	for _, member := range members {
 		nativeID, err := c.computeID(text(member["instance"]), instanceType)
 		if err != nil {
@@ -319,11 +329,7 @@ func (c *client) loadManagedGroup(ctx context.Context, id string, data map[strin
 		if text(member["currentAction"]) != "NONE" || text(member["id"]) == "" {
 			return result, groupBusy()
 		}
-		endpoint, _ := c.resourceURL(vmKind, nativeID)
-		vm, err := c.request(ctx, "GET", endpoint, nil)
-		if err != nil {
-			return result, err
-		}
+		vm := vms[nativeID]
 		if text(vm["id"]) != text(member["id"]) {
 			return result, fmt.Errorf("managed VM incarnation changed during discovery")
 		}

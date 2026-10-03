@@ -368,6 +368,9 @@ func (c *client) gkeNetwork(ctx context.Context, root asset.Asset, live map[stri
 		}
 		return nil
 	}
+	// Every workload is matched against the same internal frontends; read each
+	// frontend subnet's network once.
+	subnetNetworks := map[string]string{}
 	for _, workload := range result.Workloads {
 		if text(object(workload.data["metadata"])["deletionTimestamp"]) != "" {
 			continue
@@ -383,11 +386,16 @@ func (c *client) gkeNetwork(ctx context.Context, root asset.Asset, live map[stri
 				if err != nil {
 					return result, groupDenied("gke_frontend_network_unresolved")
 				}
-				subnet, err := c.nativeGet(ctx, "compute.googleapis.com/Subnetwork", subnetID)
-				if err != nil {
-					return result, err
+				subnetNetwork, read := subnetNetworks[subnetID]
+				if !read {
+					subnet, err := c.nativeGet(ctx, "compute.googleapis.com/Subnetwork", subnetID)
+					if err != nil {
+						return result, err
+					}
+					subnetNetwork = c.canonicalName(text(subnet["network"]))
+					subnetNetworks[subnetID] = subnetNetwork
 				}
-				if c.canonicalName(text(subnet["network"])) != networks[0] {
+				if subnetNetwork != networks[0] {
 					continue
 				}
 			}

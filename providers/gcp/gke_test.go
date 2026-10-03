@@ -343,3 +343,37 @@ func TestGKEBootDiskPolicyOverridesComputeAutoDelete(t *testing.T) {
 		}
 	}
 }
+
+func TestComputeReadsListEachZoneOnceAndReadMissingResources(t *testing.T) {
+	const zone = "/compute/v1/projects/sample-project/zones/us-central1-a/instances"
+	lists, gets := 0, []string{}
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		switch {
+		case req.URL.Path == zone:
+			lists++
+			if filter := req.URL.Query().Get("filter"); filter != "name eq '(node-a|node-b|node-c)'" {
+				t.Fatalf("filter %q", filter)
+			}
+			link := "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instances/"
+			// node-c is not returned, and an unrequested VM is ignored.
+			return apiResponse(req, 200, `{"items":[{"name":"node-a","id":"1","selfLink":"`+link+`node-a"},{"name":"node-b","id":"2","selfLink":"`+link+`node-b"},{"name":"other","id":"9","selfLink":"`+link+`other"}]}`), nil
+		case strings.HasPrefix(req.URL.Path, zone+"/"):
+			gets = append(gets, last(req.URL.Path))
+			return apiResponse(req, 200, `{"name":"node-c","id":"3"}`), nil
+		}
+		t.Fatalf("unexpected request %s", req.URL)
+		return nil, nil
+	})
+	c, err := r.resolve(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	id := "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/instances/"
+	reads, err := c.computeReads(t.Context(), instanceType, []string{id + "node-a", id + "node-b", id + "node-c"})
+	if err != nil || len(reads) != 3 || reads[id+"node-b"]["id"] != "2" || reads[id+"node-c"]["id"] != "3" || reads[id+"other"] != nil {
+		t.Fatalf("reads=%v err=%v", reads, err)
+	}
+	if lists != 1 || len(gets) != 1 || gets[0] != "node-c" {
+		t.Fatalf("lists=%d gets=%v", lists, gets)
+	}
+}

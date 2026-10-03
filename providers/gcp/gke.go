@@ -3,11 +3,15 @@ package gcp
 import (
 	"context"
 	"fmt"
+	"maps"
+	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/graph"
+	"github.com/loomx-ai/steward/internal/provider/catalog"
 )
 
 const clusterType = "container.googleapis.com/Cluster"
@@ -31,6 +35,82 @@ func (c *client) nativeGet(ctx context.Context, kind, id string) (map[string]any
 	}
 	return c.request(ctx, "GET", endpoint, nil)
 }
+
+// computeReads reads Compute resources of one kind by listing each zone or
+// region collection once, filtered to their names, instead of one GET per
+// resource. Compute lists return complete resources. Anything a list does not
+// return (or a list that fails) is read with its own GET, so the result always
+// holds a native read of every requested resource.
+func (c *client) computeReads(ctx context.Context, kind string, ids []string) (map[string]map[string]any, error) {
+	rule, ok := findType(kind)
+	if !ok {
+		return nil, fmt.Errorf("unknown GCP resource kind")
+	}
+	metadata, err := providerData()
+	if err != nil {
+		return nil, err
+	}
+	type collection struct {
+		operation  catalog.Operation
+		parameters map[string]any
+		names      []string
+	}
+	collections := map[string]*collection{}
+	wanted := map[string]bool{}
+	for _, id := range ids {
+		read, parameters, err := c.resourceOperation(rule, id, "GET")
+		if err != nil {
+			return nil, err
+		}
+		list, ok := metadata.catalog.Operation(strings.TrimSuffix(read.ID, ".get") + ".list")
+		if !ok || wanted[id] {
+			continue
+		}
+		wanted[id] = true
+		scope := map[string]any{}
+		for name, value := range parameters {
+			if object(list.InputSchema["properties"])[name] != nil {
+				scope[name] = value
+			}
+		}
+		key := list.ID + fmt.Sprint(scope)
+		if collections[key] == nil {
+			collections[key] = &collection{operation: list, parameters: scope}
+		}
+		collections[key].names = append(collections[key].names, regexp.QuoteMeta(last(id)))
+	}
+	result := map[string]map[string]any{}
+	for _, each := range collections {
+		for names := range slices.Chunk(each.names, computeReadChunk) {
+			parameters := cloneParameters(each.parameters)
+			parameters["filter"] = "name eq '(" + strings.Join(names, "|") + ")'"
+			records, err := c.nativeList(ctx, each.operation, parameters, "items")
+			if err != nil {
+				continue // Read each of these with its own GET below.
+			}
+			for _, record := range records {
+				id := c.canonicalName(text(record["selfLink"]))
+				if wanted[id] && result[id] == nil {
+					result[id] = record
+				}
+			}
+		}
+	}
+	for _, id := range ids {
+		if result[id] != nil {
+			continue
+		}
+		data, err := c.nativeGet(ctx, kind, id)
+		if err != nil {
+			return nil, err
+		}
+		result[id] = data
+	}
+	return result, nil
+}
+
+// computeReadChunk bounds the names one filtered list carries in its URL.
+const computeReadChunk = 50
 
 func gkeStable(kind string, data map[string]any) bool {
 	switch text(data["status"]) {
@@ -159,6 +239,20 @@ func (c *client) gkeMembers(ctx context.Context, root asset.Asset, live map[stri
 				return nil, err
 			}
 			members = append(members, gkeMember{id: group.instanceGroup, kind: instanceGroupType, parent: id, data: ig, deletes: true})
+			byKind := map[string][]string{}
+			for _, node := range group.nodes {
+				for _, resource := range node.resources {
+					byKind[resource.kind] = append(byKind[resource.kind], resource.id)
+				}
+			}
+			reads := map[string]map[string]any{}
+			for kind, ids := range byKind {
+				data, err := c.computeReads(ctx, kind, ids)
+				if err != nil {
+					return nil, err
+				}
+				maps.Copy(reads, data)
+			}
 			for _, node := range group.nodes {
 				members = append(members, gkeMember{id: node.id, kind: instanceType, parent: id, data: node.data, deletes: true})
 				for _, resource := range node.resources {
@@ -168,11 +262,7 @@ func (c *client) gkeMembers(ctx context.Context, root asset.Asset, live map[stri
 							resource.delete = true // GKE deletes node boot disks with the pool.
 						}
 					}
-					data, err := c.nativeGet(ctx, resource.kind, resource.id)
-					if err != nil {
-						return nil, err
-					}
-					if err := add(gkeMember{id: resource.id, kind: resource.kind, parent: node.id, data: data, deletes: resource.delete, shared: resource.shared}); err != nil {
+					if err := add(gkeMember{id: resource.id, kind: resource.kind, parent: node.id, data: reads[resource.id], deletes: resource.delete, shared: resource.shared}); err != nil {
 						return nil, err
 					}
 				}
