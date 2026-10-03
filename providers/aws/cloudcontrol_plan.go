@@ -405,10 +405,9 @@ func needsParentDetail(plan CloudControlListPlan, properties map[string]any) boo
 }
 
 func (r *Runtime) compiledSpec(nativeType string) (spec.CompiledSpec, bool) {
-	for _, compiled := range r.bundle.Specs {
-		if compiled.ResourceKind.NativeType == nativeType {
-			return compiled, true
-		}
+	index, ok := r.specIndex[nativeType]
+	if !ok {
+		return spec.CompiledSpec{}, false
 	}
-	return spec.CompiledSpec{}, false
+	return r.bundle.Specs[index], true
 }

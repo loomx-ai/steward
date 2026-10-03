@@ -355,15 +355,17 @@ func NewLifecycle() *Lifecycle { return &Lifecycle{} }
 
 type assetIndex struct {
 	byTypeID map[string][]asset.Asset
+	byType   map[string][]asset.Asset
 }
 
 func indexAWSAssets(assets []asset.Asset) assetIndex {
-	index := assetIndex{byTypeID: map[string][]asset.Asset{}}
+	index := assetIndex{byTypeID: map[string][]asset.Asset{}, byType: map[string][]asset.Asset{}}
 	for _, value := range assets {
 		if value.Identity.Provider != asset.ProviderAWS || value.ClosedAt != nil {
 			continue
 		}
 		index.byTypeID[value.Identity.NativeType+"\x00"+value.Identity.NativeID] = append(index.byTypeID[value.Identity.NativeType+"\x00"+value.Identity.NativeID], value)
+		index.byType[value.Identity.NativeType] = append(index.byType[value.Identity.NativeType], value)
 	}
 	return index
 }
@@ -407,7 +409,7 @@ func (*Lifecycle) Contribute(_ context.Context, _ asset.ScopeID, assets []asset.
 		case "AWS::EC2::NetworkInterface":
 			err = contributeRequesterManagedInterface(&result, index, value)
 		case "AWS::EC2::EIP":
-			err = contributeAddressOrder(&result, index, value, assets)
+			err = contributeAddressOrder(&result, index, value)
 		}
 		if err != nil {
 			return governance.Contribution{}, err
@@ -586,7 +588,7 @@ func contributeRequesterManagedInterface(result *governance.Contribution, index 
 
 // An associated Elastic IP cannot be released until its NAT gateway or
 // instance releases the association.
-func contributeAddressOrder(result *governance.Contribution, index assetIndex, eip asset.Asset, assets []asset.Asset) error {
+func contributeAddressOrder(result *governance.Contribution, index assetIndex, eip asset.Asset) error {
 	allocation := stringValue(eip.Normalized["AllocationId"])
 	if instanceID := stringValue(eip.Normalized["InstanceId"]); instanceID != "" {
 		if instance, found, err := index.find(eip, "AWS::EC2::Instance", instanceID); err != nil {
@@ -598,7 +600,7 @@ func contributeAddressOrder(result *governance.Contribution, index assetIndex, e
 	if allocation == "" {
 		return nil
 	}
-	for _, candidate := range assets {
+	for _, candidate := range index.byType["AWS::EC2::NatGateway"] {
 		if candidate.Identity.Provider != asset.ProviderAWS || candidate.Identity.NativeType != "AWS::EC2::NatGateway" || candidate.ClosedAt != nil ||
 			candidate.Identity.ConnectionID != eip.Identity.ConnectionID || !sameRegion(candidate, eip) {
 			continue

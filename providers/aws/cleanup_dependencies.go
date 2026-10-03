@@ -164,7 +164,7 @@ func contributeChildDependencies(result *governance.Contribution, index assetInd
 				return err
 			}
 		case clientVPNRouteType:
-			if err := contributeAssociationRoute(result, assets, child); err != nil {
+			if err := contributeAssociationRoute(result, index, child); err != nil {
 				return err
 			}
 		case "AWS::EC2::Instance":
@@ -172,7 +172,7 @@ func contributeChildDependencies(result *governance.Contribution, index assetInd
 				return err
 			}
 		case CloudFormationStackNativeType:
-			contributeBeanstalkStack(result, assets, child)
+			contributeBeanstalkStack(result, index, child)
 		}
 	}
 	return nil
@@ -220,16 +220,14 @@ func contributeConformancePackRule(result *governance.Contribution, index assetI
 	if stringValue(rule.Normalized[configRuleCreatedByField]) != conformancePackService {
 		return nil
 	}
-	for _, candidates := range index.byTypeID {
-		for _, pack := range candidates {
-			if pack.Identity.NativeType != "AWS::Config::ConformancePack" || pack.Identity.ConnectionID != rule.Identity.ConnectionID || !sameRegion(pack, rule) {
-				continue
-			}
-			for _, name := range stringSliceValue(pack.Normalized[conformancePackRulesField]) {
-				if name == rule.Identity.NativeID {
-					addChildDependency(result, "aws_config_conformance_pack_rule", childManaged, false, pack, rule, map[string]any{"field": conformancePackRulesField})
-					return nil
-				}
+	for _, pack := range index.byType["AWS::Config::ConformancePack"] {
+		if pack.Identity.ConnectionID != rule.Identity.ConnectionID || !sameRegion(pack, rule) {
+			continue
+		}
+		for _, name := range stringSliceValue(pack.Normalized[conformancePackRulesField]) {
+			if name == rule.Identity.NativeID {
+				addChildDependency(result, "aws_config_conformance_pack_rule", childManaged, false, pack, rule, map[string]any{"field": conformancePackRulesField})
+				return nil
 			}
 		}
 	}
@@ -238,13 +236,13 @@ func contributeConformancePackRule(result *governance.Contribution, index assetI
 
 // Routes added with a subnet association are removed by disassociating that
 // subnet from the same endpoint.
-func contributeAssociationRoute(result *governance.Contribution, assets []asset.Asset, route asset.Asset) error {
+func contributeAssociationRoute(result *governance.Contribution, index assetIndex, route asset.Asset) error {
 	if !strings.EqualFold(stringValue(route.Normalized["Origin"]), clientVPNRouteOriginAssociate) {
 		return nil
 	}
 	endpoint, subnet := stringValue(route.Normalized["ClientVpnEndpointId"]), stringValue(route.Normalized["TargetSubnet"])
 	var matched []asset.Asset
-	for _, candidate := range assets {
+	for _, candidate := range index.byType[clientVPNAssociationType] {
 		if candidate.Identity.Provider == asset.ProviderAWS && candidate.ClosedAt == nil && candidate.Identity.NativeType == clientVPNAssociationType &&
 			candidate.Identity.ConnectionID == route.Identity.ConnectionID && sameRegion(candidate, route) &&
 			stringValue(candidate.Normalized["ClientVpnEndpointId"]) == endpoint && stringValue(candidate.Normalized["TargetNetworkId"]) == subnet {
@@ -277,13 +275,13 @@ func contributeEMRInstance(result *governance.Contribution, index assetIndex, in
 // Elastic Beanstalk provisions an environment's resources through a
 // CloudFormation stack it owns and tags with the environment; the stack is
 // removed by terminating the environment.
-func contributeBeanstalkStack(result *governance.Contribution, assets []asset.Asset, stack asset.Asset) {
+func contributeBeanstalkStack(result *governance.Contribution, index assetIndex, stack asset.Asset) {
 	name := strings.TrimSpace(stack.Tags[beanstalkEnvironmentTag])
 	if name == "" {
 		return
 	}
 	var matched []asset.Asset
-	for _, candidate := range assets {
+	for _, candidate := range index.byTypeID["AWS::ElasticBeanstalk::Environment\x00"+name] {
 		if candidate.Identity.Provider == asset.ProviderAWS && candidate.ClosedAt == nil && candidate.Identity.NativeType == "AWS::ElasticBeanstalk::Environment" &&
 			candidate.Identity.ConnectionID == stack.Identity.ConnectionID && sameRegion(candidate, stack) && candidate.Identity.NativeID == name {
 			matched = append(matched, candidate)

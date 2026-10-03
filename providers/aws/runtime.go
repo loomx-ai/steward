@@ -45,6 +45,7 @@ type Runtime struct {
 	factory     clientFactory
 	catalog     catalog.Catalog
 	bundle      spec.Bundle
+	specIndex   map[string]int
 	parentCache cloudControlParentCache
 }
 
@@ -64,7 +65,10 @@ func newRuntime(credentials contracts.CredentialSource, factory clientFactory) (
 	if err != nil {
 		return nil, err
 	}
-	runtime := &Runtime{credentials: credentials, factory: factory, catalog: providerCatalog, bundle: bundle}
+	runtime := &Runtime{credentials: credentials, factory: factory, catalog: providerCatalog, bundle: bundle, specIndex: make(map[string]int, len(bundle.Specs))}
+	for index := len(bundle.Specs) - 1; index >= 0; index-- {
+		runtime.specIndex[bundle.Specs[index].ResourceKind.NativeType] = index
+	}
 	updater, _ := credentials.(contracts.CredentialUpdater)
 	driver, _ := NewOAuthDriver().(*oauthDriver)
 	runtime.oauth = oauth.NewMaterializer(oauthLabel, &oauthRefresher{driver: driver}, credentials, updater, time.Now)
@@ -431,12 +435,8 @@ func cloudControlRegion(scope asset.Scope) string {
 }
 
 func (r *Runtime) cloudControlKind(nativeType string) bool {
-	for _, compiled := range r.bundle.Specs {
-		if compiled.ResourceKind.NativeType == nativeType && compiled.Definition.Extensions.Hook == cloudControlHook {
-			return true
-		}
-	}
-	return false
+	compiled, ok := r.compiledSpec(nativeType)
+	return ok && compiled.Definition.Extensions.Hook == cloudControlHook
 }
 
 func (r *Runtime) productAPIKind(nativeType string) bool {
@@ -460,10 +460,8 @@ func (r *Runtime) withoutCloudControlItems(items []contracts.InventoryItem) []co
 }
 
 func (r *Runtime) resourceKind(nativeType string, scopeKind asset.ScopeKind) asset.ResourceKind {
-	for _, compiled := range r.bundle.Specs {
-		if compiled.ResourceKind.NativeType == nativeType {
-			return compiled.ResourceKind
-		}
+	if compiled, ok := r.compiledSpec(nativeType); ok {
+		return compiled.ResourceKind
 	}
 	if kind, err := r.catalog.ResourceKind(nativeType, r.catalog.Source.Checksum, nil); err == nil {
 		return kind

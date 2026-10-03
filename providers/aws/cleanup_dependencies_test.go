@@ -18,7 +18,10 @@ func TestChildDependenciesRequireCascadeOrManageChildren(t *testing.T) {
 	instance.Tags = map[string]string{emrClusterTag: "j-1"}
 	role := awsAsset("emr-role", "AWS::IAM::Role", "EMR_DefaultRole", nil)
 	role.Location = ""
+	stack := awsAsset("eb-stack", CloudFormationStackNativeType, "awseb-e-1-stack", nil)
+	stack.Tags = map[string]string{beanstalkEnvironmentTag: "web-prod"}
 	assets := []asset.Asset{
+		awsAsset("eb-env", "AWS::ElasticBeanstalk::Environment", "web-prod", nil), stack,
 		awsAsset("endpoint", clientVPNEndpointType, "cvpn-endpoint-1", nil),
 		awsAsset("association", clientVPNAssociationType, "cvpn-endpoint-1/cvpn-assoc-1", map[string]any{"ClientVpnEndpointId": "cvpn-endpoint-1", "TargetNetworkId": "subnet-1"}),
 		awsAsset("rule", clientVPNRuleType, "cvpn-endpoint-1/10.0.0.0/16/*", map[string]any{"ClientVpnEndpointId": "cvpn-endpoint-1"}),
@@ -82,6 +85,7 @@ func TestChildDependenciesRequireCascadeOrManageChildren(t *testing.T) {
 	}{
 		"rule": {"endpoint", true}, "manual-route": {"endpoint", true}, "subscription": {"topic", true}, "plan-key": {"plan", true},
 		"subnet-route": {"association", false}, "pack-rule": {"pack", false}, "emr-node": {"cluster", false},
+		"eb-stack": {"eb-env", false},
 	}
 	if len(bindings) != len(wantBindings) {
 		t.Fatalf("bindings = %+v", bindings)
