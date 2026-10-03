@@ -298,7 +298,18 @@ const (
 
 var readRetryBase, readRetryBudget = 500 * time.Millisecond, 30 * time.Second
 
-func requestJSON(ctx context.Context, httpClient *http.Client, method string, u *url.URL, body []byte, sanitize func(map[string]any) map[string]any) (contracts.InvocationResult, error) {
+func requestJSON(ctx context.Context, httpClient *http.Client, method string, u *url.URL, body []byte, sanitize func(map[string]any) map[string]any) (_ contracts.InvocationResult, failure error) {
+	if method != http.MethodGet {
+		contracts.NoteWrite(ctx)
+	} else {
+		defer func() {
+			// A cleanup Execute re-reads before it writes; a failed read there
+			// sent nothing, so the worker may reschedule a transient one.
+			if failure != nil && contracts.BeforeFirstWrite(ctx) {
+				failure = contracts.MarkBeforeMutation(failure)
+			}
+		}()
+	}
 	waited := time.Duration(0)
 	for attempt := 1; ; attempt++ {
 		result, err := requestJSONOnce(ctx, httpClient, method, u, body, sanitize)

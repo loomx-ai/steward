@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -167,5 +168,37 @@ func TestWaiterNeverReportsCompletionWhenResourceReadbackFails(t *testing.T) {
 	wait, err := a.Wait(context.Background(), contracts.ActionRequest{Action: "delete"}, contracts.ActionResult{})
 	if err == nil || wait.Done {
 		t.Fatalf("failed readback reported completion: %+v %v", wait, err)
+	}
+}
+
+func TestExecuteMarksOnlyReadFailuresBeforeTheDelete(t *testing.T) {
+	for _, throttled := range []string{"GET", "DELETE"} {
+		t.Run(throttled, func(t *testing.T) {
+			deletes := 0
+			a := protocolAction(t, "run.googleapis.com/Service", "projects/sample-project/locations/us-central1/services/web", func(request *http.Request) (*http.Response, error) {
+				if request.Method == "DELETE" {
+					deletes++
+				}
+				if request.Method == throttled {
+					return apiResponse(request, 429, `{"error":{"status":"RESOURCE_EXHAUSTED"}}`), nil
+				}
+				return apiResponse(request, 200, `{"name":"web"}`), nil
+			})
+			_, err := a.Execute(contracts.WithWriteScope(context.Background()), contracts.ActionRequest{Action: "delete"})
+			var call *contracts.ProviderCallError
+			if !errors.As(err, &call) || call.Provider.Category != execution.ErrorThrottled {
+				t.Fatalf("execute=%v", err)
+			}
+			if wantMarked := throttled == "GET"; contracts.BeforeMutation(err) != wantMarked || deletes != map[bool]int{true: 0, false: 1}[wantMarked] {
+				t.Fatalf("before mutation=%v deletes=%d", contracts.BeforeMutation(err), deletes)
+			}
+		})
+	}
+	// Outside a cleanup Execute nothing is marked.
+	_, err := requestJSON(context.Background(), &http.Client{Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
+		return apiResponse(request, 429, `{}`), nil
+	})}, http.MethodGet, &url.URL{Scheme: "https", Host: "run.googleapis.com", Path: "/v2/x"}, nil, safePayload)
+	if err == nil || contracts.BeforeMutation(err) {
+		t.Fatalf("unscoped read marked: %v", err)
 	}
 }
