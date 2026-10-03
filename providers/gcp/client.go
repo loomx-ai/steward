@@ -41,6 +41,7 @@ type client struct {
 	firewallParent string
 	identityParent string
 	fingerprint    [32]byte
+	cache          *clientCache
 }
 
 func newClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {
@@ -58,7 +59,7 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 		if !projectPattern.MatchString(v["project_id"]) || (v["firewall_policy_parent"] != "" && !firewallContainerName(v["firewall_policy_parent"])) || (v["identity_group_parent"] != "" && !identityParentValid(v["identity_group_parent"])) {
 			return invalid()
 		}
-		return &client{project: v["project_id"], email: v["service_account_email"], firewallParent: v["firewall_policy_parent"], identityParent: v["identity_group_parent"], fingerprint: sha256.Sum256([]byte(credential.Dynamic.Key)), http: &http.Client{Transport: &workloadidentity.Transport{Base: transport, Credential: credential.Dynamic}, Timeout: 60 * time.Second, CheckRedirect: noRedirect}}, nil
+		return &client{project: v["project_id"], email: v["service_account_email"], firewallParent: v["firewall_policy_parent"], identityParent: v["identity_group_parent"], fingerprint: sha256.Sum256([]byte(credential.Dynamic.Key)), cache: &clientCache{}, http: &http.Client{Transport: &workloadidentity.Transport{Base: transport, Credential: credential.Dynamic}, Timeout: 60 * time.Second, CheckRedirect: noRedirect}}, nil
 	}
 	if credential.ExpiresAt != nil && !credential.ExpiresAt.After(time.Now()) {
 		return invalid()
@@ -118,7 +119,7 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	// The JWT package owns signing and token refresh. Credentials cannot choose a
 	// token endpoint, credential file, executable, impersonation URL, or universe.
 	config := jwt.Config{Email: key.Email, PrivateKey: []byte(key.PrivateKey), PrivateKeyID: key.PrivateKeyID, TokenURL: tokenURL, Scopes: []string{"https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/userinfo.email"}}
-	return &client{project: project, email: key.Email, firewallParent: firewallParent, identityParent: identityParent, fingerprint: sha256.Sum256([]byte(project + "\x00" + raw + "\x00" + firewallParent + "\x00" + identityParent)), http: &http.Client{
+	return &client{project: project, email: key.Email, firewallParent: firewallParent, identityParent: identityParent, fingerprint: sha256.Sum256([]byte(project + "\x00" + raw + "\x00" + firewallParent + "\x00" + identityParent)), cache: &clientCache{}, http: &http.Client{
 		Transport: &tokenTransport{base: transport, source: config.TokenSource}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
 	}}, nil
 }
@@ -166,6 +167,7 @@ func oauthClient(credential contracts.Credential, transport http.RoundTripper) (
 		firewallParent: firewallParent,
 		identityParent: identityParent,
 		fingerprint:    sha256.Sum256([]byte(project + "\x00" + email + "\x00" + refreshToken + "\x00" + firewallParent + "\x00" + identityParent)),
+		cache:          &clientCache{},
 		http: &http.Client{
 			Transport: &tokenTransport{base: transport, source: source}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
 		},

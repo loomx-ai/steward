@@ -310,33 +310,27 @@ func (r *Runtime) discoveryTargets(ctx context.Context, c *client, request contr
 		parentRequest.ResourceKind = &parent
 		parentRequest.Cursor = ""
 		seen := map[string]bool{}
-		for {
-			page, err := r.listProduct(ctx, c, parentRequest, ancestors)
+		parents, err := r.productParents(ctx, c, parentRequest, ancestors, request.Cursor == "")
+		if err != nil {
+			return nil, err
+		}
+		for _, item := range parents {
+			if seen[item.NativeID] {
+				return nil, groupDenied("discoveryengine_parent_duplicate")
+			}
+			seen[item.NativeID] = true
+			if kind.NativeType == discoverySiteType && item.Normalized["contentConfig"] != "NO_CONTENT" {
+				continue
+			}
+			parameters := map[string]any{"parent": strings.TrimPrefix(item.NativeID, "//"+discoveryHost+"/")}
+			if kind.NativeType == discoverySiteType {
+				parameters = map[string]any{"name": strings.TrimPrefix(item.NativeID, "//"+discoveryHost+"/") + "/siteSearchEngine"}
+			}
+			chain, err := discoveryAncestors(item)
 			if err != nil {
 				return nil, err
 			}
-			for _, item := range page.Items {
-				if seen[item.NativeID] {
-					return nil, groupDenied("discoveryengine_parent_duplicate")
-				}
-				seen[item.NativeID] = true
-				if kind.NativeType == discoverySiteType && item.Normalized["contentConfig"] != "NO_CONTENT" {
-					continue
-				}
-				parameters := map[string]any{"parent": strings.TrimPrefix(item.NativeID, "//"+discoveryHost+"/")}
-				if kind.NativeType == discoverySiteType {
-					parameters = map[string]any{"name": strings.TrimPrefix(item.NativeID, "//"+discoveryHost+"/") + "/siteSearchEngine"}
-				}
-				chain, err := discoveryAncestors(item)
-				if err != nil {
-					return nil, err
-				}
-				result = append(result, productTarget{API: api, Parameters: parameters, ParentType: parentKind, ParentID: item.NativeID, ParentUID: text(item.Normalized["createTime"]), ParentConfiguration: text(item.Normalized[discoveryProof]), ParentContainerChain: chain})
-			}
-			if page.Complete {
-				break
-			}
-			parentRequest.Cursor = page.NextCursor
+			result = append(result, productTarget{API: api, Parameters: parameters, ParentType: parentKind, ParentID: item.NativeID, ParentUID: text(item.Normalized["createTime"]), ParentConfiguration: text(item.Normalized[discoveryProof]), ParentContainerChain: chain})
 		}
 	}
 	slices.SortFunc(result, func(a, b productTarget) int {

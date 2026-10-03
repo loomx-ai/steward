@@ -437,6 +437,7 @@ func TestRoutePolicyBGPInventoryCursorBindsPeerSnapshot(t *testing.T) {
 				f.parent["bgpPeers"] = nil
 			}
 			request.Cursor = batch.NextCursor
+			resetParentCache(r) // A resumed cursor meets a fresh parent listing once the cached set expires.
 			batch, err = r.List(t.Context(), request)
 			if mode == "unchanged" || mode == "peer-order" {
 				if err != nil || !batch.Complete || pages != 2 {

@@ -499,6 +499,7 @@ func TestServiceParentGenerationAndNativePagination(t *testing.T) {
 		t.Fatalf("second page: %+v %v", last, err)
 	}
 	parentUID = "namespace-generation-2"
+	resetParentCache(runtime) // A resumed cursor meets a fresh parent listing once the cached set expires.
 	if _, err := runtime.List(context.Background(), request); err == nil {
 		t.Fatal("cursor crossed recreated parent")
 	}

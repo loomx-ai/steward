@@ -375,6 +375,7 @@ func TestCloudNatCursorBindsParentIncarnations(t *testing.T) {
 	}
 	changed = true
 	request.Cursor = batch.NextCursor
+	resetParentCache(r) // A resumed cursor meets a fresh parent listing once the cached set expires.
 	if _, err := r.List(t.Context(), request); err == nil {
 		t.Fatal("changed parent accepted old NAT cursor")
 	}

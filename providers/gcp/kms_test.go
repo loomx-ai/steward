@@ -15,13 +15,14 @@ import (
 func TestKMSParentFanoutPagingDependenciesAndDrift(t *testing.T) {
 	const parent = "projects/sample-project/locations/us-central1"
 	changed := false
-	versionCalls := 0
+	versionCalls, ringLists := 0, 0
 	r := protocolRuntime(t, func(request *http.Request) (*http.Response, error) {
 		var data map[string]any
 		switch request.URL.Path {
 		case "/v1/projects/sample-project/locations":
 			data = map[string]any{"locations": []any{map[string]any{"name": parent, "locationId": "us-central1"}}}
 		case "/v1/" + parent + "/keyRings":
+			ringLists++
 			data = map[string]any{"keyRings": []any{map[string]any{"name": parent + "/keyRings/ring"}}}
 			if changed {
 				data["keyRings"] = append(data["keyRings"].([]any), map[string]any{"name": parent + "/keyRings/new"})
@@ -59,6 +60,11 @@ func TestKMSParentFanoutPagingDependenciesAndDrift(t *testing.T) {
 	if err != nil || !second.Complete || len(second.Items) != 1 || second.Items[0].State != "DESTROY_SCHEDULED" {
 		t.Fatalf("second=%+v err=%v", second, err)
 	}
+	// The second page reuses the grandparent and parent sets its first page listed.
+	if ringLists != 1 {
+		t.Fatalf("key rings listed %d times, want once per shard", ringLists)
+	}
+	resetParentCache(r)
 	// Change an intermediate parent itself, not only its ordering. The root
 	// parent set changing without any keys leaves this version target set intact.
 	changed = true
@@ -96,6 +102,9 @@ func TestKMSCursorRejectsChangedChildParentsAndForeignParents(t *testing.T) {
 	}
 	request.Cursor = page.NextCursor
 	changed = true
+	// A resumed cursor meets a fresh parent listing once the cached set
+	// expires or the process restarts.
+	resetParentCache(r)
 	if _, err = r.List(context.Background(), request); err == nil {
 		t.Fatal("changed KMS parent set accepted")
 	}
@@ -216,5 +225,13 @@ func TestKMSParentDeletionReadsAllChildrenAndRetainsProviderErrors(t *testing.T)
 				t.Fatalf("preflight=%+v err=%v", check, err)
 			}
 		})
+	}
+}
+
+func resetParentCache(r *Runtime) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	for _, c := range r.clients {
+		c.cache.parents = ttlCache[[]contracts.InventoryItem]{}
 	}
 }

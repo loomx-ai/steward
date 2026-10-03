@@ -10,6 +10,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/catalog"
@@ -694,17 +695,11 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		if parentType, ok := findType(parent.NativeType); ok && len(parentType.Scopes) == 1 && parentType.Scopes[0] == asset.ScopeGlobal && request.Scope.Kind == asset.ScopeRegion {
 			parentRequest.Scope = asset.Scope{Kind: asset.ScopeProject, NativeID: c.project}
 		}
-		for {
-			page, err := r.listProduct(ctx, c, parentRequest, ancestors)
-			if err != nil {
-				return nil, err
-			}
-			parents = append(parents, page.Items...)
-			if page.Complete {
-				break
-			}
-			parentRequest.Cursor = page.NextCursor
+		listed, err := r.productParents(ctx, c, parentRequest, ancestors, request.Cursor == "")
+		if err != nil {
+			return nil, err
 		}
+		parents = slices.Clone(listed)
 		sort.Slice(parents, func(i, j int) bool { return parents[i].NativeID < parents[j].NativeID })
 		for i := 1; i < len(parents); i++ {
 			if parents[i-1].NativeID == parents[i].NativeID {
@@ -899,6 +894,41 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		}
 	}
 	return targets, nil
+}
+
+// productParentTTL bounds how long a parent listing is reused by the later
+// pages of a child shard, which advances one parent per List call and would
+// otherwise relist every parent (and, recursively, every grandparent) on each
+// page. The cursor fingerprint still rejects resuming against a different
+// parent set once a listing is refreshed.
+const productParentTTL = 10 * time.Minute
+
+// productParents lists every page of a parent kind. A shard's first page lists
+// parents afresh; its later pages reuse that set. Callers must not mutate it.
+func (r *Runtime) productParents(ctx context.Context, c *client, request contracts.InventoryRequest, ancestors []string, refresh bool) ([]contracts.InventoryItem, error) {
+	list := func() ([]contracts.InventoryItem, error) {
+		var parents []contracts.InventoryItem
+		for {
+			page, err := r.listProduct(ctx, c, request, ancestors)
+			if err != nil {
+				return nil, err
+			}
+			parents = append(parents, page.Items...)
+			if page.Complete {
+				return parents, nil
+			}
+			request.Cursor = page.NextCursor
+		}
+	}
+	if c.cache == nil {
+		return list()
+	}
+	encoded, _ := json.Marshal(struct {
+		Project, Source, NativeType string
+		Scope                       asset.Scope
+		Network                     *asset.ScanTarget
+	}{c.project, request.Source, request.ResourceKind.NativeType, request.Scope, request.NetworkTarget})
+	return c.cache.parents.get(string(encoded), productParentTTL, refresh, list)
 }
 
 // Product location lists include zonal and multi-region service locations that
