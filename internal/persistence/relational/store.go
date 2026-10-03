@@ -14,6 +14,7 @@ import (
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/core/resourcequery"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -2131,6 +2132,7 @@ func (s *Store) CountActiveAssetsByScope(
 	ctx context.Context,
 	connectionID asset.ConnectionID,
 	kindIDs []asset.ResourceKindID,
+	filter *resourcequery.Expression,
 ) (map[asset.ScopeID]int, error) {
 	var rows []struct {
 		ScopeID string `gorm:"column:scope_id"`
@@ -2159,6 +2161,15 @@ func (s *Store) CountActiveAssetsByScope(
 			return map[asset.ScopeID]int{}, nil
 		}
 		query = query.Where("resource_kind_id IN ?", values)
+	}
+	if filter != nil {
+		where, arguments, err := filter.SQL(s.db.Dialector.Name())
+		if err != nil {
+			return nil, err
+		}
+		if where != "" {
+			query = query.Where(where, arguments...)
+		}
 	}
 	if err := query.
 		Group("scope_id").

@@ -188,7 +188,10 @@ type InventoryRepository interface {
 	ListActiveAssets(context.Context, asset.ScopeID, asset.ResourceKindID) ([]asset.Asset, error)
 	ListActiveAssetsByScopes(context.Context, asset.ConnectionID, []asset.ScopeID, asset.ResourceKindID) ([]asset.Asset, error)
 	ListActiveAssetsByConnection(context.Context, asset.ConnectionID, asset.ResourceKindID) ([]asset.Asset, error)
-	CountActiveAssetsByScope(context.Context, asset.ConnectionID, []asset.ResourceKindID) (map[asset.ScopeID]int, error)
+	// CountActiveAssetsByScope counts a connection's open assets per scope,
+	// limited to kinds when given and to those a non-nil resource query
+	// matches.
+	CountActiveAssetsByScope(context.Context, asset.ConnectionID, []asset.ResourceKindID, *resourcequery.Expression) (map[asset.ScopeID]int, error)
 	ListAssetIDsObservedByShard(context.Context, asset.ScanShardID) ([]asset.AssetID, error)
 	// ConnectionInventoryVersion is a cheap marker that changes whenever the
 	// connection's assets, findings or graph change.

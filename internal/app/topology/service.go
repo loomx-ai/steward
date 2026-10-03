@@ -463,7 +463,7 @@ func (s *Service) loadAccountInput(
 	constrained bool,
 ) (core.Input, error) {
 	countKindIDs := topologyCountKindIDs(query, kinds, allowedKindIDs, constrained)
-	counts, err := s.accountAssetCounts(ctx, query, scopes, kinds, bundleRevision, countKindIDs, constrained)
+	counts, err := s.accountAssetCounts(ctx, query, allowedKindIDs, countKindIDs, constrained)
 	if err != nil {
 		return core.Input{}, err
 	}
@@ -516,59 +516,23 @@ func (s *Service) loadAccountInput(
 func (s *Service) accountAssetCounts(
 	ctx context.Context,
 	query Query,
-	scopes []asset.Scope,
-	kinds map[asset.ResourceKindID]asset.ResourceKind,
-	bundleRevision string,
+	allowedKindIDs []asset.ResourceKindID,
 	countKindIDs []asset.ResourceKindID,
 	constrained bool,
 ) (map[asset.ScopeID]int, error) {
-	if query.resourceFilter == nil {
-		return s.repositories.Inventory().CountActiveAssetsByScope(
-			ctx,
-			query.ConnectionID,
-			countKindIDs,
-		)
+	if query.resourceFilter != nil && constrained && len(countKindIDs) == 0 {
+		// A filtered count only counts kinds of the provider catalog.
+		if len(allowedKindIDs) == 0 {
+			return map[asset.ScopeID]int{}, nil
+		}
+		countKindIDs = allowedKindIDs
 	}
-	countKindKeys := make([]string, len(countKindIDs))
-	for index, kindID := range countKindIDs {
-		countKindKeys[index] = string(kindID)
-	}
-	cacheKey, err := s.inputCacheKey(ctx, query.ConnectionID, scopes, bundleRevision,
-		"account", query.ResourceQuery, fmt.Sprint(constrained), digestStrings(countKindKeys))
-	if err != nil {
-		return nil, err
-	}
-	if loaded, cached := s.inputs.get(cacheKey); cached {
-		return loaded.scopeCounts, nil
-	}
-	assets, err := s.repositories.Inventory().ListActiveAssetsByConnection(
+	return s.repositories.Inventory().CountActiveAssetsByScope(
 		ctx,
 		query.ConnectionID,
-		"",
+		countKindIDs,
+		query.resourceFilter,
 	)
-	if err != nil {
-		return nil, err
-	}
-	allowedKinds := make(map[asset.ResourceKindID]struct{}, len(countKindIDs))
-	for _, kindID := range countKindIDs {
-		allowedKinds[kindID] = struct{}{}
-	}
-	counts := make(map[asset.ScopeID]int)
-	for _, value := range assets {
-		if constrained && !kindExists(kinds, value.ResourceKindID) {
-			continue
-		}
-		if len(allowedKinds) > 0 {
-			if _, allowed := allowedKinds[value.ResourceKindID]; !allowed {
-				continue
-			}
-		}
-		if query.resourceFilter.Match(value) {
-			counts[value.ScopeID]++
-		}
-	}
-	s.inputs.put(cacheKey, loadedInventory{scopeCounts: counts})
-	return counts, nil
 }
 
 func filterAssetsByResourceQuery(
@@ -921,7 +885,6 @@ type loadedInventory struct {
 	relationships []graph.Relationship
 	bindings      []graph.LifecycleBinding
 	findingCounts map[asset.AssetID]int
-	scopeCounts   map[asset.ScopeID]int
 }
 
 // inputCache is a small LRU of loaded inventories. Its keys embed the

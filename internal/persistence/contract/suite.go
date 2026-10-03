@@ -14,6 +14,7 @@ import (
 	"github.com/loomx-ai/steward/internal/core/finding"
 	"github.com/loomx-ai/steward/internal/core/graph"
 	"github.com/loomx-ai/steward/internal/core/plan"
+	"github.com/loomx-ai/steward/internal/core/resourcequery"
 	"github.com/loomx-ai/steward/internal/core/schedule"
 	"github.com/loomx-ai/steward/internal/persistence"
 )
@@ -761,7 +762,7 @@ func Run(t *testing.T, factory Factory) {
 		if err != nil || len(scopedAssets) != 1 || scopedAssets[0].ID != storedAsset.ID {
 			t.Fatalf("scoped active assets = %#v, err = %v", scopedAssets, err)
 		}
-		scopeCounts, err := repositories.Inventory().CountActiveAssetsByScope(ctx, "conn-a", nil)
+		scopeCounts, err := repositories.Inventory().CountActiveAssetsByScope(ctx, "conn-a", nil, nil)
 		if err != nil || scopeCounts["scope-global"] != 1 {
 			t.Fatalf("active asset counts = %#v, err = %v", scopeCounts, err)
 		}
@@ -1215,13 +1216,22 @@ func Run(t *testing.T, factory Factory) {
 			ctx,
 			connectionID,
 			[]asset.ResourceKindID{"alicloud:ACS::ECS::Instance"},
+			nil,
 		)
 		if err != nil || filtered[scopeID] != 1 {
 			t.Fatalf("filtered active asset counts = %#v, err = %v", filtered, err)
 		}
-		unfiltered, err := repositories.Inventory().CountActiveAssetsByScope(ctx, connectionID, nil)
+		unfiltered, err := repositories.Inventory().CountActiveAssetsByScope(ctx, connectionID, nil, nil)
 		if err != nil || unfiltered[scopeID] != 2 {
 			t.Fatalf("unfiltered active asset counts = %#v, err = %v", unfiltered, err)
+		}
+		query, err := resourcequery.Parse(`NOT resourceId = "i-a"`)
+		if err != nil {
+			t.Fatal(err)
+		}
+		queried, err := repositories.Inventory().CountActiveAssetsByScope(ctx, connectionID, nil, query)
+		if err != nil || len(queried) != 1 || queried[scopeID] != 1 {
+			t.Fatalf("resource-query active asset counts = %#v, err = %v", queried, err)
 		}
 	})
 

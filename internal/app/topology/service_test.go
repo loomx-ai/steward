@@ -297,13 +297,21 @@ func TestServiceLoadsAccountGlobalRegionAndVPCViews(t *testing.T) {
 func TestServiceResourceQueryOmitsUnmatchedAccountRegions(t *testing.T) {
 	t.Parallel()
 
-	service := topologyServiceFixture(t, 3, false)
+	_, repositories := topologyServiceFixtureWithRepositories(t, 3, false)
+	inventorySpy := &topologyInventoryRepositorySpy{InventoryRepository: repositories.Inventory()}
+	service := NewService(topologyRepositoriesSpy{
+		Repositories: repositories, inventory: inventorySpy, graph: repositories.Graph(), findings: repositories.Findings(),
+	}, topologyBundles())
 	account, err := service.Query(context.Background(), Query{
 		ConnectionID:  "connection-a",
 		ResourceQuery: `region = "cn-hangzhou"`,
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+	// The database counts the matching assets per scope.
+	if inventorySpy.connectionReads != 0 {
+		t.Fatalf("resource-query account summary read %d connection asset lists", inventorySpy.connectionReads)
 	}
 	view := account.View.(core.AccountView)
 	if got := entryKeys(view.Regions); !reflect.DeepEqual(got, []string{

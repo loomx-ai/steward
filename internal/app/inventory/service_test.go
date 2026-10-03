@@ -10,6 +10,7 @@ import (
 
 	"github.com/loomx-ai/steward/internal/app/inventory"
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/resourcequery"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -394,7 +395,7 @@ func (r *inventoryRepository) ListActiveAssetsByConnection(_ context.Context, co
 	}
 	return result, nil
 }
-func (r *inventoryRepository) CountActiveAssetsByScope(_ context.Context, connectionID asset.ConnectionID, kindIDs []asset.ResourceKindID) (map[asset.ScopeID]int, error) {
+func (r *inventoryRepository) CountActiveAssetsByScope(_ context.Context, connectionID asset.ConnectionID, kindIDs []asset.ResourceKindID, filter *resourcequery.Expression) (map[asset.ScopeID]int, error) {
 	allowed := make(map[asset.ResourceKindID]struct{}, len(kindIDs))
 	for _, kindID := range kindIDs {
 		allowed[kindID] = struct{}{}
@@ -403,7 +404,7 @@ func (r *inventoryRepository) CountActiveAssetsByScope(_ context.Context, connec
 	for _, value := range r.assets {
 		_, kindAllowed := allowed[value.ResourceKindID]
 		if value.ClosedAt == nil && value.Identity.ConnectionID == connectionID &&
-			(len(allowed) == 0 || kindAllowed) {
+			(len(allowed) == 0 || kindAllowed) && filter.Match(value) {
 			result[value.ScopeID]++
 		}
 	}
