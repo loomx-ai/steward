@@ -558,6 +558,11 @@ func TestDataCollectionPaginationBindsBothTargetSets(t *testing.T) {
 				path := "/subscriptions/" + testSubscription + "/providers/microsoft.insights/datacollectionrules"
 				s.lists[path] = append(s.lists[path], newParent)
 			}
+			if mode == "rule-immutable" || mode == "new-parent" {
+				// Later pages reuse the first page's targets; a resumed cursor
+				// meets a fresh listing once those expire or the process restarts.
+				r.targetCache = productTargetCache{}
+			}
 			request.Cursor = first.NextCursor
 			next, err := r.List(context.Background(), request)
 			if mode != "complete" {
@@ -798,6 +803,7 @@ func TestDataCollectionOrphanDiscoveryAndNativeUnlink(t *testing.T) {
 				request.Cursor = batch.NextCursor
 				if mode == "orphan-generation" {
 					object(raw["properties"])["description"] = "changed after the first page"
+					r.targetCache = productTargetCache{}
 				}
 			}
 			if slices.Contains([]string{"get-denied", "list-denied", "list-incomplete", "wrong-monitored-resource", "missing-reverse-index", "orphan-generation"}, mode) {
