@@ -11,11 +11,11 @@ import (
 )
 
 // batchRepository serves the reads of one ProjectBatch transaction from
-// memory. Scopes, natural scope keys and observations do not change inside it
-// except by inserts of new rows, so successful reads are remembered. Assets and
-// their current observations are read for the whole batch up front; once an
-// asset is written, every later read of its native key goes to the
-// transaction again.
+// memory and holds its observation, asset and change writes until flush
+// writes each kind together. Scopes, natural scope keys and observations do
+// not change inside it except by inserts of new rows, so successful reads are
+// remembered. Assets and their current observations are read for the whole
+// batch up front, and later reads of those native keys see the held writes.
 type batchRepository struct {
 	persistence.InventoryRepository
 	kinds        map[asset.ResourceKindID]asset.ResourceKind
@@ -23,7 +23,12 @@ type batchRepository struct {
 	naturalKeys  map[naturalScopeKey]asset.Scope
 	prefetched   map[asset.Identity]bool
 	assets       map[asset.Identity]asset.Asset
+	assetKeys    map[asset.AssetID]asset.Identity
 	observations map[asset.ObservationID]asset.Observation
+
+	pendingObservations []asset.Observation
+	pendingAssets       []asset.Asset
+	pendingChanges      []asset.AssetChange
 }
 
 type naturalScopeKey struct {
@@ -40,6 +45,7 @@ func newBatchRepository(ctx context.Context, repository persistence.InventoryRep
 		naturalKeys:         make(map[naturalScopeKey]asset.Scope),
 		prefetched:          make(map[asset.Identity]bool, len(items)),
 		assets:              make(map[asset.Identity]asset.Asset, len(items)),
+		assetKeys:           make(map[asset.AssetID]asset.Identity, len(items)),
 		observations:        make(map[asset.ObservationID]asset.Observation, len(items)),
 	}
 	identities := make([]asset.Identity, 0, len(items))
@@ -61,6 +67,7 @@ func newBatchRepository(ctx context.Context, repository persistence.InventoryRep
 	observationIDs := make([]asset.ObservationID, 0, len(values))
 	for _, value := range values {
 		batch.assets[identityKey(value.Identity)] = value
+		batch.assetKeys[value.ID] = identityKey(value.Identity)
 		observationIDs = append(observationIDs, value.CurrentObservationID)
 	}
 	observations, err := repository.ListObservationsByIDs(ctx, observationIDs)
@@ -133,9 +140,44 @@ func (r *batchRepository) GetAssetByIdentity(ctx context.Context, identity asset
 	return value, nil
 }
 
+// PutAsset holds the write when later reads of the asset's native key are
+// served from memory. Any other write goes out at once, after the held ones.
 func (r *batchRepository) PutAsset(ctx context.Context, value asset.Asset) error {
-	delete(r.prefetched, nativeKey(value.Identity))
-	return r.InventoryRepository.PutAsset(ctx, value)
+	if !r.prefetched[nativeKey(value.Identity)] {
+		if err := r.flush(ctx); err != nil {
+			return err
+		}
+		return r.InventoryRepository.PutAsset(ctx, value)
+	}
+	if previous, ok := r.assetKeys[value.ID]; ok {
+		delete(r.assets, previous)
+	}
+	r.assets[identityKey(value.Identity)] = value
+	r.assetKeys[value.ID] = identityKey(value.Identity)
+	r.pendingAssets = append(r.pendingAssets, value)
+	return nil
+}
+
+func (r *batchRepository) PutAssets(ctx context.Context, values []asset.Asset) error {
+	for _, value := range values {
+		if err := r.PutAsset(ctx, value); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (r *batchRepository) AppendObservations(_ context.Context, observations []asset.Observation) error {
+	for _, observation := range observations {
+		r.observations[observation.ID] = observation
+	}
+	r.pendingObservations = append(r.pendingObservations, observations...)
+	return nil
+}
+
+func (r *batchRepository) RecordAssetChanges(_ context.Context, changes []asset.AssetChange) error {
+	r.pendingChanges = append(r.pendingChanges, changes...)
+	return nil
 }
 
 func (r *batchRepository) GetObservation(ctx context.Context, id asset.ObservationID) (asset.Observation, error) {
@@ -143,4 +185,20 @@ func (r *batchRepository) GetObservation(ctx context.Context, id asset.Observati
 		return value, nil
 	}
 	return r.InventoryRepository.GetObservation(ctx, id)
+}
+
+// flush writes the held observations, assets and changes, in that order and
+// one statement batch each.
+func (r *batchRepository) flush(ctx context.Context) error {
+	if err := r.InventoryRepository.AppendObservations(ctx, r.pendingObservations); err != nil {
+		return err
+	}
+	if err := r.InventoryRepository.PutAssets(ctx, r.pendingAssets); err != nil {
+		return err
+	}
+	if err := r.InventoryRepository.RecordAssetChanges(ctx, r.pendingChanges); err != nil {
+		return err
+	}
+	r.pendingObservations, r.pendingAssets, r.pendingChanges = nil, nil, nil
+	return nil
 }

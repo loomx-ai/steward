@@ -168,6 +168,8 @@ type InventoryRepository interface {
 	ListScanShardsByRun(context.Context, asset.ScanRunID) ([]asset.ScanShard, error)
 	ScanShardProgress(context.Context, asset.ScanRunID) ([]ScanShardProgress, error)
 	PutAsset(context.Context, asset.Asset) error
+	// PutAssets upserts assets together; a repeated ID keeps its last value.
+	PutAssets(context.Context, []asset.Asset) error
 	SetAssetDirty(context.Context, asset.AssetID, bool) (asset.Asset, error)
 	GetAsset(context.Context, asset.AssetID) (asset.Asset, error)
 	GetAssetByIdentity(context.Context, asset.Identity) (asset.Asset, error)
@@ -176,12 +178,14 @@ type InventoryRepository interface {
 	ListAssetsByNativeIdentities(context.Context, []asset.Identity) ([]asset.Asset, error)
 	ListAssetsByIDs(context.Context, []asset.AssetID) ([]asset.Asset, error)
 	ListAssets(context.Context, ListOptions) (Page[asset.Asset], error)
-	AppendObservation(context.Context, asset.Observation) error
+	// AppendObservations inserts new observations together; an existing ID
+	// conflicts.
+	AppendObservations(context.Context, []asset.Observation) error
 	GetObservation(context.Context, asset.ObservationID) (asset.Observation, error)
 	ListObservationsByIDs(context.Context, []asset.ObservationID) ([]asset.Observation, error)
-	// RecordAssetChange merges the change into any change already recorded for
-	// the same asset in the same scan.
-	RecordAssetChange(context.Context, asset.AssetChange) error
+	// RecordAssetChanges merges each change, in order, into any change already
+	// recorded for the same asset in the same scan.
+	RecordAssetChanges(context.Context, []asset.AssetChange) error
 	ListAssetChanges(context.Context, AssetChangeListOptions) (Page[asset.AssetChange], error)
 	CountAssetChanges(context.Context, []asset.ScanTaskID) (map[asset.ScanTaskID]asset.ChangeCounts, error)
 	ListActiveAssets(context.Context, asset.ScopeID, asset.ResourceKindID) ([]asset.Asset, error)

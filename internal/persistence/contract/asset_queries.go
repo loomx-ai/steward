@@ -288,4 +288,32 @@ func runAssetQueries(t *testing.T, factory Factory) {
 			}
 		}
 	})
+
+	t.Run("assets upsert together and a repeated asset keeps its last value", func(t *testing.T) {
+		repositories := factory(t)
+		inventory := repositories.Inventory()
+		ctx := context.Background()
+		now := time.Date(2026, 10, 3, 0, 0, 0, 0, time.UTC)
+		value := func(id, name string) asset.Asset {
+			return asset.Asset{
+				ID: asset.AssetID(id), Name: name, ResourceKindID: "kind-ecs", FirstSeenAt: now, LastSeenAt: now,
+				Identity: asset.Identity{Provider: asset.ProviderAliCloud, Partition: "public", ConnectionID: "conn-batch", NativeType: "ACS::ECS::Instance", NativeID: id},
+			}
+		}
+		if err := inventory.PutAssets(ctx, []asset.Asset{value("a", "first"), value("b", "only"), value("a", "last")}); err != nil {
+			t.Fatal(err)
+		}
+		if err := inventory.PutAssets(ctx, []asset.Asset{value("b", "updated")}); err != nil {
+			t.Fatal(err)
+		}
+		for id, want := range map[asset.AssetID]string{"a": "last", "b": "updated"} {
+			if stored, err := inventory.GetAsset(ctx, id); err != nil || stored.Name != want {
+				t.Fatalf("asset %s = %#v, err = %v", id, stored, err)
+			}
+		}
+		page, err := inventory.ListAssets(ctx, persistence.ListOptions{ConnectionID: "conn-batch", Query: "updated", Limit: 10})
+		if err != nil || len(page.Items) != 1 || page.Items[0].ID != "b" {
+			t.Fatalf("search after a batch update = %#v, err = %v", page.Items, err)
+		}
+	})
 }

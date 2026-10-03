@@ -33,7 +33,7 @@ func TestScanChangesListByTypeAndCountOnScan(t *testing.T) {
 		{ID: "chg-a", ConnectionID: "connection-a", ScanTaskID: task.ID, AssetID: "asset-a", Type: asset.ChangeAdded, ResourceKindID: "kind", NativeID: "i-a", ChangedAt: now},
 		{ID: "chg-b", ConnectionID: "connection-a", ScanTaskID: task.ID, AssetID: "asset-b", Type: asset.ChangeModified, ResourceKindID: "kind", NativeID: "i-b", ChangedAt: now, Fields: []asset.FieldChange{{Path: "state", Before: "Running", After: "Stopped"}}},
 	} {
-		if err := repositories.Inventory().RecordAssetChange(ctx, change); err != nil {
+		if err := repositories.Inventory().RecordAssetChanges(ctx, []asset.AssetChange{change}); err != nil {
 			t.Fatal(err)
 		}
 	}

@@ -110,7 +110,7 @@ func Run(t *testing.T, factory Factory) {
 		if err != nil || len(expired) != 2 || expired[0] != "scn-old" || expired[1] != "scn-old-failed" {
 			t.Fatalf("expired = %#v, %v", expired, err)
 		}
-		if err := repositories.Inventory().RecordAssetChange(ctx, asset.AssetChange{ID: "chg-old", ConnectionID: "con-1", ScanTaskID: "scn-old", AssetID: "ast-1", Type: asset.ChangeAdded, ResourceKindID: "kind", ChangedAt: now}); err != nil {
+		if err := repositories.Inventory().RecordAssetChanges(ctx, []asset.AssetChange{{ID: "chg-old", ConnectionID: "con-1", ScanTaskID: "scn-old", AssetID: "ast-1", Type: asset.ChangeAdded, ResourceKindID: "kind", ChangedAt: now}}); err != nil {
 			t.Fatal(err)
 		}
 		for _, id := range expired {
@@ -158,52 +158,80 @@ func Run(t *testing.T, factory Factory) {
 			t.Fatalf("runs of a deleted schedule remain: %v", err)
 		}
 	})
-	t.Run("asset changes merge per scan and asset", func(t *testing.T) {
-		repositories := factory(t)
-		ctx := context.Background()
-		now := time.Date(2026, 10, 1, 3, 0, 0, 0, time.UTC)
-		inventory := repositories.Inventory()
-		record := func(id string, scan asset.ScanTaskID, assetID asset.AssetID, changeType asset.ChangeType, at time.Time, fields ...asset.FieldChange) {
-			t.Helper()
-			change := asset.AssetChange{ID: id, ConnectionID: "con-1", ScanTaskID: scan, AssetID: assetID, Type: changeType, ResourceKindID: "kind-1", NativeID: string(assetID), Name: "name-" + string(assetID), ChangedAt: at, Fields: fields}
-			if err := inventory.RecordAssetChange(ctx, change); err != nil {
+	for _, batched := range []bool{false, true} {
+		t.Run(fmt.Sprintf("asset changes merge per scan and asset (batched %t)", batched), func(t *testing.T) {
+			repositories := factory(t)
+			ctx := context.Background()
+			now := time.Date(2026, 10, 1, 3, 0, 0, 0, time.UTC)
+			inventory := repositories.Inventory()
+			var pending []asset.AssetChange
+			flush := func() {
+				t.Helper()
+				if err := inventory.RecordAssetChanges(ctx, pending); err != nil {
+					t.Fatal(err)
+				}
+				pending = nil
+			}
+			record := func(id string, scan asset.ScanTaskID, assetID asset.AssetID, changeType asset.ChangeType, at time.Time, fields ...asset.FieldChange) {
+				t.Helper()
+				pending = append(pending, asset.AssetChange{ID: id, ConnectionID: "con-1", ScanTaskID: scan, AssetID: assetID, Type: changeType, ResourceKindID: "kind-1", NativeID: string(assetID), Name: "name-" + string(assetID), ChangedAt: at, Fields: fields})
+				if !batched {
+					flush()
+				}
+			}
+			// Recorded before the batch: the batch folds into it.
+			record("chg-0", "scan-1", "ast-5", asset.ChangeAdded, now)
+			flush()
+			record("chg-1", "scan-1", "ast-1", asset.ChangeAdded, now)
+			record("chg-2", "scan-1", "ast-2", asset.ChangeModified, now.Add(time.Second), asset.FieldChange{Path: "state", Before: "Running", After: "Stopping"})
+			record("chg-3", "scan-1", "ast-2", asset.ChangeModified, now.Add(2*time.Second), asset.FieldChange{Path: "state", Before: "Stopping", After: "Stopped"})
+			record("chg-4", "scan-1", "ast-3", asset.ChangeAdded, now)
+			record("chg-5", "scan-1", "ast-3", asset.ChangeRemoved, now.Add(time.Second))
+			record("chg-6", "scan-2", "ast-1", asset.ChangeRemoved, now.Add(time.Hour))
+			// A change that cancels the recorded one removes it; the next starts anew.
+			record("chg-7", "scan-1", "ast-5", asset.ChangeRemoved, now.Add(time.Second))
+			record("chg-8", "scan-1", "ast-5", asset.ChangeAdded, now.Add(2*time.Second))
+			record("chg-9", "scan-1", "ast-4", asset.ChangeAdded, now)
+			record("chg-10", "scan-1", "ast-4", asset.ChangeRemoved, now.Add(time.Second))
+			record("chg-11", "scan-1", "ast-4", asset.ChangeModified, now.Add(2*time.Second), asset.FieldChange{Path: "name", Before: "a", After: "b"})
+			flush()
+			if added, err := inventory.ListAssetChanges(ctx, persistence.AssetChangeListOptions{ScanTaskID: "scan-1", Type: asset.ChangeAdded}); err != nil ||
+				len(added.Items) != 2 || added.Items[0].ID != "chg-8" || added.Items[1].ID != "chg-1" {
+				t.Fatalf("added changes = %#v, err = %v", added.Items, err)
+			}
+
+			counts, err := inventory.CountAssetChanges(ctx, []asset.ScanTaskID{"scan-1", "scan-2", "scan-empty"})
+			if err != nil {
 				t.Fatal(err)
 			}
-		}
-		record("chg-1", "scan-1", "ast-1", asset.ChangeAdded, now)
-		record("chg-2", "scan-1", "ast-2", asset.ChangeModified, now.Add(time.Second), asset.FieldChange{Path: "state", Before: "Running", After: "Stopping"})
-		record("chg-3", "scan-1", "ast-2", asset.ChangeModified, now.Add(2*time.Second), asset.FieldChange{Path: "state", Before: "Stopping", After: "Stopped"})
-		record("chg-4", "scan-1", "ast-3", asset.ChangeAdded, now)
-		record("chg-5", "scan-1", "ast-3", asset.ChangeRemoved, now.Add(time.Second))
-		record("chg-6", "scan-2", "ast-1", asset.ChangeRemoved, now.Add(time.Hour))
-
-		counts, err := inventory.CountAssetChanges(ctx, []asset.ScanTaskID{"scan-1", "scan-2", "scan-empty"})
-		if err != nil {
-			t.Fatal(err)
-		}
-		if counts["scan-1"] != (asset.ChangeCounts{Added: 1, Modified: 1}) || counts["scan-2"] != (asset.ChangeCounts{Removed: 1}) || counts["scan-empty"] != (asset.ChangeCounts{}) {
-			t.Fatalf("CountAssetChanges = %#v", counts)
-		}
-		page, err := inventory.ListAssetChanges(ctx, persistence.AssetChangeListOptions{ScanTaskID: "scan-1", Type: asset.ChangeModified})
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(page.Items) != 1 || page.Items[0].ID != "chg-2" || len(page.Items[0].Fields) != 1 || page.Items[0].Fields[0].Before != "Running" || page.Items[0].Fields[0].After != "Stopped" {
-			t.Fatalf("merged modified change = %#v", page.Items)
-		}
-		first, err := inventory.ListAssetChanges(ctx, persistence.AssetChangeListOptions{ScanTaskID: "scan-1", Limit: 1})
-		if err != nil || len(first.Items) != 1 || first.NextCursor == "" {
-			t.Fatalf("first page = %#v, %v", first, err)
-		}
-		second, err := inventory.ListAssetChanges(ctx, persistence.AssetChangeListOptions{ScanTaskID: "scan-1", Limit: 1, Cursor: first.NextCursor})
-		if err != nil || len(second.Items) != 1 || second.Items[0].ID == first.Items[0].ID || second.NextCursor != "" {
-			t.Fatalf("second page = %#v, %v", second, err)
-		}
-		found, err := inventory.ListAssetChanges(ctx, persistence.AssetChangeListOptions{ScanTaskID: "scan-1", Query: "NAME-AST-1"})
-		if err != nil || len(found.Items) != 1 || found.Items[0].AssetID != "ast-1" {
-			t.Fatalf("search = %#v, %v", found, err)
-		}
-	})
+			if counts["scan-1"] != (asset.ChangeCounts{Added: 2, Modified: 2}) || counts["scan-2"] != (asset.ChangeCounts{Removed: 1}) || counts["scan-empty"] != (asset.ChangeCounts{}) {
+				t.Fatalf("CountAssetChanges = %#v", counts)
+			}
+			page, err := inventory.ListAssetChanges(ctx, persistence.AssetChangeListOptions{ScanTaskID: "scan-1", Type: asset.ChangeModified})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(page.Items) != 2 || page.Items[1].ID != "chg-11" {
+				t.Fatalf("modified changes = %#v", page.Items)
+			}
+			page.Items = page.Items[:1]
+			if len(page.Items) != 1 || page.Items[0].ID != "chg-2" || len(page.Items[0].Fields) != 1 || page.Items[0].Fields[0].Before != "Running" || page.Items[0].Fields[0].After != "Stopped" {
+				t.Fatalf("merged modified change = %#v", page.Items)
+			}
+			first, err := inventory.ListAssetChanges(ctx, persistence.AssetChangeListOptions{ScanTaskID: "scan-1", Limit: 1})
+			if err != nil || len(first.Items) != 1 || first.NextCursor == "" {
+				t.Fatalf("first page = %#v, %v", first, err)
+			}
+			second, err := inventory.ListAssetChanges(ctx, persistence.AssetChangeListOptions{ScanTaskID: "scan-1", Limit: 1, Cursor: first.NextCursor})
+			if err != nil || len(second.Items) != 1 || second.Items[0].ID == first.Items[0].ID {
+				t.Fatalf("second page = %#v, %v", second, err)
+			}
+			found, err := inventory.ListAssetChanges(ctx, persistence.AssetChangeListOptions{ScanTaskID: "scan-1", Query: "NAME-AST-1"})
+			if err != nil || len(found.Items) != 1 || found.Items[0].AssetID != "ast-1" {
+				t.Fatalf("search = %#v, %v", found, err)
+			}
+		})
+	}
 	t.Run("connection site compatibility", func(t *testing.T) {
 		repositories := factory(t)
 		ctx := context.Background()
@@ -842,10 +870,10 @@ func Run(t *testing.T, factory Factory) {
 			t.Fatalf("non-matching assets = %#v, err = %v", noAssets, err)
 		}
 		observation := asset.Observation{ID: "obs-1", AssetID: "asset-1", ScanRunID: "scan-1", ScanShardID: "shard-1", ObservedAt: now, Source: "resource-center", SchemaRevision: "schema-1", ContentHash: "hash-1", Authoritative: true, Priority: 7}
-		if err := repositories.Inventory().AppendObservation(ctx, observation); err != nil {
+		if err := repositories.Inventory().AppendObservations(ctx, []asset.Observation{observation}); err != nil {
 			t.Fatal(err)
 		}
-		if err := repositories.Inventory().AppendObservation(ctx, observation); !errors.Is(err, persistence.ErrConflict) {
+		if err := repositories.Inventory().AppendObservations(ctx, []asset.Observation{observation}); !errors.Is(err, persistence.ErrConflict) {
 			t.Fatalf("duplicate observation err = %v", err)
 		}
 		observationsByID, err := repositories.Inventory().ListObservationsByIDs(ctx, []asset.ObservationID{"obs-missing", observation.ID, observation.ID})
@@ -1261,7 +1289,7 @@ func Run(t *testing.T, factory Factory) {
 		}
 		rollback := errors.New("rollback application transaction")
 		err = repositories.Inventory().WithinInventoryTx(ctx, func(tx persistence.InventoryRepository) error {
-			if err := tx.AppendObservation(ctx, asset.Observation{ID: "obs-rolled-back", AssetID: active.ID, ScanRunID: "scan-app", ScanShardID: "shard-app", ObservedAt: now, Source: "config"}); err != nil {
+			if err := tx.AppendObservations(ctx, []asset.Observation{{ID: "obs-rolled-back", AssetID: active.ID, ScanRunID: "scan-app", ScanShardID: "shard-app", ObservedAt: now, Source: "config"}}); err != nil {
 				return err
 			}
 			return rollback
@@ -1273,7 +1301,7 @@ func Run(t *testing.T, factory Factory) {
 		if err != nil || len(observations) != 0 {
 			t.Fatalf("rolled back observations = %+v, err = %v", observations, err)
 		}
-		if err := repositories.Inventory().AppendObservation(ctx, asset.Observation{ID: "obs-app", AssetID: active.ID, ScanRunID: "scan-app", ScanShardID: "shard-app", ObservedAt: now, Source: "config"}); err != nil {
+		if err := repositories.Inventory().AppendObservations(ctx, []asset.Observation{{ID: "obs-app", AssetID: active.ID, ScanRunID: "scan-app", ScanShardID: "shard-app", ObservedAt: now, Source: "config"}}); err != nil {
 			t.Fatal(err)
 		}
 		activeAssets, err := repositories.Inventory().ListActiveAssets(ctx, "scope-app", "kind-app")

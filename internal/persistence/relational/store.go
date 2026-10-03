@@ -1563,26 +1563,44 @@ func touchScanTask(db *gorm.DB, id asset.ScanTaskID, updatedAt time.Time) error 
 }
 
 func (s *Store) PutAsset(ctx context.Context, value asset.Asset) error {
+	return s.PutAssets(ctx, []asset.Asset{value})
+}
+
+func (s *Store) PutAssets(ctx context.Context, values []asset.Asset) error {
+	if len(values) == 0 {
+		return nil
+	}
 	aliases, err := s.scopeAliases(ctx)
 	if err != nil {
 		return err
 	}
-	if value.ScopeID, err = resolveScopeAlias(value.ScopeID, aliases); err != nil {
-		return err
+	rows := make([]assetRow, 0, len(values))
+	positions := make(map[string]int, len(values))
+	for _, value := range values {
+		if value.ScopeID, err = resolveScopeAlias(value.ScopeID, aliases); err != nil {
+			return err
+		}
+		value.Identity.ScopeKey = strings.TrimSpace(value.Identity.ScopeKey)
+		payload, err := encodeAsset(value)
+		if err != nil {
+			return err
+		}
+		row := assetRow{
+			ID: string(value.ID), Provider: string(value.Identity.Provider), PartitionName: value.Identity.Partition,
+			ConnectionID: string(value.Identity.ConnectionID), NativeType: value.Identity.NativeType, NativeID: value.Identity.NativeID,
+			ScopeKey: value.Identity.ScopeKey, ScopeID: string(value.ScopeID), ResourceKindID: string(value.ResourceKindID), FirstSeenAt: value.FirstSeenAt,
+			LastSeenAt: value.LastSeenAt, ClosedAt: value.ClosedAt, DeletedAt: value.DeletedAt, Dirty: value.Dirty,
+			SearchText: assetSearchText(value), Payload: payload,
+		}
+		// PostgreSQL rejects a multi-row upsert that touches a row twice.
+		if position, ok := positions[row.ID]; ok {
+			rows[position] = row
+			continue
+		}
+		positions[row.ID] = len(rows)
+		rows = append(rows, row)
 	}
-	value.Identity.ScopeKey = strings.TrimSpace(value.Identity.ScopeKey)
-	payload, err := encodeAsset(value)
-	if err != nil {
-		return err
-	}
-	row := assetRow{
-		ID: string(value.ID), Provider: string(value.Identity.Provider), PartitionName: value.Identity.Partition,
-		ConnectionID: string(value.Identity.ConnectionID), NativeType: value.Identity.NativeType, NativeID: value.Identity.NativeID,
-		ScopeKey: value.Identity.ScopeKey, ScopeID: string(value.ScopeID), ResourceKindID: string(value.ResourceKindID), FirstSeenAt: value.FirstSeenAt,
-		LastSeenAt: value.LastSeenAt, ClosedAt: value.ClosedAt, DeletedAt: value.DeletedAt, Dirty: value.Dirty,
-		SearchText: assetSearchText(value), Payload: payload,
-	}
-	return upsertRevised(s.db.WithContext(ctx), "assets", row, []string{"scope_id", "resource_kind_id", "last_seen_at", "closed_at", "deleted_at", "search_text", "payload"})
+	return upsertRevised(s.db.WithContext(ctx), "assets", rows, []string{"scope_id", "resource_kind_id", "last_seen_at", "closed_at", "deleted_at", "search_text", "payload"})
 }
 
 func (s *Store) SetAssetDirty(ctx context.Context, id asset.AssetID, dirty bool) (asset.Asset, error) {
@@ -2030,12 +2048,18 @@ func assetNameSQL(db *gorm.DB) string {
 	return "(assets.payload ->> 'name')"
 }
 
-func (s *Store) AppendObservation(ctx context.Context, observation asset.Observation) error {
-	if err := observation.Validate(); err != nil {
-		return err
+func (s *Store) AppendObservations(ctx context.Context, observations []asset.Observation) error {
+	if len(observations) == 0 {
+		return nil
 	}
-	row := newObservationRow(observation)
-	return mapCreateError(s.db.WithContext(ctx).Table("asset_observations").Create(&row).Error)
+	rows := make([]observationRow, len(observations))
+	for index, observation := range observations {
+		if err := observation.Validate(); err != nil {
+			return err
+		}
+		rows[index] = newObservationRow(observation)
+	}
+	return mapCreateError(s.db.WithContext(ctx).Table("asset_observations").CreateInBatches(rows, upsertBatchSize).Error)
 }
 
 func (s *Store) ListActiveAssets(ctx context.Context, scopeID asset.ScopeID, kindID asset.ResourceKindID) ([]asset.Asset, error) {
@@ -2346,11 +2370,14 @@ func upsert(db *gorm.DB, table string, value any, columns []string) error {
 	return db.Table(table).Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "id"}}, DoUpdates: clause.AssignmentColumns(columns)}).Create(value).Error
 }
 
-// upsertRevised upserts like upsert and bumps an updated row's revision, which
-// ConnectionInventoryVersion sums.
-func upsertRevised(db *gorm.DB, table string, value any, columns []string) error {
+// upsertRevised upserts rows by ID in batches and bumps an updated row's
+// revision, which ConnectionInventoryVersion sums.
+func upsertRevised[T any](db *gorm.DB, table string, rows []T, columns []string) error {
+	if len(rows) == 0 {
+		return nil
+	}
 	assignments := append(clause.AssignmentColumns(columns), clause.Assignment{Column: clause.Column{Name: "revision"}, Value: gorm.Expr(table + ".revision + 1")})
-	return db.Table(table).Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "id"}}, DoUpdates: assignments}).Create(value).Error
+	return db.Table(table).Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "id"}}, DoUpdates: assignments}).CreateInBatches(rows, upsertBatchSize).Error
 }
 
 // upsertBatchSize keeps a multi-row insert of the widest rows well under

@@ -359,7 +359,7 @@ func (s *Store) PutFinding(ctx context.Context, value finding.Finding) error {
 		return err
 	}
 	row := findingRow{ID: string(value.ID), AssetID: string(value.AssetID), RuleID: value.RuleID, Status: string(value.Status), Severity: string(value.Severity), LastSeenAt: value.LastSeenAt, ClosedAt: value.ClosedAt, Payload: payload}
-	return upsertRevised(s.db.WithContext(ctx), "findings", row, []string{"status", "severity", "last_seen_at", "closed_at", "payload"})
+	return upsertRevised(s.db.WithContext(ctx), "findings", []findingRow{row}, []string{"status", "severity", "last_seen_at", "closed_at", "payload"})
 }
 
 func (s *Store) ListFindingsByAsset(ctx context.Context, assetID asset.AssetID) ([]finding.Finding, error) {

@@ -212,6 +212,9 @@ func (s *Service) ProjectBatch(ctx context.Context, shard *asset.ScanShard, conn
 		updatedShard.Coverage.Authoritative = updatedShard.Authoritative
 		updatedShard.Coverage.ItemCount += len(batch.Items)
 		updatedShard.Coverage.FreshAt = options.ObservedAt
+		if err := repository.flush(ctx); err != nil {
+			return err
+		}
 		return repository.PutScanShard(ctx, updatedShard)
 	})
 	if err != nil {
@@ -311,7 +314,7 @@ func (s *Service) projectItem(ctx context.Context, repository persistence.Invent
 	// Observation append deliberately precedes current-projection mutation in
 	// the same transaction. A projection can therefore never reference a row
 	// that was not durably written.
-	if err := repository.AppendObservation(ctx, observation); err != nil {
+	if err := repository.AppendObservations(ctx, []asset.Observation{observation}); err != nil {
 		return err
 	}
 	if isNew || shouldProject(observation, current) {
@@ -349,6 +352,10 @@ func (s *Service) projectItem(ctx context.Context, repository persistence.Invent
 }
 
 func (s *Service) recordChange(ctx context.Context, repository persistence.InventoryRepository, changeType asset.ChangeType, value asset.Asset, scanTaskID asset.ScanTaskID, at time.Time, fields []asset.FieldChange) error {
+	return repository.RecordAssetChanges(ctx, []asset.AssetChange{newChange(changeType, value, scanTaskID, at, fields)})
+}
+
+func newChange(changeType asset.ChangeType, value asset.Asset, scanTaskID asset.ScanTaskID, at time.Time, fields []asset.FieldChange) asset.AssetChange {
 	change := asset.NewAssetChange(value)
 	// Change rows are keyed by scan and asset; their own ID never needs the
 	// injected sequence that tests use to pin asset and observation IDs.
@@ -357,7 +364,7 @@ func (s *Service) recordChange(ctx context.Context, repository persistence.Inven
 	change.ScanTaskID = scanTaskID
 	change.ChangedAt = at
 	change.Fields = fields
-	return repository.RecordAssetChange(ctx, change)
+	return change
 }
 
 func migrateUnscopedAliCloudOSSBucket(
@@ -605,17 +612,21 @@ func (s *Service) FinishShard(ctx context.Context, shard *asset.ScanShard, statu
 					return err
 				}
 			}
+			var closed []asset.Asset
+			var removals []asset.AssetChange
 			for _, projected := range active {
 				if _, ok := seen[projected.ID]; ok {
 					continue
 				}
 				projected.ClosedAt = &finishedAt
-				if err := repository.PutAsset(ctx, projected); err != nil {
-					return err
-				}
-				if err := s.recordChange(ctx, repository, asset.ChangeRemoved, projected, updatedShard.ScanRunID, finishedAt, nil); err != nil {
-					return err
-				}
+				closed = append(closed, projected)
+				removals = append(removals, newChange(asset.ChangeRemoved, projected, updatedShard.ScanRunID, finishedAt, nil))
+			}
+			if err := repository.PutAssets(ctx, closed); err != nil {
+				return err
+			}
+			if err := repository.RecordAssetChanges(ctx, removals); err != nil {
+				return err
 			}
 		}
 		if err := s.closeConfirmedAbsentAssets(ctx, repository, updatedShard, confirmedAbsent, finishedAt); err != nil {

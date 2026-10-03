@@ -140,7 +140,7 @@ func seedGraphWorker(t *testing.T, repositories persistence.Repositories, now ti
 			return repositories.Inventory().PutAsset(ctx, asset.Asset{ID: "asset-instance", Identity: asset.Identity{Provider: asset.ProviderAliCloud, Partition: "public", ConnectionID: "connection-graph", NativeType: "ACS::ECS::Instance", NativeID: "i-1"}, ScopeID: "scope-region", ResourceKindID: "kind-instance", CurrentObservationID: "observation-instance", Normalized: map[string]any{"vpcId": "vpc-1", "state": "Running"}, FirstSeenAt: now, LastSeenAt: now})
 		},
 		func() error {
-			return repositories.Inventory().AppendObservation(ctx, asset.Observation{ID: "observation-instance", AssetID: "asset-instance", ScanRunID: "run-graph", ScanShardID: "shard-graph", ObservedAt: finishedAt, Source: "resource-center", SchemaRevision: "bundle-graph", Authoritative: true})
+			return repositories.Inventory().AppendObservations(ctx, []asset.Observation{{ID: "observation-instance", AssetID: "asset-instance", ScanRunID: "run-graph", ScanShardID: "shard-graph", ObservedAt: finishedAt, Source: "resource-center", SchemaRevision: "bundle-graph", Authoritative: true}})
 		},
 		func() error {
 			return repositories.Inventory().PutAsset(ctx, asset.Asset{ID: "asset-vpc", Identity: asset.Identity{Provider: asset.ProviderAliCloud, Partition: "public", ConnectionID: "connection-graph", NativeType: "ACS::VPC::VPC", NativeID: "vpc-1"}, ScopeID: "scope-root", ResourceKindID: "kind-vpc", FirstSeenAt: now, LastSeenAt: now})

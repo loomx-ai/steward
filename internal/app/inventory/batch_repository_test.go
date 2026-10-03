@@ -43,6 +43,28 @@ func (r countingInventory) GetObservation(ctx context.Context, id asset.Observat
 	return r.InventoryRepository.GetObservation(ctx, id)
 }
 
+func (r countingInventory) PutAsset(ctx context.Context, value asset.Asset) error {
+	r.calls["PutAsset"]++
+	return r.InventoryRepository.PutAsset(ctx, value)
+}
+
+func (r countingInventory) PutAssets(ctx context.Context, values []asset.Asset) error {
+	r.calls["PutAssets"]++
+	return r.InventoryRepository.PutAssets(ctx, values)
+}
+
+func (r countingInventory) AppendObservations(ctx context.Context, observations []asset.Observation) error {
+	r.calls["AppendObservations"]++
+	return r.InventoryRepository.AppendObservations(ctx, observations)
+}
+
+func (r countingInventory) RecordAssetChanges(ctx context.Context, changes []asset.AssetChange) error {
+	r.calls["RecordAssetChanges"]++
+	return r.InventoryRepository.RecordAssetChanges(ctx, changes)
+}
+
+// A batch reads its assets and scopes once and writes its observations,
+// assets and changes in one call each.
 func TestProjectBatchReadsAssetsAndScopesOncePerBatch(t *testing.T) {
 	ctx, now := context.Background(), time.Date(2026, 10, 3, 0, 0, 0, 0, time.UTC)
 	repositories := openInventoryWorkerRepositories(t)
@@ -65,15 +87,31 @@ func TestProjectBatchReadsAssetsAndScopesOncePerBatch(t *testing.T) {
 	for index := range items {
 		items[index].Name, items[index].Raw = "second", map[string]any{"name": "second"}
 	}
-	// The same resource twice in one batch must see its own earlier write.
+	// The same resource twice in one batch must see its own earlier write,
+	// which is still held for the batch's single asset write.
 	duplicate := items[0]
 	duplicate.Name, duplicate.Raw = "third", map[string]any{"name": "third"}
 	items = append(items, duplicate)
 	if err := service.ProjectBatch(ctx, &shard, connection, contracts.InventoryBatch{Items: items}, inventory.ProjectionOptions{ObservedAt: now.Add(time.Minute)}); err != nil {
 		t.Fatal(err)
 	}
-	if want := map[string]int{"PutResourceKind": 1, "GetScope": 1, "GetAssetByIdentity": 1, "GetObservation": 1}; fmt.Sprint(repository.calls) != fmt.Sprint(want) {
-		t.Fatalf("repository reads = %v, want %v", repository.calls, want)
+	want := map[string]int{"PutResourceKind": 1, "GetScope": 1, "AppendObservations": 1, "PutAssets": 1, "RecordAssetChanges": 1}
+	if fmt.Sprint(repository.calls) != fmt.Sprint(want) {
+		t.Fatalf("repository calls = %v, want %v", repository.calls, want)
+	}
+	// Both batches belong to one scan, so each asset's changes fold into one.
+	changes, err := repositories.Inventory().ListAssetChanges(ctx, persistence.AssetChangeListOptions{ScanTaskID: "run-worker", Limit: 100})
+	if err != nil || len(changes.Items) != 50 {
+		t.Fatalf("changes = %d, err = %v", len(changes.Items), err)
+	}
+	for _, change := range changes.Items {
+		want := "second"
+		if change.NativeID == "i-00" {
+			want = "third"
+		}
+		if change.Type != asset.ChangeAdded || change.Name != want {
+			t.Fatalf("change = %+v, want an addition named %q", change, want)
+		}
 	}
 	assets, err := repositories.Inventory().ListActiveAssetsByConnection(ctx, connection.ID, "kind-worker")
 	if err != nil || len(assets) != 50 {

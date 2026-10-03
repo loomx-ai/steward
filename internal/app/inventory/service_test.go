@@ -242,6 +242,14 @@ func (r *inventoryRepository) PutAsset(_ context.Context, value asset.Asset) err
 	r.assets[value.ID] = value
 	return nil
 }
+func (r *inventoryRepository) PutAssets(ctx context.Context, values []asset.Asset) error {
+	for _, value := range values {
+		if err := r.PutAsset(ctx, value); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 func (r *inventoryRepository) SetAssetDirty(_ context.Context, id asset.AssetID, dirty bool) (asset.Asset, error) {
 	value, ok := r.assets[id]
 	if !ok {
@@ -308,9 +316,11 @@ func (r *inventoryRepository) ListAssetsByIDs(_ context.Context, ids []asset.Ass
 func (r *inventoryRepository) ListAssets(context.Context, persistence.ListOptions) (persistence.Page[asset.Asset], error) {
 	return persistence.Page[asset.Asset]{}, nil
 }
-func (r *inventoryRepository) AppendObservation(_ context.Context, observation asset.Observation) error {
-	r.events = append(r.events, "observation:"+string(observation.AssetID))
-	r.observations[observation.AssetID] = append(r.observations[observation.AssetID], observation)
+func (r *inventoryRepository) AppendObservations(_ context.Context, observations []asset.Observation) error {
+	for _, observation := range observations {
+		r.events = append(r.events, "observation:"+string(observation.AssetID))
+		r.observations[observation.AssetID] = append(r.observations[observation.AssetID], observation)
+	}
 	return nil
 }
 func (r *inventoryRepository) GetObservation(_ context.Context, id asset.ObservationID) (asset.Observation, error) {
@@ -323,17 +333,19 @@ func (r *inventoryRepository) GetObservation(_ context.Context, id asset.Observa
 	}
 	return asset.Observation{}, persistence.ErrNotFound
 }
-func (r *inventoryRepository) RecordAssetChange(_ context.Context, change asset.AssetChange) error {
-	key := string(change.ScanTaskID) + "/" + string(change.AssetID)
-	if existing, ok := r.changes[key]; ok {
-		merged, keep := asset.MergeAssetChange(existing, change)
-		if !keep {
-			delete(r.changes, key)
-			return nil
+func (r *inventoryRepository) RecordAssetChanges(_ context.Context, changes []asset.AssetChange) error {
+	for _, change := range changes {
+		key := string(change.ScanTaskID) + "/" + string(change.AssetID)
+		if existing, ok := r.changes[key]; ok {
+			merged, keep := asset.MergeAssetChange(existing, change)
+			if !keep {
+				delete(r.changes, key)
+				continue
+			}
+			change = merged
 		}
-		change = merged
+		r.changes[key] = change
 	}
-	r.changes[key] = change
 	return nil
 }
 func (r *inventoryRepository) ListAssetChanges(_ context.Context, options persistence.AssetChangeListOptions) (persistence.Page[asset.AssetChange], error) {

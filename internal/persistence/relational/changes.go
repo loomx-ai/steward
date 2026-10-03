@@ -53,36 +53,89 @@ func (s *Store) ListObservationsByIDs(ctx context.Context, ids []asset.Observati
 	return result, nil
 }
 
-func (s *Store) RecordAssetChange(ctx context.Context, change asset.AssetChange) error {
-	if change.ID == "" || change.ScanTaskID == "" || change.AssetID == "" || !change.Type.Valid() {
-		return errors.New("asset change requires an id, scan, asset and change type")
+func (s *Store) RecordAssetChanges(ctx context.Context, changes []asset.AssetChange) error {
+	type changeKey struct{ scanTaskID, assetID string }
+	pending := make(map[changeKey][]asset.AssetChange, len(changes))
+	keys := make([]changeKey, 0, len(changes))
+	assetIDsByScan := make(map[string][]string)
+	for _, change := range changes {
+		if change.ID == "" || change.ScanTaskID == "" || change.AssetID == "" || !change.Type.Valid() {
+			return errors.New("asset change requires an id, scan, asset and change type")
+		}
+		key := changeKey{string(change.ScanTaskID), string(change.AssetID)}
+		if _, ok := pending[key]; !ok {
+			keys = append(keys, key)
+			assetIDsByScan[key.scanTaskID] = append(assetIDsByScan[key.scanTaskID], key.assetID)
+		}
+		pending[key] = append(pending[key], change)
+	}
+	if len(keys) == 0 {
+		return nil
 	}
 	db := s.db.WithContext(ctx)
-	var existing assetChangeRow
-	err := db.Table("asset_changes").Where("scan_task_id = ? AND asset_id = ?", string(change.ScanTaskID), string(change.AssetID)).Take(&existing).Error
-	if err != nil && !errors.Is(mapError(err), persistence.ErrNotFound) {
-		return err
-	}
-	if err == nil {
-		previous, decodeErr := decode[asset.AssetChange](existing.Payload)
-		if decodeErr != nil {
-			return decodeErr
+	existing := make(map[changeKey]assetChangeRow, len(keys))
+	const batchSize = 400
+	for scanTaskID, assetIDs := range assetIDsByScan {
+		for start := 0; start < len(assetIDs); start += batchSize {
+			var rows []assetChangeRow
+			if err := db.Table("asset_changes").
+				Where("scan_task_id = ? AND asset_id IN ?", scanTaskID, assetIDs[start:min(start+batchSize, len(assetIDs))]).
+				Find(&rows).Error; err != nil {
+				return err
+			}
+			for _, row := range rows {
+				existing[changeKey{row.ScanTaskID, row.AssetID}] = row
+			}
 		}
-		merged, keep := asset.MergeAssetChange(previous, change)
-		if !keep {
-			return db.Table("asset_changes").Where("id = ?", existing.ID).Delete(nil).Error
+	}
+	// Fold each asset's changes as one write per change would have: a merge
+	// that cancels out removes the recorded change, and a later change then
+	// starts a new one.
+	var deletes []string
+	var upserts []assetChangeRow
+	for _, key := range keys {
+		var current *asset.AssetChange
+		row, recorded := existing[key]
+		if recorded {
+			previous, err := decode[asset.AssetChange](row.Payload)
+			if err != nil {
+				return err
+			}
+			current = &previous
 		}
-		change = merged
+		for _, change := range pending[key] {
+			if current == nil {
+				current = &change
+				continue
+			}
+			merged, keep := asset.MergeAssetChange(*current, change)
+			if !keep {
+				current = nil
+				continue
+			}
+			current = &merged
+		}
+		if recorded && (current == nil || current.ID != row.ID) {
+			deletes = append(deletes, row.ID)
+		}
+		if current == nil {
+			continue
+		}
+		payload, err := encode(*current)
+		if err != nil {
+			return err
+		}
+		upserts = append(upserts, assetChangeRow{
+			ID: current.ID, ConnectionID: string(current.ConnectionID), ScanTaskID: string(current.ScanTaskID), AssetID: string(current.AssetID),
+			ChangeType: string(current.Type), ResourceKindID: string(current.ResourceKindID), ChangedAt: current.ChangedAt, Payload: payload,
+		})
 	}
-	payload, err := encode(change)
-	if err != nil {
-		return err
+	for start := 0; start < len(deletes); start += batchSize {
+		if err := db.Table("asset_changes").Where("id IN ?", deletes[start:min(start+batchSize, len(deletes))]).Delete(nil).Error; err != nil {
+			return err
+		}
 	}
-	row := assetChangeRow{
-		ID: change.ID, ConnectionID: string(change.ConnectionID), ScanTaskID: string(change.ScanTaskID), AssetID: string(change.AssetID),
-		ChangeType: string(change.Type), ResourceKindID: string(change.ResourceKindID), ChangedAt: change.ChangedAt, Payload: payload,
-	}
-	return upsert(db, "asset_changes", row, []string{"change_type", "resource_kind_id", "changed_at", "payload"})
+	return upsertInBatches(db, "asset_changes", upserts, []string{"change_type", "resource_kind_id", "changed_at", "payload"})
 }
 
 func (s *Store) ListAssetChanges(ctx context.Context, options persistence.AssetChangeListOptions) (persistence.Page[asset.AssetChange], error) {
