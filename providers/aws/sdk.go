@@ -3,13 +3,18 @@ package aws
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
+	"sync"
 
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
+	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	awscredentials "github.com/aws/aws-sdk-go-v2/credentials"
 	awscloudcontrol "github.com/aws/aws-sdk-go-v2/service/cloudcontrol"
@@ -27,10 +32,82 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type sdkClientFactory struct{}
+// sdkHTTPClient is shared by every AWS SDK config so pages, kinds and regions
+// reuse pooled TCP/TLS connections instead of dialing a new transport per call.
+var sdkHTTPClient = awshttp.NewBuildableClient()
 
-func (sdkClientFactory) CallerIdentity(ctx context.Context, credential contracts.Credential, region string) (string, string, error) {
-	config, err := loadSDKConfig(ctx, credential, region)
+// sdkClientFactory keeps one loaded SDK config per connection and region and
+// reloads it when the credential changes.
+type sdkClientFactory struct {
+	mu      sync.Mutex
+	configs map[sdkConfigKey]sdkConfigEntry
+}
+
+type sdkConfigKey struct {
+	connection asset.ConnectionID
+	region     string
+}
+
+type sdkConfigEntry struct {
+	fingerprint string
+	config      awssdk.Config
+}
+
+const maxCachedSDKConfigs = 1024
+
+func (f *sdkClientFactory) config(ctx context.Context, credential contracts.Credential, region string) (awssdk.Config, error) {
+	key := sdkConfigKey{connection: credential.ConnectionID, region: region}
+	fingerprint := credentialFingerprint(credential)
+	f.mu.Lock()
+	entry, ok := f.configs[key]
+	f.mu.Unlock()
+	if !ok || entry.fingerprint != fingerprint {
+		config, err := loadSDKConfig(ctx, credential, region)
+		if err != nil {
+			return awssdk.Config{}, err
+		}
+		entry = sdkConfigEntry{fingerprint: fingerprint, config: config}
+		f.mu.Lock()
+		if f.configs == nil || len(f.configs) >= maxCachedSDKConfigs {
+			f.configs = map[sdkConfigKey]sdkConfigEntry{}
+		}
+		f.configs[key] = entry
+		f.mu.Unlock()
+	}
+	config := entry.config.Copy()
+	if credential.Type == asset.CredentialOIDC {
+		// Each OIDC resolve re-checks that the connection is still authorized;
+		// keep doing that once per client as before configs were cached.
+		config.Credentials = awssdk.NewCredentialsCache(oidcCredentialsProvider(credential))
+	}
+	return config, nil
+}
+
+// credentialFingerprint changes whenever stored or renewed credential material
+// changes, so a rotated key or refreshed session never reuses an old config.
+func credentialFingerprint(credential contracts.Credential) string {
+	keys := make([]string, 0, len(credential.Values))
+	for key := range credential.Values {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	hash := sha256.New()
+	fmt.Fprintf(hash, "%s\x00%s\x00%s", credential.Type, credential.Version, dynamicKey(credential))
+	for _, key := range keys {
+		fmt.Fprintf(hash, "\x00%s\x00%s", key, credential.Values[key])
+	}
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
+func dynamicKey(credential contracts.Credential) string {
+	if credential.Dynamic == nil {
+		return ""
+	}
+	return credential.Dynamic.Key
+}
+
+func (f *sdkClientFactory) CallerIdentity(ctx context.Context, credential contracts.Credential, region string) (string, string, error) {
+	config, err := f.config(ctx, credential, region)
 	if err != nil {
 		return "", "", err
 	}
@@ -41,8 +118,8 @@ func (sdkClientFactory) CallerIdentity(ctx context.Context, credential contracts
 	return awssdk.ToString(output.Account), awssdk.ToString(output.Arn), nil
 }
 
-func (sdkClientFactory) DiscoverRegions(ctx context.Context, credential contracts.Credential, region string) ([]providerRegion, error) {
-	config, err := loadSDKConfig(ctx, credential, region)
+func (f *sdkClientFactory) DiscoverRegions(ctx context.Context, credential contracts.Credential, region string) ([]providerRegion, error) {
+	config, err := f.config(ctx, credential, region)
 	if err != nil {
 		return nil, err
 	}
@@ -60,50 +137,50 @@ func (sdkClientFactory) DiscoverRegions(ctx context.Context, credential contract
 	return regions, nil
 }
 
-func (sdkClientFactory) ResourceExplorer(ctx context.Context, credential contracts.Credential, region string) (ResourceExplorerClient, error) {
+func (f *sdkClientFactory) ResourceExplorer(ctx context.Context, credential contracts.Credential, region string) (ResourceExplorerClient, error) {
 	region = strings.TrimSpace(region)
 	if region == "" {
 		return nil, errors.New("AWS Resource Explorer request scope requires a region")
 	}
-	config, err := loadSDKConfig(ctx, credential, region)
+	config, err := f.config(ctx, credential, region)
 	if err != nil {
 		return nil, err
 	}
 	return &resourceExplorerSDK{client: awsexplorer.NewFromConfig(config)}, nil
 }
 
-func (sdkClientFactory) CloudFormation(ctx context.Context, credential contracts.Credential, region string) (CloudFormationClient, error) {
-	config, err := loadSDKConfig(ctx, credential, region)
+func (f *sdkClientFactory) CloudFormation(ctx context.Context, credential contracts.Credential, region string) (CloudFormationClient, error) {
+	config, err := f.config(ctx, credential, region)
 	if err != nil {
 		return nil, err
 	}
 	return &cloudFormationSDK{client: awscfn.NewFromConfig(config)}, nil
 }
 
-func (sdkClientFactory) CloudControl(ctx context.Context, credential contracts.Credential, region string) (CloudControlClient, error) {
-	config, err := loadSDKConfig(ctx, credential, region)
+func (f *sdkClientFactory) CloudControl(ctx context.Context, credential contracts.Credential, region string) (CloudControlClient, error) {
+	config, err := f.config(ctx, credential, region)
 	if err != nil {
 		return nil, err
 	}
 	return &cloudControlSDK{client: awscloudcontrol.NewFromConfig(config)}, nil
 }
 
-func (sdkClientFactory) Network(ctx context.Context, credential contracts.Credential, region string) (NetworkClient, error) {
+func (f *sdkClientFactory) Network(ctx context.Context, credential contracts.Credential, region string) (NetworkClient, error) {
 	if strings.TrimSpace(region) == "" {
 		return nil, errors.New("AWS network request requires a region")
 	}
-	config, err := loadSDKConfig(ctx, credential, region)
+	config, err := f.config(ctx, credential, region)
 	if err != nil {
 		return nil, err
 	}
 	return &networkSDK{client: awsec2.NewFromConfig(config)}, nil
 }
 
-func (sdkClientFactory) Native(ctx context.Context, credential contracts.Credential, region string) (*NativeClients, error) {
+func (f *sdkClientFactory) Native(ctx context.Context, credential contracts.Credential, region string) (*NativeClients, error) {
 	if strings.TrimSpace(region) == "" {
 		return nil, errors.New("AWS product API request requires a region")
 	}
-	config, err := loadSDKConfig(ctx, credential, region)
+	config, err := f.config(ctx, credential, region)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +188,7 @@ func (sdkClientFactory) Native(ctx context.Context, credential contracts.Credent
 }
 
 func loadSDKConfig(ctx context.Context, credential contracts.Credential, region string) (awssdk.Config, error) {
-	options := []func(*awsconfig.LoadOptions) error{}
+	options := []func(*awsconfig.LoadOptions) error{awsconfig.WithHTTPClient(sdkHTTPClient)}
 	if region != "" {
 		options = append(options, awsconfig.WithRegion(region))
 	}
@@ -119,14 +196,7 @@ func loadSDKConfig(ctx context.Context, credential contracts.Credential, region 
 		if credential.Dynamic == nil {
 			return awssdk.Config{}, errors.New("OIDC workload identity is unavailable")
 		}
-		provider := awssdk.CredentialsProviderFunc(func(ctx context.Context) (awssdk.Credentials, error) {
-			value, err := credential.Dynamic.Resolve(ctx, "")
-			if err != nil {
-				return awssdk.Credentials{}, err
-			}
-			return awssdk.Credentials{AccessKeyID: value.AccessKeyID, SecretAccessKey: value.SecretAccessKey, SessionToken: value.SessionToken, CanExpire: true, Expires: value.ExpiresAt, Source: "StewardOIDC"}, nil
-		})
-		options = append(options, awsconfig.WithCredentialsProvider(provider))
+		options = append(options, awsconfig.WithCredentialsProvider(oidcCredentialsProvider(credential)))
 		return awsconfig.LoadDefaultConfig(ctx, options...)
 	}
 	accessKey := strings.TrimSpace(credential.Values["access_key_id"])
@@ -144,6 +214,16 @@ func loadSDKConfig(ctx context.Context, credential contracts.Credential, region 
 	provider := awscredentials.NewStaticCredentialsProvider(accessKey, secretKey, sessionToken)
 	options = append(options, awsconfig.WithCredentialsProvider(provider))
 	return awsconfig.LoadDefaultConfig(ctx, options...)
+}
+
+func oidcCredentialsProvider(credential contracts.Credential) awssdk.CredentialsProviderFunc {
+	return func(ctx context.Context) (awssdk.Credentials, error) {
+		value, err := credential.Dynamic.Resolve(ctx, "")
+		if err != nil {
+			return awssdk.Credentials{}, err
+		}
+		return awssdk.Credentials{AccessKeyID: value.AccessKeyID, SecretAccessKey: value.SecretAccessKey, SessionToken: value.SessionToken, CanExpire: true, Expires: value.ExpiresAt, Source: "StewardOIDC"}, nil
+	}
 }
 
 type resourceExplorerSDK struct{ client *awsexplorer.Client }

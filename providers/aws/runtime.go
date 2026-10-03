@@ -48,7 +48,7 @@ type Runtime struct {
 }
 
 func NewRuntime(credentials contracts.CredentialSource) (*Runtime, error) {
-	return newRuntime(credentials, sdkClientFactory{})
+	return newRuntime(credentials, &sdkClientFactory{})
 }
 
 func newRuntime(credentials contracts.CredentialSource, factory clientFactory) (*Runtime, error) {
