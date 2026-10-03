@@ -1,6 +1,7 @@
 package alicloud
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
@@ -287,7 +288,7 @@ const (
 	// filters on.
 	resourceCenterTypeChunk = 20
 	// resourceCenterSearchTTL bounds how long a scan's shared search serves
-	// the kind shards of its region.
+	// the kind shards of its region that have not finished reading it.
 	resourceCenterSearchTTL = 15 * time.Minute
 )
 
@@ -302,9 +303,11 @@ type resourceCenterSearchKey struct {
 }
 
 type resourceCenterSearch struct {
-	done    chan struct{}
+	done chan struct{}
+	err  error
+	// records holds every searched type's records, sorted by region and ID,
+	// until the type's shard reads its last page; guarded by the cache mutex.
 	records map[string][]ResourceRecord
-	err     error
 	expires time.Time
 }
 
@@ -321,6 +324,8 @@ func (s *resourceCenterSearch) finished() bool {
 // a multi-type search instead of each searching its own, mostly empty, type.
 // Concurrent shards wait for one search; a failed search fails every waiting
 // shard and is not kept, so no shard reads a failure as an empty listing.
+// Memory is bounded by the unread types of the searches in flight: a type's
+// records are released once its shard reads its last page.
 type resourceCenterSearchCache struct {
 	mu      sync.Mutex
 	entries map[resourceCenterSearchKey]*resourceCenterSearch
@@ -330,7 +335,7 @@ func (c *resourceCenterSearchCache) get(
 	ctx context.Context,
 	key resourceCenterSearchKey,
 	search func() (map[string][]ResourceRecord, error),
-) (map[string][]ResourceRecord, error) {
+) (*resourceCenterSearch, error) {
 	now := time.Now()
 	c.mu.Lock()
 	entry := c.entries[key]
@@ -349,46 +354,97 @@ func (c *resourceCenterSearchCache) get(
 	}
 	c.mu.Unlock()
 	if owner {
-		entry.records, entry.err = search()
-		entry.expires = time.Now().Add(resourceCenterSearchTTL)
-		if entry.err != nil {
-			c.mu.Lock()
-			if c.entries[key] == entry {
-				delete(c.entries, key)
-			}
-			c.mu.Unlock()
+		records, err := search()
+		c.mu.Lock()
+		entry.records, entry.err, entry.expires = records, err, time.Now().Add(resourceCenterSearchTTL)
+		if err != nil && c.entries[key] == entry {
+			delete(c.entries, key)
 		}
+		c.mu.Unlock()
 		close(entry.done)
 	}
 	select {
 	case <-entry.done:
-		return entry.records, entry.err
+		return entry, entry.err
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
 }
 
-// sharedResourceCenterRecords serves a scan's first page of a kind shard from
+// page returns up to limit records of nativeType after cursor and the cursor
+// of the page that follows, releasing the type's records after its last page.
+// It reports false once the type was released: a shard listing it again needs
+// a fresh search, never an empty listing.
+func (c *resourceCenterSearchCache) page(
+	entry *resourceCenterSearch,
+	nativeType string,
+	after resourceCenterCursor,
+	limit int,
+) ([]ResourceRecord, *resourceCenterCursor, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	records, ok := entry.records[nativeType]
+	if !ok {
+		return nil, nil, false
+	}
+	start, _ := slices.BinarySearchFunc(records, after, func(record ResourceRecord, cursor resourceCenterCursor) int {
+		return cmp.Or(strings.Compare(record.RegionID, cursor.RegionID), strings.Compare(record.ResourceID, cursor.ResourceID))
+	})
+	if start < len(records) && records[start].RegionID == after.RegionID && records[start].ResourceID == after.ResourceID {
+		start++
+	}
+	end := min(start+limit, len(records))
+	if end == len(records) {
+		delete(entry.records, nativeType)
+		return records[start:end], nil, true
+	}
+	last := records[end-1]
+	return records[start:end], &resourceCenterCursor{RegionID: last.RegionID, ResourceID: last.ResourceID}, true
+}
+
+func (c *resourceCenterSearchCache) forget(key resourceCenterSearchKey, entry *resourceCenterSearch) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.entries[key] == entry {
+		delete(c.entries, key)
+	}
+}
+
+// resourceCenterCursor resumes a kind shard after the last record it read.
+// It names a record rather than a position, so a shard whose shared search
+// expired keeps its place in the search that replaces it.
+type resourceCenterCursor struct {
+	RegionID   string `json:"region_id"`
+	ResourceID string `json:"resource_id"`
+}
+
+// sharedResourceCenterPage serves a scan's kind shard a page of its type from
 // one search of up to resourceCenterTypeChunk types in its region. It reports
-// false when the request needs its own search: no scan run, a resumed cursor,
-// a network or expression filter, or more records than one page holds.
-func (r *Runtime) sharedResourceCenterRecords(
+// false for requests a shared search does not answer: outside a scan, for
+// every type at once, or narrowed by a network or expression filter.
+func (r *Runtime) sharedResourceCenterPage(
 	ctx context.Context,
 	request contracts.InventoryRequest,
 	clientRegion string,
 	credential contracts.Credential,
 	client ResourceCenterClient,
 	inventory *Inventory,
-) ([]ResourceRecord, bool, error) {
-	if request.ScanRunID == "" || request.ResourceKind == nil || request.Cursor != "" || request.NetworkTarget != nil ||
+) ([]ResourceRecord, string, bool, error) {
+	if request.ScanRunID == "" || request.ResourceKind == nil || request.NetworkTarget != nil ||
 		stringOption(request.Options, "vpc_id") != "" || stringOption(request.Options, "vswitch_id") != "" ||
 		stringOption(request.Options, "search_expression") != "" {
-		return nil, false, nil
+		return nil, "", false, nil
 	}
 	nativeType := strings.TrimSpace(request.ResourceKind.NativeType)
 	position := slices.Index(inventory.resourceTypes, nativeType)
 	if position < 0 {
-		return nil, false, nil
+		return nil, "", true, fmt.Errorf("Alibaba Cloud resource type %q is not an instance resource", nativeType)
+	}
+	var after resourceCenterCursor
+	if request.Cursor != "" {
+		if err := json.Unmarshal([]byte(request.Cursor), &after); err != nil || after.ResourceID == "" {
+			return nil, "", true, fmt.Errorf("invalid Resource Center inventory cursor %q", request.Cursor)
+		}
 	}
 	chunk := position / resourceCenterTypeChunk
 	types := inventory.resourceTypes[chunk*resourceCenterTypeChunk : min((chunk+1)*resourceCenterTypeChunk, len(inventory.resourceTypes))]
@@ -397,26 +453,39 @@ func (r *Runtime) sharedResourceCenterRecords(
 		run: request.ScanRunID, connection: request.ConnectionID, credential: credentialFingerprint(credential),
 		clientRegion: clientRegion, scopeKind: request.Scope.Kind, regionFilter: regionFilter, chunk: chunk,
 	}
-	byType, err := r.resourceCenterSearches.get(ctx, key, func() (map[string][]ResourceRecord, error) {
-		// The search serves other shards too, so one shard's cancellation
-		// must not fail it for them.
-		return searchResourceTypes(context.WithoutCancel(ctx), client, regionFilter, types)
-	})
-	if err != nil {
-		return nil, true, err
-	}
-	records := byType[nativeType]
-	// ponytail: a type with more than one page is searched again on its own so
-	// its cursor stays a native token; page the shared records if that is common.
-	if len(records) > ResourceCenterPageLimit {
-		return nil, false, nil
+	var records []ResourceRecord
+	var next *resourceCenterCursor
+	for {
+		search, err := r.resourceCenterSearches.get(ctx, key, func() (map[string][]ResourceRecord, error) {
+			// The search serves other shards too, so one shard's cancellation
+			// must not fail it for them.
+			return searchResourceTypes(context.WithoutCancel(ctx), client, regionFilter, types)
+		})
+		if err != nil {
+			return nil, "", true, err
+		}
+		var ok bool
+		if records, next, ok = r.resourceCenterSearches.page(search, nativeType, after, ResourceCenterPageLimit); ok {
+			break
+		}
+		r.resourceCenterSearches.forget(key, search)
 	}
 	execution.LogJob(ctx, "info", fmt.Sprintf("resource-center %s served by the scan's shared search of %d resource types", nativeType, len(types)))
-	return records, true, nil
+	if next == nil {
+		return records, "", true, nil
+	}
+	cursor, err := json.Marshal(next)
+	if err != nil {
+		return nil, "", true, fmt.Errorf("encode Resource Center inventory cursor: %w", err)
+	}
+	return records, string(cursor), true, nil
 }
 
 func searchResourceTypes(ctx context.Context, client ResourceCenterClient, regionID string, types []string) (map[string][]ResourceRecord, error) {
-	result := make(map[string][]ResourceRecord)
+	result := make(map[string][]ResourceRecord, len(types))
+	for _, resourceType := range types {
+		result[resourceType] = nil
+	}
 	cursor := ""
 	for {
 		request := SearchRequest{NextToken: cursor, MaxResults: ResourceCenterPageLimit, RegionID: regionID, ResourceTypes: types}
@@ -438,6 +507,11 @@ func searchResourceTypes(ctx context.Context, client ResourceCenterClient, regio
 			result[record.ResourceType] = append(result[record.ResourceType], record)
 		}
 		if page.NextToken == "" {
+			for _, records := range result {
+				slices.SortFunc(records, func(left, right ResourceRecord) int {
+					return cmp.Or(strings.Compare(left.RegionID, right.RegionID), strings.Compare(left.ResourceID, right.ResourceID))
+				})
+			}
 			return result, nil
 		}
 		if page.NextToken == cursor {

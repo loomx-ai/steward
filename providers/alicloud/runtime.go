@@ -340,13 +340,14 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		return contracts.InventoryBatch{}, NormalizeError(err)
 	}
 	inventory := NewInventory(client, r.resourceCenterInventoryNativeTypes())
-	records, shared, err := r.sharedResourceCenterRecords(ctx, request, region, credential, client, inventory)
+	records, next, shared, err := r.sharedResourceCenterPage(ctx, request, region, credential, client, inventory)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
 	var batch contracts.InventoryBatch
 	if shared {
 		batch, err = inventory.listRecords(ctx, request, records)
+		batch.NextCursor, batch.Complete = next, next == ""
 	} else {
 		batch, err = inventory.List(ctx, request)
 	}

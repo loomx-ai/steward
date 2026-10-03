@@ -3,6 +3,7 @@ package alicloud
 import (
 	"context"
 	"errors"
+	"fmt"
 	"slices"
 	"sync"
 	"testing"
@@ -131,5 +132,78 @@ func TestResourceCenterKindShardsShareOneSearchPerScanAndRegion(t *testing.T) {
 	client.mu.Unlock()
 	if batch, err := list("run-3", types[0]); err != nil || len(batch.Items) != 1 {
 		t.Fatalf("retried shard batch = %+v, err = %v", batch, err)
+	}
+}
+
+func TestResourceCenterKindShardPagesItsTypeFromTheSharedSearch(t *testing.T) {
+	t.Parallel()
+
+	client := &sharedSearchClient{}
+	runtime, err := newRuntime(staticCredentials{
+		value: contracts.Credential{Type: asset.CredentialAliCloudAccessKey, Values: map[string]string{"access_key_id": "id", "access_key_secret": "secret"}},
+	}, sharedSearchFactory{&runtimeFactory{client: client}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	nativeType := NewInventory(nil, runtime.resourceCenterInventoryNativeTypes()).resourceTypes[0]
+	total := ResourceCenterPageLimit*2 + 7
+	for index := range total {
+		client.records = append(client.records, ResourceRecord{
+			RegionID: "cn-hangzhou", ResourceType: nativeType, ResourceID: fmt.Sprintf("r-%04d", total-index),
+		})
+	}
+	list := func(cursor string) (contracts.InventoryBatch, error) {
+		return runtime.List(context.Background(), contracts.InventoryRequest{
+			ConnectionID: "connection-a", ScanRunID: "run-1", Source: "resource-center", Cursor: cursor,
+			Scope:        asset.Scope{Kind: asset.ScopeRegion, NativeID: "cn-hangzhou", Location: "cn-hangzhou"},
+			ResourceKind: &asset.ResourceKind{NativeType: nativeType},
+		})
+	}
+	readAll := func(cursor string) []string {
+		t.Helper()
+		var ids []string
+		for {
+			batch, err := list(cursor)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, item := range batch.Items {
+				ids = append(ids, item.NativeID)
+			}
+			if batch.Complete {
+				return ids
+			}
+			cursor = batch.NextCursor
+		}
+	}
+
+	ids := readAll("")
+	if len(ids) != total || !slices.IsSorted(ids) || client.searchCount() != 1 {
+		t.Fatalf("listed %d of %d records (sorted %t) in %d searches", len(ids), total, slices.IsSorted(ids), client.searchCount())
+	}
+
+	// The finished shard released its records; listing the type again is a
+	// fresh search, never an empty listing that would read as deletions.
+	if again := readAll(""); len(again) != total || client.searchCount() != 2 {
+		t.Fatalf("relisted %d records in %d searches", len(again), client.searchCount())
+	}
+
+	// A shard resumed after its shared search was dropped continues after its
+	// last record; a record it already read being deleted shifts nothing.
+	first, err := list("")
+	if err != nil || first.Complete {
+		t.Fatalf("first page = %+v, err = %v", first, err)
+	}
+	client.mu.Lock()
+	client.records = client.records[:len(client.records)-1] // deletes r-0001
+	client.mu.Unlock()
+	runtime.resourceCenterSearches = resourceCenterSearchCache{}
+	rest := readAll(first.NextCursor)
+	if len(first.Items)+len(rest) != total || rest[0] != fmt.Sprintf("r-%04d", ResourceCenterPageLimit+1) {
+		t.Fatalf("resumed listing = %d records starting at %q", len(rest), rest[0])
+	}
+
+	if _, err := list(`{"parent_index":1}`); err == nil {
+		t.Fatal("accepted a cursor that names no record")
 	}
 }
