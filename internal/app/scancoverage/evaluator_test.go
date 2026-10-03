@@ -248,6 +248,70 @@ func TestEvaluateConnectionBoundsTotalHistoryReads(t *testing.T) {
 	}
 }
 
+func TestEvaluatorRemembersSummaryUntilScanHistoryChanges(t *testing.T) {
+	t.Parallel()
+
+	repositories := openCoverageRepositories(t)
+	ctx := context.Background()
+	now := time.Date(2026, 7, 24, 18, 0, 0, 0, time.UTC)
+	requirement := scancoverage.ActiveRegionRequirement([]asset.ConnectionRegion{activeCoverageRegion("cn-hangzhou")}, "connection-a")
+	skipped := asset.ScanRun{
+		ID: "scan-skipped", ConnectionID: "connection-a", Status: asset.ScanSucceeded,
+		ScopeMode: asset.ScanAllActiveRegions,
+		Targets:   []asset.ScanTarget{{Key: "region:cn-hangzhou", Kind: asset.ScanTargetRegion, RegionID: "cn-hangzhou"}},
+		CreatedAt: now, FinishedAt: timePointer(now),
+	}
+	if err := repositories.Inventory().CreateScanRun(ctx, skipped); err != nil {
+		t.Fatal(err)
+	}
+	if err := repositories.Inventory().PutScanShard(ctx, asset.ScanShard{
+		ID: "shard-skipped", ScanRunID: skipped.ID, Provider: asset.ProviderAliCloud,
+		TargetKey: "region:cn-hangzhou", RegionID: "cn-hangzhou",
+		Status: asset.ShardSkipped, CreatedAt: now, FinishedAt: timePointer(now),
+	}); err != nil {
+		t.Fatal(err)
+	}
+	spy := &coverageInventorySpy{InventoryRepository: repositories.Inventory()}
+	evaluator := scancoverage.NewEvaluator()
+
+	for attempt := 0; attempt < 2; attempt++ {
+		summary, err := evaluator.EvaluateConnection(ctx, spy, "connection-a", requirement)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if summary.Status != "incomplete" {
+			t.Fatalf("attempt %d summary = %+v", attempt, summary)
+		}
+	}
+	if len(spy.pageOptions) != 2 || len(spy.shardRunIDs) != 1 {
+		t.Fatalf("unchanged history reread shards: pages=%d shards=%v", len(spy.pageOptions), spy.shardRunIDs)
+	}
+
+	later := now.Add(time.Hour)
+	putCompleteCoverageRun(t, repositories.Inventory(), asset.ScanRun{
+		ID: "scan-complete", ConnectionID: "connection-a", Status: asset.ScanSucceeded,
+		ScopeMode: asset.ScanAllActiveRegions,
+		Targets:   []asset.ScanTarget{{Key: "region:cn-hangzhou", Kind: asset.ScanTargetRegion, RegionID: "cn-hangzhou"}},
+		CreatedAt: later, FinishedAt: timePointer(later),
+	}, "shard-complete")
+	summary, err := evaluator.EvaluateConnection(ctx, spy, "connection-a", requirement)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if summary.Status != "complete" || summary.LastCompleteScanAt == nil || !summary.LastCompleteScanAt.Equal(later) {
+		t.Fatalf("summary after a new complete scan = %+v", summary)
+	}
+
+	// A requirement that the remembered history does not satisfy is
+	// evaluated afresh as well.
+	wider := scancoverage.ActiveRegionRequirement([]asset.ConnectionRegion{
+		activeCoverageRegion("cn-hangzhou"), activeCoverageRegion("cn-shanghai"),
+	}, "connection-a")
+	if summary, err := evaluator.EvaluateConnection(ctx, spy, "connection-a", wider); err != nil || summary.Status != "incomplete" {
+		t.Fatalf("wider requirement summary = %+v err = %v", summary, err)
+	}
+}
+
 type coverageInventorySpy struct {
 	persistence.InventoryRepository
 	pageOptions       []persistence.ListOptions

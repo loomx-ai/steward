@@ -63,6 +63,7 @@ type Service struct {
 	repositories persistence.Repositories
 	bundles      BundleCatalog
 	clock        func() time.Time
+	coverages    *scancoverage.Evaluator
 }
 
 func NewService(repositories persistence.Repositories, bundles BundleCatalog, options ...Option) *Service {
@@ -70,6 +71,7 @@ func NewService(repositories persistence.Repositories, bundles BundleCatalog, op
 		repositories: repositories,
 		bundles:      bundles,
 		clock:        func() time.Time { return time.Now().UTC() },
+		coverages:    scancoverage.NewEvaluator(),
 	}
 	for _, option := range options {
 		option(service)
@@ -688,7 +690,7 @@ func (s *Service) coverage(
 	connectionID asset.ConnectionID,
 	requirement scancoverage.Requirement,
 ) (core.Coverage, error) {
-	summary, err := scancoverage.EvaluateConnection(
+	summary, err := s.coverages.EvaluateConnection(
 		ctx, s.repositories.Inventory(), connectionID, requirement,
 	)
 	if err != nil {

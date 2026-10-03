@@ -832,6 +832,17 @@ func TestServiceCursorBecomesStaleWhenCoverageChanges(t *testing.T) {
 	if err := repositories.Inventory().PutScanShard(context.Background(), shard); err != nil {
 		t.Fatal(err)
 	}
+	// Shards of a finished scan change only through a retry, which moves the
+	// scan itself to a new generation and outcome.
+	run, err := repositories.Inventory().GetScanRun(context.Background(), shard.ScanRunID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	run.RetryGeneration++
+	run.Status = asset.ScanPartial
+	if err := repositories.Inventory().PutScanRun(context.Background(), run); err != nil {
+		t.Fatal(err)
+	}
 	_, err = service.Query(context.Background(), Query{
 		ConnectionID: "connection-a", FocusKey: focusKey, Cursor: first.NextCursor,
 	})

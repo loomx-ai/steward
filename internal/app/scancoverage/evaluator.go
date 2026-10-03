@@ -2,7 +2,10 @@ package scancoverage
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/json"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -29,24 +32,116 @@ func EvaluateConnection(
 	connectionID asset.ConnectionID,
 	requirement Requirement,
 ) (ConnectionSummary, error) {
-	result := ConnectionSummary{Status: "unknown"}
 	if requirement.Unprovable {
 		return ConnectionSummary{Status: "incomplete"}, nil
 	}
-	required := requiredTargetSet(requirement)
+	candidates, err := listCandidates(ctx, repository, connectionID)
+	if err != nil {
+		return ConnectionSummary{}, err
+	}
+	return evaluateCandidates(ctx, repository, candidates, requirement)
+}
+
+// summaryLimit bounds the remembered connections; at the limit the memo
+// simply starts over.
+const summaryLimit = 256
+
+// Evaluator evaluates coverage like EvaluateConnection, but remembers each
+// connection's summary together with a digest of the scan runs and the
+// requirement it was computed from. Any new, finished, retried or deleted
+// scan changes the run list and therefore the digest, so only an unchanged
+// history skips rereading the shards of failed or skipped scans.
+type Evaluator struct {
+	mu        sync.Mutex
+	summaries map[asset.ConnectionID]rememberedSummary
+}
+
+type rememberedSummary struct {
+	digest  [sha256.Size]byte
+	summary ConnectionSummary
+}
+
+func NewEvaluator() *Evaluator {
+	return &Evaluator{summaries: make(map[asset.ConnectionID]rememberedSummary)}
+}
+
+func (e *Evaluator) EvaluateConnection(
+	ctx context.Context,
+	repository persistence.InventoryRepository,
+	connectionID asset.ConnectionID,
+	requirement Requirement,
+) (ConnectionSummary, error) {
+	if requirement.Unprovable {
+		return ConnectionSummary{Status: "incomplete"}, nil
+	}
+	candidates, err := listCandidates(ctx, repository, connectionID)
+	if err != nil {
+		return ConnectionSummary{}, err
+	}
+	payload, err := json.Marshal(struct {
+		Runs        []asset.ScanRun
+		Requirement Requirement
+	}{candidates, requirement})
+	if err != nil {
+		return evaluateCandidates(ctx, repository, candidates, requirement)
+	}
+	digest := sha256.Sum256(payload)
+	e.mu.Lock()
+	remembered, ok := e.summaries[connectionID]
+	e.mu.Unlock()
+	if ok && remembered.digest == digest {
+		return cloneSummary(remembered.summary), nil
+	}
+	summary, err := evaluateCandidates(ctx, repository, candidates, requirement)
+	if err != nil {
+		return ConnectionSummary{}, err
+	}
+	e.mu.Lock()
+	if len(e.summaries) >= summaryLimit {
+		clear(e.summaries)
+	}
+	e.summaries[connectionID] = rememberedSummary{digest: digest, summary: cloneSummary(summary)}
+	e.mu.Unlock()
+	return summary, nil
+}
+
+func cloneSummary(summary ConnectionSummary) ConnectionSummary {
+	if summary.LastCompleteScanAt != nil {
+		finished := *summary.LastCompleteScanAt
+		summary.LastCompleteScanAt = &finished
+	}
+	return summary
+}
+
+func listCandidates(
+	ctx context.Context,
+	repository persistence.InventoryRepository,
+	connectionID asset.ConnectionID,
+) ([]asset.ScanRun, error) {
 	page, err := repository.ListScanRuns(ctx, persistence.ListOptions{
 		ConnectionID: connectionID,
 		Limit:        CandidateLimit,
 	})
 	if err != nil {
-		return ConnectionSummary{}, err
-	}
-	if len(page.Items) > 0 {
-		result.Status = "incomplete"
+		return nil, err
 	}
 	candidates := page.Items
 	if len(candidates) > CandidateLimit {
 		candidates = candidates[:CandidateLimit]
+	}
+	return candidates, nil
+}
+
+func evaluateCandidates(
+	ctx context.Context,
+	repository persistence.InventoryRepository,
+	candidates []asset.ScanRun,
+	requirement Requirement,
+) (ConnectionSummary, error) {
+	result := ConnectionSummary{Status: "unknown"}
+	required := requiredTargetSet(requirement)
+	if len(candidates) > 0 {
+		result.Status = "incomplete"
 	}
 	for _, run := range candidates {
 		targets, ok := applicableRun(run, required)
