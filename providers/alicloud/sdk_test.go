@@ -587,8 +587,9 @@ func TestSLSProductAPIUsesItsOfficialGateway(t *testing.T) {
 	t.Parallel()
 
 	client := &openapi.Client{}
-	useExecutor, err := configureProductAPIGateway(client, "Sls", "GetLogs")
-	if err != nil {
+	gateway := productAPIGateway("Sls", "GetLogs")
+	useExecutor := gateway != ""
+	if err := configureProductAPIGateway(client, gateway); err != nil {
 		t.Fatal(err)
 	}
 	if !useExecutor || client.Spi == nil {
@@ -1101,8 +1102,9 @@ func TestFunctionComputeQueryUsesItsOfficialGateway(t *testing.T) {
 	t.Parallel()
 
 	client := &openapi.Client{}
-	useExecutor, err := configureProductAPIGateway(client, "FC-Open", "ListServices")
-	if err != nil {
+	gateway := productAPIGateway("FC-Open", "ListServices")
+	useExecutor := gateway != ""
+	if err := configureProductAPIGateway(client, gateway); err != nil {
 		t.Fatal(err)
 	}
 	if !useExecutor || client.Spi == nil {
@@ -1114,8 +1116,9 @@ func TestFunctionComputeDeleteServiceUsesGenericACS3Caller(t *testing.T) {
 	t.Parallel()
 
 	client := &openapi.Client{}
-	useExecutor, err := configureProductAPIGateway(client, "FC-Open", "DeleteService")
-	if err != nil {
+	gateway := productAPIGateway("FC-Open", "DeleteService")
+	useExecutor := gateway != ""
+	if err := configureProductAPIGateway(client, gateway); err != nil {
 		t.Fatal(err)
 	}
 	if useExecutor || client.Spi != nil {

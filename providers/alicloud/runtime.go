@@ -76,7 +76,7 @@ func withOAuthClock(now func() time.Time) runtimeOption {
 }
 
 func NewRuntime(credentials contracts.CredentialSource) (*Runtime, error) {
-	return newRuntime(credentials, sdkClientFactory{})
+	return newRuntime(credentials, &sdkClientFactory{})
 }
 
 func newRuntime(credentials contracts.CredentialSource, factory clientFactory, options ...runtimeOption) (*Runtime, error) {
@@ -190,7 +190,7 @@ func (r *Runtime) ValidateConnection(ctx context.Context, credential contracts.C
 			nil,
 		)
 	}
-	if _, err := cloudCredential(materialized, ctx); err != nil {
+	if _, err := cloudCredential(materialized); err != nil {
 		return failureIdentity, contracts.NewCredentialValidationError(
 			"credential_fields_invalid",
 			"The Alibaba Cloud credential fields are incomplete or invalid.",
@@ -640,16 +640,12 @@ func invocationRegion(invocation contracts.Invocation) (string, error) {
 	return "", fmt.Errorf("Alibaba Cloud invocation requires a region scope")
 }
 
-func cloudCredential(contract contracts.Credential, contexts ...context.Context) (cloudcredentials.Credential, error) {
+func cloudCredential(contract contracts.Credential) (cloudcredentials.Credential, error) {
 	if contract.Type == asset.CredentialOIDC {
 		if contract.Dynamic == nil {
 			return nil, fmt.Errorf("OIDC workload identity is unavailable")
 		}
-		ctx := context.Background()
-		if len(contexts) > 0 {
-			ctx = contexts[0]
-		}
-		return &oidcCredential{ctx: ctx, source: contract.Dynamic}, nil
+		return &oidcCredential{source: contract.Dynamic}, nil
 	}
 	values := contract.Values
 	credentialType := strings.TrimSpace(string(contract.Type))

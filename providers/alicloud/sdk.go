@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	fcgateway "github.com/alibabacloud-go/alibabacloud-gateway-fc/client"
 	ossgateway "github.com/alibabacloud-go/alibabacloud-gateway-oss/client"
@@ -35,15 +37,93 @@ const (
 	containerServiceProductCode = "CS"
 )
 
-type sdkClientFactory struct{}
+type sdkClientFactory struct {
+	clients sdkClientCache
+}
+
+// sdkClientIdleTTL bounds how long an unused SDK client, and the credential
+// provider it signs with, stays cached.
+const sdkClientIdleTTL = 15 * time.Minute
+
+type sdkClientKey struct {
+	connection asset.ConnectionID
+	credential string
+	site       asset.ConnectionSite
+	service    string
+	region     string
+	// endpoint is set for every product API client and empty for the typed
+	// Resource Center and ACK clients, so the two never share a key.
+	endpoint string
+	gateway  string
+}
+
+type cachedSDKClient struct {
+	client   any
+	version  string
+	lastUsed time.Time
+}
+
+// sdkClientCache lets calls reuse SDK clients, and the sessions their
+// credential providers hold, instead of rebuilding both per call. Clients are
+// keyed by credential fingerprint, so a rotated credential never signs with a
+// stale client, and seeing a connection's new credential version drops the
+// clients built for its previous one. Clients keep HttpClient unset, so Tea
+// still pools transports per endpoint across them.
+type sdkClientCache struct {
+	mu      sync.Mutex
+	entries map[sdkClientKey]*cachedSDKClient
+}
+
+func cachedSDKClientFor[T any](
+	cache *sdkClientCache,
+	credential contracts.Credential,
+	key sdkClientKey,
+	build func(cloudcredentials.Credential) (T, error),
+) (T, error) {
+	key.connection, key.credential, key.site = credential.ConnectionID, credentialFingerprint(credential), credential.Site
+	now := time.Now()
+	cache.mu.Lock()
+	if entry, ok := cache.entries[key]; ok {
+		entry.lastUsed = now
+		cache.mu.Unlock()
+		return entry.client.(T), nil
+	}
+	cache.mu.Unlock()
+	var zero T
+	cloudCredential, err := cloudCredential(credential)
+	if err != nil {
+		return zero, err
+	}
+	client, err := build(cloudCredential)
+	if err != nil {
+		return zero, err
+	}
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	if entry, ok := cache.entries[key]; ok {
+		entry.lastUsed = now
+		return entry.client.(T), nil
+	}
+	if cache.entries == nil {
+		cache.entries = map[sdkClientKey]*cachedSDKClient{}
+	}
+	for cached, entry := range cache.entries {
+		rotated := cached.connection == key.connection && credential.Version != "" && entry.version != credential.Version
+		if rotated || now.Sub(entry.lastUsed) > sdkClientIdleTTL {
+			delete(cache.entries, cached)
+		}
+	}
+	cache.entries[key] = &cachedSDKClient{client: client, version: credential.Version, lastUsed: now}
+	return client, nil
+}
 
 const alicloudRegionBootstrap = "cn-hangzhou"
 
-func (sdkClientFactory) CallerIdentity(ctx context.Context, credential contracts.Credential) (string, string, error) {
+func (*sdkClientFactory) CallerIdentity(ctx context.Context, credential contracts.Credential) (string, string, error) {
 	if err := ctx.Err(); err != nil {
 		return "", "", err
 	}
-	cloudCredential, err := cloudCredential(credential, ctx)
+	cloudCredential, err := cloudCredential(credential)
 	if err != nil {
 		return "", "", err
 	}
@@ -67,8 +147,8 @@ func (sdkClientFactory) CallerIdentity(ctx context.Context, credential contracts
 	return dara.StringValue(response.Body.AccountId), dara.StringValue(response.Body.Arn), nil
 }
 
-func (sdkClientFactory) DiscoverRegions(ctx context.Context, credential contracts.Credential) ([]providerRegion, error) {
-	cloudCredential, err := cloudCredential(credential, ctx)
+func (*sdkClientFactory) DiscoverRegions(ctx context.Context, credential contracts.Credential) ([]providerRegion, error) {
+	cloudCredential, err := cloudCredential(credential)
 	if err != nil {
 		return nil, err
 	}
@@ -121,35 +201,30 @@ func discoverRegionsWithVPC(ctx context.Context, client vpcRegionCaller) ([]prov
 	return regions, nil
 }
 
-func (sdkClientFactory) ResourceCenter(ctx context.Context, credential contracts.Credential, region string) (ResourceCenterClient, error) {
-	cloudCredential, err := cloudCredential(credential, ctx)
-	if err != nil {
-		return nil, err
-	}
-	config, err := openAPIConfig(cloudCredential, credential.Site, serviceResourceCenter, region, "")
-	if err != nil {
-		return nil, err
-	}
-	client, err := resourcecenterclient.NewClient(config)
-	if err != nil {
-		return nil, fmt.Errorf("create Alibaba Cloud Resource Center client: %w", err)
-	}
-	return &sdkResourceCenter{client: client}, nil
+func (f *sdkClientFactory) ResourceCenter(_ context.Context, credential contracts.Credential, region string) (ResourceCenterClient, error) {
+	key := sdkClientKey{service: serviceResourceCenter, region: region}
+	return cachedSDKClientFor(&f.clients, credential, key, func(cloudCredential cloudcredentials.Credential) (ResourceCenterClient, error) {
+		config, err := openAPIConfig(cloudCredential, credential.Site, serviceResourceCenter, region, "")
+		if err != nil {
+			return nil, err
+		}
+		client, err := resourcecenterclient.NewClient(config)
+		if err != nil {
+			return nil, fmt.Errorf("create Alibaba Cloud Resource Center client: %w", err)
+		}
+		return &sdkResourceCenter{client: client}, nil
+	})
 }
 
-func (sdkClientFactory) Invoke(
+func (f *sdkClientFactory) Invoke(
 	ctx context.Context,
 	credential contracts.Credential,
 	region string,
 	operation catalog.Operation,
 	invocation contracts.Invocation,
 ) (contracts.InvocationResult, error) {
-	cloudCredential, err := cloudCredential(credential, ctx)
-	if err != nil {
-		return contracts.InvocationResult{}, err
-	}
 	if operation.Call != nil {
-		return invokeProductAPI(ctx, cloudCredential, credential.Site, region, operation, invocation)
+		return f.invokeProductAPI(ctx, credential, region, operation, invocation)
 	}
 	switch invocation.Operation {
 	case "AlibabaCloud.SearchResources":
@@ -159,10 +234,9 @@ func (sdkClientFactory) Invoke(
 	}
 }
 
-func invokeProductAPI(
+func (f *sdkClientFactory) invokeProductAPI(
 	ctx context.Context,
-	credential cloudcredentials.Credential,
-	site asset.ConnectionSite,
+	credential contracts.Credential,
 	region string,
 	operation catalog.Operation,
 	invocation contracts.Invocation,
@@ -172,7 +246,7 @@ func invokeProductAPI(
 		return contracts.InvocationResult{}, fmt.Errorf("Alibaba Cloud operation %q has no product API call metadata", operation.Key())
 	}
 	parameters := clonedParameters(invocation.Parameters)
-	endpoint, err := productAPIEndpoint(call, site, region, parameters)
+	endpoint, err := productAPIEndpoint(call, credential.Site, region, parameters)
 	if err != nil {
 		return contracts.InvocationResult{}, fmt.Errorf(
 			"resolve Alibaba Cloud operation %q endpoint: %w",
@@ -180,18 +254,26 @@ func invokeProductAPI(
 			err,
 		)
 	}
-	config, err := openAPIConfig(credential, site, strings.ToLower(call.Product), region, endpoint)
-	if err != nil {
-		return contracts.InvocationResult{}, err
-	}
-	// Keep HttpClient unset so Tea can reuse its endpoint-scoped transports.
-	// A per-call client with keep-alives disabled caused bursts of fresh
-	// sockets, which surfaced intermittent connect(2) EBADF errors on macOS.
-	client, err := openapi.NewClient(config)
-	if err != nil {
-		return contracts.InvocationResult{}, fmt.Errorf("create Alibaba Cloud %s product client: %w", call.Product, err)
-	}
-	useGatewayExecutor, err := configureProductAPIGateway(client, call.Product, operation.Name)
+	product := strings.ToLower(call.Product)
+	gateway := productAPIGateway(call.Product, operation.Name)
+	key := sdkClientKey{service: product, region: region, endpoint: endpoint, gateway: gateway}
+	client, err := cachedSDKClientFor(&f.clients, credential, key, func(cloudCredential cloudcredentials.Credential) (*openapi.Client, error) {
+		config, err := openAPIConfig(cloudCredential, credential.Site, product, region, endpoint)
+		if err != nil {
+			return nil, err
+		}
+		// Keep HttpClient unset so Tea can reuse its endpoint-scoped transports.
+		// A per-call client with keep-alives disabled caused bursts of fresh
+		// sockets, which surfaced intermittent connect(2) EBADF errors on macOS.
+		client, err := openapi.NewClient(config)
+		if err != nil {
+			return nil, fmt.Errorf("create Alibaba Cloud %s product client: %w", call.Product, err)
+		}
+		if err := configureProductAPIGateway(client, gateway); err != nil {
+			return nil, err
+		}
+		return client, nil
+	})
 	if err != nil {
 		return contracts.InvocationResult{}, err
 	}
@@ -201,11 +283,13 @@ func invokeProductAPI(
 		client,
 		operation,
 		invocation,
-		productAPICallOptions{UseGatewayExecutor: useGatewayExecutor},
+		productAPICallOptions{UseGatewayExecutor: gateway != ""},
 	)
 }
 
-func configureProductAPIGateway(client *openapi.Client, product, operation string) (bool, error) {
+// productAPIGateway names the official API gateway a product call goes
+// through, or "" when the generic Darabonba caller sends it.
+func productAPIGateway(product, operation string) string {
 	switch {
 	case strings.EqualFold(product, "FC-Open") && strings.EqualFold(operation, "DeleteService"):
 		// FC 2.0 DeleteService uses the account-level endpoint and ACS3 signing.
@@ -213,31 +297,40 @@ func configureProductAPIGateway(client *openapi.Client, product, operation strin
 		// endpoint as POP and otherwise misreads ServiceNotFound as a server
 		// error. The generic Darabonba caller uses the same ACS3 request format
 		// as the FC 2.0 API workbench and preserves its 404 response.
-		return false, nil
+		return ""
 	case strings.EqualFold(product, "FC-Open"):
+		return "fc"
+	case strings.EqualFold(product, "Oss"):
+		return "oss"
+	case strings.EqualFold(product, "Sls"):
+		return "sls"
+	default:
+		return ""
+	}
+}
+
+func configureProductAPIGateway(client *openapi.Client, gateway string) error {
+	switch gateway {
+	case "fc":
 		spi, err := fcgateway.NewClient()
 		if err != nil {
-			return false, fmt.Errorf("create Alibaba Cloud Function Compute API gateway: %w", err)
+			return fmt.Errorf("create Alibaba Cloud Function Compute API gateway: %w", err)
 		}
 		client.Spi = spi
-		return true, nil
-	case strings.EqualFold(product, "Oss"):
+	case "oss":
 		spi, err := ossgateway.NewClient()
 		if err != nil {
-			return false, fmt.Errorf("create Alibaba Cloud OSS API gateway: %w", err)
+			return fmt.Errorf("create Alibaba Cloud OSS API gateway: %w", err)
 		}
 		client.Spi = spi
-		return true, nil
-	case strings.EqualFold(product, "Sls"):
+	case "sls":
 		spi, err := slsgateway.NewClient()
 		if err != nil {
-			return false, fmt.Errorf("create Alibaba Cloud SLS API gateway: %w", err)
+			return fmt.Errorf("create Alibaba Cloud SLS API gateway: %w", err)
 		}
 		client.Spi = spi
-		return true, nil
-	default:
-		return false, nil
 	}
+	return nil
 }
 
 func productAPIEndpoint(
@@ -524,12 +617,11 @@ func defaultString(value, fallback string) string {
 	return value
 }
 
-func (sdkClientFactory) ACK(ctx context.Context, credential contracts.Credential, region string) (ACKClient, error) {
-	cloudCredential, err := cloudCredential(credential, ctx)
-	if err != nil {
-		return nil, err
-	}
-	return newSDKACK(cloudCredential, credential.Site, region)
+func (f *sdkClientFactory) ACK(_ context.Context, credential contracts.Credential, region string) (ACKClient, error) {
+	key := sdkClientKey{service: serviceACK, region: region}
+	return cachedSDKClientFor(&f.clients, credential, key, func(cloudCredential cloudcredentials.Credential) (ACKClient, error) {
+		return newSDKACK(cloudCredential, credential.Site, region)
+	})
 }
 
 func openAPIConfig(

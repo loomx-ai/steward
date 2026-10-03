@@ -2,18 +2,27 @@ package alicloud
 
 import (
 	"context"
+	"time"
+
 	"github.com/alibabacloud-go/tea/tea"
 	cloudcredentials "github.com/aliyun/credentials-go/credentials"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
+// oidcResolveTimeout bounds one workload identity resolution. The SDK asks for
+// credentials without a context and cached clients outlive the request that
+// built them, so resolution owns its lifecycle instead of borrowing a
+// request's: a cancelled request must not fail the next call that signs.
+const oidcResolveTimeout = 30 * time.Second
+
 type oidcCredential struct {
-	ctx    context.Context
 	source *contracts.DynamicCredential
 }
 
 func (c *oidcCredential) GetCredential() (*cloudcredentials.CredentialModel, error) {
-	v, err := c.source.Resolve(c.ctx, "")
+	ctx, cancel := context.WithTimeout(context.Background(), oidcResolveTimeout)
+	defer cancel()
+	v, err := c.source.Resolve(ctx, "")
 	if err != nil {
 		return nil, err
 	}
