@@ -159,7 +159,16 @@ func TestScanTaskReadModelMigrationUpgradesExistingDatabase(t *testing.T) {
 		)`,
 		`CREATE TABLE assets (
 			id VARCHAR(128) PRIMARY KEY,
+			connection_id VARCHAR(128),
+			scope_id VARCHAR(128),
 			closed_at TIMESTAMP
+		)`,
+		`CREATE TABLE asset_observations (id VARCHAR(128) PRIMARY KEY, scan_task_id VARCHAR(128) NOT NULL)`,
+		`CREATE TABLE job_logs (
+			id VARCHAR(128) PRIMARY KEY,
+			aggregate_type VARCHAR(64),
+			aggregate_id VARCHAR(128),
+			created_at TIMESTAMP NOT NULL
 		)`,
 		`CREATE TABLE graph_revisions (scope_id VARCHAR(128) PRIMARY KEY, graph_revision VARCHAR(128) NOT NULL, observed_at TIMESTAMP NOT NULL)`,
 		`INSERT INTO graph_revisions (scope_id, graph_revision, observed_at) VALUES ('scope-existing', 'graph-existing', '2026-08-04 08:00:00+00:00')`,
