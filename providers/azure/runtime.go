@@ -35,7 +35,11 @@ func NewRuntime(credentials contracts.CredentialSource) (*Runtime, error) {
 	if err != nil {
 		return nil, err
 	}
-	runtime := &Runtime{credentials: credentials, transport: http.DefaultTransport, bundle: bundle, clients: map[asset.ConnectionID]*client{}}
+	// Scan workers share each connection's ARM host; the default transport keeps
+	// only two idle connections per host and redials for every other request.
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.MaxIdleConnsPerHost = 32
+	runtime := &Runtime{credentials: credentials, transport: transport, bundle: bundle, clients: map[asset.ConnectionID]*client{}}
 	updater, _ := credentials.(contracts.CredentialUpdater)
 	driver, _ := NewOAuthDriver().(*oauthDriver)
 	runtime.oauth = oauth.NewMaterializer(oauthLabel, &oauthRefresher{driver: driver}, credentials, updater, time.Now)

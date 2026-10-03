@@ -158,35 +158,47 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 
 // Cache the token, while binding every refresh to the active request context.
 // ARM, Storage and Batch use separate transports so tokens never cross audiences.
+// One request refreshes an expired token while concurrent requests wait for it.
 type tokenTransport struct {
-	base   http.RoundTripper
-	config clientcredentials.Config
-	mu     sync.Mutex
-	token  *oauth2.Token
+	base    http.RoundTripper
+	config  clientcredentials.Config
+	mu      sync.Mutex
+	refresh sync.Mutex
+	token   *oauth2.Token
+}
+
+func (t *tokenTransport) current() *oauth2.Token {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	return t.token
 }
 
 func (t *tokenTransport) RoundTrip(request *http.Request) (*http.Response, error) {
 	if err := request.Context().Err(); err != nil {
 		return nil, err
 	}
-	t.mu.Lock()
-	token := t.token
-	t.mu.Unlock()
+	token := t.current()
 	if !token.Valid() {
-		ctx, cancel := context.WithTimeout(request.Context(), 30*time.Second)
-		defer cancel()
-		ctx = context.WithValue(ctx, oauth2.HTTPClient, &http.Client{Transport: t.base, CheckRedirect: noRedirect})
-		var err error
-		token, err = t.config.TokenSource(ctx).Token()
-		if err != nil {
-			return nil, err
-		}
+		t.refresh.Lock()
+		token = t.current()
 		if !token.Valid() {
-			return nil, fmt.Errorf("Azure OAuth response has no usable access token")
+			ctx, cancel := context.WithTimeout(request.Context(), 30*time.Second)
+			ctx = context.WithValue(ctx, oauth2.HTTPClient, &http.Client{Transport: t.base, CheckRedirect: noRedirect})
+			var err error
+			token, err = t.config.TokenSource(ctx).Token()
+			cancel()
+			if err == nil && !token.Valid() {
+				err = fmt.Errorf("Azure OAuth response has no usable access token")
+			}
+			if err != nil {
+				t.refresh.Unlock()
+				return nil, err
+			}
+			t.mu.Lock()
+			t.token = token
+			t.mu.Unlock()
 		}
-		t.mu.Lock()
-		t.token = token
-		t.mu.Unlock()
+		t.refresh.Unlock()
 	}
 	clone := request.Clone(request.Context())
 	token.SetAuthHeader(clone)

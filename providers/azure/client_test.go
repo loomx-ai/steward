@@ -208,3 +208,31 @@ func TestCloudLogsAndResponsesRemoveValueSecrets(t *testing.T) {
 		t.Fatal("sanitized response leaked secret")
 	}
 }
+
+func TestConcurrentRequestsShareOneTokenRefresh(t *testing.T) {
+	var exchanges atomic.Int32
+	base := roundTripFunc(func(r *http.Request) (*http.Response, error) {
+		if r.URL.Host == "login.microsoftonline.com" {
+			exchanges.Add(1)
+			time.Sleep(20 * time.Millisecond)
+			return jsonResponse(200, map[string]any{"access_token": "token", "token_type": "Bearer", "expires_in": 3600}, nil), nil
+		}
+		return jsonResponse(200, map[string]any{}, nil), nil
+	})
+	c, err := newClient(testCredential(), base)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var wg sync.WaitGroup
+	for range 8 {
+		wg.Go(func() {
+			if _, err := c.request(context.Background(), "GET", apiURL(c.root(), "2022-12-01")); err != nil {
+				t.Error(err)
+			}
+		})
+	}
+	wg.Wait()
+	if exchanges.Load() != 1 {
+		t.Fatalf("token exchanged %d times", exchanges.Load())
+	}
+}
