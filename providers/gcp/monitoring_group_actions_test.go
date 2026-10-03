@@ -80,7 +80,8 @@ func newMonitoringGroupDeleteScenario(t *testing.T) *monitoringGroupDeleteScenar
 				case "get-denied":
 					return apiResponse(req, 403, `{}`), nil
 				case "target-drift":
-					if s.ownReads >= 5 {
+					// Changed after the final consumer snapshot, before DELETE.
+					if base.lists["groups"] >= 4 {
 						base.values["groups"][0]["displayName"] = "changed-before-write"
 					}
 				}
@@ -187,7 +188,7 @@ func TestMonitoringGroupReviewedDeleteAndRestart(t *testing.T) {
 				}
 				return
 			}
-			if s.deletes != 1 || result.ProviderOperationID != "" || result.Data["phase"] != "monitoring_group_delete" || s.lists["groups"] != 4 || s.ownReads < 5 {
+			if s.deletes != 1 || result.ProviderOperationID != "" || result.Data["phase"] != "monitoring_group_delete" || s.lists["groups"] != 4 || s.ownReads < 3 {
 				t.Fatal(result, s.deletes, s.lists, s.ownReads)
 			}
 			payload, _ := json.Marshal(result)
@@ -252,7 +253,7 @@ func TestMonitoringGroupReviewedDeleteAndRestart(t *testing.T) {
 }
 func TestMonitoringGroupDeleteConsumersAndReadFailures(t *testing.T) {
 	for _, collection := range []string{"groups", "uptimeCheckConfigs", "alertPolicies", "dashboards"} {
-		for _, mode := range []string{"referenced", "unresolved", "denied", "page-denied", "get-missing", "get-drift", "null", "loop", "changed"} {
+		for _, mode := range []string{"referenced", "unresolved", "denied", "page-denied", "null", "loop", "changed"} {
 			t.Run(collection+"/"+mode, func(t *testing.T) {
 				s := newMonitoringGroupDeleteScenario(t)
 				fresh := newMonitoringGroupConsumerScenario(t)

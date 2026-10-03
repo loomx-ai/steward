@@ -107,7 +107,7 @@ func TestMonitoringDashboardUptimeQueryReferences(t *testing.T) {
 }
 
 func TestMonitoringDashboardUptimeGraphAndDelete(t *testing.T) {
-	for _, mode := range []string{"live", "missing", "stale", "closed", "foreign", "unknown", "denied", "page-denied", "get-missing", "get-drift", "changed", "absent", "late-reference", "prerequisite-live", "prerequisite-gone"} {
+	for _, mode := range []string{"live", "missing", "stale", "closed", "foreign", "unknown", "denied", "page-denied", "changed", "absent", "late-reference", "prerequisite-live", "prerequisite-gone"} {
 		t.Run(mode, func(t *testing.T) {
 			s := newMonitoringGroupConsumerScenario(t)
 			s.values["groups"] = nil
@@ -225,7 +225,7 @@ func TestMonitoringDashboardUptimeGraphAndDelete(t *testing.T) {
 }
 
 func TestMonitoringDashboardUptimeForeignScopes(t *testing.T) {
-	for _, mode := range []string{"referenced", "unrelated", "empty", "denied", "page-denied", "get-missing", "get-drift", "wrong-project", "reverse-changed"} {
+	for _, mode := range []string{"referenced", "unrelated", "empty", "denied", "page-denied", "wrong-project", "reverse-changed"} {
 		t.Run(mode, func(t *testing.T) {
 			s := monitoringDependencyFixture(t)
 			s.data = nil

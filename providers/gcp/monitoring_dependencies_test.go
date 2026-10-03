@@ -142,7 +142,7 @@ func monitoringDependencyFixture(t *testing.T) *monitoringDependencyScenario {
 	return s
 }
 func TestMonitoringDependencyNativeReads(t *testing.T) {
-	for _, mode := range []string{"present", "paged", "empty", "denied", "null", "token-null", "partial", "element", "duplicate", "token-loop", "changed", "get-denied", "get-missing", "get-changed", "reverse-denied", "reverse-missing", "reverse-duplicate", "reverse-token", "reverse-changed"} {
+	for _, mode := range []string{"present", "paged", "empty", "denied", "null", "token-null", "partial", "element", "duplicate", "token-loop", "changed", "reverse-denied", "reverse-missing", "reverse-duplicate", "reverse-token", "reverse-changed"} {
 		t.Run(mode, func(t *testing.T) {
 			s := monitoringDependencyFixture(t)
 			s.mode = mode

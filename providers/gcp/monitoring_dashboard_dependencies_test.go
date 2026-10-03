@@ -89,7 +89,7 @@ func TestMonitoringDashboardPolicyNativeReferences(t *testing.T) {
 	}
 }
 func TestMonitoringDashboardPolicyGraphReview(t *testing.T) {
-	for _, mode := range []string{"normal", "missing", "stale", "foreign", "closed", "unknown", "denied", "get-missing", "get-drift", "page-denied", "changed", "target-changed"} {
+	for _, mode := range []string{"normal", "missing", "stale", "foreign", "closed", "unknown", "denied", "page-denied", "changed", "target-changed"} {
 		t.Run(mode, func(t *testing.T) {
 			s := newMonitoringGroupConsumerScenario(t)
 			s.values["dashboards"][0]["gridLayout"] = map[string]any{"widgets": []any{dashboardPolicyWidget("alertChart", alertPolicyName)}}

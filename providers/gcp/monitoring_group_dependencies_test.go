@@ -294,7 +294,7 @@ func newMonitoringGroupConsumerScenario(t *testing.T) *monitoringGroupConsumerSc
 }
 func TestMonitoringGroupConsumerSnapshotFailures(t *testing.T) {
 	for _, collection := range []string{"groups", "uptimeCheckConfigs", "alertPolicies", "dashboards"} {
-		for _, mode := range []string{"normal", "paged", "denied", "list-404", "null", "element", "duplicate", "partial", "token-null", "loop", "changed", "page-denied", "get-denied", "get-missing", "get-drift", "target-changed"} {
+		for _, mode := range []string{"normal", "paged", "denied", "list-404", "null", "element", "duplicate", "partial", "token-null", "loop", "changed", "page-denied", "target-changed"} {
 			t.Run(collection+"/"+mode, func(t *testing.T) {
 				s := newMonitoringGroupConsumerScenario(t)
 				s.collection, s.mode = collection, mode

@@ -106,19 +106,8 @@ func (c *client) monitoringPolicySnapshot(ctx context.Context) (map[string]map[s
 	if err != nil {
 		return nil, err
 	}
-	ids := make([]string, 0, len(listed))
-	for id := range listed {
-		ids = append(ids, id)
-	}
-	slices.Sort(ids)
-	result := map[string]map[string]any{}
-	for _, id := range ids {
-		live, err := c.alertPolicyInventory(ctx, id, listed[id])
-		if err != nil {
-			return nil, err
-		}
-		result[id] = live
-	}
+	// Policy lists return complete resources; a second complete list that agrees
+	// proves the set and every configuration stable across the read.
 	again, err := c.monitoringPolicyList(ctx)
 	if err != nil {
 		return nil, err
@@ -126,7 +115,7 @@ func (c *client) monitoringPolicySnapshot(ctx context.Context) (map[string]map[s
 	if monitoringPolicyReviews(listed) != monitoringPolicyReviews(again) {
 		return nil, groupDenied("monitoring_policy_set_changed")
 	}
-	return result, nil
+	return listed, nil
 }
 
 func monitoringPolicyReviews(values map[string]map[string]any) string {

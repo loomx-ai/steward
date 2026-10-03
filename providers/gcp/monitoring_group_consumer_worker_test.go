@@ -44,7 +44,7 @@ func TestMonitoringGroupConsumerSQLiteGraphRestart(t *testing.T) {
 	}
 	var previousEdges []graph.Relationship
 	var previousUnresolved []graph.UnresolvedReference
-	for _, phase := range []string{"first", "page-denied", "get-missing", "unknown-dashboard", "cleared", "returned"} {
+	for _, phase := range []string{"first", "page-denied", "unknown-dashboard", "cleared", "returned"} {
 		closeDB()
 		repos, closeDB = monitoringSQLite(t, dsn)
 		now = now.Add(time.Minute)
@@ -54,8 +54,6 @@ func TestMonitoringGroupConsumerSQLiteGraphRestart(t *testing.T) {
 		switch phase {
 		case "page-denied":
 			s.mode = "page-denied"
-		case "get-missing":
-			s.mode = "get-missing"
 		case "unknown-dashboard":
 			s.values["dashboards"][0]["futureWidget"] = map[string]any{"query": "PRIVATE_QUERY"}
 		case "cleared":
@@ -102,7 +100,7 @@ func TestMonitoringGroupConsumerSQLiteGraphRestart(t *testing.T) {
 		}
 		fresh := protocolRuntime(t, s.r.transport.RoundTrip)
 		err := governance.NewGraphHandler(repos, identityRegistry(t, fresh), monitoringDependencyContributors{r: fresh}).Handle(ctx, execution.Job{Type: execution.JobGraph, Payload: map[string]any{"scan_run_id": phase}})
-		failed := phase == "page-denied" || phase == "get-missing"
+		failed := phase == "page-denied"
 		if (err != nil) != failed {
 			t.Fatal(phase, err)
 		}

@@ -76,30 +76,8 @@ func (c *client) monitoringGroupConsumerSnapshot(ctx context.Context, kind strin
 	if err != nil {
 		return nil, err
 	}
-	ids := make([]string, 0, len(listed))
-	for id := range listed {
-		ids = append(ids, id)
-	}
-	slices.Sort(ids)
-	result := map[string]map[string]any{}
-	for _, id := range ids {
-		spec, _ := findType(kind)
-		endpoint, err := c.resourceURL(spec, id)
-		if err != nil {
-			return nil, err
-		}
-		live, err := c.request(ctx, "GET", endpoint, nil)
-		if err != nil {
-			return nil, contracts.DependencyReadError(err)
-		}
-		if err := c.monitoringGroupConsumerData(kind, id, live); err != nil {
-			return nil, err
-		}
-		if c.monitoringGroupConsumerConfiguration(kind, id, listed[id]) != c.monitoringGroupConsumerConfiguration(kind, id, live) {
-			return nil, groupDenied("monitoring_group_consumer_configuration_changed")
-		}
-		result[id] = live
-	}
+	// Monitoring lists return complete resources; a second complete list that
+	// agrees proves the set and every configuration stable across the read.
 	again, err := list()
 	if err != nil {
 		return nil, err
@@ -107,7 +85,7 @@ func (c *client) monitoringGroupConsumerSnapshot(ctx context.Context, kind strin
 	if reviews(listed) != reviews(again) {
 		return nil, groupDenied("monitoring_group_consumer_set_changed")
 	}
-	return result, nil
+	return listed, nil
 }
 
 func (c *client) monitoringGroupConsumerReference(kind string, data map[string]any, group string) monitoringReference {
