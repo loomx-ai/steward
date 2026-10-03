@@ -1,4 +1,11 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  memo,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import {
@@ -24,9 +31,14 @@ import { Input } from "@/components/ui/input";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
 import {
+  appendLiveLogs,
+  batchLogs,
+  emptyLogTerminal,
   formatCloudPayload,
   formatScanLogMessage,
   formatTerminalTimestamp,
+  mergeLogs,
+  type LogTerminalState,
 } from "@/features/scans/ScanTaskEvents";
 
 export function CleanupTaskEvents({
@@ -44,7 +56,8 @@ export function CleanupTaskEvents({
   resourceIDFilter?: string;
   onResourceIDFilterChange?: (value: string) => void;
 }) {
-  const [logs, setLogs] = useState<JobLog[]>([]);
+  const [{ logs, trimmed }, setLogState] =
+    useState<LogTerminalState>(emptyLogTerminal);
   const [error, setError] = useState<unknown>();
   const [historyCursor, setHistoryCursor] = useState("");
   const [loadingEarlier, setLoadingEarlier] = useState(false);
@@ -123,12 +136,18 @@ export function CleanupTaskEvents({
     const controller = new AbortController();
     let cursor = "";
     let ended = false;
-    setLogs([]);
+    setLogState(emptyLogTerminal);
     setLoadingEarlier(false);
     setRefreshing(true);
     setError(undefined);
     followingRef.current = true;
     pendingScrollAdjustmentRef.current = null;
+    const appendLog = batchLogs((batch) => {
+      if (controller.signal.aborted) return;
+      setLogState((current) =>
+        appendLiveLogs(current, batch, followingRef.current),
+      );
+    });
 
     const receive = (event: {
       type: "snapshot" | "log" | "end";
@@ -137,7 +156,7 @@ export function CleanupTaskEvents({
     }) => {
       if (event.id) cursor = event.id;
       if (event.type === "log") {
-        setLogs((current) => mergeLogs(current, [event.data as JobLog]));
+        appendLog(event.data as JobLog);
         return;
       }
       if (event.type === "end") ended = true;
@@ -190,7 +209,7 @@ export function CleanupTaskEvents({
           controller.signal,
         );
         if (controller.signal.aborted) return;
-        setLogs(mergeLogs([], history.items));
+        setLogState({ logs: mergeLogs([], history.items), trimmed: false });
         setHistoryCursor(history.next_cursor ?? "");
         cursor = history.live_cursor ?? "";
         setHistoryVersion((current) => current + 1);
@@ -259,7 +278,10 @@ export function CleanupTaskEvents({
         controller.signal,
       );
       if (controller.signal.aborted) return;
-      setLogs((current) => mergeLogs(history.items, current));
+      setLogState((current) => ({
+        ...current,
+        logs: mergeLogs(history.items, current.logs),
+      }));
       setHistoryCursor(history.next_cursor ?? "");
       setHistoryVersion((current) => current + 1);
     } catch (reason) {
@@ -314,21 +336,27 @@ export function CleanupTaskEvents({
             24;
         }}
       >
-        {historyCursor && (
-          <div className="flex justify-center pb-2">
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="h-7 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100"
-              onClick={() => void loadEarlier()}
-              disabled={loadingEarlier || refreshing}
-            >
-              {loadingEarlier
-                ? t("common.loading")
-                : t("scans.loadEarlierLogs")}
-            </Button>
+        {trimmed ? (
+          <div className="pb-2 text-center text-neutral-500">
+            {t("scans.olderLogsTrimmed")}
           </div>
+        ) : (
+          historyCursor && (
+            <div className="flex justify-center pb-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="h-7 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100"
+                onClick={() => void loadEarlier()}
+                disabled={loadingEarlier || refreshing}
+              >
+                {loadingEarlier
+                  ? t("common.loading")
+                  : t("scans.loadEarlierLogs")}
+              </Button>
+            </div>
+          )
         )}
         {error !== undefined && (
           <div className="whitespace-pre-wrap break-words text-amber-300">
@@ -346,41 +374,56 @@ export function CleanupTaskEvents({
               : t("cleanup.waitingForLogs")}
           </div>
         ) : (
-          logs.map((log) => {
-            const payload = formatCloudPayload(log);
-            return (
-              <div key={log.id} className="whitespace-pre-wrap break-words">
-                <span className="text-neutral-500">
-                  {formatTerminalTimestamp(log.created_at)}
-                </span>{" "}
-                <span className={cn("font-semibold", levelClass(log.level))}>
-                  {log.level.toUpperCase()}
-                </span>{" "}
-                <span className="text-sky-300">
-                  {cleanupLogTarget(
-                    log.target_key,
-                    assetsByID,
-                    resourceKindsByID,
-                    locale,
-                  )
-                    .map((part) => `[${part}]`)
-                    .join(" ")}
-                </span>{" "}
-                <span>{formatScanLogMessage(log.message)}</span>
-                {payload && (
-                  <>
-                    {" "}
-                    <span className="text-neutral-400">{payload}</span>
-                  </>
-                )}
-              </div>
-            );
-          })
+          logs.map((log) => (
+            <CleanupLogRow
+              key={log.id}
+              log={log}
+              assetsByID={assetsByID}
+              resourceKindsByID={resourceKindsByID}
+              locale={locale}
+            />
+          ))
         )}
       </div>
     </section>
   );
 }
+
+const CleanupLogRow = memo(function CleanupLogRow({
+  log,
+  assetsByID,
+  resourceKindsByID,
+  locale,
+}: {
+  log: JobLog;
+  assetsByID: ReadonlyMap<string, Asset>;
+  resourceKindsByID: ReadonlyMap<string, ResourceKind>;
+  locale: string;
+}) {
+  const payload = formatCloudPayload(log);
+  return (
+    <div className="whitespace-pre-wrap break-words">
+      <span className="text-neutral-500">
+        {formatTerminalTimestamp(log.created_at)}
+      </span>{" "}
+      <span className={cn("font-semibold", levelClass(log.level))}>
+        {log.level.toUpperCase()}
+      </span>{" "}
+      <span className="text-sky-300">
+        {cleanupLogTarget(log.target_key, assetsByID, resourceKindsByID, locale)
+          .map((part) => `[${part}]`)
+          .join(" ")}
+      </span>{" "}
+      <span>{formatScanLogMessage(log.message)}</span>
+      {payload && (
+        <>
+          {" "}
+          <span className="text-neutral-400">{payload}</span>
+        </>
+      )}
+    </div>
+  );
+});
 
 function cleanupLogTarget(
   targetKey: string | undefined,
@@ -399,16 +442,6 @@ function cleanupLogTarget(
     locale,
   );
   return [kindName, asset.identity.native_id];
-}
-
-function mergeLogs(first: JobLog[], second: JobLog[]) {
-  return [
-    ...new Map([...first, ...second].map((item) => [item.id, item])).values(),
-  ].sort(
-    (left, right) =>
-      left.created_at.localeCompare(right.created_at) ||
-      left.id.localeCompare(right.id),
-  );
 }
 
 function reconnectDelay(signal: AbortSignal, delay: number) {

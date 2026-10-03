@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getScanLogs, streamScanEvents } from "@/api/client";
 import type { JobLog, ScanTask } from "@/api/types";
@@ -19,7 +19,8 @@ export function ScanTaskEvents({
   targetLabel?: string;
   onClearTarget?: () => void;
 }) {
-  const [logs, setLogs] = useState<JobLog[]>([]);
+  const [{ logs, trimmed }, setLogState] =
+    useState<LogTerminalState>(emptyLogTerminal);
   const [error, setError] = useState<unknown>();
   const [historyCursor, setHistoryCursor] = useState("");
   const [loadingEarlier, setLoadingEarlier] = useState(false);
@@ -43,6 +44,12 @@ export function ScanTaskEvents({
     setError(undefined);
     followingRef.current = true;
     pendingScrollAdjustmentRef.current = null;
+    const appendLog = batchLogs((batch) => {
+      if (controller.signal.aborted) return;
+      setLogState((current) =>
+        appendLiveLogs(current, batch, followingRef.current),
+      );
+    });
     const receive = (event: {
       type: "snapshot" | "log" | "end";
       data: ScanTask | JobLog;
@@ -50,18 +57,7 @@ export function ScanTaskEvents({
     }) => {
       if (event.id) cursor = event.id;
       if (event.type === "log") {
-        const log = event.data as JobLog;
-        setLogs((current) =>
-          [
-            ...new Map(
-              [...current, log].map((item) => [item.id, item]),
-            ).values(),
-          ].sort(
-            (left, right) =>
-              left.created_at.localeCompare(right.created_at) ||
-              left.id.localeCompare(right.id),
-          ),
-        );
+        appendLog(event.data as JobLog);
         return;
       }
       if (event.type === "end") ended = true;
@@ -105,7 +101,7 @@ export function ScanTaskEvents({
           controller.signal,
         );
         if (controller.signal.aborted) return;
-        setLogs(mergeLogs([], history.items));
+        setLogState({ logs: mergeLogs([], history.items), trimmed: false });
         setHistoryCursor(history.next_cursor ?? "");
         cursor = history.live_cursor ?? "";
         followingRef.current = true;
@@ -166,7 +162,10 @@ export function ScanTaskEvents({
         controller.signal,
       );
       if (controller.signal.aborted) return;
-      setLogs((current) => mergeLogs(history.items, current));
+      setLogState((current) => ({
+        ...current,
+        logs: mergeLogs(history.items, current.logs),
+      }));
       setHistoryCursor(history.next_cursor ?? "");
       setHistoryVersion((current) => current + 1);
     } catch (reason) {
@@ -208,21 +207,27 @@ export function ScanTaskEvents({
             24;
         }}
       >
-        {historyCursor && (
-          <div className="flex justify-center pb-2">
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="h-7 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100"
-              onClick={() => void loadEarlier()}
-              disabled={loadingEarlier || refreshing}
-            >
-              {loadingEarlier
-                ? t("common.loading")
-                : t("scans.loadEarlierLogs")}
-            </Button>
+        {trimmed ? (
+          <div className="pb-2 text-center text-neutral-500">
+            {t("scans.olderLogsTrimmed")}
           </div>
+        ) : (
+          historyCursor && (
+            <div className="flex justify-center pb-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="h-7 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100"
+                onClick={() => void loadEarlier()}
+                disabled={loadingEarlier || refreshing}
+              >
+                {loadingEarlier
+                  ? t("common.loading")
+                  : t("scans.loadEarlierLogs")}
+              </Button>
+            </div>
+          )
         )}
         {error !== undefined && (
           <div className="whitespace-pre-wrap break-words text-amber-300">
@@ -234,45 +239,92 @@ export function ScanTaskEvents({
             {t("jobs.waiting")}
           </div>
         ) : (
-          logs.map((log) => {
-            const payload = formatCloudPayload(log);
-            return (
-              <div key={log.id}>
-                <div className="whitespace-pre-wrap break-words">
-                  <span className="text-neutral-500">
-                    {formatTerminalTimestamp(log.created_at)}
-                  </span>{" "}
-                  <span className={cn("font-semibold", levelClass(log.level))}>
-                    {log.level.toUpperCase()}
-                  </span>{" "}
-                  <span className="text-sky-300">
-                    [{log.target_key || "task"}]
-                  </span>{" "}
-                  <span>{formatScanLogMessage(log.message)}</span>
-                  {payload && (
-                    <>
-                      {" "}
-                      <span className="text-neutral-400">{payload}</span>
-                    </>
-                  )}
-                </div>
-              </div>
-            );
-          })
+          logs.map((log) => <ScanLogRow key={log.id} log={log} />)
         )}
       </div>
     </section>
   );
 }
 
-function mergeLogs(first: JobLog[], second: JobLog[]) {
+const ScanLogRow = memo(function ScanLogRow({ log }: { log: JobLog }) {
+  const payload = formatCloudPayload(log);
+  return (
+    <div>
+      <div className="whitespace-pre-wrap break-words">
+        <span className="text-neutral-500">
+          {formatTerminalTimestamp(log.created_at)}
+        </span>{" "}
+        <span className={cn("font-semibold", levelClass(log.level))}>
+          {log.level.toUpperCase()}
+        </span>{" "}
+        <span className="text-sky-300">[{log.target_key || "task"}]</span>{" "}
+        <span>{formatScanLogMessage(log.message)}</span>
+        {payload && (
+          <>
+            {" "}
+            <span className="text-neutral-400">{payload}</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+});
+
+// Live terminals keep only the newest lines while following the tail so a
+// long-running task does not grow the DOM without bound.
+export const maxRetainedLogs = 2000;
+
+export type LogTerminalState = { logs: JobLog[]; trimmed: boolean };
+
+export const emptyLogTerminal: LogTerminalState = { logs: [], trimmed: false };
+
+export function appendLiveLogs(
+  state: LogTerminalState,
+  batch: JobLog[],
+  following: boolean,
+): LogTerminalState {
+  const logs = mergeLogs(state.logs, batch);
+  if (logs === state.logs) return state;
+  if (!following || logs.length <= maxRetainedLogs) return { ...state, logs };
+  return { logs: logs.slice(-maxRetainedLogs), trimmed: true };
+}
+
+function compareLogs(left: JobLog, right: JobLog) {
+  if (left.created_at !== right.created_at) {
+    return left.created_at < right.created_at ? -1 : 1;
+  }
+  return left.id < right.id ? -1 : left.id > right.id ? 1 : 0;
+}
+
+// Merges two log lists into one ordered, de-duplicated list. Live logs almost
+// always arrive in order, so that case appends without re-sorting.
+export function mergeLogs(first: JobLog[], second: JobLog[]) {
+  if (second.length === 0) return first;
+  if (first.length === 0 && second.length === 1) return second;
+  const inOrder = second.every((log, index) => {
+    const previous = index === 0 ? first[first.length - 1] : second[index - 1];
+    return !previous || compareLogs(previous, log) < 0;
+  });
+  if (inOrder) return first.concat(second);
   return [
     ...new Map([...first, ...second].map((item) => [item.id, item])).values(),
-  ].sort(
-    (left, right) =>
-      left.created_at.localeCompare(right.created_at) ||
-      left.id.localeCompare(right.id),
-  );
+  ].sort(compareLogs);
+}
+
+// Collects logs delivered synchronously (one network chunk) and hands them to
+// apply as a single batch.
+export function batchLogs(apply: (logs: JobLog[]) => void) {
+  let pending: JobLog[] = [];
+  return (log: JobLog) => {
+    if (pending.length === 0) {
+      queueMicrotask(() => {
+        const batch = pending;
+        pending = [];
+        apply(batch);
+      });
+    }
+    pending.push(log);
+  };
 }
 
 export function formatCloudPayload(log: JobLog) {

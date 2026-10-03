@@ -4,7 +4,14 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { getScanLogs, streamScanEvents } from "@/api/client";
 import type { JobLog, ScanLogPage } from "@/api/types";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
-import { formatScanLogMessage, ScanTaskEvents } from "./ScanTaskEvents";
+import {
+  appendLiveLogs,
+  batchLogs,
+  formatScanLogMessage,
+  maxRetainedLogs,
+  mergeLogs,
+  ScanTaskEvents,
+} from "./ScanTaskEvents";
 
 vi.mock("@/api/client", () => ({
   getScanLogs: vi.fn(),
@@ -37,6 +44,67 @@ it("formats historical Alibaba Cloud operations with product names", () => {
   expect(formatScanLogMessage("AlibabaCloud.UnknownOperation failed")).toBe(
     "UnknownOperation failed",
   );
+});
+
+function testLog(id: string, createdAt: string): JobLog {
+  return {
+    id,
+    job_id: "job-a",
+    sequence: 0,
+    kind: "text",
+    level: "info",
+    message: id,
+    created_at: createdAt,
+  } as JobLog;
+}
+
+it("appends in-order logs and sorts and de-duplicates out-of-order ones", () => {
+  const first = testLog("a", "2026-01-01T00:00:01Z");
+  const second = testLog("b", "2026-01-01T00:00:02Z");
+  const third = testLog("c", "2026-01-01T00:00:02Z");
+  const current = [first, second];
+
+  const appended = mergeLogs(current, [third]);
+  expect(appended.map((log) => log.id)).toEqual(["a", "b", "c"]);
+  expect(mergeLogs(current, [])).toBe(current);
+
+  const late = testLog("late", "2026-01-01T00:00:00Z");
+  expect(
+    mergeLogs(appended, [late, { ...second, message: "updated" }]).map(
+      (log) => `${log.id}:${log.message}`,
+    ),
+  ).toEqual(["late:late", "a:a", "b:updated", "c:c"]);
+});
+
+it("keeps only the newest logs while following the live tail", () => {
+  const logs = Array.from({ length: maxRetainedLogs }, (_, index) =>
+    testLog(`log-${String(index).padStart(5, "0")}`, "2026-01-01T00:00:00Z"),
+  );
+  const next = testLog("log-99999", "2026-01-01T00:00:01Z");
+
+  const kept = appendLiveLogs({ logs, trimmed: false }, [next], false);
+  expect(kept.logs).toHaveLength(maxRetainedLogs + 1);
+  expect(kept.trimmed).toBe(false);
+
+  const trimmed = appendLiveLogs({ logs, trimmed: false }, [next], true);
+  expect(trimmed.logs).toHaveLength(maxRetainedLogs);
+  expect(trimmed.logs[0]?.id).toBe("log-00001");
+  expect(trimmed.logs.at(-1)?.id).toBe("log-99999");
+  expect(trimmed.trimmed).toBe(true);
+});
+
+it("delivers synchronously received logs as one batch", async () => {
+  const apply = vi.fn();
+  const append = batchLogs(apply);
+  append(testLog("a", "2026-01-01T00:00:01Z"));
+  append(testLog("b", "2026-01-01T00:00:02Z"));
+  expect(apply).not.toHaveBeenCalled();
+  await Promise.resolve();
+  expect(apply).toHaveBeenCalledTimes(1);
+  expect(apply.mock.calls[0]?.[0].map((log: JobLog) => log.id)).toEqual([
+    "a",
+    "b",
+  ]);
 });
 
 it("reconnects after the last received event cursor", async () => {
