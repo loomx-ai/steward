@@ -57,7 +57,8 @@ func (r *Runtime) enrichPrivateLinkEndpointTopology(
 		)
 	}
 
-	for _, index := range indices {
+	err = forEachConcurrently(len(indices), func(position int) error {
+		index := indices[position]
 		endpointID := strings.TrimSpace(items[index].NativeID)
 		zones, eniIDs, err := r.loadPrivateLinkEndpointZones(
 			ctx,
@@ -68,7 +69,7 @@ func (r *Runtime) enrichPrivateLinkEndpointTopology(
 			operation,
 		)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		if items[index].Normalized == nil {
 			items[index].Normalized = make(map[string]any)
@@ -81,6 +82,10 @@ func (r *Runtime) enrichPrivateLinkEndpointTopology(
 				eniIDs,
 			)
 		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 	return items, nil
 }
@@ -258,7 +263,8 @@ func (r *Runtime) enrichEndpointServiceTopology(
 		)
 	}
 
-	for _, index := range indices {
+	err = forEachConcurrently(len(indices), func(position int) error {
+		index := indices[position]
 		serviceID := strings.TrimSpace(items[index].NativeID)
 		resources, err := r.loadEndpointServiceResources(
 			ctx,
@@ -269,7 +275,7 @@ func (r *Runtime) enrichEndpointServiceTopology(
 			operation,
 		)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		if items[index].Normalized == nil {
 			items[index].Normalized = make(map[string]any)
@@ -284,6 +290,10 @@ func (r *Runtime) enrichEndpointServiceTopology(
 				)
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 	return items, nil
 }

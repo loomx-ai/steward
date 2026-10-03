@@ -33,35 +33,41 @@ func (r *Runtime) enrichRAMTopology(
 	request contracts.InventoryRequest,
 	items []contracts.InventoryItem,
 ) ([]contracts.InventoryItem, error) {
-	var region string
+	indices := make([]int, 0)
 	for index := range items {
 		item := &items[index]
-		name := strings.TrimSpace(item.NativeID)
-		if name == "" || (item.NativeType != ramGroupNativeType && item.NativeType != ramPolicyNativeType) {
+		if strings.TrimSpace(item.NativeID) == "" || (item.NativeType != ramGroupNativeType && item.NativeType != ramPolicyNativeType) {
 			continue
-		}
-		if region == "" {
-			resolved, err := productAPIRegion(request)
-			if err != nil {
-				return nil, err
-			}
-			region = resolved
 		}
 		if item.Normalized == nil {
 			item.Normalized = make(map[string]any)
 		}
+		indices = append(indices, index)
+	}
+	if len(indices) == 0 {
+		return items, nil
+	}
+	region, err := productAPIRegion(request)
+	if err != nil {
+		return nil, err
+	}
+	err = forEachConcurrently(len(indices), func(position int) error {
+		item := &items[indices[position]]
+		name := strings.TrimSpace(item.NativeID)
 		switch item.NativeType {
 		case ramGroupNativeType:
 			users, err := r.ramGroupUsers(ctx, request, region, name)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			item.Normalized[NormalizedRAMGroupUsersField] = users
 		case ramPolicyNativeType:
-			if err := r.enrichRAMPolicyAttachments(ctx, request, region, name, item.Normalized); err != nil {
-				return nil, err
-			}
+			return r.enrichRAMPolicyAttachments(ctx, request, region, name, item.Normalized)
 		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 	return items, nil
 }

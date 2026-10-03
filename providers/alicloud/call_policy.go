@@ -6,6 +6,8 @@ import (
 	"math/rand/v2"
 	"net"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -28,7 +30,42 @@ const (
 	resourceCenterRetryCount  = 3
 
 	destructivePreconnectRetryCount = 2
+
+	// enrichmentConcurrency bounds the per-item reads one inventory batch runs
+	// at a time. Each read keeps its own retry and throttling backoff.
+	enrichmentConcurrency = 4
 )
+
+// forEachConcurrently calls read for indexes 0..count-1, at most
+// enrichmentConcurrency at a time. After a failure no further reads start, and
+// the lowest failing index's error is returned, as a serial loop would.
+func forEachConcurrently(count int, read func(int) error) error {
+	errs := make([]error, count)
+	var failed atomic.Bool
+	var wg sync.WaitGroup
+	slots := make(chan struct{}, enrichmentConcurrency)
+	for index := range count {
+		slots <- struct{}{}
+		if failed.Load() {
+			<-slots
+			break
+		}
+		wg.Add(1)
+		go func() {
+			defer func() { <-slots; wg.Done() }()
+			if errs[index] = read(index); errs[index] != nil {
+				failed.Store(true)
+			}
+		}()
+	}
+	wg.Wait()
+	for _, err := range errs {
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 type queryRetryObserver func(failedAttempt, nextAttempt int, err error)
 

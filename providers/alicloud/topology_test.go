@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
@@ -18,6 +19,7 @@ import (
 )
 
 type topologyRuntimeFactory struct {
+	mu             sync.Mutex
 	responses      map[string]contracts.InvocationResult
 	calls          []contracts.Invocation
 	invoke         func(contracts.Invocation) (contracts.InvocationResult, error)
@@ -43,6 +45,8 @@ func (f *topologyRuntimeFactory) Invoke(_ context.Context, _ contracts.Credentia
 	if region != "cn-hangzhou" {
 		return contracts.InvocationResult{}, errors.New("unexpected region")
 	}
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	f.calls = append(f.calls, invocation)
 	if f.invoke != nil {
 		return f.invoke(invocation)
@@ -898,6 +902,11 @@ func assertTopologyArrayBatches(t *testing.T, calls []contracts.Invocation, para
 
 func assertTopologyBatches(t *testing.T, calls []contracts.Invocation, batches [][]string, prefix string) {
 	t.Helper()
+	// Batches are read concurrently, so their calls arrive in any order.
+	if len(calls) == 2 && len(batches) == 2 && len(batches[0]) < len(batches[1]) {
+		calls = []contracts.Invocation{calls[1], calls[0]}
+		batches = [][]string{batches[1], batches[0]}
+	}
 	if len(calls) != 2 || len(batches) != 2 || len(batches[0]) != 100 || len(batches[1]) != 1 {
 		t.Fatalf("%s batches = %#v calls=%#v", prefix, batches, calls)
 	}

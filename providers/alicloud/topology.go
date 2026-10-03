@@ -188,17 +188,19 @@ func (r *Runtime) loadTopologyDetails(
 	normalizedByID map[string]map[string]any,
 	allowMissing bool,
 ) (map[string]map[string]any, error) {
-	details := make(map[string]map[string]any, len(ids))
 	batchLimit := definition.api.MaxBatchSize
 	if batchLimit <= 0 {
 		batchLimit = 100
 	}
-	for start := 0; start < len(ids); start += batchLimit {
-		end := start + batchLimit
-		if end > len(ids) {
-			end = len(ids)
-		}
-		batchIDs := ids[start:end]
+	catalogOperation, ok := r.catalog.Operation(definition.api.Operation)
+	if !ok {
+		return nil, fmt.Errorf("Alibaba Cloud operation %q is not in the generated catalog", definition.api.Operation)
+	}
+	operation := detailOperationName(definition)
+	batches := make([]map[string]map[string]any, (len(ids)+batchLimit-1)/batchLimit)
+	err := forEachConcurrently(len(batches), func(batch int) error {
+		start := batch * batchLimit
+		batchIDs := ids[start:min(start+batchLimit, len(ids))]
 		var normalized map[string]any
 		if len(batchIDs) == 1 {
 			normalized = normalizedByID[batchIDs[0]]
@@ -208,12 +210,7 @@ func (r *Runtime) loadTopologyDetails(
 			specParameterContext{region: region, nativeIDs: batchIDs, normalized: normalized},
 		)
 		if err != nil {
-			return nil, err
-		}
-		operation := detailOperationName(definition)
-		catalogOperation, ok := r.catalog.Operation(definition.api.Operation)
-		if !ok {
-			return nil, fmt.Errorf("Alibaba Cloud operation %q is not in the generated catalog", definition.api.Operation)
+			return err
 		}
 		execution.LogCloudAPIRequest(ctx, definition.service, operation, contracts.CloudLogPayload(ctx, parameters))
 		result, err := r.factory.Invoke(ctx, credential, region, catalogOperation, contracts.Invocation{
@@ -225,23 +222,27 @@ func (r *Runtime) loadTopologyDetails(
 		if err != nil {
 			LogCloudAPIError(ctx, definition.service, operation, err)
 			normalized := NormalizeError(err)
-			return nil, fmt.Errorf("%s failed: %w", detailOperationLabel(definition), normalized)
+			return fmt.Errorf("%s failed: %w", detailOperationLabel(definition), normalized)
 		}
 		responsePayload := contracts.CloudLogPayload(ctx, result.Data)
 		if result.RequestID != "" {
 			responsePayload["RequestId"] = result.RequestID
 		}
 		execution.LogCloudAPIResponse(ctx, definition.service, operation, responsePayload)
-		batchDetails, err := validateTopologyDetailCoverage(
+		batches[batch], err = validateTopologyDetailCoverage(
 			definition,
 			batchIDs,
 			topologyDetailRecords(result.Data, definition.api.ItemsPath),
 			allowMissing,
 			result.RequestID,
 		)
-		if err != nil {
-			return nil, err
-		}
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	details := make(map[string]map[string]any, len(ids))
+	for _, batchDetails := range batches {
 		for nativeID, record := range batchDetails {
 			details[nativeID] = record
 		}

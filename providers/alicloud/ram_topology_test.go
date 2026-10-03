@@ -3,9 +3,12 @@ package alicloud
 import (
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -136,5 +139,46 @@ func TestRAMInventoryMembershipErrors(t *testing.T) {
 				t.Fatalf("enriched = %+v, error = %v", enriched, err)
 			}
 		})
+	}
+}
+
+func TestForEachConcurrentlyBoundsReadsAndReportsTheFirstFailureInOrder(t *testing.T) {
+	t.Parallel()
+
+	var running, peak atomic.Int32
+	results := make([]int, 20)
+	err := forEachConcurrently(len(results), func(index int) error {
+		now := running.Add(1)
+		defer running.Add(-1)
+		for {
+			seen := peak.Load()
+			if now <= seen || peak.CompareAndSwap(seen, now) {
+				break
+			}
+		}
+		time.Sleep(time.Millisecond)
+		results[index] = index * index
+		return nil
+	})
+	if err != nil || peak.Load() > enrichmentConcurrency || results[19] != 361 {
+		t.Fatalf("err=%v peak=%d results=%v", err, peak.Load(), results)
+	}
+
+	// Index 6 fails after index 7 does; a serial loop would have stopped at 6.
+	var started atomic.Int32
+	err = forEachConcurrently(100, func(index int) error {
+		started.Add(1)
+		switch index {
+		case 6:
+			time.Sleep(20 * time.Millisecond)
+			return fmt.Errorf("read %d", index)
+		case 7:
+			return fmt.Errorf("read %d", index)
+		}
+		time.Sleep(time.Millisecond)
+		return nil
+	})
+	if err == nil || err.Error() != "read 6" || started.Load() == 100 {
+		t.Fatalf("err=%v started=%d", err, started.Load())
 	}
 }
