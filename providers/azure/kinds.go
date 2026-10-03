@@ -147,13 +147,23 @@ func allTypes() []resourceType {
 	metadata, _ := providerData()
 	return metadata.kinds
 }
-func findType(nativeType string) (resourceType, bool) {
+
+// typeIndex keys every catalog kind by its lower-case native type; the first
+// kind wins, as the ordered case-insensitive search did.
+var typeIndex = sync.OnceValue(func() map[string]resourceType {
+	index := map[string]resourceType{}
 	for _, kind := range allTypes() {
-		if strings.EqualFold(kind.NativeType, nativeType) {
-			return kind, true
+		key := strings.ToLower(kind.NativeType)
+		if _, ok := index[key]; !ok {
+			index[key] = kind
 		}
 	}
-	return resourceType{}, false
+	return index
+})
+
+func findType(nativeType string) (resourceType, bool) {
+	kind, ok := typeIndex()[strings.ToLower(nativeType)]
+	return kind, ok
 }
 func compileBundle() (spec.Bundle, error) {
 	metadata, err := providerData()

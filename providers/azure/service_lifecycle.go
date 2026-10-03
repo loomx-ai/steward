@@ -551,6 +551,11 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		return dnsExternalController(parents[i].Identity.NativeType) && !dnsExternalController(parents[j].Identity.NativeType)
 	})
 	dnsOwners := map[string]asset.AssetID{}
+	byIdentity := map[serviceAssetKey][]int{}
+	for i, candidate := range assets {
+		key := serviceAssetKeyOf(candidate.Identity, candidate.Identity.NativeType, candidate.Identity.NativeID)
+		byIdentity[key] = append(byIdentity[key], i)
+	}
 	for _, parent := range parents {
 		if parent.Identity.Provider == asset.ProviderAzure && (parent.Identity.NativeType == recoveryServicesItem || parent.Identity.NativeType == recoveryServicesContainer) {
 			contribution, err := s.client.contributeRecoverySources(ctx, s.connectionID, parent, assets)
@@ -813,8 +818,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		}
 		if parent.Identity.NativeType == domainType {
 			zone := text(parent.Normalized["_domain_dns_zone"])
-			for _, target := range assets {
-				if target.Identity.Provider != parent.Identity.Provider || target.Identity.ConnectionID != parent.Identity.ConnectionID || target.Identity.Partition != parent.Identity.Partition || target.Identity.NativeType != publicDNSZoneType || target.Identity.NativeID != zone {
+			for _, i := range byIdentity[serviceAssetKeyOf(parent.Identity, publicDNSZoneType, zone)] {
+				target := assets[i]
+				if target.Identity.NativeType != publicDNSZoneType || target.Identity.NativeID != zone {
 					continue
 				}
 				// DNS hosting does not own the registration. Deleting a zone
@@ -856,14 +862,12 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				delete(evidence, graph.LifecycleEvidenceControllerVerifiesManagedAbsence)
 			}
 			var target *asset.Asset
-			for i := range assets {
-				candidate := &assets[i]
-				if candidate.Identity.Provider == parent.Identity.Provider && candidate.Identity.ConnectionID == parent.Identity.ConnectionID && candidate.Identity.Partition == parent.Identity.Partition && strings.EqualFold(candidate.Identity.NativeType, child.kind) && strings.EqualFold(candidate.Identity.NativeID, child.id) {
-					if target != nil {
-						return result, fmt.Errorf("ambiguous Azure service child")
-					}
-					target = candidate
-				}
+			switch matches := byIdentity[serviceAssetKeyOf(parent.Identity, child.kind, child.id)]; len(matches) {
+			case 0:
+			case 1:
+				target = &assets[matches[0]]
+			default:
+				return result, fmt.Errorf("ambiguous Azure service child")
 			}
 			if target == nil {
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
@@ -933,6 +937,18 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	result.Relationships = append(result.Relationships, groups.Relationships...)
 	result.Unresolved = append(result.Unresolved, groups.Unresolved...)
 	return result, nil
+}
+
+// serviceAssetKey matches a native identity within its parent's connection and
+// partition, ignoring the case of its type and ID.
+type serviceAssetKey struct {
+	provider            asset.Provider
+	connection          asset.ConnectionID
+	partition, kind, id string
+}
+
+func serviceAssetKeyOf(owner asset.Identity, nativeType, nativeID string) serviceAssetKey {
+	return serviceAssetKey{owner.Provider, owner.ConnectionID, owner.Partition, strings.ToLower(nativeType), strings.ToLower(nativeID)}
 }
 
 func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]contracts.ActionImpact, error) {
