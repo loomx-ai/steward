@@ -32,7 +32,11 @@ const (
 	OSSBucketNativeType        = "ACS::OSS::Bucket"
 )
 
-const actionReadbackInterval = 2 * time.Second
+const (
+	actionReadbackInterval    = 2 * time.Second
+	actionReadbackMaxInterval = 30 * time.Second
+	actionReadbackDelayKey    = "readback_delay_ms"
+)
 
 const KMSDeletionScheduledState = "scheduled_deletion"
 
@@ -3428,7 +3432,30 @@ func (h *ResourceAction) Wait(ctx context.Context, request contracts.ActionReque
 	if h.terminalState(readback.State) {
 		return contracts.WaitResult{Done: true, State: readback.State}, nil
 	}
-	return contracts.WaitResult{Done: false, RetryAfter: h.pollInterval(), State: readback.State}, nil
+	delay, data := h.waitBackoff(result)
+	return contracts.WaitResult{Done: false, RetryAfter: delay, State: readback.State, Data: data}, nil
+}
+
+// waitBackoff doubles the delay between readback polls from the action's poll
+// interval up to actionReadbackMaxInterval. The cap is also kept to an eighth
+// of the deletion check timeout so the window still ends with several polls;
+// without a configured timeout the worker default applies, which the provider
+// cannot see, so the interval stays fixed. The last delay is carried in the
+// persisted provider result so the backoff survives worker restarts.
+func (h *ResourceAction) waitBackoff(result contracts.ActionResult) (time.Duration, map[string]any) {
+	delay := h.pollInterval()
+	if timeout := h.DeletionCheckTimeout(); timeout > 0 {
+		limit := min(actionReadbackMaxInterval, timeout/8)
+		if previous, ok := integerValue(result.Data[actionReadbackDelayKey]); ok {
+			delay = max(delay, min(2*time.Duration(previous)*time.Millisecond, limit))
+		}
+	}
+	data := cloneTopologyMap(result.Data)
+	if data == nil {
+		data = map[string]any{}
+	}
+	data[actionReadbackDelayKey] = delay.Milliseconds()
+	return delay, data
 }
 
 func ossHDFSSafeModeMayBeEnabled(data map[string]any) bool {
