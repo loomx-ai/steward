@@ -209,33 +209,59 @@ func (a *API) projectScanTask(
 	shards []asset.ScanShard,
 ) (inventory.ScanTaskProjection, error) {
 	projection := inventory.ProjectScanTask(task, shards)
-	jobs, err := a.dependencies.Repositories.Jobs().ListJobsByAggregate(ctx, "scan_task", string(task.ID))
+	if a.dependencies.ScanControls != nil {
+		canRetry, err := a.dependencies.ScanControls.CanRetry(ctx, task, shards)
+		if err != nil {
+			return inventory.ScanTaskProjection{}, err
+		}
+		if canRetry && !containsScanAction(projection.AllowedActions, "retry") {
+			projection.AllowedActions = append(projection.AllowedActions, "retry")
+		}
+	}
+	return a.refreshScanProjection(ctx, projection)
+}
+
+// refreshScanProjection applies the parts of a scan projection that change
+// without its task or shards changing: job timing, change counts and the
+// schedule name.
+func (a *API) refreshScanProjection(ctx context.Context, projection inventory.ScanTaskProjection) (inventory.ScanTaskProjection, error) {
+	jobs, err := a.dependencies.Repositories.Jobs().ListJobsByAggregate(ctx, "scan_task", string(projection.ID))
 	if err != nil {
 		return inventory.ScanTaskProjection{}, err
 	}
 	projection = inventory.ApplyScanTiming(projection, jobs, time.Now().UTC())
-	changes, err := a.dependencies.Repositories.Inventory().CountAssetChanges(ctx, []asset.ScanTaskID{task.ID})
+	changes, err := a.dependencies.Repositories.Inventory().CountAssetChanges(ctx, []asset.ScanTaskID{projection.ID})
 	if err != nil {
 		return inventory.ScanTaskProjection{}, err
 	}
-	projection.Changes = changes[task.ID]
-	if task.ScheduleID != "" {
-		value, err := a.dependencies.Repositories.Schedules().GetSchedule(ctx, schedule.ID(task.ScheduleID))
+	projection.Changes = changes[projection.ID]
+	projection.ScheduleName = nil
+	if projection.ScheduleID != "" {
+		value, err := a.dependencies.Repositories.Schedules().GetSchedule(ctx, schedule.ID(projection.ScheduleID))
 		if err == nil {
 			projection.ScheduleName = &value.Name
 		}
 	}
-	if a.dependencies.ScanControls == nil {
-		return projection, nil
-	}
-	canRetry, err := a.dependencies.ScanControls.CanRetry(ctx, task, shards)
-	if err != nil {
-		return inventory.ScanTaskProjection{}, err
-	}
-	if canRetry && !containsScanAction(projection.AllowedActions, "retry") {
-		projection.AllowedActions = append(projection.AllowedActions, "retry")
-	}
 	return projection, nil
+}
+
+// scanProgressMarker is what a scan projection's task and shard parts are
+// derived from, read without loading every shard.
+type scanProgressMarker struct {
+	task   asset.ScanTask
+	shards []persistence.ScanShardProgress
+}
+
+func (a *API) scanProgressMarker(ctx context.Context, id asset.ScanTaskID) (scanProgressMarker, error) {
+	task, err := a.dependencies.Repositories.Inventory().GetScanRun(ctx, id)
+	if err != nil {
+		return scanProgressMarker{}, err
+	}
+	shards, err := a.dependencies.Repositories.Inventory().ScanShardProgress(ctx, id)
+	if err != nil {
+		return scanProgressMarker{}, err
+	}
+	return scanProgressMarker{task: task, shards: shards}, nil
 }
 
 func containsScanAction(actions []string, expected string) bool {
@@ -343,6 +369,13 @@ func (a *API) scanLogs(response http.ResponseWriter, request *http.Request) {
 
 func (a *API) scanEvents(response http.ResponseWriter, request *http.Request) {
 	id := asset.ScanTaskID(chi.URLParam(request, "id"))
+	// A marker is read before the projection it describes, so a change racing
+	// a rebuild only causes one more rebuild.
+	lastMarker, err := a.scanProgressMarker(request.Context(), id)
+	if err != nil {
+		repositoryError(response, err)
+		return
+	}
 	projection, err := a.scanProjection(request, id)
 	if err != nil {
 		repositoryError(response, err)
@@ -379,10 +412,20 @@ func (a *API) scanEvents(response http.ResponseWriter, request *http.Request) {
 			afterTime, afterID = log.CreatedAt, log.ID
 			writeScanEvent(response, "log", scanEventCursor(afterTime, afterID), log)
 		}
-		projection, err = a.scanProjection(request, id)
+		marker, err := a.scanProgressMarker(request.Context(), id)
 		if err != nil {
 			return
 		}
+		if reflect.DeepEqual(marker, lastMarker) {
+			// Only timing, change counts or the schedule name can differ.
+			projection, err = a.refreshScanProjection(request.Context(), lastProjection)
+		} else {
+			projection, err = a.scanProjection(request, id)
+		}
+		if err != nil {
+			return
+		}
+		lastMarker = marker
 		changed := scanProjectionChanged(lastProjection, projection)
 		if isTerminalScanStatus(projection.Status) {
 			writeScanEvent(response, "end", "", projection)

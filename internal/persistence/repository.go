@@ -85,6 +85,16 @@ type CleanupTaskAggregate struct {
 	ImpactItems []plan.ImpactItem      `json:"impact_items"`
 }
 
+// ScanShardProgress counts a scan's shards of one target and status. A scan's
+// progress rows change whenever a shard is added or changes status or item
+// count, which is everything its target progress is projected from.
+type ScanShardProgress struct {
+	TargetKey string
+	Status    asset.ShardStatus
+	Shards    int
+	ItemCount int
+}
+
 // ScanRunListItem is the persisted read model for the scan collection route.
 // It is intentionally complete without consulting scan_shards or jobs.
 type ScanRunListItem struct {
@@ -156,6 +166,7 @@ type InventoryRepository interface {
 	GetScanShard(context.Context, asset.ScanShardID) (asset.ScanShard, error)
 	ListScanShards(context.Context, ListOptions) (Page[asset.ScanShard], error)
 	ListScanShardsByRun(context.Context, asset.ScanRunID) ([]asset.ScanShard, error)
+	ScanShardProgress(context.Context, asset.ScanRunID) ([]ScanShardProgress, error)
 	PutAsset(context.Context, asset.Asset) error
 	SetAssetDirty(context.Context, asset.AssetID, bool) (asset.Asset, error)
 	GetAsset(context.Context, asset.AssetID) (asset.Asset, error)

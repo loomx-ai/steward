@@ -1415,6 +1415,28 @@ func (s *Store) ListScanShards(ctx context.Context, options persistence.ListOpti
 	return page, nil
 }
 
+func (s *Store) ScanShardProgress(ctx context.Context, runID asset.ScanRunID) ([]persistence.ScanShardProgress, error) {
+	var rows []struct {
+		TargetKey string `gorm:"column:target_key"`
+		Status    string `gorm:"column:status"`
+		Shards    int    `gorm:"column:shard_count"`
+		ItemCount int    `gorm:"column:item_count"`
+	}
+	if err := s.db.WithContext(ctx).Table("scan_shards").
+		Select("target_key, status, COUNT(*) AS shard_count, CAST(COALESCE(SUM(item_count), 0) AS BIGINT) AS item_count").
+		Where("scan_task_id = ?", string(runID)).
+		Group("target_key, status").
+		Order("target_key ASC, status ASC").
+		Scan(&rows).Error; err != nil {
+		return nil, err
+	}
+	result := make([]persistence.ScanShardProgress, len(rows))
+	for index, row := range rows {
+		result[index] = persistence.ScanShardProgress{TargetKey: row.TargetKey, Status: asset.ShardStatus(row.Status), Shards: row.Shards, ItemCount: row.ItemCount}
+	}
+	return result, nil
+}
+
 func (s *Store) ListScanShardsByRun(ctx context.Context, runID asset.ScanRunID) ([]asset.ScanShard, error) {
 	if runID == "" {
 		return nil, persistence.ErrNotFound

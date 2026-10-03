@@ -422,6 +422,10 @@ func (r *inventoryRepository) ListAssetIDsObservedByShard(_ context.Context, sha
 	return result, nil
 }
 
+func (r *inventoryRepository) ScanShardProgress(context.Context, asset.ScanRunID) ([]persistence.ScanShardProgress, error) {
+	return nil, nil
+}
+
 func (r *inventoryRepository) ConnectionInventoryVersion(context.Context, asset.ConnectionID) (string, error) {
 	return "", nil
 }

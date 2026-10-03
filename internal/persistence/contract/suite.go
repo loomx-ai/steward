@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -1343,6 +1344,24 @@ func Run(t *testing.T, factory Factory) {
 				t.Fatalf("inventory version did not change after %s: %q", name, current)
 			}
 			previous = current
+		}
+
+		if err := repositories.Inventory().PutScanShard(ctx, asset.ScanShard{ID: "shard-app-2", ScanRunID: "scan-app", TargetKey: "region:a", Provider: asset.ProviderAWS, Source: "config", ScopeID: "scope-app", ResourceKindID: "kind-app", Status: asset.ShardSucceeded, Coverage: asset.Coverage{ItemCount: 2}, CreatedAt: now}); err != nil {
+			t.Fatal(err)
+		}
+		if err := repositories.Inventory().PutScanShard(ctx, asset.ScanShard{ID: "shard-app-3", ScanRunID: "scan-app", TargetKey: "region:a", Provider: asset.ProviderAWS, Source: "config", ScopeID: "scope-app", ResourceKindID: "kind-app", Status: asset.ShardSucceeded, Coverage: asset.Coverage{ItemCount: 3}, CreatedAt: now}); err != nil {
+			t.Fatal(err)
+		}
+		progress, err := repositories.Inventory().ScanShardProgress(ctx, "scan-app")
+		if err != nil {
+			t.Fatal(err)
+		}
+		wantProgress := []persistence.ScanShardProgress{
+			{TargetKey: "region:a", Status: asset.ShardSucceeded, Shards: 2, ItemCount: 5},
+			{TargetKey: "scope:scope-app", Status: asset.ShardRunning, Shards: 1},
+		}
+		if !reflect.DeepEqual(progress, wantProgress) {
+			t.Fatalf("scan shard progress = %+v, want %+v", progress, wantProgress)
 		}
 	})
 
