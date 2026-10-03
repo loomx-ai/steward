@@ -685,14 +685,13 @@ it("filters the panorama with the typed resource query", async () => {
       name: "Advanced query · Switch to normal search",
     }),
   );
+  // The unfiltered topology is still fresh in the cache, so it is reused.
   await waitFor(() =>
-    expect(
-      queryForCall(panoramaHarness.getTopology.mock.calls.at(-1) ?? []),
-    ).toEqual(expect.objectContaining({ resource_query: undefined })),
+    expect(screen.getByTestId("current-location")).toHaveTextContent(
+      /^\/panorama$/,
+    ),
   );
-  expect(screen.getByTestId("current-location")).toHaveTextContent(
-    /^\/panorama$/,
-  );
+  expect(await screen.findByTestId("topology-summary-canvas")).toBeVisible();
 });
 
 it("preserves the resource query while drilling into the panorama", async () => {
@@ -928,16 +927,8 @@ it("loads the selected Region and VPC with region-name and VPC-ID breadcrumbs", 
   expect(breadcrumbNavigation).toHaveClass("gap-0");
   expect(vpcBreadcrumb.parentElement).toHaveClass("gap-0");
 
-  const callsBeforeRootReset = panoramaHarness.getTopology.mock.calls.length;
+  // The account topology is still fresh in the cache, so it is reused.
   window.dispatchEvent(new Event("steward:panorama-root"));
-  await waitFor(() =>
-    expect(panoramaHarness.getTopology.mock.calls.length).toBeGreaterThan(
-      callsBeforeRootReset,
-    ),
-  );
-  expect(
-    queryForCall(panoramaHarness.getTopology.mock.calls.at(-1) ?? []),
-  ).toHaveProperty("focus_key", undefined);
   expect(await screen.findByTestId("topology-summary-canvas")).toBeVisible();
   expect(screen.getByTestId("current-location")).toHaveTextContent(
     /^\/panorama$/,
@@ -1676,6 +1667,56 @@ it("keeps fetching only the current focus until its cursor is complete", async (
         queryForCall(call).focus_key === "account-global",
     ),
   ).toBe(true);
+});
+
+it("replaces a refetched last page instead of keeping its old response", async () => {
+  const pageOne = {
+    ...globalResponse,
+    next_cursor: "cursor-2",
+    truncated: true,
+  };
+  let pageTwoResources: ResourceGraphTopologyView["resources"] = [];
+  panoramaHarness.getTopology.mockImplementation(
+    async (_connectionID: string, query: TopologyQuery) => {
+      if (!query.focus_key) return accountResponse;
+      if (query.cursor !== "cursor-2") return pageOne;
+      return {
+        ...globalResponse,
+        view: { ...globalResponse.view, resources: pageTwoResources },
+        truncated: false,
+      } as TopologyResponse;
+    },
+  );
+  const user = userEvent.setup();
+  const { queryClient } = renderPanorama();
+
+  await user.click(
+    await screen.findByRole("button", { name: /Global resources/ }),
+  );
+  await waitFor(() =>
+    expect(screen.getByTestId("topology-canvas")).toHaveAttribute(
+      "data-complete",
+      "true",
+    ),
+  );
+  expect(
+    screen.queryByRole("button", { name: "Page two ECS" }),
+  ).not.toBeInTheDocument();
+
+  pageTwoResources = [
+    {
+      ...globalResponse.view.resources[0]!,
+      key: "asset-page-two",
+      asset_id: "asset-page-two",
+      name: "Page two ECS",
+    },
+  ];
+  await queryClient.invalidateQueries({ queryKey: ["topology"] });
+
+  expect(
+    await screen.findByRole("button", { name: "Page two ECS" }),
+  ).toBeVisible();
+  expect(screen.getByRole("button", { name: "生产 ECS" })).toBeVisible();
 });
 
 it("stacks loaded independent resources when pagination is complete but coverage is incomplete", async () => {

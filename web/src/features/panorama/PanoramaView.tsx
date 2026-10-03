@@ -97,6 +97,7 @@ interface PaginationState {
   scope: string;
   cursor: string;
   pages: LoadedPage[];
+  merged?: TopologyResponse;
   generation: number;
   refreshing: boolean;
   cursorRecoveryUsed: boolean;
@@ -244,6 +245,10 @@ export function PanoramaView() {
         resource_query: resourceQuery || undefined,
       }),
     enabled: panoramaRoute !== undefined,
+    // Topology changes only with a new inventory revision (scans, cleanups,
+    // dirty marks invalidate it), so a focus refetch only re-lays the canvas.
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
   const cursorStaleError = isCursorStaleError(topology.error);
   const previousConnectionID = useRef(connection.id);
@@ -310,17 +315,22 @@ export function PanoramaView() {
               refreshing: false,
               cursorRecoveryUsed: false,
             };
-      if (
-        requestedCursor &&
-        base.pages.some((page) => page.cursor === requestedCursor)
-      ) {
-        return base;
-      }
+      const loadedIndex = requestedCursor
+        ? base.pages.findIndex((page) => page.cursor === requestedCursor)
+        : -1;
+      if (base.pages[loadedIndex]?.response === response) return base;
 
+      // A refetch of an already loaded page replaces it instead of being
+      // dropped, so revalidating the last page keeps the canvas current.
       const pages =
         requestedCursor === ""
           ? [{ cursor: "", response }]
-          : [...base.pages, { cursor: requestedCursor, response }];
+          : [
+              ...(loadedIndex >= 0
+                ? base.pages.slice(0, loadedIndex)
+                : base.pages),
+              { cursor: requestedCursor, response },
+            ];
       let merged: TopologyResponse;
       try {
         merged = mergeTopologyPages(pages.map((page) => page.response));
@@ -345,6 +355,7 @@ export function PanoramaView() {
       return {
         ...base,
         pages,
+        merged,
         cursor:
           response.truncated && response.next_cursor
             ? response.next_cursor
@@ -388,13 +399,10 @@ export function PanoramaView() {
     requestScope,
   ]);
 
-  const merged = useMemo(
-    () =>
-      pagination.scope === requestScope && pagination.pages.length > 0
-        ? mergeTopologyPages(pagination.pages.map((page) => page.response))
-        : undefined,
-    [pagination.pages, pagination.scope, requestScope],
-  );
+  const merged =
+    pagination.scope === requestScope && pagination.pages.length > 0
+      ? pagination.merged
+      : undefined;
   const resourceKinds = useMemo(
     () =>
       new Map(

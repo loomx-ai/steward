@@ -68,6 +68,11 @@ export function ScanTaskEvents({
       void queryClient.invalidateQueries({
         queryKey: ["scans", connectionID],
       });
+      if (event.type === "end") {
+        void queryClient.invalidateQueries({
+          queryKey: ["topology", connectionID],
+        });
+      }
     };
     const connect = async () => {
       while (!controller.signal.aborted && !ended) {

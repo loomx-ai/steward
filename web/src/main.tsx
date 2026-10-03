@@ -16,6 +16,8 @@ const queryClient = new QueryClient({
     queries: { staleTime: 10_000, retry: 1, refetchOnWindowFocus: true },
   },
 });
+// The provider catalog ships with the server binary and only changes on upgrade.
+queryClient.setQueryDefaults(["catalog"], { staleTime: Infinity });
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
