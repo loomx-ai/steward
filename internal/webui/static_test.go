@@ -68,3 +68,46 @@ func TestBundleHandlerServesConsoleRoutesThatShareTheAssetsFolderName(t *testing
 		t.Fatalf("placeholder asset detail status = %d", recorder.Code)
 	}
 }
+
+func TestBundleHandlerCachesHashedAssetsAndRevalidatesTheShell(t *testing.T) {
+	bundle := fstest.MapFS{
+		"index.html":          {Data: []byte(`<div id="root"></div>`)},
+		"assets/index-abc.js": {Data: []byte(strings.Repeat("console.log(1);", 100))},
+		"favicon.ico":         {Data: []byte("icon")},
+	}
+	serve := func(target string, headers map[string]string) *httptest.ResponseRecorder {
+		request := httptest.NewRequest(http.MethodGet, target, nil)
+		for key, value := range headers {
+			request.Header.Set(key, value)
+		}
+		recorder := httptest.NewRecorder()
+		handler(bundle).ServeHTTP(recorder, request)
+		return recorder
+	}
+
+	asset := serve("/assets/index-abc.js", map[string]string{"Accept-Encoding": "gzip"})
+	if asset.Code != http.StatusOK || asset.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" ||
+		asset.Header().Get("Content-Encoding") != "gzip" {
+		t.Fatalf("asset status=%d headers=%v", asset.Code, asset.Header())
+	}
+
+	for _, target := range []string{"/", "/scans/schedules/sch-1"} {
+		shell := serve(target, nil)
+		etag := shell.Header().Get("ETag")
+		if shell.Code != http.StatusOK || shell.Header().Get("Cache-Control") != "no-cache" || etag == "" {
+			t.Fatalf("%s status=%d headers=%v", target, shell.Code, shell.Header())
+		}
+		if revalidated := serve(target, map[string]string{"If-None-Match": etag}); revalidated.Code != http.StatusNotModified {
+			t.Fatalf("%s revalidation status=%d", target, revalidated.Code)
+		}
+	}
+
+	icon := serve("/favicon.ico", nil)
+	etag := icon.Header().Get("ETag")
+	if icon.Code != http.StatusOK || etag == "" || icon.Header().Get("Cache-Control") != "" {
+		t.Fatalf("icon status=%d headers=%v", icon.Code, icon.Header())
+	}
+	if revalidated := serve("/favicon.ico", map[string]string{"If-None-Match": etag}); revalidated.Code != http.StatusNotModified {
+		t.Fatalf("icon revalidation status=%d", revalidated.Code)
+	}
+}

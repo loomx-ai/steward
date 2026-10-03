@@ -1,7 +1,9 @@
 package httptransport_test
 
 import (
+	"bufio"
 	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"errors"
@@ -1242,6 +1244,76 @@ func TestJobEventRouteResumesAfterLastEventID(t *testing.T) {
 	if response.Code != http.StatusOK || !strings.Contains(body, "id: 2\n") || strings.Contains(body, `"message":"first"`) || !strings.Contains(body, `"message":"second"`) {
 		t.Fatalf("status=%d body=%q", response.Code, body)
 	}
+}
+
+func TestCatalogIsCompressedAndRevalidatedByETag(t *testing.T) {
+	_, router := terminalRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/api/providers/catalog", nil)
+	request.Header.Set("Authorization", "Bearer viewer-token")
+	request.Header.Set("Accept-Encoding", "gzip")
+	response := httptest.NewRecorder()
+	router.ServeHTTP(response, request)
+	etag := response.Header().Get("ETag")
+	if response.Code != http.StatusOK || etag == "" || response.Header().Get("Content-Encoding") != "gzip" {
+		t.Fatalf("status=%d etag=%q headers=%v", response.Code, etag, response.Header())
+	}
+	reader, err := gzip.NewReader(response.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var bundles []json.RawMessage
+	if err := json.NewDecoder(reader).Decode(&bundles); err != nil || len(bundles) != 1 {
+		t.Fatalf("bundles=%d err=%v", len(bundles), err)
+	}
+
+	request = httptest.NewRequest(http.MethodGet, "/api/providers/catalog", nil)
+	request.Header.Set("Authorization", "Bearer viewer-token")
+	request.Header.Set("If-None-Match", etag)
+	response = httptest.NewRecorder()
+	router.ServeHTTP(response, request)
+	if response.Code != http.StatusNotModified || response.Body.Len() != 0 {
+		t.Fatalf("revalidation status=%d body=%q", response.Code, response.Body.String())
+	}
+}
+
+func TestEventStreamsFlushUncompressedThroughCompression(t *testing.T) {
+	repositories, router := terminalRouter(t)
+	ctx := context.Background()
+	now := time.Date(2026, 7, 13, 12, 30, 0, 0, time.UTC)
+	job := execution.Job{ID: "job-live", ConnectionID: "connection-a", Type: execution.JobScan, Status: execution.JobRunning, RunAt: now, CreatedAt: now, UpdatedAt: now}
+	if err := repositories.Jobs().Enqueue(ctx, job); err != nil {
+		t.Fatal(err)
+	}
+	if err := repositories.Jobs().AppendLog(ctx, execution.JobLog{ID: "log-live", JobID: job.ID, Sequence: 1, Kind: execution.JobLogText, Level: "info", Message: "live", CreatedAt: now}); err != nil {
+		t.Fatal(err)
+	}
+	server := httptest.NewServer(router)
+	defer server.Close()
+	streamCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	request, err := http.NewRequestWithContext(streamCtx, http.MethodGet, server.URL+"/api/jobs/job-live/events?connection_id=connection-a", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request.Header.Set("Authorization", "Bearer viewer-token")
+	request.Header.Set("Accept-Encoding", "gzip")
+	response, err := http.DefaultClient.Do(request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer response.Body.Close()
+	if encoding := response.Header.Get("Content-Encoding"); encoding != "" {
+		t.Fatalf("event stream was encoded as %q", encoding)
+	}
+	// The job is still running, so the handler keeps the stream open: the
+	// event can only arrive here if it was flushed.
+	scanner := bufio.NewScanner(response.Body)
+	for scanner.Scan() {
+		if strings.Contains(scanner.Text(), `"message":"live"`) {
+			return
+		}
+	}
+	t.Fatalf("live event was not flushed: %v", scanner.Err())
 }
 
 func TestDomainResourcesUseOpaqueCursorPagination(t *testing.T) {

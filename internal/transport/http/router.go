@@ -2,6 +2,8 @@ package httptransport
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,9 +11,11 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/loomx-ai/steward/internal/app/cleanup"
 	connectionapp "github.com/loomx-ai/steward/internal/app/connection"
@@ -68,6 +72,11 @@ type Dependencies struct {
 
 type API struct {
 	dependencies Dependencies
+	// The provider catalog is fixed once the server registers its bundles,
+	// so it is serialized once and revalidated by ETag afterwards.
+	catalogOnce sync.Once
+	catalogBody []byte
+	catalogETag string
 }
 
 type selectedConnectionContextKey struct{}
@@ -75,6 +84,9 @@ type selectedConnectionContextKey struct{}
 func NewRouter(dependencies Dependencies) http.Handler {
 	api := &API{dependencies: dependencies}
 	router := chi.NewRouter()
+	// Compress only text payloads. Event streams are not in the default type
+	// list, so SSE responses stay uncompressed and flush immediately.
+	router.Use(middleware.Compress(5))
 	router.Use(withRequestID)
 	router.Get("/api/session", api.session)
 	router.Route("/api", func(router chi.Router) {
@@ -212,10 +224,45 @@ func (a *API) listProviders(response http.ResponseWriter, _ *http.Request) {
 	writeJSON(response, http.StatusOK, descriptors)
 }
 
-func (a *API) listCatalog(response http.ResponseWriter, _ *http.Request) {
-	if a.dependencies.Bundles == nil {
-		writeJSON(response, http.StatusOK, []providerCatalogBundle{})
+func (a *API) listCatalog(response http.ResponseWriter, request *http.Request) {
+	a.catalogOnce.Do(func() {
+		payload, err := json.Marshal(a.catalog())
+		if err != nil {
+			return
+		}
+		digest := sha256.Sum256(payload)
+		a.catalogBody = append(payload, '\n')
+		a.catalogETag = `"` + hex.EncodeToString(digest[:16]) + `"`
+	})
+	if a.catalogBody == nil {
+		writeError(response, http.StatusInternalServerError, errors.New("provider catalog could not be serialized"))
 		return
+	}
+	response.Header().Set("ETag", a.catalogETag)
+	response.Header().Set("Cache-Control", "no-cache")
+	if etagMatches(request.Header.Get("If-None-Match"), a.catalogETag) {
+		response.WriteHeader(http.StatusNotModified)
+		return
+	}
+	response.Header().Set("Content-Type", "application/json")
+	response.WriteHeader(http.StatusOK)
+	_, _ = response.Write(a.catalogBody)
+}
+
+// etagMatches applies the weak comparison If-None-Match requires.
+func etagMatches(header, etag string) bool {
+	for _, candidate := range strings.Split(header, ",") {
+		candidate = strings.TrimPrefix(strings.TrimSpace(candidate), "W/")
+		if candidate == "*" || candidate == etag {
+			return true
+		}
+	}
+	return false
+}
+
+func (a *API) catalog() []providerCatalogBundle {
+	if a.dependencies.Bundles == nil {
+		return []providerCatalogBundle{}
 	}
 	bundles := a.dependencies.Bundles.Bundles()
 	catalog, hasRuntimeKinds := a.dependencies.Bundles.(ResourceKindCatalog)
@@ -248,7 +295,7 @@ func (a *API) listCatalog(response http.ResponseWriter, _ *http.Request) {
 			KindsRevision: kindsRevision,
 		})
 	}
-	writeJSON(response, http.StatusOK, result)
+	return result
 }
 
 type providerCatalogBundle struct {
