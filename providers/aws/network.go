@@ -137,7 +137,8 @@ type NetworkPage struct {
 type NetworkClient interface {
 	ListVPCs(context.Context, NetworkListRequest) (NetworkPage, error)
 	ListVSwitches(context.Context, NetworkListRequest) (NetworkPage, error)
-	InternetGatewayVPCs(context.Context, string) ([]string, error)
+	// InternetGatewayVPCs returns the attached VPC IDs of each gateway by ID.
+	InternetGatewayVPCs(context.Context, []string) (map[string][]string, error)
 	DetachInternetGateway(context.Context, string, string) error
 	VPNGatewayVPCs(context.Context, string) ([]string, error)
 	DetachVPNGateway(context.Context, string, string) error
@@ -153,11 +154,11 @@ func (a *internetGatewayAction) Execute(ctx context.Context, request contracts.A
 		return contracts.ActionResult{}, err
 	}
 	id := cloudControlIdentifier(request.Asset)
-	vpcs, err := a.network.InternetGatewayVPCs(ctx, id)
+	vpcs, err := a.network.InternetGatewayVPCs(ctx, []string{id})
 	if err != nil {
 		return contracts.ActionResult{}, NormalizeError(err)
 	}
-	for _, vpcID := range vpcs {
+	for _, vpcID := range vpcs[id] {
 		if err := a.network.DetachInternetGateway(ctx, id, vpcID); err != nil {
 			return contracts.ActionResult{}, NormalizeError(err)
 		}

@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -274,44 +276,42 @@ func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.In
 	if err != nil {
 		return nil, err
 	}
+	details, err := cloudControlDetails(ctx, client, request.Scope, items)
+	if err != nil {
+		return nil, err
+	}
 	result := make([]contracts.InventoryItem, 0, len(items))
 	subnetVPCs := map[string]string{}
-	for _, item := range items {
-		execution.LogCloudAPIRequest(ctx, "cloudcontrol", "GetResource", contracts.CloudLogPayload(ctx, map[string]any{"TypeName": item.NativeType, "Identifier": item.NativeID}))
-		resource, requestID, err := client.GetResource(ctx, item.NativeType, item.NativeID)
-		if err != nil {
-			execution.LogCloudAPIFailure(ctx, "cloudcontrol", "GetResource", err)
-			if cloudControlNotFound(err) {
-				continue // Resource was deleted between list and detail requests.
-			}
-			return nil, NormalizeError(err)
-		}
-		if resource.Identifier != item.NativeID {
-			return nil, fmt.Errorf("AWS Cloud Control GetResource identifier %q does not match %q", resource.Identifier, item.NativeID)
-		}
-		detail, err := cloudControlItem(resource, item.ResourceKind, request.Scope)
-		if err != nil {
-			return nil, err
+	var gateways []string
+	for _, detail := range details {
+		if detail == nil {
+			continue // Resource was deleted between list and detail requests.
 		}
 		if err := enrichCloudControlNetwork(ctx, client, detail.Normalized, subnetVPCs); err != nil {
 			return nil, err
 		}
-		if item.NativeType == "AWS::EC2::InternetGateway" {
-			network, err := r.networkClient(ctx, request.ConnectionID, region)
-			if err != nil {
-				return nil, err
-			}
-			vpcs, err := network.InternetGatewayVPCs(ctx, item.NativeID)
-			if err != nil {
-				return nil, NormalizeError(err)
-			}
-			if len(vpcs) == 1 {
-				detail.Normalized["vpc_id"] = vpcs[0]
+		if detail.NativeType == "AWS::EC2::InternetGateway" {
+			gateways = append(gateways, detail.NativeID)
+		}
+		result = append(result, *detail)
+	}
+	if len(gateways) > 0 {
+		network, err := r.networkClient(ctx, request.ConnectionID, region)
+		if err != nil {
+			return nil, err
+		}
+		attached, err := network.InternetGatewayVPCs(ctx, gateways)
+		if err != nil {
+			return nil, NormalizeError(err)
+		}
+		for index := range result {
+			if vpcs := attached[result[index].NativeID]; result[index].NativeType == "AWS::EC2::InternetGateway" && len(vpcs) == 1 {
+				result[index].Normalized["vpc_id"] = vpcs[0]
 			}
 		}
-		detail.NetworkReferences = cloudControlNetworkReferences(detail.Normalized)
-		execution.LogCloudAPIResponse(ctx, "cloudcontrol", "GetResource", contracts.CloudLogPayload(ctx, map[string]any{"RequestId": requestID, "ResourceDescription": detail.Raw}))
-		result = append(result, detail)
+	}
+	for index := range result {
+		result[index].NetworkReferences = cloudControlNetworkReferences(result[index].Normalized)
 	}
 	if request.ResourceKind != nil && lifecycleFactKind(request.ResourceKind.NativeType) && len(result) > 0 {
 		credential, err := r.resolveCredential(ctx, request.ConnectionID)
@@ -327,6 +327,62 @@ func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.In
 		}
 	}
 	return result, nil
+}
+
+const cloudControlDetailConcurrency = 8
+
+// cloudControlDetails reads the full model of every item with bounded
+// concurrency. Entries keep item order; nil marks a resource deleted since it
+// was listed. After a failure no further reads start and the first failing
+// item's error is returned.
+func cloudControlDetails(ctx context.Context, client CloudControlClient, scope asset.Scope, items []contracts.InventoryItem) ([]*contracts.InventoryItem, error) {
+	details := make([]*contracts.InventoryItem, len(items))
+	errs := make([]error, len(items))
+	var failed atomic.Bool
+	var wg sync.WaitGroup
+	slots := make(chan struct{}, cloudControlDetailConcurrency)
+	for index, item := range items {
+		slots <- struct{}{}
+		if failed.Load() {
+			break
+		}
+		wg.Add(1)
+		go func() {
+			defer func() { <-slots; wg.Done() }()
+			details[index], errs[index] = cloudControlDetail(ctx, client, scope, item)
+			if errs[index] != nil {
+				failed.Store(true)
+			}
+		}()
+	}
+	wg.Wait()
+	for _, err := range errs {
+		if err != nil {
+			return nil, err
+		}
+	}
+	return details, nil
+}
+
+func cloudControlDetail(ctx context.Context, client CloudControlClient, scope asset.Scope, item contracts.InventoryItem) (*contracts.InventoryItem, error) {
+	execution.LogCloudAPIRequest(ctx, "cloudcontrol", "GetResource", contracts.CloudLogPayload(ctx, map[string]any{"TypeName": item.NativeType, "Identifier": item.NativeID}))
+	resource, requestID, err := client.GetResource(ctx, item.NativeType, item.NativeID)
+	if err != nil {
+		execution.LogCloudAPIFailure(ctx, "cloudcontrol", "GetResource", err)
+		if cloudControlNotFound(err) {
+			return nil, nil
+		}
+		return nil, NormalizeError(err)
+	}
+	if resource.Identifier != item.NativeID {
+		return nil, fmt.Errorf("AWS Cloud Control GetResource identifier %q does not match %q", resource.Identifier, item.NativeID)
+	}
+	detail, err := cloudControlItem(resource, item.ResourceKind, scope)
+	if err != nil {
+		return nil, err
+	}
+	execution.LogCloudAPIResponse(ctx, "cloudcontrol", "GetResource", contracts.CloudLogPayload(ctx, map[string]any{"RequestId": requestID, "ResourceDescription": detail.Raw}))
+	return &detail, nil
 }
 
 func cloudControlAliases(properties map[string]any, identifier string) []string {

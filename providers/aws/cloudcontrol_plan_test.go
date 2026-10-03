@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -21,6 +23,7 @@ type scriptedCloudControl struct {
 	statuses  map[string]CloudControlProgress
 	lists     []CloudControlListRequest
 	getCalls  int
+	getMu     sync.Mutex
 }
 
 func pageKey(typeName, model, token string) string { return typeName + "|" + model + "|" + token }
@@ -35,6 +38,8 @@ func (c *scriptedCloudControl) ListResources(_ context.Context, request CloudCon
 }
 
 func (c *scriptedCloudControl) GetResource(_ context.Context, typeName, identifier string) (CloudControlResource, string, error) {
+	c.getMu.Lock()
+	defer c.getMu.Unlock()
 	c.getCalls++
 	resource, ok := c.resources[typeName+"|"+identifier]
 	if !ok {
@@ -305,5 +310,56 @@ func TestCloudControlReferenceDerivation(t *testing.T) {
 	deriveCloudControlReferences("AWS::EC2::VPCEndpoint", awsService)
 	if service["cluster_name"] != "web" || endpoint["service_id"] != "vpce-svc-0abc" || awsService["service_id"] != nil {
 		t.Fatalf("service=%+v endpoint=%+v aws=%+v", service, endpoint, awsService)
+	}
+}
+
+type gatewayNetworkClient struct {
+	runtimeNetworkClient
+	calls [][]string
+}
+
+func (c *gatewayNetworkClient) InternetGatewayVPCs(_ context.Context, ids []string) (map[string][]string, error) {
+	c.calls = append(c.calls, ids)
+	return map[string][]string{"igw-1": {"vpc-1"}, "igw-3": {"vpc-3", "vpc-4"}}, nil
+}
+
+func TestCloudControlEnrichmentKeepsOrderSkipsDeletedAndBatchesGatewayLookups(t *testing.T) {
+	client := &scriptedCloudControl{resources: map[string]CloudControlResource{}}
+	network := &gatewayNetworkClient{}
+	source := &runtimeCredentialSource{want: "connection-a", value: contracts.Credential{Values: map[string]string{"access_key_id": "id", "secret_access_key": "secret"}}}
+	runtime, err := newRuntime(source, &runtimeFactory{cloudControl: client, network: network})
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := contracts.InventoryRequest{
+		ConnectionID: "connection-a", Source: cloudControlSource, ResourceKind: kindFor(t, runtime, "AWS::EC2::InternetGateway"),
+		Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: "eu-west-1", Location: "eu-west-1"},
+	}
+	var items []contracts.InventoryItem
+	for index := range 30 {
+		id := fmt.Sprintf("igw-%d", index)
+		items = append(items, contracts.InventoryItem{NativeType: "AWS::EC2::InternetGateway", NativeID: id, ResourceKind: *request.ResourceKind})
+		if index != 2 { // igw-2 was deleted after listing
+			client.resources["AWS::EC2::InternetGateway|"+id] = CloudControlResource{Identifier: id, Properties: `{"InternetGatewayId":"` + id + `"}`}
+		}
+	}
+	enriched, err := runtime.EnrichInventoryBatch(context.Background(), request, items)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(enriched) != 29 || enriched[0].NativeID != "igw-0" || enriched[2].NativeID != "igw-3" || enriched[28].NativeID != "igw-29" {
+		t.Fatalf("enriched order = %v", enriched)
+	}
+	if len(network.calls) != 1 || len(network.calls[0]) != 29 {
+		t.Fatalf("gateway lookups = %v", network.calls)
+	}
+	if enriched[1].Normalized["vpc_id"] != "vpc-1" || enriched[2].Normalized["vpc_id"] != nil || strings.Join(enriched[1].NetworkReferences, ",") != "vpc-1" {
+		t.Fatalf("gateway VPCs = %v / %v", enriched[1].Normalized, enriched[2].Normalized)
+	}
+
+	delete(client.resources, "AWS::EC2::InternetGateway|igw-20")
+	client.resources["AWS::EC2::InternetGateway|igw-20"] = CloudControlResource{Identifier: "other"}
+	if _, err := runtime.EnrichInventoryBatch(context.Background(), request, items); err == nil || !strings.Contains(err.Error(), `"igw-20"`) {
+		t.Fatalf("mismatched identifier error = %v", err)
 	}
 }

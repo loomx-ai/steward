@@ -230,16 +230,18 @@ type resourceExplorerSDK struct{ client *awsexplorer.Client }
 
 type networkSDK struct{ client *awsec2.Client }
 
-func (c *networkSDK) InternetGatewayVPCs(ctx context.Context, id string) ([]string, error) {
-	output, err := c.client.DescribeInternetGateways(ctx, &awsec2.DescribeInternetGatewaysInput{InternetGatewayIds: []string{id}})
+func (c *networkSDK) InternetGatewayVPCs(ctx context.Context, ids []string) (map[string][]string, error) {
+	// Describe calls naming gateway IDs return every match in one response.
+	output, err := c.client.DescribeInternetGateways(ctx, &awsec2.DescribeInternetGatewaysInput{InternetGatewayIds: ids})
 	if err != nil {
 		return nil, err
 	}
-	var result []string
+	result := make(map[string][]string, len(output.InternetGateways))
 	for _, gateway := range output.InternetGateways {
+		gatewayID := awssdk.ToString(gateway.InternetGatewayId)
 		for _, attachment := range gateway.Attachments {
 			if id := awssdk.ToString(attachment.VpcId); id != "" {
-				result = append(result, id)
+				result[gatewayID] = append(result[gatewayID], id)
 			}
 		}
 	}
