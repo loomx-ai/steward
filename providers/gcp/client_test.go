@@ -14,8 +14,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -28,6 +30,10 @@ import (
 type roundTripFunc func(*http.Request) (*http.Response, error)
 
 func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+
+// Fixtures that answer reads with 5xx or 429 (some with a Retry-After) should
+// not wait out real backoff.
+func init() { readRetryBase, readRetryBudget = time.Millisecond, time.Second }
 
 func apiResponse(request *http.Request, status int, payload string) *http.Response {
 	return &http.Response{StatusCode: status, Header: http.Header{"Content-Type": {"application/json"}, "X-Goog-Request-Id": {"request-123"}}, Body: io.NopCloser(strings.NewReader(payload)), Request: request}
@@ -223,5 +229,62 @@ func TestClientRejectsMalformedResponsesAndUntrustedEndpoints(t *testing.T) {
 		if _, err := c.request(context.Background(), "DELETE", "https://compute.googleapis.com/", nil); err != nil {
 			t.Errorf("rejected empty deletion response: %v", err)
 		}
+	}
+}
+
+func TestReadsRetryThrottlingButMutationsDoNot(t *testing.T) {
+	readRetryBudget = 30 * time.Second
+	t.Cleanup(func() { readRetryBase, readRetryBudget = time.Millisecond, time.Second })
+	var calls atomic.Int32
+	var mu sync.Mutex
+	statuses, retryAfter := []int{429, 503, 200}, "0"
+	set := func(next []int, after string) {
+		mu.Lock()
+		defer mu.Unlock()
+		statuses, retryAfter = next, after
+		calls.Store(0)
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mu.Lock()
+		defer mu.Unlock()
+		status := statuses[min(int(calls.Add(1))-1, len(statuses)-1)]
+		if r.Method != http.MethodGet {
+			status = 503
+		}
+		w.Header().Set("Retry-After", retryAfter)
+		w.WriteHeader(status)
+		_, _ = w.Write([]byte(`{"name":"ok"}`))
+	}))
+	defer server.Close()
+	u, _ := url.Parse(server.URL + "/v1/items")
+	result, err := requestJSON(context.Background(), server.Client(), http.MethodGet, u, nil, safePayload)
+	if err != nil || result.Data["name"] != "ok" || calls.Load() != 3 {
+		t.Fatalf("read retry: data=%v err=%v calls=%d", result.Data, err, calls.Load())
+	}
+	set(statuses, retryAfter)
+	if _, err := requestJSON(context.Background(), server.Client(), http.MethodPost, u, []byte(`{}`), safePayload); err == nil || calls.Load() != 1 {
+		t.Fatalf("mutation retried: err=%v calls=%d", err, calls.Load())
+	}
+	// Persistent throttling gives up after the attempt limit; a non-retryable
+	// status, a cancelled wait and a Retry-After beyond the budget stop at once.
+	set([]int{429}, "0")
+	if _, err := requestJSON(context.Background(), server.Client(), http.MethodGet, u, nil, safePayload); err == nil || calls.Load() != readAttempts {
+		t.Fatalf("throttled read: err=%v calls=%d", err, calls.Load())
+	}
+	set([]int{404}, "0")
+	if _, err := requestJSON(context.Background(), server.Client(), http.MethodGet, u, nil, safePayload); !isNotFound(err) || calls.Load() != 1 {
+		t.Fatalf("not found retried: err=%v calls=%d", err, calls.Load())
+	}
+	set([]int{503}, "0")
+	readRetryBase = 10 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+	if _, err := requestJSON(ctx, server.Client(), http.MethodGet, u, nil, safePayload); !errors.Is(err, context.DeadlineExceeded) || calls.Load() != 1 {
+		t.Fatalf("cancelled retry wait: err=%v calls=%d", err, calls.Load())
+	}
+	readRetryBase = time.Millisecond
+	set([]int{503}, "60")
+	if _, err := requestJSON(context.Background(), server.Client(), http.MethodGet, u, nil, safePayload); err == nil || calls.Load() != 1 {
+		t.Fatalf("retry wait beyond budget: err=%v calls=%d", err, calls.Load())
 	}
 }

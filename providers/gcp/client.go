@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/rand/v2"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -269,7 +270,57 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 	return requestJSON(ctx, c.http, method, u, body, sanitize)
 }
 
-func requestJSON(ctx context.Context, httpClient *http.Client, method string, u *url.URL, body []byte, sanitize func(map[string]any) map[string]any) (result contracts.InvocationResult, failure error) {
+// Read retries absorb short throttling and transient gateway failures so one
+// 429 does not fail a whole scan shard. Mutations are never retried here: their
+// callers own idempotency and readback.
+const (
+	readAttempts     = 4
+	readRetryCeiling = 8 * time.Second
+)
+
+var readRetryBase, readRetryBudget = 500 * time.Millisecond, 30 * time.Second
+
+func requestJSON(ctx context.Context, httpClient *http.Client, method string, u *url.URL, body []byte, sanitize func(map[string]any) map[string]any) (contracts.InvocationResult, error) {
+	waited := time.Duration(0)
+	for attempt := 1; ; attempt++ {
+		result, err := requestJSONOnce(ctx, httpClient, method, u, body, sanitize)
+		var call *contracts.ProviderCallError
+		if err == nil || method != http.MethodGet || attempt == readAttempts || !errors.As(err, &call) || !retryableRead(call) {
+			return result, err
+		}
+		delay := min(readRetryBase<<(attempt-1), readRetryCeiling)
+		delay = delay/2 + time.Duration(rand.Int64N(int64(delay/2)+1))
+		delay = max(delay, call.RetryAfter)
+		if waited+delay > readRetryBudget {
+			return result, err
+		}
+		waited += delay
+		timer := time.NewTimer(delay)
+		select {
+		case <-ctx.Done():
+			timer.Stop()
+			return result, ctx.Err()
+		case <-timer.C:
+		}
+	}
+}
+
+func retryableRead(call *contracts.ProviderCallError) bool {
+	if call.Provider.Code == "transport_error" {
+		return true
+	}
+	var status googleResponseStatus
+	if !errors.As(call.Cause, &status) {
+		return false
+	}
+	switch int(status) {
+	case http.StatusTooManyRequests, http.StatusBadGateway, http.StatusServiceUnavailable, http.StatusGatewayTimeout:
+		return true
+	}
+	return false
+}
+
+func requestJSONOnce(ctx context.Context, httpClient *http.Client, method string, u *url.URL, body []byte, sanitize func(map[string]any) map[string]any) (result contracts.InvocationResult, failure error) {
 	requestLog := map[string]any{"method": method, "path": u.Path, "query": u.Query()}
 	if len(body) > 0 {
 		var value any
