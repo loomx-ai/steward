@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/spec"
@@ -261,6 +263,57 @@ func homeRegion(nativeType string, scopeKind asset.ScopeKind, location string) s
 		return awsRegionBootstrap
 	}
 	return location
+}
+
+// cloudControlParentTTL bounds how long a parent listing is reused by the later
+// pages of a child shard, which advances one parent per List call and would
+// otherwise relist every parent on each page. The cursor fingerprint still
+// rejects resuming against a different parent set once a listing is refreshed.
+const cloudControlParentTTL = 10 * time.Minute
+
+type cloudControlParentKey struct {
+	connection asset.ConnectionID
+	credential string
+	typeName   string
+	region     string
+	scopeKind  asset.ScopeKind
+	scopeID    string
+}
+
+type cloudControlParentCache struct {
+	mu      sync.Mutex
+	entries map[cloudControlParentKey]cachedCloudControlParents
+}
+
+type cachedCloudControlParents struct {
+	parents []cloudControlParent
+	expires time.Time
+}
+
+func (c *cloudControlParentCache) get(key cloudControlParentKey, refresh bool, list func() ([]cloudControlParent, error)) ([]cloudControlParent, error) {
+	now := time.Now()
+	c.mu.Lock()
+	entry, ok := c.entries[key]
+	c.mu.Unlock()
+	if ok && !refresh && now.Before(entry.expires) {
+		return entry.parents, nil
+	}
+	parents, err := list()
+	if err != nil {
+		return nil, err
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.entries == nil {
+		c.entries = map[cloudControlParentKey]cachedCloudControlParents{}
+	}
+	for cached, entry := range c.entries {
+		if !now.Before(entry.expires) {
+			delete(c.entries, cached)
+		}
+	}
+	c.entries[key] = cachedCloudControlParents{parents: parents, expires: now.Add(cloudControlParentTTL)}
+	return parents, nil
 }
 
 // listCloudControlParents reads the complete parent set in the same partition

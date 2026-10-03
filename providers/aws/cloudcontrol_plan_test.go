@@ -112,11 +112,27 @@ func TestCloudControlChildInventoryIteratesEveryParentWithBoundCursor(t *testing
 	if strings.Join(identifiers, ",") != "dev|ng-a,prod|ng-b,prod|ng-c" || len(cursors) != 2 || factory.cloudRegion != "eu-west-1" {
 		t.Fatalf("identifiers=%v cursors=%v region=%s", identifiers, cursors, factory.cloudRegion)
 	}
+	// The shard's later pages reuse the parent set its first page listed.
+	parentLists := 0
+	for _, list := range client.lists {
+		if list.TypeName == "AWS::EKS::Cluster" {
+			parentLists++
+		}
+	}
+	if parentLists != 2 {
+		t.Fatalf("parent pages listed %d times, want the 2 pages once", parentLists)
+	}
 
 	// A parent created between pages changes the fingerprint; resuming would
-	// silently skip or repeat children, so the shard must restart.
+	// silently skip or repeat children, so the shard must restart. A resumed
+	// cursor meets a fresh listing once the cached set expires or the process
+	// restarts.
 	client.pages[pageKey("AWS::EKS::Cluster", "", "c2")] = CloudControlPage{Resources: []CloudControlResource{{Identifier: "dev"}, {Identifier: "stage"}}}
 	request.Cursor = cursors[1]
+	if _, err := runtime.List(context.Background(), request); err != nil {
+		t.Fatalf("resume within the cached parent set: %v", err)
+	}
+	runtime.parentCache = cloudControlParentCache{}
 	if _, err := runtime.List(context.Background(), request); err == nil || !strings.Contains(err.Error(), "parent set changed") {
 		t.Fatalf("changed parent set error = %v", err)
 	}

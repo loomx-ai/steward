@@ -45,6 +45,7 @@ type Runtime struct {
 	factory     clientFactory
 	catalog     catalog.Catalog
 	bundle      spec.Bundle
+	parentCache cloudControlParentCache
 }
 
 func NewRuntime(credentials contracts.CredentialSource) (*Runtime, error) {
@@ -228,15 +229,22 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
+			parentKey := cloudControlParentKey{
+				connection: request.ConnectionID, credential: credentialFingerprint(credential), typeName: plan.TypeName,
+				region: region, scopeKind: request.Scope.Kind, scopeID: request.Scope.NativeID,
+			}
 			inventory.WithPlan(plan, func(ctx context.Context) ([]cloudControlParent, error) {
-				if plan.ParentSource == organizationTreeSource {
-					clients, err := r.factory.Native(ctx, credential, awsRegionBootstrap)
-					if err != nil {
-						return nil, NormalizeError(err)
+				// A shard's first page lists parents afresh; its later pages reuse that set.
+				return r.parentCache.get(parentKey, request.Cursor == "", func() ([]cloudControlParent, error) {
+					if plan.ParentSource == organizationTreeSource {
+						clients, err := r.factory.Native(ctx, credential, awsRegionBootstrap)
+						if err != nil {
+							return nil, NormalizeError(err)
+						}
+						return organizationTreeParents(ctx, clients.Organizations)
 					}
-					return organizationTreeParents(ctx, clients.Organizations)
-				}
-				return r.listCloudControlParents(ctx, client, plan, request.Scope, "", 0)
+					return r.listCloudControlParents(ctx, client, plan, request.Scope, "", 0)
+				})
 			}, func(ctx context.Context) (string, error) {
 				accountID, _, err := r.factory.CallerIdentity(ctx, credential, region)
 				if err != nil {
