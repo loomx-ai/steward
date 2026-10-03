@@ -4,18 +4,50 @@ import { AppShell } from "./app/AppShell";
 import { LoginView } from "./auth/LoginView";
 import { RequireAuth } from "./auth/AuthProvider";
 import { AssetsView } from "./features/assets/AssetsView";
-import { ScansView } from "./features/scans/ScansView";
-import { ScanTaskView } from "./features/scans/ScanTaskView";
-import { ScheduleDetail } from "./features/schedules/ScheduleDetail";
-import { CleanupView } from "./features/cleanup/CleanupView";
-import { CleanupTaskDetail } from "./features/cleanup/CleanupTaskDetail";
-import { FindingsView } from "./features/findings/FindingsView";
-import { AuditsView } from "./features/audits/AuditsView";
-import { SettingsRoute } from "./features/settings/SettingsRoute";
 
 const AssetDetail = lazy(() =>
   import("./features/assets/AssetDetail").then((module) => ({
     default: module.AssetDetail,
+  })),
+);
+const ScansView = lazy(() =>
+  import("./features/scans/ScansView").then((module) => ({
+    default: module.ScansView,
+  })),
+);
+const ScanTaskView = lazy(() =>
+  import("./features/scans/ScanTaskView").then((module) => ({
+    default: module.ScanTaskView,
+  })),
+);
+const ScheduleDetail = lazy(() =>
+  import("./features/schedules/ScheduleDetail").then((module) => ({
+    default: module.ScheduleDetail,
+  })),
+);
+const CleanupView = lazy(() =>
+  import("./features/cleanup/CleanupView").then((module) => ({
+    default: module.CleanupView,
+  })),
+);
+const CleanupTaskDetail = lazy(() =>
+  import("./features/cleanup/CleanupTaskDetail").then((module) => ({
+    default: module.CleanupTaskDetail,
+  })),
+);
+const FindingsView = lazy(() =>
+  import("./features/findings/FindingsView").then((module) => ({
+    default: module.FindingsView,
+  })),
+);
+const AuditsView = lazy(() =>
+  import("./features/audits/AuditsView").then((module) => ({
+    default: module.AuditsView,
+  })),
+);
+const SettingsRoute = lazy(() =>
+  import("./features/settings/SettingsRoute").then((module) => ({
+    default: module.SettingsRoute,
   })),
 );
 const panoramaViewModule = import("./features/panorama/PanoramaView");
