@@ -8,6 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/rand/v2"
+	"net"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -262,21 +264,41 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 			execution.LogCloudAPIFailure(ctx, u.Host, method, failure)
 		}
 	}()
-	req, err := http.NewRequestWithContext(ctx, method, endpoint, bytes.NewReader(body))
-	if err != nil {
-		return response{}, err
-	}
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("User-Agent", "steward/azure")
-	if len(body) > 0 {
-		req.Header.Set("Content-Type", "application/json")
-	}
-	for name, value := range headers {
-		req.Header.Set(name, value)
-	}
-	res, err := transport.Do(req)
-	if err != nil {
-		return response{}, transportError(ctx, err)
+	var res *http.Response
+	var waited time.Duration
+	for attempt := 0; ; attempt++ {
+		req, err := http.NewRequestWithContext(ctx, method, endpoint, bytes.NewReader(body))
+		if err != nil {
+			return response{}, err
+		}
+		req.Header.Set("Accept", "application/json")
+		req.Header.Set("User-Agent", "steward/azure")
+		if len(body) > 0 {
+			req.Header.Set("Content-Type", "application/json")
+		}
+		for name, value := range headers {
+			req.Header.Set(name, value)
+		}
+		res, err = transport.Do(req)
+		wait, retry := readRetryWait(ctx, method, attempt, waited, res, err)
+		if !retry {
+			if err != nil {
+				return response{}, transportError(ctx, err)
+			}
+			break
+		}
+		if res != nil {
+			_, _ = io.Copy(io.Discard, io.LimitReader(res.Body, 1<<20))
+			res.Body.Close()
+		}
+		timer := time.NewTimer(wait)
+		select {
+		case <-ctx.Done():
+			timer.Stop()
+			return response{}, ctx.Err()
+		case <-timer.C:
+		}
+		waited += wait
 	}
 	defer res.Body.Close()
 	out = response{data: map[string]any{}, header: res.Header, status: res.StatusCode, requestID: requestID(res.Header)}
@@ -377,6 +399,35 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	}
 	execution.LogCloudAPIResponse(ctx, u.Host, method, safeAPIPayload(responseLog, endpoint))
 	return out, nil
+}
+
+// Throttled or briefly unavailable inventory reads are retried here; one 429
+// would otherwise fail a whole scan shard. Mutations, operation polling and
+// cleanup checks keep their own Retry-After handling and are never retried here.
+const readRetries = 4
+const readRetryBudget = 60 * time.Second
+
+var readRetryBase = time.Second
+
+type inventoryReadContextKey struct{}
+
+func readRetryWait(ctx context.Context, method string, attempt int, waited time.Duration, res *http.Response, err error) (time.Duration, bool) {
+	if ctx.Value(inventoryReadContextKey{}) != true || (method != http.MethodGet && method != http.MethodHead) || attempt >= readRetries || ctx.Err() != nil {
+		return 0, false
+	}
+	var opError *net.OpError
+	if err != nil && !errors.As(err, &opError) && !errors.Is(err, io.ErrUnexpectedEOF) && !errors.Is(err, io.EOF) {
+		return 0, false
+	}
+	if err == nil && res.StatusCode != http.StatusTooManyRequests && res.StatusCode != http.StatusBadGateway && res.StatusCode != http.StatusServiceUnavailable && res.StatusCode != http.StatusGatewayTimeout {
+		return 0, false
+	}
+	backoff := readRetryBase << attempt
+	wait := backoff/2 + rand.N(backoff/2+1)
+	if res != nil && res.Header.Get("Retry-After") != "" {
+		wait = retryAfter(res.Header)
+	}
+	return wait, waited+wait <= readRetryBudget
 }
 
 func requestID(header http.Header) string {
