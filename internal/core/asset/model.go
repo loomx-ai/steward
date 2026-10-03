@@ -232,6 +232,8 @@ type Asset struct {
 	DeletedAt            *time.Time        `json:"deleted_at,omitempty"`
 }
 
+// Observation is one read of an asset. Normalized and Raw are nil when
+// ContentHash equals that of the asset's current observation at append time.
 type Observation struct {
 	ID             ObservationID  `json:"id"`
 	AssetID        AssetID        `json:"asset_id"`

@@ -1193,3 +1193,37 @@ func TestScansRecordAddedModifiedAndRemovedAssets(t *testing.T) {
 		t.Fatalf("third scan changes = %+v", got)
 	}
 }
+
+func TestUnchangedObservationKeepsItsRowWithoutRepeatingThePayload(t *testing.T) {
+	t.Parallel()
+
+	repository := newInventoryRepository()
+	service := inventory.NewService(repository)
+	connection := asset.CloudConnection{ID: "connection-1", Provider: asset.ProviderAliCloud, Partition: "aliyun"}
+	kind := asset.ResourceKind{ID: "kind-1", Provider: asset.ProviderAliCloud, NativeType: "ACS::ECS::Instance", Capabilities: asset.CapabilitySet{asset.CapabilityIndexed}}
+	shard := asset.ScanShard{ID: "shard-1", ScanRunID: "run-1", Provider: asset.ProviderAliCloud, ScopeID: "scope-1", ResourceKindID: kind.ID, Source: "resource-center"}
+	observedAt := time.Date(2026, 10, 3, 0, 0, 0, 0, time.UTC)
+	project := func(state string, at time.Time) {
+		t.Helper()
+		batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{{
+			NativeType: kind.NativeType, NativeID: "i-1", ResourceKind: kind, State: state,
+			Normalized: map[string]any{"state": state}, Raw: map[string]any{"Status": state},
+		}}}
+		if err := service.ProjectBatch(context.Background(), &shard, connection, batch, inventory.ProjectionOptions{ObservedAt: at}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	project("Running", observedAt)
+	project("Running", observedAt.Add(time.Minute))
+	project("Stopped", observedAt.Add(2*time.Minute))
+	for _, projected := range repository.assets {
+		observations := repository.observations[projected.ID]
+		if len(observations) != 3 || projected.CurrentObservationID != observations[2].ID || projected.Normalized["state"] != "Stopped" {
+			t.Fatalf("asset = %+v, observations = %+v", projected, observations)
+		}
+		if observations[0].Raw == nil || observations[1].Raw != nil || observations[1].Normalized != nil ||
+			observations[1].ContentHash != observations[0].ContentHash || observations[2].Raw["Status"] != "Stopped" {
+			t.Fatalf("observations = %+v", observations)
+		}
+	}
+}

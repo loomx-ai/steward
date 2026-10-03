@@ -311,6 +311,11 @@ func (s *Service) projectItem(ctx context.Context, repository persistence.Invent
 			current = &value
 		}
 	}
+	if current != nil && current.ContentHash == contentHash {
+		// Unchanged content is already stored: keep the row, which coverage and
+		// projection read, without a second copy of its payload.
+		observation.Normalized, observation.Raw = nil, nil
+	}
 	// Observation append deliberately precedes current-projection mutation in
 	// the same transaction. A projection can therefore never reference a row
 	// that was not durably written.
