@@ -801,6 +801,15 @@ func Run(t *testing.T, factory Factory) {
 		if err != nil || len(filteredAssets.Items) != 1 || filteredAssets.Items[0].ID != storedAsset.ID {
 			t.Fatalf("filtered assets = %#v, err = %v", filteredAssets, err)
 		}
+		for _, options := range []persistence.ListOptions{
+			{Limit: 10, ConnectionID: "conn-a", Query: "NoDe"},
+			{Limit: 10, ConnectionID: "conn-a", Query: "NoDe", SearchOrder: true},
+		} {
+			nameAssets, err := repositories.Inventory().ListAssets(ctx, options)
+			if err != nil || len(nameAssets.Items) != 1 || nameAssets.Items[0].ID != storedAsset.ID {
+				t.Fatalf("case-insensitive name search %+v = %#v, err = %v", options, nameAssets, err)
+			}
+		}
 		nativeIDAssets, err := repositories.Inventory().ListAssets(ctx, persistence.ListOptions{
 			Limit: 10, ConnectionID: "conn-a", NativeIDs: []string{"missing", storedAsset.Identity.NativeID},
 		})

@@ -1727,7 +1727,7 @@ func (s *Store) ListAssets(ctx context.Context, options persistence.ListOptions)
 	if term := strings.ToLower(strings.TrimSpace(options.Query)); term != "" {
 		pattern := "%" + escapeLike(term) + "%"
 		query = query.Where(
-			"(LOWER(assets.native_id) LIKE ? ESCAPE '\\' OR LOWER(assets.native_type) LIKE ? ESCAPE '\\' OR LOWER(assets.payload) LIKE ? ESCAPE '\\')",
+			"("+caseFolded(query, "assets.native_id")+" LIKE ? ESCAPE '\\' OR "+caseFolded(query, "assets.native_type")+" LIKE ? ESCAPE '\\' OR "+caseFolded(query, "assets.payload")+" LIKE ? ESCAPE '\\')",
 			pattern, pattern, pattern,
 		)
 	}
@@ -1759,7 +1759,7 @@ func (s *Store) ListAssets(ctx context.Context, options persistence.ListOptions)
 		}
 	}
 	if capability := strings.ToLower(strings.TrimSpace(options.Capability)); capability != "" {
-		query = query.Where("LOWER(assets.payload) LIKE ?", "%\""+capability+"\"%")
+		query = query.Where(caseFolded(query, "assets.payload")+" LIKE ?", "%\""+capability+"\"%")
 	}
 	resourceKindIDs := options.ResourceKindIDs
 	if len(resourceKindIDs) == 0 && options.ResourceKindID != "" {
@@ -1942,6 +1942,7 @@ func orderPanoramaAssetSearch(query *gorm.DB, rawTerm string) *gorm.DB {
 	containsName := "%" + escapeLike(`"name":"`) + "%" + escapeLike(strings.Trim(string(encodedTerm), `"`)) + "%"
 	prefix := escapeLike(term) + "%"
 	contains := "%" + escapeLike(term) + "%"
+	payload, nativeID := caseFolded(query, "assets.payload"), caseFolded(query, "assets.native_id")
 	order := clause.Expr{
 		SQL: `CASE
 			WHEN ` + assetKindClassSQL("network.vpc") + ` OR LOWER(assets.native_type) LIKE '%::vpc' THEN 0
@@ -1954,11 +1955,11 @@ func orderPanoramaAssetSearch(query *gorm.DB, rawTerm string) *gorm.DB {
 		END ASC,
 		CASE
 			WHEN LOWER(assets.native_id) = ? THEN 0
-			WHEN LOWER(assets.payload) LIKE ? ESCAPE '\' THEN 1
-			WHEN LOWER(assets.native_id) LIKE ? ESCAPE '\' THEN 2
-			WHEN LOWER(assets.payload) LIKE ? ESCAPE '\' THEN 3
-			WHEN LOWER(assets.native_id) LIKE ? ESCAPE '\' THEN 4
-			WHEN LOWER(assets.payload) LIKE ? ESCAPE '\' THEN 5
+			WHEN ` + payload + ` LIKE ? ESCAPE '\' THEN 1
+			WHEN ` + nativeID + ` LIKE ? ESCAPE '\' THEN 2
+			WHEN ` + payload + ` LIKE ? ESCAPE '\' THEN 3
+			WHEN ` + nativeID + ` LIKE ? ESCAPE '\' THEN 4
+			WHEN ` + payload + ` LIKE ? ESCAPE '\' THEN 5
 			ELSE 6
 		END ASC,
 		LOWER(assets.native_id) ASC,
@@ -1966,6 +1967,17 @@ func orderPanoramaAssetSearch(query *gorm.DB, rawTerm string) *gorm.DB {
 		Vars: []any{term, exactName, prefix, prefixName, contains, containsName},
 	}
 	return query.Order(clause.OrderBy{Expression: order})
+}
+
+// caseFolded returns the column to match against a lowercased LIKE pattern.
+// SQLite's LIKE already ignores ASCII case, the only case its LOWER folds, so
+// it is spared lowercasing a copy of every row; PostgreSQL's LIKE is
+// case-sensitive and keeps LOWER.
+func caseFolded(db *gorm.DB, column string) string {
+	if db.Dialector.Name() == "sqlite" {
+		return column
+	}
+	return "LOWER(" + column + ")"
 }
 
 func assetKindClassSQL(class string) string {
