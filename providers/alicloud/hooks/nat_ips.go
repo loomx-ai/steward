@@ -35,6 +35,7 @@ func (*NATIPs) Contribute(
 	sort.Slice(ordered, func(i, j int) bool { return ordered[i].ID < ordered[j].ID })
 
 	result := governance.Contribution{}
+	index := indexAssetsByNativeID(ordered)
 	for _, natIP := range ordered {
 		if natIP.Identity.Provider != asset.ProviderAliCloud ||
 			natIP.Identity.NativeType != natIPNativeType ||
@@ -52,7 +53,7 @@ func (*NATIPs) Contribute(
 			natIP,
 			natGatewayNativeType,
 			gatewayID,
-			ordered,
+			index,
 		)
 		if gatewayID == "" || !found {
 			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{

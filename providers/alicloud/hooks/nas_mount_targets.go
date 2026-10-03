@@ -29,6 +29,7 @@ func (*NASMountTargets) Contribute(
 	assets []asset.Asset,
 ) (governance.Contribution, error) {
 	result := governance.Contribution{}
+	index := indexAssetsByNativeID(assets)
 	for _, mountTarget := range assets {
 		if mountTarget.Identity.Provider != asset.ProviderAliCloud ||
 			mountTarget.Identity.NativeType != nasMountTargetNativeType {
@@ -44,7 +45,7 @@ func (*NASMountTargets) Contribute(
 			mountTarget,
 			nasFileSystemNativeType,
 			fileSystemID,
-			assets,
+			index,
 		)
 		if !found {
 			continue

@@ -44,6 +44,7 @@ func (*ServiceManagedNetworks) Contribute(
 	ordered := append([]asset.Asset(nil), assets...)
 	sort.Slice(ordered, func(i, j int) bool { return ordered[i].ID < ordered[j].ID })
 
+	index := indexAssetsByNativeID(ordered)
 	result := governance.Contribution{}
 	natSecurityGroupCandidates := make(
 		map[asset.AssetID]map[asset.AssetID]natManagedSecurityGroupCandidate,
@@ -75,7 +76,7 @@ func (*ServiceManagedNetworks) Contribute(
 				controller,
 				networkInterfaceNativeType,
 				eniID,
-				ordered,
+				index,
 			)
 			evidence := map[string]any{
 				"source": evidenceSource, "controller_id": controller.Identity.NativeID,
@@ -114,7 +115,7 @@ func (*ServiceManagedNetworks) Contribute(
 				collectNATManagedSecurityGroups(
 					controller,
 					networkInterface,
-					ordered,
+					index,
 					natSecurityGroupCandidates,
 					&result,
 				)
@@ -150,7 +151,7 @@ func (*ServiceManagedNetworks) Contribute(
 			disk,
 			eciContainerNativeType,
 			controllerID,
-			ordered,
+			index,
 		)
 		if !found {
 			continue
@@ -179,7 +180,7 @@ func (*ServiceManagedNetworks) Contribute(
 func collectNATManagedSecurityGroups(
 	controller asset.Asset,
 	networkInterface asset.Asset,
-	assets []asset.Asset,
+	index assetsByNativeID,
 	candidates map[asset.AssetID]map[asset.AssetID]natManagedSecurityGroupCandidate,
 	result *governance.Contribution,
 ) {
@@ -196,7 +197,7 @@ func collectNATManagedSecurityGroups(
 			controller,
 			securityGroupNativeType,
 			securityGroupID,
-			assets,
+			index,
 		)
 		if !found {
 			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{
@@ -330,19 +331,31 @@ func managedNetworkInterfaceEvidence(
 	}
 }
 
+// assetsByNativeID buckets assets by trimmed native ID, in input order, so a
+// contributor resolves each reference without rescanning every asset.
+type assetsByNativeID map[string][]asset.Asset
+
+func indexAssetsByNativeID(assets []asset.Asset) assetsByNativeID {
+	index := make(assetsByNativeID, len(assets))
+	for _, value := range assets {
+		nativeID := strings.TrimSpace(value.Identity.NativeID)
+		index[nativeID] = append(index[nativeID], value)
+	}
+	return index
+}
+
 func resolveScopedAsset(
 	source asset.Asset,
 	nativeType string,
 	nativeID string,
-	assets []asset.Asset,
+	index assetsByNativeID,
 ) (asset.Asset, bool) {
 	var result asset.Asset
-	for _, candidate := range assets {
+	for _, candidate := range index[strings.TrimSpace(nativeID)] {
 		if candidate.Identity.Provider != source.Identity.Provider ||
 			candidate.Identity.ConnectionID != source.Identity.ConnectionID ||
 			candidate.Identity.Partition != source.Identity.Partition ||
 			candidate.Identity.NativeType != nativeType ||
-			strings.TrimSpace(candidate.Identity.NativeID) != strings.TrimSpace(nativeID) ||
 			!sameLifecycleScope(source, candidate) {
 			continue
 		}

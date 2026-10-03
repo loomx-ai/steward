@@ -142,6 +142,7 @@ func (*ConfigurationTopology) Contribute(
 	sort.Slice(ordered, func(i, j int) bool { return ordered[i].ID < ordered[j].ID })
 
 	result := governance.Contribution{}
+	index := indexAssetsByNativeID(ordered)
 	seen := make(map[configurationRelationshipKey]struct{})
 	for _, source := range ordered {
 		if source.Identity.Provider != asset.ProviderAliCloud {
@@ -156,7 +157,7 @@ func (*ConfigurationTopology) Contribute(
 					source,
 					rule.targetTypes,
 					nativeID,
-					ordered,
+					index,
 					rule.crossScope,
 				)
 				if !found || target.ID == source.ID {
@@ -187,7 +188,7 @@ func (*ConfigurationTopology) Contribute(
 			}
 		}
 		// Encryption keys are recognized for every resource type, not a fixed list.
-		result.Relationships = append(result.Relationships, contributeKMSReferences(source, ordered, seen)...)
+		result.Relationships = append(result.Relationships, contributeKMSReferences(source, index, seen)...)
 	}
 	return result, nil
 }
@@ -202,7 +203,7 @@ func resolveConfigurationTarget(
 	source asset.Asset,
 	nativeTypes []string,
 	nativeID string,
-	assets []asset.Asset,
+	index assetsByNativeID,
 	crossScope bool,
 ) (asset.Asset, bool) {
 	nativeID = strings.TrimSpace(nativeID)
@@ -216,11 +217,10 @@ func resolveConfigurationTarget(
 
 	sameScope := make([]asset.Asset, 0, 1)
 	connectionWide := make([]asset.Asset, 0, 1)
-	for _, candidate := range assets {
+	for _, candidate := range index[nativeID] {
 		if candidate.Identity.Provider != source.Identity.Provider ||
 			candidate.Identity.ConnectionID != source.Identity.ConnectionID ||
-			candidate.Identity.Partition != source.Identity.Partition ||
-			strings.TrimSpace(candidate.Identity.NativeID) != nativeID {
+			candidate.Identity.Partition != source.Identity.Partition {
 			continue
 		}
 		if _, allowed := typeAllowed[candidate.Identity.NativeType]; !allowed {

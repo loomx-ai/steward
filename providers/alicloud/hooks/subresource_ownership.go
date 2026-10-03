@@ -65,6 +65,11 @@ func NewSubresourceOwnership() *SubresourceOwnership {
 
 func (*SubresourceOwnership) Contribute(_ context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
+	index := indexAssetsByNativeID(assets)
+	byType := make(map[string][]asset.Asset)
+	for _, value := range assets {
+		byType[value.Identity.NativeType] = append(byType[value.Identity.NativeType], value)
+	}
 	for _, child := range assets {
 		owned, ok := ownedSubresources[child.Identity.NativeType]
 		if !ok || child.Identity.Provider != asset.ProviderAliCloud {
@@ -73,9 +78,9 @@ func (*SubresourceOwnership) Contribute(_ context.Context, _ asset.ScopeID, asse
 		var parent asset.Asset
 		var found bool
 		if owned.parentMatch != nil {
-			parent, found = matchParentByFields(child, owned, assets)
+			parent, found = matchParentByFields(child, owned, byType[owned.parentType])
 		} else if parentID := strings.TrimSpace(normalizedScalar(child.Normalized[owned.parentField])); parentID != "" {
-			parent, found = resolveScopedAsset(child, owned.parentType, parentID, assets)
+			parent, found = resolveScopedAsset(child, owned.parentType, parentID, index)
 		}
 		if !found {
 			continue
@@ -113,10 +118,11 @@ func (*SubresourceOwnership) Contribute(_ context.Context, _ asset.ScopeID, asse
 }
 
 // matchParentByFields finds the one parent in the child's scope whose fields
-// equal the child's; an ambiguous or missing match binds nothing.
-func matchParentByFields(child asset.Asset, owned ownedSubresource, assets []asset.Asset) (asset.Asset, bool) {
+// equal the child's; an ambiguous or missing match binds nothing. Candidates
+// are the scanned assets of the parent type.
+func matchParentByFields(child asset.Asset, owned ownedSubresource, candidates []asset.Asset) (asset.Asset, bool) {
 	var result asset.Asset
-	for _, candidate := range assets {
+	for _, candidate := range candidates {
 		if candidate.Identity.Provider != child.Identity.Provider || candidate.Identity.NativeType != owned.parentType ||
 			!sameLifecycleScope(child, candidate) {
 			continue

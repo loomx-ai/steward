@@ -82,14 +82,14 @@ func kmsKeyReferences(value asset.Asset) []string {
 
 func contributeKMSReferences(
 	source asset.Asset,
-	ordered []asset.Asset,
+	index assetsByNativeID,
 	seen map[configurationRelationshipKey]struct{},
 ) []graph.Relationship {
 	var result []graph.Relationship
 	for _, keyID := range kmsKeyReferences(source) {
 		// Key IDs are unique within an account, so a key in another region
 		// resolves when exactly one scanned key carries that ID.
-		target, found := resolveConfigurationTarget(source, []string{kmsKeyNativeType}, keyID, ordered, true)
+		target, found := resolveConfigurationTarget(source, []string{kmsKeyNativeType}, keyID, index, true)
 		if !found || target.ID == source.ID {
 			continue
 		}
