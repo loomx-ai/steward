@@ -195,7 +195,11 @@ func (c *client) readResource(ctx context.Context, endpoint string) (result resp
 	if err != nil {
 		return response{}, err
 	}
-	rows, err := c.listAllURL(ctx, bound.URL, collection)
+	// Every member proves its membership against the same parent collection;
+	// one inventory page or contribution lists that collection once.
+	rows, err := memoized(ctx, "apim-collection:"+bound.URL, func() ([]any, error) {
+		return c.listAllURL(ctx, bound.URL, collection)
+	})
 	if err != nil {
 		return response{}, err
 	}

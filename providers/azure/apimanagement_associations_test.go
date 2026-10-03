@@ -368,3 +368,31 @@ func TestAPIMBuiltinProductGroupCanBeDetachedWithoutDeletingGroup(t *testing.T) 
 		t.Fatal("builtin group confused with product association", err, s.deletes)
 	}
 }
+
+func TestAPIMAssociationReadsListParentCollectionOncePerCall(t *testing.T) {
+	kind := apimServiceType + "/products/apis"
+	s, r, _, value, _ := apimAssociationScenario(t, kind)
+	collection := strings.TrimSuffix(value.Identity.NativeID, "/"+last(value.Identity.NativeID))
+	lists := 0
+	base := s.handle
+	s.handle = func(req *http.Request) (*http.Response, bool) {
+		if strings.EqualFold(req.URL.Path, collection) && req.Method == "GET" {
+			lists++
+		}
+		return base(req)
+	}
+	c, _ := r.resolve(context.Background(), "connection")
+	read := func(ctx context.Context) int {
+		lists = 0
+		for range 2 {
+			if _, err := c.readResource(ctx, apiURL(value.Identity.NativeID, apimVersion)); err != nil {
+				t.Fatal(err)
+			}
+		}
+		return lists
+	}
+	// Execution readbacks carry no memo and list the collection for each read.
+	if live, memoized := read(context.Background()), read(withReadMemo(context.Background())); live != 2 || memoized != 1 {
+		t.Fatalf("collection lists live=%d memoized=%d", live, memoized)
+	}
+}

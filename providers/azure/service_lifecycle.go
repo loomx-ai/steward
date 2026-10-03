@@ -465,6 +465,7 @@ func serviceDenied(reason string) error {
 }
 
 func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
+	ctx = withReadMemo(ctx)
 	result := governance.Contribution{}
 	if _, err := s.client.fleetHubOwners(assets); err != nil {
 		return result, contracts.DependencyReadError(err)
