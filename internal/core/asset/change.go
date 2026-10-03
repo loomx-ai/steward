@@ -5,8 +5,10 @@ import (
 	"maps"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 type ChangeType string
@@ -218,8 +220,24 @@ func flattenValue(result map[string]string, prefix string, value any, depth int)
 // storage must compare equal, including inside arrays and objects, so the
 // value goes through the same decode a stored asset does.
 func canonicalValue(value any) string {
-	if value == nil {
+	switch typed := value.(type) {
+	case nil:
 		return ""
+	case bool:
+		return strconv.FormatBool(typed)
+	case float64:
+		// Already in the form a decode produces, so one encode is canonical.
+		payload, err := json.Marshal(typed)
+		if err != nil {
+			return ""
+		}
+		return string(payload)
+	case string:
+		// Invalid UTF-8 encodes as \ufffd escapes but re-encodes as U+FFFD.
+		if utf8.ValidString(typed) {
+			payload, _ := json.Marshal(typed)
+			return string(payload)
+		}
 	}
 	payload, err := json.Marshal(value)
 	if err != nil {

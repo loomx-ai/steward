@@ -64,3 +64,18 @@ func TestMergeAssetChangeDescribesTheWholeScan(t *testing.T) {
 		t.Fatal("an asset seen again in the same scan never left")
 	}
 }
+
+func TestCanonicalValueFastPathsMatchTheJSONRoundTrip(t *testing.T) {
+	roundTrip := func(value any) string {
+		payload, _ := json.Marshal(value)
+		var decoded any
+		_ = json.Unmarshal(payload, &decoded)
+		normalized, _ := json.Marshal(decoded)
+		return string(normalized)
+	}
+	for _, value := range []any{"", "plain", "<a & b>", "line\nbreak  ", "\xff\xfe", true, false, 0.0, -0.0, 1.5, 1e21, 1e-7, 123456789.125} {
+		if got, want := canonicalValue(value), roundTrip(value); got != want {
+			t.Fatalf("canonicalValue(%#v) = %q, want %q", value, got, want)
+		}
+	}
+}
