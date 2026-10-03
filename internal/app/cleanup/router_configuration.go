@@ -1,14 +1,12 @@
 package cleanup
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"slices"
 	"strings"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
-	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/core/plan"
 	"github.com/loomx-ai/steward/internal/persistence"
 )
@@ -119,20 +117,20 @@ func taskRouterScopes(task persistence.CleanupTaskAggregate) (map[asset.AssetID]
 	return result, nil
 }
 
-func serializeRouterSteps(steps []plan.CleanupTaskStep, scopes map[asset.AssetID]string) ([]plan.CleanupTaskStep, bool, error) {
+func serializeRouterSteps(steps []plan.CleanupTaskStep, scopes map[asset.AssetID]string) ([]plan.CleanupTaskStep, error) {
 	relevant := false
 	for _, step := range steps {
 		relevant = relevant || step.Action == "delete" && scopes[step.AssetID] != ""
 	}
 	if !relevant {
-		return steps, false, nil
+		return steps, nil
 	}
 	ordered, err := plan.OrderSteps(steps)
 	if err != nil {
-		return nil, false, err
+		return nil, err
 	}
-	// Existing transitive prerequisites already serialize a pair. Do not add a
-	// redundant edge that would misclassify a safe legacy continuation as unsafe.
+	// Existing transitive prerequisites already serialize a pair; do not add a
+	// redundant edge.
 	dependencies := map[plan.StepID][]plan.StepID{}
 	for _, step := range ordered {
 		dependencies[step.ID] = step.DependsOn
@@ -153,7 +151,6 @@ func serializeRouterSteps(steps []plan.CleanupTaskStep, scopes map[asset.AssetID
 		}
 		return false
 	}
-	changed := false
 	previous := map[string]plan.StepID{}
 	for i := range ordered {
 		step := &ordered[i]
@@ -167,69 +164,12 @@ func serializeRouterSteps(steps []plan.CleanupTaskStep, scopes map[asset.AssetID
 				step.Evidence = map[string]any{}
 			}
 			step.Evidence[routerMutationScope] = scope
-			changed = true
 		}
 		if prior := previous[scope]; prior != "" && !dependsOn(step.ID, prior) {
 			step.DependsOn = append(slices.Clone(step.DependsOn), prior)
 			dependencies[step.ID] = step.DependsOn
-			changed = true
 		}
 		previous[scope] = step.ID
 	}
-	return ordered, changed, nil
-}
-
-// Upgrade old plans before starting workers. A continuation with newly required
-// edges cannot rewrite ordering around an already-issued, unsettled native write.
-func prepareRouterConfiguration(ctx context.Context, repositories persistence.Repositories, task *persistence.CleanupTaskAggregate, attempt *execution.ExecutionAttempt) (bool, error) {
-	scopes, err := taskRouterScopes(*task)
-	if err != nil {
-		return false, err
-	}
-	steps, changed, err := serializeRouterSteps(task.Steps, scopes)
-	if err != nil || !changed {
-		return false, err
-	}
-	affected := map[string]bool{}
-	prior := map[plan.StepID]plan.CleanupTaskStep{}
-	for _, step := range task.Steps {
-		prior[step.ID] = step
-	}
-	for _, step := range steps {
-		for _, dependency := range step.DependsOn {
-			if !slices.Contains(prior[step.ID].DependsOn, dependency) {
-				affected[scopes[step.AssetID]] = true
-			}
-		}
-	}
-	if attempt != nil && len(affected) != 0 {
-		if err := repositories.Executions().LockExecution(ctx, attempt.ID); err != nil {
-			return false, err
-		}
-		jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "cleanup_task", string(task.Task.ID))
-		if err != nil {
-			return false, err
-		}
-		for _, job := range jobs {
-			step := prior[plan.StepID(payloadString(job.Payload, "cleanup_task_step_id"))]
-			if affected[scopes[step.AssetID]] && payloadString(job.Payload, "execution_id") == string(attempt.ID) && job.Status != execution.JobSucceeded && job.Status != execution.JobFailed && job.Status != execution.JobCanceled {
-				return false, fmt.Errorf("%w: legacy Router ordering requires terminal worker jobs", persistence.ErrConflict)
-			}
-		}
-		actions, err := repositories.Executions().ListActions(ctx, attempt.ID)
-		if err != nil {
-			return false, err
-		}
-		for _, action := range actions {
-			if !affected[scopes[action.AssetID]] || action.Status == execution.ActionSucceeded {
-				continue
-			}
-			if action.Status == execution.ActionIntentPersisted && action.ResumeStatus == "" && action.FailedFrom == "" && action.ProviderRequestID == "" && action.ProviderOperationID == "" && len(action.ProviderResult) == 0 && len(action.PreflightEvidence) == 0 {
-				continue
-			}
-			return false, fmt.Errorf("%w: legacy Router ordering has an unsettled native action", persistence.ErrConflict)
-		}
-	}
-	task.Steps = steps
-	return true, nil
+	return ordered, nil
 }

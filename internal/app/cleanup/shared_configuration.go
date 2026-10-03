@@ -36,7 +36,7 @@ func solveCleanupPlan(input plan.Input) (plan.Result, error) {
 		}
 		scopes[value.ID] = scope
 	}
-	result.Steps, _, err = serializeRouterSteps(result.Steps, scopes)
+	result.Steps, err = serializeRouterSteps(result.Steps, scopes)
 	if err != nil {
 		return result, err
 	}

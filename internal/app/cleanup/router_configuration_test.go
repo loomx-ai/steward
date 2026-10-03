@@ -59,9 +59,9 @@ func TestRouterScopePlanPreservesDependenciesAndIndependentRouters(t *testing.T)
 	// existing prerequisites and evidence rather than add a reverse cycle.
 	steps := []plan.CleanupTaskStep{{ID: "set", AssetID: "set", Action: "delete", DependsOn: []plan.StepID{"policy"}, Evidence: map[string]any{"review": "set"}}, {ID: "policy", AssetID: "policy", Action: "delete", Evidence: map[string]any{"review": "policy"}}, {ID: "nat", AssetID: "nat", Action: "delete"}}
 	scopes := map[asset.AssetID]string{"set": "same", "policy": "same", "nat": "same"}
-	ordered, changed, err := serializeRouterSteps(steps, scopes)
-	if err != nil || !changed {
-		t.Fatal(ordered, changed, err)
+	ordered, err := serializeRouterSteps(steps, scopes)
+	if err != nil {
+		t.Fatal(ordered, err)
 	}
 	positions := map[plan.StepID]int{}
 	for i, step := range ordered {
@@ -73,8 +73,8 @@ func TestRouterScopePlanPreservesDependenciesAndIndependentRouters(t *testing.T)
 	if len(steps[0].Evidence) != 1 || len(steps[1].DependsOn) != 0 {
 		t.Fatal("mutated frozen input", steps)
 	}
-	again, changed, err := serializeRouterSteps(ordered, scopes)
-	if err != nil || changed || !reflect.DeepEqual(again, ordered) {
+	again, err := serializeRouterSteps(ordered, scopes)
+	if err != nil || !reflect.DeepEqual(again, ordered) {
 		t.Fatal("non-idempotent", again, err)
 	}
 }
@@ -156,67 +156,5 @@ func TestRouterScopeGuardsAllNativeFamilies(t *testing.T) {
 				}
 			})
 		}
-	}
-}
-
-func TestRouterLegacyContinuationRequiresSafeOrderingUpgrade(t *testing.T) {
-	for _, mode := range []string{"no-action", "succeeded", "intent", "waiting", "resumed", "running-job", "expired-lease", "metadata-only", "transitive"} {
-		t.Run(mode, func(t *testing.T) {
-			ctx := t.Context()
-			repos, err := sqlite.Open(filepath.Join(t.TempDir(), "legacy.db"), "../../../migrations")
-			if err != nil {
-				t.Fatal(err)
-			}
-			now := time.Now().UTC()
-			task := persistence.CleanupTaskAggregate{Task: plan.CleanupTask{ID: "task", ConnectionID: "connection"}}
-			for _, id := range []string{"a", "b"} {
-				value := routerMutationAsset(id, "RoutePolicy", "one")
-				task.Steps = append(task.Steps, plan.CleanupTaskStep{ID: plan.StepID(id), AssetID: value.ID, Action: "delete", Evidence: map[string]any{plan.EvidencePlannedAsset: value}})
-			}
-			if mode == "metadata-only" {
-				task.Steps[1].DependsOn = []plan.StepID{"a"}
-			}
-			if mode == "transitive" {
-				task.Steps[1].DependsOn = []plan.StepID{"bridge"}
-				task.Steps = append(task.Steps, plan.CleanupTaskStep{ID: "bridge", AssetID: "bridge", Action: plan.ActionVerifyManagedAbsent, DependsOn: []plan.StepID{"a"}})
-			}
-			attempt := execution.ExecutionAttempt{ID: "run", ConnectionID: "connection", CleanupTaskID: "task", Status: execution.ExecutionFailed, IdempotencyKey: "run", CreatedAt: now}
-			if err := repos.Executions().CreateExecution(ctx, attempt); err != nil {
-				t.Fatal(err)
-			}
-			if mode != "no-action" {
-				action := execution.ActionAttempt{ID: "action", ExecutionID: "run", CleanupTaskStepID: "a", AssetID: "a", Status: execution.ActionWaiting, IdempotencyKey: "action", CreatedAt: now, UpdatedAt: now}
-				if mode == "succeeded" {
-					action.Status = execution.ActionSucceeded
-				}
-				if mode == "intent" {
-					action.Status = execution.ActionIntentPersisted
-				}
-				if mode == "resumed" {
-					action.Status = execution.ActionPending
-					action.ResumeStatus = execution.ActionWaiting
-				}
-				if err := repos.Executions().AppendAction(ctx, action); err != nil {
-					t.Fatal(err)
-				}
-			}
-			if mode == "running-job" || mode == "expired-lease" {
-				past := now.Add(-time.Minute)
-				job := execution.Job{ID: "job", Type: execution.JobExecute, Status: execution.JobRunning, AggregateType: "cleanup_task", AggregateID: "task", Payload: map[string]any{"execution_id": "run", "cleanup_task_step_id": "a"}, IdempotencyKey: "job", CreatedAt: now, UpdatedAt: now, RunAt: now, LeaseOwner: "worker", LeaseUntil: &past}
-				if err := repos.Jobs().Enqueue(ctx, job); err != nil {
-					t.Fatal(err)
-				}
-			}
-			var changed bool
-			err = repos.WithTx(ctx, func(tx persistence.Repositories) error {
-				var err error
-				changed, err = prepareRouterConfiguration(ctx, tx, &task, &attempt)
-				return err
-			})
-			allowed := mode == "no-action" || mode == "succeeded" || mode == "intent" || mode == "metadata-only" || mode == "transitive"
-			if allowed && (err != nil || !changed || !slices.Contains(task.Steps[1].DependsOn, "a")) || !allowed && !errors.Is(err, persistence.ErrConflict) {
-				t.Fatal(mode, changed, err, task.Steps)
-			}
-		})
 	}
 }

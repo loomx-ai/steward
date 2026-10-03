@@ -174,11 +174,8 @@ creation/continuation guard uses frozen identities, including older tasks withou
 scope metadata, with inventory fallback for legacy tasks lacking snapshots.
 Corrupt snapshots or mismatched native parent identities cannot erase a scope.
 
-Before worker creation, old plans are upgraded in the same transaction without
-changing step IDs or reviewed assets. Continuing a plan that needs new edges
-requires terminal jobs and no unsettled previously invoked actions on the affected
-router. Metadata-only upgrades do not block already correctly ordered work.
-The connection/execution locks and durable worker dependencies are reused; no new
+The planner adds these edges when a task is created; persisted plans are not
+upgraded later. The connection/execution locks and durable worker dependencies are reused; no new
 scheduler, runtime dependency, database schema or native CAS is introduced.
 
 An old detach receipt can coexist with an already-issued native deletion whose
@@ -188,18 +185,14 @@ The all-phase recovery extension below accounts for both native operations.
 `route_policy_multi_worker_test.go` now uses concurrency two, claims both worker
 jobs and repeatedly tries the dependent policy before its predecessor settles.
 It verifies no second mutation at each checkpoint, across database/runtime
-reopening. Both current plans and old plans with removed scope/ordering metadata
-complete, retain the Router and reconcile policy tombstones. The legacy case
-also fails the original jobs before invocation, removes ordering again and uses
-the real ContinueExecution service to persist the upgrade and resume the same
-execution and step IDs. A second task's
+reopening. The plan completes, retains the Router and reconciles policy
+tombstones. A second task's
 execution request is rejected while the first occupies the Router.
 
 `router_configuration_test.go` covers every parent/component kind, cross-partition
 scope aliases, native/frozen/legacy inventory identities, forged annotations,
-malformed snapshots, different routers, terminal success, uncertain detach,
-legacy DAG ordering and continuation with resumed actions or expired worker
-leases. `order_test.go` rejects missing dependencies, duplicate identities and
+malformed snapshots, different routers, terminal success, uncertain detach and
+existing DAG ordering. `order_test.go` rejects missing dependencies, duplicate identities and
 cycles. These are locally authored SQLite/protocol tests. Independent mock-server
 and live-cloud acceptance remain unfinished. Reviewed parent cascade is covered
 in [Router evidence](../router/README.md).

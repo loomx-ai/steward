@@ -17,16 +17,6 @@ import (
 )
 
 func TestRoutePolicySQLiteSequentialDeletesFromOneScan(t *testing.T) {
-	for _, legacy := range []bool{false, true} {
-		name := "current"
-		if legacy {
-			name = "legacy"
-		}
-		t.Run(name, func(t *testing.T) { routePolicySQLiteSharedExecution(t, legacy) })
-	}
-}
-
-func routePolicySQLiteSharedExecution(t *testing.T, legacy bool) {
 	ctx := t.Context()
 	r, _, f := multiPolicyRuntime(t)
 	registry := identityRegistry(t, r)
@@ -71,17 +61,6 @@ func routePolicySQLiteSharedExecution(t *testing.T, legacy bool) {
 	if err != nil || len(task.Steps) != 2 {
 		t.Fatal(task, err)
 	}
-	// Old plans retain the same snapshot hash even without shared Router edges.
-	if legacy {
-		for i := range task.Steps {
-			task.Steps[i].DependsOn = nil
-			delete(task.Steps[i].Evidence, "gcp_router_mutation_scope")
-		}
-		slices.Reverse(task.Steps)
-		if err := repositories.CleanupTasks().ReplaceTask(ctx, task.Task, task.Steps, task.ImpactItems); err != nil {
-			t.Fatal(err)
-		}
-	}
 	other, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: selectors[:1], CreatedBy: "test"})
 	if err != nil {
 		t.Fatal(err)
@@ -90,41 +69,6 @@ func routePolicySQLiteSharedExecution(t *testing.T, legacy bool) {
 	attempt, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{CleanupTaskID: task.Task.ID, ConnectionID: "connection", RequestedBy: "test", IdempotencyKey: "multi-policy", Concurrency: &concurrency, Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}})
 	if err != nil {
 		t.Fatal(err)
-	}
-	if legacy {
-		// Also exercise an old failed task continuing before any native invocation.
-		// All original jobs are terminal before missing ordering can be backfilled.
-		for range 2 {
-			job, err := repositories.Jobs().ClaimNext(ctx, "legacy-worker", now, time.Minute, execution.JobExecute)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if err := repositories.Jobs().Complete(ctx, job.ID, "legacy-worker", execution.JobFailed, "stopped before invocation", now); err != nil {
-				t.Fatal(err)
-			}
-		}
-		saved, err := repositories.CleanupTasks().GetTask(ctx, task.Task.ID)
-		if err != nil {
-			t.Fatal(err)
-		}
-		saved.Task.Status = plan.StatusFailed
-		for i := range saved.Steps {
-			saved.Steps[i].DependsOn = nil
-			delete(saved.Steps[i].Evidence, "gcp_router_mutation_scope")
-		}
-		slices.Reverse(saved.Steps)
-		if err := repositories.CleanupTasks().ReplaceTask(ctx, saved.Task, saved.Steps, saved.ImpactItems); err != nil {
-			t.Fatal(err)
-		}
-		attempt.Status = execution.ExecutionFailed
-		if err := repositories.Executions().UpdateExecution(ctx, attempt); err != nil {
-			t.Fatal(err)
-		}
-		continued, err := planner.ContinueExecution(ctx, cleanup.ContinueExecutionRequest{CleanupTaskID: task.Task.ID, ConnectionID: "connection", RequestedBy: "test", IdempotencyKey: "continue-legacy", Concurrency: &concurrency})
-		if err != nil || continued.ID != attempt.ID {
-			t.Fatal("legacy continuation", continued, err)
-		}
-		attempt = continued
 	}
 	if _, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{CleanupTaskID: other.Task.ID, ConnectionID: "connection", RequestedBy: "test", IdempotencyKey: "overlapping-policy", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}}); !errors.Is(err, persistence.ErrConflict) {
 		t.Fatal("overlapping policy execution was not blocked", err)

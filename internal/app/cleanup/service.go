@@ -696,20 +696,11 @@ func (s *Service) CreateExecution(ctx context.Context, request CreateExecutionRe
 		if err := connectionapp.GuardActiveWork(ctx, repositories, aggregate.Task.ConnectionID, now); err != nil {
 			return err
 		}
-		upgradedRouterPlan, err := prepareRouterConfiguration(ctx, repositories, &aggregate, nil)
-		if err != nil {
-			return err
-		}
 		if err := s.guardSharedConfiguration(ctx, repositories, aggregate, ""); err != nil {
 			// Preserve completed-operation proofs even when another scope still
 			// blocks this request. No execution or jobs have been created yet.
 			semanticErr = err
 			return nil
-		}
-		if upgradedRouterPlan {
-			if err := repositories.CleanupTasks().ReplaceTask(ctx, aggregate.Task, aggregate.Steps, aggregate.ImpactItems); err != nil {
-				return err
-			}
 		}
 		created = execution.ExecutionAttempt{
 			ID: executionID, ConnectionID: aggregate.Task.ConnectionID, CleanupTaskID: string(request.CleanupTaskID), Status: execution.ExecutionPending,
@@ -883,10 +874,6 @@ func (s *Service) ContinueExecution(ctx context.Context, request ContinueExecuti
 		if err := connectionapp.GuardActiveWork(ctx, repositories, aggregate.Task.ConnectionID, now); err != nil {
 			return err
 		}
-		upgradedRouterPlan, err := prepareRouterConfiguration(ctx, repositories, &aggregate, &attempt)
-		if err != nil {
-			return err
-		}
 		if err := s.guardSharedConfiguration(ctx, repositories, aggregate, attempt.ID); err != nil {
 			// Preserve completed-operation proofs even when another scope still
 			// blocks this request. No execution or jobs have been created yet.
@@ -923,7 +910,7 @@ func (s *Service) ContinueExecution(ctx context.Context, request ContinueExecuti
 			return err
 		}
 		aggregate.Task.Status = plan.StatusExecuting
-		if inferredDependencyCount > 0 || upgradedRouterPlan {
+		if inferredDependencyCount > 0 {
 			if err := repositories.CleanupTasks().ReplaceTask(
 				ctx,
 				aggregate.Task,
