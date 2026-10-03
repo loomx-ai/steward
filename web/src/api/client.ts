@@ -682,6 +682,32 @@ export function listAssets(
   );
 }
 
+// Runs fn over fixed-size slices of values with at most `concurrency`
+// requests in flight; results keep the slice order.
+export async function mapBatches<T, R>(
+  values: T[],
+  batchSize: number,
+  fn: (batch: T[]) => Promise<R>,
+  concurrency = 4,
+): Promise<R[]> {
+  const batches: T[][] = [];
+  for (let start = 0; start < values.length; start += batchSize) {
+    batches.push(values.slice(start, start + batchSize));
+  }
+  const results = new Array<R>(batches.length);
+  let next = 0;
+  const worker = async () => {
+    while (next < batches.length) {
+      const index = next++;
+      results[index] = await fn(batches[index]!);
+    }
+  };
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, batches.length) }, worker),
+  );
+  return results;
+}
+
 export async function findAssetsByNativeIDs(
   connectionID: string,
   nativeIDs: string[],
@@ -690,19 +716,15 @@ export async function findAssetsByNativeIDs(
   const values = [
     ...new Set(nativeIDs.map((value) => value.trim()).filter(Boolean)),
   ];
-  const result: Asset[] = [];
-  const batchSize = 50;
-  for (let start = 0; start < values.length; start += batchSize) {
-    const batch = values.slice(start, start + batchSize);
-    const page = await listAssets(connectionID, {
+  const pages = await mapBatches(values, 50, (batch) =>
+    listAssets(connectionID, {
       limit: 100,
       nativeIDs: batch,
       includeClosed: true,
       signal,
-    });
-    result.push(...page.items);
-  }
-  return result;
+    }),
+  );
+  return pages.flatMap((page) => page.items);
 }
 
 export async function findAssets(
@@ -710,15 +732,16 @@ export async function findAssets(
   ids: string[],
 ): Promise<Asset[]> {
   const values = [...new Set(ids.map((value) => value.trim()).filter(Boolean))];
-  const result = new Map<string, Asset>();
   const batchSize = 50;
-  for (let start = 0; start < values.length; start += batchSize) {
-    const batch = values.slice(start, start + batchSize);
-    const page = await listAssets(connectionID, {
+  const pages = await mapBatches(values, batchSize, (batch) =>
+    listAssets(connectionID, {
       limit: batchSize,
       assetIDs: batch,
       includeClosed: true,
-    });
+    }),
+  );
+  const result = new Map<string, Asset>();
+  for (const page of pages) {
     for (const asset of page.items) {
       result.set(asset.id, asset);
     }

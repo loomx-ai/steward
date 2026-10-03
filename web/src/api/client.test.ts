@@ -23,6 +23,7 @@ import {
   listConnections,
   listProviderCatalog,
   listScans,
+  mapBatches,
   startOAuthFlow,
 } from "./client";
 
@@ -326,6 +327,29 @@ it("resolves stable asset IDs with one targeted request including closed resourc
     expect.any(Object),
   );
   expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+it("runs batches with bounded concurrency and keeps their order", async () => {
+  let inFlight = 0;
+  let peak = 0;
+  const results = await mapBatches(
+    Array.from({ length: 23 }, (_, index) => index),
+    2,
+    async (batch) => {
+      inFlight++;
+      peak = Math.max(peak, inFlight);
+      await new Promise((resolve) => setTimeout(resolve, 12 - batch[0]! / 2));
+      inFlight--;
+      return batch;
+    },
+    4,
+  );
+
+  expect(peak).toBe(4);
+  expect(results.flat()).toEqual(
+    Array.from({ length: 23 }, (_, index) => index),
+  );
+  expect(await mapBatches([], 50, async () => 1)).toEqual([]);
 });
 
 it("encodes the current panorama canvas for server-side asset search", async () => {
