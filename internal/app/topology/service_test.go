@@ -813,6 +813,45 @@ func TestServiceCursorBecomesStaleWhenFindingCountsChange(t *testing.T) {
 	}
 }
 
+func TestServiceReusesFocusedInventoryUntilItChanges(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	_, repositories := topologyServiceFixtureWithRepositories(t, 201, false)
+	inventorySpy := &topologyInventoryRepositorySpy{InventoryRepository: repositories.Inventory()}
+	service := NewService(topologyRepositoriesSpy{
+		Repositories: repositories, inventory: inventorySpy, graph: repositories.Graph(), findings: repositories.Findings(),
+	}, topologyBundles())
+	focusKey := core.VPCFocusKey("cn-hangzhou", "vpc-a")
+	first, err := service.Query(ctx, Query{ConnectionID: "connection-a", FocusKey: focusKey})
+	if err != nil || first.NextCursor == "" {
+		t.Fatalf("first page = %+v err=%v", first, err)
+	}
+	if _, err := service.Query(ctx, Query{ConnectionID: "connection-a", FocusKey: focusKey, Cursor: first.NextCursor}); err != nil {
+		t.Fatal(err)
+	}
+	if inventorySpy.scopeReads != 1 {
+		t.Fatalf("unchanged inventory was read %d times for two pages", inventorySpy.scopeReads)
+	}
+	if _, err := repositories.Inventory().SetAssetDirty(ctx, "instance-0000", true); err != nil {
+		t.Fatal(err)
+	}
+	refreshed, err := service.Query(ctx, Query{ConnectionID: "connection-a", FocusKey: focusKey})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if inventorySpy.scopeReads != 2 {
+		t.Fatalf("changed inventory reads = %d", inventorySpy.scopeReads)
+	}
+	dirty := false
+	for _, resource := range refreshed.View.(core.VPCView).Resources {
+		dirty = dirty || (resource.AssetID == "instance-0000" && resource.Dirty)
+	}
+	if !dirty {
+		t.Fatal("refreshed view does not show the asset marked dirty")
+	}
+}
+
 func TestServiceCursorBecomesStaleWhenCoverageChanges(t *testing.T) {
 	t.Parallel()
 
@@ -1271,6 +1310,7 @@ func (s findingRepositoriesSpy) Findings() persistence.FindingRepository {
 type topologyInventoryRepositorySpy struct {
 	persistence.InventoryRepository
 	connectionReads int
+	scopeReads      int
 }
 
 func (s *topologyInventoryRepositorySpy) ListActiveAssetsByConnection(
@@ -1284,6 +1324,16 @@ func (s *topologyInventoryRepositorySpy) ListActiveAssetsByConnection(
 		connectionID,
 		kindID,
 	)
+}
+
+func (s *topologyInventoryRepositorySpy) ListActiveAssetsByScopes(
+	ctx context.Context,
+	connectionID asset.ConnectionID,
+	scopeIDs []asset.ScopeID,
+	kindID asset.ResourceKindID,
+) ([]asset.Asset, error) {
+	s.scopeReads++
+	return s.InventoryRepository.ListActiveAssetsByScopes(ctx, connectionID, scopeIDs, kindID)
 }
 
 type topologyGraphRepositorySpy struct {

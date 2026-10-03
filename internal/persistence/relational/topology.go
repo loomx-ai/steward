@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/graph"
@@ -166,4 +167,43 @@ func (s *Store) ListUnresolvedByConnection(ctx context.Context, connectionID ass
 		}
 	}
 	return result, nil
+}
+
+// ConnectionInventoryVersion changes whenever the connection's assets,
+// findings, graph revisions or open graph rows do: asset and finding writes
+// bump a row revision and neither table deletes rows, so count plus revision
+// sum never repeats.
+func (s *Store) ConnectionInventoryVersion(ctx context.Context, connectionID asset.ConnectionID) (string, error) {
+	db := s.db.WithContext(ctx)
+	type totals struct {
+		Rows      int64 `gorm:"column:row_count"`
+		Revisions int64 `gorm:"column:revision_sum"`
+	}
+	const selectTotals = "COUNT(*) AS row_count, CAST(COALESCE(SUM(revision), 0) AS BIGINT) AS revision_sum"
+	var assets, findings totals
+	if err := db.Table("assets").Select(selectTotals).Where("connection_id = ?", string(connectionID)).Scan(&assets).Error; err != nil {
+		return "", err
+	}
+	connectionAssets := db.Table("assets").Select("id").Where("connection_id = ?", string(connectionID))
+	if err := db.Table("findings").Select(selectTotals).Where("asset_id IN (?)", connectionAssets).Scan(&findings).Error; err != nil {
+		return "", err
+	}
+	scopes := db.Table("scopes").Select("id").Where("connection_id = ?", string(connectionID))
+	var revisions []graphRevisionRow
+	if err := db.Table("graph_revisions").Select("scope_id, graph_revision, observed_at").Where("scope_id IN (?)", scopes).Order("scope_id ASC").Find(&revisions).Error; err != nil {
+		return "", err
+	}
+	var relationships, bindings int64
+	if err := db.Table("relationships").Where("scope_id IN (?) AND closed_at IS NULL", scopes).Count(&relationships).Error; err != nil {
+		return "", err
+	}
+	if err := db.Table("lifecycle_bindings").Where("scope_id IN (?) AND closed_at IS NULL", scopes).Count(&bindings).Error; err != nil {
+		return "", err
+	}
+	var version strings.Builder
+	fmt.Fprintf(&version, "a%d.%d:f%d.%d:r%d:b%d", assets.Rows, assets.Revisions, findings.Rows, findings.Revisions, relationships, bindings)
+	for _, row := range revisions {
+		fmt.Fprintf(&version, ":%s=%s@%d", row.ScopeID, row.GraphRevision, row.ObservedAt.UnixNano())
+	}
+	return version.String(), nil
 }

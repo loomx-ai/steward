@@ -9,8 +9,10 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"slices"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/app/scancoverage"
@@ -64,6 +66,7 @@ type Service struct {
 	bundles      BundleCatalog
 	clock        func() time.Time
 	coverages    *scancoverage.Evaluator
+	inputs       *inputCache
 }
 
 func NewService(repositories persistence.Repositories, bundles BundleCatalog, options ...Option) *Service {
@@ -72,6 +75,7 @@ func NewService(repositories persistence.Repositories, bundles BundleCatalog, op
 		bundles:      bundles,
 		clock:        func() time.Time { return time.Now().UTC() },
 		coverages:    scancoverage.NewEvaluator(),
+		inputs:       &inputCache{},
 	}
 	for _, option := range options {
 		option(service)
@@ -205,82 +209,23 @@ func (s *Service) loadInput(ctx context.Context, query Query, focus core.Focus) 
 			constrained,
 		)
 	}
-	focusScopeIDs := scopeIDsForFocus(scopes, query.ConnectionID, focus)
-	assets, err := s.repositories.Inventory().ListActiveAssetsByScopes(
-		ctx,
-		query.ConnectionID,
-		focusScopeIDs,
-		"",
-	)
+	cacheKey, err := s.inputCacheKey(ctx, query.ConnectionID, scopes, bundleRevision,
+		"focus", query.FocusKey, query.ResourceQuery, fmt.Sprint(focus.Kind != core.FocusRegion || query.Risk == "findings"))
 	if err != nil {
 		return core.Input{}, err
 	}
-	if constrained {
-		assets = filterAssetsByKinds(assets, kinds)
-	}
-	if focus.Kind == core.FocusAccountGlobal {
-		assets, err = s.loadMemberOfDescendants(
-			ctx,
-			query.ConnectionID,
-			assets,
-			kinds,
-			constrained,
-		)
+	loaded, cached := s.inputs.get(cacheKey)
+	if !cached {
+		loaded, err = s.loadFocusedInventory(ctx, query, focus, scopes, kinds, constrained)
 		if err != nil {
 			return core.Input{}, err
 		}
+		s.inputs.put(cacheKey, loaded)
 	}
-	if query.resourceFilter != nil {
-		assets = filterAssetsByResourceQuery(assets, query.resourceFilter)
-	}
-	projectedAssetCount := len(assets)
-	assetIDs := make([]asset.AssetID, len(assets))
-	for index, value := range assets {
-		assetIDs[index] = value.ID
-	}
-	relationships, err := s.repositories.Graph().ListRelationshipsByAssetIDs(
-		ctx,
-		assetIDs,
-	)
-	if err != nil {
-		return core.Input{}, err
-	}
-	bindings, err := s.repositories.Graph().ListLifecycleBindingsByAssetIDs(
-		ctx,
-		assetIDs,
-	)
-	if err != nil {
-		return core.Input{}, err
-	}
-	relatedAssetIDs := relatedEndpointIDs(assetIDs, relationships, bindings)
-	if len(relatedAssetIDs) > 0 {
-		relatedAssets, relatedErr := s.repositories.Inventory().ListAssetsByIDs(ctx, relatedAssetIDs)
-		if relatedErr != nil {
-			return core.Input{}, relatedErr
-		}
-		for _, related := range relatedAssets {
-			if related.Identity.ConnectionID == query.ConnectionID &&
-				(!constrained || kindExists(kinds, related.ResourceKindID)) {
-				assets = append(assets, related)
-			}
-		}
-	}
-	visibleAssetIDs := make(map[asset.AssetID]struct{}, len(assets))
-	for _, value := range assets {
-		visibleAssetIDs[value.ID] = struct{}{}
-	}
-	relationships = filterRelationshipsByAssets(relationships, visibleAssetIDs)
-	bindings = filterBindingsByAssets(bindings, visibleAssetIDs)
+	assets, relationships, bindings, counts := loaded.assets, loaded.relationships, loaded.bindings, loaded.findingCounts
 	graphRevisions, err := s.repositories.Graph().ListGraphRevisionsByConnection(ctx, query.ConnectionID)
 	if err != nil {
 		return core.Input{}, err
-	}
-	counts := map[asset.AssetID]int{}
-	if focus.Kind != core.FocusRegion || query.Risk == "findings" {
-		counts, err = s.findingCounts(ctx, assets[:projectedAssetCount])
-		if err != nil {
-			return core.Input{}, err
-		}
 	}
 	requirement := scancoverage.ActiveRegionRequirement(regions, query.ConnectionID)
 	global, provable := contracts.ProviderSupportsRootScope(
@@ -306,6 +251,92 @@ func (s *Service) loadInput(ctx context.Context, query Query, focus core.Focus) 
 		},
 		Coverage: coverage,
 	}, nil
+}
+
+// loadFocusedInventory reads the assets, graph rows and finding counts of a
+// focused view, the expensive part of its input.
+func (s *Service) loadFocusedInventory(
+	ctx context.Context,
+	query Query,
+	focus core.Focus,
+	scopes []asset.Scope,
+	kinds map[asset.ResourceKindID]asset.ResourceKind,
+	constrained bool,
+) (loadedInventory, error) {
+	focusScopeIDs := scopeIDsForFocus(scopes, query.ConnectionID, focus)
+	assets, err := s.repositories.Inventory().ListActiveAssetsByScopes(
+		ctx,
+		query.ConnectionID,
+		focusScopeIDs,
+		"",
+	)
+	if err != nil {
+		return loadedInventory{}, err
+	}
+	if constrained {
+		assets = filterAssetsByKinds(assets, kinds)
+	}
+	if focus.Kind == core.FocusAccountGlobal {
+		assets, err = s.loadMemberOfDescendants(
+			ctx,
+			query.ConnectionID,
+			assets,
+			kinds,
+			constrained,
+		)
+		if err != nil {
+			return loadedInventory{}, err
+		}
+	}
+	if query.resourceFilter != nil {
+		assets = filterAssetsByResourceQuery(assets, query.resourceFilter)
+	}
+	projectedAssetCount := len(assets)
+	assetIDs := make([]asset.AssetID, len(assets))
+	for index, value := range assets {
+		assetIDs[index] = value.ID
+	}
+	relationships, err := s.repositories.Graph().ListRelationshipsByAssetIDs(
+		ctx,
+		assetIDs,
+	)
+	if err != nil {
+		return loadedInventory{}, err
+	}
+	bindings, err := s.repositories.Graph().ListLifecycleBindingsByAssetIDs(
+		ctx,
+		assetIDs,
+	)
+	if err != nil {
+		return loadedInventory{}, err
+	}
+	relatedAssetIDs := relatedEndpointIDs(assetIDs, relationships, bindings)
+	if len(relatedAssetIDs) > 0 {
+		relatedAssets, relatedErr := s.repositories.Inventory().ListAssetsByIDs(ctx, relatedAssetIDs)
+		if relatedErr != nil {
+			return loadedInventory{}, relatedErr
+		}
+		for _, related := range relatedAssets {
+			if related.Identity.ConnectionID == query.ConnectionID &&
+				(!constrained || kindExists(kinds, related.ResourceKindID)) {
+				assets = append(assets, related)
+			}
+		}
+	}
+	visibleAssetIDs := make(map[asset.AssetID]struct{}, len(assets))
+	for _, value := range assets {
+		visibleAssetIDs[value.ID] = struct{}{}
+	}
+	relationships = filterRelationshipsByAssets(relationships, visibleAssetIDs)
+	bindings = filterBindingsByAssets(bindings, visibleAssetIDs)
+	counts := map[asset.AssetID]int{}
+	if focus.Kind != core.FocusRegion || query.Risk == "findings" {
+		counts, err = s.findingCounts(ctx, assets[:projectedAssetCount])
+		if err != nil {
+			return loadedInventory{}, err
+		}
+	}
+	return loadedInventory{assets: assets, relationships: relationships, bindings: bindings, findingCounts: counts}, nil
 }
 
 func (s *Service) loadMemberOfDescendants(
@@ -432,7 +463,7 @@ func (s *Service) loadAccountInput(
 	constrained bool,
 ) (core.Input, error) {
 	countKindIDs := topologyCountKindIDs(query, kinds, allowedKindIDs, constrained)
-	counts, err := s.accountAssetCounts(ctx, query, kinds, countKindIDs, constrained)
+	counts, err := s.accountAssetCounts(ctx, query, scopes, kinds, bundleRevision, countKindIDs, constrained)
 	if err != nil {
 		return core.Input{}, err
 	}
@@ -485,7 +516,9 @@ func (s *Service) loadAccountInput(
 func (s *Service) accountAssetCounts(
 	ctx context.Context,
 	query Query,
+	scopes []asset.Scope,
 	kinds map[asset.ResourceKindID]asset.ResourceKind,
+	bundleRevision string,
 	countKindIDs []asset.ResourceKindID,
 	constrained bool,
 ) (map[asset.ScopeID]int, error) {
@@ -495,6 +528,18 @@ func (s *Service) accountAssetCounts(
 			query.ConnectionID,
 			countKindIDs,
 		)
+	}
+	countKindKeys := make([]string, len(countKindIDs))
+	for index, kindID := range countKindIDs {
+		countKindKeys[index] = string(kindID)
+	}
+	cacheKey, err := s.inputCacheKey(ctx, query.ConnectionID, scopes, bundleRevision,
+		"account", query.ResourceQuery, fmt.Sprint(constrained), digestStrings(countKindKeys))
+	if err != nil {
+		return nil, err
+	}
+	if loaded, cached := s.inputs.get(cacheKey); cached {
+		return loaded.scopeCounts, nil
 	}
 	assets, err := s.repositories.Inventory().ListActiveAssetsByConnection(
 		ctx,
@@ -522,6 +567,7 @@ func (s *Service) accountAssetCounts(
 			counts[value.ScopeID]++
 		}
 	}
+	s.inputs.put(cacheKey, loadedInventory{scopeCounts: counts})
 	return counts, nil
 }
 
@@ -862,6 +908,72 @@ func digestResourceKindIDs(values []asset.ResourceKindID) string {
 func digestStrings(values []string) string {
 	digest := sha256.Sum256([]byte(strings.Join(values, "\x00")))
 	return hex.EncodeToString(digest[:])
+}
+
+// inputCacheLimit bounds the remembered inputs; one can hold every asset of a
+// large connection's focused view.
+const inputCacheLimit = 8
+
+// loadedInventory is the inventory-derived part of a topology input. Cached
+// values are shared between requests and must not be modified.
+type loadedInventory struct {
+	assets        []asset.Asset
+	relationships []graph.Relationship
+	bindings      []graph.LifecycleBinding
+	findingCounts map[asset.AssetID]int
+	scopeCounts   map[asset.ScopeID]int
+}
+
+// inputCache is a small LRU of loaded inventories. Its keys embed the
+// connection's inventory version, so any asset, finding or graph write makes
+// the old entries unreachable and they age out.
+type inputCache struct {
+	mu      sync.Mutex
+	entries []inputCacheEntry // most recently used first
+}
+
+type inputCacheEntry struct {
+	key   string
+	value loadedInventory
+}
+
+func (c *inputCache) get(key string) (loadedInventory, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for index, entry := range c.entries {
+		if entry.key == key {
+			copy(c.entries[1:index+1], c.entries[:index])
+			c.entries[0] = entry
+			return entry.value, true
+		}
+	}
+	return loadedInventory{}, false
+}
+
+func (c *inputCache) put(key string, value loadedInventory) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.entries = slices.DeleteFunc(c.entries, func(entry inputCacheEntry) bool { return entry.key == key })
+	c.entries = slices.Insert(c.entries, 0, inputCacheEntry{key: key, value: value})
+	if len(c.entries) > inputCacheLimit {
+		c.entries = slices.Delete(c.entries, inputCacheLimit, len(c.entries))
+	}
+}
+
+// inputCacheKey identifies an inventory read by the connection's inventory
+// version, its scopes (which resolve scope aliases), the catalog and the
+// request parts that shape the read.
+func (s *Service) inputCacheKey(ctx context.Context, connectionID asset.ConnectionID, scopes []asset.Scope, catalogRevision string, parts ...string) (string, error) {
+	version, err := s.repositories.Inventory().ConnectionInventoryVersion(ctx, connectionID)
+	if err != nil {
+		return "", err
+	}
+	scopeValues := make([]string, 0, len(scopes))
+	for _, scope := range scopes {
+		scopeValues = append(scopeValues, string(scope.ID)+":"+string(scope.ParentID)+":"+scope.UpdatedAt.UTC().Format(time.RFC3339Nano))
+	}
+	sort.Strings(scopeValues)
+	return digestStrings(append([]string{string(connectionID), version, digestStrings(scopeValues), catalogRevision}, parts...)), nil
 }
 
 type cursorEnvelope struct {

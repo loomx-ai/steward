@@ -1311,6 +1311,39 @@ func Run(t *testing.T, factory Factory) {
 		if err != nil || len(foreignFindings.Items) != 0 {
 			t.Fatalf("foreign findings = %+v, err = %v", foreignFindings, err)
 		}
+
+		version := func() string {
+			t.Helper()
+			value, err := repositories.Inventory().ConnectionInventoryVersion(ctx, "conn-app")
+			if err != nil {
+				t.Fatal(err)
+			}
+			return value
+		}
+		previous := version()
+		if again := version(); again != previous {
+			t.Fatalf("unchanged inventory version moved from %q to %q", previous, again)
+		}
+		for name, mutate := range map[string]func() error{
+			"asset rewrite": func() error { return repositories.Inventory().PutAsset(ctx, active) },
+			"dirty flag": func() error {
+				_, err := repositories.Inventory().SetAssetDirty(ctx, active.ID, true)
+				return err
+			},
+			"finding rewrite": func() error { return repositories.Findings().PutFinding(ctx, persistedFinding) },
+			"graph replace": func() error {
+				return repositories.Graph().ReplaceGraph(ctx, "scope-app", "graph-app", nil, nil)
+			},
+		} {
+			if err := mutate(); err != nil {
+				t.Fatalf("%s: %v", name, err)
+			}
+			current := version()
+			if current == previous {
+				t.Fatalf("inventory version did not change after %s: %q", name, current)
+			}
+			previous = current
+		}
 	})
 
 	t.Run("cleanup task intent outbox and lease", func(t *testing.T) {

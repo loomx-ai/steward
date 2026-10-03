@@ -1005,7 +1005,7 @@ func (s *Store) ConsolidateScopes(ctx context.Context, canonicalID asset.ScopeID
 				if err != nil {
 					return err
 				}
-				if err := tx.Table("assets").Where("id = ?", row.ID).Updates(map[string]any{"scope_id": string(canonicalID), "payload": payload}).Error; err != nil {
+				if err := tx.Table("assets").Where("id = ?", row.ID).Updates(map[string]any{"scope_id": string(canonicalID), "payload": payload, "revision": gorm.Expr("revision + 1")}).Error; err != nil {
 					return err
 				}
 			}
@@ -1531,14 +1531,14 @@ func (s *Store) PutAsset(ctx context.Context, value asset.Asset) error {
 		ScopeKey: value.Identity.ScopeKey, ScopeID: string(value.ScopeID), ResourceKindID: string(value.ResourceKindID), FirstSeenAt: value.FirstSeenAt,
 		LastSeenAt: value.LastSeenAt, ClosedAt: value.ClosedAt, DeletedAt: value.DeletedAt, Dirty: value.Dirty, Payload: payload,
 	}
-	return upsert(s.db.WithContext(ctx), "assets", row, []string{"scope_id", "resource_kind_id", "last_seen_at", "closed_at", "deleted_at", "payload"})
+	return upsertRevised(s.db.WithContext(ctx), "assets", row, []string{"scope_id", "resource_kind_id", "last_seen_at", "closed_at", "deleted_at", "payload"})
 }
 
 func (s *Store) SetAssetDirty(ctx context.Context, id asset.AssetID, dirty bool) (asset.Asset, error) {
 	result := s.db.WithContext(ctx).
 		Table("assets").
 		Where("id = ?", string(id)).
-		Update("dirty", dirty)
+		Updates(map[string]any{"dirty": dirty, "revision": gorm.Expr("revision + 1")})
 	if result.Error != nil {
 		return asset.Asset{}, result.Error
 	}
@@ -2248,6 +2248,13 @@ func decodePage[R any, T any](rows []R, limit int, timestamp func(R) time.Time, 
 
 func upsert(db *gorm.DB, table string, value any, columns []string) error {
 	return db.Table(table).Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "id"}}, DoUpdates: clause.AssignmentColumns(columns)}).Create(value).Error
+}
+
+// upsertRevised upserts like upsert and bumps an updated row's revision, which
+// ConnectionInventoryVersion sums.
+func upsertRevised(db *gorm.DB, table string, value any, columns []string) error {
+	assignments := append(clause.AssignmentColumns(columns), clause.Assignment{Column: clause.Column{Name: "revision"}, Value: gorm.Expr(table + ".revision + 1")})
+	return db.Table(table).Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "id"}}, DoUpdates: assignments}).Create(value).Error
 }
 
 // upsertBatchSize keeps a multi-row insert of the widest rows well under
