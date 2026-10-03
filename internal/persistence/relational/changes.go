@@ -29,6 +29,32 @@ func (s *Store) GetObservation(ctx context.Context, id asset.ObservationID) (ass
 	return decode[asset.Observation](row.Payload)
 }
 
+func (s *Store) ListObservationsByIDs(ctx context.Context, ids []asset.ObservationID) ([]asset.Observation, error) {
+	values := make([]string, 0, len(ids))
+	seen := make(map[asset.ObservationID]struct{}, len(ids))
+	for _, id := range ids {
+		if _, ok := seen[id]; ok || id == "" {
+			continue
+		}
+		seen[id] = struct{}{}
+		values = append(values, string(id))
+	}
+	const batchSize = 400
+	result := make([]asset.Observation, 0, len(values))
+	for start := 0; start < len(values); start += batchSize {
+		var rows []observationRow
+		if err := s.db.WithContext(ctx).Table("asset_observations").Where("id IN ?", values[start:min(start+batchSize, len(values))]).Order("id ASC").Find(&rows).Error; err != nil {
+			return nil, err
+		}
+		decoded, err := decodeRows[observationRow, asset.Observation](rows, func(row observationRow) string { return row.Payload })
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, decoded...)
+	}
+	return result, nil
+}
+
 func (s *Store) RecordAssetChange(ctx context.Context, change asset.AssetChange) error {
 	if change.ID == "" || change.ScanTaskID == "" || change.AssetID == "" || !change.Type.Valid() {
 		return errors.New("asset change requires an id, scan, asset and change type")

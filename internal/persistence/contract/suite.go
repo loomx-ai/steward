@@ -725,6 +725,14 @@ func Run(t *testing.T, factory Factory) {
 		if err != nil || len(assetsByID) != 1 || assetsByID[0].ID != storedAsset.ID {
 			t.Fatalf("assets by IDs = %#v, err = %v", assetsByID, err)
 		}
+		otherScopeKey := identity
+		otherScopeKey.ScopeKey = "region:cn-hangzhou"
+		missingIdentity := identity
+		missingIdentity.NativeID = "i-missing"
+		nativeAssets, err := repositories.Inventory().ListAssetsByNativeIdentities(ctx, []asset.Identity{otherScopeKey, missingIdentity, identity})
+		if err != nil || len(nativeAssets) != 1 || nativeAssets[0].ID != storedAsset.ID || nativeAssets[0].Identity.Key() != identity.Key() {
+			t.Fatalf("assets by native identities = %#v, err = %v", nativeAssets, err)
+		}
 		scopedAssets, err := repositories.Inventory().ListActiveAssetsByScopes(
 			ctx,
 			"conn-a",
@@ -810,6 +818,10 @@ func Run(t *testing.T, factory Factory) {
 		}
 		if err := repositories.Inventory().AppendObservation(ctx, observation); !errors.Is(err, persistence.ErrConflict) {
 			t.Fatalf("duplicate observation err = %v", err)
+		}
+		observationsByID, err := repositories.Inventory().ListObservationsByIDs(ctx, []asset.ObservationID{"obs-missing", observation.ID, observation.ID})
+		if err != nil || len(observationsByID) != 1 || observationsByID[0].ID != observation.ID || observationsByID[0].ContentHash != "hash-1" {
+			t.Fatalf("observations by IDs = %#v, err = %v", observationsByID, err)
 		}
 		got, err := repositories.Inventory().GetAsset(ctx, "asset-1")
 		if err != nil || got.Identity.Key() != identity.Key() {

@@ -198,7 +198,11 @@ func (s *Service) ProjectBatch(ctx context.Context, shard *asset.ScanShard, conn
 		return fmt.Errorf("scan shard does not match connection or run")
 	}
 	updatedShard := *shard
-	err := s.repository.WithinInventoryTx(ctx, func(repository persistence.InventoryRepository) error {
+	err := s.repository.WithinInventoryTx(ctx, func(transaction persistence.InventoryRepository) error {
+		repository, err := newBatchRepository(ctx, transaction, connection, batch.Items)
+		if err != nil {
+			return err
+		}
 		for _, item := range batch.Items {
 			if err := s.projectItem(ctx, repository, updatedShard, connection, item, options); err != nil {
 				return err

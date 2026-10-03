@@ -158,10 +158,14 @@ type InventoryRepository interface {
 	SetAssetDirty(context.Context, asset.AssetID, bool) (asset.Asset, error)
 	GetAsset(context.Context, asset.AssetID) (asset.Asset, error)
 	GetAssetByIdentity(context.Context, asset.Identity) (asset.Asset, error)
+	// ListAssetsByNativeIdentities returns, as GetAssetByIdentity would, every
+	// asset that shares an identity's native key whatever its scope key.
+	ListAssetsByNativeIdentities(context.Context, []asset.Identity) ([]asset.Asset, error)
 	ListAssetsByIDs(context.Context, []asset.AssetID) ([]asset.Asset, error)
 	ListAssets(context.Context, ListOptions) (Page[asset.Asset], error)
 	AppendObservation(context.Context, asset.Observation) error
 	GetObservation(context.Context, asset.ObservationID) (asset.Observation, error)
+	ListObservationsByIDs(context.Context, []asset.ObservationID) ([]asset.Observation, error)
 	ListObservations(context.Context, asset.AssetID) ([]asset.Observation, error)
 	// RecordAssetChange merges the change into any change already recorded for
 	// the same asset in the same scan.

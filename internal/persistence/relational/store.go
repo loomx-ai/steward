@@ -1531,6 +1531,10 @@ func (s *Store) GetAssetByIdentity(ctx context.Context, identity asset.Identity)
 	if err != nil {
 		return asset.Asset{}, mapError(err)
 	}
+	return decodeAssetIdentityRow(row)
+}
+
+func decodeAssetIdentityRow(row assetRow) (asset.Asset, error) {
 	value, err := decode[asset.Asset](row.Payload)
 	if err != nil {
 		return asset.Asset{}, err
@@ -1540,6 +1544,44 @@ func (s *Store) GetAssetByIdentity(ctx context.Context, identity asset.Identity)
 	value.DeletedAt = row.DeletedAt
 	value.Identity.ScopeKey = row.ScopeKey
 	return value, nil
+}
+
+func (s *Store) ListAssetsByNativeIdentities(ctx context.Context, identities []asset.Identity) ([]asset.Asset, error) {
+	type nativeGroup struct {
+		provider, partition, connectionID, nativeType string
+	}
+	groups := make(map[nativeGroup][]string)
+	seen := make(map[asset.Identity]struct{}, len(identities))
+	for _, identity := range identities {
+		identity.ScopeKey = ""
+		if _, ok := seen[identity]; ok {
+			continue
+		}
+		seen[identity] = struct{}{}
+		group := nativeGroup{string(identity.Provider), identity.Partition, string(identity.ConnectionID), identity.NativeType}
+		groups[group] = append(groups[group], identity.NativeID)
+	}
+	const batchSize = 400
+	result := make([]asset.Asset, 0, len(seen))
+	for group, nativeIDs := range groups {
+		for start := 0; start < len(nativeIDs); start += batchSize {
+			var rows []assetRow
+			if err := s.db.WithContext(ctx).Table("assets").Where(
+				"provider = ? AND partition_name = ? AND connection_id = ? AND native_type = ? AND native_id IN ?",
+				group.provider, group.partition, group.connectionID, group.nativeType, nativeIDs[start:min(start+batchSize, len(nativeIDs))],
+			).Order("id ASC").Find(&rows).Error; err != nil {
+				return nil, err
+			}
+			for _, row := range rows {
+				value, err := decodeAssetIdentityRow(row)
+				if err != nil {
+					return nil, err
+				}
+				result = append(result, value)
+			}
+		}
+	}
+	return result, nil
 }
 
 func (s *Store) ListAssetsByIDs(ctx context.Context, assetIDs []asset.AssetID) ([]asset.Asset, error) {

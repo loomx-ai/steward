@@ -257,6 +257,31 @@ func (r *inventoryRepository) GetAssetByIdentity(_ context.Context, identity ass
 	}
 	return asset.Asset{}, persistence.ErrNotFound
 }
+func (r *inventoryRepository) ListAssetsByNativeIdentities(_ context.Context, identities []asset.Identity) ([]asset.Asset, error) {
+	wanted := make(map[asset.Identity]struct{}, len(identities))
+	for _, identity := range identities {
+		identity.ScopeKey = ""
+		wanted[identity] = struct{}{}
+	}
+	var result []asset.Asset
+	for _, value := range r.assets {
+		identity := value.Identity
+		identity.ScopeKey = ""
+		if _, ok := wanted[identity]; ok {
+			result = append(result, value)
+		}
+	}
+	return result, nil
+}
+func (r *inventoryRepository) ListObservationsByIDs(_ context.Context, ids []asset.ObservationID) ([]asset.Observation, error) {
+	var result []asset.Observation
+	for _, id := range ids {
+		if value, err := r.GetObservation(context.Background(), id); err == nil {
+			result = append(result, value)
+		}
+	}
+	return result, nil
+}
 func (r *inventoryRepository) ListAssetsByIDs(_ context.Context, ids []asset.AssetID) ([]asset.Asset, error) {
 	wanted := make(map[asset.AssetID]struct{}, len(ids))
 	for _, id := range ids {
