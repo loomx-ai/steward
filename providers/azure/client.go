@@ -414,18 +414,23 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	return out, nil
 }
 
-// Throttled or briefly unavailable inventory reads are retried here; one 429
-// would otherwise fail a whole scan shard. Mutations, operation polling and
-// cleanup checks keep their own Retry-After handling and are never retried here.
+// Throttled or briefly unavailable reads of inventory and graph contribution
+// are retried here; one 429 would otherwise fail a scan shard or degrade the
+// graph. Mutations, operation polling and cleanup checks are rescheduled by the
+// cleanup worker on Retry-After instead and are never retried here.
 const readRetries = 4
 const readRetryBudget = 60 * time.Second
 
 var readRetryBase = time.Second
 
-type inventoryReadContextKey struct{}
+type readRetryContextKey struct{}
+
+func withReadRetries(ctx context.Context) context.Context {
+	return context.WithValue(ctx, readRetryContextKey{}, true)
+}
 
 func readRetryWait(ctx context.Context, method string, attempt int, waited time.Duration, res *http.Response, err error) (time.Duration, bool) {
-	if ctx.Value(inventoryReadContextKey{}) != true || (method != http.MethodGet && method != http.MethodHead) || attempt >= readRetries || ctx.Err() != nil {
+	if ctx.Value(readRetryContextKey{}) != true || (method != http.MethodGet && method != http.MethodHead) || attempt >= readRetries || ctx.Err() != nil {
 		return 0, false
 	}
 	var opError *net.OpError

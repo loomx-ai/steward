@@ -232,6 +232,7 @@ func managedGroupFrozenMembers(group string, assets []asset.Asset) map[string]bo
 }
 
 func (h *aksLifecycle) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
+	ctx = withReadRetries(ctx)
 	result := governance.Contribution{}
 	fleetOwners, err := h.client.fleetHubOwners(assets)
 	if err != nil {

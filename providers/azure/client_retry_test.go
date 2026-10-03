@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -56,7 +57,7 @@ func TestIdempotentReadsRetryThrottlingAndTransientFailures(t *testing.T) {
 		return transport.RoundTrip(r)
 	}))
 	endpoint := apiURL(c.root()+"/resourcegroups/test", resourcesVersion)
-	inventory := context.WithValue(context.Background(), inventoryReadContextKey{}, true)
+	inventory := withReadRetries(context.Background())
 	runAt := func(ctx context.Context, method string, queued ...reply) (int, error) {
 		mu.Lock()
 		replies, calls = queued, 0
@@ -95,5 +96,26 @@ func TestIdempotentReadsRetryThrottlingAndTransientFailures(t *testing.T) {
 	started := time.Now()
 	if _, err := runAt(ctx, "GET", reply{429, "30"}); !errors.Is(err, context.DeadlineExceeded) || time.Since(started) > 5*time.Second {
 		t.Fatalf("canceled retry wait error=%v after %s", err, time.Since(started))
+	}
+}
+
+func TestContributionRetriesThrottledReads(t *testing.T) {
+	s, r, assets := messagingScenario(t, serviceBusNamespaceType)
+	namespace := assets[0].Identity.NativeID
+	throttled := 0
+	s.handle = func(req *http.Request) (*http.Response, bool) {
+		if strings.EqualFold(req.URL.Path, namespace) && req.Method == "GET" && throttled == 0 {
+			throttled++
+			return jsonResponse(429, nil, http.Header{"Retry-After": {"0"}}), true
+		}
+		return nil, false
+	}
+	contributor, err := r.ServiceLifecycle(context.Background(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	contribution, err := contributor.Contribute(context.Background(), "scope", assets)
+	if err != nil || throttled != 1 || len(contribution.Bindings) == 0 {
+		t.Fatalf("throttled=%d bindings=%d error=%v", throttled, len(contribution.Bindings), err)
 	}
 }

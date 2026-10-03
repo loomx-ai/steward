@@ -14,7 +14,7 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	ctx = context.WithValue(ctx, inventoryReadContextKey{}, true)
+	ctx = withReadRetries(ctx)
 	ctx = withReadMemo(ctx)
 	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource && request.Source != synapseSource && request.Source != synapseDataInventorySource && request.Source != synapseBackupSource && request.Source != netappSource && request.Source != deploymentStackSource && request.Source != dataProtectionSource && request.Source != recoveryServicesSource && request.Source != managementGroupSource && request.Source != keyVaultCertificateSource && request.Source != graphDirectorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
