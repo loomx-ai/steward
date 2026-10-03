@@ -90,9 +90,7 @@ type cleanupTaskRow struct {
 }
 
 func (s *Store) WithinFindingTx(ctx context.Context, fn func(persistence.FindingRepository) error) error {
-	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		return fn(New(tx))
-	})
+	return s.transaction(ctx, func(store *Store) error { return fn(store) })
 }
 
 func (s *Store) ReplaceGraph(ctx context.Context, scopeID asset.ScopeID, revision string, relationships []graph.Relationship, bindings []graph.LifecycleBinding, unresolved ...graph.UnresolvedReference) error {
@@ -109,31 +107,52 @@ func (s *Store) ReplaceGraph(ctx context.Context, scopeID asset.ScopeID, revisio
 		}).Create(&revisionRow).Error; err != nil {
 			return err
 		}
-		if err := tx.Table("relationships").Where("scope_id = ? AND closed_at IS NULL", string(scopeID)).Update("closed_at", closedAt).Error; err != nil {
+		// Every graph read filters closed_at IS NULL and relationship IDs are
+		// minted per build, so superseded rows are never read or matched again:
+		// delete them instead of closing them so the tables stay one graph deep.
+		if err := tx.Table("relationships").Where("scope_id = ?", string(scopeID)).Delete(nil).Error; err != nil {
 			return err
 		}
-		if err := tx.Table("lifecycle_bindings").Where("scope_id = ? AND closed_at IS NULL", string(scopeID)).Update("closed_at", closedAt).Error; err != nil {
+		if err := tx.Table("lifecycle_bindings").Where("scope_id = ?", string(scopeID)).Delete(nil).Error; err != nil {
 			return err
 		}
+		relationshipRows := make([]relationshipRow, 0, len(relationships))
+		relationshipPositions := make(map[string]int, len(relationships))
 		for _, relationship := range relationships {
 			payload, err := encode(relationship)
 			if err != nil {
 				return err
 			}
 			row := relationshipRow{ID: string(relationship.ID), ScopeID: string(scopeID), SourceAssetID: string(relationship.SourceAssetID), TargetAssetID: string(relationship.TargetAssetID), GraphRevision: revision, ObservedAt: relationship.ObservedAt, Payload: payload}
-			if err := upsert(tx, "relationships", row, []string{"scope_id", "source_asset_id", "target_asset_id", "graph_revision", "observed_at", "closed_at", "payload"}); err != nil {
-				return err
+			// A repeated ID keeps its last value, as one upsert per row did;
+			// PostgreSQL rejects a multi-row upsert that touches a row twice.
+			if position, ok := relationshipPositions[row.ID]; ok {
+				relationshipRows[position] = row
+				continue
 			}
+			relationshipPositions[row.ID] = len(relationshipRows)
+			relationshipRows = append(relationshipRows, row)
 		}
+		if err := upsertInBatches(tx, "relationships", relationshipRows, []string{"scope_id", "source_asset_id", "target_asset_id", "graph_revision", "observed_at", "closed_at", "payload"}); err != nil {
+			return err
+		}
+		bindingRows := make([]lifecycleBindingRow, 0, len(bindings))
+		bindingPositions := make(map[string]int, len(bindings))
 		for _, binding := range bindings {
 			payload, err := encode(binding)
 			if err != nil {
 				return err
 			}
 			row := lifecycleBindingRow{ID: string(binding.ID), ScopeID: string(scopeID), ControllerAssetID: string(binding.ControllerAssetID), ManagedAssetID: string(binding.ManagedAssetID), GraphRevision: revision, ObservedAt: binding.ObservedAt, Payload: payload}
-			if err := upsert(tx, "lifecycle_bindings", row, []string{"scope_id", "controller_asset_id", "managed_asset_id", "graph_revision", "observed_at", "closed_at", "payload"}); err != nil {
-				return err
+			if position, ok := bindingPositions[row.ID]; ok {
+				bindingRows[position] = row
+				continue
 			}
+			bindingPositions[row.ID] = len(bindingRows)
+			bindingRows = append(bindingRows, row)
+		}
+		if err := upsertInBatches(tx, "lifecycle_bindings", bindingRows, []string{"scope_id", "controller_asset_id", "managed_asset_id", "graph_revision", "observed_at", "closed_at", "payload"}); err != nil {
+			return err
 		}
 		return closeGraphRowsForClosedAssets(tx, scopeID, closedAt)
 	})

@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -20,10 +21,44 @@ import (
 
 type Store struct {
 	db *gorm.DB
+	// aliases memoizes scope aliases for one transaction, nested savepoints
+	// included; nil outside a transaction, where every call reads them fresh.
+	aliases *aliasMemo
+}
+
+type aliasMemo struct {
+	mu    sync.Mutex
+	value map[asset.ScopeID]asset.ScopeID
+}
+
+func (m *aliasMemo) reset() {
+	m.mu.Lock()
+	m.value = nil
+	m.mu.Unlock()
 }
 
 func New(db *gorm.DB) *Store {
 	return &Store{db: db}
+}
+
+// inTx returns the store a transaction callback works with. Only
+// ConsolidateScopes writes aliases, and it resets the shared memo, as does the
+// end of every (nested) transaction so a rolled-back savepoint cannot leave
+// stale aliases behind.
+func (s *Store) inTx(tx *gorm.DB) *Store {
+	memo := s.aliases
+	if memo == nil {
+		memo = &aliasMemo{}
+	}
+	return &Store{db: tx, aliases: memo}
+}
+
+func (s *Store) transaction(ctx context.Context, fn func(*Store) error) error {
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		store := s.inTx(tx)
+		defer store.aliases.reset()
+		return fn(store)
+	})
 }
 
 func (s *Store) Connections() persistence.ConnectionRepository   { return s }
@@ -39,15 +74,11 @@ func (s *Store) Jobs() persistence.JobRepository                 { return s }
 func (s *Store) Schedules() persistence.ScheduleRepository       { return s }
 
 func (s *Store) WithTx(ctx context.Context, fn func(persistence.Repositories) error) error {
-	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		return fn(New(tx))
-	})
+	return s.transaction(ctx, func(store *Store) error { return fn(store) })
 }
 
 func (s *Store) WithinInventoryTx(ctx context.Context, fn func(persistence.InventoryRepository) error) error {
-	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		return fn(New(tx))
-	})
+	return s.transaction(ctx, func(store *Store) error { return fn(store) })
 }
 
 type connectionRow struct {
@@ -789,7 +820,16 @@ func decodeScopeRow(row scopeRow) (asset.Scope, error) {
 	return value, nil
 }
 
+// scopeAliases maps superseded scope IDs to their successors. Callers must not
+// modify the returned map: inside a transaction it is shared.
 func (s *Store) scopeAliases(ctx context.Context) (map[asset.ScopeID]asset.ScopeID, error) {
+	if s.aliases != nil {
+		s.aliases.mu.Lock()
+		defer s.aliases.mu.Unlock()
+		if s.aliases.value != nil {
+			return s.aliases.value, nil
+		}
+	}
 	var rows []scopeRow
 	if err := s.db.WithContext(ctx).Table("scopes").Select("id, superseded_by_scope_id").
 		Where("superseded_by_scope_id IS NOT NULL AND superseded_by_scope_id <> ''").Find(&rows).Error; err != nil {
@@ -798,6 +838,9 @@ func (s *Store) scopeAliases(ctx context.Context) (map[asset.ScopeID]asset.Scope
 	result := make(map[asset.ScopeID]asset.ScopeID, len(rows))
 	for _, row := range rows {
 		result[asset.ScopeID(row.ID)] = asset.ScopeID(row.SupersededByID)
+	}
+	if s.aliases != nil {
+		s.aliases.value = result
 	}
 	return result, nil
 }
@@ -824,6 +867,9 @@ func resolveScopeAlias(id asset.ScopeID, aliases map[asset.ScopeID]asset.ScopeID
 func (s *Store) ConsolidateScopes(ctx context.Context, canonicalID asset.ScopeID, duplicateIDs []asset.ScopeID, aliasParentID asset.ScopeID) error {
 	if canonicalID == "" {
 		return fmt.Errorf("canonical scope is required")
+	}
+	if s.aliases != nil {
+		defer s.aliases.reset()
 	}
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var canonicalRow scopeRow
@@ -2095,6 +2141,17 @@ func decodePage[R any, T any](rows []R, limit int, timestamp func(R) time.Time, 
 
 func upsert(db *gorm.DB, table string, value any, columns []string) error {
 	return db.Table(table).Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "id"}}, DoUpdates: clause.AssignmentColumns(columns)}).Create(value).Error
+}
+
+// upsertBatchSize keeps a multi-row insert of the widest rows well under
+// SQLite's 32766 bind-variable limit.
+const upsertBatchSize = 500
+
+func upsertInBatches[T any](db *gorm.DB, table string, rows []T, columns []string) error {
+	if len(rows) == 0 {
+		return nil
+	}
+	return db.Table(table).Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "id"}}, DoUpdates: clause.AssignmentColumns(columns)}).CreateInBatches(rows, upsertBatchSize).Error
 }
 
 func mapError(err error) error {

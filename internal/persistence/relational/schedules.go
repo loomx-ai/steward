@@ -2,7 +2,6 @@ package relational
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -223,21 +222,30 @@ func (s *Store) ListUnsettledRuns(ctx context.Context, limit int) ([]schedule.Ru
 
 func (s *Store) LatestRuns(ctx context.Context, scheduleIDs []schedule.ID) (map[schedule.ID]schedule.Run, error) {
 	result := make(map[schedule.ID]schedule.Run, len(scheduleIDs))
-	for _, id := range scheduleIDs {
-		var row scheduleRunRow
-		err := s.db.WithContext(ctx).Table("scan_schedule_runs").Where("schedule_id = ?", string(id)).
-			Order("created_at DESC, id DESC").Take(&row).Error
-		if errors.Is(mapError(err), persistence.ErrNotFound) {
-			continue
-		}
-		if err != nil {
-			return nil, err
-		}
+	if len(scheduleIDs) == 0 {
+		return result, nil
+	}
+	ids := make([]string, len(scheduleIDs))
+	for index, id := range scheduleIDs {
+		ids[index] = string(id)
+	}
+	var rows []scheduleRunRow
+	if err := s.db.WithContext(ctx).Table("scan_schedule_runs AS runs").
+		Where("runs.schedule_id IN ?", ids).
+		Where(`NOT EXISTS (
+			SELECT 1 FROM scan_schedule_runs AS newer
+			WHERE newer.schedule_id = runs.schedule_id
+			  AND (newer.created_at > runs.created_at OR (newer.created_at = runs.created_at AND newer.id > runs.id))
+		)`).
+		Find(&rows).Error; err != nil {
+		return nil, err
+	}
+	for _, row := range rows {
 		run, err := decode[schedule.Run](row.Payload)
 		if err != nil {
 			return nil, err
 		}
-		result[id] = run
+		result[schedule.ID(row.ScheduleID)] = run
 	}
 	return result, nil
 }
