@@ -18,13 +18,28 @@ var (
 const ExecutableConfidence = 0.9
 
 func ResolveAuthority(assetID asset.AssetID, bindings []LifecycleBinding) (AuthorityResolution, error) {
-	return resolveController(assetID, bindings, false)
+	return resolveController(assetID, indexDelegatingParents(bindings, false), false)
 }
 
 // ResolveExecutionController accepts only the operation edges activated by the
 // planner's selected controllers. It preserves ownership in the returned chain.
 func ResolveExecutionController(assetID asset.AssetID, bindings []LifecycleBinding) (AuthorityResolution, error) {
-	return resolveController(assetID, bindings, true)
+	return NewExecutionControllers(bindings).Resolve(assetID)
+}
+
+// ExecutionControllers resolves execution controllers for many assets against
+// one binding set without rescanning the bindings for every asset.
+type ExecutionControllers struct {
+	parents map[asset.AssetID][]LifecycleBinding
+}
+
+func NewExecutionControllers(bindings []LifecycleBinding) ExecutionControllers {
+	return ExecutionControllers{parents: indexDelegatingParents(bindings, true)}
+}
+
+// Resolve is ResolveExecutionController over the indexed bindings.
+func (c ExecutionControllers) Resolve(assetID asset.AssetID) (AuthorityResolution, error) {
+	return resolveController(assetID, c.parents, true)
 }
 
 func NativeDeleteEffect(binding LifecycleBinding) bool {
@@ -38,7 +53,7 @@ func NativeDeleteEffect(binding LifecycleBinding) bool {
 		binding.Evidence[LifecycleEvidenceControllerVerifiesManagedAbsence] == true
 }
 
-func resolveController(assetID asset.AssetID, bindings []LifecycleBinding, effects bool) (AuthorityResolution, error) {
+func resolveController(assetID asset.AssetID, parents map[asset.AssetID][]LifecycleBinding, effects bool) (AuthorityResolution, error) {
 	result := AuthorityResolution{
 		RequestedAssetID:  assetID,
 		ControllerAssetID: assetID,
@@ -47,7 +62,7 @@ func resolveController(assetID asset.AssetID, bindings []LifecycleBinding, effec
 	current := assetID
 
 	for {
-		candidates := activeDelegatingParents(current, bindings, effects)
+		candidates := parents[current]
 		if len(candidates) == 0 {
 			return result, nil
 		}
@@ -86,16 +101,18 @@ func resolveController(assetID asset.AssetID, bindings []LifecycleBinding, effec
 	}
 }
 
-func activeDelegatingParents(managedAssetID asset.AssetID, bindings []LifecycleBinding, effects bool) []LifecycleBinding {
-	parents := make([]LifecycleBinding, 0, 1)
+// indexDelegatingParents groups the active delegating bindings by managed
+// asset, keeping their input order.
+func indexDelegatingParents(bindings []LifecycleBinding, effects bool) map[asset.AssetID][]LifecycleBinding {
+	parents := make(map[asset.AssetID][]LifecycleBinding)
 	for _, binding := range bindings {
-		if binding.ClosedAt != nil || binding.ManagedAssetID != managedAssetID {
+		if binding.ClosedAt != nil {
 			continue
 		}
 		if !(effects && binding.Evidence[LifecycleEvidenceNativeDeleteEffect] == true) && (binding.Ownership != OwnershipExclusive || binding.CleanupPolicy != CleanupDelegate) {
 			continue
 		}
-		parents = append(parents, binding)
+		parents[binding.ManagedAssetID] = append(parents[binding.ManagedAssetID], binding)
 	}
 	return parents
 }

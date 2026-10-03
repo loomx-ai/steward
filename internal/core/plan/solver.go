@@ -63,6 +63,7 @@ func solveOnce(input Input) (Result, error) {
 	bindings = nativeExecutionBindings(bindings, selectedSet, assets, input.RequestOptions)
 	candidates := make(map[asset.AssetID]struct{}, len(selected))
 	directFallbacks := make(map[asset.AssetID]bool)
+	controllers := graph.NewExecutionControllers(bindings)
 	for _, id := range selected {
 		value, ok := assets[id]
 		if !ok {
@@ -73,7 +74,7 @@ func solveOnce(input Input) (Result, error) {
 			blockers.add(Blocker{Code: BlockAssetClosed, AssetID: id, Message: "selected asset is already closed"})
 			continue
 		}
-		resolution, resolveErr := graph.ResolveExecutionController(id, bindings)
+		resolution, resolveErr := controllers.Resolve(id)
 		if resolveErr != nil {
 			blockers.add(lifecycleBlocker(id, resolveErr))
 			continue
@@ -138,6 +139,7 @@ func solveOnce(input Input) (Result, error) {
 		}
 	}
 	byController := bindingsByController(executionBindings)
+	executionControllers := graph.NewExecutionControllers(executionBindings)
 	suppressed := make(map[asset.AssetID]struct{})
 	directChildren := make(map[asset.AssetID]asset.AssetID)
 	controllerRoots := make(map[asset.AssetID]bool)
@@ -171,7 +173,7 @@ func solveOnce(input Input) (Result, error) {
 					continue
 				}
 				if (binding.Ownership == graph.OwnershipExclusive || graph.NativeDeleteEffect(binding)) && binding.CleanupPolicy == graph.CleanupDelegate {
-					resolution, resolveErr := graph.ResolveExecutionController(managedID, executionBindings)
+					resolution, resolveErr := executionControllers.Resolve(managedID)
 					if resolveErr != nil {
 						blockers.add(lifecycleBlocker(managedID, resolveErr))
 						continue
@@ -865,12 +867,18 @@ func snapshotHash(input Input, selected []asset.AssetID, assets map[asset.AssetI
 		}
 		return protections[i].Source < protections[j].Source
 	})
-	unresolved := append([]graph.UnresolvedReference(nil), input.Unresolved...)
-	sort.Slice(unresolved, func(i, j int) bool {
-		left, _ := json.Marshal(unresolved[i])
-		right, _ := json.Marshal(unresolved[j])
-		return string(left) < string(right)
-	})
+	keys := make([]string, len(input.Unresolved))
+	order := make([]int, len(input.Unresolved))
+	for index, reference := range input.Unresolved {
+		payload, _ := json.Marshal(reference)
+		keys[index] = string(payload)
+		order[index] = index
+	}
+	sort.Slice(order, func(i, j int) bool { return keys[order[i]] < keys[order[j]] })
+	var unresolved []graph.UnresolvedReference
+	for _, index := range order {
+		unresolved = append(unresolved, input.Unresolved[index])
+	}
 	payload, err := json.Marshal(struct {
 		Selected      []asset.AssetID                  `json:"selected"`
 		Assets        []asset.Asset                    `json:"assets"`
