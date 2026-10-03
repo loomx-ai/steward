@@ -33,6 +33,10 @@ func Handler() http.Handler {
 	if !ok {
 		return placeholderHandler()
 	}
+	return handler(sub)
+}
+
+func handler(sub fs.FS) http.Handler {
 	index, err := fs.ReadFile(sub, "index.html")
 	if err != nil {
 		return placeholderHandler()
@@ -44,16 +48,27 @@ func Handler() http.Handler {
 			serveIndex(w, index)
 			return
 		}
-		if _, err := fs.Stat(sub, name); err != nil {
-			if strings.HasPrefix(name, "assets/") {
-				http.NotFound(w, r)
-				return
-			}
-			serveIndex(w, index)
+		// Only regular files come from the bundle. Directories, such as the
+		// bundle's assets/ folder that shares its name with the Resources
+		// route, fall through to the console instead of a file listing.
+		if info, err := fs.Stat(sub, name); err == nil && !info.IsDir() {
+			fileServer.ServeHTTP(w, r)
 			return
 		}
-		fileServer.ServeHTTP(w, r)
+		if missingBundleFile(name) {
+			http.NotFound(w, r)
+			return
+		}
+		serveIndex(w, index)
 	})
+}
+
+// missingBundleFile tells a request for a built file that no longer exists,
+// such as a stale tab asking for an old script, from a console route like
+// /assets/<asset id>. Answering it with the HTML shell would make the browser
+// run HTML as JavaScript.
+func missingBundleFile(name string) bool {
+	return strings.HasPrefix(name, "assets/") && path.Ext(name) != ""
 }
 
 // placeholderHandler serves the SPA shell placeholder for page routes and 404s
@@ -61,7 +76,7 @@ func Handler() http.Handler {
 func placeholderHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		name := strings.TrimPrefix(path.Clean(r.URL.Path), "/")
-		if strings.HasPrefix(name, "assets/") {
+		if missingBundleFile(name) {
 			http.NotFound(w, r)
 			return
 		}
