@@ -329,7 +329,7 @@ var cognitoDomainKind = nativeKind{
 func enrichSecrets(ctx context.Context, client SecretsNativeAPI, region string, items []contracts.InventoryItem, indexes []int) error {
 	for _, index := range indexes {
 		id := items[index].NativeID
-		execution.LogCloudAPIRequest(ctx, "secretsmanager", "DescribeSecret", rawCloudPayload(map[string]any{"SecretId": id}))
+		execution.LogCloudAPIRequest(ctx, "secretsmanager", "DescribeSecret", contracts.CloudLogPayload(ctx, map[string]any{"SecretId": id}))
 		output, err := client.DescribeSecret(ctx, &awssecrets.DescribeSecretInput{SecretId: awssdk.String(id)})
 		if err != nil {
 			execution.LogCloudAPIFailure(ctx, "secretsmanager", "DescribeSecret", err)

@@ -215,7 +215,7 @@ func (r *Runtime) loadTopologyDetails(
 		if !ok {
 			return nil, fmt.Errorf("Alibaba Cloud operation %q is not in the generated catalog", definition.api.Operation)
 		}
-		execution.LogCloudAPIRequest(ctx, definition.service, operation, rawCloudPayload(parameters))
+		execution.LogCloudAPIRequest(ctx, definition.service, operation, contracts.CloudLogPayload(ctx, parameters))
 		result, err := r.factory.Invoke(ctx, credential, region, catalogOperation, contracts.Invocation{
 			ConnectionID: request.ConnectionID,
 			Operation:    catalogOperation.Key(),
@@ -227,7 +227,7 @@ func (r *Runtime) loadTopologyDetails(
 			normalized := NormalizeError(err)
 			return nil, fmt.Errorf("%s failed: %w", detailOperationLabel(definition), normalized)
 		}
-		responsePayload := rawCloudPayload(result.Data)
+		responsePayload := contracts.CloudLogPayload(ctx, result.Data)
 		if result.RequestID != "" {
 			responsePayload["RequestId"] = result.RequestID
 		}

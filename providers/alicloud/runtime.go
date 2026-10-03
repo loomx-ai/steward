@@ -383,7 +383,7 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if operationName == "" {
 		operationName = operation.Key()
 	}
-	execution.LogCloudAPIRequest(ctx, service, operationName, rawCloudPayload(canonical.Parameters))
+	execution.LogCloudAPIRequest(ctx, service, operationName, contracts.CloudLogPayload(ctx, canonical.Parameters))
 	result, err := r.factory.Invoke(ctx, credential, region, operation, canonical)
 	if err != nil {
 		normalized := NormalizeError(err)
@@ -391,7 +391,7 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		LogCloudAPIError(ctx, service, operationName, normalized)
 		return contracts.InvocationResult{}, normalized
 	}
-	responsePayload := rawCloudPayload(result.Data)
+	responsePayload := contracts.CloudLogPayload(ctx, result.Data)
 	responsePayload["RequestId"] = result.RequestID
 	responsePayload["OperationId"] = result.OperationID
 	execution.LogCloudAPIResponse(ctx, service, operationName, responsePayload)

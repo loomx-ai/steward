@@ -182,7 +182,7 @@ func (a *instanceAction) Execute(ctx context.Context, request contracts.ActionRe
 func (a *instanceAction) retain(ctx context.Context, instanceID string, outcome attachmentOutcome) error {
 	switch outcome.nativeType {
 	case "AWS::EC2::Volume":
-		execution.LogCloudAPIRequest(ctx, "ec2", "ModifyInstanceAttribute", rawCloudPayload(map[string]any{"InstanceId": instanceID, "DeviceName": outcome.deviceName, "DeleteOnTermination": false}))
+		execution.LogCloudAPIRequest(ctx, "ec2", "ModifyInstanceAttribute", contracts.CloudLogPayload(ctx, map[string]any{"InstanceId": instanceID, "DeviceName": outcome.deviceName, "DeleteOnTermination": false}))
 		_, err := a.ec2.ModifyInstanceAttribute(ctx, &awsec2.ModifyInstanceAttributeInput{
 			InstanceId: awssdk.String(instanceID),
 			BlockDeviceMappings: []ec2types.InstanceBlockDeviceMappingSpecification{{
@@ -194,7 +194,7 @@ func (a *instanceAction) retain(ctx context.Context, instanceID string, outcome 
 			return NormalizeError(err)
 		}
 	case "AWS::EC2::NetworkInterface":
-		execution.LogCloudAPIRequest(ctx, "ec2", "ModifyNetworkInterfaceAttribute", rawCloudPayload(map[string]any{"NetworkInterfaceId": outcome.nativeID, "AttachmentId": outcome.attachmentID, "DeleteOnTermination": false}))
+		execution.LogCloudAPIRequest(ctx, "ec2", "ModifyNetworkInterfaceAttribute", contracts.CloudLogPayload(ctx, map[string]any{"NetworkInterfaceId": outcome.nativeID, "AttachmentId": outcome.attachmentID, "DeleteOnTermination": false}))
 		_, err := a.ec2.ModifyNetworkInterfaceAttribute(ctx, &awsec2.ModifyNetworkInterfaceAttributeInput{
 			NetworkInterfaceId: awssdk.String(outcome.nativeID),
 			Attachment:         &ec2types.NetworkInterfaceAttachmentChanges{AttachmentId: awssdk.String(outcome.attachmentID), DeleteOnTermination: awssdk.Bool(false)},

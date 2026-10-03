@@ -1,7 +1,9 @@
 package cleanup
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -376,5 +378,31 @@ func TestDeletionTimeoutInProgressKeepsWaiting(t *testing.T) {
 	}
 	if status := actionResumeStatus(action); status != execution.ActionWaiting {
 		t.Fatalf("in-progress timeout resume status = %s, want waiting", status)
+	}
+}
+
+func TestBoundedJobLogPayloadTruncatesLargePagesButKeepsPagingFields(t *testing.T) {
+	t.Parallel()
+
+	small := map[string]any{"RequestId": "req-1"}
+	if got := boundedJobLogPayload(small); got["RequestId"] != "req-1" || len(got) != 1 {
+		t.Fatalf("small payload changed: %#v", got)
+	}
+	assets := make([]any, 500)
+	for index := range assets {
+		assets[index] = map[string]any{"name": strings.Repeat("asset-", 200)}
+	}
+	got := boundedJobLogPayload(map[string]any{"RequestId": "req-2", "NextToken": "page-3", "Count": 500, "Items": assets})
+	encoded, err := json.Marshal(got)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(encoded) > maxJobLogPayloadBytes {
+		t.Fatalf("payload not bounded: %d bytes", len(encoded))
+	}
+	items, _ := got["Items"].([]any)
+	if got["RequestId"] != "req-2" || got["NextToken"] != "page-3" || fmt.Sprint(got["Count"]) != "500" ||
+		got["StewardTruncated"] == nil || len(items) != maxJobLogListItems+1 || items[maxJobLogListItems] != "... 490 more items truncated" {
+		t.Fatalf("truncated payload = %s", encoded)
 	}
 }

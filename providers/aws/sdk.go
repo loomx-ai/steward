@@ -22,6 +22,7 @@ import (
 	explorertypes "github.com/aws/aws-sdk-go-v2/service/resourceexplorer2/types"
 	awssts "github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 	"gopkg.in/yaml.v3"
 )
@@ -274,9 +275,12 @@ func (c *resourceExplorerSDK) Search(ctx context.Context, request SearchRequest)
 	}
 	requestID, _ := awsmiddleware.GetRequestIDMetadata(output.ResultMetadata)
 	page := SearchPage{RequestID: requestID, NextToken: awssdk.ToString(output.NextToken), Resources: make([]SearchResource, 0, len(output.Resources))}
-	if raw, err := contracts.CloudRawPayload(output); err == nil {
-		page.RawResponse = raw
-		page.RawResponse["RequestId"] = requestID
+	// The raw page only feeds the job log; skip encoding it when nothing records one.
+	if execution.JobLogEnabled(ctx) {
+		if raw, err := contracts.CloudRawPayload(output); err == nil {
+			page.RawResponse = raw
+			page.RawResponse["RequestId"] = requestID
+		}
 	}
 	rawResources, _ := page.RawResponse["Resources"].([]any)
 	for resourceIndex, resource := range output.Resources {

@@ -276,7 +276,9 @@ func requestJSON(ctx context.Context, httpClient *http.Client, method string, u 
 		}
 		requestLog["body"] = value
 	}
-	execution.LogCloudAPIRequest(ctx, u.Host, method, sanitize(requestLog))
+	if execution.JobLogEnabled(ctx) {
+		execution.LogCloudAPIRequest(ctx, u.Host, method, sanitize(requestLog))
+	}
 	defer func() {
 		if failure != nil {
 			execution.LogCloudAPIFailure(ctx, u.Host, method, failure)
@@ -364,7 +366,9 @@ func requestJSON(ctx context.Context, httpClient *http.Client, method string, u 
 	if _, present := data["error"]; (u.Host == "dataform.googleapis.com" || u.Host == "batch.googleapis.com" || u.Host == "dataproc.googleapis.com") && present {
 		return result, apiError(response.StatusCode, "native_error_response", nil, "")
 	}
-	execution.LogCloudAPIResponse(ctx, u.Host, method, sanitize(map[string]any{"request_id": result.RequestID, "status_code": response.StatusCode, "body": data}))
+	if execution.JobLogEnabled(ctx) {
+		execution.LogCloudAPIResponse(ctx, u.Host, method, sanitize(map[string]any{"request_id": result.RequestID, "status_code": response.StatusCode, "body": data}))
+	}
 	result.Data = data
 	result.NextToken = text(data["nextPageToken"])
 	return result, nil

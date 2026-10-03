@@ -163,7 +163,7 @@ func enrichLifecycleFacts(ctx context.Context, clients *NativeClients, items []c
 		if cluster == "" || name == "" {
 			return fmt.Errorf("AWS EKS node group %s lacks cluster or name", items[index].NativeID)
 		}
-		execution.LogCloudAPIRequest(ctx, "eks", "DescribeNodegroup", rawCloudPayload(map[string]any{"clusterName": cluster, "nodegroupName": name}))
+		execution.LogCloudAPIRequest(ctx, "eks", "DescribeNodegroup", contracts.CloudLogPayload(ctx, map[string]any{"clusterName": cluster, "nodegroupName": name}))
 		output, err := clients.EKS.DescribeNodegroup(ctx, &awseks.DescribeNodegroupInput{ClusterName: awssdk.String(cluster), NodegroupName: awssdk.String(name)})
 		if err != nil {
 			execution.LogCloudAPIFailure(ctx, "eks", "DescribeNodegroup", err)
@@ -222,7 +222,7 @@ func describeInstanceDocuments(ctx context.Context, client LifecycleEC2API, ids 
 		if token != "" {
 			input.NextToken = awssdk.String(token)
 		}
-		execution.LogCloudAPIRequest(ctx, "ec2", "DescribeInstances", rawCloudPayload(map[string]any{"InstanceIds": ids, "NextToken": token}))
+		execution.LogCloudAPIRequest(ctx, "ec2", "DescribeInstances", contracts.CloudLogPayload(ctx, map[string]any{"InstanceIds": ids, "NextToken": token}))
 		output, err := client.DescribeInstances(ctx, input)
 		if err != nil {
 			execution.LogCloudAPIFailure(ctx, "ec2", "DescribeInstances", err)
@@ -267,7 +267,7 @@ func enrichNetworkInterfaces(ctx context.Context, client LifecycleEC2API, items 
 		for _, index := range batch {
 			ids = append(ids, items[index].NativeID)
 		}
-		execution.LogCloudAPIRequest(ctx, "ec2", "DescribeNetworkInterfaces", rawCloudPayload(map[string]any{"NetworkInterfaceIds": ids}))
+		execution.LogCloudAPIRequest(ctx, "ec2", "DescribeNetworkInterfaces", contracts.CloudLogPayload(ctx, map[string]any{"NetworkInterfaceIds": ids}))
 		output, err := client.DescribeNetworkInterfaces(ctx, &awsec2.DescribeNetworkInterfacesInput{NetworkInterfaceIds: ids})
 		if err != nil {
 			execution.LogCloudAPIFailure(ctx, "ec2", "DescribeNetworkInterfaces", err)
@@ -320,7 +320,7 @@ func enrichAutoScalingGroups(ctx context.Context, client AutoScalingNativeAPI, i
 			if token != "" {
 				input.NextToken = awssdk.String(token)
 			}
-			execution.LogCloudAPIRequest(ctx, "autoscaling", "DescribeAutoScalingGroups", rawCloudPayload(map[string]any{"AutoScalingGroupNames": names, "NextToken": token}))
+			execution.LogCloudAPIRequest(ctx, "autoscaling", "DescribeAutoScalingGroups", contracts.CloudLogPayload(ctx, map[string]any{"AutoScalingGroupNames": names, "NextToken": token}))
 			output, err := client.DescribeAutoScalingGroups(ctx, input)
 			if err != nil {
 				execution.LogCloudAPIFailure(ctx, "autoscaling", "DescribeAutoScalingGroups", err)

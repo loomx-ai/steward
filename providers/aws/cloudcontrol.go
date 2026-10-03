@@ -148,7 +148,7 @@ func (i *CloudControlInventory) List(ctx context.Context, request contracts.Inve
 	if variant.Model != "" {
 		requestPayload["ResourceModel"] = variant.Model
 	}
-	execution.LogCloudAPIRequest(ctx, "cloudcontrol", "ListResources", rawCloudPayload(requestPayload))
+	execution.LogCloudAPIRequest(ctx, "cloudcontrol", "ListResources", contracts.CloudLogPayload(ctx, requestPayload))
 	page, err := i.client.ListResources(ctx, CloudControlListRequest{TypeName: typeName, NextToken: cursor.Token, Limit: limit, ResourceModel: variant.Model})
 	if err != nil {
 		execution.LogCloudAPIFailure(ctx, "cloudcontrol", "ListResources", err)
@@ -180,7 +180,7 @@ func (i *CloudControlInventory) List(ctx context.Context, request contracts.Inve
 		responseResources = append(responseResources, map[string]any{"Identifier": identifier, "Properties": item.Raw["Properties"]})
 		batch.Items = append(batch.Items, item)
 	}
-	execution.LogCloudAPIResponse(ctx, "cloudcontrol", "ListResources", rawCloudPayload(map[string]any{
+	execution.LogCloudAPIResponse(ctx, "cloudcontrol", "ListResources", contracts.CloudLogPayload(ctx, map[string]any{
 		"RequestId": page.RequestID, "NextToken": page.NextToken, "TypeName": typeName, "ResourceDescriptions": responseResources,
 	}))
 	return batch, nil
@@ -277,7 +277,7 @@ func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.In
 	result := make([]contracts.InventoryItem, 0, len(items))
 	subnetVPCs := map[string]string{}
 	for _, item := range items {
-		execution.LogCloudAPIRequest(ctx, "cloudcontrol", "GetResource", rawCloudPayload(map[string]any{"TypeName": item.NativeType, "Identifier": item.NativeID}))
+		execution.LogCloudAPIRequest(ctx, "cloudcontrol", "GetResource", contracts.CloudLogPayload(ctx, map[string]any{"TypeName": item.NativeType, "Identifier": item.NativeID}))
 		resource, requestID, err := client.GetResource(ctx, item.NativeType, item.NativeID)
 		if err != nil {
 			execution.LogCloudAPIFailure(ctx, "cloudcontrol", "GetResource", err)
@@ -310,7 +310,7 @@ func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.In
 			}
 		}
 		detail.NetworkReferences = cloudControlNetworkReferences(detail.Normalized)
-		execution.LogCloudAPIResponse(ctx, "cloudcontrol", "GetResource", rawCloudPayload(map[string]any{"RequestId": requestID, "ResourceDescription": detail.Raw}))
+		execution.LogCloudAPIResponse(ctx, "cloudcontrol", "GetResource", contracts.CloudLogPayload(ctx, map[string]any{"RequestId": requestID, "ResourceDescription": detail.Raw}))
 		result = append(result, detail)
 	}
 	if request.ResourceKind != nil && lifecycleFactKind(request.ResourceKind.NativeType) && len(result) > 0 {
@@ -517,7 +517,7 @@ func (a *CloudControlAction) Execute(ctx context.Context, request contracts.Acti
 
 func (a *CloudControlAction) disableProtection(ctx context.Context, request contracts.ActionRequest, patch string) (contracts.ActionResult, error) {
 	payload := map[string]any{"TypeName": request.Asset.Identity.NativeType, "Identifier": cloudControlIdentifier(request.Asset), "PatchDocument": patch}
-	execution.LogCloudAPIRequest(ctx, "cloudcontrol", "UpdateResource", rawCloudPayload(payload))
+	execution.LogCloudAPIRequest(ctx, "cloudcontrol", "UpdateResource", contracts.CloudLogPayload(ctx, payload))
 	progress, requestID, err := a.client.UpdateResource(ctx, CloudControlUpdateRequest{
 		TypeName: request.Asset.Identity.NativeType, Identifier: cloudControlIdentifier(request.Asset),
 		PatchDocument: patch, ClientToken: request.IdempotencyKey + ":disable-deletion-protection",

@@ -25,6 +25,7 @@ import (
 	cloudcredentials "github.com/aliyun/credentials-go/credentials"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/catalog"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -587,7 +588,7 @@ func (c *sdkResourceCenter) SearchResources(ctx context.Context, request SearchR
 		ctx,
 		"resource-center",
 		"SearchResources",
-		rawCloudPayload(sdkRequest),
+		contracts.CloudLogPayload(ctx, sdkRequest),
 	))
 	if err != nil {
 		return ResourcePage{}, err
@@ -596,8 +597,11 @@ func (c *sdkResourceCenter) SearchResources(ctx context.Context, request SearchR
 		return ResourcePage{}, fmt.Errorf("Alibaba Cloud Resource Center response body is empty")
 	}
 	page := ResourcePage{RequestID: dara.StringValue(response.Body.RequestId), NextToken: dara.StringValue(response.Body.NextToken)}
-	if raw, rawErr := contracts.CloudRawPayload(response.Body); rawErr == nil {
-		page.RawResponse = raw
+	// The raw page only feeds the job log; skip encoding it when nothing records one.
+	if execution.JobLogEnabled(ctx) {
+		if raw, rawErr := contracts.CloudRawPayload(response.Body); rawErr == nil {
+			page.RawResponse = raw
+		}
 	}
 	page.Resources = make([]ResourceRecord, 0, len(response.Body.Resources))
 	for _, resource := range response.Body.Resources {
@@ -640,7 +644,7 @@ func (c *sdkResourceCenter) BatchGetResourceConfigurations(
 		ctx,
 		"resource-center",
 		"BatchGetResourceConfigurations",
-		rawCloudPayload(sdkRequest),
+		contracts.CloudLogPayload(ctx, sdkRequest),
 	))
 	if err != nil {
 		return ResourceConfigurationPage{}, err
@@ -649,8 +653,11 @@ func (c *sdkResourceCenter) BatchGetResourceConfigurations(
 		return ResourceConfigurationPage{}, fmt.Errorf("Alibaba Cloud Resource Center configuration response body is empty")
 	}
 	page := ResourceConfigurationPage{RequestID: dara.StringValue(response.Body.RequestId)}
-	if raw, rawErr := contracts.CloudRawPayload(response.Body); rawErr == nil {
-		page.RawResponse = raw
+	// The raw page only feeds the job log; skip encoding it when nothing records one.
+	if execution.JobLogEnabled(ctx) {
+		if raw, rawErr := contracts.CloudRawPayload(response.Body); rawErr == nil {
+			page.RawResponse = raw
+		}
 	}
 	page.Resources = make([]ResourceRecord, 0, len(response.Body.Resources))
 	for _, resource := range response.Body.Resources {

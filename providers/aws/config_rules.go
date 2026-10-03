@@ -67,7 +67,7 @@ func describeConfigRules(ctx context.Context, client ConfigNativeAPI, names []st
 		if token != "" {
 			input.NextToken = awssdk.String(token)
 		}
-		execution.LogCloudAPIRequest(ctx, "config", "DescribeConfigRules", rawCloudPayload(map[string]any{"ConfigRuleNames": names, "NextToken": token}))
+		execution.LogCloudAPIRequest(ctx, "config", "DescribeConfigRules", contracts.CloudLogPayload(ctx, map[string]any{"ConfigRuleNames": names, "NextToken": token}))
 		output, err := client.DescribeConfigRules(ctx, input)
 		if err != nil {
 			execution.LogCloudAPIFailure(ctx, "config", "DescribeConfigRules", err)
@@ -117,7 +117,7 @@ func enrichConformancePacks(ctx context.Context, client ConfigNativeAPI, items [
 			if token != "" {
 				input.NextToken = awssdk.String(token)
 			}
-			execution.LogCloudAPIRequest(ctx, "config", "DescribeConformancePackCompliance", rawCloudPayload(map[string]any{"ConformancePackName": name, "NextToken": token}))
+			execution.LogCloudAPIRequest(ctx, "config", "DescribeConformancePackCompliance", contracts.CloudLogPayload(ctx, map[string]any{"ConformancePackName": name, "NextToken": token}))
 			output, err := client.DescribeConformancePackCompliance(ctx, input)
 			if err != nil {
 				execution.LogCloudAPIFailure(ctx, "config", "DescribeConformancePackCompliance", err)

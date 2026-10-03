@@ -106,7 +106,7 @@ func (r *Runtime) loadPrivateLinkEndpointZones(
 		if nextToken != "" {
 			parameters["NextToken"] = nextToken
 		}
-		execution.LogCloudAPIRequest(ctx, apiService, operationName, rawCloudPayload(parameters))
+		execution.LogCloudAPIRequest(ctx, apiService, operationName, contracts.CloudLogPayload(ctx, parameters))
 		result, err := r.factory.Invoke(ctx, credential, region, operation, contracts.Invocation{
 			ConnectionID: request.ConnectionID,
 			Operation:    operation.Key(),
@@ -127,7 +127,7 @@ func (r *Runtime) loadPrivateLinkEndpointZones(
 				normalized,
 			)
 		}
-		responsePayload := rawCloudPayload(result.Data)
+		responsePayload := contracts.CloudLogPayload(ctx, result.Data)
 		if result.RequestID != "" {
 			responsePayload["RequestId"] = result.RequestID
 		}
@@ -327,7 +327,7 @@ func (r *Runtime) loadEndpointServiceResources(
 		if nextToken != "" {
 			parameters["NextToken"] = nextToken
 		}
-		execution.LogCloudAPIRequest(ctx, apiService, operationName, rawCloudPayload(parameters))
+		execution.LogCloudAPIRequest(ctx, apiService, operationName, contracts.CloudLogPayload(ctx, parameters))
 		result, err := r.factory.Invoke(ctx, credential, region, operation, contracts.Invocation{
 			ConnectionID: request.ConnectionID,
 			Operation:    operation.Key(),
@@ -348,7 +348,7 @@ func (r *Runtime) loadEndpointServiceResources(
 				normalized,
 			)
 		}
-		responsePayload := rawCloudPayload(result.Data)
+		responsePayload := contracts.CloudLogPayload(ctx, result.Data)
 		if result.RequestID != "" {
 			responsePayload["RequestId"] = result.RequestID
 		}

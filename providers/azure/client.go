@@ -254,7 +254,9 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 		}
 		requestLog["body"] = value
 	}
-	execution.LogCloudAPIRequest(ctx, u.Host, method, safeAPIPayload(requestLog, endpoint))
+	if execution.JobLogEnabled(ctx) {
+		execution.LogCloudAPIRequest(ctx, u.Host, method, safeAPIPayload(requestLog, endpoint))
+	}
 	defer func() {
 		if failure != nil {
 			execution.LogCloudAPIFailure(ctx, u.Host, method, failure)
@@ -359,6 +361,9 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	}
 	if err := monitorPrivateLinkResponse(method, u, &out); err != nil {
 		return out, err
+	}
+	if !execution.JobLogEnabled(ctx) {
+		return out, nil
 	}
 	responseLog := map[string]any{"request_id": out.requestID, "status_code": out.status, "body": out.data}
 	if ctx.Value(fleetHubReadContextKey{}) == true {

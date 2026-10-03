@@ -640,7 +640,7 @@ func (i *NativeInventory) List(ctx context.Context, request contracts.InventoryR
 		return contracts.InventoryBatch{}, err
 	}
 	operation := i.kind.listOperation[strings.Index(i.kind.listOperation, "#")+1:]
-	execution.LogCloudAPIRequest(ctx, i.kind.service, operation, rawCloudPayload(map[string]any{"NextToken": cursor.Token}))
+	execution.LogCloudAPIRequest(ctx, i.kind.service, operation, contracts.CloudLogPayload(ctx, map[string]any{"NextToken": cursor.Token}))
 	page, err := i.kind.list(ctx, i.clients, cursor.Token)
 	if err != nil {
 		execution.LogCloudAPIFailure(ctx, i.kind.service, operation, err)
@@ -649,7 +649,7 @@ func (i *NativeInventory) List(ctx context.Context, request contracts.InventoryR
 	if page.NextToken != "" && page.NextToken == cursor.Token {
 		return contracts.InventoryBatch{}, fmt.Errorf("AWS %s repeated its page token", operation)
 	}
-	execution.LogCloudAPIResponse(ctx, i.kind.service, operation, rawCloudPayload(map[string]any{"RequestId": page.RequestID, "NextToken": page.NextToken, "Items": page.Items}))
+	execution.LogCloudAPIResponse(ctx, i.kind.service, operation, contracts.CloudLogPayload(ctx, map[string]any{"RequestId": page.RequestID, "NextToken": page.NextToken, "Items": page.Items}))
 	if cursor.Offset > len(page.Items) {
 		return contracts.InventoryBatch{}, fmt.Errorf("AWS %s page shrank during pagination; restart the shard", operation)
 	}

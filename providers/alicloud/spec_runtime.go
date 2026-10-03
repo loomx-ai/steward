@@ -688,7 +688,7 @@ func (r *Runtime) collectResourceCenterParents(
 			ctx,
 			"resource-center",
 			"SearchResources",
-			rawCloudPayload(requestPayload),
+			contracts.CloudLogPayload(ctx, requestPayload),
 		)
 		page, searchErr := client.SearchResources(ctx, searchRequest)
 		if searchErr != nil {
@@ -707,7 +707,7 @@ func (r *Runtime) collectResourceCenterParents(
 			ctx,
 			"resource-center",
 			"SearchResources",
-			rawCloudPayload(responsePayload),
+			contracts.CloudLogPayload(ctx, responsePayload),
 		)
 		for _, resource := range page.Resources {
 			if strings.TrimSpace(resource.ResourceType) != nativeType {

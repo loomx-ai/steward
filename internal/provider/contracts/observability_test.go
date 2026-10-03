@@ -1,10 +1,12 @@
 package contracts_test
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 	"testing"
 
+	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
@@ -121,5 +123,19 @@ func TestRedactCloudSecretsDropsVPNPreSharedKeys(t *testing.T) {
 	}
 	if !strings.Contains(string(encoded), "iss-a") || !strings.Contains(string(encoded), "ikev2") || !strings.Contains(string(encoded), "strong") {
 		t.Fatalf("raw record lost ordinary fields: %s", encoded)
+	}
+}
+
+func TestCloudLogPayloadEncodesOnlyWhenAJobLogIsRecorded(t *testing.T) {
+	unencodable := map[string]any{"Channel": make(chan int)}
+	if payload := contracts.CloudLogPayload(context.Background(), unencodable); len(payload) != 0 {
+		t.Fatalf("payload without a sink = %#v", payload)
+	}
+	ctx := execution.WithJobLogSink(context.Background(), execution.JobLogSinkFunc(func(context.Context, execution.JobLogEntry) {}))
+	if payload := contracts.CloudLogPayload(ctx, unencodable); payload["StewardLogError"] == nil {
+		t.Fatalf("payload with a sink = %#v", payload)
+	}
+	if payload := contracts.CloudLogPayload(ctx, map[string]any{"NextToken": "page-2", "Password": "secret"}); payload["NextToken"] != "page-2" || payload["Password"] != nil {
+		t.Fatalf("sanitized payload = %#v", payload)
 	}
 }

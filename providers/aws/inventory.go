@@ -92,7 +92,7 @@ func (i *Inventory) List(ctx context.Context, request contracts.InventoryRequest
 	if request.Cursor != "" {
 		requestPayload["NextToken"] = request.Cursor
 	}
-	execution.LogCloudAPIRequest(ctx, "resource-explorer-2", "ListResources", rawCloudPayload(requestPayload))
+	execution.LogCloudAPIRequest(ctx, "resource-explorer-2", "ListResources", contracts.CloudLogPayload(ctx, requestPayload))
 	page, err := i.client.Search(ctx, SearchRequest{Query: query, NextToken: request.Cursor, MaxResults: limit})
 	if err != nil {
 		execution.LogCloudAPIFailure(ctx, "resource-explorer-2", "ListResources", err)
@@ -115,7 +115,7 @@ func (i *Inventory) List(ctx context.Context, request contracts.InventoryRequest
 			"RequestId": page.RequestID, "NextToken": page.NextToken, "Resources": resources,
 		}
 	}
-	execution.LogCloudAPIResponse(ctx, "resource-explorer-2", "ListResources", rawCloudPayload(responsePayload))
+	execution.LogCloudAPIResponse(ctx, "resource-explorer-2", "ListResources", contracts.CloudLogPayload(ctx, responsePayload))
 	batch := contracts.InventoryBatch{
 		Items: make([]contracts.InventoryItem, 0, len(page.Resources)), NextCursor: page.NextToken,
 		RequestID: page.RequestID, Complete: page.NextToken == "",
@@ -151,14 +151,6 @@ func (i *Inventory) List(ctx context.Context, request contracts.InventoryRequest
 		})
 	}
 	return batch, nil
-}
-
-func rawCloudPayload(value any) map[string]any {
-	payload, err := contracts.CloudRawPayload(value)
-	if err != nil {
-		payload = map[string]any{"StewardLogError": err.Error()}
-	}
-	return payload
 }
 
 func scalarStrings(value any) []string {

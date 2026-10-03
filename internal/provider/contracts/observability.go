@@ -1,10 +1,27 @@
 package contracts
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/loomx-ai/steward/internal/core/execution"
 )
+
+// CloudLogPayload returns the sanitized raw payload for a cloud API job log
+// entry. Without a job log sink it returns an empty map and encodes nothing,
+// so scans that nobody watches do not round-trip every page through JSON.
+func CloudLogPayload(ctx context.Context, value any) map[string]any {
+	if !execution.JobLogEnabled(ctx) {
+		return map[string]any{}
+	}
+	payload, err := CloudRawPayload(value)
+	if err != nil {
+		return map[string]any{"StewardLogError": err.Error()}
+	}
+	return payload
+}
 
 func CloudRawPayload(value any) (map[string]any, error) {
 	encoded, err := json.Marshal(value)

@@ -41,6 +41,16 @@ func WithJobLogSink(ctx context.Context, sink JobLogSink) context.Context {
 	return context.WithValue(ctx, jobLogSinkContextKey{}, sink)
 }
 
+// JobLogEnabled reports whether ctx records job logs, so callers can skip
+// building payloads that nobody would store.
+func JobLogEnabled(ctx context.Context) bool {
+	if ctx == nil {
+		return false
+	}
+	sink, ok := ctx.Value(jobLogSinkContextKey{}).(JobLogSink)
+	return ok && sink != nil
+}
+
 func LogJob(ctx context.Context, level, message string) {
 	logJobEntry(ctx, JobLogEntry{Kind: JobLogText, Level: level, Message: message})
 }

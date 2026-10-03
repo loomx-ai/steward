@@ -165,7 +165,7 @@ func (i *Inventory) List(ctx context.Context, request contracts.InventoryRequest
 	if request.Cursor != "" {
 		requestPayload["NextToken"] = request.Cursor
 	}
-	execution.LogCloudAPIRequest(ctx, "resource-center", "SearchResources", rawCloudPayload(requestPayload))
+	execution.LogCloudAPIRequest(ctx, "resource-center", "SearchResources", contracts.CloudLogPayload(ctx, requestPayload))
 	page, err := i.client.SearchResources(ctx, SearchRequest{
 		NextToken: request.Cursor, MaxResults: limit, RegionID: resourceCenterRegionFilter(request.Scope),
 		ResourceTypes:    resourceTypes,
@@ -209,7 +209,7 @@ func (i *Inventory) List(ctx context.Context, request contracts.InventoryRequest
 		responsePayload["ignored_resource_count"] = len(ignoredTypes)
 		responsePayload["ignored_resource_types"] = ignored
 	}
-	execution.LogCloudAPIResponse(ctx, "resource-center", "SearchResources", rawCloudPayload(responsePayload))
+	execution.LogCloudAPIResponse(ctx, "resource-center", "SearchResources", contracts.CloudLogPayload(ctx, responsePayload))
 	configurations, err := i.resourceConfigurations(ctx, indexedResources)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
@@ -297,7 +297,7 @@ func (i *Inventory) resourceConfigurations(
 				RegionID: resource.RegionID, ResourceID: resource.ResourceID, ResourceType: resource.ResourceType,
 			})
 		}
-		execution.LogCloudAPIRequest(ctx, "resource-center", "BatchGetResourceConfigurations", rawCloudPayload(request))
+		execution.LogCloudAPIRequest(ctx, "resource-center", "BatchGetResourceConfigurations", contracts.CloudLogPayload(ctx, request))
 		page, err := client.BatchGetResourceConfigurations(ctx, request)
 		if err != nil {
 			LogCloudAPIError(ctx, "resource-center", "BatchGetResourceConfigurations", err)
@@ -307,7 +307,7 @@ func (i *Inventory) resourceConfigurations(
 		if responsePayload == nil {
 			responsePayload = map[string]any{"RequestId": page.RequestID, "Resources": page.Resources}
 		}
-		execution.LogCloudAPIResponse(ctx, "resource-center", "BatchGetResourceConfigurations", rawCloudPayload(responsePayload))
+		execution.LogCloudAPIResponse(ctx, "resource-center", "BatchGetResourceConfigurations", contracts.CloudLogPayload(ctx, responsePayload))
 		for _, resource := range page.Resources {
 			result[resourceConfigurationKey(resource.RegionID, resource.ResourceType, resource.ResourceID)] = resource
 		}

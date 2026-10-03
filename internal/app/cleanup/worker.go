@@ -1,7 +1,9 @@
 package cleanup
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -10,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode/utf8"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
@@ -94,6 +97,7 @@ func newJobLogEmitter(jobs persistence.JobRepository, job execution.Job, now fun
 }
 
 func (e *jobLogEmitter) Log(ctx context.Context, entry execution.JobLogEntry) {
+	entry.Payload = boundedJobLogPayload(entry.Payload)
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.next++
@@ -114,6 +118,86 @@ func (e *jobLogEmitter) Log(ctx context.Context, entry execution.JobLogEntry) {
 	if err != nil {
 		slog.ErrorContext(ctx, "append durable job log", "job_id", e.job.ID, "message", entry.Message, "error", err)
 	}
+}
+
+// maxJobLogPayloadBytes bounds one durable job log payload. A provider page
+// (a GCP Cloud Asset page is several MB) would otherwise become one huge
+// job_logs row written while every other log line of the job waits.
+const maxJobLogPayloadBytes = 64 << 10
+
+const (
+	maxJobLogListItems   = 10
+	maxJobLogStringBytes = 1 << 10
+)
+
+// boundedJobLogPayload keeps an oversized payload readable within
+// maxJobLogPayloadBytes: scalars such as request ids, counts and page tokens
+// stay, long strings are cut, long lists keep their leading items, and
+// StewardTruncated records the original size.
+func boundedJobLogPayload(payload map[string]any) map[string]any {
+	if len(payload) == 0 {
+		return payload
+	}
+	encoded, err := json.Marshal(payload)
+	if err != nil || len(encoded) <= maxJobLogPayloadBytes {
+		return payload
+	}
+	marker := fmt.Sprintf("payload of %d bytes exceeded the %d byte job log limit", len(encoded), maxJobLogPayloadBytes)
+	var generic map[string]any
+	decoder := json.NewDecoder(bytes.NewReader(encoded))
+	decoder.UseNumber()
+	if decoder.Decode(&generic) != nil {
+		return map[string]any{"StewardTruncated": marker}
+	}
+	trimmed := trimJobLogValue(generic).(map[string]any)
+	trimmed["StewardTruncated"] = marker
+	if encoded, err := json.Marshal(trimmed); err == nil && len(encoded) <= maxJobLogPayloadBytes {
+		return trimmed
+	}
+	// Deeply nested lists can still exceed the limit; keep top-level scalars only.
+	scalars := map[string]any{"StewardTruncated": marker}
+	for key, value := range generic {
+		switch typed := value.(type) {
+		case []any:
+			scalars[key] = fmt.Sprintf("[%d items truncated]", len(typed))
+		case map[string]any:
+			scalars[key] = "{truncated}"
+		default:
+			scalars[key] = trimJobLogValue(value)
+		}
+	}
+	return scalars
+}
+
+func trimJobLogValue(value any) any {
+	switch typed := value.(type) {
+	case map[string]any:
+		result := make(map[string]any, len(typed))
+		for key, item := range typed {
+			result[key] = trimJobLogValue(item)
+		}
+		return result
+	case []any:
+		kept := min(len(typed), maxJobLogListItems)
+		result := make([]any, 0, kept+1)
+		for _, item := range typed[:kept] {
+			result = append(result, trimJobLogValue(item))
+		}
+		if len(typed) > kept {
+			result = append(result, fmt.Sprintf("... %d more items truncated", len(typed)-kept))
+		}
+		return result
+	case string:
+		if len(typed) <= maxJobLogStringBytes {
+			return typed
+		}
+		cut := maxJobLogStringBytes
+		for cut > 0 && !utf8.RuneStart(typed[cut]) {
+			cut--
+		}
+		return fmt.Sprintf("%s... %d more bytes truncated", typed[:cut], len(typed)-cut)
+	}
+	return value
 }
 
 func NewWorker(jobs persistence.JobRepository, handlers map[execution.JobType]Handler, options WorkerOptions) *Worker {

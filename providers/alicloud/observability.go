@@ -28,7 +28,7 @@ func logCloudAPIRetry(
 			ctx,
 			service,
 			fmt.Sprintf("%s (attempt %d)", operation, nextAttempt),
-			rawCloudPayload(request),
+			contracts.CloudLogPayload(ctx, request),
 		)
 	}
 }
@@ -38,14 +38,14 @@ func logCloudAPIRetry(
 // not have a response and are logged as failures instead of fabricated
 // response payloads.
 func LogCloudAPIError(ctx context.Context, service, operation string, err error) {
-	if payload, ok := rawSDKErrorResponse(err); ok {
+	if payload, ok := rawSDKErrorResponse(ctx, err); ok {
 		execution.LogCloudAPIResponse(ctx, service, operation, payload)
 		return
 	}
 	execution.LogCloudAPIFailure(ctx, service, operation, err)
 }
 
-func rawSDKErrorResponse(err error) (map[string]any, bool) {
+func rawSDKErrorResponse(ctx context.Context, err error) (map[string]any, bool) {
 	var data string
 	var teaError *tea.SDKError
 	if errors.As(err, &teaError) {
@@ -68,7 +68,7 @@ func rawSDKErrorResponse(err error) (map[string]any, bool) {
 		return nil, false
 	}
 	sanitizeProviderPayload(payload)
-	return rawCloudPayload(payload), true
+	return contracts.CloudLogPayload(ctx, payload), true
 }
 
 func sanitizeProviderPayload(value any) {
@@ -92,12 +92,4 @@ func sanitizeProviderPayload(value any) {
 			sanitizeProviderPayload(item)
 		}
 	}
-}
-
-func rawCloudPayload(value any) map[string]any {
-	payload, err := contracts.CloudRawPayload(value)
-	if err != nil {
-		payload = map[string]any{"StewardLogError": err.Error()}
-	}
-	return payload
 }
