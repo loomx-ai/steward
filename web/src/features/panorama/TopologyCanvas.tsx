@@ -135,6 +135,7 @@ const SEARCH_FIT_PADDING = 0.35;
 const SEARCH_FIT_MIN_ZOOM = 1;
 const STACK_FIT_PADDING = 0.04;
 const MAX_CANVAS_ZOOM = 1.8;
+const CANVAS_RESIZE_DEBOUNCE_MS = 150;
 const EMPTY_RESOURCE_KINDS = new Map<string, ResourceKind>();
 
 function resourceKindNativeType(provider: string, resourceKindID: string) {
@@ -367,6 +368,9 @@ export function TopologyCanvas({
     PendingViewportTransition | undefined
   >(undefined);
   const collapsedStackViewports = useRef<Map<string, Viewport>>(new Map());
+  // Set once the viewport was moved by the user or a focus request; automatic
+  // relayouts (resize, more pages) then keep it instead of fitting again.
+  const viewportTouched = useRef(false);
   const baseLayout = useMemo(
     () =>
       buildTopologyLayout(view, expandedStackKeys, {
@@ -1478,6 +1482,7 @@ export function TopologyCanvas({
         setIsPanning(true);
         event.currentTarget.setPointerCapture?.(event.pointerId);
       }
+      viewportTouched.current = true;
       void flow.current?.setViewport({
         x: gesture.viewport.x + deltaX,
         y: gesture.viewport.y + deltaY,
@@ -1504,18 +1509,22 @@ export function TopologyCanvas({
     [],
   );
   const zoomOut = useCallback(() => {
+    viewportTouched.current = true;
     void flow.current?.zoomOut();
   }, []);
   const fitView = useCallback(() => {
+    viewportTouched.current = false;
     void flow.current?.fitView({
       padding: CANVAS_FIT_PADDING,
       maxZoom: MAX_CANVAS_ZOOM,
     });
   }, []);
   const zoomIn = useCallback(() => {
+    viewportTouched.current = true;
     void flow.current?.zoomIn();
   }, []);
   const changeZoom = useCallback((nextZoom: number) => {
+    viewportTouched.current = true;
     const clampedZoom = Math.min(MAX_CANVAS_ZOOM, Math.max(0.0001, nextZoom));
     setZoom(clampedZoom);
     void flow.current?.zoomTo(clampedZoom);
@@ -1557,20 +1566,31 @@ export function TopologyCanvas({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    let timer: number | undefined;
     const measure = () => {
       const bounds = canvas.getBoundingClientRect();
-      if (bounds.width <= 0 || bounds.height <= 0) return;
+      const width = Math.round(bounds.width);
+      const height = Math.round(bounds.height);
+      if (width <= 0 || height <= 0) return;
       setCanvasSize((current) =>
-        current.width === bounds.width && current.height === bounds.height
+        current.width === width && current.height === height
           ? current
-          : { width: bounds.width, height: bounds.height },
+          : { width, height },
       );
     };
     measure();
     if (typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(measure);
+    // Relayout once the size settles (e.g. after the sidebar animation)
+    // instead of on every animation frame.
+    const observer = new ResizeObserver(() => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(measure, CANVAS_RESIZE_DEBOUNCE_MS);
+    });
     observer.observe(canvas);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -1584,7 +1604,7 @@ export function TopologyCanvas({
         });
       } else if (transition?.kind === "restore") {
         void flow.current?.setViewport(transition.viewport);
-      } else {
+      } else if (!viewportTouched.current) {
         void flow.current?.fitView({
           padding: CANVAS_FIT_PADDING,
           maxZoom: MAX_CANVAS_ZOOM,
@@ -1607,6 +1627,7 @@ export function TopologyCanvas({
         ))
       : undefined;
     if (!focusedNode && !viewportFocusRequest.scope) return;
+    viewportTouched.current = true;
     const frame = requestAnimationFrame(() => {
       if (focusedNode) {
         void flow.current?.fitView({
@@ -1731,6 +1752,9 @@ export function TopologyCanvas({
         onPointerCancelCapture={finishNodePan}
         onInit={(instance) => {
           flow.current = instance;
+        }}
+        onMoveStart={(event) => {
+          if (event) viewportTouched.current = true;
         }}
         onMove={(_event, viewport) => setZoom(viewport.zoom)}
         onNodeClick={handleNodeClick}

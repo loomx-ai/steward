@@ -1032,6 +1032,62 @@ it("keeps resource presses in arrow mode as clicks instead of capturing them for
   ).toHaveTextContent("1 selected");
 });
 
+it("refits after a settled resize only until the user moves the viewport", async () => {
+  let resize: (() => void) | undefined;
+  vi.stubGlobal(
+    "ResizeObserver",
+    class ResizeObserver {
+      constructor(callback: ResizeObserverCallback) {
+        resize = () =>
+          callback([], this as unknown as globalThis.ResizeObserver);
+      }
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+  );
+  let width = 1000.4;
+  const bounds = vi
+    .spyOn(Element.prototype, "getBoundingClientRect")
+    .mockImplementation(
+      () =>
+        ({
+          width,
+          height: 700,
+          top: 0,
+          left: 0,
+          right: width,
+          bottom: 700,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        }) as DOMRect,
+    );
+  try {
+    const user = userEvent.setup();
+    renderCanvas();
+    await clearInitialFitView();
+
+    width = 1300.2;
+    act(() => {
+      resize?.();
+      resize?.();
+    });
+    expect(flow.fitView).not.toHaveBeenCalled();
+    await waitFor(() => expect(flow.fitView).toHaveBeenCalledOnce());
+
+    await user.click(screen.getByRole("button", { name: "Zoom in" }));
+    flow.fitView.mockClear();
+    width = 900;
+    act(() => resize?.());
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    await waitForStackFocusHandoff();
+    expect(flow.fitView).not.toHaveBeenCalled();
+  } finally {
+    bounds.mockRestore();
+  }
+});
+
 it("uses the icon toolbar to zoom out, fit the view, and zoom in", async () => {
   const user = userEvent.setup();
   renderCanvas();
