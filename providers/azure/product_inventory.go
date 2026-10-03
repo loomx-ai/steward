@@ -799,7 +799,38 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 	return targets, nil
 }
 
+// inventoryProtectionTTL bounds how long inventory pages of every kind and
+// region share one read of the subscription's resource group owners and locks.
+// Cleanup and pre-delete checks call managementLocks and always read live.
+const inventoryProtectionTTL = 30 * time.Second
+
+type inventoryProtectionCache struct {
+	mu           sync.Mutex
+	subscription string
+	owners       map[string]string
+	locks        []any
+	expires      time.Time
+}
+
 func (c *client) inventoryProtection(ctx context.Context) (map[string]string, []any, error) {
+	cache := c.protection
+	if cache == nil {
+		return c.readInventoryProtection(ctx)
+	}
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	if cache.subscription == c.subscription && time.Now().Before(cache.expires) {
+		return cache.owners, cache.locks, nil
+	}
+	owners, locks, err := c.readInventoryProtection(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+	cache.subscription, cache.owners, cache.locks, cache.expires = c.subscription, owners, locks, time.Now().Add(inventoryProtectionTTL)
+	return owners, locks, nil
+}
+
+func (c *client) readInventoryProtection(ctx context.Context) (map[string]string, []any, error) {
 	groups, err := c.listAll(ctx, c.root()+"/resourcegroups", resourcesVersion)
 	if err != nil {
 		return nil, nil, err

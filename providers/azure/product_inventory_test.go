@@ -9,6 +9,7 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -513,5 +514,36 @@ func TestProductChildShardReusesParentTargetsAcrossPages(t *testing.T) {
 	r.targetCache = productTargetCache{}
 	if _, err := r.List(context.Background(), request); err == nil || !strings.Contains(err.Error(), "current parents") {
 		t.Fatalf("changed parent set error = %v", err)
+	}
+}
+
+func TestInventoryPagesShareRecentGroupsAndLocks(t *testing.T) {
+	root := "/subscriptions/" + testSubscription
+	groups, locks := 0, 0
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		switch strings.ToLower(req.URL.Path) {
+		case root + "/resourcegroups":
+			groups++
+		case root + "/providers/microsoft.authorization/locks":
+			locks++
+		}
+		return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+	})
+	for range 2 {
+		if _, err := r.List(context.Background(), productRequest(r, vmType)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if groups != 1 || locks != 1 {
+		t.Fatalf("pages read groups=%d locks=%d", groups, locks)
+	}
+	// Cleanup checks read live locks; an expired inventory read is repeated.
+	c, _ := r.resolve(context.Background(), "connection")
+	if _, err := c.managementLocks(context.Background()); err != nil || locks != 2 {
+		t.Fatalf("live locks=%d error=%v", locks, err)
+	}
+	c.protection.expires = time.Time{}
+	if _, err := r.List(context.Background(), productRequest(r, vmType)); err != nil || groups != 2 || locks != 3 {
+		t.Fatalf("expired read groups=%d locks=%d error=%v", groups, locks, err)
 	}
 }

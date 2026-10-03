@@ -300,22 +300,9 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
-	groups, err := c.listAll(ctx, c.root()+"/resourcegroups", resourcesVersion)
+	groupOwners, locks, err := c.inventoryProtection(ctx)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
-	}
-	locks, err := c.managementLocks(ctx)
-	if err != nil {
-		return contracts.InventoryBatch{}, err
-	}
-	groupOwners := map[string]string{}
-	for _, value := range groups {
-		group := object(value)
-		id, _, err := parseID(text(group["id"]))
-		if err != nil || !strings.HasPrefix(id, c.root()+"/") {
-			return contracts.InventoryBatch{}, fmt.Errorf("invalid Azure resource group")
-		}
-		groupOwners[id] = text(group["managedBy"])
 	}
 	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: next == "", RequestID: provenance.requestID}
 	if next != "" {
@@ -350,6 +337,10 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		return nil
 	}
 	if (region == "global" || region == "") && request.Cursor == "" {
+		groups, err := c.listAll(ctx, c.root()+"/resourcegroups", resourcesVersion)
+		if err != nil {
+			return contracts.InventoryBatch{}, err
+		}
 		for _, value := range groups {
 			raw := object(value)
 			raw["type"] = groupType

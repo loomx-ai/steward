@@ -38,6 +38,7 @@ type client struct {
 	subscription, tenant, application                                        string
 	fingerprint                                                              [32]byte
 	principal                                                                *principalObserver
+	protection                                                               *inventoryProtectionCache
 }
 type response struct {
 	data      map[string]any
@@ -153,7 +154,7 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	}
 	return &client{subscription: subscription, tenant: tenant, application: application,
 		fingerprint: sha256.Sum256([]byte(subscription + "\x00" + tenant + "\x00" + application + "\x00" + secret)),
-		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default"), batchHTTP: makeHTTP("https://batch.core.windows.net//.default"), communicationHTTP: makeHTTP("https://communication.azure.com/.default"), keyVaultHTTP: makeHTTP("https://vault.azure.net/.default"), graphHTTP: makeHTTP(graphOrigin + "/.default"), principal: observer}, nil
+		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default"), batchHTTP: makeHTTP("https://batch.core.windows.net//.default"), communicationHTTP: makeHTTP("https://communication.azure.com/.default"), keyVaultHTTP: makeHTTP("https://vault.azure.net/.default"), graphHTTP: makeHTTP(graphOrigin + "/.default"), principal: observer, protection: &inventoryProtectionCache{}}, nil
 }
 
 // Cache the token, while binding every refresh to the active request context.
@@ -739,6 +740,7 @@ func oauthClient(credential contracts.Credential, transport http.RoundTripper) (
 		keyVaultHTTP:      clients["vault"],
 		graphHTTP:         clients["graph"],
 		principal:         observer,
+		protection:        &inventoryProtectionCache{},
 	}, nil
 }
 
