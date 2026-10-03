@@ -208,14 +208,32 @@ type assetRow struct {
 }
 
 type observationRow struct {
-	ID          string    `gorm:"column:id;primaryKey"`
-	AssetID     string    `gorm:"column:asset_id"`
-	ScanTaskID  string    `gorm:"column:scan_task_id"`
-	ScanShardID string    `gorm:"column:scan_shard_id"`
-	ObservedAt  time.Time `gorm:"column:observed_at"`
-	Source      string    `gorm:"column:source"`
-	ContentHash string    `gorm:"column:content_hash"`
-	Payload     string    `gorm:"column:payload"`
+	ID             string    `gorm:"column:id;primaryKey"`
+	AssetID        string    `gorm:"column:asset_id"`
+	ScanTaskID     string    `gorm:"column:scan_task_id"`
+	ScanShardID    string    `gorm:"column:scan_shard_id"`
+	ObservedAt     time.Time `gorm:"column:observed_at"`
+	Source         string    `gorm:"column:source"`
+	SchemaRevision string    `gorm:"column:schema_revision"`
+	ContentHash    string    `gorm:"column:content_hash"`
+	Authoritative  bool      `gorm:"column:authoritative"`
+	Priority       int       `gorm:"column:priority"`
+}
+
+func newObservationRow(value asset.Observation) observationRow {
+	return observationRow{
+		ID: string(value.ID), AssetID: string(value.AssetID), ScanTaskID: string(value.ScanRunID), ScanShardID: string(value.ScanShardID),
+		ObservedAt: value.ObservedAt, Source: value.Source, SchemaRevision: value.SchemaRevision, ContentHash: value.ContentHash,
+		Authoritative: value.Authoritative, Priority: value.Priority,
+	}
+}
+
+func (row observationRow) observation() asset.Observation {
+	return asset.Observation{
+		ID: asset.ObservationID(row.ID), AssetID: asset.AssetID(row.AssetID), ScanRunID: asset.ScanRunID(row.ScanTaskID), ScanShardID: asset.ScanShardID(row.ScanShardID),
+		ObservedAt: row.ObservedAt, Source: row.Source, SchemaRevision: row.SchemaRevision, ContentHash: row.ContentHash,
+		Authoritative: row.Authoritative, Priority: row.Priority,
+	}
 }
 
 func (s *Store) PutConnection(ctx context.Context, connection asset.CloudConnection) error {
@@ -2016,20 +2034,8 @@ func (s *Store) AppendObservation(ctx context.Context, observation asset.Observa
 	if err := observation.Validate(); err != nil {
 		return err
 	}
-	payload, err := encode(observation)
-	if err != nil {
-		return err
-	}
-	row := observationRow{ID: string(observation.ID), AssetID: string(observation.AssetID), ScanTaskID: string(observation.ScanRunID), ScanShardID: string(observation.ScanShardID), ObservedAt: observation.ObservedAt, Source: observation.Source, ContentHash: observation.ContentHash, Payload: payload}
+	row := newObservationRow(observation)
 	return mapCreateError(s.db.WithContext(ctx).Table("asset_observations").Create(&row).Error)
-}
-
-func (s *Store) ListObservations(ctx context.Context, assetID asset.AssetID) ([]asset.Observation, error) {
-	var rows []observationRow
-	if err := s.db.WithContext(ctx).Table("asset_observations").Where("asset_id = ?", string(assetID)).Order("observed_at ASC, id ASC").Find(&rows).Error; err != nil {
-		return nil, err
-	}
-	return decodeRows[observationRow, asset.Observation](rows, func(row observationRow) string { return row.Payload })
 }
 
 func (s *Store) ListActiveAssets(ctx context.Context, scopeID asset.ScopeID, kindID asset.ResourceKindID) ([]asset.Asset, error) {

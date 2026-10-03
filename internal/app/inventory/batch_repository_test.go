@@ -80,17 +80,13 @@ func TestProjectBatchReadsAssetsAndScopesOncePerBatch(t *testing.T) {
 		t.Fatalf("assets = %d, err = %v", len(assets), err)
 	}
 	for _, value := range assets {
-		observations, err := repositories.Inventory().ListObservations(ctx, value.ID)
-		if err != nil {
-			t.Fatal(err)
-		}
-		want, wantObservations := "second", 2
+		want := "second"
 		if value.Identity.NativeID == "i-00" {
-			want, wantObservations = "third", 3
+			want = "third"
 		}
 		current, err := repositories.Inventory().GetObservation(ctx, value.CurrentObservationID)
-		if err != nil || value.Name != want || current.Raw["name"] != want || len(observations) != wantObservations {
-			t.Fatalf("asset %s = %q with %d observations, current %#v, err = %v", value.Identity.NativeID, value.Name, len(observations), current, err)
+		if err != nil || value.Name != want || !current.ObservedAt.Equal(now.Add(time.Minute)) {
+			t.Fatalf("asset %s = %q, current %#v, err = %v", value.Identity.NativeID, value.Name, current, err)
 		}
 	}
 }

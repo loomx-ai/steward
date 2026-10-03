@@ -179,7 +179,6 @@ type InventoryRepository interface {
 	AppendObservation(context.Context, asset.Observation) error
 	GetObservation(context.Context, asset.ObservationID) (asset.Observation, error)
 	ListObservationsByIDs(context.Context, []asset.ObservationID) ([]asset.Observation, error)
-	ListObservations(context.Context, asset.AssetID) ([]asset.Observation, error)
 	// RecordAssetChange merges the change into any change already recorded for
 	// the same asset in the same scan.
 	RecordAssetChange(context.Context, asset.AssetChange) error

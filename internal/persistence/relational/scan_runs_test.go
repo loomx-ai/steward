@@ -163,7 +163,7 @@ func TestScanTaskReadModelMigrationUpgradesExistingDatabase(t *testing.T) {
 			scope_id VARCHAR(128),
 			closed_at TIMESTAMP
 		)`,
-		`CREATE TABLE asset_observations (id VARCHAR(128) PRIMARY KEY, scan_task_id VARCHAR(128) NOT NULL)`,
+		`CREATE TABLE asset_observations (id VARCHAR(128) PRIMARY KEY, scan_task_id VARCHAR(128) NOT NULL, payload TEXT NOT NULL)`,
 		`CREATE TABLE findings (id VARCHAR(128) PRIMARY KEY)`,
 		`CREATE TABLE job_logs (
 			id VARCHAR(128) PRIMARY KEY,

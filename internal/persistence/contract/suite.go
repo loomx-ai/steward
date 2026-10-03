@@ -841,7 +841,7 @@ func Run(t *testing.T, factory Factory) {
 		if err != nil || len(noAssets.Items) != 0 {
 			t.Fatalf("non-matching assets = %#v, err = %v", noAssets, err)
 		}
-		observation := asset.Observation{ID: "obs-1", AssetID: "asset-1", ScanRunID: "scan-1", ScanShardID: "shard-1", ObservedAt: now, Source: "resource-center", SchemaRevision: "schema-1", ContentHash: "hash-1", Authoritative: true}
+		observation := asset.Observation{ID: "obs-1", AssetID: "asset-1", ScanRunID: "scan-1", ScanShardID: "shard-1", ObservedAt: now, Source: "resource-center", SchemaRevision: "schema-1", ContentHash: "hash-1", Authoritative: true, Priority: 7}
 		if err := repositories.Inventory().AppendObservation(ctx, observation); err != nil {
 			t.Fatal(err)
 		}
@@ -849,7 +849,7 @@ func Run(t *testing.T, factory Factory) {
 			t.Fatalf("duplicate observation err = %v", err)
 		}
 		observationsByID, err := repositories.Inventory().ListObservationsByIDs(ctx, []asset.ObservationID{"obs-missing", observation.ID, observation.ID})
-		if err != nil || len(observationsByID) != 1 || observationsByID[0].ID != observation.ID || observationsByID[0].ContentHash != "hash-1" {
+		if err != nil || len(observationsByID) != 1 || !reflect.DeepEqual(observationsByID[0], observation) {
 			t.Fatalf("observations by IDs = %#v, err = %v", observationsByID, err)
 		}
 		got, err := repositories.Inventory().GetAsset(ctx, "asset-1")
@@ -1269,7 +1269,7 @@ func Run(t *testing.T, factory Factory) {
 		if !errors.Is(err, rollback) {
 			t.Fatalf("inventory rollback error = %v", err)
 		}
-		observations, err := repositories.Inventory().ListObservations(ctx, active.ID)
+		observations, err := repositories.Inventory().ListObservationsByIDs(ctx, []asset.ObservationID{"obs-rolled-back"})
 		if err != nil || len(observations) != 0 {
 			t.Fatalf("rolled back observations = %+v, err = %v", observations, err)
 		}

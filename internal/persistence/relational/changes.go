@@ -26,7 +26,7 @@ func (s *Store) GetObservation(ctx context.Context, id asset.ObservationID) (ass
 	if err := s.db.WithContext(ctx).Table("asset_observations").Where("id = ?", string(id)).Take(&row).Error; err != nil {
 		return asset.Observation{}, mapError(err)
 	}
-	return decode[asset.Observation](row.Payload)
+	return row.observation(), nil
 }
 
 func (s *Store) ListObservationsByIDs(ctx context.Context, ids []asset.ObservationID) ([]asset.Observation, error) {
@@ -46,11 +46,9 @@ func (s *Store) ListObservationsByIDs(ctx context.Context, ids []asset.Observati
 		if err := s.db.WithContext(ctx).Table("asset_observations").Where("id IN ?", values[start:min(start+batchSize, len(values))]).Order("id ASC").Find(&rows).Error; err != nil {
 			return nil, err
 		}
-		decoded, err := decodeRows[observationRow, asset.Observation](rows, func(row observationRow) string { return row.Payload })
-		if err != nil {
-			return nil, err
+		for _, row := range rows {
+			result = append(result, row.observation())
 		}
-		result = append(result, decoded...)
 	}
 	return result, nil
 }

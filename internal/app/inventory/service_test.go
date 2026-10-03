@@ -358,9 +358,6 @@ func (r *inventoryRepository) CountAssetChanges(_ context.Context, ids []asset.S
 	}
 	return result, nil
 }
-func (r *inventoryRepository) ListObservations(_ context.Context, id asset.AssetID) ([]asset.Observation, error) {
-	return append([]asset.Observation(nil), r.observations[id]...), nil
-}
 func (r *inventoryRepository) ListActiveAssets(_ context.Context, scopeID asset.ScopeID, kindID asset.ResourceKindID) ([]asset.Asset, error) {
 	var result []asset.Asset
 	for _, value := range r.assets {
@@ -1162,10 +1159,6 @@ func TestProjectionPreservesNativeFieldsAndDisplayMetadata(t *testing.T) {
 			if !reflect.DeepEqual(value.Normalized, native) {
 				t.Fatalf("provider identity/configuration overwritten: %+v", value.Normalized)
 			}
-			observations := repository.observations[value.ID]
-			if len(observations) == 0 || !reflect.DeepEqual(observations[len(observations)-1].Normalized, native) {
-				t.Fatal("native observation changed")
-			}
 		}
 	}
 	if len(repository.assets) != 1 {
@@ -1225,7 +1218,7 @@ func TestScansRecordAddedModifiedAndRemovedAssets(t *testing.T) {
 	}
 }
 
-func TestUnchangedObservationKeepsItsRowWithoutRepeatingThePayload(t *testing.T) {
+func TestObservationsRecordEveryReadWithoutItsContent(t *testing.T) {
 	t.Parallel()
 
 	repository := newInventoryRepository()
@@ -1252,8 +1245,7 @@ func TestUnchangedObservationKeepsItsRowWithoutRepeatingThePayload(t *testing.T)
 		if len(observations) != 3 || projected.CurrentObservationID != observations[2].ID || projected.Normalized["state"] != "Stopped" {
 			t.Fatalf("asset = %+v, observations = %+v", projected, observations)
 		}
-		if observations[0].Raw == nil || observations[1].Raw != nil || observations[1].Normalized != nil ||
-			observations[1].ContentHash != observations[0].ContentHash || observations[2].Raw["Status"] != "Stopped" {
+		if observations[1].ContentHash != observations[0].ContentHash || observations[2].ContentHash == observations[1].ContentHash {
 			t.Fatalf("observations = %+v", observations)
 		}
 	}

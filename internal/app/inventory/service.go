@@ -296,7 +296,7 @@ func (s *Service) projectItem(ctx context.Context, repository persistence.Invent
 	observation := asset.Observation{
 		ID: asset.ObservationID(s.entityID("obs")), AssetID: projected.ID, ScanRunID: shard.ScanRunID, ScanShardID: shard.ID,
 		ObservedAt: options.ObservedAt, Source: shard.Source, SchemaRevision: schemaRevision(options.SchemaRevision, kind.BundleRevision),
-		Normalized: normalized, Raw: raw, ContentHash: contentHash, Authoritative: shard.Authoritative, Priority: options.Priority,
+		ContentHash: contentHash, Authoritative: shard.Authoritative, Priority: options.Priority,
 	}
 	var current *asset.Observation
 	if !isNew && projected.CurrentObservationID != "" {
@@ -307,11 +307,6 @@ func (s *Service) projectItem(ctx context.Context, repository persistence.Invent
 		if err == nil {
 			current = &value
 		}
-	}
-	if current != nil && current.ContentHash == contentHash {
-		// Unchanged content is already stored: keep the row, which coverage and
-		// projection read, without a second copy of its payload.
-		observation.Normalized, observation.Raw = nil, nil
 	}
 	// Observation append deliberately precedes current-projection mutation in
 	// the same transaction. A projection can therefore never reference a row

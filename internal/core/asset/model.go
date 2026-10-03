@@ -232,21 +232,20 @@ type Asset struct {
 	DeletedAt            *time.Time        `json:"deleted_at,omitempty"`
 }
 
-// Observation is one read of an asset. Normalized and Raw are nil when
-// ContentHash equals that of the asset's current observation at append time.
+// Observation records that a scan shard read an asset: what coverage and
+// projection need, while the content itself lives on the asset and is
+// identified by ContentHash.
 type Observation struct {
-	ID             ObservationID  `json:"id"`
-	AssetID        AssetID        `json:"asset_id"`
-	ScanRunID      ScanRunID      `json:"scan_run_id"`
-	ScanShardID    ScanShardID    `json:"scan_shard_id"`
-	ObservedAt     time.Time      `json:"observed_at"`
-	Source         string         `json:"source"`
-	SchemaRevision string         `json:"schema_revision"`
-	Normalized     map[string]any `json:"normalized"`
-	Raw            map[string]any `json:"raw"`
-	ContentHash    string         `json:"content_hash"`
-	Authoritative  bool           `json:"authoritative"`
-	Priority       int            `json:"priority"`
+	ID             ObservationID `json:"id"`
+	AssetID        AssetID       `json:"asset_id"`
+	ScanRunID      ScanRunID     `json:"scan_run_id"`
+	ScanShardID    ScanShardID   `json:"scan_shard_id"`
+	ObservedAt     time.Time     `json:"observed_at"`
+	Source         string        `json:"source"`
+	SchemaRevision string        `json:"schema_revision"`
+	ContentHash    string        `json:"content_hash"`
+	Authoritative  bool          `json:"authoritative"`
+	Priority       int           `json:"priority"`
 }
 
 type ScanStatus string
