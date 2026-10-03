@@ -185,3 +185,16 @@ func TestBigQueryNativeViewRedactionPreservesPublicFields(t *testing.T) {
 		}
 	}
 }
+
+func TestRegionShardsSkipGlobalOnlyKindsBeforeReadingTheirParents(t *testing.T) {
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		t.Fatalf("region shard read %s", req.URL)
+		return nil, nil
+	})
+	for _, kind := range []string{"bigquery.googleapis.com/Dataset", "bigquery.googleapis.com/Table", "bigtableadmin.googleapis.com/Table"} {
+		batch, err := r.List(t.Context(), productRequest(r, kind, "us-central1"))
+		if err != nil || !batch.Complete || len(batch.Items) != 0 {
+			t.Fatalf("%s: batch=%+v err=%v", kind, batch, err)
+		}
+	}
+}

@@ -681,10 +681,16 @@ func productScopeMatches(request contracts.InventoryRequest, item contracts.Inve
 }
 
 func (r *Runtime) productTargets(ctx context.Context, c *client, request contracts.InventoryRequest, definition spec.ResourceKindSpec, ancestors []string) ([]productTarget, error) {
+	kind, _ := findType(definition.Metadata.NativeType)
+	onlyGlobal := len(kind.Scopes) == 1 && kind.Scopes[0] == asset.ScopeGlobal
+	// A region shard keeps no global-only item, so it must not enumerate the
+	// kind's parents (for example every BigQuery dataset) or read its items.
+	if onlyGlobal && request.Scope.Kind == asset.ScopeRegion && request.NetworkTarget == nil {
+		return nil, nil
+	}
 	if isDiscovery(definition.Metadata.NativeType) {
 		return r.discoveryTargets(ctx, c, request, definition, ancestors)
 	}
-	kind, _ := findType(definition.Metadata.NativeType)
 	metadata, _ := providerData()
 	locations := []string{request.Scope.NativeID}
 	if request.Scope.Kind == asset.ScopeGlobal {
@@ -779,15 +785,11 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				regional = true
 			}
 		}
-		onlyGlobal := len(kind.Scopes) == 1 && kind.Scopes[0] == asset.ScopeGlobal
 		// A global Secret Manager list must not be repeated by every regional scan.
 		if len(kind.ListOperations) > 1 && !regional && request.Scope.Kind == asset.ScopeRegion && request.NetworkTarget == nil {
 			continue
 		}
 		if regional && request.Scope.Kind == asset.ScopeGlobal && (!slices.Contains(kind.Scopes, asset.ScopeGlobal) || len(kind.ListOperations) > 1) {
-			continue
-		}
-		if onlyGlobal && request.Scope.Kind == asset.ScopeRegion && request.NetworkTarget == nil {
 			continue
 		}
 		targetLocations := locations
