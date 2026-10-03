@@ -169,7 +169,9 @@ func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) 
 	if request.ResourceKind != nil {
 		nativeType = request.ResourceKind.NativeType
 	}
-	result, err := c.assetPageResult(ctx, request.Cursor, nativeType, request.Limit)
+	// Every region shard of a scan reads the same project-wide asset pages and
+	// keeps only its own scope.
+	result, err := c.assetPageResult(withSharedReads(ctx, request.ScanRunID), request.Cursor, nativeType, request.Limit)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}

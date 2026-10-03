@@ -35,6 +35,9 @@ type productTarget struct {
 	ParentUID            string              `json:"parent_uid,omitempty"`
 	ParentConfiguration  string              `json:"parent_configuration,omitempty"`
 	ParentContainerChain string              `json:"parent_container_chain,omitempty"`
+	// Shared lists do not depend on the shard's location, so every region and
+	// global shard of a scan reads the same project-wide pages.
+	Shared bool `json:"-"`
 }
 type productRecord struct {
 	Data     map[string]any
@@ -158,6 +161,10 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
+	listCtx := ctx
+	if target.Shared {
+		listCtx = withSharedReads(ctx, request.ScanRunID)
+	}
 	if nativeType == securityBillingType || nativeType == securityServiceType || nativeType == monitoringGroupType || isMonitoringConfig(nativeType) || nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
@@ -168,9 +175,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if bindErr != nil {
 			return contracts.InventoryBatch{}, bindErr
 		}
-		result, err = c.requestResult(ctx, bound.Method, bound.URL, nil, bound.Body)
+		result, err = c.requestResult(listCtx, bound.Method, bound.URL, nil, bound.Body)
 	} else {
-		result, err = r.Invoke(ctx, contracts.Invocation{ConnectionID: request.ConnectionID, Operation: target.API.Operation, Parameters: parameters})
+		result, err = r.Invoke(listCtx, contracts.Invocation{ConnectionID: request.ConnectionID, Operation: target.API.Operation, Parameters: parameters})
 	}
 	if err != nil {
 		return contracts.InventoryBatch{}, err
@@ -837,6 +844,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		if request.Scope.Kind == asset.ScopeRegion && request.NetworkTarget != nil && regional && slices.Contains(kind.Scopes, asset.ScopeGlobal) && !slices.Contains(targetLocations, "global") {
 			targetLocations = append(targetLocations, "global")
 		}
+		shared := !regional && definition.Discovery.Parent == nil && request.Scope.Kind != asset.ScopeProject
 		for _, location := range targetLocations {
 			if regional && !serviceLocationList && !productSupportsMultiRegion(operation.Call.Product, location) {
 				continue
@@ -889,7 +897,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				if isInfra(parent.NativeType) {
 					chain = text(parent.Normalized[infraRootProof])
 				}
-				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID, ParentConfiguration: configuration, ParentContainerChain: chain})
+				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID, ParentConfiguration: configuration, ParentContainerChain: chain, Shared: shared})
 			}
 		}
 	}

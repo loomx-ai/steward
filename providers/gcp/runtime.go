@@ -21,6 +21,9 @@ type Runtime struct {
 	bundle      spec.Bundle
 	mu          sync.Mutex
 	clients     map[asset.ConnectionID]*client
+	// caches outlive a client replaced by a concurrent first resolve, so the
+	// shards of one scan share them; a new credential starts empty ones.
+	caches map[asset.ConnectionID]*clientCache
 }
 
 func NewRuntime(credentials contracts.CredentialSource) (*Runtime, error) {
@@ -31,7 +34,7 @@ func NewRuntime(credentials contracts.CredentialSource) (*Runtime, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Runtime{credentials: credentials, transport: http.DefaultTransport, bundle: bundle, clients: map[asset.ConnectionID]*client{}}, nil
+	return &Runtime{credentials: credentials, transport: http.DefaultTransport, bundle: bundle, clients: map[asset.ConnectionID]*client{}, caches: map[asset.ConnectionID]*clientCache{}}, nil
 }
 func (r *Runtime) Provider() asset.Provider { return asset.ProviderGCP }
 func (r *Runtime) Bundle() spec.Bundle {
@@ -134,6 +137,12 @@ func (r *Runtime) resolve(ctx context.Context, id asset.ConnectionID) (*client, 
 	}
 	r.mu.Lock()
 	existing := r.clients[id]
+	cache := r.caches[id]
+	if cache == nil || cache.fingerprint != candidate.fingerprint {
+		cache = &clientCache{fingerprint: candidate.fingerprint}
+		r.caches[id] = cache
+	}
+	candidate.cache = cache
 	r.mu.Unlock()
 	if existing != nil && existing.fingerprint == candidate.fingerprint {
 		return existing, nil
