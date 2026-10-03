@@ -183,6 +183,9 @@ type tokenTransport struct {
 	source func(context.Context) oauth2.TokenSource
 	mu     sync.Mutex
 	token  *oauth2.Token
+	// refresh admits one token exchange at a time; concurrent requests wait for
+	// it instead of each exchanging the same credential.
+	refresh sync.Mutex
 }
 
 func (t *tokenTransport) RoundTrip(request *http.Request) (*http.Response, error) {
@@ -199,10 +202,21 @@ func (t *tokenTransport) accessToken(ctx context.Context) (*oauth2.Token, error)
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	t.mu.Lock()
-	token := t.token
-	t.mu.Unlock()
+	cached := func() *oauth2.Token {
+		t.mu.Lock()
+		defer t.mu.Unlock()
+		return t.token
+	}
+	token := cached()
 	if !token.Valid() {
+		t.refresh.Lock()
+		defer t.refresh.Unlock()
+		if token = cached(); token.Valid() {
+			return token, nil
+		}
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
 		ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
 		// The oauth2 token sources call Client.PostForm without a context.

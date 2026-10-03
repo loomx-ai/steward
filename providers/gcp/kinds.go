@@ -38,7 +38,10 @@ type providerMetadata struct {
 	catalog catalog.Catalog
 	bundle  spec.Bundle
 	kinds   []resourceType
+	byType  map[string]resourceType
 	hosts   map[string]bool
+	// pageSizes holds the largest page each spec-declared list operation accepts.
+	pageSizes map[string]int
 }
 
 var providerData = sync.OnceValues(loadProviderData)
@@ -70,6 +73,12 @@ func loadProviderData() (providerMetadata, error) {
 		}
 		result.kinds = append(result.kinds, resourceType{NativeType: kind.NativeType, Scopes: kind.ScopeKinds, Collection: kind.REST.Collection, ReadOperations: kind.REST.ReadOperations, DeleteOperations: kind.REST.DeleteOperations, ListOperations: kind.REST.ListOperations})
 	}
+	result.byType = make(map[string]resourceType, len(result.kinds))
+	for _, kind := range result.kinds {
+		if _, exists := result.byType[kind.NativeType]; !exists {
+			result.byType[kind.NativeType] = kind
+		}
+	}
 	entries, err := providerFiles.ReadDir("specs")
 	if err != nil {
 		return result, err
@@ -91,8 +100,14 @@ func loadProviderData() (providerMetadata, error) {
 	}
 	seen := map[string]bool{}
 	definitions := map[string]spec.ResourceKindSpec{}
+	result.pageSizes = map[string]int{}
 	for _, compiled := range result.bundle.Specs {
 		definitions[compiled.ResourceKind.NativeType] = compiled.Definition
+		if list := compiled.Definition.Discovery.List; list != nil && list.Pagination != nil && list.Pagination.PageSizeParameter == "pageSize" && list.Pagination.MaxPageSize > 0 {
+			if current := result.pageSizes[list.Operation]; current == 0 || list.Pagination.MaxPageSize < current {
+				result.pageSizes[list.Operation] = list.Pagination.MaxPageSize
+			}
+		}
 	}
 	for _, kind := range result.kinds {
 		if seen[kind.NativeType] || kind.Collection == "" || len(kind.ReadOperations) == 0 {
@@ -136,12 +151,9 @@ func allTypes() []resourceType {
 	return metadata.kinds
 }
 func findType(nativeType string) (resourceType, bool) {
-	for _, kind := range allTypes() {
-		if kind.NativeType == nativeType {
-			return kind, true
-		}
-	}
-	return resourceType{}, false
+	metadata, _ := providerData()
+	kind, ok := metadata.byType[nativeType]
+	return kind, ok
 }
 func compileBundle() (spec.Bundle, error) {
 	metadata, err := providerData()

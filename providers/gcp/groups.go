@@ -95,6 +95,10 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 	if properties["maxResults"] != nil {
 		parameters["maxResults"] = 500
 	}
+	// Page-size APIs default to small pages; ask for the declared maximum.
+	if metadata, _ := providerData(); properties["pageSize"] != nil && parameters["pageSize"] == nil && metadata.pageSizes[operation.ID] > 0 {
+		parameters["pageSize"] = metadata.pageSizes[operation.ID]
+	}
 	var result []map[string]any
 	memberTotal := -1
 	seen := map[string]bool{}

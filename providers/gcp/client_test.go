@@ -288,3 +288,34 @@ func TestReadsRetryThrottlingButMutationsDoNot(t *testing.T) {
 		t.Fatalf("retry wait beyond budget: err=%v calls=%d", err, calls.Load())
 	}
 }
+
+func TestConcurrentRequestsShareOneTokenExchange(t *testing.T) {
+	credential, _ := testCredential(t)
+	var tokens atomic.Int32
+	release := make(chan struct{})
+	c, err := newClient(credential, roundTripFunc(func(request *http.Request) (*http.Response, error) {
+		if request.URL.String() == tokenURL {
+			tokens.Add(1)
+			<-release
+			return apiResponse(request, 200, `{"access_token":"test-token", "token_type":"Bearer", "expires_in":3600}`), nil
+		}
+		return apiResponse(request, 200, `{"name":"test"}`), nil
+	}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var wg sync.WaitGroup
+	for range 8 {
+		wg.Go(func() {
+			if _, err := c.request(t.Context(), "GET", "https://compute.googleapis.com/compute/v1/projects/sample-project/regions", nil); err != nil {
+				t.Error(err)
+			}
+		})
+	}
+	time.Sleep(50 * time.Millisecond) // let every request reach the token exchange
+	close(release)
+	wg.Wait()
+	if tokens.Load() != 1 {
+		t.Fatalf("token exchanges = %d, want one", tokens.Load())
+	}
+}
