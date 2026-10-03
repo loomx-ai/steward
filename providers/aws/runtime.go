@@ -233,7 +233,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
-			parentKey := cloudControlParentKey{
+			parentKey := cloudControlParentCacheKey{
 				connection: request.ConnectionID, credential: credentialFingerprint(credential), typeName: plan.TypeName,
 				region: region, scopeKind: request.Scope.Kind, scopeID: request.Scope.NativeID,
 			}

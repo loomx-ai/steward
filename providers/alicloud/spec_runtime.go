@@ -477,7 +477,7 @@ type fanoutProductAPICursor struct {
 // rejects resuming against a different parent set once a listing is refreshed.
 const fanoutParentTTL = 10 * time.Minute
 
-type fanoutParentKey struct {
+type fanoutParentCacheKey struct {
 	connection asset.ConnectionID
 	credential string
 	nativeType string
@@ -488,7 +488,7 @@ type fanoutParentKey struct {
 
 type fanoutParentCache struct {
 	mu      sync.Mutex
-	entries map[fanoutParentKey]cachedFanoutParents
+	entries map[fanoutParentCacheKey]cachedFanoutParents
 }
 
 type cachedFanoutParents struct {
@@ -496,7 +496,7 @@ type cachedFanoutParents struct {
 	expires time.Time
 }
 
-func (c *fanoutParentCache) get(key fanoutParentKey, refresh bool, list func() ([]string, error)) ([]string, error) {
+func (c *fanoutParentCache) get(key fanoutParentCacheKey, refresh bool, list func() ([]string, error)) ([]string, error) {
 	now := time.Now()
 	c.mu.Lock()
 	entry, ok := c.entries[key]
@@ -511,7 +511,7 @@ func (c *fanoutParentCache) get(key fanoutParentKey, refresh bool, list func() (
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.entries == nil {
-		c.entries = map[fanoutParentKey]cachedFanoutParents{}
+		c.entries = map[fanoutParentCacheKey]cachedFanoutParents{}
 	}
 	for cached, entry := range c.entries {
 		if !now.Before(entry.expires) {
@@ -522,17 +522,17 @@ func (c *fanoutParentCache) get(key fanoutParentKey, refresh bool, list func() (
 	return parents, nil
 }
 
-func (r *Runtime) fanoutParentKey(
+func (r *Runtime) fanoutParentCacheKey(
 	ctx context.Context,
 	request contracts.InventoryRequest,
 	nativeType string,
 	region string,
-) (fanoutParentKey, error) {
+) (fanoutParentCacheKey, error) {
 	credential, err := r.resolveCredential(ctx, request.ConnectionID)
 	if err != nil {
-		return fanoutParentKey{}, err
+		return fanoutParentCacheKey{}, err
 	}
-	return fanoutParentKey{
+	return fanoutParentCacheKey{
 		connection: request.ConnectionID, credential: credentialFingerprint(credential), nativeType: nativeType,
 		region: region, scopeKind: request.Scope.Kind, scopeID: request.Scope.NativeID,
 	}, nil
@@ -573,7 +573,7 @@ func (r *Runtime) listFanoutProductAPI(
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
-	parentKey, err := r.fanoutParentKey(ctx, request, compiled.ResourceKind.NativeType, region)
+	parentKey, err := r.fanoutParentCacheKey(ctx, request, compiled.ResourceKind.NativeType, region)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}

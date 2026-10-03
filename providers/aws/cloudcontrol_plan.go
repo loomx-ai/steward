@@ -271,7 +271,7 @@ func homeRegion(nativeType string, scopeKind asset.ScopeKind, location string) s
 // rejects resuming against a different parent set once a listing is refreshed.
 const cloudControlParentTTL = 10 * time.Minute
 
-type cloudControlParentKey struct {
+type cloudControlParentCacheKey struct {
 	connection asset.ConnectionID
 	credential string
 	typeName   string
@@ -282,7 +282,7 @@ type cloudControlParentKey struct {
 
 type cloudControlParentCache struct {
 	mu      sync.Mutex
-	entries map[cloudControlParentKey]cachedCloudControlParents
+	entries map[cloudControlParentCacheKey]cachedCloudControlParents
 }
 
 type cachedCloudControlParents struct {
@@ -290,7 +290,7 @@ type cachedCloudControlParents struct {
 	expires time.Time
 }
 
-func (c *cloudControlParentCache) get(key cloudControlParentKey, refresh bool, list func() ([]cloudControlParent, error)) ([]cloudControlParent, error) {
+func (c *cloudControlParentCache) get(key cloudControlParentCacheKey, refresh bool, list func() ([]cloudControlParent, error)) ([]cloudControlParent, error) {
 	now := time.Now()
 	c.mu.Lock()
 	entry, ok := c.entries[key]
@@ -305,7 +305,7 @@ func (c *cloudControlParentCache) get(key cloudControlParentKey, refresh bool, l
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.entries == nil {
-		c.entries = map[cloudControlParentKey]cachedCloudControlParents{}
+		c.entries = map[cloudControlParentCacheKey]cachedCloudControlParents{}
 	}
 	for cached, entry := range c.entries {
 		if !now.Before(entry.expires) {
