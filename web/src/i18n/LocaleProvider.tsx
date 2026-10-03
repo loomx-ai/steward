@@ -31,10 +31,12 @@ import {
   type LocalePreference,
 } from "./locales";
 import {
-  messages,
+  loadMessages,
+  loadedMessages,
   translate,
   translateCode,
   type MessageKey,
+  type Messages,
 } from "./messages";
 
 import {
@@ -82,13 +84,31 @@ interface LocaleContextValue {
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
-  const [preference, setPreferenceState] = useState<LocalePreference>(() =>
-    normalizePreference(localStorage.getItem(localePreferenceKey)),
-  );
+  const [preference, setPreferenceState] =
+    useState<LocalePreference>(storedPreference);
   const [languages, setLanguages] = useState<readonly string[]>(() =>
     browserLanguages(),
   );
-  const locale = resolveLocale(preference, languages);
+  const wanted = resolveLocale(preference, languages);
+  // A locale renders only once its dictionary is loaded; until then the
+  // previous one stays on screen so text never falls back mid-switch.
+  const [shown, setShown] = useState(wanted);
+  const locale = loadedMessages(wanted) ? wanted : shown;
+  const dictionary = activeMessages(locale);
+
+  useEffect(() => {
+    if (locale === wanted) {
+      setShown(wanted);
+      return;
+    }
+    let active = true;
+    void loadMessages(wanted).then(() => {
+      if (active) setShown(wanted);
+    });
+    return () => {
+      active = false;
+    };
+  }, [locale, wanted]);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -106,23 +126,21 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   }, []);
   const t = useCallback(
     (key: MessageKey, values?: Record<string, string | number>) =>
-      translate(messages[locale], key, values),
-    [locale],
+      translate(dictionary, key, values),
+    [dictionary],
   );
   const label = useCallback(
     (value: string) => {
       const key = `domain.${value.toLowerCase()}` as MessageKey;
-      return key in messages[locale]
-        ? messages[locale][key]
-        : value.replaceAll("_", " ");
+      return key in dictionary ? dictionary[key] : value.replaceAll("_", " ");
     },
-    [locale],
+    [dictionary],
   );
   const messageForCode = useCallback(
     (code: string, fallback: string, details: Record<string, unknown> = {}) =>
       lifecycleWarnings[code]?.[locale] ??
-      translateCode(locale, code, fallback, interpolationValues(details)),
-    [locale],
+      translateCode(dictionary, code, fallback, interpolationValues(details)),
+    [locale, dictionary],
   );
   const formatError = useCallback(
     (error: unknown) => {
@@ -175,23 +193,23 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
           const codeSuffix =
             providerMessage && providerCode ? ` (${providerCode})` : "";
           parts.push(
-            `${translate(messages[locale], "common.providerError")}: ${diagnostic}${codeSuffix}`,
+            `${translate(dictionary, "common.providerError")}: ${diagnostic}${codeSuffix}`,
           );
         }
         if (providerRequestID) {
           parts.push(
-            `${translate(messages[locale], "common.providerRequestId")}: ${providerRequestID}`,
+            `${translate(dictionary, "common.providerRequestId")}: ${providerRequestID}`,
           );
         }
       }
       if (requestID) {
         parts.push(
-          `${translate(messages[locale], "common.requestId")}: ${requestID}`,
+          `${translate(dictionary, "common.requestId")}: ${requestID}`,
         );
       }
       return parts.join(" · ");
     },
-    [locale, messageForCode],
+    [dictionary, messageForCode],
   );
   const dateTimeFormatter = useMemo(
     () =>
@@ -287,6 +305,24 @@ function dateTimeParts(formatter: Intl.DateTimeFormat, value: string | Date) {
       .filter((part) => part.type !== "literal")
       .map((part) => [part.type, part.value]),
   );
+}
+
+// preloadActiveLocale loads the dictionary LocaleProvider will render first;
+// await it before the initial render.
+export function preloadActiveLocale(): Promise<Messages> {
+  return loadMessages(resolveLocale(storedPreference(), browserLanguages()));
+}
+
+function activeMessages(locale: Locale): Messages {
+  const dictionary = loadedMessages(locale);
+  if (!dictionary) {
+    throw new Error(`messages for ${locale} were not loaded before render`);
+  }
+  return dictionary;
+}
+
+function storedPreference(): LocalePreference {
+  return normalizePreference(localStorage.getItem(localePreferenceKey));
 }
 
 function browserLanguages(): readonly string[] {

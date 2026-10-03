@@ -17,8 +17,11 @@ test("locale selection normalizes browser languages and honors manual preference
 });
 
 test("Chinese and English dictionaries have identical keys and interpolate values", async () => {
-  const { messages, translate, translateCode } =
-    await import("../src/i18n/messages.ts");
+  const { translate, translateCode } = await import("../src/i18n/messages.ts");
+  const messages = {
+    "en-US": (await import("../src/i18n/en-US.ts")).default,
+    "zh-CN": (await import("../src/i18n/zh-CN.ts")).default,
+  };
   assert.deepEqual(
     Object.keys(messages["zh-CN"]).sort(),
     Object.keys(messages["en-US"]).sort(),
@@ -32,11 +35,11 @@ test("Chinese and English dictionaries have identical keys and interpolate value
     "12 items",
   );
   assert.equal(
-    translateCode("zh-CN", "scan_coverage_incomplete", "fallback"),
+    translateCode(messages["zh-CN"], "scan_coverage_incomplete", "fallback"),
     "扫描覆盖不完整，不能安全清理所选范围。",
   );
   assert.equal(
-    translateCode("en-US", "unknown.code", "provider diagnostic"),
+    translateCode(messages["en-US"], "unknown.code", "provider diagnostic"),
     "provider diagnostic",
   );
   for (const value of [

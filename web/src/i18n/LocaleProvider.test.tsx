@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { APIRequestError } from "@/api/client";
 import { LocaleProvider, useLocale } from "./LocaleProvider";
 import { localePreferenceKey, type Locale } from "./locales";
@@ -40,6 +40,40 @@ function CodeProbe({
     </output>
   );
 }
+
+describe("LocaleProvider locale loading", () => {
+  afterEach(() => localStorage.removeItem(localePreferenceKey));
+
+  it("keeps the current locale on screen until the chosen one has loaded", async () => {
+    // Fresh modules, so only the dictionary loaded here is in the cache.
+    vi.resetModules();
+    const fresh = await import("./LocaleProvider");
+    const { loadedMessages } = await import("./messages");
+    localStorage.setItem(localePreferenceKey, "en-US");
+    await fresh.preloadActiveLocale();
+    expect(loadedMessages("zh-CN")).toBeUndefined();
+
+    function SwitchProbe() {
+      const { setPreference, t } = fresh.useLocale();
+      return (
+        <button type="button" onClick={() => setPreference("zh-CN")}>
+          {t("common.cancel")}
+        </button>
+      );
+    }
+    render(
+      <fresh.LocaleProvider>
+        <SwitchProbe />
+      </fresh.LocaleProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.getByRole("button")).toHaveTextContent("Cancel");
+    expect(
+      await screen.findByRole("button", { name: "取消" }),
+    ).toBeInTheDocument();
+  });
+});
 
 describe("LocaleProvider date formatting", () => {
   afterEach(() => localStorage.removeItem(localePreferenceKey));
