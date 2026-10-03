@@ -3,8 +3,6 @@ package gcp
 import (
 	"context"
 	"strings"
-
-	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 const alertPolicyType = "monitoring.googleapis.com/AlertPolicy"
@@ -184,18 +182,13 @@ func (c *client) monitoringRead(ctx context.Context, kind, id string) (map[strin
 	}
 	return data, nil
 }
-func (c *client) alertPolicyInventory(ctx context.Context, id string, listed map[string]any) (map[string]any, error) {
+func (c *client) alertPolicyInventory(id string, listed map[string]any) (map[string]any, error) {
+	// Monitoring lists return complete resources, so the listed object is the
+	// observation; deletion reads each resource live.
 	if err := c.alertPolicyData(id, listed); err != nil {
 		return nil, err
 	}
-	live, err := c.monitoringRead(ctx, alertPolicyType, id)
-	if err != nil {
-		return nil, contracts.DependencyReadError(err)
-	}
-	if monitoringConfiguration(alertPolicyType, id, listed) != monitoringConfiguration(alertPolicyType, id, live) {
-		return nil, groupDenied("alert_policy_configuration_changed")
-	}
-	return live, nil
+	return listed, nil
 }
 
 func redactAlertPolicyPayload(data map[string]any) {

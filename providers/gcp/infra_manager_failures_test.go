@@ -54,14 +54,12 @@ func TestInfraManagerIncompleteInventoryPreservesAuthority(t *testing.T) {
 						data["name"] = strings.Replace(infraTestDeployment, "us-central1", "europe-west1", 1)
 					case "latest-missing":
 						data["latestRevision"] = infraTestDeployment + "/revisions/missing"
+					// The listed deployment is the first observation; any later root
+					// read must still match it.
 					case "root-recreated":
-						if rootReads > 1 {
-							data["createTime"] = "2026-09-09T12:00:00Z"
-						}
+						data["createTime"] = "2026-09-09T12:00:00Z"
 					case "late-root-404":
-						if rootReads > 1 {
-							return respond(404, map[string]any{})
-						}
+						return respond(404, map[string]any{})
 					default:
 						return nil, false
 					}

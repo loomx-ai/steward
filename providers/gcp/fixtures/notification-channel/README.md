@@ -17,9 +17,9 @@ reviewed cleanup. The offline catalog has 202 rules and 795 methods,
 SHA-256 `5170ca227650a228c5b55abb88a1f1f275856c8f8d8440ef6762f761f88f63dd`.
 
 [LIST](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.notificationChannels/list)
-uses the configured project, no filter, page tokens and pageSize. Each observation
-requires a matching native GET. Duplicate rows, malformed lists/tokens, partial
-responses, denied/missing detail and visible configuration drift fail the scan.
+uses the configured project, no filter, page tokens and pageSize. LIST returns
+complete channels, so inventory keeps the listed objects. Duplicate rows, malformed
+lists/tokens and partial responses fail the scan.
 A complete empty list establishes absence; a failed scan preserves prior history.
 Inventory needs `monitoring.notificationChannels.list/get` in addition to the
 connection's Resource Manager identity access. Dependency discovery also needs
@@ -40,8 +40,9 @@ The visible-configuration fingerprint binds native fields, unknown fields and
 mutation history before redaction, normalizing only the project ID/number alias
 in the channel name. Google omits or truncates sensitive values, so this fingerprint
 cannot prove that hidden values are unchanged. It does not authorize deletion.
-LIST and GET representations must agree; different server masking representations
-will fail conservatively until verified normalization rules are available.
+Reviews come from LIST and deletion compares them with a live GET; a different
+server masking representation fails deletion conservatively until verified
+normalization rules are available.
 
 ## Reviewed deletion and the email boundary
 

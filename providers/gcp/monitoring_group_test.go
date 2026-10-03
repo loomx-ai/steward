@@ -80,7 +80,7 @@ func newMonitoringGroupScenario(t *testing.T) *monitoringGroupScenario {
 				t.Fatal(req.URL)
 			}
 			s.reads++
-			if s.mode == "get-denied" || s.mode == "late-denied" && s.reads > 1 {
+			if s.mode == "get-denied" || s.mode == "late-denied" {
 				return apiResponse(req, 403, `{}`), nil
 			}
 			if s.mode == "get-missing" {
@@ -89,7 +89,7 @@ func newMonitoringGroupScenario(t *testing.T) *monitoringGroupScenario {
 			for k, v := range s.group {
 				data[k] = v
 			}
-			if s.mode == "get-drift" || s.mode == "late-drift" && s.reads > 1 {
+			if s.mode == "get-drift" || s.mode == "late-drift" {
 				data["filter"] = `resource.type = "different"`
 			}
 		case "/v3/" + testMonitoringGroupName + "/members":

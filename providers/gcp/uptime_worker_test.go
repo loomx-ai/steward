@@ -85,7 +85,7 @@ func monitoringSQLiteWorkflow(t *testing.T, nativeType string) {
 		now = now.Add(time.Second)
 	}
 	var first, current asset.Asset
-	for _, phase := range []string{"first", "get-denied", "gone", "detail-drift", "detail-target-invalid", "detail-enabled-missing", "list-null", "list-token", "list-partial", "list-empty", "recovered"} {
+	for _, phase := range []string{"first", "detail-target-invalid", "detail-enabled-missing", "list-null", "list-token", "list-partial", "list-empty", "recovered"} {
 		if nativeType != uptimeType && phase == "detail-target-invalid" || nativeType != alertPolicyType && phase == "detail-enabled-missing" {
 			continue
 		}

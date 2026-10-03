@@ -335,35 +335,35 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			record.Data = live
 		}
 		if nativeType == monitoringDashboardType {
-			live, err := c.monitoringDashboardInventory(ctx, id, record.Data)
+			live, err := c.monitoringDashboardInventory(id, record.Data)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
 			record.Data = live
 		}
 		if nativeType == monitoringGroupType {
-			live, err := c.monitoringGroupInventory(ctx, id, record.Data)
+			live, err := c.monitoringGroupInventory(id, record.Data)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
 			record.Data = live
 		}
 		if nativeType == notificationChannelType {
-			live, err := c.notificationChannelInventory(ctx, id, record.Data)
+			live, err := c.notificationChannelInventory(id, record.Data)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
 			record.Data = live
 		}
 		if nativeType == alertPolicyType {
-			live, err := c.alertPolicyInventory(ctx, id, record.Data)
+			live, err := c.alertPolicyInventory(id, record.Data)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
 			record.Data = live
 		}
 		if nativeType == uptimeType {
-			live, err := c.uptimeInventory(ctx, id, record.Data)
+			live, err := c.uptimeInventory(id, record.Data)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
@@ -382,6 +382,8 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			var live map[string]any
 			if nativeType == cloudNatType {
 				live = record.Data // routers.get already returned the complete native NAT object.
+			} else if productListComplete(nativeType) {
+				live = record.Data
 			} else if isRouterComponent(nativeType) {
 				live, err = c.routerComponentRead(ctx, nativeType, id)
 			} else if isInfra(nativeType) {
@@ -655,6 +657,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		batch.Complete = false
 	}
 	return batch, nil
+}
+
+// productListComplete reports kinds whose native list returns the same complete
+// resource as their GET (the same response schema and no list view), so
+// inventory keeps the listed object instead of reading every resource again.
+// Deletion paths still read each resource live.
+func productListComplete(nativeType string) bool {
+	return isBatch(nativeType) || isDataproc(nativeType) && nativeType != dataprocNodeGroupType || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || isDataform(nativeType)
 }
 
 func productScopeMatches(request contracts.InventoryRequest, item contracts.InventoryItem) bool {

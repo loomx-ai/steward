@@ -24,9 +24,10 @@ diagnostic messages/details are also redacted because they can repeat expression
 the validity status code remains available.
 
 Native LIST uses `name=projects/PROJECT`, optional page tokens and no filter.
-`totalSize` is an estimate, not an authoritative count. Lists and detail reads must
-agree; missing, denied, partial, malformed or changed reads fail the scan and
-preserve history. Complete empty lists establish absence. Unsupported condition
+`totalSize` is an estimate, not an authoritative count. LIST returns complete
+policies, so inventory keeps the listed objects; dependency snapshots list twice
+and require agreement. Missing, denied, partial, malformed or changed reads fail
+the scan and preserve history. Complete empty lists establish absence. Unsupported condition
 union shapes fail validation rather than silently removing their configuration.
 
 [DELETE](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies/delete)

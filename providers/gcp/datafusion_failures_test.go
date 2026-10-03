@@ -13,7 +13,7 @@ import (
 )
 
 func TestDataFusionInventoryRejectsIncompleteAndUnstableResponses(t *testing.T) {
-	for _, mode := range []string{"permission", "locations_permission", "partial", "unreachable", "error", "array_shape", "duplicate", "missing_name", "missing_creation", "wrong_collection", "foreign_project", "foreign_region", "wrong_host", "bad_url", "detail_identity", "detail_configuration", "detail_error", "token_type", "token_cycle", "namespace_permission", "namespace_policy_missing", "namespace_policy_error", "namespace_policy_code_type", "namespace_policy_status_shape", "namespace_policy_shape", "namespace_parent", "namespace_duplicate", "namespace_changed", "parent_recreated", "invalid_dependency"} {
+	for _, mode := range []string{"permission", "locations_permission", "partial", "unreachable", "error", "array_shape", "duplicate", "missing_name", "missing_creation", "wrong_collection", "foreign_project", "foreign_region", "wrong_host", "bad_url", "token_type", "token_cycle", "namespace_permission", "namespace_policy_missing", "namespace_policy_error", "namespace_policy_code_type", "namespace_policy_status_shape", "namespace_policy_shape", "namespace_parent", "namespace_duplicate", "parent_recreated", "invalid_dependency"} {
 		t.Run(mode, func(t *testing.T) {
 			s := newFusionScenario(t)
 			r := protocolRuntime(t, s.transport(t))

@@ -1,7 +1,7 @@
 # Cloud Monitoring groups and member observations
 
-The native `Group` resource adds explicit global inventory, LIST/GET configuration
-comparison and a canonical parent reference. Each group additionally reads all
+The native `Group` resource adds explicit global inventory from complete native
+LIST objects and a canonical parent reference. Each group additionally reads all
 member pages twice for the same explicit past-minute interval and rereads the
 group. Changed configuration/membership, failed reads, partial data, malformed or
 inconsistent totals, duplicates and paging loops fail the observation. List omissions
@@ -68,8 +68,8 @@ consumer discovery and application/real-cloud parity acceptance remain open.
 ## Consumer graph milestone
 
 The connected Monitoring contributor now snapshots unfiltered own-project Group,
-UptimeCheckConfig, AlertPolicy and Dashboard collections. LIST/GET/re-LIST reviews
-bind complete observable configurations, including unknown fields. The target
+UptimeCheckConfig, AlertPolicy and Dashboard collections. LIST/re-LIST reviews of
+the complete listed objects bind complete observable configurations, including unknown fields. The target
 Group is independently reread before and after consumer discovery. Failures never
 replace persisted graphs with an apparent empty set. Child groups, Uptime resource
 group targets and native policy filter references yield explicit required-deletion
@@ -154,7 +154,7 @@ acceptance remain open; the protocol fixtures are not evidence of those guarante
 ## Reviewed Dashboard deletion
 
 The existing native Dashboard GET/LIST/DELETE contracts and all 61 reachable schemas
-are unchanged. Inventory requires native LIST/GET configuration agreement and binds
+are unchanged. Inventory keeps the complete native LIST object and binds
 etag, labels, layout, filters, annotations and unknown fields into the review digest.
 Native project-number names are canonicalized to the configured project identity.
 Raw layouts, text, queries and unknown content are redacted after review, including
@@ -197,7 +197,7 @@ Text, LogsPanel and metric query strings do not refer to policy objects by liter
 name matching. Unknown structure or malformed names remain unresolved. Existing
 Group query semantics, traversal bounds and native schemas remain unchanged.
 
-The connected policy contributor reads complete Dashboard LIST/GET/re-LIST snapshots
+The connected policy contributor reads complete Dashboard LIST/re-LIST snapshots
 between own target configuration reads. Fresh known consumers require explicit
 selection; missing/stale/foreign/closed consumers block cleanup. Policy-only scans
 activate this contributor. Policy actions repeat the snapshot, verify selected

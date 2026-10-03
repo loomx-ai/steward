@@ -24,7 +24,7 @@ func monitoringDashboardAsset(t *testing.T, s *monitoringGroupConsumerScenario) 
 }
 
 func TestMonitoringDashboardInventoryAndPrivacy(t *testing.T) {
-	for _, mode := range []string{"normal", "denied", "list-404", "null", "element", "partial", "token-null", "get-denied", "get-missing", "get-drift", "no-etag", "system", "wrong-project", "two-layouts", "null-layout", "bad-labels", "bad-filters"} {
+	for _, mode := range []string{"normal", "denied", "list-404", "null", "element", "partial", "token-null", "no-etag", "system", "wrong-project", "two-layouts", "null-layout", "bad-labels", "bad-filters"} {
 		t.Run(mode, func(t *testing.T) {
 			s := newMonitoringGroupConsumerScenario(t)
 			s.collection, s.mode = "dashboards", mode

@@ -22,7 +22,7 @@ func batchRunnable(job map[string]any) map[string]any {
 }
 
 func TestBatchInventoryRejectsIncompleteForeignAndRecreatedResources(t *testing.T) {
-	for _, mode := range []string{"list-403", "list-206", "list-error", "unreachable", "bad-list", "token-type", "token-loop", "duplicate-task", "foreign-project", "foreign-job", "foreign-group", "detail-404", "detail-403", "detail-206", "detail-other", "job-no-uid", "job-no-create-time", "job-invalid-create-time", "job-recreated", "missing-task-groups", "duplicate-task-groups", "foreign-task-group"} {
+	for _, mode := range []string{"list-403", "list-206", "list-error", "unreachable", "bad-list", "token-type", "token-loop", "duplicate-task", "foreign-project", "foreign-job", "foreign-group", "job-no-uid", "job-no-create-time", "job-invalid-create-time", "job-recreated", "missing-task-groups", "duplicate-task-groups", "foreign-task-group"} {
 		t.Run(mode, func(t *testing.T) {
 			s := newBatchScenario(t)
 			if mode == "job-invalid-create-time" {

@@ -3,8 +3,6 @@ package gcp
 import (
 	"context"
 	"strings"
-
-	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 const monitoringDashboardType = "monitoring.googleapis.com/Dashboard"
@@ -70,18 +68,13 @@ func (c *client) monitoringDashboardRead(ctx context.Context, id string) (map[st
 	}
 	return data, nil
 }
-func (c *client) monitoringDashboardInventory(ctx context.Context, id string, listed map[string]any) (map[string]any, error) {
+func (c *client) monitoringDashboardInventory(id string, listed map[string]any) (map[string]any, error) {
+	// Monitoring lists return complete resources, so the listed object is the
+	// observation; deletion reads each resource live.
 	if err := c.monitoringDashboardData(id, listed); err != nil {
 		return nil, err
 	}
-	live, err := c.monitoringDashboardRead(ctx, id)
-	if err != nil {
-		return nil, contracts.DependencyReadError(err)
-	}
-	if monitoringDashboardConfiguration(id, listed) != monitoringDashboardConfiguration(id, live) {
-		return nil, groupDenied("monitoring_dashboard_configuration_changed")
-	}
-	return live, nil
+	return listed, nil
 }
 func redactMonitoringDashboardPayload(data map[string]any) {
 	name := text(data["name"])

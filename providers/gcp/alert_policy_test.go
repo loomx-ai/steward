@@ -18,7 +18,7 @@ func alertPolicyFixture() map[string]any {
 	return map[string]any{"name": alertPolicyName, "displayName": "Uptime failure", "enabled": true, "combiner": "OR", "severity": "ERROR", "userLabels": map[string]any{"environment": "test"}, "documentation": map[string]any{"content": "PRIVATE_ALERT_DOCUMENT", "mimeType": "text/markdown", "links": []any{map[string]any{"displayName": "runbook", "url": "https://example.com?token=PRIVATE_ALERT_URL"}}}, "conditions": []any{map[string]any{"name": alertPolicyName + "/conditions/5678", "displayName": "Check failed", "conditionThreshold": map[string]any{"filter": `metric.type="monitoring.googleapis.com/uptime_check/check_passed" AND metric.label.check_id="PRIVATE_ALERT_CHECK"`, "comparison": "COMPARISON_GT", "duration": "60s", "thresholdValue": 1}}}, "notificationChannels": []any{"projects/sample-project/notificationChannels/9876"}, "creationRecord": map[string]any{"mutateTime": "2026-09-01T00:00:00Z", "mutatedBy": "tester@example.com"}, "mutationRecord": map[string]any{"mutateTime": "2026-09-02T00:00:00Z", "mutatedBy": "tester@example.com"}, "futureNativeField": map[string]any{"value": "bound"}}
 }
 func TestAlertPolicyNativeInventoryAndFailureBoundaries(t *testing.T) {
-	for _, mode := range []string{"normal", "list-empty", "list-paged", "list-denied", "list-null", "list-token", "list-partial", "list-duplicate", "get-denied", "get-partial", "gone", "detail-drift"} {
+	for _, mode := range []string{"normal", "list-empty", "list-paged", "list-denied", "list-null", "list-token", "list-partial", "list-duplicate"} {
 		t.Run(mode, func(t *testing.T) {
 			r, request, _, state, _ := monitoringScenario(t, alertPolicyType)
 			*state = mode

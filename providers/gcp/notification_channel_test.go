@@ -17,7 +17,7 @@ func notificationChannelFixture() map[string]any {
 }
 
 func TestNotificationChannelNativeInventory(t *testing.T) {
-	for _, mode := range []string{"normal", "list-empty", "list-paged", "list-denied", "list-null", "list-token", "list-partial", "list-duplicate", "get-denied", "get-partial", "gone", "detail-drift"} {
+	for _, mode := range []string{"normal", "list-empty", "list-paged", "list-denied", "list-null", "list-token", "list-partial", "list-duplicate"} {
 		t.Run(mode, func(t *testing.T) {
 			r, request, _, state, deletes := monitoringScenario(t, notificationChannelType)
 			*state = mode

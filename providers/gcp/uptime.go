@@ -5,8 +5,6 @@ import (
 	"encoding/base64"
 	"strings"
 	"time"
-
-	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 const uptimeType = "monitoring.googleapis.com/UptimeCheckConfig"
@@ -190,16 +188,11 @@ func (c *client) uptimeRead(ctx context.Context, id string) (map[string]any, err
 	return data, nil
 }
 
-func (c *client) uptimeInventory(ctx context.Context, id string, listed map[string]any) (map[string]any, error) {
+func (c *client) uptimeInventory(id string, listed map[string]any) (map[string]any, error) {
+	// Monitoring lists return complete resources, so the listed object is the
+	// observation; deletion reads each resource live.
 	if err := c.uptimeData(id, listed); err != nil {
 		return nil, err
 	}
-	live, err := c.uptimeRead(ctx, id)
-	if err != nil {
-		return nil, contracts.DependencyReadError(err)
-	}
-	if uptimeConfiguration(id, listed) != uptimeConfiguration(id, live) {
-		return nil, groupDenied("uptime_configuration_changed")
-	}
-	return live, nil
+	return listed, nil
 }

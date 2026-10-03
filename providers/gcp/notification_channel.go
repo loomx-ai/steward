@@ -3,8 +3,6 @@ package gcp
 import (
 	"context"
 	"strings"
-
-	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 const notificationChannelType = "monitoring.googleapis.com/NotificationChannel"
@@ -82,18 +80,13 @@ func (c *client) notificationChannelRead(ctx context.Context, id string) (map[st
 	return live, nil
 }
 
-func (c *client) notificationChannelInventory(ctx context.Context, id string, listed map[string]any) (map[string]any, error) {
+func (c *client) notificationChannelInventory(id string, listed map[string]any) (map[string]any, error) {
+	// Monitoring lists return complete resources, so the listed object is the
+	// observation; deletion reads each resource live.
 	if err := c.notificationChannelData(id, listed); err != nil {
 		return nil, err
 	}
-	live, err := c.notificationChannelRead(ctx, id)
-	if err != nil {
-		return nil, contracts.DependencyReadError(err)
-	}
-	if notificationChannelConfiguration(id, listed) != notificationChannelConfiguration(id, live) {
-		return nil, groupDenied("notification_channel_configuration_changed")
-	}
-	return live, nil
+	return listed, nil
 }
 
 func redactNotificationChannelPayload(data map[string]any) {

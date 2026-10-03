@@ -87,7 +87,14 @@ func monitoringScenario(t *testing.T, kind string, delivery ...string) (*Runtime
 					return apiResponse(req, 200, `{"nextPageToken":"next"}`), nil
 				}
 			}
-			return dataformResponse(req, 200, map[string]any{collection: []any{data}}), nil
+			listed := cloneParameters(data)
+			switch mode {
+			case "detail-enabled-missing":
+				delete(listed, "enabled")
+			case "detail-target-invalid":
+				listed["monitoredResource"] = map[string]any{"type": "gce_instance", "labels": map[string]any{"project_id": "sample-project", "zone": "us-central1-a", "instance_id": "a-name"}}
+			}
+			return dataformResponse(req, 200, map[string]any{collection: []any{listed}}), nil
 		}
 		expectedQuery := ""
 		if kind == notificationChannelType && req.Method == "DELETE" {
@@ -360,7 +367,7 @@ func TestUptimeNativeConfigurationShapes(t *testing.T) {
 }
 
 func TestUptimeListCompletenessAndPagination(t *testing.T) {
-	for _, mode := range []string{"list-empty", "list-paged", "list-denied", "list-null", "list-token", "list-partial", "list-duplicate", "detail-drift"} {
+	for _, mode := range []string{"list-empty", "list-paged", "list-denied", "list-null", "list-token", "list-partial", "list-duplicate"} {
 		t.Run(mode, func(t *testing.T) {
 			r, _, _, state, _ := uptimeScenario(t)
 			*state = mode

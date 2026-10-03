@@ -73,18 +73,13 @@ func (c *client) monitoringGroupRead(ctx context.Context, id string) (map[string
 	return data, nil
 }
 
-func (c *client) monitoringGroupInventory(ctx context.Context, id string, listed map[string]any) (map[string]any, error) {
+func (c *client) monitoringGroupInventory(id string, listed map[string]any) (map[string]any, error) {
+	// Monitoring lists return complete resources, so the listed object is the
+	// observation; deletion reads each resource live.
 	if err := c.monitoringGroupData(id, listed); err != nil {
 		return nil, err
 	}
-	live, err := c.monitoringGroupRead(ctx, id)
-	if err != nil {
-		return nil, contracts.DependencyReadError(err)
-	}
-	if c.monitoringGroupConfiguration(id, listed) != c.monitoringGroupConfiguration(id, live) {
-		return nil, groupDenied("monitoring_group_configuration_changed")
-	}
-	return live, nil
+	return listed, nil
 }
 
 func (c *client) monitoringMembers(ctx context.Context, id, start, end string) (map[string]map[string]any, error) {

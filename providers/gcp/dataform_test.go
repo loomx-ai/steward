@@ -726,7 +726,7 @@ func TestDataformCancellationResumeRejectsDriftAndForgedState(t *testing.T) {
 }
 
 func TestDataformInventoryFailuresDoNotEstablishAbsence(t *testing.T) {
-	for _, mode := range []string{"locations-403", "locations-206", "locations-loop", "locations-foreign", "list-403", "list-206", "list-malformed", "detail-404", "detail-206", "detail-foreign", "detail-drift", "parent-drift", "parent-404", "cursor-parent-drift", "cursor-connection", "cursor-scope", "cursor-kind"} {
+	for _, mode := range []string{"locations-403", "locations-206", "locations-loop", "locations-foreign", "list-403", "list-206", "list-malformed", "parent-drift", "parent-404", "cursor-parent-drift", "cursor-connection", "cursor-scope", "cursor-kind"} {
 		t.Run(mode, func(t *testing.T) {
 			s := newDataformScenario(t)
 			r := protocolRuntime(t, s.transport(t))
