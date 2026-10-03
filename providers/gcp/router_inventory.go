@@ -1,38 +1,24 @@
 package gcp
 
 import (
-	"context"
 	"slices"
 	"strings"
-
-	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 const routerReview = "_router_configuration"
 const routerBaseReview = "_router_base_configuration"
 
-// Read the complete parent before recording deletion impact. A LIST record can
-// be stale or omit configuration; neither may silently replace a reviewed GET.
-func (c *client) routerInventoryData(ctx context.Context, id string, listed map[string]any) (map[string]any, error) {
-	kind, _ := findType(routerType)
-	endpoint, err := c.resourceURL(kind, id)
-	if err != nil {
-		return nil, err
-	}
+// routers.list items are complete Router resources (RouterList.items is the
+// GET schema), so they are validated in place before recording deletion impact.
+// Cleanup re-reads the live router against this review before any write.
+func (c *client) routerInventoryData(id string, listed map[string]any) error {
 	if listed["name"] != last(id) || !firewallNumericID(text(listed["id"])) {
-		return nil, groupDenied("router_list_identity_invalid")
+		return groupDenied("router_list_identity_invalid")
 	}
 	if link, ok := listed["selfLink"]; ok && c.canonicalName(text(link)) != id {
-		return nil, groupDenied("router_list_scope_changed")
+		return groupDenied("router_list_scope_changed")
 	}
-	live, err := c.request(ctx, "GET", endpoint, nil)
-	if err != nil {
-		return nil, contracts.DependencyReadError(err)
-	}
-	if err := c.routerData(id, text(listed["id"]), live); err != nil {
-		return nil, err
-	}
-	return live, nil
+	return c.routerData(id, text(listed["id"]), listed)
 }
 
 func (c *client) routerData(id, incarnation string, data map[string]any) error {

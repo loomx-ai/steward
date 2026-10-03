@@ -115,7 +115,7 @@ func routerComponentActionRuntime(t *testing.T, nativeType string) (*Runtime, co
 			if strings.HasSuffix(req.URL.Path, "/routers/router-a/"+map[string]string{routePolicyType: "listRoutePolicies", namedSetType: "listNamedSets"}[nativeType]) {
 				data := map[string]any{}
 				if fixture.exists {
-					data["result"] = []any{map[string]any{"name": componentName}}
+					data["result"] = []any{fixture.policy}
 				}
 				return dataformResponse(req, 200, data), nil
 			}

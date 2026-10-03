@@ -15,13 +15,14 @@ controller cleanup. It does not establish policy/named-set cascade. Their
 independent native deletions are the prerequisite path used by the Router
 lifecycle contributor and execution driver.
 
-Native Router inventory now performs one GET per listed Router observation.
-It checks the listed numeric incarnation against current detail, native
-name/selfLink/region, complete array/object shapes, unique NAT/peer/interface/key
-names and typed interface references. Unknown native fields remain available.
-Temporary parent enumeration for child sources still uses native LIST; it does
-not persist a Router observation or issue redundant Router GETs. Child sources
-retain their existing independent detail/parent checks and cursor bindings.
+Native Router inventory keeps each `routers.list` item: `RouterList.items` is
+the same `Router` schema that GET returns. It checks the listed numeric
+incarnation, native name/selfLink/region, complete array/object shapes, unique
+NAT/peer/interface/key names and typed interface references. Unknown native
+fields remain available. Policies and named sets likewise keep their
+`listRoutePolicies`/`listNamedSets` records (the GET `resource` schema). Cleanup
+re-reads the live Router and every component against these reviews before any
+write.
 
 Two opaque configuration digests are retained before redaction: a full review
 and a base review excluding NAT/BGP-peer collections that subsequent reviewed
@@ -33,11 +34,11 @@ proofs after separately reviewed policy removals.
 
 `router_inventory_test.go` exercises the real runtime with explicit native
 LIST/GET fixtures for regional, project, global and VPC scans, pagination,
-LIST/detail drift, malformed native containers, partial/denied reads and
+malformed native containers, partial/denied lists and
 redaction. The Router fixture validates against the pinned native schema.
 Request/response log tests verify that redaction does not modify wire data.
 SQLite scan jobs reopen the database across successful, denied, missing,
-incarnation-changed, empty and recovered observations; failures preserve history,
+empty and recovered observations; failures preserve history,
 authoritative absence closes records, and recovery retains the same asset ID
 with new review evidence. Existing NAT/policy/set scans and cleanup tests remain
 in the regression scope.

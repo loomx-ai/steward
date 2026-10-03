@@ -37,10 +37,10 @@ go test -race ./providers/gcp -run 'TestNamedSet|TestRoutePolicy' -count=1
 Locally authored protocol fixtures cover project/regional/global scope, nested
 router/set paging, identical local names in different routers, parent UID and
 cursor changes, project-number aliases, malformed identities/wrappers/fields,
-denials, detail 404, partial results and token cycles. The independent JSON
+denials, partial results and token cycles. The independent JSON
 Schema validator checks both native set types and rejects malformed element
 shapes. Forward-compatible enum values are retained. SQLite scans and property
-queries verify failed detail reads preserve prior history, an authoritative
+queries verify failed list reads preserve prior history, an authoritative
 empty list closes old observations, and reappearance reuses the original asset
 ID with refreshed data. Shared tests also rerun route-policy behavior.
 

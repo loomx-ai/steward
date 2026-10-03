@@ -41,8 +41,6 @@ func TestSecurityHTTPScanAndQuery(t *testing.T) {
 			}
 			return dataformResponse(req, 200, map[string]any{"locations": []any{map[string]any{"name": "projects/sample-project/locations/eu"}}}), nil
 		case "/v1/projects/sample-project/locations/eu/securityCenterServices":
-			return dataformResponse(req, 200, map[string]any{"securityCenterServices": []any{map[string]any{"name": serviceName}}}), nil
-		case "/v1/" + serviceName:
 			if phase == "denied" {
 				return dataformResponse(req, 403, map[string]any{}), nil
 			}
@@ -50,7 +48,7 @@ func TestSecurityHTTPScanAndQuery(t *testing.T) {
 			if phase == "updated" {
 				data["effectiveEnablementState"] = "DISABLED"
 			}
-			return dataformResponse(req, 200, data), nil
+			return dataformResponse(req, 200, map[string]any{"securityCenterServices": []any{data}}), nil
 		case "/v1/" + billingName:
 			tier := "PREMIUM"
 			if phase == "updated" {

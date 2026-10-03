@@ -43,7 +43,7 @@ func multiPolicyRuntime(t *testing.T) (*Runtime, []contracts.ActionRequest, *mul
 				var values []any
 				for _, name := range []string{"policy-a", "policy-b"} {
 					if f.policies[name] != nil {
-						values = append(values, map[string]any{"name": name})
+						values = append(values, f.policies[name])
 					}
 				}
 				data := map[string]any{}

@@ -18,15 +18,14 @@ func routePolicyFixture(name string) map[string]any {
 func TestRoutePolicyNativeInventory(t *testing.T) { testRouterComponentInventory(t, routePolicyType) }
 
 func testRouterComponentInventory(t *testing.T, nativeType string) {
-	list, get, query, collection, field := "listRoutePolicies", "getRoutePolicy", "policy", "routePolicies", "terms"
+	list, collection, field := "listRoutePolicies", "routePolicies", "terms"
 	fixture := routePolicyFixture
 	if nativeType == namedSetType {
-		list, get, query, collection, field = "listNamedSets", "getNamedSet", "namedSet", "namedSets", "elements"
+		list, collection, field = "listNamedSets", "namedSets", "elements"
 		fixture = namedSetFixture
 	}
 	for _, scope := range []string{"us-central1", "project", "global"} {
 		t.Run(scope, func(t *testing.T) {
-			var reads []string
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 				if req.Method != "GET" {
 					t.Fatal("inventory attempted mutation", req.URL)
@@ -41,7 +40,6 @@ func testRouterComponentInventory(t *testing.T, nativeType string) {
 					return apiResponse(req, 200, `{"items":[{"name":"us-central1"},{"name":"europe-west1"}]}`), nil
 				}
 				parts := strings.Split(req.URL.Path, "/")
-				region := parts[6]
 				if strings.HasSuffix(req.URL.Path, "/routers") {
 					name := "router-a"
 					if req.URL.Query().Get("pageToken") == "router-next" {
@@ -67,14 +65,10 @@ func testRouterComponentInventory(t *testing.T, nativeType string) {
 							result["nextPageToken"] = "policy-next"
 						}
 					}
-					result["result"] = []any{map[string]any{"name": name}}
+					result["result"] = []any{fixture(name)}
 					return dataformResponse(req, 200, result), nil
 				}
-				if strings.HasSuffix(req.URL.Path, "/"+get) {
-					name := req.URL.Query().Get(query)
-					reads = append(reads, region+"/"+router+"/"+name)
-					return dataformResponse(req, 200, map[string]any{"resource": fixture(name)}), nil
-				}
+				// The list returns complete components; inventory never reads one again.
 				t.Fatal("unexpected request", req.URL)
 				return nil, nil
 			})
@@ -136,15 +130,15 @@ func testRouterComponentInventory(t *testing.T, nativeType string) {
 				want = 0
 			}
 			slices.Sort(ids)
-			if len(ids) != want || len(reads) != want || len(slices.Compact(ids)) != want {
-				t.Fatal("missing or duplicate policies", ids, reads)
+			if len(ids) != want || len(slices.Compact(ids)) != want {
+				t.Fatal("missing or duplicate policies", ids)
 			}
 		})
 	}
 }
 
 func TestRoutePolicyRejectsIncompleteOrChangedData(t *testing.T) {
-	for _, mode := range []string{"parent-denied", "foreign-parent", "parent-name-mismatch", "parent-uid-changed", "list-denied", "list-shape", "partial", "unreachable", "name-path", "duplicate", "detail-denied", "detail-missing", "wrapper", "identity", "terms", "priority", "duplicate-priority", "actions", "expression", "cursor-cycle", "parent-changed"} {
+	for _, mode := range []string{"parent-denied", "foreign-parent", "parent-name-mismatch", "parent-uid-changed", "list-denied", "list-shape", "partial", "unreachable", "name-path", "duplicate", "terms", "priority", "duplicate-priority", "actions", "expression", "cursor-cycle", "parent-changed"} {
 		t.Run(mode, func(t *testing.T) {
 			parentLists := 0
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
@@ -177,7 +171,9 @@ func TestRoutePolicyRejectsIncompleteOrChangedData(t *testing.T) {
 					if mode == "list-denied" {
 						return apiResponse(req, 403, `{}`), nil
 					}
-					result := map[string]any{"result": []any{map[string]any{"name": "policy-a"}}}
+					data := routePolicyFixture("policy-a")
+					term := object(array(data["terms"])[0])
+					result := map[string]any{"result": []any{data}}
 					switch mode {
 					case "list-shape":
 						result["result"] = map[string]any{}
@@ -186,28 +182,11 @@ func TestRoutePolicyRejectsIncompleteOrChangedData(t *testing.T) {
 					case "unreachable":
 						result["unreachables"] = []any{"router-a"}
 					case "name-path":
-						result["result"] = []any{map[string]any{"name": "other/policy-a"}}
+						data["name"] = "other/policy-a"
 					case "duplicate":
-						result["result"] = []any{map[string]any{"name": "policy-a"}, map[string]any{"name": "policy-a"}}
+						result["result"] = []any{data, data}
 					case "cursor-cycle", "parent-changed", "parent-uid-changed":
 						result["nextPageToken"] = "again"
-					}
-					return dataformResponse(req, 200, result), nil
-				}
-				if strings.HasSuffix(req.URL.Path, "/getRoutePolicy") {
-					if mode == "detail-denied" {
-						return apiResponse(req, 403, `{}`), nil
-					}
-					if mode == "detail-missing" {
-						return apiResponse(req, 404, `{}`), nil
-					}
-					data := routePolicyFixture("policy-a")
-					term := object(array(data["terms"])[0])
-					switch mode {
-					case "wrapper":
-						return dataformResponse(req, 200, data), nil
-					case "identity":
-						data["name"] = "policy-b"
 					case "terms":
 						data["terms"] = map[string]any{}
 					case "priority":
@@ -219,7 +198,7 @@ func TestRoutePolicyRejectsIncompleteOrChangedData(t *testing.T) {
 					case "expression":
 						object(term["match"])["expression"] = true
 					}
-					return dataformResponse(req, 200, map[string]any{"resource": data}), nil
+					return dataformResponse(req, 200, result), nil
 				}
 				t.Fatal("unexpected request", req.URL)
 				return nil, nil

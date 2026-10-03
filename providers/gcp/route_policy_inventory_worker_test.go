@@ -22,11 +22,11 @@ func TestRoutePolicySQLiteFailureAbsenceAndRecovery(t *testing.T) {
 }
 
 func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
-	list, get, field := "listRoutePolicies", "getRoutePolicy", "terms"
+	list, field := "listRoutePolicies", "terms"
 	fixture := routePolicyFixture
 	reviewField, firstReview, recoveredReview := "fingerprint", "ZnAx", "ZnAy"
 	if nativeType == namedSetType {
-		list, get, field = "listNamedSets", "getNamedSet", "elements"
+		list, field = "listNamedSets", "elements"
 		fixture = namedSetFixture
 	}
 	if nativeType == cloudNatType {
@@ -70,26 +70,22 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 			t.Fatal("unexpected API", req.URL)
 		}
 		if strings.HasSuffix(req.URL.Path, "/routers") {
-			if nativeType == routerType && phase == "absent" {
+			if nativeType != routerType {
+				return dataformResponse(req, 200, map[string]any{"items": []any{map[string]any{"name": "router-a", "id": "1001", "selfLink": "https://www.googleapis.com" + req.URL.Path + "/router-a"}}}), nil
+			}
+			switch phase {
+			case "absent":
 				return apiResponse(req, 200, `{}`), nil
-			}
-			return dataformResponse(req, 200, map[string]any{"items": []any{map[string]any{"name": "router-a", "id": "1001", "selfLink": "https://www.googleapis.com" + req.URL.Path + "/router-a"}}}), nil
-		}
-		if nativeType == routerType && strings.HasSuffix(req.URL.Path, "/router-a") {
-			if phase == "denied" {
+			case "denied":
 				return apiResponse(req, 403, `{}`), nil
-			}
-			if phase == "missing" {
+			case "missing":
 				return apiResponse(req, 404, `{}`), nil
 			}
 			data := fixture("")
-			if phase == "changed" {
-				data["id"] = "2000"
-			}
 			if phase == "recovered" {
 				data[reviewField] = recoveredReview
 			}
-			return dataformResponse(req, 200, data), nil
+			return dataformResponse(req, 200, map[string]any{"items": []any{data}}), nil
 		}
 		if nativeType == cloudNatType && strings.HasSuffix(req.URL.Path, "/router-a") {
 			if phase == "denied" {
@@ -116,29 +112,22 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 			return dataformResponse(req, 200, parent), nil
 		}
 		if strings.HasSuffix(req.URL.Path, "/"+list) {
-			if phase == "absent" {
+			switch phase {
+			case "absent":
 				return apiResponse(req, 200, `{"warning":{"code":"NO_RESULTS_ON_PAGE"}}`), nil
-			}
-			return apiResponse(req, 200, `{"result":[{"name":"policy-a"}]}`), nil
-		}
-		if strings.HasSuffix(req.URL.Path, "/"+get) {
-			if phase == "denied" {
+			case "denied":
 				return apiResponse(req, 403, `{}`), nil
-			}
-			if phase == "missing" {
+			case "missing":
 				return apiResponse(req, 404, `{}`), nil
 			}
 			data := fixture("policy-a")
-			if phase == "changed" {
-				data["name"] = "other-policy"
-			}
 			if phase == "unresolved-set" {
 				object(array(data["terms"])[0])["match"] = map[string]any{"expression": "prefixSets(name)"}
 			}
 			if phase == "recovered" {
 				data["fingerprint"] = "ZnAy"
 			}
-			return dataformResponse(req, 200, map[string]any{"resource": data}), nil
+			return dataformResponse(req, 200, map[string]any{"result": []any{data}}), nil
 		}
 		t.Fatal("unexpected request", req.URL)
 		return nil, nil
@@ -178,7 +167,11 @@ func testRouterComponentSQLiteRecovery(t *testing.T, nativeType string) {
 	}
 	handler := inventory.NewScanHandler(repositories, registry, inventory.NewService(repositories.Inventory()))
 	var first asset.Asset
-	steps := []string{"first", "denied", "missing", "changed"}
+	steps := []string{"first", "denied", "missing"}
+	if nativeType == cloudNatType {
+		// routers.get must still return the listed Router incarnation.
+		steps = append(steps, "changed")
+	}
 	if nativeType == routePolicyType {
 		steps = append(steps, "unresolved-set")
 	}

@@ -165,7 +165,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	if target.Shared {
 		listCtx = withSharedReads(ctx, request.ScanRunID)
 	}
-	if nativeType == securityBillingType || nativeType == securityServiceType || nativeType == monitoringGroupType || isMonitoringConfig(nativeType) || nativeType == cloudNatType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
+	if nativeType == securityBillingType || nativeType == securityServiceType || nativeType == monitoringGroupType || isMonitoringConfig(nativeType) || isRouterComponent(nativeType) || nativeType == routerType || nativeType == storagePoolType || isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -326,13 +326,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 		seenIDs[id] = true
 		// Parent enumeration only needs LIST identities for the child source.
-		// Persisted Router observations require their own complete native GET.
+		// Persisted Router observations validate the complete listed Router.
 		if nativeType == routerType && len(ancestors) == 1 {
-			live, err := c.routerInventoryData(ctx, id, record.Data)
-			if err != nil {
+			if err := c.routerInventoryData(id, record.Data); err != nil {
 				return contracts.InventoryBatch{}, err
 			}
-			record.Data = live
 		}
 		if nativeType == monitoringDashboardType {
 			live, err := c.monitoringDashboardInventory(id, record.Data)
@@ -380,12 +378,8 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				return contracts.InventoryBatch{}, err
 			}
 			var live map[string]any
-			if nativeType == cloudNatType {
-				live = record.Data // routers.get already returned the complete native NAT object.
-			} else if productListComplete(nativeType) {
+			if productListComplete(nativeType) {
 				live = record.Data
-			} else if isRouterComponent(nativeType) {
-				live, err = c.routerComponentRead(ctx, nativeType, id)
 			} else if isInfra(nativeType) {
 				live, err = c.infraRead(ctx, nativeType, id)
 			} else if isFusion(nativeType) {
@@ -662,9 +656,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 // productListComplete reports kinds whose native list returns the same complete
 // resource as their GET (the same response schema and no list view), so
 // inventory keeps the listed object instead of reading every resource again.
-// Deletion paths still read each resource live.
+// Router components come from the Router's own list methods (Cloud NAT from
+// routers.get) and Dataproc node groups from the cluster GET's embedded
+// NodeGroup. Deletion paths still read each resource live.
 func productListComplete(nativeType string) bool {
-	return isBatch(nativeType) || isDataproc(nativeType) && nativeType != dataprocNodeGroupType || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || isDataform(nativeType)
+	return isBatch(nativeType) || isDataproc(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) || isDataform(nativeType) || isRouterComponent(nativeType) || nativeType == securityServiceType
 }
 
 func productScopeMatches(request contracts.InventoryRequest, item contracts.InventoryItem) bool {

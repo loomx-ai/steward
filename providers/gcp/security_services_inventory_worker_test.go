@@ -19,15 +19,15 @@ import (
 	providerruntime "github.com/loomx-ai/steward/internal/provider/runtime"
 )
 
-// A successful LIST followed by a failed detail GET cannot close the previously
-// observed service or replace its full metadata with a list summary.
-func TestSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T) {
+// A failed, partial or invalid service LIST cannot close the previously observed
+// service or replace its complete metadata.
+func TestSecurityServicesListFailurePreservesSQLiteObservations(t *testing.T) {
 	for _, parent := range []string{"projects/sample-project", "folders/456", "organizations/123"} {
-		t.Run(parent, func(t *testing.T) { testSecurityServicesDetailFailurePreservesSQLiteObservations(t, parent) })
+		t.Run(parent, func(t *testing.T) { testSecurityServicesListFailurePreservesSQLiteObservations(t, parent) })
 	}
 }
 
-func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, parent string) {
+func testSecurityServicesListFailurePreservesSQLiteObservations(t *testing.T, parent string) {
 	ctx := context.Background()
 	failure := ""
 	name := parent + "/locations/eu/securityCenterServices/event-threat-detection"
@@ -45,40 +45,32 @@ func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, 
 			}
 			return dataformResponse(req, 200, map[string]any{"locations": []any{map[string]any{"name": "projects/sample-project/locations/eu"}}}), nil
 		case "/v1/" + parent + "/locations/eu/securityCenterServices":
-			if failure == "hidden_service" {
+			switch failure {
+			case "hidden_service":
 				return dataformResponse(req, 200, map[string]any{}), nil
+			case "denied":
+				return dataformResponse(req, 403, map[string]any{}), nil
+			case "missing":
+				return dataformResponse(req, 404, map[string]any{}), nil
 			}
-			record := map[string]any{"name": name}
-			if failure == "list_state" {
+			record := securityServiceData(name)
+			record["extension"] = map[string]any{"serviceConfig": map[string]any{"ordinary": "PRIVATE_NESTED_CONFIG"}}
+			switch failure {
+			case "list_state":
 				record["effectiveEnablementState"] = true
-			}
-			if failure == "list_partial" {
+			case "list_partial":
 				record["unreachable"] = []any{"eu"}
+			case "updated":
+				record["effectiveEnablementState"] = "DISABLED"
 			}
 			body := map[string]any{"securityCenterServices": []any{record}}
 			if failure == "list_token" {
 				body["nextPageToken"] = 12
 			}
+			if failure == "page_partial" {
+				body["unreachable"] = []any{"eu"}
+			}
 			return dataformResponse(req, 200, body), nil
-		case "/v1/" + name:
-			if failure == "denied" {
-				return dataformResponse(req, 403, map[string]any{}), nil
-			}
-			if failure == "missing" {
-				return dataformResponse(req, 404, map[string]any{}), nil
-			}
-			data := securityServiceData(name)
-			data["extension"] = map[string]any{"serviceConfig": map[string]any{"ordinary": "PRIVATE_NESTED_CONFIG"}}
-			if failure == "detail_partial" {
-				data["unreachable"] = []any{"eu"}
-			}
-			if failure == "updated" {
-				data["effectiveEnablementState"] = "DISABLED"
-			}
-			if failure == "changed" {
-				data["name"] = name + "-other"
-			}
-			return dataformResponse(req, 200, data), nil
 		}
 		t.Fatalf("unexpected request %s", req.URL)
 		return nil, nil
@@ -125,7 +117,7 @@ func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, 
 	service := inventory.NewService(repositories.Inventory(), inventory.WithClock(func() time.Time { return now }))
 	handler := inventory.NewScanHandler(repositories, dataformVisibilityRuntime{adapter: r}, service)
 	var lastObserved time.Time
-	runs := []string{"first", "denied", "missing", "changed", "list_state", "list_partial", "list_token", "detail_partial", "hidden_location", "hidden_service", "updated", "legacy"}
+	runs := []string{"first", "denied", "missing", "list_state", "list_partial", "list_token", "page_partial", "hidden_location", "hidden_service", "updated", "legacy"}
 	if parent != "projects/sample-project" {
 		runs = append([]string{"first", "ancestor_denied", "ancestry_hidden"}, runs[1:]...)
 	}
@@ -149,7 +141,7 @@ func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, 
 		}
 		failure = runID
 		err := handler.Handle(ctx, execution.Job{ID: execution.JobID("security-services-" + runID), Type: execution.JobScan, Payload: map[string]any{"scan_shard_id": string(shard.ID)}})
-		failed := runID == "list_state" || runID == "list_partial" || runID == "list_token" || runID == "detail_partial" || runID == "ancestor_denied" || runID == "denied" || runID == "missing" || runID == "changed" || runID == "legacy"
+		failed := runID == "list_state" || runID == "list_partial" || runID == "list_token" || runID == "page_partial" || runID == "ancestor_denied" || runID == "denied" || runID == "missing" || runID == "legacy"
 		if !failed && err != nil || failed && err == nil {
 			t.Fatalf("scan %s: %v", runID, err)
 		}
@@ -186,7 +178,7 @@ func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, 
 				t.Fatal("unobserved service was marked fresh", runID, value.LastSeenAt, lastObserved)
 			}
 			if value.ClosedAt != nil || value.DeletedAt != nil || value.Normalized["effectiveEnablementState"] != wantState || len(object(value.Normalized["modules"])) != 1 {
-				t.Fatal("failed detail scan lost the last complete service", value)
+				t.Fatal("failed list scan lost the last complete service", value)
 			}
 		}
 		expression, err := resourcequery.Parse(`properties.effectiveEnablementState = "` + wantState + `" AND properties.intendedEnablementState = "INHERITED" AND properties.configurationParent = "` + parent + `"`)
@@ -198,7 +190,7 @@ func testSecurityServicesDetailFailurePreservesSQLiteObservations(t *testing.T, 
 		}
 		matched, err := repositories.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10, ResourceQuery: expression})
 		if err != nil || len(matched.Items) != 1 {
-			t.Fatal("native service query lost after detail scan failure", matched, err)
+			t.Fatal("native service query lost after list scan failure", matched, err)
 		}
 		now = now.Add(time.Minute)
 	}

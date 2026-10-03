@@ -25,7 +25,7 @@ func TestSecurityServicesAncestorInventory(t *testing.T) {
 	for _, scope := range []string{"project", "global", "eu"} {
 		t.Run(scope, func(t *testing.T) {
 			s := newOrganizationScenario()
-			lists, details := 0, 0
+			lists := 0
 			r := securityAncestorRuntime(t, s, func(req *http.Request) (*http.Response, error) {
 				if req.Method != "GET" {
 					t.Fatal(req.Method)
@@ -45,11 +45,11 @@ func TestSecurityServicesAncestorInventory(t *testing.T) {
 						service = "security-health-analytics"
 						delete(body, "nextPageToken")
 					}
-					body["securityCenterServices"] = []any{map[string]any{"name": name + "/" + service}}
+					body["securityCenterServices"] = []any{securityServiceData(name + "/" + service)}
 					return dataformResponse(req, 200, body), nil
 				}
-				details++
-				return dataformResponse(req, 200, securityServiceData(name)), nil
+				t.Fatal("listed service read again", req.URL)
+				return nil, nil
 			})
 			request := securityServiceRequest(r, scope)
 			counts := map[string]int{}
@@ -81,8 +81,8 @@ func TestSecurityServicesAncestorInventory(t *testing.T) {
 			if scope == "project" {
 				want = 4
 			}
-			if len(counts) != 3 || lists != want*3 || details != want*3 {
-				t.Fatal(counts, lists, details)
+			if len(counts) != 3 || lists != want*3 {
+				t.Fatal(counts, lists)
 			}
 			for _, parent := range []string{"projects/sample-project", "folders/456", "organizations/123"} {
 				if counts[parent] != want {
@@ -94,7 +94,7 @@ func TestSecurityServicesAncestorInventory(t *testing.T) {
 }
 
 func TestSecurityServicesAncestorFailuresAndCursor(t *testing.T) {
-	for _, mode := range []string{"list-denied", "list-missing", "foreign-parent", "foreign-location", "detail-denied", "detail-missing", "detail-identity", "duplicate", "malformed", "partial", "ancestry-during-read", "ancestry-between-pages", "ancestor-denied"} {
+	for _, mode := range []string{"list-denied", "list-missing", "foreign-parent", "foreign-location", "duplicate", "malformed", "partial", "ancestry-during-read", "ancestry-between-pages", "ancestor-denied"} {
 		t.Run(mode, func(t *testing.T) {
 			s := newOrganizationScenario()
 			lists := 0
@@ -126,7 +126,7 @@ func TestSecurityServicesAncestorFailuresAndCursor(t *testing.T) {
 					if mode == "foreign-location" {
 						id = strings.Replace(id, "global", "eu", 1)
 					}
-					rows := []any{map[string]any{"name": id}}
+					rows := []any{securityServiceData(id)}
 					if mode == "duplicate" {
 						rows = append(rows, rows[0])
 					}
@@ -142,16 +142,8 @@ func TestSecurityServicesAncestorFailuresAndCursor(t *testing.T) {
 					}
 					return dataformResponse(req, 200, body), nil
 				}
-				if mode == "detail-denied" {
-					return apiResponse(req, 403, `{}`), nil
-				}
-				if mode == "detail-missing" {
-					return apiResponse(req, 404, `{}`), nil
-				}
-				if mode == "detail-identity" {
-					name += "-other"
-				}
-				return dataformResponse(req, 200, securityServiceData(name)), nil
+				t.Fatal("listed service read again", req.URL)
+				return nil, nil
 			})
 			request := securityServiceRequest(r, "global")
 			page, err := r.List(t.Context(), request)

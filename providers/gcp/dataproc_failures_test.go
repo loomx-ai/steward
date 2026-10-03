@@ -15,7 +15,7 @@ import (
 )
 
 func TestDataprocInventoryRejectsIncompleteAndRecreatedNativeResources(t *testing.T) {
-	for _, mode := range []string{"list-403", "list-206", "list-error", "unreachable", "bad-list", "token-type", "token-loop", "duplicate", "project", "uuid", "node-foreign", "node-missing-id", "node-duplicate", "node-detail-404", "node-detail-403", "node-detail-206", "node-config-changed", "parent-config-changed", "parent-uuid-changed"} {
+	for _, mode := range []string{"list-403", "list-206", "list-error", "unreachable", "bad-list", "token-type", "token-loop", "duplicate", "project", "uuid", "node-foreign", "node-missing-id", "node-duplicate", "parent-config-changed", "parent-uuid-changed"} {
 		t.Run(mode, func(t *testing.T) {
 			s := newDataprocScenario(t)
 			reads := 0
@@ -23,6 +23,10 @@ func TestDataprocInventoryRejectsIncompleteAndRecreatedNativeResources(t *testin
 				entry := object(array(object(s.resources[dpRoot]["config"])["auxiliaryNodeGroups"])[0])
 				delete(entry, "nodeGroupId")
 				delete(object(entry["nodeGroup"]), "name")
+			}
+			if mode == "node-foreign" {
+				entry := object(array(object(s.resources[dpRoot]["config"])["auxiliaryNodeGroups"])[0])
+				object(entry["nodeGroup"])["name"] = dpOther + "/nodeGroups/aux-real-17"
 			}
 			if mode == "node-duplicate" {
 				config := object(s.resources[dpRoot]["config"])
@@ -50,23 +54,7 @@ func TestDataprocInventoryRejectsIncompleteAndRecreatedNativeResources(t *testin
 					return dataformResponse(req, 200, data), true
 				}
 				if name == dpNode {
-					data := roundTripDataformJSON(t, s.resources[dpNode])
-					code := 200
-					switch mode {
-					case "node-foreign":
-						data["name"] = dpOther + "/nodeGroups/aux-real-17"
-					case "node-detail-404":
-						code = 404
-					case "node-detail-403":
-						code = 403
-					case "node-detail-206":
-						code = 206
-					case "node-config-changed":
-						object(data["nodeGroupConfig"])["numInstances"] = 8
-					default:
-						return nil, false
-					}
-					return dataformResponse(req, code, data), true
+					t.Fatal("cluster GET already returned the complete node group", req.URL)
 				}
 				if name != "projects/sample-project/regions/us-central1/clusters" {
 					return nil, false

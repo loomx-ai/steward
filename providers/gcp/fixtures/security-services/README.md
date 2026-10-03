@@ -1,8 +1,8 @@
 # Security Command Center service inventory
 
 The native `securitycentermanagement.googleapis.com/SecurityCenterService` rule
-reads project-visible service locations, paginated project/ancestor service lists and each listed
-service's own GET. It preserves intended/effective enablement, module settings and
+reads project-visible service locations and paginated project/ancestor service
+lists, whose records are complete services (the GET schema). It preserves intended/effective enablement, module settings and
 update time. Module omission denotes inherited configuration, not a disabled
 module. The state shown in inventory is the effective service state, including
 `INGEST_ONLY`; no subscription tier is inferred from it.
@@ -30,10 +30,10 @@ subscription. [Organization subscriptions](../security-subscription/README.md) a
 records. Unstructured serviceConfig is redacted before inventory, Invoke and logs.
 
 `security_services_test.go` covers two service pages in both global/EU locations,
-project-number canonicalization, complete detail state, no eligible-module filter,
+project-number canonicalization, complete listed state, no eligible-module filter,
 no deletion, invalid identities/settings, denied/missing reads, partial results,
 page cycles and a changed location set. The SQLite scan-worker test retains the
-last complete service and searchable state after detail failures. All service
+last complete service and searchable state after list failures. All service
 responses are synthetic. The official Google mockgcp tree at
 `673a61419de1b8e4f7d26070ce20dde2daa61da8` contains no Security Center Management
 implementation; no independent emulator or live-cloud execution is claimed.
@@ -139,13 +139,13 @@ Invoke and inventory share validation of complete native pages, record identitie
 project aliases, duplicates, settings and token types. Empty pages may carry an
 opaque nextPageToken; Invoke returns it without following additional pages. The
 caller-supplied pageSize, pageToken and showEligibleModulesOnly are preserved.
-Nested partial records fail the entire page. Inventory detail GETs also reject
-partial responses before replacing any previous observation.
+Nested partial records fail the entire page before replacing any previous
+observation.
 
 `security_service_list_test.go` covers project, folder and organization APIs and
 invalid project LIST parents. Running it against a559d94 reproduces 20 failures.
 SCC payload sanitization covers unnamed extension serviceConfig objects as well as
 native records. The SQLite worker regression additionally verifies retained state,
 query results, timestamps and absence of private nested configuration after failed
-LIST/detail reads. These are synthetic protocol and real SQLite tests, not an
+LIST reads. These are synthetic protocol and real SQLite tests, not an
 independent SCC emulator or live-cloud acceptance.

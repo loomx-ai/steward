@@ -33,9 +33,10 @@ go test -race ./providers/gcp -run 'TestRoutePolicy' -count=1
 
 The locally authored protocol fixtures exercise router and policy paging,
 project/regional/global scope, same policy names in different routers,
-project-number aliases, parent identity/UID changes, changed detail identity,
-403/404, invalid response wrappers/fields, incomplete lists and cursor cycles.
-Real SQLite workers verify failed details preserve searchable prior observations,
+project-number aliases, parent identity/UID changes, invalid listed fields,
+403/404, incomplete lists and cursor cycles. Inventory keeps the complete listed
+policies; GET is used by cleanup readback. Real SQLite workers verify failed
+lists preserve searchable prior observations,
 a successful empty list closes the old policy, and reappearance refreshes the
 same asset. The router remains a dependency; native policy cleanup is covered below.
 

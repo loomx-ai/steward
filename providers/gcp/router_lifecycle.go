@@ -28,7 +28,8 @@ func (c *client) routerSaved(value asset.Asset) error {
 	return err
 }
 
-// These native components do not have ordinary nested REST GET endpoints.
+// These native components do not have ordinary nested REST GET endpoints; the
+// Router's own list methods return them complete.
 func (c *client) routerLiveChildren(ctx context.Context, parent asset.Identity, data map[string]any) ([]serviceChild, error) {
 	nats, err := c.cloudNatRouter(data, parent.NativeID, text(data["id"]))
 	if err != nil {
@@ -59,15 +60,11 @@ func (c *client) routerLiveChildren(ctx context.Context, parent asset.Identity, 
 				return nil, groupDenied("router_child_list_invalid")
 			}
 			seen[name] = true
-			id := parent.NativeID + "/" + entry.collection + "/" + name
-			live, err := c.routerComponentRead(ctx, entry.kind, id)
-			if err != nil {
+			// The Router list methods return complete components (the GET schema).
+			if err := routerComponentData(entry.kind, record, name); err != nil {
 				return nil, err
 			}
-			if fingerprint, present := record["fingerprint"]; present && fingerprint != live["fingerprint"] {
-				return nil, groupDenied("router_child_changed")
-			}
-			result = append(result, serviceChild{kind: entry.kind, id: id, data: live, direct: true})
+			result = append(result, serviceChild{kind: entry.kind, id: parent.NativeID + "/" + entry.collection + "/" + name, data: record, direct: true})
 		}
 	}
 	slices.SortFunc(result, func(a, b serviceChild) int { return strings.Compare(a.id, b.id) })

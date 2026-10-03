@@ -64,7 +64,7 @@ func routerCascadeRuntime(t *testing.T) (*Runtime, []asset.Asset, *routerCascade
 				if len(f.sets) == 0 {
 					return apiResponse(req, 200, `{}`), nil
 				}
-				return apiResponse(req, 200, `{"result":[{"name":"set-a"}]}`), nil
+				return dataformResponse(req, 200, map[string]any{"result": []any{f.sets["set-a"]}}), nil
 			}
 			if strings.HasSuffix(req.URL.Path, "/getNamedSet") {
 				value, ok := f.sets[req.URL.Query().Get("namedSet")]
@@ -247,7 +247,7 @@ func TestRouterCascadeDiscoveryRejectsDriftAndMissingCoverage(t *testing.T) {
 						return apiResponse(req, 200, `{"result":[{"name":"policy-a"},{"name":"policy-a"}]}`), nil
 					case "new-policy":
 						if lists > 1 {
-							return apiResponse(req, 200, `{"result":[{"name":"policy-a"}]}`), nil
+							return dataformResponse(req, 200, map[string]any{"result": []any{f.policies["policy-a"]}}), nil
 						}
 					}
 				}
@@ -468,7 +468,7 @@ func TestRouterCascadeOperationReceiptsAndVisibility(t *testing.T) {
 }
 
 func TestRouterCascadeNativeChildPagination(t *testing.T) {
-	base, values, _ := routerCascadeRuntime(t)
+	base, values, f := routerCascadeRuntime(t)
 	pages := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if req.Method == "GET" && strings.HasSuffix(req.URL.Path, "/listRoutePolicies") {
@@ -477,9 +477,9 @@ func TestRouterCascadeNativeChildPagination(t *testing.T) {
 				t.Fatal(req.URL)
 			}
 			if req.URL.Query().Get("pageToken") == "next" {
-				return apiResponse(req, 200, `{"result":[{"name":"policy-b"}]}`), nil
+				return dataformResponse(req, 200, map[string]any{"result": []any{f.policies["policy-b"]}}), nil
 			}
-			return apiResponse(req, 200, `{"result":[{"name":"policy-a"}],"nextPageToken":"next"}`), nil
+			return dataformResponse(req, 200, map[string]any{"result": []any{f.policies["policy-a"]}, "nextPageToken": "next"}), nil
 		}
 		return base.transport.RoundTrip(req)
 	})

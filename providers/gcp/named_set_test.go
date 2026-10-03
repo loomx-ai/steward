@@ -21,7 +21,7 @@ func TestNamedSetSQLiteFailureAbsenceAndRecovery(t *testing.T) {
 }
 
 func TestNamedSetNativeInventoryFailures(t *testing.T) {
-	for _, mode := range []string{"parent-denied", "parent-name-mismatch", "parent-uid-change", "list-denied", "list-partial", "list-unreachable", "list-invalid", "list-name-invalid", "list-cycle", "detail-denied", "detail-missing", "detail-wrapper", "detail-name", "elements-null", "element-scalar", "expression-type", "fingerprint-type"} {
+	for _, mode := range []string{"parent-denied", "parent-name-mismatch", "parent-uid-change", "list-denied", "list-partial", "list-unreachable", "list-invalid", "list-name-invalid", "list-cycle", "elements-null", "element-scalar", "expression-type", "fingerprint-type"} {
 		t.Run(mode, func(t *testing.T) {
 			parentReads := 0
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
@@ -46,7 +46,8 @@ func TestNamedSetNativeInventoryFailures(t *testing.T) {
 					if mode == "list-denied" {
 						return apiResponse(req, 403, `{}`), nil
 					}
-					result := map[string]any{"result": []any{map[string]any{"name": "set-a"}}}
+					data := namedSetFixture("set-a")
+					result := map[string]any{"result": []any{data}}
 					switch mode {
 					case "list-partial":
 						result["warning"] = map[string]any{"code": "PARTIAL_SUCCESS"}
@@ -55,28 +56,9 @@ func TestNamedSetNativeInventoryFailures(t *testing.T) {
 					case "list-invalid":
 						result["result"] = map[string]any{}
 					case "list-name-invalid":
-						result["result"] = []any{map[string]any{"name": "../foreign"}}
+						data["name"] = "../foreign"
 					case "list-cycle", "parent-uid-change":
 						result["nextPageToken"] = "next"
-					}
-					return dataformResponse(req, 200, result), nil
-				}
-				if strings.HasSuffix(req.URL.Path, "/getNamedSet") {
-					if req.URL.Query().Get("namedSet") != "set-a" || req.URL.Query().Get("policy") != "" {
-						t.Fatal("wrong query", req.URL)
-					}
-					if mode == "detail-denied" {
-						return apiResponse(req, 403, `{}`), nil
-					}
-					if mode == "detail-missing" {
-						return apiResponse(req, 404, `{}`), nil
-					}
-					data := namedSetFixture("set-a")
-					switch mode {
-					case "detail-wrapper":
-						return dataformResponse(req, 200, data), nil
-					case "detail-name":
-						data["name"] = "other"
 					case "elements-null":
 						data["elements"] = nil
 					case "element-scalar":
@@ -86,7 +68,7 @@ func TestNamedSetNativeInventoryFailures(t *testing.T) {
 					case "fingerprint-type":
 						data["fingerprint"] = 123
 					}
-					return dataformResponse(req, 200, map[string]any{"resource": data}), nil
+					return dataformResponse(req, 200, result), nil
 				}
 				t.Fatal("unexpected path", req.URL)
 				return nil, nil

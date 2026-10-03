@@ -26,10 +26,9 @@ func routerInventoryFixture(path string) map[string]any {
 	return data
 }
 
-func TestRouterNativeDetailPaginationAndReview(t *testing.T) {
+func TestRouterListPaginationAndReview(t *testing.T) {
 	for _, scope := range []string{"us-central1", "project", "global", "network"} {
 		t.Run(scope, func(t *testing.T) {
-			gets := 0
 			logs := []execution.JobLogEntry{}
 			ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, e execution.JobLogEntry) { logs = append(logs, e) }))
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
@@ -50,15 +49,10 @@ func TestRouterNativeDetailPaginationAndReview(t *testing.T) {
 					} else {
 						data["nextPageToken"] = "next"
 					}
-					listed := cloudNatParent(req.URL.Path + "/" + name)
-					listed["description"] = "stale-list"
-					data["items"] = []any{listed}
+					data["items"] = []any{routerInventoryFixture(req.URL.Path + "/" + name)}
 					return dataformResponse(req, 200, data), nil
 				}
-				if strings.HasSuffix(req.URL.Path, "/router-a") || strings.HasSuffix(req.URL.Path, "/router-b") {
-					gets++
-					return dataformResponse(req, 200, routerInventoryFixture(req.URL.Path)), nil
-				}
+				// routers.list returns complete Routers; inventory never reads one again.
 				t.Fatal(req.URL)
 				return nil, nil
 			})
@@ -98,8 +92,8 @@ func TestRouterNativeDetailPaginationAndReview(t *testing.T) {
 			if scope == "global" {
 				want = 0
 			}
-			if len(seen) != want || gets != want {
-				t.Fatal(seen, gets)
+			if len(seen) != want {
+				t.Fatal(seen)
 			}
 			raw, _ := json.Marshal(logs)
 			if scope != "global" && len(logs) == 0 || strings.Contains(string(raw), "router-only-secret") {
@@ -109,33 +103,20 @@ func TestRouterNativeDetailPaginationAndReview(t *testing.T) {
 	}
 }
 
-func TestRouterInventoryRejectsIncompleteOrChangedNativeDetail(t *testing.T) {
-	for _, mode := range []string{"denied", "missing", "list-id", "list-link", "id", "name", "self-link", "region", "partial", "pagination", "empty", "null-nats", "duplicate-nat", "bgp", "peers", "interfaces", "duplicate-interface", "interface-field", "interface-region", "keys", "duplicate-key", "key-field"} {
+func TestRouterInventoryRejectsIncompleteOrInvalidListedRouter(t *testing.T) {
+	for _, mode := range []string{"id", "name", "self-link", "region", "partial", "pagination", "empty", "null-nats", "duplicate-nat", "bgp", "peers", "interfaces", "duplicate-interface", "interface-field", "interface-region", "keys", "duplicate-key", "key-field"} {
 		t.Run(mode, func(t *testing.T) {
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 				if req.Method != "GET" {
 					t.Fatal(req.Method)
 				}
-				if strings.HasSuffix(req.URL.Path, "/routers") {
-					data := cloudNatParent(req.URL.Path + "/router-a")
-					if mode == "list-id" {
-						delete(data, "id")
-					}
-					if mode == "list-link" {
-						data["selfLink"] = "https://www.googleapis.com/compute/v1/projects/foreign/regions/us-central1/routers/router-a"
-					}
-					return dataformResponse(req, 200, map[string]any{"items": []any{data}}), nil
+				if !strings.HasSuffix(req.URL.Path, "/routers") {
+					t.Fatal(req.URL)
 				}
-				if mode == "denied" {
-					return apiResponse(req, 403, `{}`), nil
-				}
-				if mode == "missing" {
-					return apiResponse(req, 404, `{}`), nil
-				}
-				data := routerInventoryFixture(req.URL.Path)
+				data := routerInventoryFixture(req.URL.Path + "/router-a")
 				switch mode {
 				case "id":
-					data["id"] = "3000"
+					delete(data, "id")
 				case "name":
 					data["name"] = "foreign"
 				case "self-link":
@@ -171,7 +152,7 @@ func TestRouterInventoryRejectsIncompleteOrChangedNativeDetail(t *testing.T) {
 				case "key-field":
 					object(array(data["md5AuthenticationKeys"])[0])["key"] = false
 				}
-				return dataformResponse(req, 200, data), nil
+				return dataformResponse(req, 200, map[string]any{"items": []any{data}}), nil
 			})
 			batch, err := r.List(t.Context(), productRequest(r, routerType, "us-central1"))
 			if err == nil || len(batch.Items) != 0 {

@@ -18,7 +18,6 @@ func securityServiceData(name string) map[string]any {
 func TestSecurityServicesNativeInventoryAndReadOnly(t *testing.T) {
 	for _, scope := range []string{"project", "global", "eu"} {
 		t.Run(scope, func(t *testing.T) {
-			var reads []string
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 				if req.Method != "GET" || req.URL.Host != securityServiceHost {
 					t.Fatalf("unexpected API %s %s", req.Method, req.URL)
@@ -39,7 +38,7 @@ func TestSecurityServicesNativeInventoryAndReadOnly(t *testing.T) {
 					}
 					name := strings.TrimPrefix(req.URL.Path, "/v1/") + "/" + service
 					name = strings.Replace(name, "projects/sample-project/", "projects/123456/", 1)
-					body := map[string]any{"securityCenterServices": []any{map[string]any{"name": name}}}
+					body := map[string]any{"securityCenterServices": []any{securityServiceData(name)}}
 					if service == "event-threat-detection" {
 						body["nextPageToken"] = "second-service"
 					}
@@ -48,9 +47,9 @@ func TestSecurityServicesNativeInventoryAndReadOnly(t *testing.T) {
 					}
 					return dataformResponse(req, 200, body), nil
 				}
-				name := strings.TrimPrefix(req.URL.Path, "/v1/")
-				reads = append(reads, name)
-				return dataformResponse(req, 200, securityServiceData(name)), nil
+				// The list returns complete services; inventory never reads one again.
+				t.Fatal("unexpected request", req.URL)
+				return nil, nil
 			})
 			request := securityServiceRequest(r, scope)
 			var locations []string
@@ -82,15 +81,15 @@ func TestSecurityServicesNativeInventoryAndReadOnly(t *testing.T) {
 			if scope == "project" {
 				want = []string{"eu", "eu", "global", "global"}
 			}
-			if !slices.Equal(locations, want) || len(reads) != len(want) {
-				t.Fatal("native location/detail coverage", locations, reads)
+			if !slices.Equal(locations, want) {
+				t.Fatal("native location coverage", locations)
 			}
 		})
 	}
 }
 
 func TestSecurityServicesFailedReadsDoNotCompleteInventory(t *testing.T) {
-	for _, mode := range []string{"foreign-project", "foreign-location", "duplicate", "unreachable", "list-denied", "detail-denied", "detail-missing", "detail-identity", "state-type", "module-type", "modules-type", "cursor-cycle", "locations-changed"} {
+	for _, mode := range []string{"foreign-project", "foreign-location", "duplicate", "unreachable", "list-denied", "state-type", "module-type", "modules-type", "cursor-cycle", "locations-changed"} {
 		t.Run(mode, func(t *testing.T) {
 			lists, locations := 0, 0
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
@@ -117,7 +116,16 @@ func TestSecurityServicesFailedReadsDoNotCompleteInventory(t *testing.T) {
 					if mode == "foreign-location" {
 						name = strings.Replace(name, "global", "eu", 1)
 					}
-					rows := []any{map[string]any{"name": name}}
+					data := securityServiceData(name)
+					switch mode {
+					case "state-type":
+						data["effectiveEnablementState"] = true
+					case "module-type":
+						data["modules"] = map[string]any{"SSH": false}
+					case "modules-type":
+						data["modules"] = []any{}
+					}
+					rows := []any{data}
 					if mode == "duplicate" {
 						rows = append(rows, rows[0])
 					}
@@ -130,24 +138,8 @@ func TestSecurityServicesFailedReadsDoNotCompleteInventory(t *testing.T) {
 					}
 					return dataformResponse(req, 200, body), nil
 				}
-				if mode == "detail-denied" {
-					return apiResponse(req, 403, `{}`), nil
-				}
-				if mode == "detail-missing" {
-					return apiResponse(req, 404, `{}`), nil
-				}
-				data := securityServiceData(name)
-				switch mode {
-				case "detail-identity":
-					data["name"] = name + "-other"
-				case "state-type":
-					data["effectiveEnablementState"] = true
-				case "module-type":
-					data["modules"] = map[string]any{"SSH": false}
-				case "modules-type":
-					data["modules"] = []any{}
-				}
-				return dataformResponse(req, 200, data), nil
+				t.Fatal("unexpected request", req.URL)
+				return nil, nil
 			})
 			request := securityServiceRequest(r, "project")
 			page, err := r.List(t.Context(), request)

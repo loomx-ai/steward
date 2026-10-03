@@ -72,7 +72,7 @@ func routerComponentSQLiteCleanup(t *testing.T, nativeType string, bgp, setRefer
 				if !setExists {
 					return apiResponse(req, 200, `{}`), nil
 				}
-				return apiResponse(req, 200, `{"result":[{"name":"local"}]}`), nil
+				return dataformResponse(req, 200, map[string]any{"result": []any{namedSetFixture("local")}}), nil
 			}
 			if req.Method == "GET" && strings.HasSuffix(req.URL.Path, "/getNamedSet") {
 				if req.URL.Query().Get("namedSet") != "local" {
