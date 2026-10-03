@@ -3,6 +3,7 @@ package relational
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -566,7 +567,7 @@ func (s *Store) ReplaceTask(ctx context.Context, value plan.CleanupTask, steps [
 			return err
 		}
 		result := tx.Table("cleanup_tasks").Where("id = ?", string(value.ID)).Updates(map[string]any{
-			"status": value.Status, "payload": payload,
+			"status": value.Status, "payload": payload, "revision": gorm.Expr("revision + 1"),
 		})
 		if result.Error != nil {
 			return result.Error
@@ -607,7 +608,7 @@ func (s *Store) UpdateTask(ctx context.Context, value plan.CleanupTask) error {
 		return err
 	}
 	result := s.db.WithContext(ctx).Table("cleanup_tasks").Where("id = ?", string(value.ID)).Updates(map[string]any{
-		"status": value.Status, "payload": payload,
+		"status": value.Status, "payload": payload, "revision": gorm.Expr("revision + 1"),
 	})
 	if result.Error != nil {
 		return result.Error
@@ -628,7 +629,7 @@ func (s *Store) UpdateImpactItems(ctx context.Context, cleanupTaskID plan.Cleanu
 			if err != nil {
 				return err
 			}
-			result := tx.Table("cleanup_task_rows").Where("id = ? AND cleanup_task_id = ? AND row_kind = ?", string(value.ID), string(cleanupTaskID), "impact").Update("payload", payload)
+			result := tx.Table("cleanup_task_rows").Where("id = ? AND cleanup_task_id = ? AND row_kind = ?", string(value.ID), string(cleanupTaskID), "impact").Updates(map[string]any{"payload": payload, "revision": gorm.Expr("revision + 1")})
 			if result.Error != nil {
 				return result.Error
 			}
@@ -638,4 +639,30 @@ func (s *Store) UpdateImpactItems(ctx context.Context, cleanupTaskID plan.Cleanu
 		}
 		return nil
 	})
+}
+
+// CleanupTaskVersion changes whenever the task, its steps and impact rows, its
+// executions or their actions do: every update bumps a row revision, rows are
+// otherwise only added, and ReplaceTask, which rewrites the steps and impact
+// rows, also updates the task row.
+func (s *Store) CleanupTaskVersion(ctx context.Context, connectionID asset.ConnectionID, id plan.CleanupTaskID) (string, error) {
+	db := s.db.WithContext(ctx)
+	var task struct {
+		Revision int64 `gorm:"column:revision"`
+	}
+	if err := db.Table("cleanup_tasks").Select("revision").Where("id = ? AND connection_id = ?", string(id), string(connectionID)).Take(&task).Error; err != nil {
+		return "", mapError(err)
+	}
+	var rows, executions, actions revisionTotals
+	if err := db.Table("cleanup_task_rows").Select(selectRevisionTotals).Where("cleanup_task_id = ?", string(id)).Scan(&rows).Error; err != nil {
+		return "", err
+	}
+	if err := db.Table("execution_attempts").Select(selectRevisionTotals).Where("cleanup_task_id = ?", string(id)).Scan(&executions).Error; err != nil {
+		return "", err
+	}
+	taskExecutions := db.Table("execution_attempts").Select("id").Where("cleanup_task_id = ?", string(id))
+	if err := db.Table("action_attempts").Select(selectRevisionTotals).Where("execution_id IN (?)", taskExecutions).Scan(&actions).Error; err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("t%d:r%d.%d:e%d.%d:a%d.%d", task.Revision, rows.Rows, rows.Revisions, executions.Rows, executions.Revisions, actions.Rows, actions.Revisions), nil
 }

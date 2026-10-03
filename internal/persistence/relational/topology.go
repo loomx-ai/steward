@@ -169,23 +169,27 @@ func (s *Store) ListUnresolvedByConnection(ctx context.Context, connectionID ass
 	return result, nil
 }
 
+// revisionTotals is a table's row count and revision sum. Where every update
+// bumps a row's revision, the pair changes whenever the rows do.
+type revisionTotals struct {
+	Rows      int64 `gorm:"column:row_count"`
+	Revisions int64 `gorm:"column:revision_sum"`
+}
+
+const selectRevisionTotals = "COUNT(*) AS row_count, CAST(COALESCE(SUM(revision), 0) AS BIGINT) AS revision_sum"
+
 // ConnectionInventoryVersion changes whenever the connection's assets,
 // findings, graph revisions or open graph rows do: asset and finding writes
 // bump a row revision and neither table deletes rows, so count plus revision
 // sum never repeats.
 func (s *Store) ConnectionInventoryVersion(ctx context.Context, connectionID asset.ConnectionID) (string, error) {
 	db := s.db.WithContext(ctx)
-	type totals struct {
-		Rows      int64 `gorm:"column:row_count"`
-		Revisions int64 `gorm:"column:revision_sum"`
-	}
-	const selectTotals = "COUNT(*) AS row_count, CAST(COALESCE(SUM(revision), 0) AS BIGINT) AS revision_sum"
-	var assets, findings totals
-	if err := db.Table("assets").Select(selectTotals).Where("connection_id = ?", string(connectionID)).Scan(&assets).Error; err != nil {
+	var assets, findings revisionTotals
+	if err := db.Table("assets").Select(selectRevisionTotals).Where("connection_id = ?", string(connectionID)).Scan(&assets).Error; err != nil {
 		return "", err
 	}
 	connectionAssets := db.Table("assets").Select("id").Where("connection_id = ?", string(connectionID))
-	if err := db.Table("findings").Select(selectTotals).Where("asset_id IN (?)", connectionAssets).Scan(&findings).Error; err != nil {
+	if err := db.Table("findings").Select(selectRevisionTotals).Where("asset_id IN (?)", connectionAssets).Scan(&findings).Error; err != nil {
 		return "", err
 	}
 	scopes := db.Table("scopes").Select("id").Where("connection_id = ?", string(connectionID))

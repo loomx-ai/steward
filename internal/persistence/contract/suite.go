@@ -1565,6 +1565,46 @@ func Run(t *testing.T, factory Factory) {
 			t.Fatalf("published outbox still pending = %#v, err = %v", pending, err)
 		}
 
+		if _, err := repositories.CleanupTasks().CleanupTaskVersion(ctx, "conn-b", cleanupTask.ID); !errors.Is(err, persistence.ErrNotFound) {
+			t.Fatalf("foreign cleanup task version error = %v", err)
+		}
+		taskVersion := func() string {
+			t.Helper()
+			value, err := repositories.CleanupTasks().CleanupTaskVersion(ctx, "conn-a", cleanupTask.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			return value
+		}
+		previousVersion := taskVersion()
+		if again := taskVersion(); again != previousVersion {
+			t.Fatalf("unchanged cleanup task version moved from %q to %q", previousVersion, again)
+		}
+		secondAction := execution.ActionAttempt{ID: "action-2", ExecutionID: "execution-1", CleanupTaskStepID: "step-2", AssetID: "asset-1", Action: "delete", Status: execution.ActionPending, IdempotencyKey: "action-key-2", CreatedAt: now, UpdatedAt: now}
+		for _, mutation := range []struct {
+			name   string
+			mutate func() error
+		}{
+			{"task update", func() error { return repositories.CleanupTasks().UpdateTask(ctx, cleanupTask) }},
+			{"impact update", func() error { return repositories.CleanupTasks().UpdateImpactItems(ctx, cleanupTask.ID, impacts) }},
+			{"task replace", func() error { return repositories.CleanupTasks().ReplaceTask(ctx, cleanupTask, steps, impacts) }},
+			{"execution update", func() error { return repositories.Executions().UpdateExecution(ctx, executionAttempt) }},
+			{"action update", func() error { return repositories.Executions().UpdateAction(ctx, actionAttempt) }},
+			{"action append", func() error { return repositories.Executions().AppendAction(ctx, secondAction) }},
+			{"execution create", func() error {
+				return repositories.Executions().CreateExecution(ctx, execution.ExecutionAttempt{ID: "execution-2", ConnectionID: "conn-a", CleanupTaskID: "cln-1", Status: execution.ExecutionPending, RequestedBy: "tester", IdempotencyKey: "execution-key-2", CreatedAt: now.Add(time.Second)})
+			}},
+		} {
+			if err := mutation.mutate(); err != nil {
+				t.Fatalf("%s: %v", mutation.name, err)
+			}
+			current := taskVersion()
+			if current == previousVersion {
+				t.Fatalf("cleanup task version did not change after %s: %q", mutation.name, current)
+			}
+			previousVersion = current
+		}
+
 		if err := repositories.Inventory().CreateScanRun(ctx, asset.ScanRun{
 			ID: "scan-history", ConnectionID: "conn-a", Status: asset.ScanSucceeded,
 			Targets: []asset.ScanTarget{{

@@ -191,60 +191,32 @@ type cleanupProgress struct {
 	connectionID asset.ConnectionID
 	taskID       plan.CleanupTaskID
 	started      bool
+	version      string
 	steps        []plan.CleanupTaskStep
 	task         plan.CleanupTask
 	impacts      map[plan.ImpactItemID]plan.ImpactItem
 	execution    *executionAttemptProjection
 	actions      map[execution.ActionAttemptID]execution.ActionAttempt
+	actionsDone  bool
 }
 
 // writeCleanupProgress writes an event for each part of the task that changed
 // since the last call and reports whether it wrote any and whether the task has
-// settled: terminal, with its latest attempt and every action finished.
+// settled: terminal, with its latest attempt and every action finished. The
+// task, impact and action rows are read only when the task's version moved;
+// the attempt is projected every call because its timing follows its jobs.
 func (a *API) writeCleanupProgress(response http.ResponseWriter, request *http.Request, progress *cleanupProgress) (wrote, ended bool, err error) {
 	ctx := request.Context()
-	stored, err := a.dependencies.Repositories.CleanupTasks().GetTask(ctx, progress.taskID)
-	if err == nil && stored.Task.ConnectionID != progress.connectionID {
-		err = persistence.ErrNotFound
-	}
+	version, err := a.dependencies.Repositories.CleanupTasks().CleanupTaskVersion(ctx, progress.connectionID, progress.taskID)
 	if err != nil {
 		return false, false, err
 	}
-	if !progress.started || !reflect.DeepEqual(progress.steps, stored.Steps) {
-		// The page shows the steps the service derives, so the full aggregate
-		// comes from it rather than from the stored rows.
-		aggregate, err := a.dependencies.CleanupTasks.GetTask(ctx, progress.taskID, progress.connectionID)
-		if err != nil {
-			return false, false, err
+	changed := !progress.started || version != progress.version
+	if changed {
+		if wrote, err = a.writeCleanupTaskChanges(response, request, progress); err != nil {
+			return wrote, false, err
 		}
-		writeScanEvent(response, "aggregate", "", aggregate)
-		wrote = true
-		progress.started = true
-		progress.steps = stored.Steps
-		progress.task = aggregate.Task
-		progress.impacts = make(map[plan.ImpactItemID]plan.ImpactItem, len(aggregate.ImpactItems))
-		for _, impact := range aggregate.ImpactItems {
-			progress.impacts[impact.ID] = impact
-		}
-	} else {
-		if !reflect.DeepEqual(progress.task, stored.Task) {
-			writeScanEvent(response, "task", "", stored.Task)
-			progress.task = stored.Task
-			wrote = true
-		}
-		changed := []plan.ImpactItem{}
-		for _, impact := range stored.ImpactItems {
-			if previous, seen := progress.impacts[impact.ID]; !seen || !reflect.DeepEqual(previous, impact) {
-				changed = append(changed, impact)
-				progress.impacts[impact.ID] = impact
-			}
-		}
-		if len(changed) > 0 {
-			writeScanEvent(response, "impacts", "", struct {
-				Items []plan.ImpactItem `json:"items"`
-			}{Items: changed})
-			wrote = true
-		}
+		progress.version = version
 	}
 
 	latest, err := a.latestCleanupExecution(request, progress.connectionID, progress.taskID)
@@ -263,30 +235,80 @@ func (a *API) writeCleanupProgress(response http.ResponseWriter, request *http.R
 		progress.actions = map[execution.ActionAttemptID]execution.ActionAttempt{}
 	}
 	progress.execution = latest
-	// ponytail: each tick re-reads the task rows and the attempt's actions to
-	// diff them here; a revision bumped on every action or impact write would
-	// let unchanged ticks skip those reads.
-	actions, err := a.dependencies.Repositories.Executions().ListExecutionActions(ctx, progress.connectionID, latest.ID)
-	if err != nil {
-		return wrote, false, err
-	}
-	changed := []execution.ActionAttempt{}
-	for _, action := range actions {
-		action = execution.PublicActionAttempt(action)
-		if previous, seen := progress.actions[action.ID]; !seen || !reflect.DeepEqual(previous, action) {
-			changed = append(changed, action)
-			progress.actions[action.ID] = action
+	if changed {
+		actions, err := a.dependencies.Repositories.Executions().ListExecutionActions(ctx, progress.connectionID, latest.ID)
+		if err != nil {
+			return wrote, false, err
 		}
-		settled = settled && isTerminalActionStatus(action.Status)
+		changedActions := []execution.ActionAttempt{}
+		progress.actionsDone = true
+		for _, action := range actions {
+			action = execution.PublicActionAttempt(action)
+			if previous, seen := progress.actions[action.ID]; !seen || !reflect.DeepEqual(previous, action) {
+				changedActions = append(changedActions, action)
+				progress.actions[action.ID] = action
+			}
+			progress.actionsDone = progress.actionsDone && isTerminalActionStatus(action.Status)
+		}
+		if len(changedActions) > 0 {
+			writeScanEvent(response, "actions", "", struct {
+				ExecutionID execution.ExecutionID     `json:"execution_id"`
+				Items       []execution.ActionAttempt `json:"items"`
+			}{ExecutionID: latest.ID, Items: changedActions})
+			wrote = true
+		}
 	}
-	if len(changed) > 0 {
-		writeScanEvent(response, "actions", "", struct {
-			ExecutionID execution.ExecutionID     `json:"execution_id"`
-			Items       []execution.ActionAttempt `json:"items"`
-		}{ExecutionID: latest.ID, Items: changed})
+	return wrote, settled && progress.actionsDone && isTerminalExecutionStatus(latest.Status), nil
+}
+
+// writeCleanupTaskChanges writes the full aggregate on the first call or when
+// the steps changed, and otherwise the task header and the impact items that
+// changed since the last call.
+func (a *API) writeCleanupTaskChanges(response http.ResponseWriter, request *http.Request, progress *cleanupProgress) (wrote bool, err error) {
+	ctx := request.Context()
+	stored, err := a.dependencies.Repositories.CleanupTasks().GetTask(ctx, progress.taskID)
+	if err == nil && stored.Task.ConnectionID != progress.connectionID {
+		err = persistence.ErrNotFound
+	}
+	if err != nil {
+		return false, err
+	}
+	if !progress.started || !reflect.DeepEqual(progress.steps, stored.Steps) {
+		// The page shows the steps the service derives, so the full aggregate
+		// comes from it rather than from the stored rows.
+		aggregate, err := a.dependencies.CleanupTasks.GetTask(ctx, progress.taskID, progress.connectionID)
+		if err != nil {
+			return false, err
+		}
+		writeScanEvent(response, "aggregate", "", aggregate)
+		progress.started = true
+		progress.steps = stored.Steps
+		progress.task = aggregate.Task
+		progress.impacts = make(map[plan.ImpactItemID]plan.ImpactItem, len(aggregate.ImpactItems))
+		for _, impact := range aggregate.ImpactItems {
+			progress.impacts[impact.ID] = impact
+		}
+		return true, nil
+	}
+	if !reflect.DeepEqual(progress.task, stored.Task) {
+		writeScanEvent(response, "task", "", stored.Task)
+		progress.task = stored.Task
 		wrote = true
 	}
-	return wrote, settled && isTerminalExecutionStatus(latest.Status), nil
+	changed := []plan.ImpactItem{}
+	for _, impact := range stored.ImpactItems {
+		if previous, seen := progress.impacts[impact.ID]; !seen || !reflect.DeepEqual(previous, impact) {
+			changed = append(changed, impact)
+			progress.impacts[impact.ID] = impact
+		}
+	}
+	if len(changed) > 0 {
+		writeScanEvent(response, "impacts", "", struct {
+			Items []plan.ImpactItem `json:"items"`
+		}{Items: changed})
+		wrote = true
+	}
+	return wrote, nil
 }
 
 // latestCleanupExecution returns the task's newest execution attempt with

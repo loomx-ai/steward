@@ -230,7 +230,7 @@ func (s *Store) UpdateExecution(ctx context.Context, attempt execution.Execution
 	if err != nil {
 		return err
 	}
-	result := s.db.WithContext(ctx).Table("execution_attempts").Where("id = ?", string(attempt.ID)).Updates(map[string]any{"status": string(attempt.Status), "payload": payload})
+	result := s.db.WithContext(ctx).Table("execution_attempts").Where("id = ?", string(attempt.ID)).Updates(map[string]any{"status": string(attempt.Status), "payload": payload, "revision": gorm.Expr("revision + 1")})
 	if result.Error != nil {
 		return result.Error
 	}
@@ -347,7 +347,7 @@ func (s *Store) UpdateAction(ctx context.Context, attempt execution.ActionAttemp
 	if err != nil {
 		return err
 	}
-	result := s.db.WithContext(ctx).Table("action_attempts").Where("id = ?", string(attempt.ID)).Updates(map[string]any{"status": string(attempt.Status), "updated_at": attempt.UpdatedAt, "payload": payload})
+	result := s.db.WithContext(ctx).Table("action_attempts").Where("id = ?", string(attempt.ID)).Updates(map[string]any{"status": string(attempt.Status), "updated_at": attempt.UpdatedAt, "payload": payload, "revision": gorm.Expr("revision + 1")})
 	if result.Error != nil {
 		return result.Error
 	}

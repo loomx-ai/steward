@@ -238,6 +238,9 @@ type CleanupTaskRepository interface {
 	ReplaceTask(context.Context, plan.CleanupTask, []plan.CleanupTaskStep, []plan.ImpactItem) error
 	UpdateTask(context.Context, plan.CleanupTask) error
 	UpdateImpactItems(context.Context, plan.CleanupTaskID, []plan.ImpactItem) error
+	// CleanupTaskVersion is a cheap marker that changes whenever the task, its
+	// steps and impact items, its executions or their actions do.
+	CleanupTaskVersion(context.Context, asset.ConnectionID, plan.CleanupTaskID) (string, error)
 }
 
 type ExecutionRepository interface {
