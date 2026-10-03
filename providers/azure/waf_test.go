@@ -704,6 +704,9 @@ func TestWAFNativePaginationAndScopes(t *testing.T) {
 					// A newly discovered RG changes the collection set for CDN WAF.
 					groups := "/subscriptions/" + testSubscription + "/resourcegroups"
 					s.lists[groups] = append(s.lists[groups], map[string]any{"id": groups + "/second", "type": groupType})
+					// Later pages reuse the first page's parents; a resumed cursor
+					// meets a fresh listing once those expire or the process restarts.
+					r.targetCache = productTargetCache{}
 				}
 				request.Cursor = first.NextCursor
 				last, err := r.List(context.Background(), request)

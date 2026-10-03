@@ -451,3 +451,53 @@ func TestRegionalProductNetworkScanIncludesGlobalBindings(t *testing.T) {
 		t.Fatalf("network scan lost global resource=%+v error=%v", batch, err)
 	}
 }
+
+func TestProductChildShardReusesParentTargetsAcrossPages(t *testing.T) {
+	root := "/subscriptions/" + testSubscription
+	parents := []any{nativeResource(vnetType, "a", "eastus", map[string]any{}), nativeResource(vnetType, "b", "eastus", map[string]any{})}
+	parentLists := 0
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		path := strings.ToLower(req.URL.Path)
+		var data any
+		switch {
+		case path == strings.ToLower(root+"/providers/"+vnetType):
+			parentLists++
+			data = map[string]any{"value": parents}
+		case strings.HasSuffix(path, "/subnets"):
+			parent := strings.TrimSuffix(req.URL.Path, "/subnets")
+			data = map[string]any{"value": []any{map[string]any{"id": parent + "/subnets/s", "name": "s", "properties": map[string]any{}}}}
+		case strings.Contains(path, "/subnets/"):
+			data = map[string]any{"id": req.URL.Path, "name": "s", "properties": map[string]any{}}
+		case path == root+"/resourcegroups", path == root+"/providers/microsoft.authorization/locks":
+			data = map[string]any{"value": []any{}}
+		default:
+			for _, parent := range parents {
+				if strings.EqualFold(text(object(parent)["id"]), req.URL.Path) {
+					data = parent
+				}
+			}
+			if data == nil {
+				t.Fatalf("unexpected request %s", req.URL)
+			}
+		}
+		return jsonResponse(200, data, nil), nil
+	})
+	request := productRequest(r, subnetType)
+	request.Source = productInventorySource
+	first, err := r.List(context.Background(), request)
+	if err != nil || first.Complete || len(first.Items) != 1 {
+		t.Fatalf("first=%+v error=%v", first, err)
+	}
+	request.Cursor = first.NextCursor
+	second, err := r.List(context.Background(), request)
+	if err != nil || !second.Complete || len(second.Items) != 1 || parentLists != 1 {
+		t.Fatalf("second=%+v parent lists=%d error=%v", second, parentLists, err)
+	}
+	// A parent created between pages changes the fingerprint once the parents
+	// are listed again, so a resumed cursor cannot skip its children.
+	parents = append(parents, nativeResource(vnetType, "c", "eastus", map[string]any{}))
+	r.targetCache = productTargetCache{}
+	if _, err := r.List(context.Background(), request); err == nil || !strings.Contains(err.Error(), "current parents") {
+		t.Fatalf("changed parent set error = %v", err)
+	}
+}

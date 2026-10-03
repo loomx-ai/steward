@@ -24,6 +24,7 @@ type Runtime struct {
 	mu             sync.Mutex
 	clients        map[asset.ConnectionID]*client
 	synapseClients map[asset.ConnectionID]*synapseDataClient
+	targetCache    productTargetCache
 }
 
 func NewRuntime(credentials contracts.CredentialSource) (*Runtime, error) {

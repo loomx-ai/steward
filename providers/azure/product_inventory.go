@@ -11,6 +11,8 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/catalog"
@@ -96,7 +98,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	default:
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure product scope")
 	}
-	targets, err := r.productTargets(ctx, c, request, definition, ancestors)
+	// A shard's first page lists parents afresh; its later pages reuse that set.
+	targetKey := productTargetKey{connection: request.ConnectionID, credential: c.fingerprint, nativeType: strings.ToLower(nativeType), scopeKind: request.Scope.Kind, scopeID: request.Scope.NativeID}
+	targets, err := r.targetCache.get(targetKey, request.Cursor == "", func() ([]productTarget, error) {
+		return r.productTargets(ctx, c, request, definition, ancestors)
+	})
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
@@ -566,6 +572,56 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 		return errProductParentGenerationChanged
 	}
 	return nil
+}
+
+// productTargetTTL bounds how long a child shard's later pages reuse the parent
+// targets its first page listed; without it every page relists every parent.
+// The cursor fingerprint still rejects resuming against a different parent set
+// once the targets are listed again.
+const productTargetTTL = 10 * time.Minute
+
+type productTargetKey struct {
+	connection asset.ConnectionID
+	credential [32]byte
+	nativeType string
+	scopeKind  asset.ScopeKind
+	scopeID    string
+}
+
+type productTargetCache struct {
+	mu      sync.Mutex
+	entries map[productTargetKey]cachedProductTargets
+}
+
+type cachedProductTargets struct {
+	targets []productTarget
+	expires time.Time
+}
+
+func (c *productTargetCache) get(key productTargetKey, refresh bool, list func() ([]productTarget, error)) ([]productTarget, error) {
+	now := time.Now()
+	c.mu.Lock()
+	entry, ok := c.entries[key]
+	c.mu.Unlock()
+	if ok && !refresh && now.Before(entry.expires) {
+		return entry.targets, nil
+	}
+	targets, err := list()
+	if err != nil {
+		return nil, err
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.entries == nil {
+		c.entries = map[productTargetKey]cachedProductTargets{}
+	}
+	for cached, entry := range c.entries {
+		if !now.Before(entry.expires) {
+			delete(c.entries, cached)
+		}
+	}
+	c.entries[key] = cachedProductTargets{targets: targets, expires: now.Add(productTargetTTL)}
+	return targets, nil
 }
 
 func (r *Runtime) productTargets(ctx context.Context, c *client, request contracts.InventoryRequest, definition spec.ResourceKindSpec, ancestors []string) ([]productTarget, error) {
