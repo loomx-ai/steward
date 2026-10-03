@@ -297,7 +297,7 @@ func (s *ControlService) reconcileRetryPlan(
 	existing := retryShardSignatures(existingShards)
 	added := make([]asset.ScanShard, 0)
 	persistedKinds := make(map[asset.ResourceKindID]struct{})
-	putShard := func(targetKey, regionID string, scopeID asset.ScopeID, template retryShardTemplate) error {
+	addShard := func(targetKey, regionID string, scopeID asset.ScopeID, template retryShardTemplate) error {
 		signature := retryShardSignature(targetKey, template)
 		if _, ok := existing[signature]; ok {
 			return nil
@@ -317,9 +317,6 @@ func (s *ControlService) reconcileRetryPlan(
 			template.source, kindID, template.authoritative, now,
 		)
 		shard.RetryGeneration = generation
-		if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
-			return err
-		}
 		existing[signature] = struct{}{}
 		added = append(added, shard)
 		return nil
@@ -356,7 +353,7 @@ func (s *ControlService) reconcileRetryPlan(
 			scopeByTarget[target.Key] = scopeID
 		}
 		for _, template := range definition.regionTemplates {
-			if err := putShard(target.Key, regionID, scopeID, template); err != nil {
+			if err := addShard(target.Key, regionID, scopeID, template); err != nil {
 				return nil, err
 			}
 		}
@@ -391,10 +388,14 @@ func (s *ControlService) reconcileRetryPlan(
 			scopeByTarget[globalTarget.Key] = scopeID
 		}
 		for _, template := range definition.globalTemplates {
-			if err := putShard(globalTarget.Key, "global", scopeID, template); err != nil {
+			if err := addShard(globalTarget.Key, "global", scopeID, template); err != nil {
 				return nil, err
 			}
 		}
+	}
+	// The added shards are new, so they are inserted together.
+	if err := repositories.Inventory().CreateScanShards(ctx, added); err != nil {
+		return nil, err
 	}
 	sortScanTargets(task.Targets)
 	return added, nil
