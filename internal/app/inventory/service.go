@@ -582,31 +582,29 @@ func (s *Service) FinishShard(ctx context.Context, shard *asset.ScanShard, statu
 				if err != nil {
 					return err
 				}
-				for _, id := range coveredIDs {
-					value, err := repository.GetAsset(ctx, id)
-					if err != nil {
-						return err
-					}
+				covered, err := repository.ListAssetsByIDs(ctx, coveredIDs)
+				if err != nil {
+					return err
+				}
+				if len(covered) != len(coveredIDs) {
+					return fmt.Errorf("observed asset of shard %s: %w", updatedShard.ID, persistence.ErrNotFound)
+				}
+				for _, value := range covered {
 					if value.ClosedAt == nil {
 						active = append(active, value)
 					}
 				}
-			} else if updatedShard.Authoritative {
-				active, err = repository.ListActiveAssetsByConnection(ctx, run.ConnectionID, updatedShard.ResourceKindID)
+			} else if updatedShard.Authoritative && updatedShard.ScopeID != "" {
+				scopeIDs, err := coveredScopeIDs(ctx, repository, updatedShard.ScopeID, run.ConnectionID)
+				if err != nil {
+					return err
+				}
+				active, err = repository.ListActiveAssetsByScopes(ctx, run.ConnectionID, scopeIDs, updatedShard.ResourceKindID)
 				if err != nil {
 					return err
 				}
 			}
 			for _, projected := range active {
-				if run.ScopeMode != asset.ScanSelectedNetworks {
-					covered, err := scopeWithinCoverage(ctx, repository, projected.ScopeID, updatedShard.ScopeID, run.ConnectionID)
-					if err != nil {
-						return err
-					}
-					if !covered {
-						continue
-					}
-				}
 				if _, ok := seen[projected.ID]; ok {
 					continue
 				}
@@ -629,6 +627,38 @@ func (s *Service) FinishShard(ctx context.Context, shard *asset.ScanShard, statu
 	}
 	*shard = updatedShard
 	return nil
+}
+
+// coveredScopeIDs lists the coverage scope and every scope below it, the same
+// scopes scopeWithinCoverage accepts, so reconciliation reads only the assets a
+// shard covers instead of walking every asset of the connection upwards.
+func coveredScopeIDs(ctx context.Context, repository persistence.InventoryRepository, coverageScopeID asset.ScopeID, connectionID asset.ConnectionID) ([]asset.ScopeID, error) {
+	coverageScope, err := repository.GetScope(ctx, coverageScopeID)
+	if err != nil {
+		return nil, fmt.Errorf("resolve inventory coverage scope %s: %w", coverageScopeID, err)
+	}
+	if coverageScope.ConnectionID != connectionID {
+		return nil, fmt.Errorf("coverage scope %s belongs to connection %s, expected %s", coverageScope.ID, coverageScope.ConnectionID, connectionID)
+	}
+	scopes, err := repository.ListScopesByConnection(ctx, connectionID)
+	if err != nil {
+		return nil, err
+	}
+	children := make(map[asset.ScopeID][]asset.ScopeID, len(scopes))
+	for _, scope := range scopes {
+		children[scope.ParentID] = append(children[scope.ParentID], scope.ID)
+	}
+	result := []asset.ScopeID{coverageScopeID}
+	visited := map[asset.ScopeID]struct{}{coverageScopeID: {}}
+	for index := 0; index < len(result); index++ {
+		for _, child := range children[result[index]] {
+			if _, ok := visited[child]; !ok {
+				visited[child] = struct{}{}
+				result = append(result, child)
+			}
+		}
+	}
+	return result, nil
 }
 
 func scopeWithinCoverage(ctx context.Context, repository persistence.InventoryRepository, scopeID, coverageScopeID asset.ScopeID, connectionID asset.ConnectionID) (bool, error) {

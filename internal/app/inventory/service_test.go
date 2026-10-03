@@ -1009,9 +1009,20 @@ func TestAuthoritativeRegionalShardDoesNotCloseAssetsInSiblingScope(t *testing.T
 	sibling := activeAsset("asset-sibling")
 	sibling.Identity.ConnectionID = "connection-a"
 	sibling.ScopeID = "scope-region-b"
+	// A zone below the region is covered; an asset outside the region is never
+	// read, so even one whose scope no longer resolves cannot fail the shard.
+	repository.scopes["scope-zone-a"] = asset.Scope{ID: "scope-zone-a", ConnectionID: "connection-a", ParentID: "scope-region-a", Kind: asset.ScopeZone}
+	zoned := activeAsset("asset-zoned")
+	zoned.Identity.ConnectionID = "connection-a"
+	zoned.ScopeID = "scope-zone-a"
+	orphan := activeAsset("asset-orphan")
+	orphan.Identity.ConnectionID = "connection-a"
+	orphan.ScopeID = "scope-missing"
 	repository.assets[seen.ID] = seen
 	repository.assets[missing.ID] = missing
 	repository.assets[sibling.ID] = sibling
+	repository.assets[zoned.ID] = zoned
+	repository.assets[orphan.ID] = orphan
 	repository.observations[seen.ID] = []asset.Observation{{AssetID: seen.ID, ScanShardID: "shard-region-a"}}
 	repository.runs["run-region-a"] = asset.ScanRun{ID: "run-region-a", ConnectionID: "connection-a"}
 	service := inventory.NewService(repository)
@@ -1020,8 +1031,9 @@ func TestAuthoritativeRegionalShardDoesNotCloseAssetsInSiblingScope(t *testing.T
 	if err := service.FinishShard(context.Background(), &shard, asset.ShardSucceeded, ""); err != nil {
 		t.Fatal(err)
 	}
-	if repository.assets[seen.ID].ClosedAt != nil || repository.assets[missing.ID].ClosedAt == nil || repository.assets[sibling.ID].ClosedAt != nil {
-		t.Fatalf("seen=%+v missing=%+v sibling=%+v", repository.assets[seen.ID], repository.assets[missing.ID], repository.assets[sibling.ID])
+	if repository.assets[seen.ID].ClosedAt != nil || repository.assets[missing.ID].ClosedAt == nil || repository.assets[sibling.ID].ClosedAt != nil ||
+		repository.assets[zoned.ID].ClosedAt == nil || repository.assets[orphan.ID].ClosedAt != nil {
+		t.Fatalf("seen=%+v missing=%+v sibling=%+v zoned=%+v orphan=%+v", repository.assets[seen.ID], repository.assets[missing.ID], repository.assets[sibling.ID], repository.assets[zoned.ID], repository.assets[orphan.ID])
 	}
 }
 
