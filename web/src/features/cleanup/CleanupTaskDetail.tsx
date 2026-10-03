@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   useMutation,
   useQuery,
@@ -221,13 +228,17 @@ export function CleanupTaskDetail() {
         ? 2500
         : false,
   });
-  const aggregate = detail.data
-    ? {
-        ...detail.data,
-        steps: detail.data.steps ?? [],
-        impact_items: detail.data.impact_items ?? [],
-      }
-    : undefined;
+  const aggregate = useMemo(
+    () =>
+      detail.data
+        ? {
+            ...detail.data,
+            steps: detail.data.steps ?? [],
+            impact_items: detail.data.impact_items ?? [],
+          }
+        : undefined,
+    [detail.data],
+  );
   const hasExecution =
     aggregate !== undefined &&
     [
@@ -643,8 +654,54 @@ export function CleanupTaskDetail() {
       ),
     [label, locale, resourceRows],
   );
+  const deferredQuery = useDeferredValue(query);
+  const searching = deferredQuery.trim() !== "";
+  // Lower-cased search fields per row, joined by a newline the single-line
+  // search input can never contain, so typing only runs substring checks.
+  const searchTextByRow = useMemo(
+    () =>
+      searching &&
+      new Map(
+        resourceRows.map((row) => {
+          const asset = byID.get(row.assetID);
+          return [
+            row,
+            [
+              asset?.name ?? "",
+              asset?.identity.native_id ?? "",
+              cleanupActionDisplayLabel(
+                row,
+                byID,
+                resourceKindsByID,
+                locale,
+                label,
+                t,
+              ),
+              cleanupAssetRegionLabel(
+                asset,
+                connectionRegions,
+                t("common.global"),
+              ),
+              row.status,
+            ]
+              .join("\n")
+              .toLowerCase(),
+          ] as const;
+        }),
+      ),
+    [
+      byID,
+      connectionRegions,
+      searching,
+      label,
+      locale,
+      resourceKindsByID,
+      resourceRows,
+      t,
+    ],
+  );
   const filteredRows = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
+    const normalized = deferredQuery.trim().toLowerCase();
     return resourceRows
       .filter((row) => status === allStatuses || row.status === status)
       .filter((row) => {
@@ -657,46 +714,20 @@ export function CleanupTaskDetail() {
       .filter(
         (row) =>
           !normalized ||
-          byID.get(row.assetID)?.name?.toLowerCase().includes(normalized) ||
-          byID
-            .get(row.assetID)
-            ?.identity.native_id.toLowerCase()
-            .includes(normalized) ||
-          cleanupActionDisplayLabel(
-            row,
-            byID,
-            resourceKindsByID,
-            locale,
-            label,
-            t,
-          )
-            .toLowerCase()
-            .includes(normalized) ||
-          cleanupAssetRegionLabel(
-            byID.get(row.assetID),
-            connectionRegions,
-            t("common.global"),
-          )
-            .toLowerCase()
-            .includes(normalized) ||
-          row.status.toLowerCase().includes(normalized),
+          (searchTextByRow && searchTextByRow.get(row)?.includes(normalized)),
       )
       .sort(
         (left, right) =>
           resourcePriority(left.status) - resourcePriority(right.status) ||
-          left.assetID.localeCompare(right.assetID),
+          defaultCollator.compare(left.assetID, right.assetID),
       );
   }, [
     byID,
-    connectionRegions,
-    label,
-    locale,
-    query,
+    deferredQuery,
     resourceKindIDs,
-    resourceKindsByID,
     resourceRows,
+    searchTextByRow,
     status,
-    t,
   ]);
   const pageCount = Math.max(1, Math.ceil(filteredRows.length / pageSize));
   const visibleRows = filteredRows.slice(
@@ -2353,11 +2384,47 @@ export function cleanupResourceRows(
   return rows;
 }
 
+// Same ordering as String#localeCompare without a locale, without building a
+// collator per comparison.
+const defaultCollator = new Intl.Collator();
+
 function projectManagedResourceRows(
   rows: ResourceRow[],
   byID: ReadonlyMap<string, Asset>,
 ) {
   const rowByAssetID = new Map(rows.map((row) => [row.assetID, row]));
+  const transitRouterByNativeID = new Map<string, Asset>();
+  for (const candidate of byID.values()) {
+    if (
+      candidate.identity.native_type === "ACS::CEN::TransitRouter" &&
+      !transitRouterByNativeID.has(candidate.identity.native_id)
+    ) {
+      transitRouterByNativeID.set(candidate.identity.native_id, candidate);
+    }
+  }
+  const managedENIRowBySecurityGroupID = new Map<string, ResourceRow>();
+  for (const candidateRow of rows) {
+    if (
+      candidateRow.lifecycleKind !== "nat_service_managed_eni" ||
+      !candidateRow.controllerID
+    ) {
+      continue;
+    }
+    const networkInterface = byID.get(candidateRow.assetID);
+    if (
+      networkInterface?.identity.native_type !== "ACS::ECS::NetworkInterface"
+    ) {
+      continue;
+    }
+    for (const securityGroupID of normalizedStringValues(
+      networkInterface.normalized,
+      "security_group_ids",
+    )) {
+      if (!managedENIRowBySecurityGroupID.has(securityGroupID)) {
+        managedENIRowBySecurityGroupID.set(securityGroupID, candidateRow);
+      }
+    }
+  }
   return rows.map((row) => {
     const value = byID.get(row.assetID);
     if (
@@ -2367,11 +2434,7 @@ function projectManagedResourceRows(
       const transitRouterID =
         normalizedString(value?.normalized, "transitRouterId") ||
         normalizedString(value?.normalized, "configuration.TransitRouterId");
-      const controller = [...byID.values()].find(
-        (candidate) =>
-          candidate.identity.native_type === "ACS::CEN::TransitRouter" &&
-          candidate.identity.native_id === transitRouterID,
-      );
+      const controller = transitRouterByNativeID.get(transitRouterID);
       const controllerRow = controller
         ? rowByAssetID.get(controller.id)
         : undefined;
@@ -2394,23 +2457,9 @@ function projectManagedResourceRows(
     ) {
       return projectManagedVerificationRow(row, rowByAssetID);
     }
-    const managedENIRow = rows.find((candidateRow) => {
-      if (
-        candidateRow.lifecycleKind !== "nat_service_managed_eni" ||
-        !candidateRow.controllerID
-      ) {
-        return false;
-      }
-      const networkInterface = byID.get(candidateRow.assetID);
-      return (
-        networkInterface?.identity.native_type ===
-          "ACS::ECS::NetworkInterface" &&
-        normalizedStringValues(
-          networkInterface.normalized,
-          "security_group_ids",
-        ).includes(value.identity.native_id)
-      );
-    });
+    const managedENIRow = managedENIRowBySecurityGroupID.get(
+      value.identity.native_id,
+    );
     if (!managedENIRow?.controllerID) {
       return projectManagedVerificationRow(row, rowByAssetID);
     }
