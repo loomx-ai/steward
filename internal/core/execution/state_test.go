@@ -22,7 +22,7 @@ func TestActionPersistsIntentBeforeProviderCall(t *testing.T) {
 
 func TestActionCannotLeaveTerminalState(t *testing.T) {
 	attempt := execution.ActionAttempt{Status: execution.ActionSucceeded}
-	if err := attempt.Transition(execution.ActionReconciling); !errors.Is(err, execution.ErrInvalidTransition) {
+	if err := attempt.Transition(execution.ActionFailed); !errors.Is(err, execution.ErrInvalidTransition) {
 		t.Fatalf("terminal action must not transition, got %v", err)
 	}
 }
@@ -34,15 +34,5 @@ func TestActionCanSkipFromPersistedIntent(t *testing.T) {
 	}
 	if err := attempt.Transition(execution.ActionInvoking); !errors.Is(err, execution.ErrInvalidTransition) {
 		t.Fatalf("skipped action must be terminal, got %v", err)
-	}
-}
-
-func TestActionCanReconcileAfterReadback(t *testing.T) {
-	attempt := execution.ActionAttempt{Status: execution.ActionReadingBack}
-	if err := attempt.Transition(execution.ActionReconciling); err != nil {
-		t.Fatal(err)
-	}
-	if err := attempt.Transition(execution.ActionFailed); err != nil {
-		t.Fatal(err)
 	}
 }

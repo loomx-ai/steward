@@ -15,7 +15,6 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-const natMutationScope = "gcp_nat_mutation_scope" // Legacy persisted key.
 const routerMutationScope = "gcp_router_mutation_scope"
 
 func solveCleanupPlan(input plan.Input) (plan.Result, error) {
@@ -52,7 +51,7 @@ func (s *Service) guardSharedConfiguration(ctx context.Context, repositories per
 }
 
 func guardSharedConfiguration(ctx context.Context, repositories persistence.Repositories, aggregate persistence.CleanupTaskAggregate, registry ProviderActionRegistry, continuing execution.ExecutionID) error {
-	selected, err := taskRouterScopes(ctx, repositories, aggregate)
+	selected, err := taskRouterScopes(aggregate)
 	if err != nil {
 		return err
 	}
@@ -81,7 +80,7 @@ func guardSharedConfiguration(ctx context.Context, repositories persistence.Repo
 			if err != nil {
 				return err
 			}
-			otherScopes, err := taskRouterScopes(ctx, repositories, other)
+			otherScopes, err := taskRouterScopes(other)
 			if err != nil {
 				return fmt.Errorf("%w: cannot identify previous shared provider updates: %w", persistence.ErrConflict, err)
 			}

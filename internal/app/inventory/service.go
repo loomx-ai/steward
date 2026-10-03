@@ -255,18 +255,6 @@ func (s *Service) projectItem(ctx context.Context, repository persistence.Invent
 		return err
 	}
 	isNew := errors.Is(err, persistence.ErrNotFound)
-	if isNew {
-		projected, isNew, err = migrateUnscopedAliCloudOSSBucket(
-			ctx,
-			repository,
-			connection.ID,
-			kind,
-			identity,
-		)
-		if err != nil {
-			return err
-		}
-	}
 	if !isNew && projected.DeletedAt != nil &&
 		strings.EqualFold(strings.TrimSpace(shard.Source), "resource-center") {
 		if projected.ClosedAt == nil {
@@ -365,73 +353,6 @@ func newChange(changeType asset.ChangeType, value asset.Asset, scanTaskID asset.
 	change.ChangedAt = at
 	change.Fields = fields
 	return change
-}
-
-func migrateUnscopedAliCloudOSSBucket(
-	ctx context.Context,
-	repository persistence.InventoryRepository,
-	connectionID asset.ConnectionID,
-	kind asset.ResourceKind,
-	identity asset.Identity,
-) (asset.Asset, bool, error) {
-	// OSS Bucket was previously modeled as global. Reuse that asset when the
-	// regional observation first arrives so its identity and history stay intact.
-	if kind.Provider != asset.ProviderAliCloud ||
-		kind.NativeType != "ACS::OSS::Bucket" ||
-		strings.TrimSpace(identity.ScopeKey) == "" ||
-		!containsScopeKind(kind.ScopeKinds, asset.ScopeRegion) ||
-		containsScopeKind(kind.ScopeKinds, asset.ScopeGlobal) {
-		return asset.Asset{}, true, nil
-	}
-	legacyIdentity := identity
-	legacyIdentity.ScopeKey = ""
-	legacy, err := repository.GetAssetByIdentity(ctx, legacyIdentity)
-	if errors.Is(err, persistence.ErrNotFound) {
-		return asset.Asset{}, true, nil
-	}
-	if err != nil {
-		return asset.Asset{}, true, err
-	}
-	boundary, err := authoritativeScopeKind(ctx, repository, legacy.ScopeID, connectionID)
-	if err != nil {
-		return asset.Asset{}, true, err
-	}
-	if boundary != asset.ScopeGlobal {
-		return asset.Asset{}, true, nil
-	}
-	return legacy, false, nil
-}
-
-func authoritativeScopeKind(
-	ctx context.Context,
-	repository persistence.InventoryRepository,
-	scopeID asset.ScopeID,
-	connectionID asset.ConnectionID,
-) (asset.ScopeKind, error) {
-	visited := make(map[asset.ScopeID]struct{})
-	for scopeID != "" {
-		if _, exists := visited[scopeID]; exists {
-			return "", fmt.Errorf("scope hierarchy contains a cycle at %s", scopeID)
-		}
-		visited[scopeID] = struct{}{}
-		scope, err := repository.GetScope(ctx, scopeID)
-		if err != nil {
-			return "", fmt.Errorf("resolve authoritative scope for %s: %w", scopeID, err)
-		}
-		if scope.ConnectionID != connectionID {
-			return "", fmt.Errorf(
-				"scope %s belongs to connection %s, expected %s",
-				scope.ID,
-				scope.ConnectionID,
-				connectionID,
-			)
-		}
-		if scope.Kind == asset.ScopeRegion || scope.Kind == asset.ScopeGlobal {
-			return scope.Kind, nil
-		}
-		scopeID = scope.ParentID
-	}
-	return "", nil
 }
 
 func inventoryItemCapabilities(

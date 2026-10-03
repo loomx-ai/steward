@@ -12,20 +12,17 @@ import (
 
 func localCredentialKey(directory string, allowCreate bool) (string, error) {
 	path := filepath.Join(directory, "credential-master-key")
-	// Reuse the development key for databases previously created by make dev.
-	for _, candidate := range []string{path, filepath.Join(directory, "dev-credential-master-key")} {
-		value, err := os.ReadFile(candidate)
-		if err == nil {
-			encoded := strings.TrimSpace(string(value))
-			key, err := base64.StdEncoding.DecodeString(encoded)
-			if err != nil || len(key) != 32 {
-				return "", fmt.Errorf("invalid local credential key in %s; restore the original key", candidate)
-			}
-			return encoded, nil
+	value, err := os.ReadFile(path)
+	if err == nil {
+		encoded := strings.TrimSpace(string(value))
+		key, err := base64.StdEncoding.DecodeString(encoded)
+		if err != nil || len(key) != 32 {
+			return "", fmt.Errorf("invalid local credential key in %s; restore the original key", path)
 		}
-		if !errors.Is(err, os.ErrNotExist) {
-			return "", err
-		}
+		return encoded, nil
+	}
+	if !errors.Is(err, os.ErrNotExist) {
+		return "", err
 	}
 	if !allowCreate {
 		return "", fmt.Errorf("existing cloud connections require their original STEWARD_CREDENTIAL_MASTER_KEY; refusing to generate a replacement key")

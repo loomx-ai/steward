@@ -1628,24 +1628,6 @@ func TestTopologyRouteRejectsOversizedLimitWithStableError(t *testing.T) {
 	}
 }
 
-func TestTopologyRouteRejectsLegacyQueryParameters(t *testing.T) {
-	_, router := terminalRouter(t)
-	for _, parameter := range []string{"parent_key=x", "depth=1", "node_limit=50"} {
-		request := httptest.NewRequest(http.MethodGet, "/api/topology?connection_id=connection-a&"+parameter, nil)
-		request.Header.Set("Authorization", "Bearer viewer-token")
-		response := httptest.NewRecorder()
-		router.ServeHTTP(response, request)
-		var body struct {
-			Error struct {
-				Code string `json:"code"`
-			} `json:"error"`
-		}
-		if err := json.Unmarshal(response.Body.Bytes(), &body); err != nil || response.Code != http.StatusBadRequest || body.Error.Code != "topology.query_invalid" {
-			t.Fatalf("%s status=%d body=%s err=%v", parameter, response.Code, response.Body.String(), err)
-		}
-	}
-}
-
 type testBundles map[asset.Provider]spec.Bundle
 
 func (b testBundles) Bundle(provider asset.Provider) (spec.Bundle, error) { return b[provider], nil }
@@ -1728,7 +1710,7 @@ func terminalRouterWithOAuthFlows(t *testing.T, validator connectionapp.Validato
 	}
 	now := time.Date(2026, 7, 13, 12, 0, 0, 0, time.UTC)
 	if err := repositories.Connections().PutConnection(context.Background(), asset.CloudConnection{
-		ID: "connection-a", Name: "test account", Provider: asset.ProviderAliCloud, Partition: "public", Principal: "test account", Status: asset.ConnectionActive,
+		ID: "connection-a", Name: "test account", Provider: asset.ProviderAliCloud, Site: asset.ConnectionSiteCN, Partition: "public", Principal: "test account", Status: asset.ConnectionActive,
 		CreatedAt: now, UpdatedAt: now,
 	}); err != nil {
 		t.Fatal(err)

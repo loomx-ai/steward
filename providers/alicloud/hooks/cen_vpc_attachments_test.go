@@ -77,7 +77,7 @@ func TestCENVPCAttachmentsOwnManagedENIsFromStructuredZoneMappings(t *testing.T)
 	)
 	assets := []asset.Asset{managedENI, nameOnlyENI, attachment, cen, transitRouter, vpc}
 
-	contribution, err := hooks.NewCENVPCAttachments().Contribute(
+	contribution, err := hooks.NewCENTopology().Contribute(
 		context.Background(),
 		"scope-account",
 		assets,
@@ -193,7 +193,7 @@ func TestCENVPCAttachmentsReportMissingInventoryENI(t *testing.T) {
 			},
 		},
 	}
-	contribution, err := hooks.NewCENVPCAttachments().Contribute(
+	contribution, err := hooks.NewCENTopology().Contribute(
 		context.Background(),
 		"scope-account",
 		[]asset.Asset{attachment},
@@ -286,7 +286,7 @@ func TestCENTopologyConnectsRouteTablesAcrossResourceCenterScopes(t *testing.T) 
 		},
 	}
 
-	contribution, err := hooks.NewCENVPCAttachments().Contribute(
+	contribution, err := hooks.NewCENTopology().Contribute(
 		context.Background(),
 		"scope-account",
 		[]asset.Asset{

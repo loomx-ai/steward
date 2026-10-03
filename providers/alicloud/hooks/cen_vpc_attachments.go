@@ -28,16 +28,8 @@ const (
 // zone mappings.
 type CENTopology struct{}
 
-// CENVPCAttachments is retained as a source-compatible name for the original,
-// narrower contributor.
-type CENVPCAttachments = CENTopology
-
 func NewCENTopology() *CENTopology {
 	return &CENTopology{}
-}
-
-func NewCENVPCAttachments() *CENVPCAttachments {
-	return NewCENTopology()
 }
 
 func (*CENTopology) Contribute(

@@ -355,8 +355,7 @@ func (s ScanStatus) Terminal() bool {
 
 type ScanShard struct {
 	ID              ScanShardID    `json:"id"`
-	ScanTaskID      ScanTaskID     `json:"scan_task_id"`
-	ScanRunID       ScanRunID      `json:"-"`
+	ScanRunID       ScanRunID      `json:"scan_task_id"`
 	TargetKey       string         `json:"target_key"`
 	RetryGeneration int            `json:"retry_generation"`
 	Provider        Provider       `json:"provider"`

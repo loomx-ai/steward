@@ -801,25 +801,14 @@ export function CleanupTaskDetail() {
     acknowledgementRequired: needsExplicitConfirmation,
     acknowledged: explicitConfirmation,
   });
-  const scanCoverageAdvisories = (aggregate.task.blockers ?? []).filter(
-    (blocker) => blocker.code === "scan_coverage_incomplete",
-  );
-  const executionBlockers = (aggregate.task.blockers ?? []).filter(
-    (blocker) => blocker.code !== "scan_coverage_incomplete",
-  );
+  const executionBlockers = aggregate.task.blockers ?? [];
   const needsCompleteScan =
     !["executing", "completed", "succeeded"].includes(aggregate.task.status) &&
-    (aggregate.task.blockers ?? []).some(
-      (blocker) =>
-        blocker.code === "scan_coverage_incomplete" ||
-        blocker.code === "dependent_scan_incomplete",
+    executionBlockers.some(
+      (blocker) => blocker.evidence?.reason === "dependent_scan_incomplete",
     );
-  const legacyCoverageAdvisoryTask =
-    aggregate.task.status === "draft" &&
-    scanCoverageAdvisories.length > 0 &&
-    executionBlockers.length === 0;
   const canExecute =
-    (aggregate.task.status === "ready" || legacyCoverageAdvisoryTask) &&
+    aggregate.task.status === "ready" &&
     aggregate.steps.length > 0 &&
     executionBlockers.length === 0;
   const recoverableBlockedExecution =
@@ -1040,10 +1029,7 @@ export function CleanupTaskDetail() {
           </Alert>
         )}
         <CleanupWarnings
-          warnings={[
-            ...(aggregate.task.warnings ?? []),
-            ...scanCoverageAdvisories,
-          ]}
+          warnings={aggregate.task.warnings ?? []}
           blockers={executionBlockers}
           dependentAssetIDs={dependentAssetIDs}
           managedControllerIDs={managedControllerIDs}
@@ -1072,12 +1058,8 @@ export function CleanupTaskDetail() {
           </Fact>
           <Fact label={t("common.status")}>
             <StateBadge
-              value={
-                legacyCoverageAdvisoryTask ? "ready" : aggregate.task.status
-              }
-              label={label(
-                legacyCoverageAdvisoryTask ? "ready" : aggregate.task.status,
-              )}
+              value={aggregate.task.status}
+              label={label(aggregate.task.status)}
             />
           </Fact>
           <Fact label={t("common.requestedBy")}>
@@ -2947,13 +2929,9 @@ export function cleanupActionDisplayStatus(
   }
   if (action.status === "pending") return "waiting";
   if (
-    [
-      "intent_persisted",
-      "invoking",
-      "waiting",
-      "reading_back",
-      "reconciling",
-    ].includes(action.status)
+    ["intent_persisted", "invoking", "waiting", "reading_back"].includes(
+      action.status,
+    )
   ) {
     return "in_progress";
   }
@@ -3147,13 +3125,11 @@ function isTerminalExecution(status: string) {
 }
 
 function isActiveExecution(status: string) {
-  return ["pending", "running", "waiting", "reconciling", "pausing"].includes(
-    status,
-  );
+  return ["pending", "running", "waiting", "pausing"].includes(status);
 }
 
 function pausableExecutionStatus(status: string) {
-  return ["pending", "running", "waiting", "reconciling"].includes(status);
+  return ["pending", "running", "waiting"].includes(status);
 }
 
 function isTerminalAction(status: string) {
@@ -3507,9 +3483,6 @@ function blockerMessage(
   ) => string,
   t: any,
 ) {
-  if (blocker.code === "scan_coverage_incomplete") {
-    return t("cleanup.scanCoverageWarning");
-  }
   switch (lifecycleKind(blocker.evidence)) {
     case "vpc_system_route_table":
       return t("cleanup.systemRouteTableBlocked");

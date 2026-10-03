@@ -65,15 +65,3 @@ func TestLocalKeyPersistsAndNeverReplacesExistingCredentials(t *testing.T) {
 		t.Fatal("replaced a corrupt key")
 	}
 }
-
-func TestLocalKeyReusesDevelopmentKey(t *testing.T) {
-	dir := t.TempDir()
-	want := base64.StdEncoding.EncodeToString(make([]byte, 32))
-	if err := os.WriteFile(filepath.Join(dir, "dev-credential-master-key"), []byte(want), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	key, err := localCredentialKey(dir, false)
-	if err != nil || key != want {
-		t.Fatalf("development key not reused: %v", err)
-	}
-}

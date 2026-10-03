@@ -27,13 +27,8 @@ var actionTransitions = map[ActionStatus]map[ActionStatus]struct{}{
 		ActionFailed:      {},
 	},
 	ActionReadingBack: {
-		ActionSucceeded:   {},
-		ActionSkipped:     {},
-		ActionFailed:      {},
-		ActionReconciling: {},
-	},
-	ActionReconciling: {
 		ActionSucceeded: {},
+		ActionSkipped:   {},
 		ActionFailed:    {},
 	},
 }

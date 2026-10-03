@@ -617,7 +617,6 @@ func executionKeepsConnectionBusy(status execution.ExecutionStatus) bool {
 	case execution.ExecutionPending,
 		execution.ExecutionRunning,
 		execution.ExecutionWaiting,
-		execution.ExecutionReconciling,
 		execution.ExecutionPausing,
 		execution.ExecutionPaused:
 		return true

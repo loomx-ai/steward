@@ -46,7 +46,13 @@ func routerScope(identity asset.Identity) (string, error) {
 				return "", fmt.Errorf("invalid native Monitoring mutation segment")
 			}
 		}
-		return monitoringProjectScope(string(identity.ConnectionID) + "/gcp///" + host + "/" + root + "/" + parts[1] + "/" + collection), nil
+		// Monitoring writes are serialized per project, Billing Budget writes
+		// per account collection.
+		scope := string(identity.ConnectionID) + "/gcp///" + host + "/" + root + "/" + parts[1]
+		if host == "billingbudgets.googleapis.com" {
+			scope += "/" + collection
+		}
+		return scope, nil
 	}
 	suffix := ""
 	switch identity.NativeType {
@@ -79,49 +85,33 @@ func routerScope(identity asset.Identity) (string, error) {
 	return string(identity.ConnectionID) + "/gcp///compute.googleapis.com/" + strings.Join(parts[:6], "/"), nil
 }
 
-// Frozen identities are authoritative even if older tasks lack scope annotations.
-func taskRouterScopes(ctx context.Context, repositories persistence.Repositories, task persistence.CleanupTaskAggregate) (map[asset.AssetID]string, error) {
+// Reviewed snapshots are authoritative for the Router scope a step reserves.
+func taskRouterScopes(task persistence.CleanupTaskAggregate) (map[asset.AssetID]string, error) {
 	result := map[asset.AssetID]string{}
 	for _, step := range task.Steps {
-		var value asset.Asset
-		if raw, exists := step.Evidence[plan.EvidencePlannedAsset]; exists {
-			encoded, err := json.Marshal(raw)
-			if err != nil {
-				return nil, err
-			}
-			if err := json.Unmarshal(encoded, &value); err != nil {
-				return nil, err
-			}
-			if value.ID == "" || value.ID != step.AssetID {
-				return nil, fmt.Errorf("reviewed cleanup asset identity is missing or changed")
-			}
-		} else {
-			// Preserve legacy explicit reservations when no reviewed snapshot exists.
-			scope, _ := step.Evidence[routerMutationScope].(string)
-			if scope == "" {
-				scope, _ = step.Evidence[natMutationScope].(string)
-			}
-			if scope != "" {
-				result[step.AssetID] = monitoringProjectScope(strings.Replace(scope, "/google-cloud/", "/gcp/", 1))
-				continue
-			}
-			if step.Action != "delete" {
-				continue
-			}
-			var err error
-			value, err = repositories.Inventory().GetAsset(ctx, step.AssetID)
-			if err != nil {
-				return nil, err
-			}
-		}
 		if step.Action != "delete" {
 			continue
+		}
+		raw, exists := step.Evidence[plan.EvidencePlannedAsset]
+		if !exists {
+			return nil, fmt.Errorf("reviewed cleanup asset snapshot is missing")
+		}
+		encoded, err := json.Marshal(raw)
+		if err != nil {
+			return nil, err
+		}
+		var value asset.Asset
+		if err := json.Unmarshal(encoded, &value); err != nil {
+			return nil, err
+		}
+		if value.ID == "" || value.ID != step.AssetID {
+			return nil, fmt.Errorf("reviewed cleanup asset identity is missing or changed")
 		}
 		scope, err := routerScope(value.Identity)
 		if err != nil {
 			return nil, err
 		}
-		if scope != "" && (value.ID != step.AssetID || value.Identity.ConnectionID != task.Task.ConnectionID) {
+		if scope != "" && value.Identity.ConnectionID != task.Task.ConnectionID {
 			return nil, fmt.Errorf("reviewed Router mutation identity changed")
 		}
 		result[step.AssetID] = scope
@@ -192,7 +182,7 @@ func serializeRouterSteps(steps []plan.CleanupTaskStep, scopes map[asset.AssetID
 // Upgrade old plans before starting workers. A continuation with newly required
 // edges cannot rewrite ordering around an already-issued, unsettled native write.
 func prepareRouterConfiguration(ctx context.Context, repositories persistence.Repositories, task *persistence.CleanupTaskAggregate, attempt *execution.ExecutionAttempt) (bool, error) {
-	scopes, err := taskRouterScopes(ctx, repositories, *task)
+	scopes, err := taskRouterScopes(*task)
 	if err != nil {
 		return false, err
 	}
@@ -242,17 +232,4 @@ func prepareRouterConfiguration(ctx context.Context, repositories persistence.Re
 	}
 	task.Steps = steps
 	return true, nil
-}
-
-// Older tasks persisted a collection suffix. Coordinate them with new project
-// reservations without rewriting their frozen action or evidence.
-func monitoringProjectScope(scope string) string {
-	parts := strings.Split(scope, "/")
-	if len(parts) == 8 && parts[1] == "gcp" && parts[2] == "" && parts[3] == "" && parts[4] == "monitoring.googleapis.com" && parts[5] == "projects" {
-		switch parts[7] {
-		case "alertPolicies", "notificationChannels", "groups", "dashboards", "uptimeCheckConfigs":
-			return strings.Join(parts[:7], "/")
-		}
-	}
-	return scope
 }

@@ -96,7 +96,6 @@ it.each([
   [{ status: "invoking" }, "running", "in_progress"],
   [{ status: "waiting" }, "waiting", "in_progress"],
   [{ status: "reading_back" }, "running", "in_progress"],
-  [{ status: "reconciling" }, "reconciling", "in_progress"],
   [{ status: "waiting" }, "failed", "in_progress"],
   [{ status: "pending" }, "failed", "waiting"],
   [{ status: "invoking" }, "pausing", "pausing"],
@@ -1995,90 +1994,6 @@ it("summarizes blockers once and marks each affected resource result", async () 
   expect(screen.queryByText("Execution blockers")).not.toBeInTheDocument();
   expect(screen.queryByText("New task builder")).not.toBeInTheDocument();
   expect(readCleanupSelectionHandoff("connection-a")).toEqual([]);
-});
-
-it("treats incomplete scan coverage as an executable warning", async () => {
-  vi.mocked(getCleanupTask).mockResolvedValue({
-    task: {
-      id: "cln-incomplete-scan",
-      connection_id: "connection-a",
-      status: "draft",
-      selectors: [
-        {
-          kind: "scope",
-          connection_id: "connection-a",
-          scope_id: "scope-region",
-          scope_kind: "region",
-        },
-      ],
-      resolved_asset_ids: [],
-      revision: {
-        inventory_revision: "inventory-1",
-        graph_revision: "graph-1",
-        spec_bundle_revision: "bundle-1",
-        spec_hash: "spec-1",
-      },
-      scan_coverage: { status: "incomplete" },
-      snapshot_hash: "snapshot-incomplete-scan",
-      blockers: [
-        {
-          code: "scan_coverage_incomplete",
-          message: "cleanup range requires a complete scan",
-          evidence: {
-            coverage: {
-              status: "incomplete",
-            },
-          },
-        },
-      ],
-      created_by: "operator",
-      created_at: "2026-08-03T00:00:00Z",
-    },
-    steps: [
-      {
-        id: "step-current",
-        cleanup_task_id: "cln-incomplete-scan",
-        asset_id: "asset-current",
-        kind: "direct",
-        action: "delete",
-      },
-    ],
-    impact_items: [],
-  });
-  vi.mocked(findAssets).mockResolvedValue([]);
-
-  render(
-    <QueryClientProvider
-      client={
-        new QueryClient({ defaultOptions: { queries: { retry: false } } })
-      }
-    >
-      <MemoryRouter initialEntries={["/cleanup/cln-incomplete-scan"]}>
-        <LocaleProvider>
-          <Routes>
-            <Route path="/cleanup/:id" element={<CleanupTaskDetailHarness />} />
-          </Routes>
-        </LocaleProvider>
-      </MemoryRouter>
-    </QueryClientProvider>,
-  );
-
-  expect(
-    await screen.findByText(
-      "Scan coverage is incomplete. Cleanup will proceed using the resources currently discovered and may miss unscanned dependencies.",
-    ),
-  ).toBeVisible();
-  expect(screen.getByRole("button", { name: "Start cleanup" })).toBeVisible();
-  expect(screen.getByText("Ready")).toBeVisible();
-  expect(screen.queryByText("Execution blockers")).not.toBeInTheDocument();
-  expect(
-    screen.queryByText(
-      "Execution blockers found: 1. Resource-level blockers are marked in Resource results.",
-    ),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole("button", { name: "View 1 blocked resources" }),
-  ).not.toBeInTheDocument();
 });
 
 it("shows a system route table as deleted with its selected VPC", async () => {

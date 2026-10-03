@@ -18,28 +18,6 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func TestNormalizeLegacyCleanupActionRequestID(t *testing.T) {
-	legacy := execution.AuditEvent{
-		Action:    "cleanup.action.succeeded",
-		RequestID: "provider-request",
-		Evidence:  map[string]any{"provider_operation_id": "provider-operation"},
-	}
-	normalizeLegacyCleanupActionRequestID(&legacy)
-	if legacy.RequestID != "" || legacy.Evidence["provider_request_id"] != "provider-request" {
-		t.Fatalf("legacy audit = %#v", legacy)
-	}
-
-	current := execution.AuditEvent{
-		Action:    "cleanup.action.succeeded",
-		RequestID: "steward-request",
-		Evidence:  map[string]any{"provider_request_id": "provider-request"},
-	}
-	normalizeLegacyCleanupActionRequestID(&current)
-	if current.RequestID != "steward-request" || current.Evidence["provider_request_id"] != "provider-request" {
-		t.Fatalf("current audit = %#v", current)
-	}
-}
-
 func TestPrimaryListReadsUseOneSQLStatement(t *testing.T) {
 	countQueries := false
 	queryCount := 0

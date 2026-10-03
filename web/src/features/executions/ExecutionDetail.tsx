@@ -14,7 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRequiredConnection } from "@/connections/ActiveConnectionProvider";
 import { useLocale } from "@/i18n/LocaleProvider";
 
-const active = new Set(["pending", "running", "waiting", "reconciling"]);
+const active = new Set(["pending", "running", "waiting"]);
 
 export function isExecutionActive(status: string) {
   return active.has(status);
@@ -23,8 +23,7 @@ export function isExecutionActive(status: string) {
 export function executionTimeline(status: string): TimelineItem[] {
   const failed = status === "failed" || status === "error";
   const complete = status === "succeeded" || status === "completed";
-  const reconciling = status === "reconciling";
-  const running = ["running", "waiting", "reconciling"].includes(status);
+  const running = ["running", "waiting"].includes(status);
   return [
     {
       id: "queued",
@@ -36,22 +35,16 @@ export function executionTimeline(status: string): TimelineItem[] {
       title: "Provider execution",
       state: failed
         ? "complete"
-        : running && !reconciling
+        : running
           ? "active"
-          : running || complete
+          : complete
             ? "complete"
             : "pending",
     },
     {
       id: "reconcile",
       title: "Reconciliation",
-      state: failed
-        ? "error"
-        : reconciling
-          ? "active"
-          : complete
-            ? "complete"
-            : "pending",
+      state: failed ? "error" : complete ? "complete" : "pending",
     },
   ];
 }

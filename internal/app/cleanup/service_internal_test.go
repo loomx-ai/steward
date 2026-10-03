@@ -35,25 +35,6 @@ func TestRequestedExecutionConcurrencyDefaultsAndValidatesBounds(t *testing.T) {
 	}
 }
 
-func TestRetryableProviderSkipResumesFromInvoking(t *testing.T) {
-	t.Parallel()
-
-	action := execution.ActionAttempt{
-		Status:            execution.ActionSkipped,
-		SkipReason:        string(asset.SkipProductUnsupported),
-		ProviderRequestID: "failed-prerequisite-request",
-		ProviderError: &execution.ProviderError{
-			Code: "UnsupportedHTTPMethod",
-			Summary: map[string]any{
-				"operation": "AlibabaCloud.NAS.DescribeLifecyclePolicies",
-			},
-		},
-	}
-	if status := actionResumeStatus(action); status != execution.ActionInvoking {
-		t.Fatalf("retryable provider skip resume status = %s, want invoking", status)
-	}
-}
-
 func TestAppendSelectionWarningsDescribesPublicImagePreparation(t *testing.T) {
 	t.Parallel()
 

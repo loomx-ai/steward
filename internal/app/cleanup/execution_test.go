@@ -219,45 +219,6 @@ func TestCreateExecutionRejectsConcurrencyOutsideOneToOneHundred(t *testing.T) {
 	}
 }
 
-func TestCreateExecutionAllowsLegacyCoverageOnlyDraftTask(t *testing.T) {
-	ctx := context.Background()
-	repositories, planner, selectors := rangeCoverageFixture(t, asset.ScanRun{
-		ID: "scan-filtered-legacy", Status: asset.ScanSucceeded,
-		ScopeMode: asset.ScanAllActiveRegions,
-		Targets: []asset.ScanTarget{{
-			Key: "region:cn-hangzhou", Kind: asset.ScanTargetRegion, RegionID: "cn-hangzhou",
-		}},
-		ResourceKindIDs: []asset.ResourceKindID{"kind-instance"},
-	})
-	created, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{
-		Selectors: []plan.CleanupSelector{selectors[0]}, CreatedBy: "operator",
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	legacy := created.Task
-	legacy.Status = plan.StatusDraft
-	legacy.Blockers = []plan.Blocker{{
-		Code: plan.BlockScanCoverageIncomplete, Message: "cleanup range requires a complete scan",
-		Evidence: map[string]any{"coverage": legacy.Coverage},
-	}}
-	legacy.Warnings = nil
-	if err := repositories.CleanupTasks().UpdateTask(ctx, legacy); err != nil {
-		t.Fatal(err)
-	}
-
-	attempt, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{
-		CleanupTaskID: legacy.ID, RequestedBy: "operator", IdempotencyKey: "legacy-coverage",
-		Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true},
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if attempt.Status != execution.ExecutionPending {
-		t.Fatalf("attempt = %+v", attempt)
-	}
-}
-
 func TestCreateExecutionRejectsUnverifiedConnection(t *testing.T) {
 	ctx := context.Background()
 	repositories := openPlanningRepositories(t)
@@ -3172,37 +3133,6 @@ func TestManagedImpactsRequireReadbackBeforeDependentCleanup(t *testing.T) {
 		if impact.Result != plan.ImpactDeletedByController {
 			t.Fatalf("verified managed impact = %+v", impact)
 		}
-	}
-}
-
-func TestLegacyReconcilingActionCompletesWithoutSchedulingRescan(t *testing.T) {
-	ctx := context.Background()
-	repositories, planner, created, now := controllerExecutionFixture(t, "execution-legacy-reconciling", []controllerChild{
-		{id: "ecs", ownership: graph.OwnershipExclusive, policy: graph.CleanupDelegate},
-	})
-	driver := &scriptedActionDriver{readback: contracts.ReadbackResult{Exists: false, State: "absent"}}
-	handler := cleanup.NewExecutionHandler(
-		planner,
-		cleanup.ActionResolverFunc(func(context.Context, asset.Asset) (cleanup.ActionDriver, error) {
-			return driver, nil
-		}),
-	)
-	job := cleanupExecutionJobForAsset(t, repositories, "cln-controller", "ack")
-	action := execution.ActionAttempt{
-		ID: "act-legacy-reconciling", ExecutionID: created.ID,
-		CleanupTaskStepID: job.Payload["cleanup_task_step_id"].(string),
-		AssetID:           "ack", Action: "delete", Status: execution.ActionReconciling,
-		IdempotencyKey: "legacy-reconciling", CreatedAt: now, UpdatedAt: now,
-	}
-	if err := repositories.Executions().AppendAction(ctx, action); err != nil {
-		t.Fatal(err)
-	}
-	if err := handler.Handle(ctx, job); err != nil {
-		t.Fatal(err)
-	}
-	actions, err := repositories.Executions().ListActions(ctx, created.ID)
-	if err != nil || len(actions) != 1 || actions[0].Status != execution.ActionSucceeded {
-		t.Fatalf("legacy action = %+v, err=%v", actions, err)
 	}
 }
 

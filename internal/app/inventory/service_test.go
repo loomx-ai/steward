@@ -181,7 +181,7 @@ func (r *inventoryRepository) ListScanRunListItems(_ context.Context, _ persiste
 	for _, run := range r.runs {
 		item := persistence.ScanRunListItem{ScanRun: run, UpdatedAt: run.CreatedAt}
 		for _, shard := range r.shards {
-			if shard.ScanTaskID == run.ID || shard.ScanRunID == run.ID {
+			if shard.ScanRunID == run.ID {
 				item.ResourceCount += shard.Coverage.ItemCount
 			}
 		}
@@ -808,85 +808,6 @@ func TestRegionalProjectionKeepsSameNativeIDInDifferentRegions(t *testing.T) {
 	}
 	if _, ok := scopeKeys["region:cn-shanghai"]; !ok {
 		t.Fatalf("regional scope keys = %v", scopeKeys)
-	}
-}
-
-func TestRegionalProjectionMigratesLegacyGlobalIdentity(t *testing.T) {
-	t.Parallel()
-
-	repository := newInventoryRepository()
-	connection := asset.CloudConnection{
-		ID: "connection-oss", Provider: asset.ProviderAliCloud, Partition: "aliyun",
-	}
-	repository.scopes["scope-account"] = asset.Scope{
-		ID: "scope-account", ConnectionID: connection.ID, Kind: asset.ScopeAccount,
-	}
-	repository.scopes["scope-global"] = asset.Scope{
-		ID: "scope-global", ConnectionID: connection.ID, ParentID: "scope-account",
-		Kind: asset.ScopeGlobal, NativeID: "account/global",
-	}
-	repository.scopes["scope-hangzhou"] = asset.Scope{
-		ID: "scope-hangzhou", ConnectionID: connection.ID, ParentID: "scope-account",
-		Kind: asset.ScopeRegion, NativeID: "cn-hangzhou", Location: "cn-hangzhou",
-	}
-	kind := asset.ResourceKind{
-		ID: "alicloud:ACS::OSS::Bucket", Provider: asset.ProviderAliCloud,
-		NativeType: "ACS::OSS::Bucket", ScopeKinds: []asset.ScopeKind{asset.ScopeRegion},
-		Capabilities: asset.CapabilitySet{asset.CapabilityIndexed}, BundleRevision: "regional-oss",
-	}
-	legacyIdentity, err := asset.NewIdentity(
-		string(connection.Provider),
-		connection.Partition,
-		connection.ID,
-		kind.NativeType,
-		"bucket-a",
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	observedAt := time.Date(2026, 8, 11, 10, 0, 0, 0, time.UTC)
-	legacy := asset.Asset{
-		ID: "asset-oss", Identity: legacyIdentity, ScopeID: "scope-global",
-		ResourceKindID: kind.ID, CurrentObservationID: "observation-global",
-		FirstSeenAt: observedAt.Add(-time.Hour), LastSeenAt: observedAt.Add(-time.Hour),
-	}
-	repository.assets[legacy.ID] = legacy
-	repository.observations[legacy.ID] = []asset.Observation{{
-		ID: legacy.CurrentObservationID, AssetID: legacy.ID, ObservedAt: legacy.LastSeenAt,
-	}}
-	service := inventory.NewService(
-		repository,
-		inventory.WithIDGenerator(sequenceIDs("observation-regional")),
-	)
-	shard := asset.ScanShard{
-		ID: "shard-oss", ScanRunID: "scan-oss", Provider: connection.Provider,
-		ScopeID: "scope-hangzhou", ResourceKindID: kind.ID, Source: "resource-center",
-	}
-	err = service.ProjectBatch(
-		context.Background(),
-		&shard,
-		connection,
-		contracts.InventoryBatch{Items: []contracts.InventoryItem{{
-			NativeType: kind.NativeType, NativeID: legacy.Identity.NativeID,
-			ResourceKind: kind, Name: "bucket-a", Location: "cn-hangzhou",
-			Scope: contracts.InventoryScope{
-				Kind: asset.ScopeRegion, NativeID: "cn-hangzhou", Location: "cn-hangzhou",
-			},
-		}}},
-		inventory.ProjectionOptions{ObservedAt: observedAt},
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(repository.assets) != 1 {
-		t.Fatalf("assets = %#v, want the existing asset to be migrated", repository.assets)
-	}
-	projected := repository.assets[legacy.ID]
-	if projected.ScopeID != "scope-hangzhou" ||
-		projected.Identity.ScopeKey != "region:cn-hangzhou" ||
-		projected.CurrentObservationID != "observation-regional" ||
-		len(repository.observations[legacy.ID]) != 2 {
-		t.Fatalf("migrated OSS asset = %+v, observations = %+v", projected, repository.observations[legacy.ID])
 	}
 }
 

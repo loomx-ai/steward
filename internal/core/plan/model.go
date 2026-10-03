@@ -13,11 +13,10 @@ const EvidencePlannedAsset = "planned_asset"
 
 // PlannedAsset keeps provider preflight comparisons bound to the reviewed
 // inventory, even if a scan updates inventory while a cleanup is in progress.
-// Legacy tasks without the snapshot retain their previous behavior.
 func PlannedAsset(evidence map[string]any, current asset.Asset) (asset.Asset, error) {
 	raw, found := evidence[EvidencePlannedAsset]
 	if !found {
-		return current, nil
+		return asset.Asset{}, fmt.Errorf("cleanup has no reviewed snapshot of asset %s", current.ID)
 	}
 	payload, err := json.Marshal(raw)
 	if err != nil {
@@ -69,22 +68,10 @@ const (
 // and cascades whose provider driver verifies the complete containing scope is
 // absent before completing its own readback. A documented deletion guarantee
 // alone does not suppress independent child verification.
-// The lifecycle-kind fallback keeps cleanup tasks created before the explicit
-// evidence flag compatible with the current execution semantics.
 func ControllerDeletionImpliesAbsence(evidence map[string]any) bool {
-	if integrated, _ := evidence[graph.LifecycleEvidenceControllerIntegratedResource].(bool); integrated {
-		return true
-	}
-	if verified, _ := evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence].(bool); verified {
-		return true
-	}
-	lifecycleKind, _ := evidence["lifecycle_kind"].(string)
-	switch lifecycleKind {
-	case "vpc_system_route_table", "cen_transit_router_system_route_table":
-		return true
-	default:
-		return false
-	}
+	integrated, _ := evidence[graph.LifecycleEvidenceControllerIntegratedResource].(bool)
+	verified, _ := evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence].(bool)
+	return integrated || verified
 }
 
 type ExpectedOutcome string
@@ -100,21 +87,20 @@ const (
 type BlockCode string
 
 const (
-	BlockAssetMissing           BlockCode = "asset_missing"
-	BlockAssetClosed            BlockCode = "asset_closed"
-	BlockNotActionable          BlockCode = "not_actionable"
-	BlockManagedByController    BlockCode = "managed_by_controller"
-	BlockLifecycleConflict      BlockCode = "lifecycle_conflict"
-	BlockLifecycleCycle         BlockCode = "lifecycle_cycle"
-	BlockLifecycleConfidence    BlockCode = "lifecycle_confidence"
-	BlockLifecycleAuthority     BlockCode = "lifecycle_authority"
-	BlockProtected              BlockCode = "protected"
-	BlockUnresolvedCleanup      BlockCode = "unresolved_cleanup_dependency"
-	BlockDependencyCycle        BlockCode = "dependency_cycle"
-	BlockDirectCleanupInvalid   BlockCode = "direct_cleanup_invalid"
-	BlockControllerUnavailable  BlockCode = "controller_unavailable"
-	BlockScanCoverageIncomplete BlockCode = "scan_coverage_incomplete"
-	BlockCrossScopeDependency   BlockCode = "cross_scope_dependency"
+	BlockAssetMissing          BlockCode = "asset_missing"
+	BlockAssetClosed           BlockCode = "asset_closed"
+	BlockNotActionable         BlockCode = "not_actionable"
+	BlockManagedByController   BlockCode = "managed_by_controller"
+	BlockLifecycleConflict     BlockCode = "lifecycle_conflict"
+	BlockLifecycleCycle        BlockCode = "lifecycle_cycle"
+	BlockLifecycleConfidence   BlockCode = "lifecycle_confidence"
+	BlockLifecycleAuthority    BlockCode = "lifecycle_authority"
+	BlockProtected             BlockCode = "protected"
+	BlockUnresolvedCleanup     BlockCode = "unresolved_cleanup_dependency"
+	BlockDependencyCycle       BlockCode = "dependency_cycle"
+	BlockDirectCleanupInvalid  BlockCode = "direct_cleanup_invalid"
+	BlockControllerUnavailable BlockCode = "controller_unavailable"
+	BlockCrossScopeDependency  BlockCode = "cross_scope_dependency"
 )
 
 type Blocker struct {

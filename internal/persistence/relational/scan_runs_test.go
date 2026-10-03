@@ -83,7 +83,7 @@ func TestPutScanShardMaintainsScanTaskResourceCount(t *testing.T) {
 		t.Fatal(err)
 	}
 	first := asset.ScanShard{
-		ID: "shard-1", ScanTaskID: "scan-1", ScopeID: "scope-1", Source: "test",
+		ID: "shard-1", ScanRunID: "scan-1", ScopeID: "scope-1", Source: "test",
 		Status: asset.ShardRunning, Coverage: asset.Coverage{ItemCount: 3}, CreatedAt: now,
 	}
 	if err := store.PutScanShard(ctx, first); err != nil {
@@ -94,7 +94,7 @@ func TestPutScanShardMaintainsScanTaskResourceCount(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := store.PutScanShard(ctx, asset.ScanShard{
-		ID: "shard-2", ScanTaskID: "scan-1", ScopeID: "scope-1", Source: "test",
+		ID: "shard-2", ScanRunID: "scan-1", ScopeID: "scope-1", Source: "test",
 		Status: asset.ShardSucceeded, Coverage: asset.Coverage{ItemCount: 2}, CreatedAt: now,
 	}); err != nil {
 		t.Fatal(err)
@@ -285,7 +285,7 @@ func TestScanTaskReadModelMigrationUpgradesExistingDatabase(t *testing.T) {
 		t.Fatalf("create scan after migration: %v", err)
 	}
 	if err := store.PutScanShard(context.Background(), asset.ScanShard{
-		ID: "shard-new", ScanTaskID: "scan-new", TargetKey: "region:me-east-1",
+		ID: "shard-new", ScanRunID: "scan-new", TargetKey: "region:me-east-1",
 		ScopeID: "scope-me-east-1", Source: "test", Status: asset.ShardPending,
 		CreatedAt: createdAt,
 	}); err != nil {

@@ -699,7 +699,6 @@ func TestOSSBucketActionPausesHDFSAndDeletesHDFSFilesBeforeOSSObjects(t *testing
 	if err != nil || result.Data["phase"] != "pause_hdfs" ||
 		result.Data["trigger_code"] != "AccessDenied" ||
 		result.Data["hdfs_cleanup_automatic"] != true ||
-		result.Data["manual_action_required"] != nil ||
 		result.RetryAfter != 250*time.Millisecond {
 		t.Fatalf("result=%+v err=%v", result, err)
 	}

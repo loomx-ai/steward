@@ -14,15 +14,14 @@ type OutboxEventID string
 type ExecutionStatus string
 
 const (
-	ExecutionPending     ExecutionStatus = "pending"
-	ExecutionRunning     ExecutionStatus = "running"
-	ExecutionWaiting     ExecutionStatus = "waiting"
-	ExecutionReconciling ExecutionStatus = "reconciling"
-	ExecutionPausing     ExecutionStatus = "pausing"
-	ExecutionPaused      ExecutionStatus = "paused"
-	ExecutionSucceeded   ExecutionStatus = "succeeded"
-	ExecutionFailed      ExecutionStatus = "failed"
-	ExecutionCanceled    ExecutionStatus = "canceled"
+	ExecutionPending   ExecutionStatus = "pending"
+	ExecutionRunning   ExecutionStatus = "running"
+	ExecutionWaiting   ExecutionStatus = "waiting"
+	ExecutionPausing   ExecutionStatus = "pausing"
+	ExecutionPaused    ExecutionStatus = "paused"
+	ExecutionSucceeded ExecutionStatus = "succeeded"
+	ExecutionFailed    ExecutionStatus = "failed"
+	ExecutionCanceled  ExecutionStatus = "canceled"
 )
 
 type ActionStatus string
@@ -33,7 +32,6 @@ const (
 	ActionInvoking        ActionStatus = "invoking"
 	ActionWaiting         ActionStatus = "waiting"
 	ActionReadingBack     ActionStatus = "reading_back"
-	ActionReconciling     ActionStatus = "reconciling"
 	ActionSucceeded       ActionStatus = "succeeded"
 	ActionSkipped         ActionStatus = "skipped"
 	ActionFailed          ActionStatus = "failed"

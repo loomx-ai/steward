@@ -262,7 +262,7 @@ func TestOAuthCredentialReplacementUsesExistingConnectionSite(t *testing.T) {
 		t.Fatal(err)
 	}
 	if connection.Site != asset.ConnectionSiteCN {
-		t.Fatalf("legacy connection site=%q", connection.Site)
+		t.Fatalf("connection site=%q", connection.Site)
 	}
 	request := httptest.NewRequest(http.MethodPut, "/api/connections/connection-a/credential", bytes.NewBufferString(
 		`{"type":"oauth","values":{"flow_id":"oauth-flow-a"}}`,

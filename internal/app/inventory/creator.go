@@ -757,7 +757,7 @@ func networkSourceKindMatchesTarget(
 
 func (c *Creator) shard(runID asset.ScanRunID, targetKey string, provider asset.Provider, regionID string, scopeID asset.ScopeID, source string, kindID asset.ResourceKindID, authoritative bool, now time.Time) asset.ScanShard {
 	shard := asset.ScanShard{
-		ID: asset.ScanShardID(c.entityID("shr")), ScanTaskID: runID, ScanRunID: runID, TargetKey: targetKey, Provider: provider, Source: source, RegionID: regionID,
+		ID: asset.ScanShardID(c.entityID("shr")), ScanRunID: runID, TargetKey: targetKey, Provider: provider, Source: source, RegionID: regionID,
 		ScopeID: scopeID, ResourceKindID: kindID, Authoritative: authoritative, Status: asset.ShardPending, CreatedAt: now,
 	}
 	shard.Coverage = asset.Coverage{Source: source, TargetKey: targetKey, ScopeID: scopeID, ResourceKindID: kindID, Authoritative: authoritative}

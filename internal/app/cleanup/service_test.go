@@ -628,8 +628,7 @@ func TestRangeCleanupWarnsForTargetedOrFilteredCoverage(t *testing.T) {
 					t.Fatalf("selector %d create task: %v", index, err)
 				}
 				if created.Task.Status != plan.StatusReady || created.Task.Coverage.Status != "incomplete" ||
-					!containsTaskWarning(created.Task.Warnings, plan.WarningScanCoverageIncomplete, "") ||
-					containsTaskBlocker(created.Task.Blockers, plan.BlockScanCoverageIncomplete, "") {
+					!containsTaskWarning(created.Task.Warnings, plan.WarningScanCoverageIncomplete, "") {
 					t.Fatalf("selector %d task = %+v", index, created.Task)
 				}
 			}
@@ -836,8 +835,7 @@ func TestConnectionCoverageRequiresProviderDeclaredGlobalScope(t *testing.T) {
 				return
 			}
 			if created.Task.Status != plan.StatusReady || created.Task.Coverage.Status != "incomplete" ||
-				!containsTaskWarning(created.Task.Warnings, plan.WarningScanCoverageIncomplete, "") ||
-				containsTaskBlocker(created.Task.Blockers, plan.BlockScanCoverageIncomplete, "") {
+				!containsTaskWarning(created.Task.Warnings, plan.WarningScanCoverageIncomplete, "") {
 				t.Fatalf("provider-incomplete coverage warning = %+v", created.Task)
 			}
 		})
@@ -856,8 +854,7 @@ func TestRangeCleanupWarnsForExpandedRetiredAndGlobalScopes(t *testing.T) {
 				t.Fatal(err)
 			}
 			if created.Task.Status != plan.StatusReady || created.Task.Coverage.Status != "incomplete" ||
-				!containsTaskWarning(created.Task.Warnings, plan.WarningScanCoverageIncomplete, "") ||
-				containsTaskBlocker(created.Task.Blockers, plan.BlockScanCoverageIncomplete, "") {
+				!containsTaskWarning(created.Task.Warnings, plan.WarningScanCoverageIncomplete, "") {
 				t.Fatalf("incomplete coverage warning missing: %+v", created.Task)
 			}
 		})
@@ -932,8 +929,7 @@ func TestRangeCleanupWarnsForDeclaredTargetWithoutShard(t *testing.T) {
 		t.Fatal(err)
 	}
 	if created.Task.Status != plan.StatusReady || created.Task.Coverage.Status != "incomplete" ||
-		!containsTaskWarning(created.Task.Warnings, plan.WarningScanCoverageIncomplete, "") ||
-		containsTaskBlocker(created.Task.Blockers, plan.BlockScanCoverageIncomplete, "") {
+		!containsTaskWarning(created.Task.Warnings, plan.WarningScanCoverageIncomplete, "") {
 		t.Fatalf("declared target without shard warning missing: %+v", created.Task)
 	}
 }
@@ -1260,7 +1256,6 @@ func TestCleanupServiceWarnsForIncompleteScanAndBlocksCrossScopeDependency(t *te
 	}
 	if aggregate.Task.Status != plan.StatusDraft ||
 		!containsTaskWarning(aggregate.Task.Warnings, plan.WarningScanCoverageIncomplete, "") ||
-		containsTaskBlocker(aggregate.Task.Blockers, plan.BlockScanCoverageIncomplete, "") ||
 		!containsTaskBlocker(aggregate.Task.Blockers, plan.BlockCrossScopeDependency, network.ID) {
 		t.Fatalf("plan = %+v", aggregate.Task)
 	}

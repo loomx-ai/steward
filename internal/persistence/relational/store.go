@@ -339,7 +339,7 @@ func (s *Store) GetConnection(ctx context.Context, id asset.ConnectionID) (asset
 	if err != nil {
 		return asset.CloudConnection{}, err
 	}
-	return normalizeConnection(connection), nil
+	return connection, nil
 }
 
 func (s *Store) ListConnections(ctx context.Context, options persistence.ListOptions) (persistence.Page[asset.CloudConnection], error) {
@@ -370,7 +370,7 @@ func (s *Store) ListConnections(ctx context.Context, options persistence.ListOpt
 		if err != nil {
 			return persistence.Page[asset.CloudConnection]{}, err
 		}
-		page.Items = append(page.Items, normalizeConnection(connection))
+		page.Items = append(page.Items, connection)
 	}
 	return page, nil
 }
@@ -452,7 +452,7 @@ func (s *Store) ListConnectionAggregates(ctx context.Context, options persistenc
 			return persistence.Page[persistence.ConnectionListAggregate]{}, decodeErr
 		}
 		item := persistence.ConnectionListAggregate{
-			Connection:          normalizeConnection(connection),
+			Connection:          connection,
 			Credential:          credential,
 			ActiveRegionCount:   row.ActiveRegionCount,
 			RetiredRegionCount:  row.RetiredRegionCount,
@@ -468,19 +468,6 @@ func (s *Store) ListConnectionAggregates(ctx context.Context, options persistenc
 		page.Items = append(page.Items, item)
 	}
 	return page, nil
-}
-
-func normalizeConnection(connection asset.CloudConnection) asset.CloudConnection {
-	if strings.TrimSpace(connection.Name) == "" {
-		connection.Name = connection.Principal
-	}
-	if connection.Status == "" {
-		connection.Status = asset.ConnectionActive
-	}
-	if connection.Provider == asset.ProviderAliCloud && connection.Site == "" {
-		connection.Site = asset.ConnectionSiteCN
-	}
-	return connection
 }
 
 func (s *Store) PutCredential(ctx context.Context, credential asset.ConnectionCredential) error {
@@ -1280,7 +1267,7 @@ func (s *Store) ListScanRunsByConnection(ctx context.Context, connectionID asset
 }
 
 func (s *Store) PutScanShard(ctx context.Context, shard asset.ScanShard) error {
-	shard = normalizeScanShardIdentity(shard)
+	shard = defaultScanShardTarget(shard)
 	aliases, err := s.scopeAliases(ctx)
 	if err != nil {
 		return err
@@ -1298,7 +1285,7 @@ func (s *Store) PutScanShard(ctx context.Context, shard asset.ScanShard) error {
 		return err
 	}
 	row := scanShardRow{
-		ID: string(shard.ID), ScanTaskID: string(shard.ScanTaskID), TargetKey: shard.TargetKey,
+		ID: string(shard.ID), ScanTaskID: string(shard.ScanRunID), TargetKey: shard.TargetKey,
 		RetryGeneration: shard.RetryGeneration, ScopeID: string(shard.ScopeID),
 		ResourceKindID: string(shard.ResourceKindID), Source: shard.Source,
 		Authoritative: shard.Authoritative, Status: string(shard.Status),
@@ -1348,7 +1335,7 @@ func (s *Store) CreateScanShards(ctx context.Context, shards []asset.ScanShard) 
 	rows := make([]scanShardRow, 0, len(shards))
 	itemCounts := make(map[string]int)
 	for _, shard := range shards {
-		if shard, err = canonicalizeScanShard(shard, aliases); err != nil {
+		if shard, err = canonicalizeScanShard(defaultScanShardTarget(shard), aliases); err != nil {
 			return err
 		}
 		payload, err := encode(shard)
@@ -1356,13 +1343,13 @@ func (s *Store) CreateScanShards(ctx context.Context, shards []asset.ScanShard) 
 			return err
 		}
 		rows = append(rows, scanShardRow{
-			ID: string(shard.ID), ScanTaskID: string(shard.ScanTaskID), TargetKey: shard.TargetKey,
+			ID: string(shard.ID), ScanTaskID: string(shard.ScanRunID), TargetKey: shard.TargetKey,
 			RetryGeneration: shard.RetryGeneration, ScopeID: string(shard.ScopeID),
 			ResourceKindID: string(shard.ResourceKindID), Source: shard.Source,
 			Authoritative: shard.Authoritative, Status: string(shard.Status),
 			ItemCount: shard.Coverage.ItemCount, CreatedAt: shard.CreatedAt, Payload: payload,
 		})
-		itemCounts[string(shard.ScanTaskID)] += shard.Coverage.ItemCount
+		itemCounts[string(shard.ScanRunID)] += shard.Coverage.ItemCount
 	}
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := mapCreateError(tx.Table("scan_shards").CreateInBatches(rows, upsertBatchSize).Error); err != nil {
@@ -1493,7 +1480,6 @@ func (s *Store) ListScanShardsByRun(ctx context.Context, runID asset.ScanRunID) 
 }
 
 func canonicalizeScanShard(value asset.ScanShard, aliases map[asset.ScopeID]asset.ScopeID) (asset.ScanShard, error) {
-	value = normalizeScanShardIdentity(value)
 	var err error
 	value.ScopeID, err = resolveScopeAlias(value.ScopeID, aliases)
 	if err != nil {
@@ -1508,13 +1494,9 @@ func canonicalizeScanShard(value asset.ScanShard, aliases map[asset.ScopeID]asse
 	return value, nil
 }
 
-func normalizeScanShardIdentity(value asset.ScanShard) asset.ScanShard {
-	if value.ScanTaskID == "" {
-		value.ScanTaskID = value.ScanRunID
-	}
-	if value.ScanRunID == "" {
-		value.ScanRunID = value.ScanTaskID
-	}
+// defaultScanShardTarget derives the target of a shard written without one
+// from its region or scope.
+func defaultScanShardTarget(value asset.ScanShard) asset.ScanShard {
 	if strings.TrimSpace(value.TargetKey) == "" {
 		if value.RegionID == "global" {
 			value.TargetKey = "global"

@@ -72,7 +72,6 @@ function renderCleanupTasks() {
 
 it("polls only active executions and projects a stable timeline", () => {
   expect(isExecutionActive("running")).toBe(true);
-  expect(isExecutionActive("reconciling")).toBe(true);
   expect(isExecutionActive("succeeded")).toBe(false);
   expect(executionTimeline("running").map((item) => item.state)).toEqual([
     "complete",

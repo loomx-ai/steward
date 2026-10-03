@@ -79,9 +79,9 @@ func TestRouterScopePlanPreservesDependenciesAndIndependentRouters(t *testing.T)
 	}
 }
 
-func TestRouterScopeGuardsAllNativeFamiliesAndLegacySnapshots(t *testing.T) {
+func TestRouterScopeGuardsAllNativeFamilies(t *testing.T) {
 	for _, kind := range []string{"Router", "RouterNat", "RoutePolicy", "NamedSet"} {
-		for _, mode := range []string{"frozen", "inventory", "wrong-annotation", "partition-alias", "malformed", "wrong-connection", "different-router", "succeeded", "failed-detach"} {
+		for _, mode := range []string{"frozen", "missing-snapshot", "wrong-annotation", "partition-alias", "malformed", "wrong-connection", "different-router", "succeeded", "failed-detach"} {
 			t.Run(kind+"/"+mode, func(t *testing.T) {
 				ctx := t.Context()
 				db := filepath.Join(t.TempDir(), "scope.db")
@@ -101,11 +101,8 @@ func TestRouterScopeGuardsAllNativeFamiliesAndLegacySnapshots(t *testing.T) {
 					t.Fatal(err)
 				}
 				evidence := map[string]any{plan.EvidencePlannedAsset: value}
-				if mode == "inventory" {
-					evidence = nil
-					if err := repos.Inventory().PutAsset(ctx, value); err != nil {
-						t.Fatal(err)
-					}
+				if mode == "missing-snapshot" {
+					evidence = map[string]any{}
 				}
 				if mode == "wrong-annotation" {
 					evidence[routerMutationScope] = "unrelated"

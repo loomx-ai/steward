@@ -240,7 +240,7 @@ func latestCleanupExecution(
 
 func pausableExecutionStatus(status execution.ExecutionStatus) bool {
 	switch status {
-	case execution.ExecutionPending, execution.ExecutionRunning, execution.ExecutionWaiting, execution.ExecutionReconciling:
+	case execution.ExecutionPending, execution.ExecutionRunning, execution.ExecutionWaiting:
 		return true
 	default:
 		return false

@@ -1216,16 +1216,6 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 			}
 			execution.LogJob(ctx, "success", "cleanup action succeeded")
 			return h.finalizeExecution(ctx, attempt, aggregate)
-		case execution.ActionReconciling:
-			// Compatibility for actions persisted by older versions while they
-			// were waiting for an internal authoritative rescan. Cleanup no
-			// longer creates scans; close the confirmed resource and leave
-			// non-guaranteed delegated impacts unverified.
-			if err := h.completeReconciliation(ctx, attempt, aggregate, step, value, &action); err != nil {
-				return err
-			}
-			execution.LogJob(ctx, "success", "cleanup action succeeded")
-			return h.finalizeExecution(ctx, attempt, aggregate)
 		case execution.ActionSucceeded, execution.ActionSkipped, execution.ActionFailed:
 			return h.finalizeExecution(ctx, attempt, aggregate)
 		default:
@@ -1716,7 +1706,6 @@ func (h *ExecutionHandler) completeControllerIntegratedVerification(
 			return err
 		}
 	case execution.ActionReadingBack:
-	case execution.ActionReconciling:
 	default:
 		return fmt.Errorf(
 			"controller-integrated action %q has unsupported status %q",
@@ -2148,7 +2137,7 @@ func (h *ExecutionHandler) ensureActionIntent(ctx context.Context, attempt execu
 		if lookupErr == nil {
 			resumeStatus := current.ResumeStatus
 			switch resumeStatus {
-			case execution.ActionInvoking, execution.ActionWaiting, execution.ActionReadingBack, execution.ActionReconciling:
+			case execution.ActionInvoking, execution.ActionWaiting, execution.ActionReadingBack:
 			default:
 				resumeStatus = execution.ActionInvoking
 			}
@@ -2440,47 +2429,6 @@ func (h *ExecutionHandler) completeDirectReadback(
 				return err
 			}
 		}
-		if err := repositories.Executions().UpdateAction(ctx, *action); err != nil {
-			return err
-		}
-		return appendActionOutcome(ctx, repositories, attempt, *action, "succeeded", action.UpdatedAt)
-	})
-}
-
-func (h *ExecutionHandler) completeReconciliation(
-	ctx context.Context,
-	attempt execution.ExecutionAttempt,
-	aggregate persistence.CleanupTaskAggregate,
-	step plan.CleanupTaskStep,
-	value asset.Asset,
-	action *execution.ActionAttempt,
-) error {
-	return h.planner.repositories.WithTx(ctx, func(repositories persistence.Repositories) error {
-		action.UpdatedAt = h.planner.clock()
-		closeAssetProjection(&value, action.UpdatedAt)
-		if err := repositories.Inventory().PutAsset(ctx, value); err != nil {
-			return err
-		}
-		if err := repositories.Graph().CloseAssetTopology(ctx, value.ID, action.UpdatedAt); err != nil {
-			return err
-		}
-		impacts := initialImpactResults(aggregate.ImpactItems, step.ID)
-		if err := closeControllerIntegratedImpactAssets(
-			ctx,
-			repositories,
-			aggregate.ImpactItems,
-			step.ID,
-			action.UpdatedAt,
-		); err != nil {
-			return err
-		}
-		if err := repositories.CleanupTasks().UpdateImpactItems(ctx, aggregate.Task.ID, impacts); err != nil {
-			return err
-		}
-		if err := action.Transition(execution.ActionSucceeded); err != nil {
-			return err
-		}
-		action.FinishedAt = &action.UpdatedAt
 		if err := repositories.Executions().UpdateAction(ctx, *action); err != nil {
 			return err
 		}

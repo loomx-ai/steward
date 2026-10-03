@@ -635,7 +635,7 @@ func (s *Service) CreateExecution(ctx context.Context, request CreateExecutionRe
 				reason,
 			)
 		}
-		if aggregate.Task.Status != plan.StatusReady && !legacyCoverageAdvisoryTask(aggregate.Task) {
+		if aggregate.Task.Status != plan.StatusReady {
 			return fmt.Errorf("cleanup task %q is not ready for execution: %s", request.CleanupTaskID, aggregate.Task.Status)
 		}
 		if request.ConnectionID != "" && aggregate.Task.ConnectionID != request.ConnectionID {
@@ -1147,12 +1147,6 @@ func cleanupExecutionJob(
 }
 
 func actionResumeStatus(action execution.ActionAttempt) execution.ActionStatus {
-	if retryableProviderSkipNeedsReinvoke(action) {
-		// This skip came from a provider call that never reached the delete
-		// operation. A request ID belongs to that failed prerequisite query, so
-		// it must not be mistaken for an accepted asynchronous deletion.
-		return execution.ActionInvoking
-	}
 	if terminalROSStackInstanceOperationNeedsReinvoke(action) {
 		// A terminal StackInstance operation cannot make progress through more
 		// polling. Re-enter the action so it reads the StackGroup and its current
@@ -1166,7 +1160,7 @@ func actionResumeStatus(action execution.ActionAttempt) execution.ActionStatus {
 		return execution.ActionInvoking
 	}
 	switch action.FailedFrom {
-	case execution.ActionInvoking, execution.ActionWaiting, execution.ActionReadingBack, execution.ActionReconciling:
+	case execution.ActionInvoking, execution.ActionWaiting, execution.ActionReadingBack:
 		return action.FailedFrom
 	}
 	if action.ProviderRequestID != "" || action.ProviderOperationID != "" {
@@ -1202,15 +1196,6 @@ func resumedProviderIdempotencyKey(
 	return fmt.Sprintf("%s:continue:%d", key, attempt.ContinueCount)
 }
 
-func retryableProviderSkipNeedsReinvoke(action execution.ActionAttempt) bool {
-	return action.Status == execution.ActionSkipped &&
-		action.SkipReason == string(asset.SkipProductUnsupported) &&
-		action.ProviderError != nil &&
-		action.ProviderError.Code == "UnsupportedHTTPMethod" &&
-		strings.TrimSpace(fmt.Sprint(action.ProviderError.Summary["operation"])) ==
-			"AlibabaCloud.NAS.DescribeLifecyclePolicies"
-}
-
 func deletionNeverStartedBeforeTimeout(action execution.ActionAttempt) bool {
 	if action.Status != execution.ActionFailed || action.ProviderError == nil ||
 		action.ProviderError.Code != "DeletionCheckTimeout" {
@@ -1230,11 +1215,6 @@ func deletionNeverStartedBeforeTimeout(action execution.ActionAttempt) bool {
 func retryableProviderSkip(action execution.ActionAttempt) bool {
 	if action.Status != execution.ActionSkipped || action.ProviderError == nil {
 		return false
-	}
-	if retryableProviderSkipNeedsReinvoke(action) {
-		// Compatibility for attempts made by the short-lived catalog revision
-		// that incorrectly sent this GET-only NAS operation as POST.
-		return true
 	}
 	if action.SkipReason != string(asset.SkipProviderRegionUnavailable) {
 		return false
@@ -2091,18 +2071,6 @@ func cleanupNormalizedNumber(normalized map[string]any, field string) float64 {
 	default:
 		return 0
 	}
-}
-
-func legacyCoverageAdvisoryTask(task plan.CleanupTask) bool {
-	if task.Status != plan.StatusDraft || len(task.Blockers) == 0 {
-		return false
-	}
-	for _, blocker := range task.Blockers {
-		if blocker.Code != plan.BlockScanCoverageIncomplete {
-			return false
-		}
-	}
-	return true
 }
 
 func isNetworkFoundation(value asset.Asset) bool {

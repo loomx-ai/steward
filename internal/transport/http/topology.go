@@ -14,14 +14,6 @@ func (a *API) topology(response http.ResponseWriter, request *http.Request) {
 		writeError(response, http.StatusServiceUnavailable, fmt.Errorf("topology service is unavailable"))
 		return
 	}
-	for _, legacy := range []string{"parent_key", "depth", "node_limit"} {
-		if request.URL.Query().Has(legacy) {
-			writeAPIError(response, http.StatusBadRequest, APIError{
-				Code: "topology.query_invalid", Message: fmt.Sprintf("%s is not supported", legacy),
-			})
-			return
-		}
-	}
 	limit, err := optionalInteger(request, "limit")
 	if err != nil {
 		writeAPIError(response, http.StatusBadRequest, APIError{Code: "topology.limit_invalid", Message: err.Error()})

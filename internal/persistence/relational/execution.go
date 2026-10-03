@@ -332,7 +332,6 @@ func (s *Store) CountInFlightActions(ctx context.Context, executionID execution.
 		string(execution.ActionInvoking),
 		string(execution.ActionWaiting),
 		string(execution.ActionReadingBack),
-		string(execution.ActionReconciling),
 	}
 	var count int64
 	err := s.db.WithContext(ctx).
@@ -439,26 +438,9 @@ func (s *Store) ListAuditEvents(ctx context.Context, options persistence.ListOpt
 		if err != nil {
 			return persistence.Page[execution.AuditEvent]{}, err
 		}
-		normalizeLegacyCleanupActionRequestID(&event)
 		page.Items = append(page.Items, event)
 	}
 	return page, nil
-}
-
-func normalizeLegacyCleanupActionRequestID(event *execution.AuditEvent) {
-	if event == nil ||
-		!strings.HasPrefix(event.Action, "cleanup.action.") ||
-		strings.TrimSpace(event.RequestID) == "" {
-		return
-	}
-	if _, migrated := event.Evidence["provider_request_id"]; migrated {
-		return
-	}
-	if event.Evidence == nil {
-		event.Evidence = make(map[string]any)
-	}
-	event.Evidence["provider_request_id"] = event.RequestID
-	event.RequestID = ""
 }
 
 func (s *Store) Enqueue(ctx context.Context, job execution.Job) error {

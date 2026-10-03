@@ -92,18 +92,12 @@ const (
 	ossDeleteHDFSFilesPhase                    = "delete_hdfs_files"
 	ossRestoreHDFSPhase                        = "restore_hdfs"
 	ossWaitHDFSRestoredPhase                   = "wait_hdfs_restored"
-	// These phase names are retained so attempts persisted by older builds can
-	// resume through the new HDFS safe-mode workflow.
-	ossDisableDataLakeStoragePhase = "disable_data_lake_storage"
-	// ossWaitDataLakeCleanupPhase is retained so cleanup attempts persisted by
-	// older builds resume by disabling the service automatically.
-	ossWaitDataLakeCleanupPhase      = "wait_data_lake_cleanup"
-	ossBucketDeleteRequestedPhase    = "bucket_delete_requested"
-	vpcDetachDhcpOptionsSetOperation = "AlibabaCloud.DetachDhcpOptionsSetFromVpc"
-	vpcDeleteDhcpOptionsSetOperation = "AlibabaCloud.DeleteDhcpOptionsSet"
-	vpcListDhcpOptionsSetsOperation  = "AlibabaCloud.ListDhcpOptionsSets"
-	vpcDetachDhcpOptionsSetPhase     = "detach_dhcp_options_set"
-	vpcDeleteDhcpOptionsSetPhase     = "delete_dhcp_options_set"
+	ossBucketDeleteRequestedPhase              = "bucket_delete_requested"
+	vpcDetachDhcpOptionsSetOperation           = "AlibabaCloud.DetachDhcpOptionsSetFromVpc"
+	vpcDeleteDhcpOptionsSetOperation           = "AlibabaCloud.DeleteDhcpOptionsSet"
+	vpcListDhcpOptionsSetsOperation            = "AlibabaCloud.ListDhcpOptionsSets"
+	vpcDetachDhcpOptionsSetPhase               = "detach_dhcp_options_set"
+	vpcDeleteDhcpOptionsSetPhase               = "delete_dhcp_options_set"
 )
 
 const (
@@ -597,11 +591,6 @@ func (h *ResourceAction) startOSSDataLakeStorageDisable(
 	data["hdfs_cleanup_automatic"] = true
 	data["hdfs_restored"] = false
 	data["hdfs_restore_requested"] = false
-	delete(data, "data_lake_storage_target_status")
-	delete(data, "data_lake_storage_disable_automatic")
-	delete(data, "manual_action_required")
-	delete(data, "data_lake_cleanup_steps")
-	delete(data, "data_lake_cleanup_command")
 	data["trigger_code"] = trigger.Code
 	data["trigger_message"] = trigger.Message
 	return contracts.ActionResult{
@@ -627,9 +616,6 @@ func (h *ResourceAction) pauseOSSHDFS(
 	data["phase"] = ossWaitHDFSPausedPhase
 	data["hdfs_safe_mode_requested"] = true
 	data["hdfs_pause_request_id"] = result.RequestID
-	delete(data, "manual_action_required")
-	delete(data, "data_lake_cleanup_steps")
-	delete(data, "data_lake_cleanup_command")
 	return contracts.ActionResult{
 		ProviderRequestID: result.RequestID,
 		Data:              data,
@@ -979,10 +965,6 @@ func (h *ResourceAction) advanceOSSBucketCleanup(
 		return h.restoreOSSHDFS(ctx, request, state)
 	case ossWaitHDFSRestoredPhase:
 		return h.waitOSSHDFSRestored(ctx, request, state)
-	case ossDisableDataLakeStoragePhase:
-		return h.pauseOSSHDFS(ctx, request, state)
-	case ossWaitDataLakeCleanupPhase:
-		return h.pauseOSSHDFS(ctx, request, state)
 	default:
 		return contracts.ActionResult{}, fmt.Errorf(
 			"Alibaba Cloud OSS bucket cleanup has unsupported phase %q",
@@ -1456,15 +1438,7 @@ func (h *ResourceAction) retryOSSBucketDelete(
 		if cleanup && pass < ossBucketCleanupMaxPass {
 			data := cloneTopologyMap(state)
 			data["phase"] = ossDeleteObjectVersionsPhase
-			if strings.TrimSpace(stringValue(state["phase"])) == ossWaitDataLakeCleanupPhase {
-				data["cleanup_pass"] = 1
-				data["data_lake_cleanup_completed"] = true
-				delete(data, "manual_action_required")
-				delete(data, "data_lake_cleanup_steps")
-				delete(data, "data_lake_cleanup_command")
-			} else {
-				data["cleanup_pass"] = pass + 1
-			}
+			data["cleanup_pass"] = pass + 1
 			data["trigger_code"] = providerError.Code
 			data["trigger_message"] = providerError.Message
 			return ossBucketCleanupResult(data, providerError.RequestID), nil
@@ -3474,9 +3448,7 @@ func ossBucketCleanupPhase(phase string) bool {
 		ossWaitHDFSPausedPhase,
 		ossDeleteHDFSFilesPhase,
 		ossRestoreHDFSPhase,
-		ossWaitHDFSRestoredPhase,
-		ossDisableDataLakeStoragePhase,
-		ossWaitDataLakeCleanupPhase:
+		ossWaitHDFSRestoredPhase:
 		return true
 	default:
 		return false

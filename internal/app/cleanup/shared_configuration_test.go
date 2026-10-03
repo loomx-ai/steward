@@ -48,8 +48,7 @@ func TestCloudNatConcurrentExecutionsKeepScopeUntilVerifiedSuccess(t *testing.T)
 		t.Fatal(err)
 	}
 	now := time.Now().UTC()
-	scope := "connection/gcp/router-a"
-	other := persistence.CleanupTaskAggregate{Task: plan.CleanupTask{ID: "other", ConnectionID: "connection", Status: plan.StatusExecuting, CreatedAt: now, UpdatedAt: &now}, Steps: []plan.CleanupTaskStep{{ID: "other-step", CleanupTaskID: "other", AssetID: "other-nat", Kind: plan.StepDirect, Action: "delete", Evidence: map[string]any{natMutationScope: scope}}}}
+	other := persistence.CleanupTaskAggregate{Task: plan.CleanupTask{ID: "other", ConnectionID: "connection", Status: plan.StatusExecuting, CreatedAt: now, UpdatedAt: &now}, Steps: []plan.CleanupTaskStep{{ID: "other-step", CleanupTaskID: "other", AssetID: "other-nat", Kind: plan.StepDirect, Action: "delete", Evidence: map[string]any{plan.EvidencePlannedAsset: routerMutationAsset("other-nat", "RouterNat", "a")}}}}
 	if err := repositories.CleanupTasks().CreateTask(ctx, other.Task, other.Steps, nil); err != nil {
 		t.Fatal(err)
 	}
@@ -57,7 +56,7 @@ func TestCloudNatConcurrentExecutionsKeepScopeUntilVerifiedSuccess(t *testing.T)
 	if err := repositories.Executions().CreateExecution(ctx, attempt); err != nil {
 		t.Fatal(err)
 	}
-	current := persistence.CleanupTaskAggregate{Task: plan.CleanupTask{ID: "current", ConnectionID: "connection"}, Steps: []plan.CleanupTaskStep{{ID: "current-step", Evidence: map[string]any{natMutationScope: scope}}}}
+	current := persistence.CleanupTaskAggregate{Task: plan.CleanupTask{ID: "current", ConnectionID: "connection"}, Steps: []plan.CleanupTaskStep{{ID: "current-step", AssetID: "current-nat", Action: "delete", Evidence: map[string]any{plan.EvidencePlannedAsset: routerMutationAsset("current-nat", "RouterNat", "a")}}}}
 	action := execution.ActionAttempt{ID: "other-action", ExecutionID: attempt.ID, CleanupTaskStepID: "other-step", AssetID: "other-nat", Action: "delete", Status: execution.ActionInvoking, IdempotencyKey: "other-action", CreatedAt: now, UpdatedAt: now}
 	if err := repositories.Executions().AppendAction(ctx, action); err != nil {
 		t.Fatal(err)
@@ -78,11 +77,11 @@ func TestCloudNatConcurrentExecutionsKeepScopeUntilVerifiedSuccess(t *testing.T)
 	if err := guardSharedConfiguration(ctx, repositories, other, nil, attempt.ID); err != nil {
 		t.Fatal("same task cannot recover", err)
 	}
-	current.Steps[0].Evidence[natMutationScope] = "connection/gcp/router-b"
+	current.Steps[0].Evidence[plan.EvidencePlannedAsset] = routerMutationAsset("current-nat", "RouterNat", "b")
 	if err := guardSharedConfiguration(ctx, repositories, current, nil, ""); err != nil {
 		t.Fatal("different router blocked", err)
 	}
-	current.Steps[0].Evidence[natMutationScope] = scope
+	current.Steps[0].Evidence[plan.EvidencePlannedAsset] = routerMutationAsset("current-nat", "RouterNat", "a")
 	action.Status = execution.ActionSucceeded
 	if err := repositories.Executions().UpdateAction(ctx, action); err != nil {
 		t.Fatal(err)
@@ -106,8 +105,7 @@ func TestCloudNatTerminalScopeWithoutInvocation(t *testing.T) {
 				t.Fatal(err)
 			}
 			now := time.Now().UTC()
-			scope := "connection/gcp/router"
-			task := persistence.CleanupTaskAggregate{Task: plan.CleanupTask{ID: "old", ConnectionID: "connection", Status: plan.StatusFailed, CreatedAt: now}, Steps: []plan.CleanupTaskStep{{ID: "step", CleanupTaskID: "old", AssetID: "nat", Action: "delete", Evidence: map[string]any{natMutationScope: scope}}}}
+			task := persistence.CleanupTaskAggregate{Task: plan.CleanupTask{ID: "old", ConnectionID: "connection", Status: plan.StatusFailed, CreatedAt: now}, Steps: []plan.CleanupTaskStep{{ID: "step", CleanupTaskID: "old", AssetID: "nat", Action: "delete", Evidence: map[string]any{plan.EvidencePlannedAsset: routerMutationAsset("nat", "RouterNat", "router")}}}}
 			if err := repositories.CleanupTasks().CreateTask(ctx, task.Task, task.Steps, nil); err != nil {
 				t.Fatal(err)
 			}
@@ -146,7 +144,7 @@ func TestCloudNatTerminalScopeWithoutInvocation(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			current := persistence.CleanupTaskAggregate{Task: plan.CleanupTask{ID: "new", ConnectionID: "connection"}, Steps: []plan.CleanupTaskStep{{Evidence: map[string]any{natMutationScope: scope}}}}
+			current := persistence.CleanupTaskAggregate{Task: plan.CleanupTask{ID: "new", ConnectionID: "connection"}, Steps: []plan.CleanupTaskStep{{ID: "new-step", AssetID: "new-nat", Action: "delete", Evidence: map[string]any{plan.EvidencePlannedAsset: routerMutationAsset("new-nat", "RouterNat", "router")}}}}
 			err = guardSharedConfiguration(ctx, repositories, current, nil, "")
 			safe := mode == "no-action" || mode == "intent" || mode == "finished-job"
 			if safe && err != nil || !safe && !errors.Is(err, persistence.ErrConflict) {
@@ -187,7 +185,7 @@ func TestCloudNatSettlementProofPersistsAndInvalidatesOnActionChange(t *testing.
 		if err := repositories.Inventory().PutAsset(ctx, value); err != nil {
 			t.Fatal(err)
 		}
-		step := plan.CleanupTaskStep{ID: plan.StepID(id), CleanupTaskID: "old", AssetID: value.ID, Action: "delete", Evidence: map[string]any{natMutationScope: id, plan.EvidencePlannedAsset: value}}
+		step := plan.CleanupTaskStep{ID: plan.StepID(id), CleanupTaskID: "old", AssetID: value.ID, Action: "delete", Evidence: map[string]any{plan.EvidencePlannedAsset: value}}
 		other.Steps = append(other.Steps, step)
 		action := execution.ActionAttempt{ID: execution.ActionAttemptID(id), ExecutionID: attempt.ID, CleanupTaskStepID: id, AssetID: value.ID, Action: "delete", Status: execution.ActionWaiting, IdempotencyKey: id, ProviderOperationID: "native-operation", CreatedAt: now, UpdatedAt: now}
 		if err := repositories.Executions().AppendAction(ctx, action); err != nil {
