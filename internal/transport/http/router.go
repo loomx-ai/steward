@@ -154,6 +154,7 @@ func NewRouter(dependencies Dependencies) http.Handler {
 			router.Post("/cleanup/{id}/assets", requireRole(RoleOperator, api.addCleanupTaskAssets))
 			router.Get("/cleanup/{id}/logs", requireRole(RoleViewer, api.cleanupTaskLogs))
 			router.Get("/cleanup/{id}/events", requireRole(RoleViewer, api.cleanupTaskEvents))
+			router.Get("/cleanup/{id}/progress", requireRole(RoleViewer, api.cleanupTaskProgress))
 			router.Get("/cleanup/{id}/executions", requireRole(RoleViewer, api.listCleanupTaskExecutions))
 			router.Post("/cleanup/{id}/executions", requireRole(RoleOperator, api.createExecution))
 			router.Post("/cleanup/{id}/continue", requireRole(RoleOperator, api.continueExecution))

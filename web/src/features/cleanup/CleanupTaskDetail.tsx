@@ -135,6 +135,7 @@ import {
 import { cloudConsoleURL } from "../panorama/consoleLinks";
 import { panoramaResourcePath } from "../panorama/route";
 import { CleanupTaskEvents } from "./CleanupTaskEvents";
+import { followCleanupTaskProgress } from "./cleanupProgress";
 import {
   confirmationMode,
   dedupeSelectors,
@@ -218,11 +219,15 @@ export function CleanupTaskDetail() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<PageSize>(DEFAULT_PAGE_SIZE);
   const activeActionsRef = useRef(false);
+  // While the progress stream is up it owns the task, execution and action
+  // caches, so their queries stop fetching; the intervals below only run as a
+  // fallback while the stream is down.
+  const [progressStreaming, setProgressStreaming] = useState(false);
 
   const detail = useQuery({
     queryKey: ["cleanup-task", connection.id, id],
     queryFn: () => getCleanupTask(connection.id, id),
-    enabled: Boolean(id),
+    enabled: Boolean(id) && !progressStreaming,
     refetchInterval: (value) =>
       ["executing", "pausing"].includes(value.state.data?.task.status ?? "")
         ? 2500
@@ -265,7 +270,7 @@ export function CleanupTaskDetail() {
   const executions = useQuery({
     queryKey: ["cleanup-task-executions", connection.id, id],
     queryFn: () => listCleanupTaskExecutions(connection.id, id, "", 20),
-    enabled: Boolean(id) && hasExecution,
+    enabled: Boolean(id) && hasExecution && !progressStreaming,
     refetchInterval: (query) => {
       const latest = latestExecution(query.state.data?.items ?? []);
       if (!latest) {
@@ -280,7 +285,7 @@ export function CleanupTaskDetail() {
   const actions = useQuery({
     queryKey: ["cleanup-actions", connection.id, attempt?.id],
     queryFn: () => listExecutionActions(connection.id, attempt!.id),
-    enabled: Boolean(attempt?.id),
+    enabled: Boolean(attempt?.id) && !progressStreaming,
     refetchInterval: (query) =>
       shouldPollCleanupActions(attempt?.status, query.state.data?.items ?? [])
         ? 2000
@@ -310,6 +315,25 @@ export function CleanupTaskDetail() {
     (actions.data?.items ?? []).some(
       (action) => !isTerminalAction(action.status),
     );
+  const live =
+    ["executing", "pausing"].includes(aggregate?.task.status ?? "") ||
+    Boolean(attempt && isActiveExecution(attempt.status)) ||
+    hasActiveActions;
+  useEffect(() => {
+    if (!id || !live) return;
+    const controller = new AbortController();
+    void followCleanupTaskProgress(
+      queryClient,
+      connection.id,
+      id,
+      setProgressStreaming,
+      controller.signal,
+    );
+    return () => {
+      controller.abort();
+      setProgressStreaming(false);
+    };
+  }, [connection.id, id, live, queryClient]);
 
   const baseResourceRows = useMemo(
     () =>
@@ -931,10 +955,6 @@ export function CleanupTaskDetail() {
     continueExecution.error ??
     pauseExecution.error ??
     resumeExecution.error;
-  const liveLogs =
-    ["executing", "pausing"].includes(aggregate.task.status) ||
-    Boolean(attempt && isActiveExecution(attempt.status)) ||
-    hasActiveActions;
   const inspectCleanupTarget = (
     selector: CleanupSelector,
     selectorIndex: number,
@@ -1370,7 +1390,7 @@ export function CleanupTaskDetail() {
             <CleanupTaskEvents
               connectionID={connection.id}
               taskID={aggregate.task.id}
-              live={liveLogs}
+              live={live}
               assetsByID={byID}
               resourceIDFilter={logResourceID}
               onResourceIDFilterChange={setLogResourceID}

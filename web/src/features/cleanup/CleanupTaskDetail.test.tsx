@@ -24,6 +24,8 @@ import {
   listProviderCatalog,
   pauseCleanupExecution,
   resumeCleanupExecution,
+  streamCleanupTaskProgress,
+  type CleanupProgressEvent,
 } from "@/api/client";
 import type { ActionAttempt } from "@/api/types";
 import { WorkspaceProvider } from "@/app/WorkspaceContext";
@@ -53,6 +55,7 @@ vi.mock("@/api/client", async (importOriginal) => ({
   listProviderCatalog: vi.fn(),
   pauseCleanupExecution: vi.fn(),
   resumeCleanupExecution: vi.fn(),
+  streamCleanupTaskProgress: vi.fn(),
 }));
 
 vi.mock("@/connections/ActiveConnectionProvider", () => ({
@@ -216,6 +219,16 @@ beforeEach(() => {
   vi.mocked(listProviderCatalog).mockReset();
   vi.mocked(pauseCleanupExecution).mockReset();
   vi.mocked(resumeCleanupExecution).mockReset();
+  // By default the progress stream connects but sends nothing, so pages fall
+  // back to polling.
+  vi.mocked(streamCleanupTaskProgress)
+    .mockReset()
+    .mockImplementation(
+      (_connectionID, _taskID, _onEvent, signal) =>
+        new Promise((resolve) =>
+          signal.addEventListener("abort", () => resolve(), { once: true }),
+        ),
+    );
   vi.mocked(listProviderCatalog).mockResolvedValue([
     {
       provider: "alicloud",
@@ -1174,6 +1187,139 @@ it("stops polling actions and assets after every resource action is terminal", a
   });
   expect(listExecutionActions).toHaveBeenCalledTimes(1);
   expect(findAssets).toHaveBeenCalledTimes(1);
+});
+
+it("follows a running task through its progress stream and polls only while the stream is down", async () => {
+  vi.useFakeTimers();
+  const aggregate = {
+    task: {
+      id: "cln-live",
+      connection_id: "connection-a",
+      status: "executing" as const,
+      selectors: [{ kind: "asset" as const, asset_id: "asset-a" }],
+      resolved_asset_ids: ["asset-a"],
+      revision: {
+        inventory_revision: "inventory-1",
+        graph_revision: "graph-1",
+        spec_bundle_revision: "bundle-1",
+        spec_hash: "spec-1",
+      },
+      scan_coverage: { status: "complete" as const },
+      snapshot_hash: "snapshot-live",
+      created_by: "operator",
+      created_at: "2026-08-03T00:00:00Z",
+    },
+    steps: [
+      {
+        id: "step-a",
+        cleanup_task_id: "cln-live",
+        asset_id: "asset-a",
+        kind: "direct" as const,
+        action: "delete",
+      },
+    ],
+    impact_items: [],
+  };
+  const execution = {
+    id: "execution-live",
+    connection_id: "connection-a",
+    cleanup_task_id: "cln-live",
+    status: "running",
+    requested_by: "operator",
+    idempotency_key: "key-live",
+    created_at: "2026-08-03T00:00:01Z",
+  };
+  const action = {
+    id: "action-live",
+    execution_id: "execution-live",
+    cleanup_task_step_id: "step-a",
+    asset_id: "asset-a",
+    action: "delete",
+    status: "invoking",
+    idempotency_key: "key-action",
+    spec_bundle_revision: "bundle-1",
+    spec_hash: "spec-1",
+    created_at: "2026-08-03T00:00:02Z",
+    updated_at: "2026-08-03T00:00:03Z",
+  };
+  vi.mocked(getCleanupTask).mockResolvedValue(aggregate);
+  vi.mocked(listCleanupTaskExecutions).mockResolvedValue({
+    items: [execution],
+  });
+  vi.mocked(listExecutionActions).mockResolvedValue({ items: [action] });
+  let emit: (event: CleanupProgressEvent) => void = () => {};
+  let drop: (reason: unknown) => void = () => {};
+  vi.mocked(streamCleanupTaskProgress).mockImplementationOnce(
+    (_connectionID, _taskID, onEvent) =>
+      new Promise((_, reject) => {
+        emit = onEvent;
+        drop = reject;
+      }),
+  );
+
+  render(
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
+    >
+      <MemoryRouter initialEntries={["/cleanup/cln-live"]}>
+        <LocaleProvider>
+          <Routes>
+            <Route path="/cleanup/:id" element={<CleanupTaskDetailHarness />} />
+          </Routes>
+        </LocaleProvider>
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+  await act(async () => {
+    for (let index = 0; index < 5; index += 1) {
+      await vi.advanceTimersByTimeAsync(1);
+    }
+  });
+  expect(streamCleanupTaskProgress).toHaveBeenCalledWith(
+    "connection-a",
+    "cln-live",
+    expect.any(Function),
+    expect.any(AbortSignal),
+  );
+  expect(screen.getByText("1 in progress")).toBeVisible();
+
+  await act(async () => {
+    emit({ type: "aggregate", data: aggregate });
+    emit({ type: "execution", data: execution });
+    emit({
+      type: "actions",
+      data: { execution_id: "execution-live", items: [action] },
+    });
+    await vi.advanceTimersByTimeAsync(1);
+  });
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(6000);
+  });
+  expect(getCleanupTask).toHaveBeenCalledTimes(1);
+  expect(listCleanupTaskExecutions).toHaveBeenCalledTimes(1);
+  expect(listExecutionActions).toHaveBeenCalledTimes(1);
+
+  await act(async () => {
+    emit({
+      type: "actions",
+      data: {
+        execution_id: "execution-live",
+        items: [{ ...action, status: "succeeded" }],
+      },
+    });
+    await vi.advanceTimersByTimeAsync(1);
+  });
+  expect(screen.getByText("1 succeeded")).toBeVisible();
+  expect(listExecutionActions).toHaveBeenCalledTimes(1);
+
+  await act(async () => {
+    drop(new Error("stream dropped"));
+    await vi.advanceTimersByTimeAsync(2600);
+  });
+  expect(streamCleanupTaskProgress).toHaveBeenCalledTimes(2);
+  expect(vi.mocked(getCleanupTask).mock.calls.length).toBeGreaterThan(1);
 });
 
 it("settles stale resource actions after the task completes before its execution cache", async () => {

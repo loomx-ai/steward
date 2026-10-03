@@ -6,20 +6,14 @@ import {
   useRef,
   useState,
 } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import {
   getCleanupTaskLogs,
   listProviderCatalog,
   streamCleanupTaskEvents,
 } from "@/api/client";
-import type {
-  Asset,
-  CleanupTask,
-  JobLog,
-  CleanupTaskAggregate,
-  ResourceKind,
-} from "@/api/types";
+import type { Asset, CleanupTask, JobLog, ResourceKind } from "@/api/types";
 import { ResourceKindPicker } from "@/components/domain/ResourceKindPicker";
 import {
   compareResourceKindOptionsByProduct,
@@ -72,7 +66,6 @@ export function CleanupTaskEvents({
     height: number;
     top: number;
   } | null>(null);
-  const queryClient = useQueryClient();
   const { formatError, locale, t } = useLocale();
   const activeResourceIDFilter =
     resourceIDFilter === undefined ? localResourceIDFilter : resourceIDFilter;
@@ -159,21 +152,8 @@ export function CleanupTaskEvents({
         appendLog(event.data as JobLog);
         return;
       }
+      // Task progress reaches the page through its own progress stream.
       if (event.type === "end") ended = true;
-      queryClient.setQueryData<CleanupTaskAggregate>(
-        ["cleanup-task", connectionID, taskID],
-        (current) =>
-          current ? { ...current, task: event.data as CleanupTask } : current,
-      );
-      void queryClient.invalidateQueries({
-        queryKey: ["cleanup", connectionID],
-      });
-      void queryClient.invalidateQueries({
-        queryKey: ["cleanup-task-executions", connectionID, taskID],
-      });
-      void queryClient.invalidateQueries({
-        queryKey: ["cleanup-actions", connectionID],
-      });
     };
 
     const connect = async () => {
@@ -232,7 +212,6 @@ export function CleanupTaskEvents({
     connectionID,
     debouncedResourceIDFilter,
     live,
-    queryClient,
     resourceKindIDs,
     t,
     taskID,
@@ -444,7 +423,7 @@ function cleanupLogTarget(
   return [kindName, asset.identity.native_id];
 }
 
-function reconnectDelay(signal: AbortSignal, delay: number) {
+export function reconnectDelay(signal: AbortSignal, delay: number) {
   return new Promise<void>((resolve) => {
     const timer = window.setTimeout(resolve, delay);
     signal.addEventListener(

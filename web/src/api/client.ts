@@ -21,6 +21,7 @@ import type {
   CreateConnectionInput,
   ExecutionAttempt,
   Finding,
+  ImpactItem,
   Job,
   JobLog,
   LifecycleBinding,
@@ -1135,23 +1136,86 @@ export async function streamCleanupTaskEvents(
   signal: AbortSignal,
 ): Promise<string> {
   const params = cleanupLogParams(filters);
+  let latest = after;
+  await readCleanupStream(
+    `/api/cleanup/${encodeURIComponent(taskID)}/events?${params.toString()}`,
+    connectionID,
+    after,
+    signal,
+    (event, data, id) => {
+      if (id) latest = id;
+      if (event === "snapshot" || event === "log" || event === "end") {
+        onEvent({
+          type: event,
+          data: JSON.parse(data) as CleanupTask | JobLog,
+          id,
+        });
+      }
+    },
+  );
+  return latest;
+}
+
+export type CleanupProgressEvent =
+  | { type: "aggregate"; data: CleanupTaskAggregate }
+  | { type: "task" | "end"; data: CleanupTask }
+  | { type: "impacts"; data: { items: ImpactItem[] } }
+  | { type: "execution"; data: ExecutionAttempt }
+  | { type: "actions"; data: { execution_id: string; items: ActionAttempt[] } };
+
+const cleanupProgressEvents = new Set<string>([
+  "aggregate",
+  "task",
+  "end",
+  "impacts",
+  "execution",
+  "actions",
+]);
+
+// streamCleanupTaskProgress follows a running cleanup task: the full
+// aggregate first, then only what changes. It resolves when the stream closes.
+export async function streamCleanupTaskProgress(
+  connectionID: string,
+  taskID: string,
+  onEvent: (event: CleanupProgressEvent) => void,
+  signal: AbortSignal,
+): Promise<void> {
+  await readCleanupStream(
+    `/api/cleanup/${encodeURIComponent(taskID)}/progress`,
+    connectionID,
+    "",
+    signal,
+    (event, data) => {
+      if (cleanupProgressEvents.has(event)) {
+        onEvent({
+          type: event,
+          data: JSON.parse(data),
+        } as CleanupProgressEvent);
+      }
+    },
+  );
+}
+
+async function readCleanupStream(
+  path: string,
+  connectionID: string,
+  after: string,
+  signal: AbortSignal,
+  onFrame: (event: string, data: string, id?: string) => void,
+) {
   const token = accessTokenProvider()?.trim();
   const headers = new Headers({ Accept: "text/event-stream" });
   if (token) headers.set("Authorization", `Bearer ${token}`);
   if (after) headers.set("Last-Event-ID", after);
-  const response = await fetch(
-    scopedPath(
-      `/api/cleanup/${encodeURIComponent(taskID)}/events?${params.toString()}`,
-      connectionID,
-    ),
-    { headers, signal },
-  );
+  const response = await fetch(scopedPath(path, connectionID), {
+    headers,
+    signal,
+  });
   observePrincipal(response);
   if (!response.ok || !response.body)
     throw new Error(`cleanup event stream failed with ${response.status}`);
   const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
   let buffer = "";
-  let latest = after;
   while (true) {
     const { done, value } = await reader.read();
     buffer += value ?? "";
@@ -1160,34 +1224,18 @@ export async function streamCleanupTaskEvents(
       const frame = buffer.slice(0, boundary);
       buffer = buffer.slice(boundary + 2);
       const lines = frame.split("\n");
-      const event = lines
-        .find((line) => line.startsWith("event:"))
-        ?.slice(6)
-        .trim();
-      const id = lines
-        .find((line) => line.startsWith("id:"))
-        ?.slice(3)
-        .trim();
-      const data = lines
-        .find((line) => line.startsWith("data:"))
-        ?.slice(5)
-        .trim();
-      if (id) latest = id;
-      if (
-        (event === "snapshot" || event === "log" || event === "end") &&
-        data
-      ) {
-        onEvent({
-          type: event,
-          data: JSON.parse(data) as CleanupTask | JobLog,
-          id,
-        });
-      }
+      const field = (name: string) =>
+        lines
+          .find((line) => line.startsWith(`${name}:`))
+          ?.slice(name.length + 1)
+          .trim();
+      const event = field("event");
+      const data = field("data");
+      if (event && data) onFrame(event, data, field("id"));
       boundary = buffer.indexOf("\n\n");
     }
     if (done) break;
   }
-  return latest;
 }
 
 export function getCleanupTaskLogs(
