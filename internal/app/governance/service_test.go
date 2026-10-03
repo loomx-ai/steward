@@ -230,3 +230,35 @@ func TestGraphRebuildMergesDuplicateRelationshipEvidenceWithProductPriority(t *t
 		t.Fatalf("supplemental relationship evidence = %#v", relationship.Evidence)
 	}
 }
+
+type mutatingContributor struct{ seen *[]any }
+
+func (c mutatingContributor) Contribute(_ context.Context, _ asset.ScopeID, values []asset.Asset) (governance.Contribution, error) {
+	nested := values[0].Normalized["nested"].(map[string]any)
+	*c.seen = append(*c.seen, nested["value"])
+	nested["value"] = "mutated"
+	values[0].Tags["owner"] = "mutated"
+	return governance.Contribution{}, nil
+}
+
+func TestGraphRebuildIsolatesContributorsFromEachOthersMutations(t *testing.T) {
+	t.Parallel()
+
+	assets := []asset.Asset{{
+		ID: "ecs-1", Identity: asset.Identity{Provider: asset.ProviderAliCloud, Partition: "aliyun", ConnectionID: "connection-1", NativeType: "ACS::ECS::Instance", NativeID: "i-1"},
+		Tags: map[string]string{"owner": "team"}, Normalized: map[string]any{"nested": map[string]any{"value": "original"}},
+	}}
+	repository := &graphRepository{}
+	var seen []any
+	contributor := mutatingContributor{seen: &seen}
+	service := governance.NewService(repository, repository)
+	if _, err := service.RebuildGraphFromAssets(context.Background(), "scope-root", "connection-1", "graph-1", spec.Bundle{}, []governance.Contributor{contributor, contributor}, assets); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(seen, []any{"original", "original"}) {
+		t.Fatalf("contributors saw %v", seen)
+	}
+	if assets[0].Normalized["nested"].(map[string]any)["value"] != "original" || assets[0].Tags["owner"] != "team" {
+		t.Fatalf("contributor mutated the caller's assets: %+v", assets[0])
+	}
+}

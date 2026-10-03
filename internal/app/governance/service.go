@@ -2,8 +2,9 @@ package governance
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"maps"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -68,6 +69,16 @@ func (s *Service) RebuildGraph(ctx context.Context, scopeID asset.ScopeID, conne
 	assets, err := s.assets.ListActiveAssetsByConnection(ctx, connectionID, "")
 	if err != nil {
 		return GraphResult{}, err
+	}
+	return s.RebuildGraphFromAssets(ctx, scopeID, connectionID, revision, bundle, contributors, assets)
+}
+
+// RebuildGraphFromAssets rebuilds the graph from the connection's active
+// assets the caller already loaded. It reorders assets but does not modify
+// them.
+func (s *Service) RebuildGraphFromAssets(ctx context.Context, scopeID asset.ScopeID, connectionID asset.ConnectionID, revision string, bundle spec.Bundle, contributors []Contributor, assets []asset.Asset) (GraphResult, error) {
+	if scopeID == "" || connectionID == "" || strings.TrimSpace(revision) == "" {
+		return GraphResult{}, fmt.Errorf("scope, connection, and graph revision are required")
 	}
 	for _, value := range assets {
 		if value.Identity.ConnectionID != connectionID {
@@ -141,11 +152,7 @@ func (s *Service) RebuildGraph(ctx context.Context, scopeID asset.ScopeID, conne
 		if contributor == nil {
 			continue
 		}
-		contributorAssets, err := cloneAssets(assets)
-		if err != nil {
-			return GraphResult{}, err
-		}
-		contribution, err := contributor.Contribute(ctx, scopeID, contributorAssets)
+		contribution, err := contributor.Contribute(ctx, scopeID, cloneAssets(assets))
 		if err != nil {
 			return GraphResult{}, err
 		}
@@ -383,14 +390,52 @@ func lifecycleBindingID(revision string, controllerID, managedID asset.AssetID, 
 	return graph.LifecycleBindingID(idgen.MustNew("lcb"))
 }
 
-func cloneAssets(values []asset.Asset) ([]asset.Asset, error) {
-	payload, err := json.Marshal(values)
-	if err != nil {
-		return nil, fmt.Errorf("copy assets for graph contributor: %w", err)
+// cloneAssets gives a contributor its own deep copy so one contributor cannot
+// change what later contributors or finding evaluation see. Asset documents
+// are decoded JSON, so maps and slices are the only containers to copy.
+func cloneAssets(values []asset.Asset) []asset.Asset {
+	result := make([]asset.Asset, len(values))
+	for index, value := range values {
+		value.Tags = maps.Clone(value.Tags)
+		value.Capabilities = slices.Clone(value.Capabilities)
+		value.Normalized, _ = cloneDocument(value.Normalized).(map[string]any)
+		if value.ClosedAt != nil {
+			closedAt := *value.ClosedAt
+			value.ClosedAt = &closedAt
+		}
+		if value.DeletedAt != nil {
+			deletedAt := *value.DeletedAt
+			value.DeletedAt = &deletedAt
+		}
+		result[index] = value
 	}
-	var result []asset.Asset
-	if err := json.Unmarshal(payload, &result); err != nil {
-		return nil, fmt.Errorf("copy assets for graph contributor: %w", err)
+	return result
+}
+
+func cloneDocument(value any) any {
+	switch typed := value.(type) {
+	case map[string]any:
+		if typed == nil {
+			return typed
+		}
+		result := make(map[string]any, len(typed))
+		for key, item := range typed {
+			result[key] = cloneDocument(item)
+		}
+		return result
+	case []any:
+		if typed == nil {
+			return typed
+		}
+		result := make([]any, len(typed))
+		for index, item := range typed {
+			result[index] = cloneDocument(item)
+		}
+		return result
+	case []string:
+		return slices.Clone(typed)
+	case map[string]string:
+		return maps.Clone(typed)
 	}
-	return result, nil
+	return value
 }

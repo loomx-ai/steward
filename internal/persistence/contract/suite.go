@@ -1264,6 +1264,13 @@ func Run(t *testing.T, factory Factory) {
 		if err != nil || len(observedIDs) != 1 || observedIDs[0] != active.ID {
 			t.Fatalf("observed asset IDs = %+v, err = %v", observedIDs, err)
 		}
+		runObservedIDs, err := repositories.Inventory().ListAssetIDsObservedByRun(ctx, "scan-app")
+		if err != nil || len(runObservedIDs) != 1 || runObservedIDs[0] != active.ID {
+			t.Fatalf("run observed asset IDs = %+v, err = %v", runObservedIDs, err)
+		}
+		if ids, err := repositories.Inventory().ListAssetIDsObservedByRun(ctx, "scan-other"); err != nil || len(ids) != 0 {
+			t.Fatalf("other run observed asset IDs = %+v, err = %v", ids, err)
+		}
 		err = repositories.Findings().WithinFindingTx(ctx, func(tx persistence.FindingRepository) error {
 			if err := tx.PutFinding(ctx, finding.Finding{ID: "finding-rolled-back", AssetID: active.ID, RuleID: "rule", Status: finding.StatusOpen, Severity: finding.SeverityHigh, FirstSeenAt: now, LastSeenAt: now}); err != nil {
 				return err

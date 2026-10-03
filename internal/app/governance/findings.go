@@ -42,68 +42,110 @@ func (e *FindingEngine) Evaluate(ctx context.Context, value asset.Asset, compile
 		return fmt.Errorf("finding evaluation requires observed time")
 	}
 	return e.repository.WithinFindingTx(ctx, func(repository persistence.FindingRepository) error {
-		existing, err := repository.ListFindingsByAsset(ctx, value.ID)
-		if err != nil {
-			return err
+		return evaluate(ctx, repository, value, compiled, evaluation)
+	})
+}
+
+// AssetEvaluation is one asset's input to EvaluateAll.
+type AssetEvaluation struct {
+	Asset      asset.Asset
+	Compiled   spec.CompiledSpec
+	Evaluation Evaluation
+}
+
+// findingTxChunk bounds how many assets share one finding transaction so a
+// large scan neither commits per asset nor holds one long write lock.
+const findingTxChunk = 250
+
+// EvaluateAll evaluates every item as Evaluate would, committing a chunk of
+// assets per transaction instead of one transaction per asset.
+func (e *FindingEngine) EvaluateAll(ctx context.Context, items []AssetEvaluation) error {
+	for _, item := range items {
+		if item.Asset.ID == "" {
+			return fmt.Errorf("finding evaluation requires an asset")
 		}
-		byRule := make(map[string]finding.Finding, len(existing))
-		for _, current := range existing {
-			if current.Evidence["engine"] == findingEngine {
-				byRule[current.RuleID] = current
-			}
+		if item.Evaluation.ObservedAt.IsZero() {
+			return fmt.Errorf("finding evaluation requires observed time")
 		}
-		matched := make(map[string]struct{}, len(compiled.Rules))
-		for _, rule := range compiled.Rules {
-			actual, ok := normalizedValue(value.Normalized, rule.FieldPath)
-			if !ok || !ruleMatches(actual, rule.Operator, rule.Expected) {
-				continue
-			}
-			matched[rule.ID] = struct{}{}
-			result, exists := byRule[rule.ID]
-			if !exists {
-				result = finding.Finding{
-					ID: finding.ID(idgen.MustNew("fnd")), AssetID: value.ID, RuleID: rule.ID,
-					FirstSeenAt: evaluation.ObservedAt,
+	}
+	for start := 0; start < len(items); start += findingTxChunk {
+		chunk := items[start:min(start+findingTxChunk, len(items))]
+		if err := e.repository.WithinFindingTx(ctx, func(repository persistence.FindingRepository) error {
+			for _, item := range chunk {
+				if err := evaluate(ctx, repository, item.Asset, item.Compiled, item.Evaluation); err != nil {
+					return err
 				}
 			}
-			result.Status = finding.StatusOpen
-			result.Severity = rule.Severity
-			result.Title = rule.Title
-			result.Description = rule.Description
-			result.SpecBundleRevision = compiled.ResourceKind.BundleRevision
-			if result.SpecBundleRevision == "" {
-				result.SpecBundleRevision = compiled.Revision
-			}
-			result.LastSeenAt = evaluation.ObservedAt
-			result.ClosedAt = nil
-			result.Evidence = map[string]any{
-				"engine": findingEngine, "field": strings.Join(rule.FieldPath, "."),
-				"operator": string(rule.Operator), "expected": rule.Expected, "actual": actual, "spec_hash": compiled.Hash,
-			}
-			if err := repository.PutFinding(ctx, result); err != nil {
-				return err
-			}
-		}
-		if !evaluation.Authoritative || !evaluation.Complete {
 			return nil
+		}); err != nil {
+			return err
 		}
-		for _, current := range existing {
-			if current.Evidence["engine"] != findingEngine || current.Status != finding.StatusOpen {
-				continue
-			}
-			if _, ok := matched[current.RuleID]; ok {
-				continue
-			}
-			closedAt := evaluation.ObservedAt
-			current.Status = finding.StatusClosed
-			current.ClosedAt = &closedAt
-			current.LastSeenAt = evaluation.ObservedAt
-			if err := repository.PutFinding(ctx, current); err != nil {
-				return err
+	}
+	return nil
+}
+
+func evaluate(ctx context.Context, repository persistence.FindingRepository, value asset.Asset, compiled spec.CompiledSpec, evaluation Evaluation) error {
+	existing, err := repository.ListFindingsByAsset(ctx, value.ID)
+	if err != nil {
+		return err
+	}
+	byRule := make(map[string]finding.Finding, len(existing))
+	for _, current := range existing {
+		if current.Evidence["engine"] == findingEngine {
+			byRule[current.RuleID] = current
+		}
+	}
+	matched := make(map[string]struct{}, len(compiled.Rules))
+	for _, rule := range compiled.Rules {
+		actual, ok := normalizedValue(value.Normalized, rule.FieldPath)
+		if !ok || !ruleMatches(actual, rule.Operator, rule.Expected) {
+			continue
+		}
+		matched[rule.ID] = struct{}{}
+		result, exists := byRule[rule.ID]
+		if !exists {
+			result = finding.Finding{
+				ID: finding.ID(idgen.MustNew("fnd")), AssetID: value.ID, RuleID: rule.ID,
+				FirstSeenAt: evaluation.ObservedAt,
 			}
 		}
+		result.Status = finding.StatusOpen
+		result.Severity = rule.Severity
+		result.Title = rule.Title
+		result.Description = rule.Description
+		result.SpecBundleRevision = compiled.ResourceKind.BundleRevision
+		if result.SpecBundleRevision == "" {
+			result.SpecBundleRevision = compiled.Revision
+		}
+		result.LastSeenAt = evaluation.ObservedAt
+		result.ClosedAt = nil
+		result.Evidence = map[string]any{
+			"engine": findingEngine, "field": strings.Join(rule.FieldPath, "."),
+			"operator": string(rule.Operator), "expected": rule.Expected, "actual": actual, "spec_hash": compiled.Hash,
+		}
+		if err := repository.PutFinding(ctx, result); err != nil {
+			return err
+		}
+	}
+	if !evaluation.Authoritative || !evaluation.Complete {
 		return nil
-	})
+	}
+	for _, current := range existing {
+		if current.Evidence["engine"] != findingEngine || current.Status != finding.StatusOpen {
+			continue
+		}
+		if _, ok := matched[current.RuleID]; ok {
+			continue
+		}
+		closedAt := evaluation.ObservedAt
+		current.Status = finding.StatusClosed
+		current.ClosedAt = &closedAt
+		current.LastSeenAt = evaluation.ObservedAt
+		if err := repository.PutFinding(ctx, current); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func normalizedValue(document map[string]any, path []string) (any, bool) {

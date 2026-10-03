@@ -105,7 +105,7 @@ func (h *GraphHandler) Handle(ctx context.Context, job execution.Job) (handleErr
 			return err
 		}
 	}
-	if _, err := h.graphs.RebuildGraph(ctx, rootScopeID, connection.ID, string(run.ID), bundle, contributors); err != nil {
+	if _, err := h.graphs.RebuildGraphFromAssets(ctx, rootScopeID, connection.ID, string(run.ID), bundle, contributors, assets); err != nil {
 		return err
 	}
 	if err := h.evaluateFindings(ctx, run, shards, assets, bundle); err != nil {
@@ -134,7 +134,13 @@ func (h *GraphHandler) scanShards(ctx context.Context, runID asset.ScanRunID) ([
 
 func (h *GraphHandler) rootScope(ctx context.Context, connectionID asset.ConnectionID, shards []asset.ScanShard) (asset.ScopeID, error) {
 	roots := make(map[asset.ScopeID]struct{})
+	checked := make(map[asset.ScopeID]struct{})
 	for _, shard := range shards {
+		// Thousands of shards share a few scopes; walk each scope once.
+		if _, done := checked[shard.ScopeID]; done {
+			continue
+		}
+		checked[shard.ScopeID] = struct{}{}
 		current, err := h.repositories.Inventory().GetScope(ctx, shard.ScopeID)
 		if err != nil {
 			return "", err
@@ -176,17 +182,21 @@ func (h *GraphHandler) evaluateFindings(ctx context.Context, run asset.ScanRun, 
 	if run.FinishedAt != nil {
 		observedAt = *run.FinishedAt
 	}
-	observedAssetIDs := make(map[asset.AssetID]struct{})
+	ids, err := h.repositories.Inventory().ListAssetIDsObservedByRun(ctx, run.ID)
+	if err != nil {
+		return err
+	}
+	observedAssetIDs := make(map[asset.AssetID]struct{}, len(ids))
+	for _, id := range ids {
+		observedAssetIDs[id] = struct{}{}
+	}
+	// Only shards of the asset's kind or of every kind can cover it.
+	shardsByKind := make(map[asset.ResourceKindID][]asset.ScanShard)
 	for _, shard := range shards {
-		ids, err := h.repositories.Inventory().ListAssetIDsObservedByShard(ctx, shard.ID)
-		if err != nil {
-			return err
-		}
-		for _, id := range ids {
-			observedAssetIDs[id] = struct{}{}
-		}
+		shardsByKind[shard.ResourceKindID] = append(shardsByKind[shard.ResourceKindID], shard)
 	}
 	ancestorCache := make(map[asset.ScopeID]map[asset.ScopeID]struct{})
+	var evaluations []AssetEvaluation
 	for _, value := range assets {
 		if _, observed := observedAssetIDs[value.ID]; !observed {
 			continue
@@ -195,20 +205,18 @@ func (h *GraphHandler) evaluateFindings(ctx context.Context, run asset.ScanRun, 
 		if !exists || len(compiled.Rules) == 0 {
 			continue
 		}
-		authoritativeComplete, err := h.authoritativeCoverage(ctx, value, shards, ancestorCache)
+		authoritativeComplete, err := h.authoritativeCoverage(ctx, value, shardsByKind, ancestorCache)
 		if err != nil {
 			return err
 		}
-		if err := h.findings.Evaluate(ctx, value, compiled, Evaluation{
+		evaluations = append(evaluations, AssetEvaluation{Asset: value, Compiled: compiled, Evaluation: Evaluation{
 			ObservedAt: observedAt, Authoritative: authoritativeComplete, Complete: authoritativeComplete,
-		}); err != nil {
-			return err
-		}
+		}})
 	}
-	return nil
+	return h.findings.EvaluateAll(ctx, evaluations)
 }
 
-func (h *GraphHandler) authoritativeCoverage(ctx context.Context, value asset.Asset, shards []asset.ScanShard, cache map[asset.ScopeID]map[asset.ScopeID]struct{}) (bool, error) {
+func (h *GraphHandler) authoritativeCoverage(ctx context.Context, value asset.Asset, shardsByKind map[asset.ResourceKindID][]asset.ScanShard, cache map[asset.ScopeID]map[asset.ScopeID]struct{}) (bool, error) {
 	if value.ScopeID == "" || value.ResourceKindID == "" {
 		return false, nil
 	}
@@ -218,15 +226,14 @@ func (h *GraphHandler) authoritativeCoverage(ctx context.Context, value asset.As
 	}
 	seen := false
 	complete := true
-	for _, shard := range shards {
-		if shard.ResourceKindID != "" && shard.ResourceKindID != value.ResourceKindID {
-			continue
+	for _, shards := range [2][]asset.ScanShard{shardsByKind[""], shardsByKind[value.ResourceKindID]} {
+		for _, shard := range shards {
+			if _, covers := ancestors[shard.ScopeID]; !covers {
+				continue
+			}
+			seen = true
+			complete = complete && shard.Status == asset.ShardSucceeded && shard.Authoritative && shard.Coverage.Authoritative && shard.Coverage.Complete
 		}
-		if _, covers := ancestors[shard.ScopeID]; !covers {
-			continue
-		}
-		seen = true
-		complete = complete && shard.Status == asset.ShardSucceeded && shard.Authoritative && shard.Coverage.Authoritative && shard.Coverage.Complete
 	}
 	return seen && complete, nil
 }

@@ -179,6 +179,8 @@ type InventoryRepository interface {
 	ListActiveAssetsByConnection(context.Context, asset.ConnectionID, asset.ResourceKindID) ([]asset.Asset, error)
 	CountActiveAssetsByScope(context.Context, asset.ConnectionID, []asset.ResourceKindID) (map[asset.ScopeID]int, error)
 	ListAssetIDsObservedByShard(context.Context, asset.ScanShardID) ([]asset.AssetID, error)
+	// ListAssetIDsObservedByRun returns every asset any shard of the run observed.
+	ListAssetIDsObservedByRun(context.Context, asset.ScanRunID) ([]asset.AssetID, error)
 	ListAssetIDsObservedByTarget(context.Context, asset.ConnectionID, string, string, asset.ScopeID, asset.ResourceKindID) ([]asset.AssetID, error)
 }
 

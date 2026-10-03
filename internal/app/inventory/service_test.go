@@ -422,6 +422,19 @@ func (r *inventoryRepository) ListAssetIDsObservedByShard(_ context.Context, sha
 	return result, nil
 }
 
+func (r *inventoryRepository) ListAssetIDsObservedByRun(_ context.Context, runID asset.ScanRunID) ([]asset.AssetID, error) {
+	var result []asset.AssetID
+	for assetID, observations := range r.observations {
+		for _, observation := range observations {
+			if observation.ScanRunID == runID {
+				result = append(result, assetID)
+				break
+			}
+		}
+	}
+	return result, nil
+}
+
 func (r *inventoryRepository) ListAssetIDsObservedByTarget(_ context.Context, _ asset.ConnectionID, _ string, _ string, _ asset.ScopeID, _ asset.ResourceKindID) ([]asset.AssetID, error) {
 	return nil, nil
 }

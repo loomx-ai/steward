@@ -2155,6 +2155,23 @@ func (s *Store) ListAssetIDsObservedByShard(ctx context.Context, shardID asset.S
 	return result, nil
 }
 
+func (s *Store) ListAssetIDsObservedByRun(ctx context.Context, runID asset.ScanRunID) ([]asset.AssetID, error) {
+	var ids []string
+	if err := s.db.WithContext(ctx).Table("asset_observations AS observations").
+		Select("DISTINCT observations.asset_id").
+		Joins("JOIN scan_shards AS shards ON shards.id = observations.scan_shard_id").
+		Where("shards.scan_task_id = ?", string(runID)).
+		Order("observations.asset_id ASC").
+		Pluck("observations.asset_id", &ids).Error; err != nil {
+		return nil, err
+	}
+	result := make([]asset.AssetID, len(ids))
+	for index, id := range ids {
+		result[index] = asset.AssetID(id)
+	}
+	return result, nil
+}
+
 func (s *Store) ListAssetIDsObservedByTarget(ctx context.Context, connectionID asset.ConnectionID, targetKey, source string, scopeID asset.ScopeID, kindID asset.ResourceKindID) ([]asset.AssetID, error) {
 	query := s.db.WithContext(ctx).Table("asset_observations AS observations").
 		Select("DISTINCT observations.asset_id").
