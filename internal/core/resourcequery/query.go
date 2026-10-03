@@ -1,9 +1,11 @@
 package resourcequery
 
 import (
+	"cmp"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"reflect"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -97,19 +99,23 @@ type predicateNode struct {
 func (n predicateNode) predicateCount() int { return 1 }
 func (n predicateNode) depth() int          { return 1 }
 
+// match is the reference semantics that Expression.SQL reproduces. A missing
+// or null field only satisfies IS NULL; every other predicate on it is false,
+// so NOT of such a predicate is true.
 func (n predicateNode) match(value asset.Asset) bool {
 	actual, exists := assetField(value, n.field)
+	present := exists && actual != nil
 	switch n.operator {
 	case OperatorIsNull:
-		return !exists || actual == nil
+		return !present
 	case OperatorIsNotNull:
-		return exists && actual != nil
+		return present
 	}
-	if !exists || actual == nil {
+	if !present {
 		return false
 	}
 	if n.operator == OperatorContains {
-		return strings.Contains(strings.ToLower(fmt.Sprint(actual)), strings.ToLower(n.values[0].String))
+		return containsText(actual, strings.ToLower(n.values[0].String))
 	}
 	if n.operator == OperatorIn || n.operator == OperatorNotIn {
 		matched := false
@@ -390,11 +396,11 @@ func assetField(value asset.Asset, field string) (any, bool) {
 	case "provider":
 		return string(value.Identity.Provider), true
 	case "name":
-		return value.Name, true
+		return optionalText(value.Name)
 	case "state":
-		return value.State, true
+		return optionalText(value.State)
 	case "region", "location":
-		return value.Location, true
+		return optionalText(value.Location)
 	case "dirty":
 		return value.Dirty, true
 	case "id":
@@ -430,61 +436,72 @@ func nestedValue(values map[string]any, path []string) (any, bool) {
 	return current, true
 }
 
+// optionalText treats an empty display field as absent.
+func optionalText(value string) (any, bool) {
+	return value, value != ""
+}
+
+// compare orders actual against expected when they are comparable: numbers
+// against JSON numbers or numeric strings, booleans against booleans or the
+// strings strconv.ParseBool accepts (false before true), and strings against
+// the text of any scalar, byte by byte. Objects and arrays never compare.
 func compare(actual any, expected Value) (int, bool) {
-	if expected.Kind == ValueNumber {
-		actualNumber, ok := numberValue(actual)
+	switch expected.Kind {
+	case ValueNumber:
+		number, ok := numberValue(actual)
 		if !ok {
 			return 0, false
 		}
-		switch {
-		case actualNumber < expected.Number:
-			return -1, true
-		case actualNumber > expected.Number:
-			return 1, true
-		default:
-			return 0, true
+		return cmp.Compare(number, expected.Number), true
+	case ValueBoolean:
+		boolean, ok := booleanValue(actual)
+		if !ok {
+			return 0, false
 		}
+		return compareBooleans(boolean, expected.Boolean), true
 	}
-	if expected.Kind == ValueBoolean {
-		actualBoolean, ok := booleanValue(actual)
-		if !ok || actualBoolean != expected.Boolean {
-			return -1, ok
-		}
-		return 0, true
+	text, ok := scalarText(actual)
+	if !ok {
+		return 0, false
 	}
-	actualString := fmt.Sprint(actual)
-	return strings.Compare(actualString, expected.String), true
+	return strings.Compare(text, expected.String), true
 }
+
+func compareBooleans(left, right bool) int {
+	switch {
+	case left == right:
+		return 0
+	case right:
+		return -1
+	default:
+		return 1
+	}
+}
+
+// jsonNumberText matches a JSON number literal.
+var jsonNumberText = regexp.MustCompile(`^-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?$`)
 
 func numberValue(value any) (float64, bool) {
 	switch typed := value.(type) {
 	case float64:
 		return typed, true
-	case float32:
-		return float64(typed), true
 	case int:
 		return float64(typed), true
 	case int64:
 		return float64(typed), true
-	case int32:
-		return float64(typed), true
-	case jsonNumber:
-		result, err := strconv.ParseFloat(string(typed), 64)
+	case json.Number:
+		result, err := typed.Float64()
 		return result, err == nil
 	case string:
+		if !jsonNumberText.MatchString(typed) {
+			return 0, false
+		}
 		result, err := strconv.ParseFloat(typed, 64)
 		return result, err == nil
 	default:
-		value := reflect.ValueOf(value)
-		if value.IsValid() && value.Kind() >= reflect.Int && value.Kind() <= reflect.Float64 {
-			result, err := strconv.ParseFloat(fmt.Sprint(value.Interface()), 64)
-			return result, err == nil
-		}
 		return 0, false
 	}
 }
-
-type jsonNumber string
 
 func booleanValue(value any) (bool, bool) {
 	switch typed := value.(type) {
@@ -496,6 +513,46 @@ func booleanValue(value any) (bool, bool) {
 	default:
 		return false, false
 	}
+}
+
+// scalarText is how a string, number or boolean reads as text; numbers read
+// as JSON stores them.
+func scalarText(value any) (string, bool) {
+	switch typed := value.(type) {
+	case string:
+		return typed, true
+	case bool:
+		return strconv.FormatBool(typed), true
+	case json.Number:
+		return typed.String(), true
+	}
+	if number, ok := numberValue(value); ok {
+		return strconv.FormatFloat(number, 'f', -1, 64), true
+	}
+	return "", false
+}
+
+// containsText reports whether the lowercased needle occurs in the text of
+// value or of any value or object key nested in it.
+func containsText(value any, needle string) bool {
+	switch typed := value.(type) {
+	case map[string]any:
+		for key, item := range typed {
+			if strings.Contains(strings.ToLower(key), needle) || containsText(item, needle) {
+				return true
+			}
+		}
+		return false
+	case []any:
+		for _, item := range typed {
+			if containsText(item, needle) {
+				return true
+			}
+		}
+		return false
+	}
+	text, ok := scalarText(value)
+	return ok && strings.Contains(strings.ToLower(text), needle)
 }
 
 func SupportedFields(kinds []asset.ResourceKind) []string {

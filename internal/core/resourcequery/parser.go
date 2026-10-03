@@ -2,6 +2,7 @@ package resourcequery
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 	"unicode"
@@ -132,6 +133,10 @@ func (p *parser) parsePredicate() (node, error) {
 	field := p.next()
 	if field.kind != tokenIdentifier || isKeyword(field.text) {
 		return nil, parseFailure(field, "expected a field name")
+	}
+	canonical := canonicalField(field.text)
+	if canonical == "tags." || strings.HasPrefix(canonical, "properties.") && slices.Contains(strings.Split(field.text[len("properties."):], "."), "") {
+		return nil, parseFailure(field, "field name has an empty key")
 	}
 	operator, err := p.parseOperator()
 	if err != nil {
@@ -386,11 +391,13 @@ func lex(source string) ([]token, error) {
 	return tokens, nil
 }
 
+// identifierCharacter also admits ':', '/' and '@' after the first character,
+// which cloud tag keys such as aws:cloudformation:stack-name use.
 func identifierCharacter(value byte, first bool) bool {
 	if value >= 'A' && value <= 'Z' || value >= 'a' && value <= 'z' || value == '_' {
 		return true
 	}
-	return !first && (value >= '0' && value <= '9' || value == '-' || value == '.')
+	return !first && (value >= '0' && value <= '9' || strings.IndexByte("-.:/@", value) >= 0)
 }
 
 func isNumberStart(source string, index int) bool {

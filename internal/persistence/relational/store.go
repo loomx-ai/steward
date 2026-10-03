@@ -202,6 +202,8 @@ type assetRow struct {
 	Dirty          bool       `gorm:"column:dirty"`
 	SearchText     string     `gorm:"column:search_text"`
 	Payload        string     `gorm:"column:payload"`
+	// CanonicalScopeID is read by ListAssets, never written.
+	CanonicalScopeID *string `gorm:"column:canonical_scope_id;->"`
 }
 
 type observationRow struct {
@@ -937,6 +939,12 @@ func (s *Store) ConsolidateScopes(ctx context.Context, canonicalID asset.ScopeID
 			duplicateRows = append(duplicateRows, duplicateRow)
 			scopeIDs = append(scopeIDs, duplicateRow.ID)
 		}
+		// Older aliases of the duplicates now point at the canonical scope too,
+		// so every alias resolves in one step.
+		if err := tx.Table("scopes").Where("superseded_by_scope_id IN ?", scopeIDs[1:]).
+			Update("superseded_by_scope_id", string(canonicalID)).Error; err != nil {
+			return err
+		}
 
 		var activeShardRows []scanShardRow
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Table("scan_shards").
@@ -1577,20 +1585,11 @@ func (s *Store) GetAsset(ctx context.Context, id asset.AssetID) (asset.Asset, er
 	if err := s.db.WithContext(ctx).Table("assets").Where("id = ?", string(id)).Take(&row).Error; err != nil {
 		return asset.Asset{}, mapError(err)
 	}
-	value, err := decode[asset.Asset](row.Payload)
+	values, err := s.decodeAssetRows(ctx, []assetRow{row})
 	if err != nil {
 		return asset.Asset{}, err
 	}
-	value.Dirty = row.Dirty
-	value.ClosedAt = row.ClosedAt
-	value.DeletedAt = row.DeletedAt
-	value.Identity.ScopeKey = row.ScopeKey
-	aliases, err := s.scopeAliases(ctx)
-	if err != nil {
-		return asset.Asset{}, err
-	}
-	value.ScopeID, err = resolveScopeAlias(value.ScopeID, aliases)
-	return value, err
+	return values[0], nil
 }
 
 func (s *Store) GetAssetByIdentity(ctx context.Context, identity asset.Identity) (asset.Asset, error) {
@@ -1698,7 +1697,11 @@ func (s *Store) ListAssetsByIDs(ctx context.Context, assetIDs []asset.AssetID) (
 
 func (s *Store) ListAssets(ctx context.Context, options persistence.ListOptions) (persistence.Page[asset.Asset], error) {
 	limit := normalizeLimit(options.Limit)
-	query := s.db.WithContext(ctx).Table("assets").Select("assets.*")
+	// Aliases are one step deep, so one join resolves a row written against a
+	// scope that was consolidated meanwhile.
+	query := s.db.WithContext(ctx).Table("assets").
+		Select("assets.*, scope_alias.superseded_by_scope_id AS canonical_scope_id").
+		Joins("LEFT JOIN scopes AS scope_alias ON scope_alias.id = assets.scope_id")
 	if !options.IncludeClosed {
 		query = query.Where("assets.closed_at IS NULL")
 	}
@@ -1801,24 +1804,23 @@ func (s *Store) ListAssets(ctx context.Context, options persistence.ListOptions)
 	if err := query.Limit(limit + 1).Find(&rows).Error; err != nil {
 		return persistence.Page[asset.Asset]{}, err
 	}
-	page := persistence.Page[asset.Asset]{Items: make([]asset.Asset, 0, min(limit, len(rows)))}
-	for index, row := range rows {
-		if index == limit {
-			if !options.SearchOrder {
-				last := rows[index-1]
-				page.NextCursor = encodeCursor(last.FirstSeenAt, last.ID)
-			}
-			break
+	page := persistence.Page[asset.Asset]{}
+	if len(rows) > limit {
+		if !options.SearchOrder {
+			last := rows[limit-1]
+			page.NextCursor = encodeCursor(last.FirstSeenAt, last.ID)
 		}
-		value, err := decode[asset.Asset](row.Payload)
+		rows = rows[:limit]
+	}
+	page.Items = make([]asset.Asset, 0, len(rows))
+	for _, row := range rows {
+		value, err := decodeAssetIdentityRow(row)
 		if err != nil {
 			return persistence.Page[asset.Asset]{}, err
 		}
-		value.Dirty = row.Dirty
-		value.ClosedAt = row.ClosedAt
-		value.DeletedAt = row.DeletedAt
-		value.Identity.ScopeKey = row.ScopeKey
-		value.ScopeID = asset.ScopeID(row.ScopeID)
+		if row.CanonicalScopeID != nil && *row.CanonicalScopeID != "" {
+			value.ScopeID = asset.ScopeID(*row.CanonicalScopeID)
+		}
 		page.Items = append(page.Items, value)
 	}
 	return page, nil
@@ -2185,14 +2187,10 @@ func (s *Store) decodeAssetRows(ctx context.Context, rows []assetRow) ([]asset.A
 	}
 	result := make([]asset.Asset, 0, len(rows))
 	for _, row := range rows {
-		value, err := decode[asset.Asset](row.Payload)
+		value, err := decodeAssetIdentityRow(row)
 		if err != nil {
 			return nil, err
 		}
-		value.Dirty = row.Dirty
-		value.ClosedAt = row.ClosedAt
-		value.DeletedAt = row.DeletedAt
-		value.Identity.ScopeKey = row.ScopeKey
 		value.ScopeID, err = resolveScopeAlias(value.ScopeID, aliases)
 		if err != nil {
 			return nil, err
