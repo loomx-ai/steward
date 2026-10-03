@@ -3,6 +3,7 @@ package alicloud
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -14,12 +15,11 @@ func TestKafkaTopicsAreIdentifiedWithinTheirInstance(t *testing.T) {
 
 	// Two instances hold a topic with the same name; shapes follow the
 	// official alikafka 2019-09-16 metadata.
+	instances := []any{map[string]any{"InstanceId": "alikafka-a"}, map[string]any{"InstanceId": "alikafka-b"}}
 	runtime, factory := encryptionKeyRuntime(t, func(invocation contracts.Invocation) (contracts.InvocationResult, error) {
 		switch invocation.Operation {
 		case "AlibabaCloud.AliKafka.GetInstanceList":
-			return contracts.InvocationResult{Data: map[string]any{"InstanceList": map[string]any{"InstanceVO": []any{
-				map[string]any{"InstanceId": "alikafka-a"}, map[string]any{"InstanceId": "alikafka-b"},
-			}}}}, nil
+			return contracts.InvocationResult{Data: map[string]any{"InstanceList": map[string]any{"InstanceVO": instances}}}, nil
 		case "AlibabaCloud.AliKafka.GetTopicList":
 			instance := invocation.Parameters["InstanceId"]
 			return contracts.InvocationResult{Data: map[string]any{"Total": 1, "TopicList": map[string]any{"TopicVO": []any{
@@ -34,7 +34,7 @@ func TestKafkaTopicsAreIdentifiedWithinTheirInstance(t *testing.T) {
 		Scope:        asset.Scope{Kind: asset.ScopeRegion, NativeID: "cn-hangzhou"},
 		Source:       "product-api", ResourceKind: &kind, Limit: 100,
 	}
-	var ids []string
+	var ids, cursors []string
 	for {
 		batch, err := runtime.List(context.Background(), request)
 		if err != nil {
@@ -50,9 +50,32 @@ func TestKafkaTopicsAreIdentifiedWithinTheirInstance(t *testing.T) {
 			break
 		}
 		request.Cursor = batch.NextCursor
+		cursors = append(cursors, batch.NextCursor)
 	}
 	if len(ids) != 2 || ids[0] != "alikafka-a/orders" || ids[1] != "alikafka-b/orders" {
 		t.Fatalf("native IDs = %v, calls = %+v", ids, factory.calls)
+	}
+	// The shard's later pages reuse the parent set its first page listed.
+	parentLists := 0
+	for _, call := range factory.calls {
+		if call.Operation == "AlibabaCloud.AliKafka.GetInstanceList" {
+			parentLists++
+		}
+	}
+	if parentLists != 1 {
+		t.Fatalf("parents listed %d times, want once per shard", parentLists)
+	}
+
+	// A parent created between pages changes the fingerprint once the cached
+	// set is refreshed; resuming would skip or repeat children.
+	instances = append([]any{map[string]any{"InstanceId": "alikafka-0"}}, instances...)
+	request.Cursor = cursors[0]
+	if _, err := runtime.List(context.Background(), request); err != nil {
+		t.Fatalf("resume within the cached parent set: %v", err)
+	}
+	runtime.parentCache = fanoutParentCache{}
+	if _, err := runtime.List(context.Background(), request); err == nil || !strings.Contains(err.Error(), "parent set changed") {
+		t.Fatalf("changed parent set error = %v", err)
 	}
 }
 

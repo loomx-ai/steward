@@ -2,12 +2,16 @@ package alicloud
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"reflect"
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
@@ -464,6 +468,100 @@ func cloudFirewallInventoryAbsent(resource map[string]any) bool {
 type fanoutProductAPICursor struct {
 	ParentIndex int    `json:"parent_index"`
 	ChildCursor string `json:"child_cursor,omitempty"`
+	Fingerprint string `json:"parent_fingerprint,omitempty"`
+}
+
+// fanoutParentTTL bounds how long a parent listing is reused by the later
+// pages of a fanout shard, which advances one parent per List call and would
+// otherwise relist every parent on each page. The cursor fingerprint still
+// rejects resuming against a different parent set once a listing is refreshed.
+const fanoutParentTTL = 10 * time.Minute
+
+type fanoutParentKey struct {
+	connection asset.ConnectionID
+	credential string
+	nativeType string
+	region     string
+	scopeKind  asset.ScopeKind
+	scopeID    string
+}
+
+type fanoutParentCache struct {
+	mu      sync.Mutex
+	entries map[fanoutParentKey]cachedFanoutParents
+}
+
+type cachedFanoutParents struct {
+	parents []string
+	expires time.Time
+}
+
+func (c *fanoutParentCache) get(key fanoutParentKey, refresh bool, list func() ([]string, error)) ([]string, error) {
+	now := time.Now()
+	c.mu.Lock()
+	entry, ok := c.entries[key]
+	c.mu.Unlock()
+	if ok && !refresh && now.Before(entry.expires) {
+		return entry.parents, nil
+	}
+	parents, err := list()
+	if err != nil {
+		return nil, err
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.entries == nil {
+		c.entries = map[fanoutParentKey]cachedFanoutParents{}
+	}
+	for cached, entry := range c.entries {
+		if !now.Before(entry.expires) {
+			delete(c.entries, cached)
+		}
+	}
+	c.entries[key] = cachedFanoutParents{parents: parents, expires: now.Add(fanoutParentTTL)}
+	return parents, nil
+}
+
+func (r *Runtime) fanoutParentKey(
+	ctx context.Context,
+	request contracts.InventoryRequest,
+	nativeType string,
+	region string,
+) (fanoutParentKey, error) {
+	credential, err := r.resolveCredential(ctx, request.ConnectionID)
+	if err != nil {
+		return fanoutParentKey{}, err
+	}
+	return fanoutParentKey{
+		connection: request.ConnectionID, credential: credentialFingerprint(credential), nativeType: nativeType,
+		region: region, scopeKind: request.Scope.Kind, scopeID: request.Scope.NativeID,
+	}, nil
+}
+
+func credentialFingerprint(credential contracts.Credential) string {
+	keys := make([]string, 0, len(credential.Values))
+	for key := range credential.Values {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	hash := sha256.New()
+	dynamicKey := ""
+	if credential.Dynamic != nil {
+		dynamicKey = credential.Dynamic.Key
+	}
+	fmt.Fprintf(hash, "%s\x00%s\x00%s", credential.Type, credential.Version, dynamicKey)
+	for _, key := range keys {
+		fmt.Fprintf(hash, "\x00%s\x00%s", key, credential.Values[key])
+	}
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
+func fanoutParentFingerprint(parents []string) string {
+	hash := sha256.New()
+	for _, parent := range parents {
+		fmt.Fprintf(hash, "%s\x00", parent)
+	}
+	return hex.EncodeToString(hash.Sum(nil))[:16]
 }
 
 func (r *Runtime) listFanoutProductAPI(
@@ -475,16 +573,24 @@ func (r *Runtime) listFanoutProductAPI(
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
-	parents, err := r.collectFanoutParents(
-		ctx,
-		request,
-		*compiled.Definition.Discovery.Parent,
-		region,
-	)
+	parentKey, err := r.fanoutParentKey(ctx, request, compiled.ResourceKind.NativeType, region)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
-	cursor := fanoutProductAPICursor{}
+	// A shard's first page lists parents afresh; its later pages reuse that set.
+	parents, err := r.parentCache.get(parentKey, strings.TrimSpace(request.Cursor) == "", func() ([]string, error) {
+		return r.collectFanoutParents(
+			ctx,
+			request,
+			*compiled.Definition.Discovery.Parent,
+			region,
+		)
+	})
+	if err != nil {
+		return contracts.InventoryBatch{}, err
+	}
+	fingerprint := fanoutParentFingerprint(parents)
+	cursor := fanoutProductAPICursor{Fingerprint: fingerprint}
 	if strings.TrimSpace(request.Cursor) != "" {
 		if err := json.Unmarshal([]byte(request.Cursor), &cursor); err != nil {
 			return contracts.InventoryBatch{}, fmt.Errorf(
@@ -493,6 +599,14 @@ func (r *Runtime) listFanoutProductAPI(
 				err,
 			)
 		}
+		// Parent indexes are only meaningful against the set that issued the
+		// cursor; resuming against another set would skip or repeat children.
+		if cursor.Fingerprint != "" && cursor.Fingerprint != fingerprint {
+			return contracts.InventoryBatch{}, fmt.Errorf(
+				"Alibaba Cloud product API fanout parent set changed during pagination; restart the shard",
+			)
+		}
+		cursor.Fingerprint = fingerprint
 	}
 	if cursor.ParentIndex < 0 || cursor.ParentIndex > len(parents) {
 		return contracts.InventoryBatch{}, fmt.Errorf(

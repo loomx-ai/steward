@@ -55,6 +55,7 @@ type Runtime struct {
 	resourceKindByNativeType map[string]asset.ResourceKind
 	resourceKindRevision     string
 	bundle                   spec.Bundle
+	parentCache              fanoutParentCache
 }
 
 var _ contracts.InventoryBatchEnricher = (*Runtime)(nil)
