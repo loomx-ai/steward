@@ -329,31 +329,76 @@ export function expandCleanupSelectors(
   );
 }
 
-export function isCleanupTargetPending(
+type PendingCandidate = Pick<
+  CleanupTarget,
+  "key" | "ancestryKeys" | "selector"
+> & {
+  connectionId?: string;
+};
+
+interface PendingIndex {
+  keys: Set<string>;
+  selectorKeys: Set<string>;
+  rangeKeys: Set<string>;
+}
+
+// Indexes the pending targets once so many canvas nodes can be checked without
+// scanning every target and selector for each node.
+export function cleanupPendingMatcher(
   targets: readonly CleanupTarget[],
-  candidate: Pick<CleanupTarget, "key" | "ancestryKeys" | "selector"> & {
-    connectionId?: string;
-  },
-): boolean {
-  const candidateKeys = asSelectors(candidate.selector).map(selectorKey);
-  const candidateConnectionId = candidate.connectionId;
-  return targets.some((target) => {
-    if (
-      candidateConnectionId !== undefined &&
-      target.connectionId !== candidateConnectionId
-    ) {
-      return false;
+): (candidate: PendingCandidate) => boolean {
+  const all: PendingIndex = {
+    keys: new Set(),
+    selectorKeys: new Set(),
+    rangeKeys: new Set(),
+  };
+  const byConnection = new Map<string, PendingIndex>();
+  for (const target of targets) {
+    let index = byConnection.get(target.connectionId);
+    if (!index) {
+      index = {
+        keys: new Set(),
+        selectorKeys: new Set(),
+        rangeKeys: new Set(),
+      };
+      byConnection.set(target.connectionId, index);
     }
-    if (target.key === candidate.key) return true;
-    if (candidateKeys.some((key) => selectorKeys(target).includes(key))) {
+    index.keys.add(target.key);
+    all.keys.add(target.key);
+    for (const key of selectorKeys(target)) {
+      index.selectorKeys.add(key);
+      all.selectorKeys.add(key);
+    }
+    if (isRangeTarget(target)) index.rangeKeys.add(target.key);
+  }
+  return (candidate) => {
+    const index =
+      candidate.connectionId === undefined
+        ? all
+        : byConnection.get(candidate.connectionId);
+    if (!index) return false;
+    if (index.keys.has(candidate.key)) return true;
+    const candidateSelectors = Array.isArray(candidate.selector)
+      ? candidate.selector
+      : [candidate.selector];
+    if (
+      candidateSelectors.some((selector) =>
+        index.selectorKeys.has(selectorKey(selector)),
+      )
+    ) {
       return true;
     }
-    if (candidateConnectionId === undefined || !isRangeTarget(target)) {
-      return false;
-    }
-    return (
-      candidate.ancestryKeys.includes(target.key) &&
-      candidate.ancestryKeys.at(-1) !== target.key
+    if (candidate.connectionId === undefined) return false;
+    const last = candidate.ancestryKeys.at(-1);
+    return candidate.ancestryKeys.some(
+      (key) => key !== last && index.rangeKeys.has(key),
     );
-  });
+  };
+}
+
+export function isCleanupTargetPending(
+  targets: readonly CleanupTarget[],
+  candidate: PendingCandidate,
+): boolean {
+  return cleanupPendingMatcher(targets)(candidate);
 }

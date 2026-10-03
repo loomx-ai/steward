@@ -26,16 +26,17 @@ import type { TopologyResourceGroupTypeSummary } from "./layout";
 import {
   TopologyContextMenu,
   type DirtyAssetTarget,
+  type MenuValue,
 } from "./TopologyContextMenu";
 
 export interface TopologyNodeContextMenuActions {
   onViewDetails: () => void;
-  consoleURL?: string;
+  consoleURL?: MenuValue<string | undefined>;
   onAddToCleanup?: () => void;
   onRemoveFromCleanup?: () => void;
-  inheritedCleanup?: boolean;
+  inheritedCleanup?: MenuValue<boolean | undefined>;
   dirtyAsset?: DirtyAssetTarget;
-  dirtyAssets?: readonly DirtyAssetTarget[];
+  dirtyAssets?: MenuValue<readonly DirtyAssetTarget[] | undefined>;
   onOpenChange: (open: boolean) => void;
 }
 

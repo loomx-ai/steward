@@ -2,6 +2,7 @@ import { expect, it } from "vitest";
 import type { CleanupSelector } from "@/api/types";
 import {
   addCleanupTargets,
+  cleanupPendingMatcher,
   expandCleanupSelectors,
   isCleanupTargetPending,
   removeCleanupBatchMember,
@@ -384,4 +385,24 @@ it("keeps the original pending candidate shape for direct selector matching", ()
 
 it("uses a full target's connection context for same-connection ancestor coverage", () => {
   expect(isCleanupTargetPending([region], resource)).toBe(true);
+});
+
+it("reuses one pending index for many canvas candidates", () => {
+  const isPending = cleanupPendingMatcher([batch(["asset-b"]), vpc]);
+
+  expect(isPending(asset("asset-b"))).toBe(true);
+  expect(isPending(asset("asset-z"))).toBe(true);
+  expect(isPending(vpc)).toBe(true);
+  expect(isPending(region)).toBe(false);
+  expect(isPending({ ...asset("asset-z"), connectionId: "connection-b" })).toBe(
+    false,
+  );
+  expect(
+    isPending({
+      key: "asset:asset-b",
+      ancestryKeys: [],
+      selector: { kind: "asset", asset_id: "asset-b" },
+    }),
+  ).toBe(true);
+  expect(cleanupPendingMatcher([])(resource)).toBe(false);
 });

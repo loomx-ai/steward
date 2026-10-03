@@ -813,6 +813,25 @@ it("highlights the collapsed group of a hovered search result without expanding 
   ).toHaveClass("outline-primary");
 });
 
+it("keeps unaffected canvas nodes referentially stable when a resource is selected", async () => {
+  const user = userEvent.setup();
+  renderCanvas();
+  const before = new Map(flow.nodes.map((node) => [node.id, node]));
+  expect(before.has("disk-unrelated")).toBe(true);
+
+  await user.click(
+    within(screen.getByTestId("flow-node-sg")).getByRole("button", {
+      name: /shared-security-group/,
+    }),
+  );
+
+  const after = new Map(flow.nodes.map((node) => [node.id, node]));
+  expect(after.get("sg")).not.toBe(before.get("sg"));
+  expect(after.get("sg")?.data.selected).toBe(true);
+  expect(after.get("disk-unrelated")).toBe(before.get("disk-unrelated"));
+  expect(after.get("vsw-b")).toBe(before.get("vsw-b"));
+});
+
 function completeFlowSelection(
   nodeIDs: readonly string[],
   { shiftKey = false }: { shiftKey?: boolean } = {},

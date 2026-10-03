@@ -38,7 +38,7 @@ import {
   type CanvasMode,
 } from "./boxSelection";
 import { CanvasToolbar, type CanvasToolbarProps } from "./CanvasToolbar";
-import { isCleanupTargetPending, type CleanupTarget } from "./cleanupSelection";
+import { cleanupPendingMatcher, type CleanupTarget } from "./cleanupSelection";
 import { cleanupTargetContainsKey } from "./cleanupLocation";
 import { cloudConsoleURL } from "./consoleLinks";
 import { useCleanupSelection } from "./CleanupSelectionContext";
@@ -265,6 +265,63 @@ function cleanupRemovalSet(
 
 function hasRemovalOperations(task: CleanupRemovalSet): boolean {
   return task.targetKeys.length > 0 || task.batchMembers.length > 0;
+}
+
+// Whether a pending target is only covered by a selected Region or VPC, so it
+// cannot be removed on its own.
+function removalInherited(
+  targets: readonly CleanupTarget[],
+  target: CleanupTarget,
+): boolean {
+  const removalSet = cleanupRemovalSet(targets, target);
+  return removalSet.inherited && !hasRemovalOperations(removalSet);
+}
+
+interface CanvasNodeState {
+  focus: ReturnType<typeof connectedEdgeFocus>;
+  highlightedNodeKey?: string;
+  selectedCandidateKeys: ReadonlySet<string>;
+  pendingCleanupResourceKeys: ReadonlySet<string>;
+  isCleanupPending: (target: CleanupTarget) => boolean;
+  selectMode: boolean;
+}
+
+type CanvasNodeDynamic = { nodeSelected: boolean } & Record<string, unknown>;
+
+// A canvas node split into the part built once per layout and the per-render
+// state (selection, highlight, cleanup) that decides whether it must change.
+interface CanvasNodeEntry {
+  dynamic: (state: CanvasNodeState) => CanvasNodeDynamic;
+  compose: (dynamic: CanvasNodeDynamic) => TopologyFlowNode;
+}
+
+function canvasNodeEntry<D extends CanvasNodeDynamic>(
+  dynamic: (state: CanvasNodeState) => D,
+  compose: (dynamic: D) => TopologyFlowNode,
+): CanvasNodeEntry {
+  return {
+    dynamic,
+    compose: compose as (dynamic: CanvasNodeDynamic) => TopologyFlowNode,
+  };
+}
+
+function sameNodeDynamic(
+  left: CanvasNodeDynamic,
+  right: CanvasNodeDynamic,
+): boolean {
+  const keys = Object.keys(left);
+  if (keys.length !== Object.keys(right).length) return false;
+  return keys.every((key) => {
+    const leftValue = left[key];
+    const rightValue = right[key];
+    if (Object.is(leftValue, rightValue)) return true;
+    return (
+      leftValue instanceof Set &&
+      rightValue instanceof Set &&
+      leftValue.size === rightValue.size &&
+      [...leftValue].every((value) => rightValue.has(value))
+    );
+  });
 }
 
 function mergeCleanupTargetSelection(
@@ -536,16 +593,46 @@ export function TopologyCanvas({
       ),
     [layout.edges, selectedResourceKey, view.resources],
   );
+  const isCleanupPending = useMemo(
+    () => cleanupPendingMatcher(cleanupTargets),
+    [cleanupTargets],
+  );
   const pendingCleanupResourceKeys = useMemo(() => {
     const pending = new Set<string>();
     for (const resource of view.resources) {
       const candidate = resourceTargetsByKey.get(resource.key);
-      if (candidate && isCleanupTargetPending(cleanupTargets, candidate)) {
+      if (candidate && isCleanupPending(candidate)) {
         pending.add(resource.key);
       }
     }
     return pending;
-  }, [cleanupTargets, resourceTargetsByKey, view.resources]);
+  }, [isCleanupPending, resourceTargetsByKey, view.resources]);
+  // Current values for node callbacks and context-menu getters, so node data
+  // stays stable while focus, selection and the cleanup list change.
+  const latestValues = {
+    cleanupTargets,
+    isCleanupPending,
+    pendingCleanupResourceKeys,
+    focusSelectedKey: focus.selectedKey,
+    selectedResourceKey,
+    onClearFocus,
+    onSelectResource,
+    onResourceContextMenu,
+    onStackContextMenu,
+  };
+  const latest = useRef(latestValues);
+  latest.current = latestValues;
+  const clearFocus = useCallback(() => latest.current.onClearFocus(), []);
+  const activateResource = useCallback(
+    (resource: TopologyResource, trigger: HTMLElement | null) =>
+      latest.current.onSelectResource(resource, trigger),
+    [],
+  );
+  const openStackContextMenu = useCallback(
+    (stackKey: string, trigger: HTMLElement | null) =>
+      latest.current.onStackContextMenu(stackKey, trigger),
+    [],
+  );
   const selectedCandidateKeys = useMemo(
     () => new Set(candidateTargets.map((target) => target.key)),
     [candidateTargets],
@@ -645,6 +732,7 @@ export function TopologyCanvas({
   }, []);
   const collapseStack = useCallback(
     (stackKey: string, memberKeys: readonly string[]) => {
+      const { selectedResourceKey, onClearFocus } = latest.current;
       if (selectedResourceKey && memberKeys.includes(selectedResourceKey)) {
         onClearFocus();
       }
@@ -666,7 +754,7 @@ export function TopologyCanvas({
         return next;
       });
     },
-    [onClearFocus, selectedResourceKey],
+    [],
   );
   const handleNodeClick = useCallback<NodeMouseHandler<TopologyFlowNode>>(
     (_event, node) => {
@@ -695,53 +783,53 @@ export function TopologyCanvas({
   const removeCleanupTargets = useCallback(
     (targets: readonly CleanupTarget[]) => {
       for (const target of targets) {
-        executeRemoval(cleanupRemovalSet(cleanupTargets, target));
+        executeRemoval(
+          cleanupRemovalSet(latest.current.cleanupTargets, target),
+        );
       }
     },
-    [cleanupTargets, executeRemoval],
+    [executeRemoval],
   );
 
-  const resourceState = useCallback(
-    (
-      resource: TopologyResource,
-    ): {
-      selectable: boolean;
-      selected: boolean;
-      data: ResourceFlowNode["data"];
-    } => {
+  const staticNodes = useMemo<CanvasNodeEntry[]>(() => {
+    const vSwitchNativeType = networkNativeType(connection.provider, "vswitch");
+    const vSwitchConsoleURL = (vSwitch: TopologyVSwitch) =>
+      cloudConsoleURL({
+        provider: connection.provider,
+        nativeType: vSwitchNativeType,
+        nativeId: vSwitch.native_id,
+        regionId: regionID,
+        consoleLinkTemplate: resourceKinds.get(
+          `${connection.provider}:${vSwitchNativeType}`,
+        )?.console_link_template,
+      });
+    const targetInheritsCleanup = (target: CleanupTarget | null) => () =>
+      target !== null &&
+      latest.current.isCleanupPending(target) &&
+      removalInherited(latest.current.cleanupTargets, target);
+    const resourceParts = (resource: TopologyResource) => {
       const cleanupTarget = resourceTargetsByKey.get(resource.key) ?? null;
-      const selected =
-        cleanupTarget !== null && selectedCandidateKeys.has(cleanupTarget.key);
-      const pendingCleanup =
-        cleanupTarget !== null &&
-        isCleanupTargetPending(cleanupTargets, cleanupTarget);
-      const removalSet = cleanupTarget
-        ? cleanupRemovalSet(cleanupTargets, cleanupTarget)
-        : { targetKeys: [], batchMembers: [], inherited: false };
       return {
         selectable: cleanupTarget !== null,
-        selected,
         data: {
           resource,
-          current: focus.selectedKey === resource.key,
-          searchHighlighted:
-            highlightedNodeKey === resource.key ||
-            cleanupTargetContainsKey(cleanupTarget, highlightedNodeKey),
-          selected,
-          related: focus.relatedKeys.has(resource.key),
-          pendingCleanup,
           cleanupTarget,
-          interactionEnabled: mode === "select",
-          onSelect: (additive) => {
+          onSelect: (additive: boolean) => {
             if (!cleanupTarget) return false;
             const nowSelected = toggleCandidateTarget(cleanupTarget, additive);
-            if (!nowSelected && focus.selectedKey === resource.key) {
-              onClearFocus();
+            if (
+              !nowSelected &&
+              latest.current.focusSelectedKey === resource.key
+            ) {
+              latest.current.onClearFocus();
             }
             return nowSelected;
           },
-          onActivate: onSelectResource,
-          onContextMenu: (value, trigger) => {
+          onActivate: activateResource,
+          onContextMenu: (
+            value: TopologyResource,
+            trigger: HTMLElement | null,
+          ) => {
             if (
               cleanupTarget &&
               !candidateTargetsRef.current.some(
@@ -750,7 +838,7 @@ export function TopologyCanvas({
             ) {
               selectCandidateTargets([cleanupTarget], false);
             }
-            onResourceContextMenu(value, trigger);
+            latest.current.onResourceContextMenu(value, trigger);
           },
           contextMenu: {
             onViewDetails: () => setDetailResource(resource),
@@ -760,570 +848,558 @@ export function TopologyCanvas({
               dirty: Boolean(resource.dirty),
             },
             dirtyAssets: cleanupTarget
-              ? dirtyAssetTargets(contextMenuTargets(cleanupTarget))
+              ? () => dirtyAssetTargets(contextMenuTargets(cleanupTarget))
               : undefined,
-            consoleURL: cloudConsoleURL({
-              provider: connection.provider,
-              nativeType: resourceKindNativeType(
-                connection.provider,
-                resource.resource_kind_id,
-              ),
-              nativeId: resource.native_id,
-              regionId: regionID,
-              consoleLinkTemplate: resourceKinds.get(resource.resource_kind_id)
-                ?.console_link_template,
-              templateValues: resource.console_link_values,
-            }),
+            consoleURL: () =>
+              cloudConsoleURL({
+                provider: connection.provider,
+                nativeType: resourceKindNativeType(
+                  connection.provider,
+                  resource.resource_kind_id,
+                ),
+                nativeId: resource.native_id,
+                regionId: regionID,
+                consoleLinkTemplate: resourceKinds.get(
+                  resource.resource_kind_id,
+                )?.console_link_template,
+                templateValues: resource.console_link_values,
+              }),
             onAddToCleanup: cleanupTarget
               ? () => addTargets(contextMenuTargets(cleanupTarget))
               : undefined,
             onRemoveFromCleanup: cleanupTarget
               ? () => removeCleanupTargets(contextMenuTargets(cleanupTarget))
               : undefined,
-            inheritedCleanup:
-              pendingCleanup &&
-              removalSet.inherited &&
-              !hasRemovalOperations(removalSet),
+            inheritedCleanup: targetInheritsCleanup(cleanupTarget),
             onOpenChange: setContextMenuOpen,
           },
         },
+        dynamic: (state: CanvasNodeState, childKeys?: readonly string[]) => {
+          const selected =
+            cleanupTarget !== null &&
+            state.selectedCandidateKeys.has(cleanupTarget.key);
+          return {
+            nodeSelected: selected,
+            current: state.focus.selectedKey === resource.key,
+            searchHighlighted:
+              state.highlightedNodeKey === resource.key ||
+              cleanupTargetContainsKey(
+                cleanupTarget,
+                state.highlightedNodeKey,
+              ) ||
+              Boolean(childKeys?.includes(state.highlightedNodeKey ?? "")),
+            selected,
+            related: state.focus.relatedKeys.has(resource.key),
+            pendingCleanup:
+              cleanupTarget !== null && state.isCleanupPending(cleanupTarget),
+            interactionEnabled: state.selectMode,
+          };
+        },
       };
-    },
-    [
-      addTargets,
-      cleanupTargets,
-      connection.id,
-      connection.provider,
-      contextMenuTargets,
-      dirtyAssetTargets,
-      focus.relatedKeys,
-      focus.selectedKey,
-      highlightedNodeKey,
-      mode,
-      onClearFocus,
-      onResourceContextMenu,
-      onSelectResource,
-      regionID,
-      removeCleanupTargets,
-      resourceKinds,
-      resourceTargetsByKey,
-      selectCandidateTargets,
-      selectedCandidateKeys,
-      toggleCandidateTarget,
-    ],
-  );
-  const nodes = useMemo<TopologyFlowNode[]>(
-    () =>
-      layout.nodes.map((node): TopologyFlowNode => {
-        const common = {
-          id: node.key,
-          position: node.position,
+    };
+
+    return layout.nodes.map((node): CanvasNodeEntry => {
+      const common = {
+        id: node.key,
+        position: node.position,
+        width: node.size.width,
+        height: node.size.height,
+        style: {
           width: node.size.width,
           height: node.size.height,
-          style: {
-            width: node.size.width,
-            height: node.size.height,
-          },
-          className: "!border-0 !bg-transparent !p-0 !shadow-none",
-          draggable: false,
-          selectable: false,
-          focusable: false,
-          parentId: node.parentKey,
-          extent: node.parentKey ? ("parent" as const) : undefined,
-        };
-        switch (node.kind) {
-          case "resource": {
-            const state = resourceState(node.resource);
-            return {
-              ...common,
-              selectable: state.selectable,
-              selected: state.selected,
-              type: "resource",
-              data: state.data,
-            } satisfies ResourceFlowNode;
-          }
-          case "resourceGroup": {
-            const state = resourceState(node.resource);
-            return {
-              ...common,
-              selectable: state.selectable,
-              selected: state.selected,
-              type: "resourceGroup",
-              data: {
-                ...state.data,
-                searchHighlighted:
-                  state.data.searchHighlighted ||
-                  node.childKeys.includes(highlightedNodeKey ?? ""),
-                childKeys: node.childKeys,
-                directChildCount: node.directChildCount,
-                childTypeSummaries: node.childTypeSummaries,
-                childFindingCount: node.childFindingCount,
-                onExpand: expandStack,
-              },
-            } satisfies ResourceGroupFlowNode;
-          }
-          case "expandedResourceGroup": {
-            const state = resourceState(node.resource);
-            return {
-              ...common,
-              selectable: state.selectable,
-              selected: state.selected,
-              type: "expandedResourceGroup",
-              data: {
-                ...state.data,
-                searchHighlighted:
-                  state.data.searchHighlighted ||
-                  node.childKeys.includes(highlightedNodeKey ?? ""),
-                childKeys: node.childKeys,
-                directChildCount: node.directChildCount,
-                childTypeSummaries: node.childTypeSummaries,
-                childFindingCount: node.childFindingCount,
-                onCollapse: (resourceKey, childKeys) =>
-                  collapseStack(resourceKey, childKeys),
-              },
-            } satisfies ExpandedResourceGroupFlowNode;
-          }
-          case "vswitch": {
-            const cleanupTarget =
-              vSwitchTargetsByKey.get(node.vSwitch.key) ?? null;
-            const selected =
-              cleanupTarget !== null &&
-              selectedCandidateKeys.has(cleanupTarget.key);
-            const pendingCleanup =
-              cleanupTarget !== null &&
-              isCleanupTargetPending(cleanupTargets, cleanupTarget);
-            const removalSet = cleanupTarget
-              ? cleanupRemovalSet(cleanupTargets, cleanupTarget)
-              : { targetKeys: [], batchMembers: [], inherited: false };
-            return {
-              ...common,
-              selectable: cleanupTarget !== null,
-              selected,
-              type: "vswitch",
-              data: {
-                vSwitch: node.vSwitch,
+        },
+        className: "!border-0 !bg-transparent !p-0 !shadow-none",
+        draggable: false,
+        selectable: false,
+        focusable: false,
+        parentId: node.parentKey,
+        extent: node.parentKey ? ("parent" as const) : undefined,
+      };
+      switch (node.kind) {
+        case "resource": {
+          const parts = resourceParts(node.resource);
+          return canvasNodeEntry(
+            (state) => parts.dynamic(state),
+            ({ nodeSelected, ...dynamic }) =>
+              ({
+                ...common,
+                selectable: parts.selectable,
+                selected: nodeSelected,
+                type: "resource",
+                data: { ...parts.data, ...dynamic },
+              }) satisfies ResourceFlowNode,
+          );
+        }
+        case "resourceGroup": {
+          const parts = resourceParts(node.resource);
+          return canvasNodeEntry(
+            (state) => parts.dynamic(state, node.childKeys),
+            ({ nodeSelected, ...dynamic }) =>
+              ({
+                ...common,
+                selectable: parts.selectable,
+                selected: nodeSelected,
+                type: "resourceGroup",
+                data: {
+                  ...parts.data,
+                  ...dynamic,
+                  childKeys: node.childKeys,
+                  directChildCount: node.directChildCount,
+                  childTypeSummaries: node.childTypeSummaries,
+                  childFindingCount: node.childFindingCount,
+                  onExpand: expandStack,
+                },
+              }) satisfies ResourceGroupFlowNode,
+          );
+        }
+        case "expandedResourceGroup": {
+          const parts = resourceParts(node.resource);
+          return canvasNodeEntry(
+            (state) => parts.dynamic(state, node.childKeys),
+            ({ nodeSelected, ...dynamic }) =>
+              ({
+                ...common,
+                selectable: parts.selectable,
+                selected: nodeSelected,
+                type: "expandedResourceGroup",
+                data: {
+                  ...parts.data,
+                  ...dynamic,
+                  childKeys: node.childKeys,
+                  directChildCount: node.directChildCount,
+                  childTypeSummaries: node.childTypeSummaries,
+                  childFindingCount: node.childFindingCount,
+                  onCollapse: collapseStack,
+                },
+              }) satisfies ExpandedResourceGroupFlowNode,
+          );
+        }
+        case "vswitch": {
+          const vSwitch = node.vSwitch;
+          const cleanupTarget = vSwitchTargetsByKey.get(vSwitch.key) ?? null;
+          const data = {
+            vSwitch,
+            cleanupTarget,
+            onSelect: (additive: boolean) => {
+              if (cleanupTarget) {
+                toggleCandidateTarget(cleanupTarget, additive);
+              }
+              clearFocus();
+            },
+            onContextMenu: () => {
+              if (
+                cleanupTarget &&
+                !candidateTargetsRef.current.some(
+                  (target) => target.key === cleanupTarget.key,
+                )
+              ) {
+                selectCandidateTargets([cleanupTarget], false);
+              }
+            },
+            contextMenu: {
+              onViewDetails: () => showVSwitchDetails(vSwitch),
+              dirtyAsset: vSwitch.asset_id
+                ? {
+                    connectionId: connection.id,
+                    id: vSwitch.asset_id,
+                    dirty: Boolean(vSwitch.dirty),
+                  }
+                : undefined,
+              consoleURL: () => vSwitchConsoleURL(vSwitch),
+              onAddToCleanup: cleanupTarget
+                ? () => addTargets(contextMenuTargets(cleanupTarget))
+                : undefined,
+              onRemoveFromCleanup: cleanupTarget
+                ? () => removeCleanupTargets(contextMenuTargets(cleanupTarget))
+                : undefined,
+              inheritedCleanup: targetInheritsCleanup(cleanupTarget),
+              onOpenChange: setContextMenuOpen,
+            },
+          };
+          return canvasNodeEntry(
+            (state) => {
+              const selected =
+                cleanupTarget !== null &&
+                state.selectedCandidateKeys.has(cleanupTarget.key);
+              return {
+                nodeSelected: selected,
                 selected,
                 searchHighlighted:
-                  highlightedNodeKey === node.vSwitch.key ||
-                  cleanupTargetContainsKey(cleanupTarget, highlightedNodeKey),
-                pendingCleanup,
-                cleanupTarget,
-                interactionEnabled: mode === "select" && cleanupTarget !== null,
-                onSelect: (additive) => {
-                  if (cleanupTarget) {
-                    toggleCandidateTarget(cleanupTarget, additive);
-                  }
-                  onClearFocus();
-                },
-                onContextMenu: () => {
-                  if (
-                    cleanupTarget &&
-                    !candidateTargetsRef.current.some(
-                      (target) => target.key === cleanupTarget.key,
-                    )
-                  ) {
-                    selectCandidateTargets([cleanupTarget], false);
-                  }
-                },
-                contextMenu: {
-                  onViewDetails: () => showVSwitchDetails(node.vSwitch),
-                  dirtyAsset: node.vSwitch.asset_id
-                    ? {
-                        connectionId: connection.id,
-                        id: node.vSwitch.asset_id,
-                        dirty: Boolean(node.vSwitch.dirty),
-                      }
-                    : undefined,
-                  consoleURL: cloudConsoleURL({
-                    provider: connection.provider,
-                    nativeType: networkNativeType(
-                      connection.provider,
-                      "vswitch",
-                    ),
-                    nativeId: node.vSwitch.native_id,
-                    regionId: regionID,
-                    consoleLinkTemplate: resourceKinds.get(
-                      `${connection.provider}:${networkNativeType(
-                        connection.provider,
-                        "vswitch",
-                      )}`,
-                    )?.console_link_template,
-                  }),
-                  onAddToCleanup: cleanupTarget
-                    ? () => addTargets(contextMenuTargets(cleanupTarget))
-                    : undefined,
-                  onRemoveFromCleanup: cleanupTarget
-                    ? () =>
-                        removeCleanupTargets(contextMenuTargets(cleanupTarget))
-                    : undefined,
-                  inheritedCleanup:
-                    pendingCleanup &&
-                    removalSet.inherited &&
-                    !hasRemovalOperations(removalSet),
-                  onOpenChange: setContextMenuOpen,
-                },
-              },
-            } satisfies VSwitchFlowNode;
-          }
-          case "stack": {
-            const resources = node.memberKeys.flatMap((key) => {
-              const resource = resourcesByKey.get(key);
-              return resource ? [resource] : [];
-            });
-            const displayName = resourceTypeName(
-              node.resourceKindID,
-              node.typeName,
-              node.typeNames,
-              locale,
+                  state.highlightedNodeKey === vSwitch.key ||
+                  cleanupTargetContainsKey(
+                    cleanupTarget,
+                    state.highlightedNodeKey,
+                  ),
+                pendingCleanup:
+                  cleanupTarget !== null &&
+                  state.isCleanupPending(cleanupTarget),
+                interactionEnabled: state.selectMode && cleanupTarget !== null,
+              };
+            },
+            ({ nodeSelected, ...dynamic }) =>
+              ({
+                ...common,
+                selectable: cleanupTarget !== null,
+                selected: nodeSelected,
+                type: "vswitch",
+                data: { ...data, ...dynamic },
+              }) satisfies VSwitchFlowNode,
+          );
+        }
+        case "stack":
+        case "expandedStack": {
+          const resources = node.memberKeys.flatMap((key) => {
+            const resource = resourcesByKey.get(key);
+            return resource ? [resource] : [];
+          });
+          const displayName = resourceTypeName(
+            node.resourceKindID,
+            node.typeName,
+            node.typeNames,
+            locale,
+          );
+          const cleanupTarget = batchCleanupTarget({
+            connectionId: connection.id,
+            key: node.key,
+            displayName,
+            resources,
+            ancestryKeys: contextAncestry,
+            locationContext,
+          });
+          const memberPendingCount = (pending: ReadonlySet<string>) =>
+            node.memberKeys.filter((key) => pending.has(key)).length;
+          const stackPending =
+            node.kind === "stack"
+              ? (pending: ReadonlySet<string>) =>
+                  node.count > 0 && memberPendingCount(pending) === node.count
+              : (pending: ReadonlySet<string>) =>
+                  node.count > 0 &&
+                  node.memberKeys.every((key) => pending.has(key));
+          const shared = {
+            stackKey: node.key,
+            resourceKindID: node.resourceKindID,
+            typeName: node.typeName,
+            typeNames: node.typeNames,
+            icon: node.icon,
+            count: node.count,
+            cleanupTarget,
+            contextMenu: {
+              onViewDetails: () => setStackDetail({ displayName, resources }),
+              onAddToCleanup: () =>
+                addTargets(contextMenuTargets(cleanupTarget)),
+              onRemoveFromCleanup: () =>
+                removeCleanupTargets(contextMenuTargets(cleanupTarget)),
+              inheritedCleanup: () =>
+                stackPending(latest.current.pendingCleanupResourceKeys) &&
+                removalInherited(latest.current.cleanupTargets, cleanupTarget),
+              onOpenChange: setContextMenuOpen,
+            },
+          };
+          const stackDynamic = (state: CanvasNodeState) => ({
+            nodeSelected: state.selectedCandidateKeys.has(cleanupTarget.key),
+            pendingCleanup: stackPending(state.pendingCleanupResourceKeys),
+            searchHighlighted:
+              node.memberKeys.includes(state.highlightedNodeKey ?? "") ||
+              cleanupTargetContainsKey(cleanupTarget, state.highlightedNodeKey),
+            interactionEnabled: state.selectMode,
+          });
+          if (node.kind === "expandedStack") {
+            const data = {
+              ...shared,
+              onCollapse: (stackKey: string) =>
+                collapseStack(stackKey, node.memberKeys),
+              onContextMenu: openStackContextMenu,
+            };
+            return canvasNodeEntry(
+              stackDynamic,
+              ({ nodeSelected, ...dynamic }) =>
+                ({
+                  ...common,
+                  selectable: true,
+                  selected: nodeSelected,
+                  type: "expandedStack",
+                  data: { ...data, ...dynamic },
+                }) satisfies ExpandedStackFlowNode,
             );
-            const cleanupTarget = batchCleanupTarget({
-              connectionId: connection.id,
-              key: node.key,
-              displayName,
-              resources,
-              ancestryKeys: contextAncestry,
-              locationContext,
-            });
-            const removalSet = cleanupRemovalSet(cleanupTargets, cleanupTarget);
-            const pendingCleanupCount = node.memberKeys.filter((key) =>
-              pendingCleanupResourceKeys.has(key),
-            ).length;
-            const pendingCleanup =
-              node.count > 0 && pendingCleanupCount === node.count;
-            const selected = selectedCandidateKeys.has(cleanupTarget.key);
-            return {
-              ...common,
-              selectable: true,
-              selected,
-              type: "stack",
-              data: {
-                stackKey: node.key,
-                resourceKindID: node.resourceKindID,
-                typeName: node.typeName,
-                typeNames: node.typeNames,
-                icon: node.icon,
-                count: node.count,
-                pendingCleanup,
-                pendingCleanupCount,
-                selected,
-                searchHighlighted:
-                  node.memberKeys.includes(highlightedNodeKey ?? "") ||
-                  cleanupTargetContainsKey(cleanupTarget, highlightedNodeKey),
-                cleanupTarget,
-                interactionEnabled: mode === "select",
-                onSelect: (_stackKey, _trigger, additive) => {
-                  toggleCandidateTarget(cleanupTarget, additive);
-                  onClearFocus();
-                },
-                onExpand: expandStack,
-                onContextMenu: (stackKey, trigger) => {
-                  if (
-                    !candidateTargetsRef.current.some(
-                      (target) => target.key === cleanupTarget.key,
-                    )
-                  ) {
-                    selectCandidateTargets([cleanupTarget], false);
+          }
+          const data = {
+            ...shared,
+            onSelect: (
+              _stackKey: string,
+              _trigger: HTMLElement | null,
+              additive: boolean,
+            ) => {
+              toggleCandidateTarget(cleanupTarget, additive);
+              clearFocus();
+            },
+            onExpand: expandStack,
+            onContextMenu: (stackKey: string, trigger: HTMLElement | null) => {
+              if (
+                !candidateTargetsRef.current.some(
+                  (target) => target.key === cleanupTarget.key,
+                )
+              ) {
+                selectCandidateTargets([cleanupTarget], false);
+              }
+              latest.current.onStackContextMenu(stackKey, trigger);
+            },
+          };
+          return canvasNodeEntry(
+            (state) => ({
+              ...stackDynamic(state),
+              pendingCleanupCount: memberPendingCount(
+                state.pendingCleanupResourceKeys,
+              ),
+              selected: state.selectedCandidateKeys.has(cleanupTarget.key),
+            }),
+            ({ nodeSelected, ...dynamic }) =>
+              ({
+                ...common,
+                selectable: true,
+                selected: nodeSelected,
+                type: "stack",
+                data: { ...data, ...dynamic },
+              }) satisfies StackFlowNode,
+          );
+        }
+        case "vSwitchStack": {
+          const targets = node.vSwitches.flatMap((vSwitch) => {
+            const target = vSwitchTargetsByKey.get(vSwitch.key);
+            return target ? [target] : [];
+          });
+          const pendingCount = (
+            isPending: (target: CleanupTarget) => boolean,
+          ) => targets.filter(isPending).length;
+          const data = {
+            stackKey: node.key,
+            count: node.count,
+            vSwitches: node.vSwitches,
+            cleanupTargets: targets,
+            onSelect: toggleCandidateTargets,
+            onExpand: expandStack,
+            onContextMenu: () => {
+              if (
+                !targets.every((candidate) =>
+                  candidateTargetsRef.current.some(
+                    (target) => target.key === candidate.key,
+                  ),
+                )
+              ) {
+                selectCandidateTargets(targets, false);
+              }
+            },
+            contextMenu:
+              targets.length > 0
+                ? {
+                    onViewDetails: () => expandStack(node.key),
+                    onAddToCleanup: () =>
+                      addTargets(contextMenuTargetGroup(targets)),
+                    onRemoveFromCleanup: () =>
+                      removeCleanupTargets(contextMenuTargetGroup(targets)),
+                    inheritedCleanup: () =>
+                      pendingCount(latest.current.isCleanupPending) ===
+                        targets.length &&
+                      targets.every((target) =>
+                        removalInherited(latest.current.cleanupTargets, target),
+                      ),
+                    onOpenChange: setContextMenuOpen,
                   }
-                  onStackContextMenu(stackKey, trigger);
-                },
-                contextMenu: {
-                  onViewDetails: () =>
-                    setStackDetail({ displayName, resources }),
-                  onAddToCleanup: () =>
-                    addTargets(contextMenuTargets(cleanupTarget)),
-                  onRemoveFromCleanup: () =>
-                    removeCleanupTargets(contextMenuTargets(cleanupTarget)),
-                  inheritedCleanup:
-                    pendingCleanup &&
-                    removalSet.inherited &&
-                    !hasRemovalOperations(removalSet),
-                  onOpenChange: setContextMenuOpen,
-                },
-              },
-            } satisfies StackFlowNode;
-          }
-          case "expandedStack": {
-            const resources = node.memberKeys.flatMap((key) => {
-              const resource = resourcesByKey.get(key);
-              return resource ? [resource] : [];
-            });
-            const displayName = resourceTypeName(
-              node.resourceKindID,
-              node.typeName,
-              node.typeNames,
-              locale,
-            );
-            const cleanupTarget = batchCleanupTarget({
-              connectionId: connection.id,
-              key: node.key,
-              displayName,
-              resources,
-              ancestryKeys: contextAncestry,
-              locationContext,
-            });
-            const removalSet = cleanupRemovalSet(cleanupTargets, cleanupTarget);
-            const pendingCleanup =
-              node.count > 0 &&
-              node.memberKeys.every((key) =>
-                pendingCleanupResourceKeys.has(key),
-              );
-            return {
-              ...common,
-              selectable: true,
-              selected: selectedCandidateKeys.has(cleanupTarget.key),
-              type: "expandedStack",
-              data: {
-                stackKey: node.key,
-                resourceKindID: node.resourceKindID,
-                typeName: node.typeName,
-                typeNames: node.typeNames,
-                icon: node.icon,
-                count: node.count,
-                pendingCleanup,
-                searchHighlighted:
-                  node.memberKeys.includes(highlightedNodeKey ?? "") ||
-                  cleanupTargetContainsKey(cleanupTarget, highlightedNodeKey),
-                cleanupTarget,
-                interactionEnabled: mode === "select",
-                onCollapse: (stackKey) =>
-                  collapseStack(stackKey, node.memberKeys),
-                onContextMenu: onStackContextMenu,
-                contextMenu: {
-                  onViewDetails: () =>
-                    setStackDetail({ displayName, resources }),
-                  onAddToCleanup: () =>
-                    addTargets(contextMenuTargets(cleanupTarget)),
-                  onRemoveFromCleanup: () =>
-                    removeCleanupTargets(contextMenuTargets(cleanupTarget)),
-                  inheritedCleanup:
-                    pendingCleanup &&
-                    removalSet.inherited &&
-                    !hasRemovalOperations(removalSet),
-                  onOpenChange: setContextMenuOpen,
-                },
-              },
-            } satisfies ExpandedStackFlowNode;
-          }
-          case "vSwitchStack": {
-            const targets = node.vSwitches.flatMap((vSwitch) => {
-              const target = vSwitchTargetsByKey.get(vSwitch.key);
-              return target ? [target] : [];
-            });
-            const removalSets = targets.map((target) =>
-              cleanupRemovalSet(cleanupTargets, target),
-            );
-            const pendingCleanupCount = targets.filter((target) =>
-              isCleanupTargetPending(cleanupTargets, target),
-            ).length;
-            const selected =
-              targets.length > 0 &&
-              targets.every((target) => selectedCandidateKeys.has(target.key));
-            const pendingCleanup =
-              targets.length > 0 && pendingCleanupCount === targets.length;
-            return {
-              ...common,
-              selectable: targets.length > 0,
-              selected,
-              type: "vSwitchStack",
-              data: {
-                stackKey: node.key,
-                count: node.count,
-                vSwitches: node.vSwitches,
+                : undefined,
+          };
+          return canvasNodeEntry(
+            (state) => {
+              const pendingCleanupCount = pendingCount(state.isCleanupPending);
+              const selected =
+                targets.length > 0 &&
+                targets.every((target) =>
+                  state.selectedCandidateKeys.has(target.key),
+                );
+              return {
+                nodeSelected: selected,
                 selected,
                 searchHighlighted:
                   node.vSwitches.some(
-                    (vSwitch) => vSwitch.key === highlightedNodeKey,
+                    (vSwitch) => vSwitch.key === state.highlightedNodeKey,
                   ) ||
                   targets.some((target) =>
-                    cleanupTargetContainsKey(target, highlightedNodeKey),
+                    cleanupTargetContainsKey(target, state.highlightedNodeKey),
                   ),
-                pendingCleanup,
+                pendingCleanup:
+                  targets.length > 0 && pendingCleanupCount === targets.length,
                 pendingCleanupCount,
-                cleanupTargets: targets,
-                interactionEnabled: mode === "select" && targets.length > 0,
-                onSelect: toggleCandidateTargets,
-                onExpand: expandStack,
-                onContextMenu: () => {
-                  if (
-                    !targets.every((candidate) =>
-                      candidateTargetsRef.current.some(
-                        (target) => target.key === candidate.key,
-                      ),
-                    )
-                  ) {
-                    selectCandidateTargets(targets, false);
-                  }
-                },
-                contextMenu:
-                  targets.length > 0
-                    ? {
-                        onViewDetails: () => expandStack(node.key),
-                        onAddToCleanup: () =>
-                          addTargets(contextMenuTargetGroup(targets)),
-                        onRemoveFromCleanup: () =>
-                          removeCleanupTargets(contextMenuTargetGroup(targets)),
-                        inheritedCleanup:
-                          pendingCleanup &&
-                          removalSets.every(
-                            (set) =>
-                              set.inherited && !hasRemovalOperations(set),
-                          ),
-                        onOpenChange: setContextMenuOpen,
-                      }
-                    : undefined,
-              },
-            } satisfies VSwitchStackFlowNode;
-          }
-          case "expandedVSwitchStack": {
-            const cleanupTargetsByVSwitchKey = new Map(
-              node.vSwitches.flatMap((vSwitch) => {
-                const target = vSwitchTargetsByKey.get(vSwitch.key);
-                return target ? ([[vSwitch.key, target]] as const) : [];
+                interactionEnabled: state.selectMode && targets.length > 0,
+              };
+            },
+            ({ nodeSelected, ...dynamic }) =>
+              ({
+                ...common,
+                selectable: targets.length > 0,
+                selected: nodeSelected,
+                type: "vSwitchStack",
+                data: { ...data, ...dynamic },
+              }) satisfies VSwitchStackFlowNode,
+          );
+        }
+        case "expandedVSwitchStack": {
+          const cleanupTargetsByVSwitchKey = new Map(
+            node.vSwitches.flatMap((vSwitch) => {
+              const target = vSwitchTargetsByKey.get(vSwitch.key);
+              return target ? ([[vSwitch.key, target]] as const) : [];
+            }),
+          );
+          const targets = [...cleanupTargetsByVSwitchKey.values()];
+          const data = {
+            stackKey: node.key,
+            count: node.count,
+            vSwitches: node.vSwitches,
+            cleanupTargets: targets,
+            cleanupTargetsByVSwitchKey,
+            contextMenus: new Map(
+              node.vSwitches.map((vSwitch) => {
+                const target =
+                  cleanupTargetsByVSwitchKey.get(vSwitch.key) ?? null;
+                return [
+                  vSwitch.key,
+                  {
+                    onViewDetails: () => showVSwitchDetails(vSwitch),
+                    dirtyAsset: vSwitch.asset_id
+                      ? {
+                          connectionId: connection.id,
+                          id: vSwitch.asset_id,
+                          dirty: Boolean(vSwitch.dirty),
+                        }
+                      : undefined,
+                    consoleURL: () => vSwitchConsoleURL(vSwitch),
+                    onAddToCleanup: target
+                      ? () => addTargets(contextMenuTargets(target))
+                      : undefined,
+                    onRemoveFromCleanup: target
+                      ? () => removeCleanupTargets(contextMenuTargets(target))
+                      : undefined,
+                    inheritedCleanup: targetInheritsCleanup(target),
+                    onOpenChange: setContextMenuOpen,
+                  },
+                ] as const;
               }),
-            );
-            const targets = [...cleanupTargetsByVSwitchKey.values()];
-            const pendingTargetKeys = new Set(
-              targets
-                .filter((target) =>
-                  isCleanupTargetPending(cleanupTargets, target),
+            ),
+            onSelect: toggleCandidateTarget,
+            onContextMenu: (target: CleanupTarget) => {
+              if (
+                !candidateTargetsRef.current.some(
+                  (candidate) => candidate.key === target.key,
                 )
-                .map((target) => target.key),
-            );
-            const highlightedVSwitchKey = node.vSwitches.find((vSwitch) => {
-              const target = cleanupTargetsByVSwitchKey.get(vSwitch.key);
-              return (
-                vSwitch.key === highlightedNodeKey ||
-                cleanupTargetContainsKey(target, highlightedNodeKey)
-              );
-            })?.key;
-            return {
-              ...common,
-              selectable: targets.length > 0,
-              selected:
+              ) {
+                selectCandidateTargets([target], false);
+              }
+            },
+            onCollapse: (stackKey: string) => collapseStack(stackKey, []),
+          };
+          return canvasNodeEntry(
+            (state) => ({
+              nodeSelected:
                 targets.length > 0 &&
                 targets.every((target) =>
-                  selectedCandidateKeys.has(target.key),
+                  state.selectedCandidateKeys.has(target.key),
                 ),
-              type: "expandedVSwitchStack",
-              data: {
-                stackKey: node.key,
-                count: node.count,
-                vSwitches: node.vSwitches,
-                cleanupTargets: targets,
-                cleanupTargetsByVSwitchKey,
-                selectedTargetKeys: selectedCandidateKeys,
-                pendingTargetKeys,
-                highlightedVSwitchKey,
-                interactionEnabled: mode === "select" && targets.length > 0,
-                contextMenus: new Map(
-                  node.vSwitches.map((vSwitch) => {
-                    const target = cleanupTargetsByVSwitchKey.get(vSwitch.key);
-                    const removalSet = target
-                      ? cleanupRemovalSet(cleanupTargets, target)
-                      : {
-                          targetKeys: [],
-                          batchMembers: [],
-                          inherited: false,
-                        };
-                    const pendingCleanup = target
-                      ? pendingTargetKeys.has(target.key)
-                      : false;
-                    return [
-                      vSwitch.key,
-                      {
-                        onViewDetails: () => showVSwitchDetails(vSwitch),
-                        dirtyAsset: vSwitch.asset_id
-                          ? {
-                              connectionId: connection.id,
-                              id: vSwitch.asset_id,
-                              dirty: Boolean(vSwitch.dirty),
-                            }
-                          : undefined,
-                        consoleURL: cloudConsoleURL({
-                          provider: connection.provider,
-                          nativeType: networkNativeType(
-                            connection.provider,
-                            "vswitch",
-                          ),
-                          nativeId: vSwitch.native_id,
-                          regionId: regionID,
-                          consoleLinkTemplate: resourceKinds.get(
-                            `${connection.provider}:${networkNativeType(
-                              connection.provider,
-                              "vswitch",
-                            )}`,
-                          )?.console_link_template,
-                        }),
-                        onAddToCleanup: target
-                          ? () => addTargets(contextMenuTargets(target))
-                          : undefined,
-                        onRemoveFromCleanup: target
-                          ? () =>
-                              removeCleanupTargets(contextMenuTargets(target))
-                          : undefined,
-                        inheritedCleanup:
-                          pendingCleanup &&
-                          removalSet.inherited &&
-                          !hasRemovalOperations(removalSet),
-                        onOpenChange: setContextMenuOpen,
-                      },
-                    ] as const;
-                  }),
-                ),
-                onSelect: toggleCandidateTarget,
-                onContextMenu: (target) => {
-                  if (
-                    !candidateTargetsRef.current.some(
-                      (candidate) => candidate.key === target.key,
-                    )
-                  ) {
-                    selectCandidateTargets([target], false);
-                  }
-                },
-                onCollapse: (stackKey) => collapseStack(stackKey, []),
-              },
-            } satisfies ExpandedVSwitchStackFlowNode;
-          }
+              selectedTargetKeys: new Set(
+                targets
+                  .filter((target) =>
+                    state.selectedCandidateKeys.has(target.key),
+                  )
+                  .map((target) => target.key),
+              ),
+              pendingTargetKeys: new Set(
+                targets
+                  .filter((target) => state.isCleanupPending(target))
+                  .map((target) => target.key),
+              ),
+              highlightedVSwitchKey: node.vSwitches.find((vSwitch) => {
+                const target = cleanupTargetsByVSwitchKey.get(vSwitch.key);
+                return (
+                  vSwitch.key === state.highlightedNodeKey ||
+                  cleanupTargetContainsKey(target, state.highlightedNodeKey)
+                );
+              })?.key,
+              interactionEnabled: state.selectMode && targets.length > 0,
+            }),
+            ({ nodeSelected, ...dynamic }) =>
+              ({
+                ...common,
+                selectable: targets.length > 0,
+                selected: nodeSelected,
+                type: "expandedVSwitchStack",
+                data: { ...data, ...dynamic },
+              }) satisfies ExpandedVSwitchStackFlowNode,
+          );
         }
-      }),
-    [
-      addTargets,
-      collapseStack,
-      connection.id,
-      contextAncestry,
-      contextMenuTargetGroup,
-      contextMenuTargets,
-      connection.provider,
-      locationContext,
-      cleanupTargets,
-      executeRemoval,
-      expandStack,
-      dirtyAssetTargets,
-      focus.relatedKeys,
-      focus.selectedKey,
+      }
+    });
+  }, [
+    activateResource,
+    addTargets,
+    clearFocus,
+    collapseStack,
+    connection.id,
+    connection.provider,
+    contextAncestry,
+    contextMenuTargetGroup,
+    contextMenuTargets,
+    dirtyAssetTargets,
+    expandStack,
+    layout.nodes,
+    locale,
+    locationContext,
+    openStackContextMenu,
+    regionID,
+    removeCleanupTargets,
+    resourceKinds,
+    resourceTargetsByKey,
+    resourcesByKey,
+    selectCandidateTargets,
+    showVSwitchDetails,
+    toggleCandidateTarget,
+    toggleCandidateTargets,
+    vSwitchTargetsByKey,
+  ]);
+  const nodeState = useMemo<CanvasNodeState>(
+    () => ({
+      focus,
       highlightedNodeKey,
-      layout.nodes,
-      locale,
-      mode,
-      onResourceContextMenu,
-      onClearFocus,
-      onSelectResource,
-      onStackContextMenu,
-      pendingCleanupResourceKeys,
-      removeCleanupTargets,
-      regionID,
-      resourceKinds,
-      resourceState,
-      resourceTargetsByKey,
-      resourcesByKey,
-      resourcesByAssetID,
-      selectCandidateTargets,
       selectedCandidateKeys,
-      showVSwitchDetails,
-      toggleCandidateTarget,
-      toggleCandidateTargets,
-      vSwitchTargetsByKey,
+      pendingCleanupResourceKeys,
+      isCleanupPending,
+      selectMode: mode === "select",
+    }),
+    [
+      focus,
+      highlightedNodeKey,
+      isCleanupPending,
+      mode,
+      pendingCleanupResourceKeys,
+      selectedCandidateKeys,
     ],
+  );
+  // Node objects are reused while their selection, highlight and cleanup state
+  // is unchanged, so React Flow only re-renders the nodes that changed.
+  const composedNodes = useRef(
+    new WeakMap<
+      CanvasNodeEntry,
+      { dynamic: CanvasNodeDynamic; node: TopologyFlowNode }
+    >(),
+  );
+  const nodes = useMemo(
+    () =>
+      staticNodes.map((entry) => {
+        const dynamic = entry.dynamic(nodeState);
+        const cached = composedNodes.current.get(entry);
+        if (cached && sameNodeDynamic(cached.dynamic, dynamic)) {
+          return cached.node;
+        }
+        const node = entry.compose(dynamic);
+        composedNodes.current.set(entry, { dynamic, node });
+        return node;
+      }),
+    [nodeState, staticNodes],
   );
   const visibleLayoutEdges = useMemo(
     () =>
@@ -1594,8 +1670,7 @@ export function TopologyCanvas({
     ? cleanupRemovalSet(cleanupTargets, detailCleanupTarget)
     : null;
   const detailPendingCleanup =
-    detailCleanupTarget !== null &&
-    isCleanupTargetPending(cleanupTargets, detailCleanupTarget);
+    detailCleanupTarget !== null && isCleanupPending(detailCleanupTarget);
   const detailInheritedCleanup =
     detailPendingCleanup &&
     detailRemovalSet !== null &&
