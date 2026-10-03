@@ -375,10 +375,8 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 		if err := repositories.Inventory().CreateScanRun(ctx, run); err != nil {
 			return err
 		}
-		for _, shard := range shards {
-			if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
-				return err
-			}
+		if err := repositories.Inventory().CreateScanShards(ctx, shards); err != nil {
+			return err
 		}
 		for _, job := range jobs {
 			if err := repositories.Jobs().Enqueue(ctx, job); err != nil {

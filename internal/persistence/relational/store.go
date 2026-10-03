@@ -1309,6 +1309,54 @@ func (s *Store) PutScanShard(ctx context.Context, shard asset.ScanShard) error {
 	})
 }
 
+func (s *Store) CreateScanShards(ctx context.Context, shards []asset.ScanShard) error {
+	if len(shards) == 0 {
+		return nil
+	}
+	aliases, err := s.scopeAliases(ctx)
+	if err != nil {
+		return err
+	}
+	rows := make([]scanShardRow, 0, len(shards))
+	itemCounts := make(map[string]int)
+	for _, shard := range shards {
+		if shard, err = canonicalizeScanShard(shard, aliases); err != nil {
+			return err
+		}
+		payload, err := encode(shard)
+		if err != nil {
+			return err
+		}
+		rows = append(rows, scanShardRow{
+			ID: string(shard.ID), ScanTaskID: string(shard.ScanTaskID), TargetKey: shard.TargetKey,
+			RetryGeneration: shard.RetryGeneration, ScopeID: string(shard.ScopeID),
+			ResourceKindID: string(shard.ResourceKindID), Source: shard.Source,
+			Authoritative: shard.Authoritative, Status: string(shard.Status),
+			ItemCount: shard.Coverage.ItemCount, CreatedAt: shard.CreatedAt, Payload: payload,
+		})
+		itemCounts[string(shard.ScanTaskID)] += shard.Coverage.ItemCount
+	}
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := mapCreateError(tx.Table("scan_shards").CreateInBatches(rows, upsertBatchSize).Error); err != nil {
+			return err
+		}
+		for taskID, delta := range itemCounts {
+			if delta == 0 {
+				continue
+			}
+			result := tx.Table("scan_tasks").Where("id = ?", taskID).
+				UpdateColumn("resource_count", gorm.Expr("resource_count + ?", delta))
+			if result.Error != nil {
+				return result.Error
+			}
+			if result.RowsAffected != 1 {
+				return persistence.ErrNotFound
+			}
+		}
+		return nil
+	})
+}
+
 func (s *Store) GetScanShard(ctx context.Context, id asset.ScanShardID) (asset.ScanShard, error) {
 	var row scanShardRow
 	if err := s.db.WithContext(ctx).Table("scan_shards").Where("id = ?", string(id)).Take(&row).Error; err != nil {

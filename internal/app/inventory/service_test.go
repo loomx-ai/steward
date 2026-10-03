@@ -201,6 +201,15 @@ func (r *inventoryRepository) PutScanShard(_ context.Context, shard asset.ScanSh
 	r.shards[shard.ID] = shard
 	return nil
 }
+func (r *inventoryRepository) CreateScanShards(_ context.Context, shards []asset.ScanShard) error {
+	for _, shard := range shards {
+		if _, ok := r.shards[shard.ID]; ok {
+			return persistence.ErrConflict
+		}
+		r.shards[shard.ID] = shard
+	}
+	return nil
+}
 func (r *inventoryRepository) GetScanShard(_ context.Context, id asset.ScanShardID) (asset.ScanShard, error) {
 	value, ok := r.shards[id]
 	if !ok {

@@ -151,6 +151,8 @@ type InventoryRepository interface {
 	ListScanRunListItems(context.Context, ListOptions) (Page[ScanRunListItem], error)
 	ListScanRunsByConnection(context.Context, asset.ConnectionID) ([]asset.ScanRun, error)
 	PutScanShard(context.Context, asset.ScanShard) error
+	// CreateScanShards inserts new shards together; an existing ID conflicts.
+	CreateScanShards(context.Context, []asset.ScanShard) error
 	GetScanShard(context.Context, asset.ScanShardID) (asset.ScanShard, error)
 	ListScanShards(context.Context, ListOptions) (Page[asset.ScanShard], error)
 	ListScanShardsByRun(context.Context, asset.ScanRunID) ([]asset.ScanShard, error)

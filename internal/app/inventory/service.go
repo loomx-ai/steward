@@ -120,11 +120,8 @@ func (s *Service) StartScan(ctx context.Context, run asset.ScanRun, shards []ass
 			if shard.ScanRunID != run.ID {
 				return fmt.Errorf("scan shard %q does not belong to run %q", shard.ID, run.ID)
 			}
-			if err := repository.PutScanShard(ctx, shard); err != nil {
-				return err
-			}
 		}
-		return nil
+		return repository.CreateScanShards(ctx, shards)
 	})
 }
 

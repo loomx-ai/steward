@@ -697,6 +697,24 @@ func Run(t *testing.T, factory Factory) {
 		if err != nil || len(listItems.Items) != 1 || listItems.Items[0].ScanRun.ID != "scan-1" || listItems.Items[0].ResourceCount != 3 || listItems.NextCursor != "" {
 			t.Fatalf("oldest scan run list item = %#v, err = %v", listItems, err)
 		}
+		createdShards := []asset.ScanShard{
+			{ID: "shard-2a", ScanRunID: "scan-2", Provider: asset.ProviderAliCloud, Source: "resource-center", ScopeID: "scope-global", ResourceKindID: "kind-ecs", Status: asset.ShardPending, Coverage: asset.Coverage{ItemCount: 2}, CreatedAt: now},
+			{ID: "shard-2b", ScanRunID: "scan-2", Provider: asset.ProviderAliCloud, Source: "resource-center", ScopeID: "scope-global", Status: asset.ShardPending, CreatedAt: now.Add(time.Second)},
+		}
+		if err := repositories.Inventory().CreateScanShards(ctx, createdShards); err != nil {
+			t.Fatal(err)
+		}
+		if err := repositories.Inventory().CreateScanShards(ctx, createdShards[:1]); !errors.Is(err, persistence.ErrConflict) {
+			t.Fatalf("duplicate created shard err = %v", err)
+		}
+		createdRunShards, err := repositories.Inventory().ListScanShardsByRun(ctx, "scan-2")
+		if err != nil || len(createdRunShards) != 2 || createdRunShards[0].ID != "shard-2a" || createdRunShards[1].TargetKey != "scope:scope-global" {
+			t.Fatalf("created scan shards = %#v, err = %v", createdRunShards, err)
+		}
+		createdListItems, err := repositories.Inventory().ListScanRunListItems(ctx, persistence.ListOptions{Limit: 10, ConnectionID: "conn-a"})
+		if err != nil || len(createdListItems.Items) != 3 || createdListItems.Items[1].ScanRun.ID != "scan-2" || createdListItems.Items[1].ResourceCount != 2 {
+			t.Fatalf("created shard resource count = %#v, err = %v", createdListItems, err)
+		}
 		identity, err := asset.NewIdentity("alicloud", "public", "conn-a", "ACS::ECS::Instance", "i-1")
 		if err != nil {
 			t.Fatal(err)
