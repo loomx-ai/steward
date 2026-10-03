@@ -117,3 +117,36 @@ func TestMessagingNativeConfigurationWithoutReplicationCanDeleteIndependently(t 
 		}
 	}
 }
+
+func TestMessagingInventoryPageReadsNamespaceReplicationOnce(t *testing.T) {
+	s, r, assets := messagingScenario(t, serviceBusNamespaceType)
+	parentID := assets[0].Identity.NativeID
+	reads := 0
+	s.handle = func(req *http.Request) (*http.Response, bool) {
+		if strings.EqualFold(req.URL.Path, parentID) {
+			reads++
+		}
+		return nil, false
+	}
+	var target asset.Asset
+	for _, value := range assets {
+		if value.Identity.NativeType == serviceBusQueueType {
+			target = value
+		}
+	}
+	c, _ := r.resolve(context.Background(), "connection")
+	count := func(ctx context.Context) int {
+		reads = 0
+		for range 2 {
+			if _, err := r.inventoryItem(ctx, c, s.records[target.Identity.NativeID], nil, nil); err != nil {
+				t.Fatal(err)
+			}
+		}
+		return reads
+	}
+	// Cleanup checks carry no page memo and read the namespace for each entity.
+	live, page := count(context.Background()), count(withReadMemo(context.Background()))
+	if page == 0 || live != 2*page {
+		t.Fatalf("namespace reads live=%d page=%d", live, page)
+	}
+}

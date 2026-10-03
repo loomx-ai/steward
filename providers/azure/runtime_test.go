@@ -113,6 +113,8 @@ func TestLegacySubscriptionInventoryPagingChildrenAndVMNetworking(t *testing.T) 
 			data = map[string]any{"value": []any{}}
 		case strings.ToLower(resourceID(nicType, "nic")):
 			data = nic
+		case root + "/resourcegroups/test/providers/microsoft.network/networkinterfaces":
+			data = map[string]any{"value": []any{nic}}
 		case strings.ToLower(resourceID(vnetType, "vnet")):
 			data = vnet
 		case strings.ToLower(resourceID(vnetType, "vnet") + "/subnets"):

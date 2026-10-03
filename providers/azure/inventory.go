@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -14,6 +15,7 @@ import (
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
 	ctx = context.WithValue(ctx, inventoryReadContextKey{}, true)
+	ctx = withReadMemo(ctx)
 	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource && request.Source != synapseSource && request.Source != synapseDataInventorySource && request.Source != synapseBackupSource && request.Source != netappSource && request.Source != deploymentStackSource && request.Source != dataProtectionSource && request.Source != recoveryServicesSource && request.Source != managementGroupSource && request.Source != keyVaultCertificateSource && request.Source != graphDirectorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
 	}
@@ -407,6 +409,83 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	return batch, nil
 }
+
+// readMemo shares native reads that several resources of one inventory page
+// would otherwise repeat. It lives only in that call's context; cleanup actions
+// never carry it and always read live.
+type readMemoContextKey struct{}
+
+type readMemo struct {
+	mu     sync.Mutex
+	values map[string]any
+}
+
+func withReadMemo(ctx context.Context) context.Context {
+	return context.WithValue(ctx, readMemoContextKey{}, &readMemo{values: map[string]any{}})
+}
+
+// memoized returns the call's earlier successful read for key, or reads now.
+// Without a memo in the context every call reads.
+func memoized[T any](ctx context.Context, key string, read func() (T, error)) (T, error) {
+	memo, _ := ctx.Value(readMemoContextKey{}).(*readMemo)
+	if memo == nil {
+		return read()
+	}
+	memo.mu.Lock()
+	value, ok := memo.values[key]
+	memo.mu.Unlock()
+	if ok {
+		return value.(T), nil
+	}
+	result, err := read()
+	if err != nil {
+		return result, err
+	}
+	memo.mu.Lock()
+	memo.values[key] = result
+	memo.mu.Unlock()
+	return result, nil
+}
+
+// inventoryNIC reads a VM's NIC. An inventory page lists each resource group's
+// NICs once instead of reading every VM's NIC on its own; a NIC missing from
+// that list is still read directly.
+func (c *client) inventoryNIC(ctx context.Context, kind resourceType, id string) (map[string]any, error) {
+	parts := strings.Split(strings.ToLower(id), "/")
+	if ctx.Value(readMemoContextKey{}) != nil && len(parts) > 5 && strings.Join(parts[:4], "/") == c.root()+"/resourcegroups" {
+		group := strings.Join(parts[:5], "/")
+		nics, err := memoized(ctx, "nics:"+group, func() (map[string]map[string]any, error) {
+			values, err := c.listAll(ctx, group+"/providers/Microsoft.Network/networkInterfaces", kind.Version)
+			if err != nil {
+				return nil, err
+			}
+			index := map[string]map[string]any{}
+			for _, value := range values {
+				index[strings.ToLower(text(object(value)["id"]))] = object(value)
+			}
+			return index, nil
+		})
+		if err != nil {
+			return nil, err
+		}
+		if nic := nics[strings.ToLower(id)]; nic != nil {
+			return nic, nil
+		}
+	}
+	endpoint, err := c.resourceURL(kind, id)
+	if err != nil {
+		return nil, err
+	}
+	nic, err := c.request(ctx, "GET", endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if !strings.EqualFold(text(nic.data["id"]), id) {
+		return nil, fmt.Errorf("Azure NIC identity mismatch")
+	}
+	return nic.data, nil
+}
+
 func resourceRegion(raw map[string]any) string {
 	if kind := cosmosKind(text(raw["type"])); kind != "" {
 		return cosmosRegion(kind, raw)
@@ -813,18 +892,11 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		// VM placement is carried by its NICs, not by the VM ARM document.
 		nicKind, _ := findType(nicType)
 		for _, nicID := range refs[nicType] {
-			endpoint, err := c.resourceURL(nicKind, nicID)
+			nic, err := c.inventoryNIC(ctx, nicKind, nicID)
 			if err != nil {
 				return contracts.InventoryItem{}, err
 			}
-			nic, err := c.request(ctx, "GET", endpoint)
-			if err != nil {
-				return contracts.InventoryItem{}, err
-			}
-			if !strings.EqualFold(text(nic.data["id"]), nicID) {
-				return contracts.InventoryItem{}, fmt.Errorf("Azure NIC identity mismatch")
-			}
-			for target, ids := range references(nicType, nicID, nic.data) {
+			for target, ids := range references(nicType, nicID, nic) {
 				if target == vnetType || target == subnetType {
 					for _, ref := range ids {
 						addReference(refs, target, ref)

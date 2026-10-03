@@ -174,6 +174,16 @@ func (c *client) messagingReplicationContext(ctx context.Context, kind, id strin
 		return "", "", fmt.Errorf("invalid Azure messaging entity namespace")
 	}
 	namespaceID := strings.Join(parts[:9], "/")
+	// Every entity of a namespace shares its replication state; an inventory
+	// page reads it once per namespace.
+	result, err := memoized(ctx, "messaging-replication:"+strings.ToLower(namespaceID), func() ([2]string, error) {
+		reason, creation, err := c.namespaceReplication(ctx, namespaceID)
+		return [2]string{reason, creation}, err
+	})
+	return result[0], result[1], err
+}
+
+func (c *client) namespaceReplication(ctx context.Context, namespaceID string) (reason, creation string, err error) {
 	_, namespaceType, err := parseID(namespaceID)
 	if err != nil {
 		return "", "", err

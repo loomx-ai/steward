@@ -63,7 +63,7 @@ func TestProductVMDetailPagingNetworkAndScope(t *testing.T) {
 	nic := nativeResource(nicType, "nic", "eastus", map[string]any{"ipConfigurations": []any{map[string]any{"properties": map[string]any{"subnet": map[string]any{"id": resourceID(vnetType, "vnet") + "/subnets/subnet"}}}}})
 	vm := nativeResource(vmType, "vm", "eastus", map[string]any{"vmId": "vm-incarnation", "customData": "never-in-inventory", "networkProfile": map[string]any{"networkInterfaces": []any{map[string]any{"id": resourceID(nicType, "nic")}}}})
 	west := nativeResource(vmType, "west", "westus", map[string]any{})
-	westReads := 0
+	westReads, nicLists, nicReads := 0, 0, 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		var data any
 		switch strings.ToLower(req.URL.Path) {
@@ -82,7 +82,11 @@ func TestProductVMDetailPagingNetworkAndScope(t *testing.T) {
 			westReads++
 			data = west
 		case strings.ToLower(text(nic["id"])):
+			nicReads++
 			data = nic
+		case root + "/resourcegroups/test/providers/microsoft.network/networkinterfaces":
+			nicLists++
+			data = map[string]any{"value": []any{nic}}
 		case root + "/resourcegroups", root + "/providers/microsoft.authorization/locks":
 			data = map[string]any{"value": []any{}}
 		default:
@@ -98,6 +102,10 @@ func TestProductVMDetailPagingNetworkAndScope(t *testing.T) {
 	item := page.Items[0]
 	if item.Normalized["_inventory_source"] != productInventorySource || item.Normalized["vmId"] != "vm-incarnation" || item.Normalized["vpc_id"] != strings.ToLower(resourceID(vnetType, "vnet")) {
 		t.Fatalf("missing product detail/source/network: %+v", item)
+	}
+	// The page lists the VM's resource group NICs instead of reading each NIC.
+	if nicLists != 1 || nicReads != 0 {
+		t.Fatalf("NIC lists=%d reads=%d", nicLists, nicReads)
 	}
 	encoded, _ := json.Marshal(item)
 	if strings.Contains(string(encoded), "never-in-inventory") {
