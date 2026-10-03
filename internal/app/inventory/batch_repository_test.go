@@ -55,7 +55,7 @@ func TestProjectBatchReadsAssetsAndScopesOncePerBatch(t *testing.T) {
 	for index := range 50 {
 		items = append(items, contracts.InventoryItem{
 			NativeType: workerKind().NativeType, NativeID: fmt.Sprintf("i-%02d", index), ResourceKind: workerKind(),
-			Name: "first", Raw: map[string]any{"index": index},
+			Name: "first", Raw: map[string]any{"name": "first"},
 		})
 	}
 	if err := service.ProjectBatch(ctx, &shard, connection, contracts.InventoryBatch{Items: items}, inventory.ProjectionOptions{ObservedAt: now}); err != nil {
@@ -63,11 +63,11 @@ func TestProjectBatchReadsAssetsAndScopesOncePerBatch(t *testing.T) {
 	}
 	clear(repository.calls)
 	for index := range items {
-		items[index].Name = "second"
+		items[index].Name, items[index].Raw = "second", map[string]any{"name": "second"}
 	}
 	// The same resource twice in one batch must see its own earlier write.
 	duplicate := items[0]
-	duplicate.Name = "third"
+	duplicate.Name, duplicate.Raw = "third", map[string]any{"name": "third"}
 	items = append(items, duplicate)
 	if err := service.ProjectBatch(ctx, &shard, connection, contracts.InventoryBatch{Items: items}, inventory.ProjectionOptions{ObservedAt: now.Add(time.Minute)}); err != nil {
 		t.Fatal(err)
@@ -88,8 +88,9 @@ func TestProjectBatchReadsAssetsAndScopesOncePerBatch(t *testing.T) {
 		if value.Identity.NativeID == "i-00" {
 			want, wantObservations = "third", 3
 		}
-		if value.Name != want || len(observations) != wantObservations || value.CurrentObservationID != observations[len(observations)-1].ID {
-			t.Fatalf("asset %s = %q with %d observations, current %s", value.Identity.NativeID, value.Name, len(observations), value.CurrentObservationID)
+		current, err := repositories.Inventory().GetObservation(ctx, value.CurrentObservationID)
+		if err != nil || value.Name != want || current.Raw["name"] != want || len(observations) != wantObservations {
+			t.Fatalf("asset %s = %q with %d observations, current %#v, err = %v", value.Identity.NativeID, value.Name, len(observations), current, err)
 		}
 	}
 }
