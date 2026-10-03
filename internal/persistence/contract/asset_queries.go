@@ -10,7 +10,7 @@ import (
 	"github.com/loomx-ai/steward/internal/persistence"
 )
 
-func runAssetSearch(t *testing.T, factory Factory) {
+func runAssetQueries(t *testing.T, factory Factory) {
 	t.Run("keyword asset search uses the maintained search document", func(t *testing.T) {
 		repositories := factory(t)
 		inventory := repositories.Inventory()
@@ -103,6 +103,74 @@ func runAssetSearch(t *testing.T, factory Factory) {
 		}
 		if got := search("10.0.9.9", persistence.ListOptions{}); len(got) != 0 {
 			t.Fatalf("closed asset matched an open-only search: %v", got)
+		}
+	})
+
+	t.Run("asset canvases and capabilities read fields inside the payload", func(t *testing.T) {
+		repositories := factory(t)
+		inventory := repositories.Inventory()
+		ctx := context.Background()
+		now := time.Date(2026, 10, 3, 0, 0, 0, 0, time.UTC)
+		if err := inventory.PutScope(ctx, asset.Scope{ID: "scope-hz", ConnectionID: "conn-canvas", Kind: asset.ScopeRegion, NativeID: "cn-hangzhou", CreatedAt: now, UpdatedAt: now}); err != nil {
+			t.Fatal(err)
+		}
+		for _, kind := range []asset.ResourceKind{
+			{ID: "kind-vpc", Provider: asset.ProviderAliCloud, NativeType: "ACS::VPC::VPC", Class: "network.vpc"},
+			{ID: "kind-ecs", Provider: asset.ProviderAliCloud, NativeType: "ACS::ECS::Instance", Class: "compute.instance"},
+		} {
+			if err := inventory.PutResourceKind(ctx, kind); err != nil {
+				t.Fatal(err)
+			}
+		}
+		put := func(id, nativeType, kindID string, normalized map[string]any, tags map[string]string, capabilities asset.CapabilitySet) {
+			t.Helper()
+			value := asset.Asset{
+				ID: asset.AssetID(id), ScopeID: "scope-hz", ResourceKindID: asset.ResourceKindID(kindID),
+				Identity:   asset.Identity{Provider: asset.ProviderAliCloud, Partition: "public", ConnectionID: "conn-canvas", NativeType: nativeType, NativeID: id},
+				Normalized: normalized, Tags: tags, Capabilities: capabilities, FirstSeenAt: now, LastSeenAt: now,
+			}
+			if err := inventory.PutAsset(ctx, value); err != nil {
+				t.Fatal(err)
+			}
+		}
+		put("VPC-1", "ACS::VPC::VPC", "kind-vpc", nil, nil, asset.CapabilitySet{asset.CapabilityIndexed})
+		put("in-vpc", "ACS::ECS::Instance", "kind-ecs", map[string]any{"network": map[string]any{"vpc_id": "vpc-1"}}, nil, asset.CapabilitySet{asset.CapabilityIndexed, asset.CapabilityActionable})
+		put("other-vpc", "ACS::ECS::Instance", "kind-ecs", map[string]any{"vpc_id": "vpc-2"}, nil, nil)
+		put("public", "ACS::ECS::Instance", "kind-ecs", map[string]any{"vpc_id": ""}, map[string]string{"role": "actionable"}, nil)
+		list := func(options persistence.ListOptions) []asset.AssetID {
+			t.Helper()
+			options.ConnectionID, options.Limit = "conn-canvas", 50
+			page, err := inventory.ListAssets(ctx, options)
+			if err != nil {
+				t.Fatalf("list %+v: %v", options, err)
+			}
+			ids := make([]asset.AssetID, len(page.Items))
+			for index, value := range page.Items {
+				ids[index] = value.ID
+			}
+			slices.Sort(ids)
+			return ids
+		}
+		for name, test := range map[string]struct {
+			options persistence.ListOptions
+			want    []asset.AssetID
+		}{
+			"vpc":           {persistence.ListOptions{AssetCanvas: persistence.AssetCanvasVPC, RegionID: "cn-hangzhou", VPCID: "VPC-1"}, []asset.AssetID{"VPC-1", "in-vpc"}},
+			"region public": {persistence.ListOptions{AssetCanvas: persistence.AssetCanvasRegionPublic, RegionID: "cn-hangzhou"}, []asset.AssetID{"public"}},
+			"capability":    {persistence.ListOptions{Capability: "Actionable"}, []asset.AssetID{"in-vpc"}},
+		} {
+			if got := list(test.options); !slices.Equal(got, test.want) {
+				t.Fatalf("%s = %v, want %v", name, got, test.want)
+			}
+		}
+		// jsonb cannot store U+0000, so assets are stored without it.
+		put("nul", "ACS::ECS::Instance", "kind-ecs", map[string]any{"note": "a\x00b"}, nil, nil)
+		if stored, err := inventory.GetAsset(ctx, "nul"); err != nil || stored.Normalized["note"] != "ab" {
+			t.Fatalf("asset with U+0000 = %#v, err = %v", stored.Normalized, err)
+		}
+		page, err := inventory.ListAssets(ctx, persistence.ListOptions{ConnectionID: "conn-canvas", Query: "vpc", SearchOrder: true, Limit: 50})
+		if err != nil || len(page.Items) != 3 || page.Items[0].ID != "VPC-1" {
+			t.Fatalf("VPC kinds rank first = %#v, err = %v", page.Items, err)
 		}
 	})
 }

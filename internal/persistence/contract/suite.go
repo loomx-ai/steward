@@ -1672,5 +1672,5 @@ func Run(t *testing.T, factory Factory) {
 			t.Fatalf("filtered cleanup logs=%#v err=%v", missingCleanupLogs, err)
 		}
 	})
-	runAssetSearch(t, factory)
+	runAssetQueries(t, factory)
 }

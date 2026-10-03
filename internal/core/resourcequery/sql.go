@@ -114,7 +114,7 @@ func (c *sqlCompiler) jsonField(path []string) (string, []any, error) {
 			placeholders[index] = "?"
 			arguments[index] = segment
 		}
-		return "jsonb_extract_path_text(assets.payload::jsonb, " + strings.Join(placeholders, ", ") + ")", arguments, nil
+		return "jsonb_extract_path_text(assets.payload, " + strings.Join(placeholders, ", ") + ")", arguments, nil
 	}
 	return "json_extract(assets.payload, ?)", []any{"$." + strings.Join(path, ".")}, nil
 }

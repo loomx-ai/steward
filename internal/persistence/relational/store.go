@@ -1002,7 +1002,7 @@ func (s *Store) ConsolidateScopes(ctx context.Context, canonicalID asset.ScopeID
 				value.Dirty = row.Dirty
 				value.Identity.ScopeKey = row.ScopeKey
 				value.ScopeID = canonicalID
-				payload, err := encode(value)
+				payload, err := encodeAsset(value)
 				if err != nil {
 					return err
 				}
@@ -1544,7 +1544,7 @@ func (s *Store) PutAsset(ctx context.Context, value asset.Asset) error {
 		return err
 	}
 	value.Identity.ScopeKey = strings.TrimSpace(value.Identity.ScopeKey)
-	payload, err := encode(value)
+	payload, err := encodeAsset(value)
 	if err != nil {
 		return err
 	}
@@ -1757,7 +1757,7 @@ func (s *Store) ListAssets(ctx context.Context, options persistence.ListOptions)
 		}
 	}
 	if capability := strings.ToLower(strings.TrimSpace(options.Capability)); capability != "" {
-		query = query.Where(caseFolded(query, "assets.payload")+" LIKE ?", "%\""+capability+"\"%")
+		query = whereAssetHasCapability(query, capability)
 	}
 	resourceKindIDs := options.ResourceKindIDs
 	if len(resourceKindIDs) == 0 && options.ResourceKindID != "" {
@@ -1855,21 +1855,16 @@ func (s *Store) filterAssetsByCanvas(ctx context.Context, query *gorm.DB, option
 	}
 	switch options.AssetCanvas {
 	case persistence.AssetCanvasRegionPublic:
-		vpcField := "%" + escapeLike(`"vpc_id":"`) + "%"
-		emptyVPC := "%" + escapeLike(`"vpc_id":""`) + "%"
-		query = query.Where(
-			"NOT ("+assetKindClassSQL("network.vpc")+") AND (LOWER(assets.payload) NOT LIKE ? ESCAPE '\\' OR LOWER(assets.payload) LIKE ? ESCAPE '\\')",
-			vpcField, emptyVPC,
-		)
+		query = query.Where("NOT (" + kindClassIs(query, "network.vpc") + ") AND NOT (" + assetHasVPCSQL(query) + ")")
 	case persistence.AssetCanvasVPC:
-		encodedVPC, err := json.Marshal(strings.ToLower(strings.TrimSpace(options.VPCID)))
+		vpcID := strings.ToLower(strings.TrimSpace(options.VPCID))
+		inVPC, vpcArgument, err := assetInVPCSQL(query, vpcID)
 		if err != nil {
 			return nil, err
 		}
-		vpcPattern := "%" + escapeLike(`"vpc_id":`+string(encodedVPC)) + "%"
 		query = query.Where(
-			"(LOWER(assets.payload) LIKE ? ESCAPE '\\' OR (("+assetKindClassSQL("network.vpc")+") AND LOWER(assets.native_id) = ?))",
-			vpcPattern, strings.ToLower(strings.TrimSpace(options.VPCID)),
+			"("+inVPC+" OR (("+kindClassIs(query, "network.vpc")+") AND LOWER(assets.native_id) = ?))",
+			vpcArgument, vpcID,
 		)
 	}
 	return query, nil
@@ -1939,12 +1934,12 @@ func orderPanoramaAssetSearch(query *gorm.DB, rawTerm string) *gorm.DB {
 	name := "LOWER(COALESCE(" + assetNameSQL(query) + ", ''))"
 	order := clause.Expr{
 		SQL: `CASE
-			WHEN ` + assetKindClassSQL("network.vpc") + ` OR LOWER(assets.native_type) LIKE '%::vpc' THEN 0
-			WHEN ` + assetKindClassSQL("network.subnet") + ` OR LOWER(assets.native_type) LIKE '%::vswitch' THEN 1
-			WHEN ` + assetKindClassSQL("compute.instance") + ` OR (LOWER(assets.native_type) LIKE '%::instance' AND LOWER(assets.native_type) LIKE '%::ecs::%') THEN 2
-			WHEN ` + assetKindClassSQL("network.security_group") + ` OR LOWER(assets.native_type) LIKE '%::securitygroup' THEN 3
-			WHEN ` + assetKindClassSQL("storage.block") + ` OR LOWER(assets.native_type) LIKE '%::disk' THEN 4
-			WHEN ` + assetKindClassSQL("storage.bucket") + ` OR LOWER(assets.native_type) LIKE '%::bucket' THEN 5
+			WHEN ` + kindClassIs(query, "network.vpc") + ` OR LOWER(assets.native_type) LIKE '%::vpc' THEN 0
+			WHEN ` + kindClassIs(query, "network.subnet") + ` OR LOWER(assets.native_type) LIKE '%::vswitch' THEN 1
+			WHEN ` + kindClassIs(query, "compute.instance") + ` OR (LOWER(assets.native_type) LIKE '%::instance' AND LOWER(assets.native_type) LIKE '%::ecs::%') THEN 2
+			WHEN ` + kindClassIs(query, "network.security_group") + ` OR LOWER(assets.native_type) LIKE '%::securitygroup' THEN 3
+			WHEN ` + kindClassIs(query, "storage.block") + ` OR LOWER(assets.native_type) LIKE '%::disk' THEN 4
+			WHEN ` + kindClassIs(query, "storage.bucket") + ` OR LOWER(assets.native_type) LIKE '%::bucket' THEN 5
 			ELSE 6
 		END ASC,
 		CASE
@@ -1963,27 +1958,55 @@ func orderPanoramaAssetSearch(query *gorm.DB, rawTerm string) *gorm.DB {
 	return query.Order(clause.OrderBy{Expression: order})
 }
 
+// kindClassIs tests the class of the resource kind joined as resource_kinds.
+func kindClassIs(db *gorm.DB, class string) string {
+	if db.Dialector.Name() == "sqlite" {
+		return "LOWER(json_extract(resource_kinds.payload, '$.class')) = '" + class + "'"
+	}
+	return "LOWER(resource_kinds.payload ->> 'class') = '" + class + "'"
+}
+
+// assetHasVPCSQL holds when a non-empty vpc_id string appears anywhere in the
+// asset. SQLite matches the payload text Steward encoded; PostgreSQL walks the
+// jsonb document.
+func assetHasVPCSQL(db *gorm.DB) string {
+	if db.Dialector.Name() == "sqlite" {
+		return `assets.payload GLOB '*"vpc_id":"[^"]*'`
+	}
+	return `jsonb_path_exists(assets.payload, 'lax $.**.vpc_id ? (@.type() == "string" && @ != "")')`
+}
+
+// assetInVPCSQL holds when a vpc_id string anywhere in the asset equals the
+// lowercased vpcID, ignoring case; it takes one argument.
+func assetInVPCSQL(db *gorm.DB, vpcID string) (string, any, error) {
+	if db.Dialector.Name() == "sqlite" {
+		encoded, err := json.Marshal(vpcID)
+		if err != nil {
+			return "", nil, err
+		}
+		// SQLite's LIKE ignores ASCII case.
+		return "assets.payload LIKE ? ESCAPE '\\'", "%" + escapeLike(`"vpc_id":`+string(encoded)) + "%", nil
+	}
+	return `EXISTS (
+		SELECT 1 FROM jsonb_path_query(assets.payload, 'lax $.**.vpc_id') AS vpc(id)
+		WHERE jsonb_typeof(vpc.id) = 'string' AND LOWER(vpc.id #>> '{}') = ?
+	)`, vpcID, nil
+}
+
+// whereAssetHasCapability keeps the assets whose capabilities list capability.
+func whereAssetHasCapability(query *gorm.DB, capability string) *gorm.DB {
+	if query.Dialector.Name() == "sqlite" {
+		return query.Where("EXISTS (SELECT 1 FROM json_each(assets.payload, '$.capabilities') WHERE json_each.value = ?)", capability)
+	}
+	return query.Where("assets.payload -> 'capabilities' @> to_jsonb(CAST(? AS TEXT))", capability)
+}
+
 // assetNameSQL reads the asset's display name from its payload.
 func assetNameSQL(db *gorm.DB) string {
 	if db.Dialector.Name() == "sqlite" {
 		return "json_extract(assets.payload, '$.name')"
 	}
-	return "(assets.payload::jsonb ->> 'name')"
-}
-
-// caseFolded returns the column to match against a lowercased LIKE pattern.
-// SQLite's LIKE already ignores ASCII case, the only case its LOWER folds, so
-// it is spared lowercasing a copy of every row; PostgreSQL's LIKE is
-// case-sensitive and keeps LOWER.
-func caseFolded(db *gorm.DB, column string) string {
-	if db.Dialector.Name() == "sqlite" {
-		return column
-	}
-	return "LOWER(" + column + ")"
-}
-
-func assetKindClassSQL(class string) string {
-	return "LOWER(resource_kinds.payload) LIKE '%\"class\":\"" + class + "\"%'"
+	return "(assets.payload ->> 'name')"
 }
 
 func (s *Store) AppendObservation(ctx context.Context, observation asset.Observation) error {
@@ -2243,6 +2266,28 @@ func encode[T any](value T) (string, error) {
 		return "", fmt.Errorf("encode repository payload: %w", err)
 	}
 	return string(payload), nil
+}
+
+// encodeAsset encodes an asset without U+0000, which PostgreSQL jsonb cannot
+// store; both dialects keep the same document.
+func encodeAsset(value asset.Asset) (string, error) {
+	payload, err := encode(value)
+	if err != nil || !strings.Contains(payload, `\u0000`) {
+		return payload, err
+	}
+	var stripped strings.Builder
+	for index := 0; index < len(payload); index++ {
+		if payload[index] == '\\' {
+			if strings.HasPrefix(payload[index:], `\u0000`) {
+				index += len(`\u0000`) - 1
+				continue
+			}
+			stripped.WriteByte(payload[index])
+			index++
+		}
+		stripped.WriteByte(payload[index])
+	}
+	return stripped.String(), nil
 }
 
 func decode[T any](payload string) (T, error) {

@@ -25,7 +25,8 @@ func assetSearchText(value asset.Asset) string {
 		if document.Len() > 0 {
 			document.WriteByte('\n')
 		}
-		document.WriteString(strings.ToLower(text))
+		// PostgreSQL text cannot hold U+0000.
+		document.WriteString(strings.ReplaceAll(strings.ToLower(text), "\x00", ""))
 	}
 	for _, text := range []string{
 		string(value.ID), value.Identity.NativeID, value.Identity.NativeType, string(value.ResourceKindID),
