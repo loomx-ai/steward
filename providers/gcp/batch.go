@@ -260,7 +260,7 @@ func (c *client) batchVMHasJob(ctx context.Context, vm map[string]any) (bool, er
 	}
 	metadata, _ := providerData()
 	operation, _ := metadata.catalog.Operation("batch.projects.locations.jobs.list")
-	locations, supported, err := c.productLocations(ctx, operation)
+	locations, supported, err := c.productLocations(ctx, "", operation)
 	if err != nil {
 		return false, err
 	}

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -233,5 +234,39 @@ func resetParentCache(r *Runtime) {
 	defer r.mu.Unlock()
 	for _, c := range r.clients {
 		c.cache.parents = ttlCache[[]contracts.InventoryItem]{}
+	}
+}
+
+func TestProductLocationsAreReadOncePerServiceAcrossShards(t *testing.T) {
+	locationReads := 0
+	r := protocolRuntime(t, func(request *http.Request) (*http.Response, error) {
+		switch request.URL.Path {
+		case "/v1/projects/sample-project/locations":
+			locationReads++
+			return apiResponse(request, 200, `{"locations":[{"name":"projects/sample-project/locations/us-central1","locationId":"us-central1"},{"name":"projects/sample-project/locations/europe-west1","locationId":"europe-west1"}]}`), nil
+		case "/v1/projects/sample-project/locations/us-central1/keyRings", "/v1/projects/sample-project/locations/europe-west1/keyRings":
+			return apiResponse(request, 200, `{}`), nil
+		}
+		t.Fatalf("unexpected request %s", request.URL)
+		return nil, nil
+	})
+	list := func(scan asset.ScanRunID, region string) {
+		request := productRequest(r, "cloudkms.googleapis.com/KeyRing", region)
+		request.ScanRunID = scan
+		if page, err := r.List(context.Background(), request); err != nil || !page.Complete {
+			t.Fatalf("page=%+v err=%v", page, err)
+		}
+	}
+	for _, region := range []string{"us-central1", "europe-west1", "us-central1"} {
+		list("scan-1", region)
+	}
+	if locationReads != 1 {
+		t.Fatalf("service locations read %d times in one scan, want once", locationReads)
+	}
+	// Another scan, or a read outside any scan, reads the list afresh.
+	list("scan-2", "us-central1")
+	list("", "us-central1")
+	if locationReads != 3 {
+		t.Fatalf("service locations read %d times, want once per scan and per unscoped read", locationReads)
 	}
 }

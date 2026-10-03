@@ -781,7 +781,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		serviceLocationList := false
 		if regional && !onlyGlobal && request.Scope.Kind != asset.ScopeGlobal {
 			var err error
-			serviceLocations, serviceLocationList, err = c.productLocations(ctx, operation)
+			serviceLocations, serviceLocationList, err = c.productLocations(ctx, request.ScanRunID, operation)
 			if err != nil {
 				return nil, err
 			}
@@ -933,7 +933,9 @@ func (r *Runtime) productParents(ctx context.Context, c *client, request contrac
 
 // Product location lists include zonal and multi-region service locations that
 // Compute cannot enumerate. An unreadable/partial list is never an empty shard.
-func (c *client) productLocations(ctx context.Context, resource catalog.Operation) ([]string, bool, error) {
+// Every kind and region shard of a scan asks for the same list, so a scan reads
+// it once; reads outside a scan (such as deletion checks) are always live.
+func (c *client) productLocations(ctx context.Context, scan asset.ScanRunID, resource catalog.Operation) ([]string, bool, error) {
 	metadata, err := providerData()
 	if err != nil {
 		return nil, false, err
@@ -946,28 +948,40 @@ func (c *client) productLocations(ctx context.Context, resource catalog.Operatio
 		if operation.Call == nil || operation.ID != resource.Call.Product+".projects.locations.list" || operation.Call.Version != version {
 			continue
 		}
-		records, err := c.nativeList(ctx, operation, map[string]any{"name": "projects/" + c.project}, "locations")
+		list := func() ([]string, error) {
+			records, err := c.nativeList(ctx, operation, map[string]any{"name": "projects/" + c.project}, "locations")
+			if err != nil {
+				return nil, err
+			}
+			var locations []string
+			seen := map[string]bool{}
+			for _, record := range records {
+				name := text(record["name"])
+				location := text(record["locationId"])
+				if location == "" {
+					location = last(name)
+				}
+				if !segmentPattern.MatchString(location) || location == "." || location == ".." || strings.Contains(location, "/") || seen[location] || (name != "projects/"+c.project+"/locations/"+location && name != "projects/"+c.number+"/locations/"+location) {
+					return nil, fmt.Errorf("invalid or duplicate GCP product location")
+				}
+				if resource.Call.Product == "tpu" && regionOf(location) == location {
+					return nil, groupDenied("tpu_location_not_zone")
+				}
+				seen[location] = true
+				locations = append(locations, location)
+			}
+			sort.Strings(locations)
+			return locations, nil
+		}
+		var locations []string
+		if c.cache == nil || scan == "" {
+			locations, err = list()
+		} else {
+			locations, err = c.cache.locations.get(string(scan)+"\x00"+c.project+"\x00"+operation.ID+"\x00"+version, sharedReadTTL, false, list)
+		}
 		if err != nil {
 			return nil, true, err
 		}
-		var locations []string
-		seen := map[string]bool{}
-		for _, record := range records {
-			name := text(record["name"])
-			location := text(record["locationId"])
-			if location == "" {
-				location = last(name)
-			}
-			if !segmentPattern.MatchString(location) || location == "." || location == ".." || strings.Contains(location, "/") || seen[location] || (name != "projects/"+c.project+"/locations/"+location && name != "projects/"+c.number+"/locations/"+location) {
-				return nil, true, fmt.Errorf("invalid or duplicate GCP product location")
-			}
-			if resource.Call.Product == "tpu" && regionOf(location) == location {
-				return nil, true, groupDenied("tpu_location_not_zone")
-			}
-			seen[location] = true
-			locations = append(locations, location)
-		}
-		sort.Strings(locations)
 		return locations, true, nil
 	}
 	return nil, false, nil

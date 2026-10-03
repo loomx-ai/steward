@@ -415,7 +415,7 @@ func (r *Runtime) listDataformFolders(ctx context.Context, c *client, request co
 		return contracts.InventoryBatch{}, err
 	}
 	operation, _ := metadata.catalog.Operation("dataform.projects.locations.repositories.list")
-	available, supported, err := c.productLocations(ctx, operation)
+	available, supported, err := c.productLocations(ctx, request.ScanRunID, operation)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
