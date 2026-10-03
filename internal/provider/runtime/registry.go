@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"maps"
+	"slices"
 	"sort"
 	"sync"
 
@@ -13,15 +15,25 @@ import (
 )
 
 type Registry struct {
-	mu        sync.RWMutex
-	providers map[asset.Provider]contracts.Provider
-	bundles   map[asset.Provider]spec.Bundle
+	mu            sync.RWMutex
+	providers     map[asset.Provider]contracts.Provider
+	bundles       map[asset.Provider]spec.Bundle
+	sortedBundles []spec.Bundle
+	resourceKinds map[asset.Provider]resourceKindSnapshot
+}
+
+// resourceKindSnapshot is a provider's resource kind metadata captured once
+// at registration; provider metadata is static after construction.
+type resourceKindSnapshot struct {
+	kinds    []asset.ResourceKind
+	revision string
 }
 
 func NewRegistry() *Registry {
 	return &Registry{
-		providers: make(map[asset.Provider]contracts.Provider),
-		bundles:   make(map[asset.Provider]spec.Bundle),
+		providers:     make(map[asset.Provider]contracts.Provider),
+		bundles:       make(map[asset.Provider]spec.Bundle),
+		resourceKinds: make(map[asset.Provider]resourceKindSnapshot),
 	}
 }
 
@@ -37,6 +49,13 @@ func (r *Registry) Register(provider contracts.Provider) error {
 	defer r.mu.Unlock()
 	if _, exists := r.providers[name]; exists {
 		return fmt.Errorf("provider runtime %q is already registered", name)
+	}
+	if metadata, ok := provider.(contracts.ResourceKindMetadata); ok {
+		kinds, revision := metadata.ResourceKinds()
+		var snapshot []asset.ResourceKind
+		if payload, err := json.Marshal(kinds); err == nil && json.Unmarshal(payload, &snapshot) == nil {
+			r.resourceKinds[name] = resourceKindSnapshot{kinds: snapshot, revision: revision}
+		}
 	}
 	r.providers[name] = provider
 	return nil
@@ -183,6 +202,10 @@ func (r *Registry) RegisterBundle(bundle spec.Bundle) error {
 		return fmt.Errorf("compiled bundle for provider %q is already registered", bundle.Provider)
 	}
 	r.bundles[bundle.Provider] = copy
+	r.sortedBundles = append(r.sortedBundles, copy)
+	sort.Slice(r.sortedBundles, func(i, j int) bool {
+		return r.sortedBundles[i].Provider < r.sortedBundles[j].Provider
+	})
 	return nil
 }
 
@@ -196,48 +219,23 @@ func (r *Registry) Bundle(provider asset.Provider) (spec.Bundle, error) {
 	return cloneBundle(bundle)
 }
 
+// Bundles returns every registered bundle sorted by provider. The bundles
+// share the registry's registration-time copy: callers must treat them as
+// read-only. Use Bundle for a copy that may be mutated.
 func (r *Registry) Bundles() []spec.Bundle {
 	r.mu.RLock()
-	providers := make([]asset.Provider, 0, len(r.bundles))
-	for provider := range r.bundles {
-		providers = append(providers, provider)
-	}
-	sort.Slice(providers, func(i, j int) bool { return providers[i] < providers[j] })
-	values := make([]spec.Bundle, 0, len(providers))
-	for _, provider := range providers {
-		bundle, err := cloneBundle(r.bundles[provider])
-		if err == nil {
-			values = append(values, bundle)
-		}
-	}
-	r.mu.RUnlock()
-	return values
+	defer r.mu.RUnlock()
+	return append([]spec.Bundle(nil), r.sortedBundles...)
 }
 
 func (r *Registry) ResourceKinds(provider asset.Provider) ([]asset.ResourceKind, string, bool) {
 	r.mu.RLock()
-	resolved, exists := r.providers[provider]
+	snapshot, ok := r.resourceKinds[provider]
 	r.mu.RUnlock()
-	if !exists {
-		return nil, "", false
-	}
-	metadata, ok := resolved.(contracts.ResourceKindMetadata)
 	if !ok {
 		return nil, "", false
 	}
-	kinds, revision := metadata.ResourceKinds()
-	payload, err := json.Marshal(kinds)
-	if err != nil {
-		return nil, "", false
-	}
-	var cloned []asset.ResourceKind
-	if err := json.Unmarshal(payload, &cloned); err != nil {
-		return nil, "", false
-	}
-	for index := range cloned {
-		cloned[index].FieldDisplayNames = cloneLocalizedFields(cloned[index].FieldDisplayNames)
-	}
-	return cloned, revision, true
+	return cloneResourceKinds(snapshot.kinds), snapshot.revision, true
 }
 
 func (r *Registry) ProviderDescriptors() []contracts.ProviderDescriptor {
@@ -275,6 +273,32 @@ func cloneBundle(bundle spec.Bundle) (spec.Bundle, error) {
 		return spec.Bundle{}, fmt.Errorf("copy compiled bundle: %w", err)
 	}
 	return clone, nil
+}
+
+func cloneResourceKinds(values []asset.ResourceKind) []asset.ResourceKind {
+	if values == nil {
+		return nil
+	}
+	cloned := make([]asset.ResourceKind, len(values))
+	for index, value := range values {
+		value.ScopeKinds = slices.Clone(value.ScopeKinds)
+		value.Capabilities = slices.Clone(value.Capabilities)
+		value.DisplayNames = maps.Clone(value.DisplayNames)
+		value.FieldDisplayNames = cloneLocalizedFields(value.FieldDisplayNames)
+		value.SummaryFields = slices.Clone(value.SummaryFields)
+		if value.Properties != nil {
+			properties := make([]asset.ResourceProperty, len(value.Properties))
+			for position, property := range value.Properties {
+				property.DisplayNames = maps.Clone(property.DisplayNames)
+				property.Enum = slices.Clone(property.Enum)
+				property.Operators = slices.Clone(property.Operators)
+				properties[position] = property
+			}
+			value.Properties = properties
+		}
+		cloned[index] = value
+	}
+	return cloned
 }
 
 func cloneLocalizedFields(values map[string]map[string]string) map[string]map[string]string {

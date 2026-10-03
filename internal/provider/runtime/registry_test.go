@@ -45,7 +45,8 @@ func (fakeResourceKindProvider) ResourceKinds() ([]asset.ResourceKind, string) {
 		FieldDisplayNames: map[string]map[string]string{
 			"vpc_id": {"zh-CN": "所属专有网络"},
 		},
-		Icon: "/icons/alicloud/acs-ecs-instance.svg",
+		Icon:       "/icons/alicloud/acs-ecs-instance.svg",
+		Properties: []asset.ResourceProperty{{Path: "status", Type: "string", Enum: []any{"Running"}}},
 	}}, "resource-catalog-a"
 }
 
@@ -84,6 +85,25 @@ func TestRegistryCopiesCompiledBundlesAtItsBoundary(t *testing.T) {
 	}
 	if second.Specs[0].ResourceKind.NativeType != "AWS::EC2::Instance" {
 		t.Fatalf("registered bundle was mutated: %+v", second)
+	}
+}
+
+func TestRegistryListsBundlesSortedByProvider(t *testing.T) {
+	t.Parallel()
+
+	registry := providerruntime.NewRegistry()
+	for _, provider := range []asset.Provider{asset.ProviderGCP, asset.ProviderAWS, asset.ProviderAliCloud} {
+		if err := registry.RegisterBundle(spec.Bundle{Provider: provider, Hash: "hash", Revision: "revision"}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	first := registry.Bundles()
+	if len(first) != 3 || first[0].Provider != asset.ProviderAliCloud || first[1].Provider != asset.ProviderAWS || first[2].Provider != asset.ProviderGCP {
+		t.Fatalf("bundles = %+v", first)
+	}
+	first[0] = spec.Bundle{}
+	if second := registry.Bundles(); second[0].Provider != asset.ProviderAliCloud {
+		t.Fatalf("bundle list was mutated through a previous result: %+v", second)
 	}
 }
 
@@ -239,8 +259,10 @@ func TestRegistryCopiesOptionalResourceKindMetadata(t *testing.T) {
 	kinds[0].ScopeKinds[0] = asset.ScopeGlobal
 	kinds[0].DisplayNames["zh-CN"] = "mutated"
 	kinds[0].FieldDisplayNames["vpc_id"]["zh-CN"] = "mutated"
+	kinds[0].Properties[0].Enum[0] = "mutated"
 	fresh, _, ok := registry.ResourceKinds(asset.ProviderAliCloud)
 	if !ok || fresh[0].Icon == "mutated" ||
+		fresh[0].Properties[0].Enum[0] != "Running" ||
 		fresh[0].ScopeKinds[0] != asset.ScopeRegion ||
 		fresh[0].DisplayNames["zh-CN"] != "云服务器" ||
 		fresh[0].FieldDisplayNames["vpc_id"]["zh-CN"] != "所属专有网络" {
