@@ -123,7 +123,7 @@ jobs:
         run: |
           flags="-s -w -X main.version=$VERSION"
           if [[ "$GOOS" == linux ]]; then flags="$flags -linkmode external -extldflags -static"; fi
-          go build -trimpath -tags 'withassets,netgo,osusergo,sqlite_omit_load_extension' -ldflags "$flags" -o "bin/steward$EXTENSION" ./cmd/steward
+          go build -trimpath -tags 'withassets,netgo,osusergo,sqlite_omit_load_extension,sqlite_fts5' -ldflags "$flags" -o "bin/steward$EXTENSION" ./cmd/steward
       - name: Smoke test native binary
         env:
           EXTENSION: ${{ matrix.extension }}

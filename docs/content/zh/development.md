@@ -24,6 +24,8 @@ make build
 
 `make build` 将 Web 控制台打包进可执行文件。单独执行 `go install` 不包含 Web 控制台。
 
+SQLite 的资源搜索依赖 FTS5 模块，Go SQLite 驱动只有在 `sqlite_fts5` 构建标签下才会编译它。Makefile 已经带上该标签；自行执行 `go build`、`go test`、`go vet` 或 `go install` 时也要加上 `-tags sqlite_fts5`。
+
 <span id="development"></span>
 
 ## 本地开发

@@ -3,6 +3,9 @@
 BIN := bin/steward$(shell go env GOEXE)
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 DEV_PORTS := 5858 8585
+# SQLite keyword search needs the FTS5 module, which go-sqlite3 only compiles in
+# with this tag; every go build, test and vet must pass it.
+GO_TAGS := sqlite_fts5
 
 .PHONY: help install build run stop dev test lint format
 
@@ -26,7 +29,7 @@ build:
 	npm --prefix web run build
 	rm -f web/tsconfig.tsbuildinfo
 	mkdir -p bin
-	CGO_ENABLED=1 go build -trimpath -tags withassets -ldflags "-s -w -X main.version=$(VERSION)" -o $(BIN) ./cmd/steward
+	CGO_ENABLED=1 go build -trimpath -tags withassets,$(GO_TAGS) -ldflags "-s -w -X main.version=$(VERSION)" -o $(BIN) ./cmd/steward
 	@printf "Built %s/%s\n" "$(CURDIR)" "$(BIN)"
 
 run: build
@@ -53,7 +56,7 @@ dev:
 		dev_dir=$$(mktemp -d "$${TMPDIR:-/tmp}/steward-dev.XXXXXX"); \
 		api_pid=; \
 		trap 'if [ -n "$$api_pid" ]; then kill $$api_pid >/dev/null 2>&1 || true; wait $$api_pid >/dev/null 2>&1 || true; fi; rm -rf "$$dev_dir"' INT TERM EXIT; \
-		go build -o "$$dev_dir/steward" ./cmd/steward; \
+		go build -tags $(GO_TAGS) -o "$$dev_dir/steward" ./cmd/steward; \
 		STEWARD_HOME=.steward STEWARD_AUTH_TOKEN=$$dev_token "$$dev_dir/steward" server start & \
 		api_pid=$$!; \
 		ready=0; \
@@ -76,11 +79,11 @@ dev:
 		STEWARD_DEV_PROXY_TOKEN=$$dev_token VITE_STEWARD_DEV_AUTO_LOGIN=1 npm --prefix web run dev
 
 test:
-	go test -timeout 30m ./...
+	go test -tags $(GO_TAGS) -timeout 30m ./...
 	npm --prefix web run test
 
 lint:
-	go vet ./...
+	go vet -tags $(GO_TAGS) ./...
 	npm --prefix web run lint
 
 format:

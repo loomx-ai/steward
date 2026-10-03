@@ -200,6 +200,7 @@ type assetRow struct {
 	ClosedAt       *time.Time `gorm:"column:closed_at"`
 	DeletedAt      *time.Time `gorm:"column:deleted_at"`
 	Dirty          bool       `gorm:"column:dirty"`
+	SearchText     string     `gorm:"column:search_text"`
 	Payload        string     `gorm:"column:payload"`
 }
 
@@ -1551,9 +1552,10 @@ func (s *Store) PutAsset(ctx context.Context, value asset.Asset) error {
 		ID: string(value.ID), Provider: string(value.Identity.Provider), PartitionName: value.Identity.Partition,
 		ConnectionID: string(value.Identity.ConnectionID), NativeType: value.Identity.NativeType, NativeID: value.Identity.NativeID,
 		ScopeKey: value.Identity.ScopeKey, ScopeID: string(value.ScopeID), ResourceKindID: string(value.ResourceKindID), FirstSeenAt: value.FirstSeenAt,
-		LastSeenAt: value.LastSeenAt, ClosedAt: value.ClosedAt, DeletedAt: value.DeletedAt, Dirty: value.Dirty, Payload: payload,
+		LastSeenAt: value.LastSeenAt, ClosedAt: value.ClosedAt, DeletedAt: value.DeletedAt, Dirty: value.Dirty,
+		SearchText: assetSearchText(value), Payload: payload,
 	}
-	return upsertRevised(s.db.WithContext(ctx), "assets", row, []string{"scope_id", "resource_kind_id", "last_seen_at", "closed_at", "deleted_at", "payload"})
+	return upsertRevised(s.db.WithContext(ctx), "assets", row, []string{"scope_id", "resource_kind_id", "last_seen_at", "closed_at", "deleted_at", "search_text", "payload"})
 }
 
 func (s *Store) SetAssetDirty(ctx context.Context, id asset.AssetID, dirty bool) (asset.Asset, error) {
@@ -1724,12 +1726,8 @@ func (s *Store) ListAssets(ctx context.Context, options persistence.ListOptions)
 	if provider := strings.TrimSpace(options.Provider); provider != "" {
 		query = query.Where("assets.provider = ?", provider)
 	}
-	if term := strings.ToLower(strings.TrimSpace(options.Query)); term != "" {
-		pattern := "%" + escapeLike(term) + "%"
-		query = query.Where(
-			"("+caseFolded(query, "assets.native_id")+" LIKE ? ESCAPE '\\' OR "+caseFolded(query, "assets.native_type")+" LIKE ? ESCAPE '\\' OR "+caseFolded(query, "assets.payload")+" LIKE ? ESCAPE '\\')",
-			pattern, pattern, pattern,
-		)
+	if term := strings.TrimSpace(options.Query); term != "" {
+		query = whereKeywordMatches(query, term)
 	}
 	if options.ResourceQuery != nil {
 		where, arguments, err := options.ResourceQuery.SQL(s.db.Dialector.Name())
@@ -1936,13 +1934,9 @@ func (s *Store) assetScopeAuthorityIDs(ctx context.Context, options persistence.
 
 func orderPanoramaAssetSearch(query *gorm.DB, rawTerm string) *gorm.DB {
 	term := strings.ToLower(strings.TrimSpace(rawTerm))
-	encodedTerm, _ := json.Marshal(term)
-	exactName := "%" + escapeLike(`"name":`+string(encodedTerm)) + "%"
-	prefixName := "%" + escapeLike(`"name":`+strings.TrimSuffix(string(encodedTerm), `"`)) + "%"
-	containsName := "%" + escapeLike(`"name":"`) + "%" + escapeLike(strings.Trim(string(encodedTerm), `"`)) + "%"
 	prefix := escapeLike(term) + "%"
 	contains := "%" + escapeLike(term) + "%"
-	payload, nativeID := caseFolded(query, "assets.payload"), caseFolded(query, "assets.native_id")
+	name := "LOWER(COALESCE(" + assetNameSQL(query) + ", ''))"
 	order := clause.Expr{
 		SQL: `CASE
 			WHEN ` + assetKindClassSQL("network.vpc") + ` OR LOWER(assets.native_type) LIKE '%::vpc' THEN 0
@@ -1955,18 +1949,26 @@ func orderPanoramaAssetSearch(query *gorm.DB, rawTerm string) *gorm.DB {
 		END ASC,
 		CASE
 			WHEN LOWER(assets.native_id) = ? THEN 0
-			WHEN ` + payload + ` LIKE ? ESCAPE '\' THEN 1
-			WHEN ` + nativeID + ` LIKE ? ESCAPE '\' THEN 2
-			WHEN ` + payload + ` LIKE ? ESCAPE '\' THEN 3
-			WHEN ` + nativeID + ` LIKE ? ESCAPE '\' THEN 4
-			WHEN ` + payload + ` LIKE ? ESCAPE '\' THEN 5
+			WHEN ` + name + ` = ? THEN 1
+			WHEN LOWER(assets.native_id) LIKE ? ESCAPE '\' THEN 2
+			WHEN ` + name + ` LIKE ? ESCAPE '\' THEN 3
+			WHEN LOWER(assets.native_id) LIKE ? ESCAPE '\' THEN 4
+			WHEN ` + name + ` LIKE ? ESCAPE '\' THEN 5
 			ELSE 6
 		END ASC,
 		LOWER(assets.native_id) ASC,
 		assets.id ASC`,
-		Vars: []any{term, exactName, prefix, prefixName, contains, containsName},
+		Vars: []any{term, term, prefix, prefix, contains, contains},
 	}
 	return query.Order(clause.OrderBy{Expression: order})
+}
+
+// assetNameSQL reads the asset's display name from its payload.
+func assetNameSQL(db *gorm.DB) string {
+	if db.Dialector.Name() == "sqlite" {
+		return "json_extract(assets.payload, '$.name')"
+	}
+	return "(assets.payload::jsonb ->> 'name')"
 }
 
 // caseFolded returns the column to match against a lowercased LIKE pattern.

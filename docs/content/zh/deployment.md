@@ -49,7 +49,7 @@ steward server start
 
 令牌登录后的角色由 `STEWARD_AUTH_ROLE` 决定（默认 `admin`），详见[角色](./configuration.md#roles)。浏览器和服务不在同一台机器上时，浏览器登录方式的云连接无法使用，请改用 AccessKey 或 [OIDC](./oidc.md)。
 
-如需用 PostgreSQL 代替内置的 SQLite，设置 `STEWARD_DB_DRIVER=postgres` 和 `STEWARD_DB_DSN`，详见[配置参考](./configuration.md)。
+如需用 PostgreSQL 代替内置的 SQLite，设置 `STEWARD_DB_DRIVER=postgres` 和 `STEWARD_DB_DSN`，详见[配置参考](./configuration.md)。Steward 首次启动时会为资源搜索创建 `pg_trgm` 扩展，因此其数据库角色需要该数据库的 `CREATE` 权限，或者预先安装好该扩展。
 
 <span id="backup"></span>
 

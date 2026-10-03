@@ -32,6 +32,9 @@ func Open(dsn, migrationsDirectory string) (*Repositories, error) {
 	sqlDB.SetMaxOpenConns(1)
 	if err := persistence.Migrate(sqlDB, "sqlite3", migrationsDirectory); err != nil {
 		_ = sqlDB.Close()
+		if strings.Contains(err.Error(), "no such module: fts5") {
+			return nil, fmt.Errorf("%w: this binary was built without SQLite FTS5; build it with -tags sqlite_fts5", err)
+		}
 		return nil, err
 	}
 	// Refresh planner statistics on every start; analysis_limit keeps this a

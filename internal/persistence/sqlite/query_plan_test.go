@@ -23,21 +23,27 @@ func TestHotStatementsUseIndexes(t *testing.T) {
 	}
 	for _, test := range []struct {
 		statement string
-		index     string
-		sorted    bool // ORDER BY must come from the index, not a temp B-tree
+		plan      string // a substring of the expected plan
+		sorted    bool   // ORDER BY must come from the index, not a temp B-tree
 	}{
+		// A keyword search reads the trigram index, not every asset.
+		{`SELECT assets.id FROM assets WHERE connection_id = 'connection' AND closed_at IS NULL AND assets.id IN (
+			SELECT asset_search_rows.asset_id FROM asset_search
+			JOIN asset_search_rows ON asset_search_rows.id = asset_search.rowid
+			WHERE asset_search.document GLOB '*10.0.1*')`,
+			"VIRTUAL TABLE INDEX 0:G", false},
 		{`DELETE FROM asset_observations WHERE scan_task_id = 'scan' AND EXISTS (
 			SELECT 1 FROM assets WHERE assets.id = asset_observations.asset_id AND assets.last_seen_at > asset_observations.observed_at)`,
-			"idx_asset_observations_scan_task", false},
+			"USING INDEX idx_asset_observations_scan_task ", false},
 		{`SELECT * FROM job_logs WHERE aggregate_type = 'scan_task' AND aggregate_id = 'scan'
-			ORDER BY created_at ASC, id ASC LIMIT 50`, "idx_job_logs_aggregate_cursor", true},
+			ORDER BY created_at ASC, id ASC LIMIT 50`, "USING INDEX idx_job_logs_aggregate_cursor ", true},
 		{`SELECT * FROM job_logs WHERE aggregate_type = 'scan_task' AND aggregate_id = 'scan'
 			AND (created_at < 1 OR (created_at = 1 AND id < 'log')) ORDER BY created_at DESC, id DESC LIMIT 50`,
-			"idx_job_logs_aggregate_cursor", true},
+			"USING INDEX idx_job_logs_aggregate_cursor ", true},
 		{`SELECT * FROM asset_changes WHERE scan_task_id = 'scan' ORDER BY changed_at DESC, id DESC LIMIT 51`,
-			"idx_asset_changes_scan_cursor", true},
+			"USING INDEX idx_asset_changes_scan_cursor ", true},
 		{`SELECT * FROM assets WHERE closed_at IS NULL AND connection_id = 'connection' AND scope_id IN ('a', 'b') ORDER BY id ASC`,
-			"idx_assets_connection_scope", false},
+			"USING INDEX idx_assets_connection_scope ", false},
 	} {
 		rows, err := db.Query("EXPLAIN QUERY PLAN " + test.statement)
 		if err != nil {
@@ -54,8 +60,8 @@ func TestHotStatementsUseIndexes(t *testing.T) {
 		}
 		rows.Close()
 		joined := strings.Join(plan, "\n")
-		if !strings.Contains(joined, "USING INDEX "+test.index+" ") || test.sorted && strings.Contains(joined, "TEMP B-TREE FOR ORDER BY") {
-			t.Errorf("plan for %q:\n%s\nwant index %s (sorted by index: %t)", test.statement, joined, test.index, test.sorted)
+		if !strings.Contains(joined, test.plan) || test.sorted && strings.Contains(joined, "TEMP B-TREE FOR ORDER BY") {
+			t.Errorf("plan for %q:\n%s\nwant %q (sorted by index: %t)", test.statement, joined, test.plan, test.sorted)
 		}
 	}
 }

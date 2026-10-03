@@ -49,7 +49,7 @@ Keep the same token and key across restarts; do not generate new ones each time.
 
 The token signs in with the role set in `STEWARD_AUTH_ROLE` (default `admin`). See [roles](./configuration.md#roles). Browser sign-in connections do not work when your browser is on a different machine from the server; use access keys or [OIDC](./oidc.md) instead.
 
-To use PostgreSQL instead of the built-in SQLite database, set `STEWARD_DB_DRIVER=postgres` and `STEWARD_DB_DSN`. See the [configuration reference](./configuration.md).
+To use PostgreSQL instead of the built-in SQLite database, set `STEWARD_DB_DRIVER=postgres` and `STEWARD_DB_DSN`. See the [configuration reference](./configuration.md). Steward creates the `pg_trgm` extension for asset search on first start, so its database role needs the `CREATE` privilege on the database, or the extension must already be installed.
 
 <span id="backup"></span>
 

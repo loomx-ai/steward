@@ -48,3 +48,31 @@ func TestEmbeddedMigrationsAndExplicitOverride(t *testing.T) {
 		t.Fatalf("external overrides must not leak into subsequent embedded migrations: %v", err)
 	}
 }
+
+func TestDialectMigrationsOnlyRunForTheirDialect(t *testing.T) {
+	directory := t.TempDir()
+	for name, body := range map[string]string{
+		"00001_shared.sql":            "CREATE TABLE shared (id INTEGER);",
+		"00002_index.sqlite3.sql":     "CREATE TABLE dialect_only (id INTEGER);",
+		"00002_index.postgres.sql":    "CREATE EXTENSION postgres_only;",
+		"00003_after.sql":             "CREATE TABLE after_dialect (id INTEGER);",
+		"00004_postgres.postgres.sql": "CREATE EXTENSION postgres_only;",
+	} {
+		if err := os.WriteFile(filepath.Join(directory, name), []byte("-- +goose Up\n"+body+"\n"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	db, err := sql.Open("sqlite3", ":memory:")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { db.Close() })
+	if err := persistence.Migrate(db, "sqlite3", directory); err != nil {
+		t.Fatal(err)
+	}
+	for _, table := range []string{"shared", "dialect_only", "after_dialect"} {
+		if _, err := db.Exec("SELECT id FROM " + table); err != nil {
+			t.Fatalf("table %s: %v", table, err)
+		}
+	}
+}

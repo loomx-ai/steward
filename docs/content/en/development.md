@@ -24,6 +24,8 @@ make build
 
 `make build` embeds the web console in the executable. Plain `go install` does not include the web console.
 
+SQLite asset search uses the FTS5 module, which the Go SQLite driver only compiles in with the `sqlite_fts5` build tag. The Makefile passes it; pass `-tags sqlite_fts5` yourself to any other `go build`, `go test`, `go vet` or `go install`.
+
 <span id="development"></span>
 
 ## Local development
