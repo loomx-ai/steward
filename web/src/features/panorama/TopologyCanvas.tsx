@@ -368,6 +368,7 @@ export function TopologyCanvas({
     PendingViewportTransition | undefined
   >(undefined);
   const collapsedStackViewports = useRef<Map<string, Viewport>>(new Map());
+  const handledViewportFocusRequest = useRef<object | undefined>(undefined);
   // Set once the viewport was moved by the user or a focus request; automatic
   // relayouts (resize, more pages) then keep it instead of fitting again.
   const viewportTouched = useRef(false);
@@ -472,24 +473,29 @@ export function TopologyCanvas({
           node.childKeys.includes(selectedResourceKey)),
     )?.key;
   }, [baseLayout.nodes, selectedResourceKey]);
-  const highlightedExpansionKey = useMemo(() => {
-    if (!highlightedNodeKey) return undefined;
+  // Only a chosen search result or located cleanup target reveals a collapsed
+  // member; hovering a search result highlights its stack without relayout.
+  const focusRequestNodeKey = searchFocusRequest
+    ? searchFocusRequest.nodeKey
+    : focusedCleanupTargetKey;
+  const focusExpansionKey = useMemo(() => {
+    if (!focusRequestNodeKey) return undefined;
     return baseLayout.nodes.find(
       (node) =>
         (node.kind === "stack" &&
-          node.memberKeys.includes(highlightedNodeKey)) ||
+          node.memberKeys.includes(focusRequestNodeKey)) ||
         (node.kind === "resourceGroup" &&
-          node.childKeys.includes(highlightedNodeKey)),
+          node.childKeys.includes(focusRequestNodeKey)),
     )?.key;
-  }, [baseLayout.nodes, highlightedNodeKey]);
+  }, [baseLayout.nodes, focusRequestNodeKey]);
   const layout = useMemo(() => {
-    if (!selectedExpansionKey && !highlightedExpansionKey) return baseLayout;
+    if (!selectedExpansionKey && !focusExpansionKey) return baseLayout;
     const effectiveExpandedStackKeys = new Set(expandedStackKeys);
     if (selectedExpansionKey) {
       effectiveExpandedStackKeys.add(selectedExpansionKey);
     }
-    if (highlightedExpansionKey) {
-      effectiveExpandedStackKeys.add(highlightedExpansionKey);
+    if (focusExpansionKey) {
+      effectiveExpandedStackKeys.add(focusExpansionKey);
     }
     return buildTopologyLayout(view, effectiveExpandedStackKeys, {
       complete,
@@ -500,7 +506,7 @@ export function TopologyCanvas({
     canvasSize,
     complete,
     expandedStackKeys,
-    highlightedExpansionKey,
+    focusExpansionKey,
     selectedExpansionKey,
     view,
   ]);
@@ -1618,7 +1624,12 @@ export function TopologyCanvas({
   }, [layout]);
 
   useEffect(() => {
-    if (!viewportFocusRequest) return;
+    if (
+      !viewportFocusRequest ||
+      handledViewportFocusRequest.current === viewportFocusRequest
+    ) {
+      return;
+    }
     const requestedNodeKey = viewportFocusRequest.nodeKey;
     const focusedNode = requestedNodeKey
       ? (nodes.find((node) => node.id === requestedNodeKey) ??
@@ -1629,6 +1640,8 @@ export function TopologyCanvas({
     if (!focusedNode && !viewportFocusRequest.scope) return;
     viewportTouched.current = true;
     const frame = requestAnimationFrame(() => {
+      // Fit each request once; later relayouts keep the focused viewport.
+      handledViewportFocusRequest.current = viewportFocusRequest;
       if (focusedNode) {
         void flow.current?.fitView({
           nodes: [focusedNode],

@@ -774,6 +774,42 @@ it("automatically reveals a grouped child selected from canvas search", async ()
   });
 });
 
+it("highlights the collapsed group of a hovered search result without expanding it", async () => {
+  const parent = resource("cen", "ros-ut-beijing", "CEN Instance", "network");
+  const children = ["a", "b"].map((suffix) =>
+    resource(
+      `router-${suffix}`,
+      `tr-${suffix}`,
+      "CEN Transit Router",
+      "network",
+    ),
+  );
+  renderCanvas({
+    topologyView: {
+      kind: "resource_graph",
+      context: { key: "account-global", name: "Global resources" },
+      resources: [parent, ...children],
+      edges: children.map((child) => ({
+        key: `${child.key}-membership`,
+        source_key: child.key,
+        target_key: parent.key,
+        kind: "relationship",
+        relation: "member_of",
+      })),
+    },
+    highlightedNodeKey: "router-b",
+  });
+
+  expect(screen.queryByTestId("flow-node-router-b")).not.toBeInTheDocument();
+  expect(screen.getByTestId("flow-node-cen")).toHaveAttribute(
+    "data-node-type",
+    "resourceGroup",
+  );
+  expect(
+    screen.getByTestId("flow-node-cen").querySelector("[data-resource-group]"),
+  ).toHaveClass("outline-primary");
+});
+
 function completeFlowSelection(
   nodeIDs: readonly string[],
   { shiftKey = false }: { shiftKey?: boolean } = {},
