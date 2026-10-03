@@ -782,6 +782,38 @@ func TestExecutionHandlerSpacesWaiterAndReadbackQueries(t *testing.T) {
 	}
 }
 
+func TestExecutionHandlerBacksOffReadbacksThatStillObserveTheResource(t *testing.T) {
+	ctx := context.Background()
+	repositories, planner, _, now := directExecutionFixture(t, "execution-readback-backoff")
+	driver := &scriptedActionDriver{
+		pollInterval: 2 * time.Second,
+		readback:     contracts.ReadbackResult{Exists: true, State: "deleting"},
+	}
+	handler := cleanup.NewExecutionHandler(planner, cleanup.ActionResolverFunc(func(context.Context, asset.Asset) (cleanup.ActionDriver, error) {
+		return driver, nil
+	}), cleanup.WithDeletionCheckTimeout(10*time.Minute))
+	job := claimExecutionJob(t, repositories, now)
+
+	var delays []time.Duration
+	for range 8 {
+		var retry *cleanup.RetryError
+		if err := handler.Handle(ctx, job); !errors.As(err, &retry) {
+			t.Fatalf("handle = %v", err)
+		}
+		delays = append(delays, retry.After)
+	}
+	s := time.Second
+	// Delete, waiter, then readbacks doubling up to the 30s cap.
+	want := []time.Duration{2 * s, 2 * s, 2 * s, 4 * s, 8 * s, 16 * s, 30 * s, 30 * s}
+	if fmt.Sprint(delays) != fmt.Sprint(want) || driver.readbackCalls != 6 {
+		t.Fatalf("delays = %v readbacks = %d, want %v", delays, driver.readbackCalls, want)
+	}
+	driver.readback = contracts.ReadbackResult{Exists: false, State: "absent"}
+	if err := handler.Handle(ctx, job); err != nil {
+		t.Fatalf("absent readback = %v", err)
+	}
+}
+
 func TestExecutionHandlerPersistsWaiterDataForTheNextPoll(t *testing.T) {
 	ctx := context.Background()
 	repositories, planner, created, now := directExecutionFixture(t, "execution-waiter-data")

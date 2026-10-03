@@ -1183,6 +1183,7 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 					return h.handleProviderError(ctx, &attempt, aggregate, step, &action, err, true)
 				}
 			}
+			previousDelay := time.Duration(requestInt(action.Readback[readbackDelayKey])) * time.Millisecond
 			action.Readback = map[string]any{"exists": readback.Exists, "state": readback.State, "data": cloneRequest(readback.Data)}
 			if readback.Exists {
 				if checkDeadlineExceeded || h.deletionCheckExpired(action, deletionCheckTimeout) {
@@ -1190,12 +1191,14 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 				}
 				execution.LogJob(ctx, "warn", fmt.Sprintf("provider readback still observes resource: state=%s", readback.State))
 				action.ProviderError = nil
-				if err := h.updateAction(ctx, &action); err != nil {
-					return err
-				}
 				delay := persistedPollInterval(action)
 				if delay <= 0 {
 					delay = h.retryDelay
+				}
+				delay = readbackDelay(previousDelay, delay, deletionCheckTimeout)
+				action.Readback[readbackDelayKey] = delay.Milliseconds()
+				if err := h.updateAction(ctx, &action); err != nil {
+					return err
 				}
 				return RetryAfter(fmt.Errorf("provider readback still observes asset %s in state %s", value.ID, readback.State), delay)
 			}
@@ -1242,6 +1245,22 @@ func preflightProviderRequestID(evidence map[string]any) string {
 		}
 	}
 	return ""
+}
+
+const (
+	maxReadbackDelay = 30 * time.Second
+	readbackDelayKey = "retry_delay_ms"
+)
+
+// readbackDelay doubles the wait between delete readbacks that still observe
+// the resource, from base up to 30s and an eighth of the deletion check window
+// so the window still ends with several readbacks. The previous delay is
+// persisted with the readback, so the backoff survives worker restarts.
+func readbackDelay(previous, base, window time.Duration) time.Duration {
+	if previous <= 0 {
+		return base
+	}
+	return max(base, min(2*previous, maxReadbackDelay, window/8))
 }
 
 func persistedPollInterval(action execution.ActionAttempt) time.Duration {
