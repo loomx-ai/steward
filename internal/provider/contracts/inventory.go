@@ -8,7 +8,10 @@ import (
 
 type InventoryRequest struct {
 	ConnectionID asset.ConnectionID `json:"connection_id"`
-	Scope        asset.Scope        `json:"scope"`
+	// ScanRunID identifies the scan this shard belongs to. Providers may share
+	// one native listing between the shards of a scan, never across scans.
+	ScanRunID asset.ScanRunID `json:"scan_run_id,omitempty"`
+	Scope     asset.Scope     `json:"scope"`
 	// Source is the server-selected inventory source for this shard. Providers
 	// may keep product API discovery metadata for actions and explicit fallback
 	// scans while routing supported inventory through a broader native source.

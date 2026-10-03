@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"slices"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/alibabacloud-go/tea/dara"
@@ -184,10 +186,6 @@ func (i *Inventory) List(ctx context.Context, request contracts.InventoryRequest
 			"RequestId": page.RequestID, "NextToken": page.NextToken, "Resources": page.Resources,
 		}
 	}
-	batch := contracts.InventoryBatch{
-		Items: make([]contracts.InventoryItem, 0, len(page.Resources)), NextCursor: page.NextToken,
-		RequestID: page.RequestID, Complete: page.NextToken == "",
-	}
 	ignoredTypes := make(map[string]struct{})
 	indexedResources := make([]ResourceRecord, 0, len(page.Resources))
 	for _, record := range page.Resources {
@@ -210,6 +208,18 @@ func (i *Inventory) List(ctx context.Context, request contracts.InventoryRequest
 		responsePayload["ignored_resource_types"] = ignored
 	}
 	execution.LogCloudAPIResponse(ctx, "resource-center", "SearchResources", contracts.CloudLogPayload(ctx, responsePayload))
+	batch, err := i.listRecords(ctx, request, indexedResources)
+	if err != nil {
+		return contracts.InventoryBatch{}, err
+	}
+	batch.NextCursor, batch.RequestID, batch.Complete = page.NextToken, page.RequestID, page.NextToken == ""
+	return batch, nil
+}
+
+// listRecords completes searched index records with their configurations
+// into one inventory batch.
+func (i *Inventory) listRecords(ctx context.Context, request contracts.InventoryRequest, indexedResources []ResourceRecord) (contracts.InventoryBatch, error) {
+	batch := contracts.InventoryBatch{Items: make([]contracts.InventoryItem, 0, len(indexedResources)), Complete: true}
 	configurations, err := i.resourceConfigurations(ctx, indexedResources)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
@@ -270,6 +280,171 @@ func (i *Inventory) List(ctx context.Context, request contracts.InventoryRequest
 		})
 	}
 	return batch, nil
+}
+
+const (
+	// resourceCenterTypeChunk bounds the resource types one shared search
+	// filters on.
+	resourceCenterTypeChunk = 20
+	// resourceCenterSearchTTL bounds how long a scan's shared search serves
+	// the kind shards of its region.
+	resourceCenterSearchTTL = 15 * time.Minute
+)
+
+type resourceCenterSearchKey struct {
+	run          asset.ScanRunID
+	connection   asset.ConnectionID
+	credential   string
+	clientRegion string
+	scopeKind    asset.ScopeKind
+	regionFilter string
+	chunk        int
+}
+
+type resourceCenterSearch struct {
+	done    chan struct{}
+	records map[string][]ResourceRecord
+	err     error
+	expires time.Time
+}
+
+func (s *resourceCenterSearch) finished() bool {
+	select {
+	case <-s.done:
+		return true
+	default:
+		return false
+	}
+}
+
+// resourceCenterSearchCache lets the kind shards of one scan and region share
+// a multi-type search instead of each searching its own, mostly empty, type.
+// Concurrent shards wait for one search; a failed search fails every waiting
+// shard and is not kept, so no shard reads a failure as an empty listing.
+type resourceCenterSearchCache struct {
+	mu      sync.Mutex
+	entries map[resourceCenterSearchKey]*resourceCenterSearch
+}
+
+func (c *resourceCenterSearchCache) get(
+	ctx context.Context,
+	key resourceCenterSearchKey,
+	search func() (map[string][]ResourceRecord, error),
+) (map[string][]ResourceRecord, error) {
+	now := time.Now()
+	c.mu.Lock()
+	entry := c.entries[key]
+	owner := entry == nil || (entry.finished() && !now.Before(entry.expires))
+	if owner {
+		for cached, value := range c.entries {
+			if value.finished() && !now.Before(value.expires) {
+				delete(c.entries, cached)
+			}
+		}
+		if c.entries == nil {
+			c.entries = map[resourceCenterSearchKey]*resourceCenterSearch{}
+		}
+		entry = &resourceCenterSearch{done: make(chan struct{})}
+		c.entries[key] = entry
+	}
+	c.mu.Unlock()
+	if owner {
+		entry.records, entry.err = search()
+		entry.expires = time.Now().Add(resourceCenterSearchTTL)
+		if entry.err != nil {
+			c.mu.Lock()
+			if c.entries[key] == entry {
+				delete(c.entries, key)
+			}
+			c.mu.Unlock()
+		}
+		close(entry.done)
+	}
+	select {
+	case <-entry.done:
+		return entry.records, entry.err
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+}
+
+// sharedResourceCenterRecords serves a scan's first page of a kind shard from
+// one search of up to resourceCenterTypeChunk types in its region. It reports
+// false when the request needs its own search: no scan run, a resumed cursor,
+// a network or expression filter, or more records than one page holds.
+func (r *Runtime) sharedResourceCenterRecords(
+	ctx context.Context,
+	request contracts.InventoryRequest,
+	clientRegion string,
+	credential contracts.Credential,
+	client ResourceCenterClient,
+	inventory *Inventory,
+) ([]ResourceRecord, bool, error) {
+	if request.ScanRunID == "" || request.ResourceKind == nil || request.Cursor != "" || request.NetworkTarget != nil ||
+		stringOption(request.Options, "vpc_id") != "" || stringOption(request.Options, "vswitch_id") != "" ||
+		stringOption(request.Options, "search_expression") != "" {
+		return nil, false, nil
+	}
+	nativeType := strings.TrimSpace(request.ResourceKind.NativeType)
+	position := slices.Index(inventory.resourceTypes, nativeType)
+	if position < 0 {
+		return nil, false, nil
+	}
+	chunk := position / resourceCenterTypeChunk
+	types := inventory.resourceTypes[chunk*resourceCenterTypeChunk : min((chunk+1)*resourceCenterTypeChunk, len(inventory.resourceTypes))]
+	regionFilter := resourceCenterRegionFilter(request.Scope)
+	key := resourceCenterSearchKey{
+		run: request.ScanRunID, connection: request.ConnectionID, credential: credentialFingerprint(credential),
+		clientRegion: clientRegion, scopeKind: request.Scope.Kind, regionFilter: regionFilter, chunk: chunk,
+	}
+	byType, err := r.resourceCenterSearches.get(ctx, key, func() (map[string][]ResourceRecord, error) {
+		// The search serves other shards too, so one shard's cancellation
+		// must not fail it for them.
+		return searchResourceTypes(context.WithoutCancel(ctx), client, regionFilter, types)
+	})
+	if err != nil {
+		return nil, true, err
+	}
+	records := byType[nativeType]
+	// ponytail: a type with more than one page is searched again on its own so
+	// its cursor stays a native token; page the shared records if that is common.
+	if len(records) > ResourceCenterPageLimit {
+		return nil, false, nil
+	}
+	execution.LogJob(ctx, "info", fmt.Sprintf("resource-center %s served by the scan's shared search of %d resource types", nativeType, len(types)))
+	return records, true, nil
+}
+
+func searchResourceTypes(ctx context.Context, client ResourceCenterClient, regionID string, types []string) (map[string][]ResourceRecord, error) {
+	result := make(map[string][]ResourceRecord)
+	cursor := ""
+	for {
+		request := SearchRequest{NextToken: cursor, MaxResults: ResourceCenterPageLimit, RegionID: regionID, ResourceTypes: types}
+		execution.LogCloudAPIRequest(ctx, "resource-center", "SearchResources", contracts.CloudLogPayload(ctx, request))
+		page, err := client.SearchResources(ctx, request)
+		if err != nil {
+			LogCloudAPIError(ctx, "resource-center", "SearchResources", err)
+			return nil, NormalizeError(err)
+		}
+		responsePayload := page.RawResponse
+		if responsePayload == nil {
+			responsePayload = map[string]any{"RequestId": page.RequestID, "NextToken": page.NextToken, "Resources": page.Resources}
+		}
+		execution.LogCloudAPIResponse(ctx, "resource-center", "SearchResources", contracts.CloudLogPayload(ctx, responsePayload))
+		for _, record := range page.Resources {
+			if strings.TrimSpace(record.ResourceType) == "" || strings.TrimSpace(record.ResourceID) == "" {
+				continue
+			}
+			result[record.ResourceType] = append(result[record.ResourceType], record)
+		}
+		if page.NextToken == "" {
+			return result, nil
+		}
+		if page.NextToken == cursor {
+			return nil, fmt.Errorf("Alibaba Cloud Resource Center repeated search cursor %q", cursor)
+		}
+		cursor = page.NextToken
+	}
 }
 
 func (i *Inventory) resourceConfigurations(

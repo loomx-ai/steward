@@ -249,7 +249,7 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 			return &run, fmt.Errorf("%w: connection %q status is %q", asset.ErrConnectionNotValidated, currentConnection.ID, currentConnection.Status)
 		}
 		request := contracts.InventoryRequest{
-			ConnectionID: connection.ID, Scope: scope, Source: shard.Source, ResourceKind: kind,
+			ConnectionID: connection.ID, ScanRunID: shard.ScanRunID, Scope: scope, Source: shard.Source, ResourceKind: kind,
 			Cursor: cursor, Limit: MaxBatchSize, NetworkTarget: networkTarget, KnownNativeIDs: slices.Clone(knownIDs),
 		}
 		if len(knownMetadata) != 0 {

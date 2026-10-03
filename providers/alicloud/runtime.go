@@ -56,6 +56,7 @@ type Runtime struct {
 	resourceKindRevision     string
 	bundle                   spec.Bundle
 	parentCache              fanoutParentCache
+	resourceCenterSearches   resourceCenterSearchCache
 }
 
 var _ contracts.InventoryBatchEnricher = (*Runtime)(nil)
@@ -338,7 +339,17 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	if err != nil {
 		return contracts.InventoryBatch{}, NormalizeError(err)
 	}
-	batch, err := NewInventory(client, r.resourceCenterInventoryNativeTypes()).List(ctx, request)
+	inventory := NewInventory(client, r.resourceCenterInventoryNativeTypes())
+	records, shared, err := r.sharedResourceCenterRecords(ctx, request, region, credential, client, inventory)
+	if err != nil {
+		return contracts.InventoryBatch{}, err
+	}
+	var batch contracts.InventoryBatch
+	if shared {
+		batch, err = inventory.listRecords(ctx, request, records)
+	} else {
+		batch, err = inventory.List(ctx, request)
+	}
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
