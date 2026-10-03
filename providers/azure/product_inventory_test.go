@@ -63,6 +63,7 @@ func TestProductVMDetailPagingNetworkAndScope(t *testing.T) {
 	nic := nativeResource(nicType, "nic", "eastus", map[string]any{"ipConfigurations": []any{map[string]any{"properties": map[string]any{"subnet": map[string]any{"id": resourceID(vnetType, "vnet") + "/subnets/subnet"}}}}})
 	vm := nativeResource(vmType, "vm", "eastus", map[string]any{"vmId": "vm-incarnation", "customData": "never-in-inventory", "networkProfile": map[string]any{"networkInterfaces": []any{map[string]any{"id": resourceID(nicType, "nic")}}}})
 	west := nativeResource(vmType, "west", "westus", map[string]any{})
+	westReads := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		var data any
 		switch strings.ToLower(req.URL.Path) {
@@ -78,6 +79,7 @@ func TestProductVMDetailPagingNetworkAndScope(t *testing.T) {
 		case strings.ToLower(text(vm["id"])):
 			data = vm
 		case strings.ToLower(text(west["id"])):
+			westReads++
 			data = west
 		case strings.ToLower(text(nic["id"])):
 			data = nic
@@ -119,6 +121,10 @@ func TestProductVMDetailPagingNetworkAndScope(t *testing.T) {
 	page, err = r.List(context.Background(), request)
 	if err != nil || !page.Complete || len(page.Items) != 0 {
 		t.Fatalf("regional last page=%+v error=%v", page, err)
+	}
+	// The listed location already places the westus VM outside this shard.
+	if westReads != 1 {
+		t.Fatalf("westus VM detail read %d times, want only by the subscription scan", westReads)
 	}
 }
 

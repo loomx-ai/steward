@@ -218,6 +218,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if kind.NativeType == logAnalyticsTableType && logAnalyticsTableCreator(raw) == "Microsoft" {
 			continue
 		}
+		// Subscription-wide lists serve every region shard. Skip rows the listed
+		// location already places in another shard before their detail read.
+		if region, ok := productListedRegion(kind.NativeType, raw); ok && !productScopeMatches(request, contracts.InventoryItem{Location: region}) {
+			continue
+		}
 		readURL, err := c.resourceURL(kind, wireID)
 		if err != nil {
 			return contracts.InventoryBatch{}, err
@@ -369,6 +374,17 @@ func productScopeMatches(request contracts.InventoryRequest, item contracts.Inve
 	return request.Scope.Kind == asset.ScopeSubscription ||
 		(request.Scope.Kind == asset.ScopeGlobal && item.Location == "global") ||
 		(request.Scope.Kind == asset.ScopeRegion && (strings.EqualFold(request.Scope.NativeID, item.Location) || (request.NetworkTarget != nil && item.Location == "global")))
+}
+
+// productListedRegion is the region inventoryItem derives from a list row's
+// location. Rows without a location, and kinds whose region comes from a parent
+// or a native property, are only placed after their detail read.
+func productListedRegion(nativeType string, raw map[string]any) (string, bool) {
+	if text(raw["location"]) == "" || isCosmosType(nativeType) || isAPIMType(nativeType) || isBatchType(nativeType) || isStreamAnalyticsType(nativeType) || isKustoType(nativeType) ||
+		fleetKind(nativeType).kind != "" || monitorResourceKind(nativeType) != "" {
+		return "", false
+	}
+	return resourceRegion(map[string]any{"type": nativeType, "location": raw["location"]}), true
 }
 
 func productGeneration(raw map[string]any) string {
