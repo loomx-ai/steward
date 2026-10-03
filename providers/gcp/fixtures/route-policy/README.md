@@ -170,9 +170,8 @@ Router, RouterNat, RoutePolicy and NamedSet delete steps now share the same
 connection/parent scope. Historical `gcp` and `google-cloud` partition names
 normalize to one scope. The planner preserves existing DAG prerequisites before
 adding same-parent serialization; other routers remain independent. The execution
-creation/continuation guard uses frozen identities, including older tasks without
-scope metadata, with inventory fallback for legacy tasks lacking snapshots.
-Corrupt snapshots or mismatched native parent identities cannot erase a scope.
+creation/continuation guard uses the reviewed asset snapshots; a missing snapshot
+fails the guard. Corrupt snapshots or mismatched native parent identities cannot erase a scope.
 
 The planner adds these edges when a task is created; persisted plans are not
 upgraded later. The connection/execution locks and durable worker dependencies are reused; no new
