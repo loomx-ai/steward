@@ -221,7 +221,12 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 			identity := value.Identity
 			if identity.Provider == shard.Provider && identity.ConnectionID == connection.ID && identity.Partition == connection.Partition && identity.NativeType == kind.NativeType {
 				knownIDs = append(knownIDs, identity.NativeID)
-				knownMetadata[identity.NativeID] = value.Normalized
+				// Normalize once; every page then gets a cheap structural copy.
+				metadata, err := snapshotMap(value.Normalized)
+				if err != nil {
+					return &run, err
+				}
+				knownMetadata[identity.NativeID] = metadata
 				knownAssets[identity.NativeID] = append(knownAssets[identity.NativeID], value)
 			}
 		}
@@ -250,11 +255,7 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 		if len(knownMetadata) != 0 {
 			request.KnownNativeMetadata = make(map[string]map[string]any, len(knownMetadata))
 			for id, metadata := range knownMetadata {
-				copy, err := snapshotMap(metadata)
-				if err != nil {
-					return &run, err
-				}
-				request.KnownNativeMetadata[id] = copy
+				request.KnownNativeMetadata[id] = cloneSnapshot(metadata).(map[string]any)
 			}
 		}
 		batch, err := adapter.List(ctx, request)

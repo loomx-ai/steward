@@ -755,6 +755,26 @@ func snapshotMap(value map[string]any) (map[string]any, error) {
 	return result, nil
 }
 
+// cloneSnapshot deep-copies a snapshotMap value, whose only containers are
+// JSON objects and arrays.
+func cloneSnapshot(value any) any {
+	switch typed := value.(type) {
+	case map[string]any:
+		result := make(map[string]any, len(typed))
+		for key, item := range typed {
+			result[key] = cloneSnapshot(item)
+		}
+		return result
+	case []any:
+		result := make([]any, len(typed))
+		for index, item := range typed {
+			result[index] = cloneSnapshot(item)
+		}
+		return result
+	}
+	return value
+}
+
 func observationHash(normalized, raw map[string]any) (string, error) {
 	payload, err := json.Marshal(struct {
 		Normalized map[string]any `json:"normalized"`
