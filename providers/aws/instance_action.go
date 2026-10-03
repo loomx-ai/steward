@@ -134,7 +134,7 @@ func (a *instanceAction) Preflight(ctx context.Context, request contracts.Action
 func (a *instanceAction) Execute(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	live, exists, err := a.liveInstance(ctx, request.Asset.Identity.NativeID)
 	if err != nil {
-		return contracts.ActionResult{}, err
+		return contracts.ActionResult{}, beforeDelete(err)
 	}
 	if exists {
 		outcomes, reason := plannedOutcomes(request, live)
@@ -155,7 +155,7 @@ func (a *instanceAction) Execute(ctx context.Context, request contracts.ActionRe
 			// Terminate only after live readback shows every retained policy.
 			live, exists, err = a.liveInstance(ctx, request.Asset.Identity.NativeID)
 			if err != nil {
-				return contracts.ActionResult{}, err
+				return contracts.ActionResult{}, beforeDelete(err)
 			}
 			if exists {
 				outcomes, reason = plannedOutcomes(request, live)
@@ -166,7 +166,7 @@ func (a *instanceAction) Execute(ctx context.Context, request contracts.ActionRe
 					if outcome.liveDelete != outcome.delete {
 						return contracts.ActionResult{}, &contracts.ProviderCallError{Provider: execution.ProviderError{
 							Category: execution.ErrorRetryable, Code: "RetentionNotApplied", Message: "AWS has not applied DeleteOnTermination for " + outcome.nativeID,
-						}, RetryAfter: instanceAttachmentWait}
+						}, RetryAfter: instanceAttachmentWait, BeforeMutation: true}
 					}
 				}
 			}

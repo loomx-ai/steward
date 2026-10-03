@@ -884,7 +884,7 @@ func (a *NativeAction) Execute(ctx context.Context, request contracts.ActionRequ
 		return contracts.ActionResult{Data: map[string]any{"phase": "absent"}, RetryAfter: time.Second}, nil
 	}
 	if err != nil {
-		return contracts.ActionResult{}, NormalizeError(err)
+		return contracts.ActionResult{}, beforeDelete(err)
 	}
 	if matchesState(a.state(model), a.kind.deletingStates) {
 		return contracts.ActionResult{Data: map[string]any{"phase": "deleting"}, RetryAfter: nativeWait}, nil
@@ -906,12 +906,12 @@ func (a *NativeAction) Execute(ctx context.Context, request contracts.ActionRequ
 		data["protection_request_id"] = requestID
 		model, _, err = a.kind.read(ctx, a.clients, id)
 		if err != nil && !errors.Is(err, errNativeAbsent) {
-			return contracts.ActionResult{}, NormalizeError(err)
+			return contracts.ActionResult{}, beforeDelete(err)
 		}
 		if err == nil && a.kind.protection.enabled(model) {
 			return contracts.ActionResult{}, &contracts.ProviderCallError{Provider: execution.ProviderError{
 				Category: execution.ErrorRetryable, Code: "DeletionProtectionStillEnabled", Message: "AWS resource still reports deletion protection",
-			}, RetryAfter: nativeWait}
+			}, RetryAfter: nativeWait, BeforeMutation: true}
 		}
 	}
 	requestID, err := a.kind.remove(ctx, a.clients, id, model, request.IdempotencyKey)

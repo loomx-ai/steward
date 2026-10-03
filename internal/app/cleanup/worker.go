@@ -1049,7 +1049,7 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 				return err
 			}
 			execution.LogJob(ctx, "info", fmt.Sprintf("provider action %s invoking", step.Action))
-			result, err := driver.Execute(ctx, request)
+			result, err := driver.Execute(contracts.WithWriteScope(ctx), request)
 			if err != nil {
 				if isVerifiedDeleteNotFound(err) || isVerifiedAbsentProviderError(err) {
 					execution.LogJob(ctx, "info", "provider reports resource already absent; treating delete as succeeded")
@@ -1059,7 +1059,11 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 					execution.LogJob(ctx, "success", "cleanup action succeeded")
 					return h.finalizeExecution(ctx, attempt, aggregate)
 				}
-				return h.handleProviderError(ctx, &attempt, aggregate, step, &action, err, false)
+				// A transient failure raised before the delete was submitted is
+				// rescheduled like a preflight failure; the action stays Invoking.
+				transientBeforeDelete := contracts.BeforeMutation(err) &&
+					(isProviderCategory(err, execution.ErrorThrottled) || isProviderCategory(err, execution.ErrorRetryable))
+				return h.handleProviderError(ctx, &attempt, aggregate, step, &action, err, transientBeforeDelete)
 			}
 			execution.LogJob(ctx, "info", fmt.Sprintf(
 				"provider action accepted: request_id=%s operation_id=%s",

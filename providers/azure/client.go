@@ -272,9 +272,18 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	if execution.JobLogEnabled(ctx) {
 		execution.LogCloudAPIRequest(ctx, u.Host, method, safeAPIPayload(requestLog, endpoint))
 	}
+	read := method == http.MethodGet || method == http.MethodHead
+	if !read {
+		contracts.NoteWrite(ctx)
+	}
 	defer func() {
 		if failure != nil {
 			execution.LogCloudAPIFailure(ctx, u.Host, method, failure)
+			// A cleanup Execute re-reads before it writes; a failed read there
+			// sent nothing, so the worker may reschedule a transient one.
+			if read && contracts.BeforeFirstWrite(ctx) {
+				failure = contracts.MarkBeforeMutation(failure)
+			}
 		}
 	}()
 	var res *http.Response

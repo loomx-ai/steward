@@ -117,7 +117,7 @@ func (a *CloudFormationAction) Execute(ctx context.Context, request contracts.Ac
 	}
 	description, requestID, err := a.client.DescribeStack(ctx, request.Asset.Identity.NativeID)
 	if err != nil {
-		return contracts.ActionResult{}, NormalizeError(err)
+		return contracts.ActionResult{}, beforeDelete(err)
 	}
 	if !description.Exists || cloudFormationDeletionState(description.Status) {
 		return contracts.ActionResult{ProviderRequestID: requestID, ProviderOperationID: request.IdempotencyKey, RetryAfter: cloudFormationWaitInterval}, nil

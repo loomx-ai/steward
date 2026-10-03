@@ -273,7 +273,11 @@ type ErrorClassifier interface {
 type ProviderCallError struct {
 	Provider   execution.ProviderError
 	RetryAfter time.Duration
-	Cause      error
+	// BeforeMutation marks an ActionHook.Execute failure raised before the
+	// action submitted its delete. Anything Execute already changed is
+	// preparation it re-verifies, so invoking Execute again is safe.
+	BeforeMutation bool
+	Cause          error
 }
 
 type CredentialValidationError struct {

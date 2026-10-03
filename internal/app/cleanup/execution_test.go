@@ -2599,6 +2599,41 @@ func TestExecutionHandlerFailsThrottledDeleteWithoutAutomaticRetry(t *testing.T)
 	}
 }
 
+func TestExecutionHandlerReschedulesTransientReadBeforeDelete(t *testing.T) {
+	ctx := context.Background()
+	repositories, planner, created, now := directExecutionFixture(t, "execution-read-throttle")
+	driver := &scriptedActionDriver{
+		executeErrors: []error{contracts.MarkBeforeMutation(&contracts.ProviderCallError{
+			Provider:   execution.ProviderError{Category: execution.ErrorThrottled, Code: "Throttling", Message: "slow down"},
+			RetryAfter: 17 * time.Second,
+		})},
+		readback: contracts.ReadbackResult{Exists: false, State: "absent"},
+	}
+	handler := cleanup.NewExecutionHandler(planner, cleanup.ActionResolverFunc(func(context.Context, asset.Asset) (cleanup.ActionDriver, error) {
+		return driver, nil
+	}))
+	job := claimExecutionJob(t, repositories, now)
+
+	var retry *cleanup.RetryError
+	if err := handler.Handle(ctx, job); !errors.As(err, &retry) || retry.After != 17*time.Second {
+		t.Fatalf("throttled read before delete error = %v, want reschedule after Retry-After", err)
+	}
+	actions, err := repositories.Executions().ListActions(ctx, created.ID)
+	if err != nil || len(actions) != 1 || actions[0].Status != execution.ActionInvoking || actions[0].ProviderError == nil || actions[0].ProviderError.Category != execution.ErrorThrottled {
+		t.Fatalf("actions=%+v err=%v", actions, err)
+	}
+	if err := handler.Handle(ctx, job); err != nil {
+		t.Fatal(err)
+	}
+	actions, err = repositories.Executions().ListActions(ctx, created.ID)
+	if err != nil || actions[0].Status != execution.ActionSucceeded || driver.executeCalls != 2 {
+		t.Fatalf("actions=%+v executeCalls=%d err=%v", actions, driver.executeCalls, err)
+	}
+	if len(driver.executeWriteScoped) != 2 || !driver.executeWriteScoped[0] || !driver.executeWriteScoped[1] {
+		t.Fatalf("Execute write scopes = %v, want every call scoped", driver.executeWriteScoped)
+	}
+}
+
 func TestExecutionHandlerStopsPersistedInvalidDeleteRetryWithoutAnotherProviderCall(t *testing.T) {
 	ctx := context.Background()
 	repositories, planner, created, now := directExecutionFixture(t, "execution-invalid-delete")
@@ -3254,6 +3289,7 @@ type scriptedActionDriver struct {
 	executeErrors        []error
 	executeCalls         int
 	executeRequests      []contracts.ActionRequest
+	executeWriteScoped   []bool
 	idempotencyKeys      []string
 	pollInterval         time.Duration
 	deletionCheckTimeout time.Duration
@@ -3337,8 +3373,9 @@ func (d *scriptedActionDriver) Preflight(context.Context, contracts.ActionReques
 	return contracts.PreflightResult{Allowed: true}, nil
 }
 
-func (d *scriptedActionDriver) Execute(_ context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
+func (d *scriptedActionDriver) Execute(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	d.executeCalls++
+	d.executeWriteScoped = append(d.executeWriteScoped, contracts.BeforeFirstWrite(ctx))
 	d.executeRequests = append(d.executeRequests, request)
 	d.idempotencyKeys = append(d.idempotencyKeys, request.IdempotencyKey)
 	if len(d.executeErrors) > 0 {

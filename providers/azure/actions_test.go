@@ -257,3 +257,47 @@ func TestOperationFailureRetainsRequestIDWithoutProviderMessage(t *testing.T) {
 		t.Fatalf("failure=%v", failure)
 	}
 }
+
+func TestExecuteMarksOnlyReadFailuresBeforeTheDelete(t *testing.T) {
+	for _, throttled := range []string{"GET", "DELETE"} {
+		t.Run(throttled, func(t *testing.T) {
+			value := actionAsset(diskType, "disk")
+			deletes := 0
+			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				if response, handled := emptyMonitorIndexResponse(t, req); handled {
+					return response, nil
+				}
+				if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+					return response, nil
+				}
+				if req.Method == "DELETE" {
+					deletes++
+				}
+				switch {
+				case strings.EqualFold(req.URL.Path, value.Identity.NativeID):
+					if req.Method == throttled {
+						return jsonResponse(429, map[string]any{"error": map[string]any{"code": "TooManyRequests"}}, http.Header{"Retry-After": {"7"}}), nil
+					}
+					return jsonResponse(200, nativeResource(diskType, "disk", "eastus", map[string]any{}), nil), nil
+				case strings.HasSuffix(strings.ToLower(req.URL.Path), "/resourcegroups/test"):
+					return jsonResponse(200, map[string]any{"id": req.URL.Path}, nil), nil
+				case strings.HasSuffix(req.URL.Path, "/locks"):
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+				}
+				return nil, fmt.Errorf("unexpected %s %s", req.Method, req.URL)
+			})
+			driver, err := r.ResolveAction(context.Background(), "connection", value)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = driver.Execute(contracts.WithWriteScope(context.Background()), contracts.ActionRequest{Asset: value, Action: "delete"})
+			var call *contracts.ProviderCallError
+			if !errors.As(err, &call) || call.Provider.Category != execution.ErrorThrottled {
+				t.Fatalf("execute=%v", err)
+			}
+			if wantMarked := throttled == "GET"; contracts.BeforeMutation(err) != wantMarked || deletes != map[bool]int{true: 0, false: 1}[wantMarked] {
+				t.Fatalf("before mutation=%v deletes=%d", contracts.BeforeMutation(err), deletes)
+			}
+		})
+	}
+}

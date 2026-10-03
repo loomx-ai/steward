@@ -74,7 +74,7 @@ func (a *guardedAction) Preflight(ctx context.Context, request contracts.ActionR
 func (a *guardedAction) Execute(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	outcome, err := a.check(ctx, request)
 	if err != nil {
-		return contracts.ActionResult{}, err
+		return contracts.ActionResult{}, beforeDelete(err)
 	}
 	if outcome.pending {
 		return contracts.ActionResult{Data: map[string]any{"phase": cloudControlPhaseDelete, "status": "SUCCESS", "guard": "deletion_scheduled"}}, nil

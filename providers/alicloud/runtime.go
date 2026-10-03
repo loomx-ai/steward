@@ -397,11 +397,20 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		operationName = operation.Key()
 	}
 	execution.LogCloudAPIRequest(ctx, service, operationName, contracts.CloudLogPayload(ctx, canonical.Parameters))
+	read := readOperation(operationName)
+	if !read {
+		contracts.NoteWrite(ctx)
+	}
 	result, err := r.factory.Invoke(ctx, credential, region, operation, canonical)
 	if err != nil {
 		normalized := NormalizeError(err)
 		annotateProviderErrorOperation(normalized, canonical.Operation)
 		LogCloudAPIError(ctx, service, operationName, normalized)
+		// A cleanup Execute re-reads before it writes; a failed read there
+		// sent nothing, so the worker may reschedule a transient one.
+		if read && contracts.BeforeFirstWrite(ctx) {
+			normalized = contracts.MarkBeforeMutation(normalized)
+		}
 		return contracts.InvocationResult{}, normalized
 	}
 	responsePayload := contracts.CloudLogPayload(ctx, result.Data)
@@ -409,6 +418,17 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	responsePayload["OperationId"] = result.OperationID
 	execution.LogCloudAPIResponse(ctx, service, operationName, responsePayload)
 	return result, nil
+}
+
+// readOperation reports whether an Alibaba Cloud API only reads: every product
+// names its reads with one of these verbs.
+func readOperation(name string) bool {
+	for _, verb := range []string{"Describe", "List", "Get", "Query"} {
+		if strings.HasPrefix(name, verb) {
+			return true
+		}
+	}
+	return false
 }
 
 func annotateProviderErrorOperation(err error, operation string) {

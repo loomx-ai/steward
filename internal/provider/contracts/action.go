@@ -2,6 +2,8 @@ package contracts
 
 import (
 	"context"
+	"errors"
+	"sync/atomic"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -96,3 +98,42 @@ type LifecycleHook interface {
 }
 
 type NormalizedError = execution.ProviderError
+
+// MarkBeforeMutation flags a provider failure raised before Execute submitted
+// its delete. Errors that are not provider call errors are returned unchanged.
+func MarkBeforeMutation(err error) error {
+	var callError *ProviderCallError
+	if errors.As(err, &callError) {
+		callError.BeforeMutation = true
+	}
+	return err
+}
+
+// BeforeMutation reports whether err was raised before Execute submitted its
+// delete.
+func BeforeMutation(err error) bool {
+	var callError *ProviderCallError
+	return errors.As(err, &callError) && callError.BeforeMutation
+}
+
+type writeScopeKey struct{}
+
+// WithWriteScope scopes ctx to one Execute call, so a provider transport can
+// tell whether a failed read came before every write of that call.
+func WithWriteScope(ctx context.Context) context.Context {
+	return context.WithValue(ctx, writeScopeKey{}, new(atomic.Bool))
+}
+
+// NoteWrite records that the provider is sending a write in the Execute call.
+func NoteWrite(ctx context.Context) {
+	if written, ok := ctx.Value(writeScopeKey{}).(*atomic.Bool); ok {
+		written.Store(true)
+	}
+}
+
+// BeforeFirstWrite reports whether ctx belongs to an Execute call that has not
+// sent a write yet.
+func BeforeFirstWrite(ctx context.Context) bool {
+	written, ok := ctx.Value(writeScopeKey{}).(*atomic.Bool)
+	return ok && !written.Load()
+}

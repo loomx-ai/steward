@@ -2419,3 +2419,38 @@ func TestContractCredentialBuildsSDKCredentialWithoutEmbeddingSecretsInRuntime(t
 		t.Fatalf("SDK credential model=%+v", model)
 	}
 }
+
+func TestRuntimeMarksReadFailuresOnlyBeforeTheFirstWrite(t *testing.T) {
+	t.Parallel()
+
+	source := &credentialSource{
+		wantConnection: "connection-a",
+		value: contracts.Credential{Values: map[string]string{
+			"type": "access_key", "access_key_id": "key-id", "access_key_secret": "key-secret",
+		}},
+	}
+	factory := &runtimeFactory{invokeErr: tea.NewSDKError(map[string]any{
+		"code": "Throttling", "message": "slow down", "statusCode": 400,
+	})}
+	runtime, err := newRuntime(source, factory)
+	if err != nil {
+		t.Fatalf("create runtime: %v", err)
+	}
+	ctx := contracts.WithWriteScope(context.Background())
+	invoke := func(operation string) error {
+		_, err := runtime.Invoke(ctx, contracts.Invocation{
+			ConnectionID: "connection-a", Operation: operation,
+			Scope: map[string]string{"region": "cn-hangzhou"},
+		})
+		return err
+	}
+	if err := invoke("AlibabaCloud.DescribeVSwitches"); !contracts.BeforeMutation(err) {
+		t.Fatalf("read before any write err=%v, want marked", err)
+	}
+	if err := invoke("AlibabaCloud.DeleteVSwitch"); err == nil || contracts.BeforeMutation(err) {
+		t.Fatalf("write err=%v, want unmarked", err)
+	}
+	if err := invoke("AlibabaCloud.DescribeVSwitches"); err == nil || contracts.BeforeMutation(err) {
+		t.Fatalf("read after a write err=%v, want unmarked", err)
+	}
+}

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 	provideraws "github.com/loomx-ai/steward/providers/aws"
 )
@@ -68,6 +69,15 @@ func TestCloudFormationPreflightAllowsDeletionInProgress(t *testing.T) {
 	}
 	if len(client.deleteCalls) != 0 {
 		t.Fatalf("delete calls=%+v", client.deleteCalls)
+	}
+}
+
+func TestCloudFormationExecuteMarksThrottledDescribeBeforeDelete(t *testing.T) {
+	client := &actionCloudFormationClient{describeErr: &provideraws.APIError{Code: "Throttling", Message: "Rate exceeded", StatusCode: 400}}
+	_, err := provideraws.NewCloudFormationAction(client).Execute(context.Background(), contracts.ActionRequest{Asset: awsStackAsset(), Action: "delete", IdempotencyKey: "token"})
+	var call *contracts.ProviderCallError
+	if !errors.As(err, &call) || call.Provider.Category != execution.ErrorThrottled || !contracts.BeforeMutation(err) || len(client.deleteCalls) != 0 {
+		t.Fatalf("execute err=%v deletes=%+v", err, client.deleteCalls)
 	}
 }
 

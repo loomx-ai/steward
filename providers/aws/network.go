@@ -156,7 +156,7 @@ func (a *internetGatewayAction) Execute(ctx context.Context, request contracts.A
 	id := cloudControlIdentifier(request.Asset)
 	vpcs, err := a.network.InternetGatewayVPCs(ctx, []string{id})
 	if err != nil {
-		return contracts.ActionResult{}, NormalizeError(err)
+		return contracts.ActionResult{}, beforeDelete(err)
 	}
 	for _, vpcID := range vpcs[id] {
 		if err := a.network.DetachInternetGateway(ctx, id, vpcID); err != nil {
@@ -179,7 +179,7 @@ func (a *vpnGatewayAction) Execute(ctx context.Context, request contracts.Action
 	id := cloudControlIdentifier(request.Asset)
 	vpcs, err := a.network.VPNGatewayVPCs(ctx, id)
 	if err != nil {
-		return contracts.ActionResult{}, NormalizeError(err)
+		return contracts.ActionResult{}, beforeDelete(err)
 	}
 	for _, vpcID := range vpcs {
 		if err := a.network.DetachVPNGateway(ctx, id, vpcID); err != nil {
@@ -191,12 +191,12 @@ func (a *vpnGatewayAction) Execute(ctx context.Context, request contracts.Action
 		// attached VPC before submitting the delete.
 		remaining, err := a.network.VPNGatewayVPCs(ctx, id)
 		if err != nil {
-			return contracts.ActionResult{}, NormalizeError(err)
+			return contracts.ActionResult{}, beforeDelete(err)
 		}
 		if len(remaining) > 0 {
 			return contracts.ActionResult{}, &contracts.ProviderCallError{Provider: execution.ProviderError{
 				Category: execution.ErrorRetryable, Code: "VpnGatewayDetaching", Message: "AWS virtual private gateway is still detaching from its VPC",
-			}, RetryAfter: cloudControlWaitInterval}
+			}, RetryAfter: cloudControlWaitInterval, BeforeMutation: true}
 		}
 	}
 	return a.CloudControlAction.Execute(ctx, request)

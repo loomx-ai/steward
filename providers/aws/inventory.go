@@ -271,6 +271,12 @@ func (e *APIError) Error() string {
 	return e.Code + ": " + e.Message
 }
 
+// beforeDelete normalizes a failure raised in Execute before the delete was
+// submitted; anything already changed there is re-verified on the next Execute.
+func beforeDelete(err error) error {
+	return contracts.MarkBeforeMutation(NormalizeError(err))
+}
+
 func NormalizeError(err error) error {
 	if err == nil || errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 		return err

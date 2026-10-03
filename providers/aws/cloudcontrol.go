@@ -554,7 +554,7 @@ func (a *CloudControlAction) Execute(ctx context.Context, request contracts.Acti
 			if cloudControlNotFound(err) {
 				return contracts.ActionResult{ProviderRequestID: requestID, Data: map[string]any{"phase": cloudControlPhaseDelete, "status": "FAILED", "error_code": "NotFound"}}, nil
 			}
-			return contracts.ActionResult{}, NormalizeError(err)
+			return contracts.ActionResult{}, beforeDelete(err)
 		}
 		model, err := cloudControlModel(resource.Properties)
 		if err != nil {
