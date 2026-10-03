@@ -139,7 +139,7 @@ test("make dev auto-authenticates through the Vite proxy only", () => {
 
   assert.match(makefile, /dev_token=.*\/dev\/urandom/);
   assert.match(makefile, /mktemp -d/);
-  assert.match(makefile, /go build -o/);
+  assert.match(makefile, /go build -tags \$\(GO_TAGS\) -o/);
   assert.doesNotMatch(makefile, /go run/);
   assert.match(makefile, /rm -rf "\$\$dev_dir"/);
   assert.match(makefile, /STEWARD_AUTH_TOKEN=\$\$dev_token/);
