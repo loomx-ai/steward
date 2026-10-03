@@ -82,6 +82,7 @@ type projector struct {
 	knownVSwitches map[string]map[string]asset.Asset
 	placements     map[asset.AssetID]placement
 	warnings       []ProjectionWarning
+	memberOf       map[asset.AssetID][]asset.AssetID
 }
 
 func newProjector(input Input) *projector {
@@ -437,29 +438,28 @@ func (p *projector) regionView(regionID string) RegionView {
 		},
 		VPCs: []EntrySummary{},
 	}
+	// The VPC is the container represented by this summary card. Count only
+	// the boundary and resource nodes that the user will see after drilling
+	// into it, otherwise an empty VPC misleadingly appears to contain itself.
+	counts := make(map[string]int)
+	uncertainMembership := make(map[string]bool)
+	for _, vSwitch := range p.knownVSwitches[regionID] {
+		if vSwitch.ID != "" && p.resourceMatchesFilters(vSwitch) {
+			counts[normalizedVPCID(vSwitch.Normalized)]++
+		}
+	}
+	for _, candidate := range p.open {
+		if p.isBoundary(candidate) || assetRegion(candidate, p.scopeByID) != regionID || !p.resourceMatchesFilters(candidate) {
+			continue
+		}
+		placement := p.placements[candidate.ID]
+		counts[placement.vpcID]++
+		if placement.membershipUnknown || placement.conflicting {
+			uncertainMembership[placement.vpcID] = true
+		}
+	}
 	for nativeID, value := range p.knownVPCs[regionID] {
-		// The VPC is the container represented by this summary card. Count only
-		// the boundary and resource nodes that the user will see after drilling
-		// into it, otherwise an empty VPC misleadingly appears to contain itself.
-		count := 0
-		for vSwitchID, vSwitch := range p.knownVSwitches[regionID] {
-			if p.vSwitchBelongsToVPC(regionID, vSwitchID, nativeID) && p.resourceMatchesFilters(vSwitch) {
-				count++
-			}
-		}
-		uncertainMembership := false
-		for _, candidate := range p.filteredResources(p.open) {
-			if p.isBoundary(candidate) || assetRegion(candidate, p.scopeByID) != regionID {
-				continue
-			}
-			placement := p.placements[candidate.ID]
-			if placement.vpcID == nativeID {
-				count++
-				if placement.membershipUnknown || placement.conflicting {
-					uncertainMembership = true
-				}
-			}
-		}
+		count := counts[nativeID]
 		name := strings.TrimSpace(value.Name)
 		if name == "" {
 			name = nativeID
@@ -468,7 +468,7 @@ func (p *projector) regionView(regionID string) RegionView {
 		if p.hasResourceFilter() {
 			cleanup = CleanupSummary{}
 		}
-		if uncertainMembership {
+		if uncertainMembership[nativeID] {
 			cleanup = CleanupSummary{PotentialBlockers: 1}
 		}
 		view.VPCs = append(view.VPCs, EntrySummary{
@@ -696,13 +696,8 @@ func (p *projector) consoleLinkValues(
 	}
 	if strings.Contains(template, "{parentId}") && values["parentId"] == "" {
 		parentIDs := map[string]struct{}{}
-		for _, relationship := range p.input.Relationships {
-			if relationship.ClosedAt != nil ||
-				relationship.Type != graph.RelationshipMemberOf ||
-				relationship.SourceAssetID != resource.ID {
-				continue
-			}
-			parent := p.openByID[relationship.TargetAssetID]
+		for _, targetID := range p.memberOfTargets()[resource.ID] {
+			parent := p.openByID[targetID]
 			parentID := strings.TrimSpace(parent.Identity.NativeID)
 			if parentID != "" {
 				parentIDs[parentID] = struct{}{}
@@ -718,6 +713,21 @@ func (p *projector) consoleLinkValues(
 		return nil
 	}
 	return values
+}
+
+// memberOfTargets indexes open member_of relationships by their source once
+// per projection.
+func (p *projector) memberOfTargets() map[asset.AssetID][]asset.AssetID {
+	if p.memberOf == nil {
+		p.memberOf = make(map[asset.AssetID][]asset.AssetID)
+		for _, relationship := range p.input.Relationships {
+			if relationship.ClosedAt != nil || relationship.Type != graph.RelationshipMemberOf {
+				continue
+			}
+			p.memberOf[relationship.SourceAssetID] = append(p.memberOf[relationship.SourceAssetID], relationship.TargetAssetID)
+		}
+	}
+	return p.memberOf
 }
 
 func (p *projector) cleanup(value asset.Asset) CleanupSummary {

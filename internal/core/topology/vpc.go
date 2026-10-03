@@ -63,6 +63,15 @@ func (p *projector) vpcResponse(base Response, regionID, vpcID string) (Response
 }
 
 func (p *projector) vSwitches(regionID, vpcID string, allValues, page []asset.Asset) []VSwitch {
+	counts := make(map[string]int)
+	for _, candidate := range allValues {
+		counts[p.placements[candidate.ID].vSwitchID]++
+	}
+	pageKeys := make(map[string][]string)
+	for _, candidate := range page {
+		vSwitchID := p.placements[candidate.ID].vSwitchID
+		pageKeys[vSwitchID] = append(pageKeys[vSwitchID], string(candidate.ID))
+	}
 	result := []VSwitch{}
 	for nativeID, value := range p.knownVSwitches[regionID] {
 		if normalizedVPCID(value.Normalized) != vpcID {
@@ -78,17 +87,8 @@ func (p *projector) vSwitches(regionID, vpcID string, allValues, page []asset.As
 		}
 		item := VSwitch{
 			Key: key, AssetID: string(value.ID), Dirty: value.Dirty, Name: name, NativeID: nativeID,
-			Zone: normalizedString(value.Normalized, NormalizedZoneID), ResourceCount: 0, ResourceKeys: []string{},
-		}
-		for _, candidate := range allValues {
-			if p.placements[candidate.ID].vSwitchID == nativeID {
-				item.ResourceCount++
-			}
-		}
-		for _, candidate := range page {
-			if p.placements[candidate.ID].vSwitchID == nativeID {
-				item.ResourceKeys = append(item.ResourceKeys, string(candidate.ID))
-			}
+			Zone: normalizedString(value.Normalized, NormalizedZoneID), ResourceCount: counts[nativeID],
+			ResourceKeys: append([]string{}, pageKeys[nativeID]...),
 		}
 		result = append(result, item)
 	}
