@@ -124,4 +124,4 @@ navTitle: "定时扫描"
 - 设置 `STEWARD_PUBLIC_URL` 后，消息中会附带扫描详情链接。参阅[配置参考](./configuration.md)。
 - Steward Cloud 的通知渠道只能发送到公网地址。
 
-<aside class="docs-note">定时扫描在 Steward 服务运行时执行。在笔记本上本机运行时，合盖或退出期间不会扫描，恢复后按<strong>错过了运行时间</strong>的规则处理。需要稳定的定时扫描，请[在服务器上部署](./deployment.md)。</aside>
+<aside class="docs-note">定时扫描在 Steward 服务运行时执行。在笔记本上本机运行时，合盖或退出期间不会扫描，恢复后按<strong>错过了运行时间</strong>的规则处理。需要稳定的定时扫描，请<a href="./deployment.md">在服务器上部署</a>。</aside>
