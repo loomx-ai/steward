@@ -19,9 +19,13 @@ const (
 	cloudProductQueryTimeout    = 5 * time.Second
 	cloudProductQueryRetryCount = 3
 	cloudProductQueryRetryDelay = 250 * time.Millisecond
-	cloudProductIdleTimeout     = time.Second
-	resourceCenterCallTimeout   = 5 * time.Second
-	resourceCenterRetryCount    = 3
+	// Tea pools one transport per endpoint and runtime option set, so an idle
+	// timeout longer than the gap between pages keeps connections alive across
+	// calls instead of dialing (and TLS handshaking) for nearly every request.
+	cloudProductIdleTimeout   = 30 * time.Second
+	cloudProductMaxIdleConns  = 16
+	resourceCenterCallTimeout = 5 * time.Second
+	resourceCenterRetryCount  = 3
 
 	destructivePreconnectRetryCount = 2
 )
@@ -206,7 +210,8 @@ func waitForQueryRetry(ctx context.Context, delay time.Duration) error {
 
 func runtimeOptions(timeout time.Duration) *dara.RuntimeOptions {
 	return &dara.RuntimeOptions{
-		ReadTimeout: dara.Int(int(timeout.Milliseconds())),
-		IdleTimeout: dara.Int(int(cloudProductIdleTimeout.Milliseconds())),
+		ReadTimeout:  dara.Int(int(timeout.Milliseconds())),
+		IdleTimeout:  dara.Int(int(cloudProductIdleTimeout.Milliseconds())),
+		MaxIdleConns: dara.Int(cloudProductMaxIdleConns),
 	}
 }
