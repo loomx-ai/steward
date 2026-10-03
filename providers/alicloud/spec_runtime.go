@@ -468,13 +468,13 @@ func cloudFirewallInventoryAbsent(resource map[string]any) bool {
 type fanoutProductAPICursor struct {
 	ParentIndex int    `json:"parent_index"`
 	ChildCursor string `json:"child_cursor,omitempty"`
-	Fingerprint string `json:"parent_fingerprint,omitempty"`
+	Fingerprint string `json:"parent_fingerprint"`
 }
 
 // fanoutParentTTL bounds how long a parent listing is reused by the later
 // pages of a fanout shard, which advances one parent per List call and would
-// otherwise relist every parent on each page. The cursor fingerprint still
-// rejects resuming against a different parent set once a listing is refreshed.
+// otherwise relist every parent on each page. The cursor fingerprint rejects
+// resuming against a different parent set once a listing is refreshed.
 const fanoutParentTTL = 10 * time.Minute
 
 type fanoutParentCacheKey struct {
@@ -590,8 +590,10 @@ func (r *Runtime) listFanoutProductAPI(
 		return contracts.InventoryBatch{}, err
 	}
 	fingerprint := fanoutParentFingerprint(parents)
-	cursor := fanoutProductAPICursor{Fingerprint: fingerprint}
-	if strings.TrimSpace(request.Cursor) != "" {
+	var cursor fanoutProductAPICursor
+	if strings.TrimSpace(request.Cursor) == "" {
+		cursor.Fingerprint = fingerprint
+	} else {
 		if err := json.Unmarshal([]byte(request.Cursor), &cursor); err != nil {
 			return contracts.InventoryBatch{}, fmt.Errorf(
 				"invalid product API fanout cursor %q: %w",
@@ -601,12 +603,14 @@ func (r *Runtime) listFanoutProductAPI(
 		}
 		// Parent indexes are only meaningful against the set that issued the
 		// cursor; resuming against another set would skip or repeat children.
-		if cursor.Fingerprint != "" && cursor.Fingerprint != fingerprint {
+		if cursor.Fingerprint == "" {
+			return contracts.InventoryBatch{}, fmt.Errorf("product API fanout cursor %q has no parent fingerprint", request.Cursor)
+		}
+		if cursor.Fingerprint != fingerprint {
 			return contracts.InventoryBatch{}, fmt.Errorf(
 				"Alibaba Cloud product API fanout parent set changed during pagination; restart the shard",
 			)
 		}
-		cursor.Fingerprint = fingerprint
 	}
 	if cursor.ParentIndex < 0 || cursor.ParentIndex > len(parents) {
 		return contracts.InventoryBatch{}, fmt.Errorf(

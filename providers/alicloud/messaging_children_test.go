@@ -77,6 +77,12 @@ func TestKafkaTopicsAreIdentifiedWithinTheirInstance(t *testing.T) {
 	if _, err := runtime.List(context.Background(), request); err == nil || !strings.Contains(err.Error(), "parent set changed") {
 		t.Fatalf("changed parent set error = %v", err)
 	}
+
+	// A cursor that does not name its parent set cannot be resumed safely.
+	request.Cursor = `{"parent_index":1}`
+	if _, err := runtime.List(context.Background(), request); err == nil || !strings.Contains(err.Error(), "no parent fingerprint") {
+		t.Fatalf("unfingerprinted cursor error = %v", err)
+	}
 }
 
 func TestLogstoresAreListedByNameWithinTheirProject(t *testing.T) {
