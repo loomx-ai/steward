@@ -31,6 +31,19 @@ func TestJobEventStreamResumesAfterLastEventID(t *testing.T) {
 	}
 }
 
+func TestJobEventStreamEndsForCanceledJobs(t *testing.T) {
+	handler := events.NewJobEventHandler(terminalEventStore{job: execution.Job{ID: "job-1", Status: execution.JobCanceled}}, time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	request := httptest.NewRequestWithContext(ctx, "GET", "/jobs/job-1/events", nil)
+	request.SetPathValue("id", "job-1")
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if ctx.Err() != nil || response.Code != 200 {
+		t.Fatalf("canceled job stream kept polling: status=%d err=%v", response.Code, ctx.Err())
+	}
+}
+
 type terminalEventStore struct {
 	job  execution.Job
 	logs []execution.JobLog

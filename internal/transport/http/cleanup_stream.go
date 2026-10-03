@@ -96,7 +96,9 @@ func (a *API) cleanupTaskEvents(response http.ResponseWriter, request *http.Requ
 		poll = time.Second
 	}
 	for {
-		_, logs, err := a.dependencies.Repositories.Jobs().ListCleanupLogsAfter(
+		// The log query returns the task header with the connection check, so
+		// the poll reads no steps or impact rows.
+		latestTask, logs, err := a.dependencies.Repositories.Jobs().ListCleanupLogsAfter(
 			request.Context(),
 			selectedConnectionID(request),
 			cleanupTask.ID,
@@ -112,10 +114,7 @@ func (a *API) cleanupTaskEvents(response http.ResponseWriter, request *http.Requ
 			afterTime, afterID = log.CreatedAt, log.ID
 			writeScanEvent(response, "log", scanEventCursor(afterTime, afterID), log)
 		}
-		cleanupTask, err = a.loadCleanupTask(request)
-		if err != nil {
-			return
-		}
+		cleanupTask = latestTask
 		switch {
 		case isTerminalCleanupStatus(cleanupTask.Status):
 			writeScanEvent(response, "end", "", cleanupTask)

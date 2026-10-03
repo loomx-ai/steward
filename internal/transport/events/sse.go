@@ -65,7 +65,8 @@ func (h *JobEventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if job.Status == execution.JobSucceeded || job.Status == execution.JobFailed {
+		// A paused job may resume, so its stream stays open.
+		if job.Status == execution.JobSucceeded || job.Status == execution.JobFailed || job.Status == execution.JobCanceled {
 			return
 		}
 		select {
