@@ -10,9 +10,13 @@ import {
 import {
   Background,
   ReactFlow,
+  ReactFlowProvider,
+  useStore,
   type Edge,
   type NodeMouseHandler,
+  type OnSelectionChangeFunc,
   type ReactFlowInstance,
+  type ReactFlowState,
   type Viewport,
 } from "@xyflow/react";
 import type {
@@ -33,7 +37,7 @@ import {
   prioritizeBoxSelectionTargets,
   type CanvasMode,
 } from "./boxSelection";
-import { CanvasToolbar } from "./CanvasToolbar";
+import { CanvasToolbar, type CanvasToolbarProps } from "./CanvasToolbar";
 import { isCleanupTargetPending, type CleanupTarget } from "./cleanupSelection";
 import { cleanupTargetContainsKey } from "./cleanupLocation";
 import { cloudConsoleURL } from "./consoleLinks";
@@ -136,6 +140,11 @@ const SEARCH_FIT_MIN_ZOOM = 1;
 const STACK_FIT_PADDING = 0.04;
 const MAX_CANVAS_ZOOM = 1.8;
 const CANVAS_RESIZE_DEBOUNCE_MS = 150;
+const CANVAS_FIT_VIEW_OPTIONS = {
+  padding: CANVAS_FIT_PADDING,
+  maxZoom: MAX_CANVAS_ZOOM,
+};
+const PRO_OPTIONS = { hideAttribution: true };
 const EMPTY_RESOURCE_KINDS = new Map<string, ResourceKind>();
 
 function resourceKindNativeType(provider: string, resourceKindID: string) {
@@ -357,7 +366,6 @@ export function TopologyCanvas({
     () => new Set(),
   );
   const [canvasSize, setCanvasSize] = useState(DEFAULT_CANVAS_SIZE);
-  const [zoom, setZoom] = useState(1);
   const flow = useRef<ReactFlowInstance<TopologyFlowNode, Edge> | null>(null);
   const selectedFlowNodes = useRef<TopologyFlowNode[]>([]);
   const nodePanGesture = useRef<CanvasPanGesture | null>(null);
@@ -1409,6 +1417,32 @@ export function TopologyCanvas({
     },
     [selectCandidateTargets],
   );
+  const handleClickCapture = useCallback((event: ReactMouseEvent) => {
+    if (
+      !suppressNodeClick.current ||
+      !(event.target instanceof Element) ||
+      !event.target.closest(".react-flow__node")
+    ) {
+      return;
+    }
+    suppressNodeClick.current = false;
+    event.preventDefault();
+    event.stopPropagation();
+  }, []);
+  const handleInit = useCallback(
+    (instance: ReactFlowInstance<TopologyFlowNode, Edge>) => {
+      flow.current = instance;
+    },
+    [],
+  );
+  const handleMoveStart = useCallback((event: unknown) => {
+    if (event) viewportTouched.current = true;
+  }, []);
+  const handleSelectionChange = useCallback<
+    OnSelectionChangeFunc<TopologyFlowNode, Edge>
+  >(({ nodes: selectedNodes }) => {
+    selectedFlowNodes.current = selectedNodes;
+  }, []);
   const handlePaneClick = useCallback(() => {
     if (mode !== "select") return;
     clearCandidates();
@@ -1532,7 +1566,6 @@ export function TopologyCanvas({
   const changeZoom = useCallback((nextZoom: number) => {
     viewportTouched.current = true;
     const clampedZoom = Math.min(MAX_CANVAS_ZOOM, Math.max(0.0001, nextZoom));
-    setZoom(clampedZoom);
     void flow.current?.zoomTo(clampedZoom);
   }, []);
   const viewportFocusRequest = useMemo<
@@ -1726,73 +1759,54 @@ export function TopologyCanvas({
       )}
       tabIndex={-1}
     >
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        colorMode={resolvedTheme}
-        minZoom={0.0001}
-        maxZoom={MAX_CANVAS_ZOOM}
-        fitView
-        fitViewOptions={{
-          padding: CANVAS_FIT_PADDING,
-          maxZoom: MAX_CANVAS_ZOOM,
-        }}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        nodesFocusable={false}
-        elementsSelectable={mode === "select"}
-        selectionOnDrag={mode === "select"}
-        panOnDrag={mode === "pan" ? true : [1]}
-        selectionKeyCode={null}
-        multiSelectionKeyCode="Shift"
-        proOptions={{ hideAttribution: true }}
-        onClickCapture={(event) => {
-          if (
-            !suppressNodeClick.current ||
-            !(event.target instanceof Element) ||
-            !event.target.closest(".react-flow__node")
-          ) {
-            return;
+      <ReactFlowProvider>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          colorMode={resolvedTheme}
+          minZoom={0.0001}
+          maxZoom={MAX_CANVAS_ZOOM}
+          onlyRenderVisibleElements
+          fitView
+          fitViewOptions={CANVAS_FIT_VIEW_OPTIONS}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          nodesFocusable={false}
+          elementsSelectable={mode === "select"}
+          selectionOnDrag={mode === "select"}
+          panOnDrag={mode === "pan" ? true : [1]}
+          selectionKeyCode={null}
+          multiSelectionKeyCode="Shift"
+          proOptions={PRO_OPTIONS}
+          onClickCapture={handleClickCapture}
+          onPointerDownCapture={handleNodePanStart}
+          onPointerMoveCapture={handleNodePanMove}
+          onPointerUpCapture={finishNodePan}
+          onPointerCancelCapture={finishNodePan}
+          onInit={handleInit}
+          onMoveStart={handleMoveStart}
+          onNodeClick={handleNodeClick}
+          onPaneClick={handlePaneClick}
+          onSelectionChange={handleSelectionChange}
+          onSelectionEnd={handleSelectionEnd}
+        >
+          <Background gap={22} size={1} color="var(--border)" />
+        </ReactFlow>
+        <ZoomAwareCanvasToolbar
+          mode={mode}
+          onZoomChange={changeZoom}
+          onModeChange={handleToolbarModeChange}
+          relationshipsVisible={relationshipsVisible}
+          onRelationshipsVisibilityChange={
+            layout.edges.length > 0 ? setRelationshipsVisible : undefined
           }
-          suppressNodeClick.current = false;
-          event.preventDefault();
-          event.stopPropagation();
-        }}
-        onPointerDownCapture={handleNodePanStart}
-        onPointerMoveCapture={handleNodePanMove}
-        onPointerUpCapture={finishNodePan}
-        onPointerCancelCapture={finishNodePan}
-        onInit={(instance) => {
-          flow.current = instance;
-        }}
-        onMoveStart={(event) => {
-          if (event) viewportTouched.current = true;
-        }}
-        onMove={(_event, viewport) => setZoom(viewport.zoom)}
-        onNodeClick={handleNodeClick}
-        onPaneClick={handlePaneClick}
-        onSelectionChange={({ nodes: selectedNodes }) => {
-          selectedFlowNodes.current = selectedNodes;
-        }}
-        onSelectionEnd={handleSelectionEnd}
-      >
-        <Background gap={22} size={1} color="var(--border)" />
-      </ReactFlow>
-      <CanvasToolbar
-        mode={mode}
-        zoom={zoom}
-        onZoomChange={changeZoom}
-        onModeChange={handleToolbarModeChange}
-        relationshipsVisible={relationshipsVisible}
-        onRelationshipsVisibilityChange={
-          layout.edges.length > 0 ? setRelationshipsVisible : undefined
-        }
-        onEscape={handleToolbarEscape}
-        onZoomOut={zoomOut}
-        onFitView={fitView}
-        onZoomIn={zoomIn}
-      />
+          onEscape={handleToolbarEscape}
+          onZoomOut={zoomOut}
+          onFitView={fitView}
+          onZoomIn={zoomIn}
+        />
+      </ReactFlowProvider>
       <BoxSelectionActionBar
         candidateKeys={candidateTargets.map((target) => target.key)}
         onAdd={() => addTargets(candidateTargets)}
@@ -1841,6 +1855,15 @@ export function TopologyCanvas({
       <ProjectionWarningStatus warnings={warnings} />
     </div>
   );
+}
+
+const selectZoom = (state: ReactFlowState) => state.transform[2];
+
+// Reads the zoom from the flow store so panning and zooming re-render only the
+// toolbar, not the whole canvas.
+function ZoomAwareCanvasToolbar(props: Omit<CanvasToolbarProps, "zoom">) {
+  const zoom = useStore(selectZoom);
+  return <CanvasToolbar {...props} zoom={zoom} />;
 }
 
 function ProjectionWarningStatus({

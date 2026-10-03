@@ -129,6 +129,9 @@ vi.mock("@xyflow/react", () => ({
   Background: () => null,
   Controls: () => null,
   Handle: () => null,
+  ReactFlowProvider: ({ children }: { children: ReactNode }) => children,
+  useStore: (selector: (state: { transform: number[] }) => unknown) =>
+    selector({ transform: [0, 0, 1] }),
   Position: {
     Left: "left",
     Right: "right",

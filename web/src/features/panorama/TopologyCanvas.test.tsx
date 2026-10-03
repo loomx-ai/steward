@@ -261,6 +261,9 @@ vi.mock("@xyflow/react", () => ({
   ),
   Handle: () => null,
   Position: { Left: "left", Right: "right" },
+  ReactFlowProvider: ({ children }: { children: ReactNode }) => children,
+  useStore: (selector: (state: { transform: number[] }) => unknown) =>
+    selector({ transform: [0, 0, 1] }),
 }));
 
 const cleanup = { selectable: false, potential_blockers: 0 };
