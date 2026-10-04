@@ -17,11 +17,11 @@ import (
 )
 
 func (a *API) loadCleanupTask(request *http.Request) (plan.CleanupTask, error) {
-	aggregate, err := a.dependencies.Repositories.CleanupTasks().GetTask(request.Context(), plan.CleanupTaskID(chi.URLParam(request, "id")))
-	if err == nil && aggregate.Task.ConnectionID != selectedConnectionID(request) {
+	task, err := a.dependencies.Repositories.CleanupTasks().GetTaskHeader(request.Context(), plan.CleanupTaskID(chi.URLParam(request, "id")))
+	if err == nil && task.ConnectionID != selectedConnectionID(request) {
 		err = persistence.ErrNotFound
 	}
-	return aggregate.Task, err
+	return task, err
 }
 
 func (a *API) cleanupTaskLogs(response http.ResponseWriter, request *http.Request) {
@@ -195,6 +195,7 @@ type cleanupProgress struct {
 	steps        []plan.CleanupTaskStep
 	task         plan.CleanupTask
 	impacts      map[plan.ImpactItemID]plan.ImpactItem
+	attempt      *execution.ExecutionAttempt
 	execution    *executionAttemptProjection
 	actions      map[execution.ActionAttemptID]execution.ActionAttempt
 	actionsDone  bool
@@ -219,14 +220,22 @@ func (a *API) writeCleanupProgress(response http.ResponseWriter, request *http.R
 		progress.version = version
 	}
 
-	latest, err := a.latestCleanupExecution(request, progress.connectionID, progress.taskID)
+	// Attempts are part of the version, so only their job timing can move
+	// while it holds still.
+	if changed {
+		if progress.attempt, err = a.latestCleanupAttempt(request, progress.connectionID, progress.taskID); err != nil {
+			return wrote, false, err
+		}
+	}
+	settled := isTerminalCleanupStatus(progress.task.Status)
+	if progress.attempt == nil {
+		return wrote, settled, nil
+	}
+	projected, err := a.executionProjection(request, *progress.attempt)
 	if err != nil {
 		return wrote, false, err
 	}
-	settled := isTerminalCleanupStatus(progress.task.Status)
-	if latest == nil {
-		return wrote, settled, nil
-	}
+	latest := &projected
 	if !reflect.DeepEqual(progress.execution, latest) {
 		writeScanEvent(response, "execution", "", latest)
 		wrote = true
@@ -311,10 +320,10 @@ func (a *API) writeCleanupTaskChanges(response http.ResponseWriter, request *htt
 	return wrote, nil
 }
 
-// latestCleanupExecution returns the task's newest execution attempt with
-// its timing, or nil before the first one. Attempts list oldest first.
-func (a *API) latestCleanupExecution(request *http.Request, connectionID asset.ConnectionID, taskID plan.CleanupTaskID) (*executionAttemptProjection, error) {
-	var latest persistence.Page[execution.ExecutionAttempt]
+// latestCleanupAttempt returns the task's newest execution attempt, or nil
+// before the first one. Attempts list oldest first.
+func (a *API) latestCleanupAttempt(request *http.Request, connectionID asset.ConnectionID, taskID plan.CleanupTaskID) (*execution.ExecutionAttempt, error) {
+	var latest *execution.ExecutionAttempt
 	options := persistence.ListOptions{Limit: 100}
 	for {
 		page, err := a.dependencies.Repositories.Executions().ListCleanupTaskExecutions(request.Context(), connectionID, string(taskID), options)
@@ -322,21 +331,13 @@ func (a *API) latestCleanupExecution(request *http.Request, connectionID asset.C
 			return nil, err
 		}
 		if len(page.Items) > 0 {
-			latest.Items = page.Items[len(page.Items)-1:]
+			latest = &page.Items[len(page.Items)-1]
 		}
 		if page.NextCursor == "" {
-			break
+			return latest, nil
 		}
 		options.Cursor = page.NextCursor
 	}
-	if len(latest.Items) == 0 {
-		return nil, nil
-	}
-	projected, err := a.projectExecutionPage(request, latest)
-	if err != nil {
-		return nil, err
-	}
-	return &projected.Items[0], nil
 }
 
 func cleanupLogFilter(request *http.Request) persistence.CleanupLogFilter {

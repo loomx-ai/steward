@@ -592,6 +592,11 @@ export interface CleanupTask {
   updated_at?: string;
 }
 
+// A listed cleanup task carries its newest execution attempt, if any.
+export interface CleanupTaskListItem extends CleanupTask {
+  latest_execution?: ExecutionAttempt;
+}
+
 export interface CleanupTaskStep {
   id: string;
   cleanup_task_id: string;

@@ -7,12 +7,8 @@ import {
 import { Plus, Search } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { listExecutions, listCleanupTasks } from "@/api/client";
-import type {
-  CleanupTask,
-  CleanupSelector,
-  ExecutionAttempt,
-} from "@/api/types";
+import { listCleanupTasks } from "@/api/client";
+import type { CleanupTask, CleanupSelector } from "@/api/types";
 import { AsyncState } from "@/components/domain/AsyncState";
 import { CursorPagination } from "@/components/domain/CursorPagination";
 import { DataTableShell } from "@/components/domain/DataTableShell";
@@ -54,8 +50,8 @@ const taskStatuses = [
   "canceled",
 ] as const;
 
-export function filterCleanupTasks(
-  values: CleanupTask[],
+export function filterCleanupTasks<T extends CleanupTask>(
+  values: T[],
   filters: { search: string; status: string },
   requestedByTask: ReadonlyMap<string, string> = new Map(),
 ) {
@@ -114,24 +110,17 @@ export function CleanupView() {
       listCleanupTasks(connection.id, pagination.cursor, pagination.pageSize),
     placeholderData: keepPreviousData,
   });
-  const executions = useQuery({
-    queryKey: ["cleanup-executions-for-list", connection.id],
-    queryFn: () => listExecutions(connection.id, "", 500),
-  });
-  const sourceRows = tasks.data?.items ?? [];
-  const latestExecutionByTask = useMemo(
-    () => latestExecutions(executions.data?.items ?? []),
-    [executions.data?.items],
-  );
+  const sourceRows = useMemo(() => tasks.data?.items ?? [], [tasks.data]);
   const requestedByTask = useMemo(
     () =>
       new Map(
-        [...latestExecutionByTask].map(([cleanupTaskID, attempt]) => [
-          cleanupTaskID,
-          attempt.requested_by,
-        ]),
+        sourceRows.flatMap((task) =>
+          task.latest_execution
+            ? [[task.id, task.latest_execution.requested_by] as const]
+            : [],
+        ),
       ),
-    [latestExecutionByTask],
+    [sourceRows],
   );
   const rows = useMemo(
     () => filterCleanupTasks(sourceRows, { search, status }, requestedByTask),
@@ -241,7 +230,7 @@ export function CleanupView() {
             </TableHeader>
             <TableBody>
               {rows.map((task) => {
-                const attempt = latestExecutionByTask.get(task.id);
+                const attempt = task.latest_execution;
                 return (
                   <TableRow key={task.id}>
                     <TableCell>
@@ -297,17 +286,6 @@ export function CleanupView() {
       )}
     </PageLayout>
   );
-}
-
-function latestExecutions(values: ExecutionAttempt[]) {
-  const result = new Map<string, ExecutionAttempt>();
-  for (const value of values) {
-    const existing = result.get(value.cleanup_task_id);
-    if (!existing || existing.created_at.localeCompare(value.created_at) < 0) {
-      result.set(value.cleanup_task_id, value);
-    }
-  }
-  return result;
 }
 
 function cleanupScope(

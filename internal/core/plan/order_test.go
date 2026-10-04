@@ -15,3 +15,22 @@ func TestOrderStepsRejectsInvalidPersistedDAG(t *testing.T) {
 		}
 	}
 }
+
+func TestOrderStepsEmitsSmallestReadyStepFirst(t *testing.T) {
+	ordered, err := OrderSteps([]CleanupTaskStep{
+		{ID: "a", AssetID: "a", DependsOn: []StepID{"z"}},
+		{ID: "b", AssetID: "b", DependsOn: []StepID{"c"}},
+		{ID: "c", AssetID: "c"},
+		{ID: "z", AssetID: "z"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got string
+	for _, step := range ordered {
+		got += string(step.ID)
+	}
+	if got != "cbza" {
+		t.Fatalf("order = %q, want cbza", got)
+	}
+}

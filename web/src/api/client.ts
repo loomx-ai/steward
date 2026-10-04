@@ -27,6 +27,7 @@ import type {
   LifecycleBinding,
   Page,
   CleanupTaskAggregate,
+  CleanupTaskListItem,
   Principal,
   ProviderBundle,
   ProviderCatalogBundle,
@@ -808,7 +809,7 @@ export function listCleanupTasks(
   connectionID: string,
   cursor = "",
   limit = 100,
-): Promise<Page<CleanupTaskAggregate["task"]>> {
+): Promise<Page<CleanupTaskListItem>> {
   return request(
     scopedPath(listPath("/api/cleanup", cursor, limit), connectionID),
   );
@@ -956,18 +957,6 @@ export function listCleanupTaskExecutions(
   );
 }
 
-export function getExecution(
-  connectionID: string,
-  id: string,
-): Promise<ExecutionAttempt> {
-  return request<ExecutionAttempt>(
-    scopedPath(
-      `/api/execution-attempts/${encodeURIComponent(id)}`,
-      connectionID,
-    ),
-  );
-}
-
 export function listExecutionActions(
   connectionID: string,
   executionID: string,
@@ -988,50 +977,6 @@ export function listAuditEvents(
   return request<Page<AuditEvent>>(
     scopedPath(listPath("/api/audit-events", cursor, limit), connectionID),
   );
-}
-
-export async function streamJobEvents(
-  connectionID: string,
-  jobID: string,
-  after: number,
-  onLog: (log: JobLog) => void,
-  signal: AbortSignal,
-): Promise<number> {
-  const token = accessTokenProvider()?.trim();
-  const headers = new Headers({ Accept: "text/event-stream" });
-  if (token) headers.set("Authorization", `Bearer ${token}`);
-  if (after > 0) headers.set("Last-Event-ID", String(after));
-  const response = await fetch(
-    scopedPath(`/api/jobs/${encodeURIComponent(jobID)}/events`, connectionID),
-    { headers, signal },
-  );
-  observePrincipal(response);
-  if (!response.ok || !response.body) {
-    throw new Error(`job event stream failed with ${response.status}`);
-  }
-  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
-  let buffer = "";
-  let latest = after;
-  while (true) {
-    const { done, value } = await reader.read();
-    buffer += value ?? "";
-    let boundary = buffer.indexOf("\n\n");
-    while (boundary >= 0) {
-      const frame = buffer.slice(0, boundary);
-      buffer = buffer.slice(boundary + 2);
-      const idLine = frame.split("\n").find((line) => line.startsWith("id:"));
-      const dataLine = frame
-        .split("\n")
-        .find((line) => line.startsWith("data:"));
-      if (idLine && dataLine) {
-        latest = Number(idLine.slice(3).trim()) || latest;
-        onLog(JSON.parse(dataLine.slice(5).trim()) as JobLog);
-      }
-      boundary = buffer.indexOf("\n\n");
-    }
-    if (done) break;
-  }
-  return latest;
 }
 
 export async function streamScanEvents(

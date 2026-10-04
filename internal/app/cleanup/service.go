@@ -1481,6 +1481,21 @@ func lifecycleComponentFromSnapshot(selected []asset.AssetID, allAssets []asset.
 	for _, value := range allAssets {
 		available[value.ID] = value
 	}
+	// Index both endpoints once (keeping input order) so the walk is linear.
+	relationshipsByEndpoint := make(map[asset.AssetID][]graph.Relationship)
+	for _, relationship := range allRelationships {
+		relationshipsByEndpoint[relationship.SourceAssetID] = append(relationshipsByEndpoint[relationship.SourceAssetID], relationship)
+		if relationship.TargetAssetID != relationship.SourceAssetID {
+			relationshipsByEndpoint[relationship.TargetAssetID] = append(relationshipsByEndpoint[relationship.TargetAssetID], relationship)
+		}
+	}
+	bindingsByEndpoint := make(map[asset.AssetID][]graph.LifecycleBinding)
+	for _, binding := range allBindings {
+		bindingsByEndpoint[binding.ControllerAssetID] = append(bindingsByEndpoint[binding.ControllerAssetID], binding)
+		if binding.ManagedAssetID != binding.ControllerAssetID {
+			bindingsByEndpoint[binding.ManagedAssetID] = append(bindingsByEndpoint[binding.ManagedAssetID], binding)
+		}
+	}
 	assetsByID := make(map[asset.AssetID]asset.Asset)
 	relationshipsByKey := make(map[string]graph.Relationship)
 	bindingsByKey := make(map[string]graph.LifecycleBinding)
@@ -1492,10 +1507,8 @@ func lifecycleComponentFromSnapshot(selected []asset.AssetID, allAssets []asset.
 			continue
 		}
 		assetsByID[id] = value
-		for _, relationship := range allRelationships {
-			if relationship.SourceAssetID == id || relationship.TargetAssetID == id {
-				relationshipsByKey[relationshipIdentity(relationship)] = relationship
-			}
+		for _, relationship := range relationshipsByEndpoint[id] {
+			relationshipsByKey[relationshipIdentity(relationship)] = relationship
 			if relationship.ClosedAt == nil && relationship.SourceAssetID == id && relationship.Evidence[graph.RelationshipEvidenceRequiredDeletion] == true {
 				if endpoint := relationship.TargetAssetID; endpoint != "" {
 					if _, seen := queued[endpoint]; !seen {
@@ -1505,10 +1518,7 @@ func lifecycleComponentFromSnapshot(selected []asset.AssetID, allAssets []asset.
 				}
 			}
 		}
-		for _, binding := range allBindings {
-			if binding.ControllerAssetID != id && binding.ManagedAssetID != id {
-				continue
-			}
+		for _, binding := range bindingsByEndpoint[id] {
 			bindingsByKey[lifecycleBindingIdentity(binding)] = binding
 			for _, endpoint := range []asset.AssetID{binding.ControllerAssetID, binding.ManagedAssetID} {
 				if endpoint == "" {

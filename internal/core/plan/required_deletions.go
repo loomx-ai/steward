@@ -58,7 +58,7 @@ func Solve(input Input) (Result, error) {
 		}
 	}
 	if len(requirements) == 0 {
-		return solveOnce(input)
+		return solveOnce(input, true)
 	}
 	assets, err := indexAssets(input.Assets)
 	if err != nil {
@@ -72,7 +72,7 @@ func Solve(input Input) (Result, error) {
 	// Reusing the normal solver preserves retention and lifecycle authority
 	// semantics. Each pass adds at least one previously unselected asset.
 	for pass := 0; pass <= len(assets); pass++ {
-		result, err := solveOnce(input)
+		result, err := solveOnce(input, false)
 		if err != nil {
 			return Result{}, err
 		}
@@ -228,6 +228,10 @@ func Solve(input Input) (Result, error) {
 			ordered = stableSteps(stepAssets)
 		}
 		result.Steps, result.Blockers = ordered, blockers.values()
+		result.SnapshotHash, err = snapshotHash(input, uniqueAssetIDs(input.ResolvedAssetIDs), assets, activeRelationships(input.Relationships), activeBindings(input.LifecycleBindings))
+		if err != nil {
+			return Result{}, err
+		}
 		return result, nil
 	}
 	return Result{}, fmt.Errorf("cleanup prerequisite expansion did not converge")

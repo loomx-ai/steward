@@ -8,7 +8,9 @@ import (
 
 	"github.com/loomx-ai/steward/internal/app/cleanup"
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/core/plan"
+	"github.com/loomx-ai/steward/internal/persistence"
 )
 
 func (a *API) createCleanupTask(response http.ResponseWriter, request *http.Request) {
@@ -84,11 +86,46 @@ func (a *API) addCleanupTaskAssets(response http.ResponseWriter, request *http.R
 	writeJSON(response, http.StatusOK, aggregate)
 }
 
+// cleanupTaskListItem is a listed task with its newest execution attempt, so
+// the list page needs no separate execution query.
+type cleanupTaskListItem struct {
+	plan.CleanupTask
+	LatestExecution *executionAttemptProjection `json:"latest_execution,omitempty"`
+}
+
 func (a *API) listCleanupTasks(response http.ResponseWriter, request *http.Request) {
 	page, err := a.dependencies.Repositories.CleanupTasks().ListTasks(request.Context(), pageOptions(request))
 	if err != nil {
 		repositoryError(response, err)
 		return
 	}
-	writeJSON(response, http.StatusOK, page)
+	taskIDs := make([]string, 0, len(page.Items))
+	for _, task := range page.Items {
+		taskIDs = append(taskIDs, string(task.ID))
+	}
+	latest, err := a.dependencies.Repositories.Executions().LatestCleanupTaskExecutions(request.Context(), selectedConnectionID(request), taskIDs)
+	if err != nil {
+		repositoryError(response, err)
+		return
+	}
+	attempts := persistence.Page[execution.ExecutionAttempt]{}
+	for _, task := range page.Items {
+		if attempt, exists := latest[string(task.ID)]; exists {
+			attempts.Items = append(attempts.Items, attempt)
+		}
+	}
+	projected, err := a.projectExecutionPage(request, attempts)
+	if err != nil {
+		repositoryError(response, err)
+		return
+	}
+	byTask := make(map[string]*executionAttemptProjection, len(projected.Items))
+	for index := range projected.Items {
+		byTask[projected.Items[index].CleanupTaskID] = &projected.Items[index]
+	}
+	items := make([]cleanupTaskListItem, 0, len(page.Items))
+	for _, task := range page.Items {
+		items = append(items, cleanupTaskListItem{CleanupTask: task, LatestExecution: byTask[string(task.ID)]})
+	}
+	writeJSON(response, http.StatusOK, persistence.Page[cleanupTaskListItem]{Items: items, NextCursor: page.NextCursor})
 }

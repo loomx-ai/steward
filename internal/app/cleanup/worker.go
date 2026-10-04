@@ -594,12 +594,12 @@ func (h *ExecutionHandler) checkExecutionControl(
 	if err != nil {
 		return err
 	}
-	aggregate, err := h.planner.repositories.CleanupTasks().GetTask(ctx, cleanupTaskID)
+	task, err := h.planner.repositories.CleanupTasks().GetTaskHeader(ctx, cleanupTaskID)
 	if err != nil {
 		return err
 	}
 	if attempt.Status == execution.ExecutionPausing || attempt.Status == execution.ExecutionPaused ||
-		aggregate.Task.Status == plan.StatusPausing || aggregate.Task.Status == plan.StatusPaused {
+		task.Status == plan.StatusPausing || task.Status == plan.StatusPaused {
 		return &execution.JobStatusError{
 			Status: execution.JobPaused,
 			Cause:  fmt.Errorf("cleanup task %s is paused", cleanupTaskID),
@@ -625,18 +625,18 @@ func (h *ExecutionHandler) ReconcileJobSettlement(ctx context.Context, job execu
 		if err != nil {
 			return err
 		}
-		aggregate, err := repositories.CleanupTasks().GetTask(ctx, cleanupTaskID)
+		task, err := repositories.CleanupTasks().GetTaskHeader(ctx, cleanupTaskID)
 		if err != nil {
 			return err
 		}
 		attemptControlled := attempt.Status == execution.ExecutionPausing || attempt.Status == execution.ExecutionPaused
-		taskControlled := aggregate.Task.Status == plan.StatusPausing || aggregate.Task.Status == plan.StatusPaused
+		taskControlled := task.Status == plan.StatusPausing || task.Status == plan.StatusPaused
 		jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "cleanup_task", string(cleanupTaskID))
 		if err != nil {
 			return err
 		}
 		if !attemptControlled && !taskControlled {
-			if aggregate.Task.Status != plan.StatusExecuting || !pausableExecutionStatus(attempt.Status) {
+			if task.Status != plan.StatusExecuting || !pausableExecutionStatus(attempt.Status) {
 				return nil
 			}
 			for _, current := range jobs {
@@ -674,11 +674,11 @@ func (h *ExecutionHandler) ReconcileJobSettlement(ctx context.Context, job execu
 			}
 		}
 		attempt.Status = execution.ExecutionPaused
-		aggregate.Task.Status = plan.StatusPaused
+		task.Status = plan.StatusPaused
 		if err := repositories.Executions().UpdateExecution(ctx, attempt); err != nil {
 			return err
 		}
-		return repositories.CleanupTasks().UpdateTask(ctx, aggregate.Task)
+		return repositories.CleanupTasks().UpdateTask(ctx, task)
 	})
 }
 
@@ -2437,6 +2437,18 @@ func (h *ExecutionHandler) completeDirectReadback(
 }
 
 func (h *ExecutionHandler) finalizeExecution(ctx context.Context, attempt execution.ExecutionAttempt, aggregate persistence.CleanupTaskAggregate) error {
+	// Without a failed action nothing is blocked, so the execution cannot
+	// settle until every step has a terminal action. This cheap probe skips
+	// the full reload (and the handler-wide lock) for every unfinished step.
+	counts, err := h.planner.repositories.Executions().CountActionsByStatus(ctx, attempt.ID)
+	if err != nil {
+		return err
+	}
+	if counts[execution.ActionFailed] == 0 &&
+		counts[execution.ActionSucceeded]+counts[execution.ActionSkipped] < len(aggregate.Steps) {
+		return nil
+	}
+
 	h.executionStateMu.Lock()
 	defer h.executionStateMu.Unlock()
 
@@ -2697,21 +2709,41 @@ func appendCreatedFromRuntimeDependencies(
 	steps []plan.CleanupTaskStep,
 	relationships []graph.Relationship,
 ) (plan.CleanupTaskStep, int) {
+	stepByAssetID, sourcesByTarget := createdFromIndexes(steps, relationships)
+	return appendCreatedFromDependencies(step, stepByAssetID, sourcesByTarget)
+}
+
+// createdFromIndexes is built once per task so dependency inference stays
+// linear in steps plus relationships.
+func createdFromIndexes(
+	steps []plan.CleanupTaskStep,
+	relationships []graph.Relationship,
+) (map[asset.AssetID]plan.StepID, map[asset.AssetID][]asset.AssetID) {
 	stepByAssetID := make(map[asset.AssetID]plan.StepID, len(steps))
 	for _, candidate := range steps {
 		stepByAssetID[candidate.AssetID] = candidate.ID
 	}
+	sourcesByTarget := make(map[asset.AssetID][]asset.AssetID)
+	for _, relationship := range relationships {
+		if relationship.Type == graph.RelationshipCreatedFrom {
+			sourcesByTarget[relationship.TargetAssetID] = append(sourcesByTarget[relationship.TargetAssetID], relationship.SourceAssetID)
+		}
+	}
+	return stepByAssetID, sourcesByTarget
+}
+
+func appendCreatedFromDependencies(
+	step plan.CleanupTaskStep,
+	stepByAssetID map[asset.AssetID]plan.StepID,
+	sourcesByTarget map[asset.AssetID][]asset.AssetID,
+) (plan.CleanupTaskStep, int) {
 	existing := make(map[plan.StepID]struct{}, len(step.DependsOn))
 	for _, dependency := range step.DependsOn {
 		existing[dependency] = struct{}{}
 	}
 	added := 0
-	for _, relationship := range relationships {
-		if relationship.Type != graph.RelationshipCreatedFrom ||
-			relationship.TargetAssetID != step.AssetID {
-			continue
-		}
-		dependency, exists := stepByAssetID[relationship.SourceAssetID]
+	for _, sourceAssetID := range sourcesByTarget[step.AssetID] {
+		dependency, exists := stepByAssetID[sourceAssetID]
 		if !exists || dependency == step.ID {
 			continue
 		}
@@ -2734,13 +2766,14 @@ func appendCreatedFromTaskDependencies(
 	steps []plan.CleanupTaskStep,
 	relationships []graph.Relationship,
 ) ([]plan.CleanupTaskStep, int) {
+	stepByAssetID, sourcesByTarget := createdFromIndexes(steps, relationships)
 	result := append([]plan.CleanupTaskStep(nil), steps...)
 	added := 0
 	for index := range result {
-		updated, stepAdded := appendCreatedFromRuntimeDependencies(
+		updated, stepAdded := appendCreatedFromDependencies(
 			result[index],
-			steps,
-			relationships,
+			stepByAssetID,
+			sourcesByTarget,
 		)
 		result[index] = updated
 		added += stepAdded

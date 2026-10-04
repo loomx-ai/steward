@@ -3,14 +3,13 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, expect, it, vi } from "vitest";
-import { listExecutions, listCleanupTasks } from "@/api/client";
+import { listCleanupTasks } from "@/api/client";
 import type { CleanupTask } from "@/api/types";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { filterCleanupTasks, CleanupView } from "./CleanupView";
 
 vi.mock("@/api/client", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/api/client")>()),
-  listExecutions: vi.fn(),
   listCleanupTasks: vi.fn(),
 }));
 
@@ -65,22 +64,22 @@ beforeEach(() => {
     scrollIntoView: { configurable: true, value: vi.fn() },
   });
   vi.mocked(listCleanupTasks).mockResolvedValue({
-    items: [cleanupTask("cln-1", "2026-08-03T00:00:00Z")],
-  });
-  vi.mocked(listExecutions).mockResolvedValue({
     items: [
       {
-        id: "execution-1",
-        connection_id: "connection-a",
-        cleanup_task_id: "cln-1",
-        status: "succeeded",
-        requested_by: "operator",
-        idempotency_key: "key-1",
-        created_at: "2026-08-03T00:00:01Z",
-        updated_at: "2026-08-03T00:01:32Z",
-        duration_ms: 90_000,
-        started_at: "2026-08-03T00:00:02Z",
-        finished_at: "2026-08-03T00:01:32Z",
+        ...cleanupTask("cln-1", "2026-08-03T00:00:00Z"),
+        latest_execution: {
+          id: "execution-1",
+          connection_id: "connection-a",
+          cleanup_task_id: "cln-1",
+          status: "succeeded",
+          requested_by: "operator",
+          idempotency_key: "key-1",
+          created_at: "2026-08-03T00:00:01Z",
+          updated_at: "2026-08-03T00:01:32Z",
+          duration_ms: 90_000,
+          started_at: "2026-08-03T00:00:02Z",
+          finished_at: "2026-08-03T00:01:32Z",
+        },
       },
     ],
   });
@@ -168,7 +167,6 @@ it("summarizes a single unnamed target without exposing its internal ID", async 
   task.selectors = [{ kind: "asset", asset_id: "ast-internal-id" }];
   task.resolved_asset_ids = ["ast-internal-id"];
   vi.mocked(listCleanupTasks).mockResolvedValue({ items: [task] });
-  vi.mocked(listExecutions).mockResolvedValue({ items: [] });
 
   render(
     <QueryClientProvider

@@ -1,6 +1,7 @@
 package plan
 
 import (
+	"container/heap"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -38,7 +39,9 @@ type Result struct {
 	SnapshotHash string            `json:"snapshot_hash"`
 }
 
-func solveOnce(input Input) (Result, error) {
+// solveOnce skips the snapshot hash unless hash is set; required-deletion
+// expansion only needs it for its final pass.
+func solveOnce(input Input, hash bool) (Result, error) {
 	selected := uniqueAssetIDs(input.ResolvedAssetIDs)
 	if len(selected) == 0 {
 		return Result{}, fmt.Errorf("cleanup task requires at least one selected asset")
@@ -361,13 +364,17 @@ func solveOnce(input Input) (Result, error) {
 
 	// Keep other native controllers visible even though their operation edges
 	// were not activated for execution. Sharing is not an ownership conflict.
+	bindingsByManaged := make(map[asset.AssetID][]graph.LifecycleBinding)
+	for _, binding := range input.LifecycleBindings {
+		bindingsByManaged[binding.ManagedAssetID] = append(bindingsByManaged[binding.ManagedAssetID], binding)
+	}
 	for _, impact := range impactItems {
 		if impact.Expected != ExpectedDelegatedDelete {
 			continue
 		}
 		seenControllers := map[asset.AssetID]bool{}
-		for _, binding := range input.LifecycleBindings {
-			if binding.ManagedAssetID != impact.AssetID || !graph.NativeDeleteEffect(binding) || seenControllers[binding.ControllerAssetID] {
+		for _, binding := range bindingsByManaged[impact.AssetID] {
+			if !graph.NativeDeleteEffect(binding) || seenControllers[binding.ControllerAssetID] {
 				continue
 			}
 			if _, deleting := deletionOwner[binding.ControllerAssetID]; deleting {
@@ -453,9 +460,11 @@ func solveOnce(input Input) (Result, error) {
 		right := strings.Join([]string{string(result.Warnings[j].Code), string(result.Warnings[j].AssetID), string(result.Warnings[j].ControllerID)}, "\x00")
 		return left < right
 	})
-	result.SnapshotHash, err = snapshotHash(input, selected, assets, relationships, snapshotBindings)
-	if err != nil {
-		return Result{}, err
+	if hash {
+		result.SnapshotHash, err = snapshotHash(input, selected, assets, relationships, snapshotBindings)
+		if err != nil {
+			return Result{}, err
+		}
 	}
 	for i := range result.Steps {
 		step := &result.Steps[i]
@@ -801,27 +810,40 @@ func topologicalSteps(steps map[asset.AssetID]CleanupTaskStep, dependencies map[
 			dependents[dependencyID] = append(dependents[dependencyID], stepID)
 		}
 	}
-	ready := make([]asset.AssetID, 0, len(steps))
+	ready := make(readyAssets, 0, len(steps))
 	for id, degree := range indegree {
 		if degree == 0 {
 			ready = append(ready, id)
 		}
 	}
-	sort.Slice(ready, func(i, j int) bool { return ready[i] < ready[j] })
+	heap.Init(&ready)
 	result := make([]CleanupTaskStep, 0, len(steps))
-	for len(ready) > 0 {
-		id := ready[0]
-		ready = ready[1:]
+	for ready.Len() > 0 {
+		id := heap.Pop(&ready).(asset.AssetID)
 		result = append(result, steps[id])
 		for _, dependent := range dependents[id] {
 			indegree[dependent]--
 			if indegree[dependent] == 0 {
-				ready = append(ready, dependent)
-				sort.Slice(ready, func(i, j int) bool { return ready[i] < ready[j] })
+				heap.Push(&ready, dependent)
 			}
 		}
 	}
 	return result, len(result) == len(steps)
+}
+
+// readyAssets is a min-heap of asset IDs: topologicalSteps always emits the
+// smallest ready ID next.
+type readyAssets []asset.AssetID
+
+func (h readyAssets) Len() int           { return len(h) }
+func (h readyAssets) Less(i, j int) bool { return h[i] < h[j] }
+func (h readyAssets) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+func (h *readyAssets) Push(x any)        { *h = append(*h, x.(asset.AssetID)) }
+func (h *readyAssets) Pop() any {
+	old := *h
+	value := old[len(old)-1]
+	*h = old[:len(old)-1]
+	return value
 }
 
 func stableSteps(values map[asset.AssetID]CleanupTaskStep) []CleanupTaskStep {

@@ -202,3 +202,41 @@ func TestCleanupProgressStreamHidesOtherConnectionsTasks(t *testing.T) {
 		t.Fatalf("status=%d body=%s", streamResponse.Code, streamResponse.Body.String())
 	}
 }
+
+func TestCleanupTaskListIncludesLatestExecution(t *testing.T) {
+	_, router := terminalRouter(t)
+	serve := func(method, path, body string) *httptest.ResponseRecorder {
+		request := httptest.NewRequest(method, path, bytes.NewBufferString(body))
+		request.Header.Set("Authorization", "Bearer operator-token")
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+		return response
+	}
+	list := func() []map[string]any {
+		response := serve(http.MethodGet, "/api/cleanup?connection_id=connection-a", "")
+		var page struct {
+			Items []map[string]any `json:"items"`
+		}
+		if err := json.Unmarshal(response.Body.Bytes(), &page); err != nil || response.Code != http.StatusOK || len(page.Items) != 1 {
+			t.Fatalf("list status=%d body=%s err=%v", response.Code, response.Body.String(), err)
+		}
+		return page.Items
+	}
+	taskResponse := serve(http.MethodPost, "/api/cleanup?connection_id=connection-a", `{"selectors":[{"kind":"asset","asset_id":"asset-a"}]}`)
+	var aggregate persistence.CleanupTaskAggregate
+	if err := json.Unmarshal(taskResponse.Body.Bytes(), &aggregate); err != nil || taskResponse.Code != http.StatusCreated {
+		t.Fatalf("cleanup task status=%d body=%s err=%v", taskResponse.Code, taskResponse.Body.String(), err)
+	}
+	if item := list()[0]; item["id"] != string(aggregate.Task.ID) || item["latest_execution"] != nil {
+		t.Fatalf("unexecuted task item = %v", item)
+	}
+	executeResponse := serve(http.MethodPost, "/api/cleanup/"+string(aggregate.Task.ID)+"/executions?connection_id=connection-a", `{"idempotency_key":"list-latest","confirmation":{"acknowledged":true}}`)
+	var attempt execution.ExecutionAttempt
+	if err := json.Unmarshal(executeResponse.Body.Bytes(), &attempt); err != nil || executeResponse.Code != http.StatusAccepted {
+		t.Fatalf("execution status=%d body=%s err=%v", executeResponse.Code, executeResponse.Body.String(), err)
+	}
+	latest, _ := list()[0]["latest_execution"].(map[string]any)
+	if latest["id"] != string(attempt.ID) || latest["requested_by"] != attempt.RequestedBy {
+		t.Fatalf("latest execution = %v, want %s", latest, attempt.ID)
+	}
+}

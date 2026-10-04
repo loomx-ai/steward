@@ -387,3 +387,33 @@ func TestBoundedJobLogPayloadTruncatesLargePagesButKeepsPagingFields(t *testing.
 		t.Fatalf("truncated payload = %s", encoded)
 	}
 }
+
+func TestLifecycleComponentFollowsRequiredDeletionsAndBindings(t *testing.T) {
+	t.Parallel()
+
+	assets := []asset.Asset{{ID: "a"}, {ID: "b"}, {ID: "c"}, {ID: "d"}, {ID: "e"}, {ID: "f"}}
+	relationships := []graph.Relationship{
+		{ID: "a-b", SourceAssetID: "a", TargetAssetID: "b", Evidence: map[string]any{graph.RelationshipEvidenceRequiredDeletion: true}},
+		{ID: "e-a", SourceAssetID: "e", TargetAssetID: "a"},
+		{ID: "d-f", SourceAssetID: "d", TargetAssetID: "f", Evidence: map[string]any{graph.RelationshipEvidenceRequiredDeletion: true}},
+	}
+	bindings := []graph.LifecycleBinding{
+		{ID: "c-b", ControllerAssetID: "c", ManagedAssetID: "b"},
+		{ID: "d-e", ControllerAssetID: "d", ManagedAssetID: "e"},
+	}
+	gotAssets, gotRelationships, gotBindings := lifecycleComponentFromSnapshot([]asset.AssetID{"a"}, assets, relationships, bindings)
+	var ids []string
+	for _, value := range gotAssets {
+		ids = append(ids, string(value.ID))
+	}
+	for _, value := range gotRelationships {
+		ids = append(ids, string(value.ID))
+	}
+	for _, value := range gotBindings {
+		ids = append(ids, string(value.ID))
+	}
+	// e is only a relationship neighbour of a, so it is not walked.
+	if got := strings.Join(ids, ","); got != "a,b,c,a-b,e-a,c-b" {
+		t.Fatalf("component = %s", got)
+	}
+}
