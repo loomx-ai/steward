@@ -174,7 +174,15 @@ func (c *client) cloudNatVpcHubs(ctx context.Context, network string) ([]string,
 	return slices.Compact(hubs), firewallDigest(proofs), nil
 }
 
-func (c *client) enrichCloudNatHubs(ctx context.Context, item *contracts.InventoryItem, data, parent map[string]any, parentID string) error {
+// cloudNatHubCheck is the verified spoke membership of one network as seen
+// from one router page. The NATs of a router share it, so it is read once.
+type cloudNatHubCheck struct {
+	hubs  []string
+	proof string
+	err   error
+}
+
+func (c *client) enrichCloudNatHubs(ctx context.Context, item *contracts.InventoryItem, data, parent map[string]any, parentID string, checked map[string]cloudNatHubCheck) error {
 	hubs, membership, err := c.cloudNatHubReferences(data)
 	if err != nil || !membership {
 		return err
@@ -183,39 +191,54 @@ func (c *client) enrichCloudNatHubs(ctx context.Context, item *contracts.Invento
 	if network == "" {
 		return groupDenied("cloud_nat_source_network_missing")
 	}
-	first, proof, err := c.cloudNatVpcHubs(ctx, network)
-	if err != nil {
-		return err
+	key := network + "\x00" + parentID
+	check, done := checked[key]
+	if !done {
+		check.hubs, check.proof, check.err = c.cloudNatHubMembership(ctx, network, parent, parentID)
+		checked[key] = check
 	}
-	_, second, err := c.cloudNatVpcHubs(ctx, network)
-	if err != nil {
-		return err
+	if check.err != nil {
+		return check.err
 	}
-	if proof != second {
-		return groupDenied("cloud_nat_spoke_membership_changed")
-	}
-	kind, _ := findType(routerType)
-	endpoint, err := c.resourceURL(kind, parentID)
-	if err != nil {
-		return err
-	}
-	live, err := c.request(ctx, "GET", endpoint, nil)
-	if err != nil {
-		return contracts.DependencyReadError(err)
-	}
-	if err := c.routerData(parentID, text(parent["id"]), live); err != nil {
-		return err
-	}
-	if routerConfiguration(parent, false) != routerConfiguration(live, false) {
-		return groupDenied("cloud_nat_router_changed")
-	}
-	hubs = append(hubs, first...)
+	hubs = append(hubs, check.hubs...)
 	slices.Sort(hubs)
 	hubs = slices.Compact(hubs)
-	item.Normalized["_cloud_nat_hub_membership"] = proof
+	item.Normalized["_cloud_nat_hub_membership"] = check.proof
 	item.Normalized[referenceKey(cloudNatHubType)] = hubs
 	item.NetworkReferences = append(item.NetworkReferences, hubs...)
 	slices.Sort(item.NetworkReferences)
 	item.NetworkReferences = slices.Compact(item.NetworkReferences)
 	return nil
+}
+
+// cloudNatHubMembership reads the network's spokes twice around an unchanged
+// router read, proving the membership snapshot is stable.
+func (c *client) cloudNatHubMembership(ctx context.Context, network string, parent map[string]any, parentID string) ([]string, string, error) {
+	first, proof, err := c.cloudNatVpcHubs(ctx, network)
+	if err != nil {
+		return nil, "", err
+	}
+	_, second, err := c.cloudNatVpcHubs(ctx, network)
+	if err != nil {
+		return nil, "", err
+	}
+	if proof != second {
+		return nil, "", groupDenied("cloud_nat_spoke_membership_changed")
+	}
+	kind, _ := findType(routerType)
+	endpoint, err := c.resourceURL(kind, parentID)
+	if err != nil {
+		return nil, "", err
+	}
+	live, err := c.request(ctx, "GET", endpoint, nil)
+	if err != nil {
+		return nil, "", contracts.DependencyReadError(err)
+	}
+	if err := c.routerData(parentID, text(parent["id"]), live); err != nil {
+		return nil, "", err
+	}
+	if routerConfiguration(parent, false) != routerConfiguration(live, false) {
+		return nil, "", groupDenied("cloud_nat_router_changed")
+	}
+	return first, proof, nil
 }

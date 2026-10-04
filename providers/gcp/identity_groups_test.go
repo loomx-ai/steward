@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -26,6 +27,8 @@ type identityScenario struct {
 	hook                       func(*http.Request) (*http.Response, bool)
 	emptyPage, delayed, linger bool
 	operation                  map[string]any
+	// mu serializes the fake service: groups are read concurrently.
+	mu sync.Mutex
 }
 
 func newIdentityScenario() *identityScenario {
@@ -44,6 +47,8 @@ func newIdentityScenario() *identityScenario {
 // of the generated catalog, identity parser and deletion implementation.
 func (s *identityScenario) transport(t *testing.T) roundTripFunc {
 	return func(r *http.Request) (*http.Response, error) {
+		s.mu.Lock()
+		defer s.mu.Unlock()
 		s.calls = append(s.calls, r.Method+" "+r.URL.String())
 		if s.hook != nil {
 			if response, handled := s.hook(r); handled {
@@ -646,10 +651,11 @@ func TestIdentityGroupsMembershipPagingAndReadRaces(t *testing.T) {
 						s.groups[identityTestGroup]["description"] = "changed inside membership interval"
 					}
 				}
-				if req.URL.Path == "/v1/"+identityTestGroup+"/memberships/m-user" && variant == "member_detail_changed" {
-					row := cloneParameters(s.members[identityTestGroup+"/memberships/m-user"])
-					row["updateTime"] = "2026-02-02T00:00:00Z"
-					return dataformResponse(req, 200, row), true
+				// A member that changes between the two snapshot passes.
+				if req.URL.Path == "/v1/"+identityTestGroup+"/memberships" && variant == "member_detail_changed" {
+					if reads++; reads > 1 {
+						s.members[identityTestGroup+"/memberships/m-user"]["updateTime"] = "2026-02-02T00:00:00Z"
+					}
 				}
 				if req.URL.Path == "/v1/"+identityTestGroup+"/securitySettings" && variant == "security_during_read" {
 					reads++
@@ -783,5 +789,36 @@ func TestIdentityGroupsInventoryScopeBoundary(t *testing.T) {
 				t.Fatal("invalid directory inventory scope accepted")
 			}
 		})
+	}
+}
+func TestIdentityGroupShardsOfOneScanShareOneDirectoryRead(t *testing.T) {
+	s := newIdentityScenario()
+	r := s.runtime(t)
+	if _, err := r.resolve(context.Background(), "connection"); err != nil {
+		t.Fatal(err)
+	}
+	var mu sync.Mutex
+	paths := map[string]int{}
+	s.hook = func(req *http.Request) (*http.Response, bool) {
+		mu.Lock()
+		paths[req.URL.Path]++
+		mu.Unlock()
+		return nil, false
+	}
+	items := 0
+	for _, scan := range []asset.ScanRunID{"scan-1", "scan-1", "scan-2"} {
+		for _, kind := range []string{identityGroupType, identityMemberType} {
+			request := identityInventoryRequest(r, kind)
+			request.ScanRunID = scan
+			batch, err := r.List(context.Background(), request)
+			if err != nil || !batch.Complete {
+				t.Fatalf("%s %s: %+v %v", scan, kind, batch, err)
+			}
+			items += len(batch.Items)
+		}
+	}
+	// Each scan lists the directory twice; a membership is never read alone.
+	if paths["/v1/groups"] != 4 || paths["/v1/"+identityTestGroup+"/memberships/m-user"] != 0 || items == 0 {
+		t.Fatalf("requests = %v items = %d", paths, items)
 	}
 }

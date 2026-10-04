@@ -273,39 +273,58 @@ func (c *client) gkeMembers(ctx context.Context, root asset.Asset, live map[stri
 }
 
 func (h *computeGroups) contributeGKE(ctx context.Context, assets []asset.Asset) (governance.Contribution, map[string]bool, error) {
+	indexed := indexManagedAssets(assets)
 	result := governance.Contribution{}
 	owned := map[string]bool{}
 	// Process clusters before standalone node pools so each binding has one
 	// native controller and no duplicate Compute contribution.
 	for _, rootKind := range []string{clusterType, nodePoolType} {
+		var roots []asset.Asset
 		for _, root := range assets {
-			if root.Identity.Provider != asset.ProviderGCP || root.Identity.NativeType != rootKind || owned[root.Identity.NativeID] {
-				continue
+			if root.Identity.Provider == asset.ProviderGCP && root.Identity.NativeType == rootKind && !owned[root.Identity.NativeID] {
+				roots = append(roots, root)
 			}
+		}
+		// Live reads run concurrently; bindings are added in asset order.
+		lives := make([]map[string]any, len(roots))
+		reads := make([][]gkeMember, len(roots))
+		if err := forEachConcurrently(len(roots), groupReadConcurrency, func(index int) error {
+			root := roots[index]
 			live, err := h.client.nativeGet(ctx, rootKind, root.Identity.NativeID)
 			if err != nil {
-				return result, owned, err
+				return err
 			}
 			members, err := h.client.gkeMembers(ctx, root, live)
 			if err != nil {
-				return result, owned, err
+				return err
 			}
 			if rootKind == clusterType && root.Normalized[gkeNetworkKey] != nil {
 				network, err := plannedGKENetwork(root)
 				if err != nil {
-					return result, owned, err
+					return err
 				}
 				for _, resource := range network.Resources {
 					data, err := h.client.nativeGet(ctx, resource.Kind, resource.ID)
 					if err != nil {
-						return result, owned, err
+						return err
 					}
 					if text(data["id"]) != resource.UID {
-						return result, owned, groupDenied("gke_network_resource_identity_changed")
+						return groupDenied("gke_network_resource_identity_changed")
 					}
 					members = append(members, gkeMember{id: resource.ID, kind: resource.Kind, parent: root.Identity.NativeID, data: data, deletes: resource.Delete, shared: !resource.Delete})
 				}
 			}
+			lives[index], reads[index] = live, members
+			return nil
+		}); err != nil {
+			return result, owned, err
+		}
+		for index, root := range roots {
+			// A root claimed by an earlier root of this pass is skipped, as before.
+			if owned[root.Identity.NativeID] {
+				continue
+			}
+			live, members := lives[index], reads[index]
 			controllers := map[string]asset.Asset{root.Identity.NativeID: root}
 			for _, member := range members {
 				owner, exists := controllers[member.parent]
@@ -316,7 +335,7 @@ func (h *computeGroups) contributeGKE(ctx context.Context, assets []asset.Asset)
 				if member.shared {
 					ownership, policy = graph.OwnershipShared, graph.CleanupRetain
 				}
-				managed, err := addGroupBinding(&result, assets, owner, member.kind, member.id, ownership, policy, member.deletes)
+				managed, err := addGroupBinding(&result, indexed, owner, member.kind, member.id, ownership, policy, member.deletes)
 				if err != nil {
 					return result, owned, err
 				}

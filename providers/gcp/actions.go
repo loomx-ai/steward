@@ -656,12 +656,26 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 			}
 			done := data["done"] == true || text(data["status"]) == "DONE"
 			if !done {
-				return contracts.WaitResult{RetryAfter: 2 * time.Second, State: text(data["status"])}, nil
+				return contracts.WaitResult{RetryAfter: operationPollDelay(data, time.Now()), State: text(data["status"])}, nil
 			}
 		}
 	}
 	return contracts.WaitResult{Done: true}, nil
 }
+
+// operationPollDelay polls a young operation every 2s and backs off as it
+// ages, to an eighth of its age and at most 30s, so a long deletion keeps
+// several polls in any window without being read every 2s. The age comes from
+// the operation itself, so the backoff needs no persisted state.
+func operationPollDelay(data map[string]any, now time.Time) time.Duration {
+	for _, raw := range []any{data["startTime"], data["insertTime"], object(data["metadata"])["createTime"]} {
+		if started, err := time.Parse(time.RFC3339Nano, text(raw)); err == nil {
+			return min(30*time.Second, max(2*time.Second, now.Sub(started)/8))
+		}
+	}
+	return 2 * time.Second
+}
+
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	if a.kind.NativeType == billingBudgetType {
 		return a.billingBudgetReadback(ctx, request)

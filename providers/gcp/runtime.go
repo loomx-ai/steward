@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -131,12 +133,22 @@ func (r *Runtime) resolve(ctx context.Context, id asset.ConnectionID) (*client, 
 	if err != nil {
 		return nil, err
 	}
+	// Every inventory page resolves its client. An unchanged, unexpired
+	// credential reuses the resolved client instead of re-parsing its key.
+	source := credentialSource(credential)
+	r.mu.Lock()
+	existing := r.clients[id]
+	r.mu.Unlock()
+	if existing != nil && existing.source == source && (credential.ExpiresAt == nil || credential.ExpiresAt.After(time.Now())) {
+		return existing, nil
+	}
 	candidate, err := newClient(credential, r.transport)
 	if err != nil {
 		return nil, err
 	}
+	candidate.source = source
 	r.mu.Lock()
-	existing := r.clients[id]
+	existing = r.clients[id]
 	cache := r.caches[id]
 	if cache == nil || cache.fingerprint != candidate.fingerprint {
 		cache = &clientCache{fingerprint: candidate.fingerprint}
@@ -214,11 +226,19 @@ func (r *Runtime) DiscoverRegions(ctx context.Context, id asset.ConnectionID) ([
 	sort.Slice(result, func(i, j int) bool { return result[i].RegionID < result[j].RegionID })
 	return result, nil
 }
+
+// compiledSpec finds a kind's spec by index rather than scanning every spec:
+// the runtime bundle is the provider bundle the index was built from.
+func (r *Runtime) compiledSpec(nativeType string) (spec.CompiledSpec, bool) {
+	metadata, _ := providerData()
+	if index, ok := metadata.specIndex[nativeType]; ok && index < len(r.bundle.Specs) && r.bundle.Specs[index].ResourceKind.NativeType == nativeType {
+		return r.bundle.Specs[index], true
+	}
+	return spec.CompiledSpec{}, false
+}
 func (r *Runtime) resourceKind(nativeType string) asset.ResourceKind {
-	for _, compiled := range r.bundle.Specs {
-		if compiled.ResourceKind.NativeType == nativeType {
-			return compiled.ResourceKind
-		}
+	if compiled, ok := r.compiledSpec(nativeType); ok {
+		return compiled.ResourceKind
 	}
 	return asset.ResourceKind{ID: asset.ResourceKindID("gcp:" + nativeType), Provider: asset.ProviderGCP, NativeType: nativeType, DisplayName: last(nativeType), ScopeKinds: both, Capabilities: asset.CapabilitySet{asset.CapabilityIndexed}, BundleRevision: r.bundle.Revision}
 }
@@ -229,4 +249,20 @@ func regionOf(location string) string {
 		return strings.Join(parts[:len(parts)-1], "-")
 	}
 	return location
+}
+
+// credentialSource identifies the stored credential material a client was
+// built from.
+func credentialSource(credential contracts.Credential) [32]byte {
+	dynamic := ""
+	if credential.Dynamic != nil {
+		dynamic = credential.Dynamic.Key
+	}
+	encoded, _ := json.Marshal(struct {
+		Type             asset.CredentialType
+		Values           map[string]string
+		ExpiresAt        *time.Time
+		Version, Dynamic string
+	}{credential.Type, credential.Values, credential.ExpiresAt, credential.Version, dynamic})
+	return sha256.Sum256(encoded)
 }

@@ -42,7 +42,9 @@ type client struct {
 	firewallParent string
 	identityParent string
 	fingerprint    [32]byte
-	cache          *clientCache
+	// source identifies the credential the client was resolved from.
+	source [32]byte
+	cache  *clientCache
 }
 
 func newClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {

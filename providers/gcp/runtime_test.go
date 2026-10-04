@@ -3,10 +3,13 @@ package gcp
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"maps"
 	"net/http"
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -151,5 +154,32 @@ func TestRegionalBackendReferenceUsesCAIListType(t *testing.T) {
 	refs := references(c, map[string]any{"backendService": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/backendServices/backend"})
 	if len(refs["compute.googleapis.com/RegionBackendService"]) != 1 || len(refs["compute.googleapis.com/BackendService"]) != 0 {
 		t.Fatalf("regional backend would not resolve against CAI inventory: %+v", refs)
+	}
+}
+
+// An unchanged credential reuses its resolved client; a rotated or expired one
+// is rebuilt and validated again.
+func TestResolveReusesClientOnlyForTheSameUnexpiredCredential(t *testing.T) {
+	credential, _ := testCredential(t)
+	current := credential
+	r := protocolRuntime(t, func(*http.Request) (*http.Response, error) { return nil, errors.New("unexpected product request") })
+	r.credentials = credentialFunc(func(context.Context, asset.ConnectionID) (contracts.Credential, error) { return current, nil })
+	first, err := r.resolve(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if again, err := r.resolve(t.Context(), "connection"); err != nil || again != first {
+		t.Fatalf("unchanged credential rebuilt its client: %v", err)
+	}
+	current.Values = maps.Clone(credential.Values)
+	current.Values["service_account_json"] = "{}"
+	if _, err := r.resolve(t.Context(), "connection"); err == nil {
+		t.Fatal("rotated invalid credential reused the old client")
+	}
+	current = credential
+	past := time.Now().Add(-time.Minute)
+	current.ExpiresAt = &past
+	if _, err := r.resolve(t.Context(), "connection"); err == nil {
+		t.Fatal("expired credential reused the old client")
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -200,5 +201,22 @@ func TestExecuteMarksOnlyReadFailuresBeforeTheDelete(t *testing.T) {
 	})}, http.MethodGet, &url.URL{Scheme: "https", Host: "run.googleapis.com", Path: "/v2/x"}, nil, safePayload)
 	if err == nil || contracts.BeforeMutation(err) {
 		t.Fatalf("unscoped read marked: %v", err)
+	}
+}
+
+func TestOperationPollDelayBacksOffWithOperationAge(t *testing.T) {
+	now := time.Date(2026, 10, 4, 12, 0, 0, 0, time.UTC)
+	for _, test := range []struct {
+		data map[string]any
+		want time.Duration
+	}{
+		{map[string]any{}, 2 * time.Second},
+		{map[string]any{"insertTime": now.Add(-5 * time.Second).Format(time.RFC3339Nano)}, 2 * time.Second},
+		{map[string]any{"startTime": now.Add(-80 * time.Second).Format(time.RFC3339)}, 10 * time.Second},
+		{map[string]any{"metadata": map[string]any{"createTime": now.Add(-time.Hour).Format(time.RFC3339Nano)}}, 30 * time.Second},
+	} {
+		if got := operationPollDelay(test.data, now); got != test.want {
+			t.Errorf("delay for %v = %s, want %s", test.data, got, test.want)
+		}
 	}
 }

@@ -42,6 +42,8 @@ type providerMetadata struct {
 	hosts   map[string]bool
 	// pageSizes holds the largest page each spec-declared list operation accepts.
 	pageSizes map[string]int
+	// specIndex locates each kind's compiled spec in bundle.Specs.
+	specIndex map[string]int
 }
 
 var providerData = sync.OnceValues(loadProviderData)
@@ -101,7 +103,11 @@ func loadProviderData() (providerMetadata, error) {
 	seen := map[string]bool{}
 	definitions := map[string]spec.ResourceKindSpec{}
 	result.pageSizes = map[string]int{}
-	for _, compiled := range result.bundle.Specs {
+	result.specIndex = make(map[string]int, len(result.bundle.Specs))
+	for index, compiled := range result.bundle.Specs {
+		if _, exists := result.specIndex[compiled.ResourceKind.NativeType]; !exists {
+			result.specIndex[compiled.ResourceKind.NativeType] = index
+		}
 		definitions[compiled.ResourceKind.NativeType] = compiled.Definition
 		if list := compiled.Definition.Discovery.List; list != nil && list.Pagination != nil && list.Pagination.PageSizeParameter == "pageSize" && list.Pagination.MaxPageSize > 0 {
 			if current := result.pageSizes[list.Operation]; current == 0 || list.Pagination.MaxPageSize < current {

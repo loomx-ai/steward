@@ -17,6 +17,7 @@ type clientCache struct {
 	fingerprint [32]byte
 	parents     ttlCache[[]contracts.InventoryItem]
 	locations   ttlCache[[]string]
+	identity    ttlCache[[]identityGroupView]
 	reads       sharedReads
 }
 
@@ -77,8 +78,10 @@ type sharedReads struct {
 }
 
 type sharedRead struct {
-	done      chan struct{}
-	body      []byte
+	done chan struct{}
+	// parts holds the encoded page, or for a split page one entry per part.
+	parts     map[string][]byte
+	size      int
 	requestID string
 	err       error
 	expires   time.Time
@@ -95,6 +98,41 @@ func withSharedReads(ctx context.Context, scan asset.ScanRunID) context.Context 
 }
 
 func (s *sharedReads) get(ctx context.Context, key string, fetch func(context.Context) (contracts.InvocationResult, error)) (contracts.InvocationResult, error) {
+	entry, err := s.load(ctx, key, func(ctx context.Context) (map[string]any, string, error) {
+		result, err := fetch(ctx)
+		return map[string]any{"": result.Data}, result.RequestID, err
+	})
+	if err != nil {
+		return contracts.InvocationResult{}, err
+	}
+	data := map[string]any{}
+	if err := decodeShared(entry.parts[""], &data); err != nil {
+		return contracts.InvocationResult{}, err
+	}
+	return contracts.InvocationResult{Data: data, RequestID: entry.requestID, NextToken: text(data["nextPageToken"])}, nil
+}
+
+// getParts shares a page that fetch splits into named parts, so each shard
+// decodes only the parts it keeps. A part the page does not have is nil.
+func (s *sharedReads) getParts(ctx context.Context, key string, fetch func(context.Context) (map[string]any, string, error), names ...string) ([]any, string, error) {
+	entry, err := s.load(ctx, key, fetch)
+	if err != nil {
+		return nil, "", err
+	}
+	values := make([]any, len(names))
+	for index, name := range names {
+		if body, ok := entry.parts[name]; ok {
+			if err := decodeShared(body, &values[index]); err != nil {
+				return nil, "", err
+			}
+		}
+	}
+	return values, entry.requestID, nil
+}
+
+// load returns the finished shared entry for key, fetching it when no live one
+// exists. fetch returns the page parts and its request ID.
+func (s *sharedReads) load(ctx context.Context, key string, fetch func(context.Context) (map[string]any, string, error)) (*sharedRead, error) {
 	now := time.Now()
 	s.mu.Lock()
 	entry := s.entries[key]
@@ -115,18 +153,26 @@ func (s *sharedReads) get(ctx context.Context, key string, fetch func(context.Co
 	if owner {
 		// The page serves other shards too, so one shard's cancellation must
 		// not fail it for them.
-		result, err := fetch(context.WithoutCancel(ctx))
+		parts, requestID, err := fetch(context.WithoutCancel(ctx))
 		if err == nil {
-			entry.body, err = json.Marshal(result.Data)
+			entry.parts = make(map[string][]byte, len(parts))
+			for name, value := range parts {
+				var body []byte
+				if body, err = json.Marshal(value); err != nil {
+					break
+				}
+				entry.parts[name] = body
+				entry.size += len(body)
+			}
 		}
-		entry.requestID, entry.err, entry.expires = result.RequestID, err, time.Now().Add(sharedReadTTL)
+		entry.requestID, entry.err, entry.expires = requestID, err, time.Now().Add(sharedReadTTL)
 		s.mu.Lock()
 		if s.entries[key] == entry {
-			if err != nil || s.bytes+len(entry.body) > sharedReadBudget {
+			if err != nil || s.bytes+entry.size > sharedReadBudget {
 				// Waiting shards still receive this page; later ones read their own.
 				delete(s.entries, key)
 			} else {
-				s.bytes += len(entry.body)
+				s.bytes += entry.size
 			}
 		}
 		s.mu.Unlock()
@@ -135,25 +181,22 @@ func (s *sharedReads) get(ctx context.Context, key string, fetch func(context.Co
 	select {
 	case <-entry.done:
 	case <-ctx.Done():
-		return contracts.InvocationResult{}, ctx.Err()
+		return nil, ctx.Err()
 	}
-	if entry.err != nil {
-		return contracts.InvocationResult{}, entry.err
-	}
-	data := map[string]any{}
-	decoder := json.NewDecoder(bytes.NewReader(entry.body))
+	return entry, entry.err
+}
+
+func decodeShared(body []byte, target any) error {
+	decoder := json.NewDecoder(bytes.NewReader(body))
 	decoder.UseNumber()
-	if err := decoder.Decode(&data); err != nil {
-		return contracts.InvocationResult{}, err
-	}
-	return contracts.InvocationResult{Data: data, RequestID: entry.requestID, NextToken: text(data["nextPageToken"])}, nil
+	return decoder.Decode(target)
 }
 
 // drop removes an entry; the caller holds s.mu.
 func (s *sharedReads) drop(key string, entry *sharedRead) {
 	if s.entries[key] == entry {
 		delete(s.entries, key)
-		s.bytes -= len(entry.body)
+		s.bytes -= entry.size
 	}
 }
 

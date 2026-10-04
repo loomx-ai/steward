@@ -141,10 +141,10 @@ func (c *client) identityValidate(kind, name string, data map[string]any) error 
 		if _, present := data["roles"]; present && !ok {
 			return groupDenied("identity_membership_roles_invalid")
 		}
-		// The native resource contract defaults an unspecified role set to MEMBER.
+		// The native resource contract defaults an unspecified role set to
+		// MEMBER; identityDefaultRoles records it on reads the caller owns.
 		if len(roles) == 0 {
 			roles = []any{map[string]any{"name": "MEMBER"}}
-			data["roles"] = roles
 		}
 		seen := map[string]bool{}
 		for _, raw := range roles {
@@ -166,6 +166,15 @@ func (c *client) identityValidate(kind, name string, data map[string]any) error 
 	}
 	return nil
 }
+
+// identityDefaultRoles writes the default MEMBER role set into a validated
+// membership whose roles are unspecified. It writes data, so callers pass only
+// maps they own, never a saved asset.
+func identityDefaultRoles(kind string, data map[string]any) {
+	if roles, _ := data["roles"].([]any); kind == identityMemberType && len(roles) == 0 {
+		data["roles"] = []any{map[string]any{"name": "MEMBER"}}
+	}
+}
 func (c *client) identityRead(ctx context.Context, kind, name string) (map[string]any, error) {
 	data, err := c.request(ctx, "GET", "https://"+identityHost+"/v1/"+name, nil)
 	if err != nil {
@@ -180,6 +189,7 @@ func (c *client) identityComplete(ctx context.Context, kind, name string, data m
 	if err := c.identityValidate(kind, name, data); err != nil {
 		return err
 	}
+	identityDefaultRoles(kind, data)
 	if kind == identityGroupType {
 		if _, security := object(data["labels"])[identityHost+"/groups.security"]; security {
 			settings, err := c.request(ctx, "GET", "https://"+identityHost+"/v1/"+name+"/securitySettings", nil)
@@ -224,18 +234,14 @@ func (c *client) identityGroupView(ctx context.Context, name string) (identityGr
 			if err := c.identityValidate(identityMemberType, memberName, row); err != nil {
 				return previous, err
 			}
+			identityDefaultRoles(identityMemberType, row)
 			if identityGroupName(memberName) != name || current.Members[memberName] != nil {
 				return previous, groupDenied("identity_membership_list_invalid")
 			}
-			live, err := c.identityRead(ctx, identityMemberType, memberName)
-			if err != nil {
-				return previous, err
-			}
-			if identityConfiguration(row) != identityConfiguration(live) {
-				return previous, groupDenied("identity_membership_list_detail_changed")
-			}
-			current.Members[memberName] = live
-			proofs = append(proofs, identityMemberProof{memberName, identityConfiguration(live)})
+			// The FULL list row carries every field memberships.get returns;
+			// the second pass below proves the rows did not change.
+			current.Members[memberName] = row
+			proofs = append(proofs, identityMemberProof{memberName, identityConfiguration(row)})
 		}
 		slices.SortFunc(proofs, func(a, b identityMemberProof) int { return strings.Compare(a.ID, b.ID) })
 		finalGroup, err := c.identityRead(ctx, identityGroupType, name)
@@ -271,6 +277,52 @@ func (r *Runtime) listIdentityGroups(ctx context.Context, c *client, request con
 	if c.identityParent == "" {
 		return batch, nil
 	}
+	views, err := r.identityDirectoryViews(ctx, c, request.ScanRunID)
+	if err != nil {
+		return batch, err
+	}
+	for _, view := range views {
+		rows := view.Members
+		if request.ResourceKind.NativeType == identityGroupType {
+			rows = map[string]map[string]any{text(view.Group["name"]): view.Group}
+		}
+		ids := []string{}
+		for id := range rows {
+			ids = append(ids, id)
+		}
+		slices.Sort(ids)
+		for _, id := range ids {
+			item, err := r.inventoryItem(c, map[string]any{"name": "//" + identityHost + "/" + id, "assetType": request.ResourceKind.NativeType, "resource": map[string]any{"data": rows[id], "location": "global"}})
+			if err != nil {
+				return batch, err
+			}
+			delete(item.Normalized, "project_id")
+			delete(item.Normalized, "project_number")
+			item.Normalized["_inventory_source"] = identityInventorySource
+			batch.Items = append(batch.Items, item)
+		}
+	}
+	return batch, nil
+}
+
+const (
+	identityGroupConcurrency = 4
+	identityDirectoryTTL     = 15 * time.Minute
+)
+
+// identityDirectoryViews reads every group's verified view in group-name
+// order. The group and membership shards of one scan share one read: views are
+// kept per scan and directory, are never mutated by callers, and a failed read
+// is never kept.
+func (r *Runtime) identityDirectoryViews(ctx context.Context, c *client, scan asset.ScanRunID) ([]identityGroupView, error) {
+	load := func() ([]identityGroupView, error) { return c.identityDirectory(ctx) }
+	if scan == "" || c.cache == nil {
+		return load()
+	}
+	return c.cache.identity.get(string(scan)+"\x00"+c.identityParent, identityDirectoryTTL, false, load)
+}
+
+func (c *client) identityDirectory(ctx context.Context) ([]identityGroupView, error) {
 	list := func() (map[string]string, error) {
 		rows, err := c.batchList(ctx, "cloudidentity.groups.list", map[string]any{"parent": c.identityParent, "view": "FULL", "pageSize": 500}, "groups")
 		if err != nil {
@@ -291,51 +343,39 @@ func (r *Runtime) listIdentityGroups(ctx context.Context, c *client, request con
 	}
 	first, err := list()
 	if err != nil {
-		return batch, err
+		return nil, err
 	}
 	names := []string{}
 	for name := range first {
 		names = append(names, name)
 	}
 	slices.Sort(names)
-	for _, name := range names {
-		view, err := c.identityGroupView(ctx, name)
+	// Groups are read concurrently; the first failing group in name order
+	// fails the directory, as a serial read would.
+	views := make([]identityGroupView, len(names))
+	if err := forEachConcurrently(len(names), identityGroupConcurrency, func(index int) error {
+		view, err := c.identityGroupView(ctx, names[index])
 		if err != nil {
-			return batch, err
+			return err
 		}
 		withoutSecurity := cloneParameters(view.Group)
 		delete(withoutSecurity, identitySecurity)
-		if first[name] != identityConfiguration(withoutSecurity) {
-			return batch, groupDenied("identity_group_list_detail_changed")
+		if first[names[index]] != identityConfiguration(withoutSecurity) {
+			return groupDenied("identity_group_list_detail_changed")
 		}
-		rows := view.Members
-		if request.ResourceKind.NativeType == identityGroupType {
-			rows = map[string]map[string]any{name: view.Group}
-		}
-		ids := []string{}
-		for id := range rows {
-			ids = append(ids, id)
-		}
-		slices.Sort(ids)
-		for _, id := range ids {
-			item, err := r.inventoryItem(c, map[string]any{"name": "//" + identityHost + "/" + id, "assetType": request.ResourceKind.NativeType, "resource": map[string]any{"data": rows[id], "location": "global"}})
-			if err != nil {
-				return batch, err
-			}
-			delete(item.Normalized, "project_id")
-			delete(item.Normalized, "project_number")
-			item.Normalized["_inventory_source"] = identityInventorySource
-			batch.Items = append(batch.Items, item)
-		}
+		views[index] = view
+		return nil
+	}); err != nil {
+		return nil, err
 	}
 	second, err := list()
 	if err != nil {
-		return batch, err
+		return nil, err
 	}
 	if !reflect.DeepEqual(first, second) {
-		return batch, groupDenied("identity_group_directory_changed")
+		return nil, groupDenied("identity_group_directory_changed")
 	}
-	return batch, nil
+	return views, nil
 }
 func identityResourceOperation(metadata providerMetadata, kind, id, method string) (catalog.Operation, map[string]any, error) {
 	name, err := identityName(kind, id)

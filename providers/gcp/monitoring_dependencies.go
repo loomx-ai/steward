@@ -268,6 +268,7 @@ func (c *client) monitoringConsumers(ctx context.Context, kinds []string, checks
 }
 
 func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
+	indexed := indexManagedAssets(assets)
 	result, err := h.notificationChannelDependencies(ctx, assets)
 	if err != nil {
 		return result, err
@@ -336,7 +337,7 @@ func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID
 				block("monitoring_foreign_consumer_requires_own_connection")
 				continue
 			}
-			policy, found, err := findManagedAsset(assets, check, nativeType, id)
+			policy, found, err := findManagedAsset(indexed, check, nativeType, id)
 			if err != nil {
 				return result, err
 			}

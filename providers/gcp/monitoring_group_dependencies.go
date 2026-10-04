@@ -103,6 +103,7 @@ func (c *client) monitoringGroupConsumerReference(kind string, data map[string]a
 }
 
 func (h *monitoringDependencies) monitoringGroupDependencies(ctx context.Context, assets []asset.Asset) (governance.Contribution, error) {
+	indexed := indexManagedAssets(assets)
 	result := governance.Contribution{}
 	var groups []asset.Asset
 	for _, value := range assets {
@@ -167,7 +168,7 @@ func (h *monitoringDependencies) monitoringGroupDependencies(ctx context.Context
 					block("monitoring_group_consumer_reference_unresolved")
 					continue
 				}
-				consumer, found, err := findManagedAsset(assets, group, kind, id)
+				consumer, found, err := findManagedAsset(indexed, group, kind, id)
 				if err != nil {
 					return result, err
 				}

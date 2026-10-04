@@ -266,6 +266,7 @@ func (c *client) infraGroupSavedMembers(root asset.Asset) ([]infraMember, error)
 }
 
 func (s *serviceCascades) contributeInfraGroup(ctx context.Context, root asset.Asset, assets []asset.Asset) (governance.Contribution, error) {
+	indexed := indexManagedAssets(assets)
 	result := governance.Contribution{}
 	planned, err := s.client.infraGroupSavedMembers(root)
 	if err != nil {
@@ -290,7 +291,7 @@ func (s *serviceCascades) contributeInfraGroup(ctx context.Context, root asset.A
 			continue
 		}
 		evidence := map[string]any{"resource_type": member.Kind, "instance_id": member.ID, "delete_by_default": true, "retention_supported": member.Kind == infraDeployment, graph.LifecycleEvidenceControllerMetadata: true, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
-		managed, found, err := findManagedAsset(assets, root, member.Kind, member.ID)
+		managed, found, err := findManagedAsset(indexed, root, member.Kind, member.ID)
 		if err != nil {
 			return result, err
 		}

@@ -19,10 +19,11 @@ func (c *client) identitySaved(value asset.Asset) ([]identityMemberProof, error)
 	if err != nil {
 		return nil, err
 	}
-	data := value.Normalized
+	data := cloneParameters(value.Normalized)
 	if err := c.identityValidate(value.Identity.NativeType, name, data); err != nil {
 		return nil, err
 	}
+	identityDefaultRoles(value.Identity.NativeType, data)
 	if data[identityScope] != c.identityParent || data[identityProof] != identityConfiguration(data) || len(text(data[identityParentProof])) != 64 || data[identitySnapshot] != identityManifest(data) {
 		return nil, groupDenied("identity_group_review_changed")
 	}

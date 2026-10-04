@@ -695,3 +695,21 @@ func TestManagedGroupListRejectsPaginationCyclesAndPartialResults(t *testing.T) 
 		})
 	}
 }
+
+func TestManagedAssetIndexKeepsIdentityScopeAndAmbiguity(t *testing.T) {
+	controller := asset.Asset{ID: "mig", Identity: asset.Identity{Provider: asset.ProviderGCP, Partition: "gcp", ConnectionID: "a"}}
+	vm := func(id asset.AssetID, connection asset.ConnectionID) asset.Asset {
+		return asset.Asset{ID: id, Identity: asset.Identity{Provider: asset.ProviderGCP, Partition: "gcp", ConnectionID: connection, NativeType: instanceType, NativeID: "//compute.googleapis.com/vm"}}
+	}
+	index := indexManagedAssets([]asset.Asset{vm("other", "b"), vm("one", "a")})
+	if found, ok, err := findManagedAsset(index, controller, instanceType, "//compute.googleapis.com/vm"); err != nil || !ok || found.ID != "one" {
+		t.Fatalf("found=%v ok=%v err=%v", found.ID, ok, err)
+	}
+	if _, ok, err := findManagedAsset(index, controller, autoscalerType, "//compute.googleapis.com/vm"); err != nil || ok {
+		t.Fatalf("another type matched: ok=%v err=%v", ok, err)
+	}
+	index = indexManagedAssets([]asset.Asset{vm("one", "a"), vm("two", "a")})
+	if _, _, err := findManagedAsset(index, controller, instanceType, "//compute.googleapis.com/vm"); err == nil {
+		t.Fatal("ambiguous identity accepted")
+	}
+}

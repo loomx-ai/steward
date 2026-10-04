@@ -114,6 +114,7 @@ func (c *client) storagePoolSame(root asset.Asset, live map[string]any) error {
 }
 
 func (h *computeGroups) contributeStoragePools(ctx context.Context, assets []asset.Asset, bindings []graph.LifecycleBinding) (governance.Contribution, error) {
+	indexed := indexManagedAssets(assets)
 	result := governance.Contribution{}
 	for _, root := range assets {
 		if root.Identity.Provider != asset.ProviderGCP || root.Identity.NativeType != storagePoolType {
@@ -172,7 +173,7 @@ func (h *computeGroups) contributeStoragePools(ctx context.Context, assets []ass
 			continue
 		}
 		for _, member := range members {
-			disk, found, err := findManagedAsset(assets, root, "compute.googleapis.com/Disk", member.ID)
+			disk, found, err := findManagedAsset(indexed, root, "compute.googleapis.com/Disk", member.ID)
 			if err != nil {
 				return result, err
 			}

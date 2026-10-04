@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
@@ -531,9 +533,55 @@ func (c *client) statefulAddress(ctx context.Context, node managedNode, category
 	return id, nil
 }
 
-func findManagedAsset(assets []asset.Asset, controller asset.Asset, nativeType, id string) (asset.Asset, bool, error) {
+const groupReadConcurrency = 8
+
+// forEachConcurrently runs read for each index with at most limit in flight.
+// After a failure no further reads start; the error of the first failing index
+// is returned, as a serial loop would report it.
+func forEachConcurrently(count, limit int, read func(int) error) error {
+	errs := make([]error, count)
+	var failed atomic.Bool
+	var wg sync.WaitGroup
+	slots := make(chan struct{}, limit)
+	for index := range count {
+		slots <- struct{}{}
+		if failed.Load() {
+			<-slots
+			break
+		}
+		wg.Add(1)
+		go func() {
+			defer func() { <-slots; wg.Done() }()
+			if errs[index] = read(index); errs[index] != nil {
+				failed.Store(true)
+			}
+		}()
+	}
+	wg.Wait()
+	for _, err := range errs {
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// managedAssets indexes assets by native type and ID, so each binding looks up
+// its managed resource instead of scanning every asset.
+type managedAssets map[string][]asset.Asset
+
+func indexManagedAssets(assets []asset.Asset) managedAssets {
+	index := make(managedAssets, len(assets))
+	for _, value := range assets {
+		key := value.Identity.NativeType + "\x00" + value.Identity.NativeID
+		index[key] = append(index[key], value)
+	}
+	return index
+}
+
+func findManagedAsset(assets managedAssets, controller asset.Asset, nativeType, id string) (asset.Asset, bool, error) {
 	var result asset.Asset
-	for _, candidate := range assets {
+	for _, candidate := range assets[nativeType+"\x00"+id] {
 		if candidate.Identity.Provider != controller.Identity.Provider || candidate.Identity.ConnectionID != controller.Identity.ConnectionID || candidate.Identity.Partition != controller.Identity.Partition || candidate.Identity.NativeType != nativeType || candidate.Identity.NativeID != id {
 			continue
 		}
@@ -545,7 +593,7 @@ func findManagedAsset(assets []asset.Asset, controller asset.Asset, nativeType, 
 	return result, result.ID != "", nil
 }
 
-func addGroupBinding(result *governance.Contribution, assets []asset.Asset, controller asset.Asset, nativeType, id string, ownership graph.Ownership, policy graph.CleanupPolicy, deletes bool) (asset.Asset, error) {
+func addGroupBinding(result *governance.Contribution, assets managedAssets, controller asset.Asset, nativeType, id string, ownership graph.Ownership, policy graph.CleanupPolicy, deletes bool) (asset.Asset, error) {
 	managed, found, err := findManagedAsset(assets, controller, nativeType, id)
 	if err != nil {
 		return managed, err
@@ -569,6 +617,7 @@ func addGroupBinding(result *governance.Contribution, assets []asset.Asset, cont
 }
 
 func (h *computeGroups) Contribute(ctx context.Context, scope asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
+	indexed := indexManagedAssets(assets)
 	result, gkeOwned, err := h.contributeGKE(ctx, assets)
 	if err != nil {
 		return result, err
@@ -589,33 +638,41 @@ func (h *computeGroups) Contribute(ctx context.Context, scope asset.ScopeID, ass
 			managedVMs[value.ID] = true
 		}
 	}
+	var managers []asset.Asset
 	for _, manager := range assets {
-		if manager.Identity.Provider != asset.ProviderGCP || manager.Identity.NativeType != managerType || gkeOwned[manager.Identity.NativeID] {
-			continue
+		if manager.Identity.Provider == asset.ProviderGCP && manager.Identity.NativeType == managerType && !gkeOwned[manager.Identity.NativeID] {
+			managers = append(managers, manager)
 		}
+	}
+	// Live group reads run concurrently; bindings are added in asset order.
+	groups := make([]managedGroup, len(managers))
+	if err := forEachConcurrently(len(managers), groupReadConcurrency, func(index int) error {
 		kind, _ := findType(managerType)
-		endpoint, err := h.client.resourceURL(kind, manager.Identity.NativeID)
+		endpoint, err := h.client.resourceURL(kind, managers[index].Identity.NativeID)
 		if err != nil {
-			return result, err
+			return err
 		}
 		live, err := h.client.request(ctx, "GET", endpoint, nil)
 		if err != nil {
-			return result, err
+			return err
 		}
-		group, err := h.client.loadManagedGroup(ctx, manager.Identity.NativeID, live)
-		if err != nil {
-			return result, err
-		}
-		if _, err := addGroupBinding(&result, assets, manager, instanceGroupType, group.instanceGroup, graph.OwnershipExclusive, graph.CleanupDelegate, true); err != nil {
+		groups[index], err = h.client.loadManagedGroup(ctx, managers[index].Identity.NativeID, live)
+		return err
+	}); err != nil {
+		return result, err
+	}
+	for index, manager := range managers {
+		group := groups[index]
+		if _, err := addGroupBinding(&result, indexed, manager, instanceGroupType, group.instanceGroup, graph.OwnershipExclusive, graph.CleanupDelegate, true); err != nil {
 			return result, err
 		}
 		if group.autoscaler != "" {
-			if _, err := addGroupBinding(&result, assets, manager, autoscalerType, group.autoscaler, graph.OwnershipExclusive, graph.CleanupDirect, true); err != nil {
+			if _, err := addGroupBinding(&result, indexed, manager, autoscalerType, group.autoscaler, graph.OwnershipExclusive, graph.CleanupDirect, true); err != nil {
 				return result, err
 			}
 		}
 		for _, node := range group.nodes {
-			vm, err := addGroupBinding(&result, assets, manager, instanceType, node.id, graph.OwnershipExclusive, graph.CleanupDelegate, true)
+			vm, err := addGroupBinding(&result, indexed, manager, instanceType, node.id, graph.OwnershipExclusive, graph.CleanupDelegate, true)
 			if err != nil {
 				return result, err
 			}
@@ -628,7 +685,7 @@ func (h *computeGroups) Contribute(ctx context.Context, scope asset.ScopeID, ass
 				if resource.shared {
 					ownership, policy = graph.OwnershipShared, graph.CleanupRetain
 				}
-				if _, err := addGroupBinding(&result, assets, vm, resource.kind, resource.id, ownership, policy, resource.delete); err != nil {
+				if _, err := addGroupBinding(&result, indexed, vm, resource.kind, resource.id, ownership, policy, resource.delete); err != nil {
 					return result, err
 				}
 			}

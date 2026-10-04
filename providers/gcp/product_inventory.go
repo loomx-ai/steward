@@ -26,7 +26,16 @@ type productCursor struct {
 	Target      int      `json:"target"`
 	Token       string   `json:"token,omitempty"`
 	Seen        []string `json:"seen,omitempty"`
+	Pages       int      `json:"pages,omitempty"`
 }
+
+// productSeenTokens and productMaxTargetPages bound a product cursor's cycle
+// detection: 256 token hashes keep it near 25KB, under the 128KB cursor limit.
+const (
+	productSeenTokens     = 256
+	productMaxTargetPages = 100000
+)
+
 type productTarget struct {
 	API                  spec.ProductAPISpec `json:"api"`
 	Parameters           map[string]any      `json:"parameters"`
@@ -45,10 +54,8 @@ type productRecord struct {
 }
 
 func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, bool) {
-	for _, compiled := range r.bundle.Specs {
-		if compiled.ResourceKind.NativeType == nativeType {
-			return compiled.Definition, compiled.Definition.Discovery.Source == productInventorySource || compiled.Definition.Discovery.Source == securityBillingSource || compiled.Definition.Discovery.Source == securityServiceSource
-		}
+	if compiled, ok := r.compiledSpec(nativeType); ok {
+		return compiled.Definition, compiled.Definition.Discovery.Source == productInventorySource || compiled.Definition.Discovery.Source == securityBillingSource || compiled.Definition.Discovery.Source == securityServiceSource
 	}
 	return spec.ResourceKindSpec{}, false
 }
@@ -253,7 +260,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	metadata, _ := providerData()
 	operation, _ := metadata.catalog.Operation(target.API.Operation)
 	seenIDs := map[string]bool{}
-	for _, record := range records {
+	prefetched := r.prefetchProductReads(ctx, c, nativeType, kind, operation, parameters, identityPath, target.ParentID, records)
+	natHubs := map[string]cloudNatHubCheck{}
+	for index, record := range records {
 		if resourceSoftDeleted(nativeType, record.Data) {
 			continue
 		}
@@ -386,6 +395,8 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				live, err = c.fusionRead(ctx, nativeType, id)
 			} else if isTPU(nativeType) {
 				live, err = c.tpuRead(ctx, nativeType, id)
+			} else if read, ok := prefetched[index]; ok && read.id == id {
+				live, err = read.data, read.err
 			} else if isDiscovery(nativeType) {
 				live, err = c.discoveryRead(ctx, nativeType, id)
 			} else {
@@ -515,7 +526,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				if len(networks) == 1 {
 					item.Normalized["vpc_id"] = networks[0]
 				}
-				if err := c.enrichCloudNatHubs(ctx, &item, record.Data, result.Data, target.ParentID); err != nil {
+				if err := c.enrichCloudNatHubs(ctx, &item, record.Data, result.Data, target.ParentID, natHubs); err != nil {
 					return contracts.InventoryBatch{}, err
 				}
 			}
@@ -638,12 +649,21 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if next == cursor.Token || slices.Contains(cursor.Seen, tokenHash) {
 			return contracts.InventoryBatch{}, fmt.Errorf("GCP product pagination did not advance")
 		}
+		if cursor.Pages++; cursor.Pages > productMaxTargetPages {
+			return contracts.InventoryBatch{}, fmt.Errorf("GCP product pagination exceeded %d pages", productMaxTargetPages)
+		}
 		cursor.Token = next
+		// Recent tokens catch a short cycle; the page cap ends a longer one
+		// while the cursor stays far below its size limit.
 		cursor.Seen = append(cursor.Seen, tokenHash)
+		if len(cursor.Seen) > productSeenTokens {
+			cursor.Seen = cursor.Seen[len(cursor.Seen)-productSeenTokens:]
+		}
 	} else {
 		cursor.Target++
 		cursor.Token = ""
 		cursor.Seen = nil
+		cursor.Pages = 0
 	}
 	if cursor.Target < len(targets) {
 		encoded, _ := json.Marshal(cursor)
@@ -651,6 +671,75 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		batch.Complete = false
 	}
 	return batch, nil
+}
+
+const productReadConcurrency = 8
+
+type productRead struct {
+	id   string
+	data map[string]any
+	err  error
+}
+
+// prefetchProductReads reads, eight at a time, the listed BigQuery, Bigtable
+// and Discovery Engine resources whose list omits fields of their GET. The
+// list loop consumes each read in record order exactly where it read serially
+// before; a record without a prefetched read is read there as before.
+func (r *Runtime) prefetchProductReads(ctx context.Context, c *client, nativeType string, kind resourceType, operation catalog.Operation, parameters map[string]any, identityPath, parentID string, records []productRecord) map[int]productRead {
+	bigquery := nativeType == "bigquery.googleapis.com/Dataset" || nativeType == "bigquery.googleapis.com/Table"
+	if !bigquery && nativeType != "bigtableadmin.googleapis.com/Table" && !isDiscovery(nativeType) {
+		return nil
+	}
+	var indexes []int
+	var ids []string
+	for index, record := range records {
+		if resourceSoftDeleted(nativeType, record.Data) {
+			continue
+		}
+		id, err := c.productIdentity(kind, operation, parameters, identityPath, record)
+		if err != nil || !c.productReadAllowed(nativeType, kind, id, parameters, parentID, record) {
+			continue // The list loop rejects this record before reading it.
+		}
+		indexes, ids = append(indexes, index), append(ids, id)
+	}
+	reads := make([]productRead, len(ids))
+	// A failed read is kept for its record; later reads are not started.
+	_ = forEachConcurrently(len(ids), productReadConcurrency, func(i int) error {
+		reads[i].id = ids[i]
+		if isDiscovery(nativeType) {
+			reads[i].data, reads[i].err = c.discoveryRead(ctx, nativeType, ids[i])
+		} else {
+			endpoint, _ := c.resourceURL(kind, ids[i])
+			reads[i].data, reads[i].err = c.request(ctx, "GET", endpoint, nil)
+		}
+		return reads[i].err
+	})
+	result := make(map[int]productRead, len(ids))
+	for i, read := range reads {
+		if read.id != "" {
+			result[indexes[i]] = read
+		}
+	}
+	return result
+}
+
+// productReadAllowed repeats the list loop's checks that precede its read,
+// so a prefetch never reads a resource the loop would reject unread.
+func (c *client) productReadAllowed(nativeType string, kind resourceType, id string, parameters map[string]any, parentID string, record productRecord) bool {
+	if _, err := c.resourceURL(kind, id); err != nil {
+		return false
+	}
+	if nativeType == "bigtableadmin.googleapis.com/Table" {
+		return strings.HasPrefix(id, parentID+"/tables/")
+	}
+	if isDiscovery(nativeType) {
+		if c.discoveryIdentity(nativeType, id, record.Data) != nil {
+			return false
+		}
+		parent := text(parameters["parent"])
+		return parent == "" || strings.HasPrefix(id, c.canonicalName("//"+discoveryHost+"/"+parent)+"/"+kind.Collection+"/")
+	}
+	return true
 }
 
 // productListComplete reports kinds whose native list returns the same complete
@@ -939,11 +1028,18 @@ func (r *Runtime) productParents(ctx context.Context, c *client, request contrac
 	if c.cache == nil {
 		return list()
 	}
+	// Within a scan, every child shard and child kind of the same parent set
+	// reuses one listing; it never outlives the scan, so a shard's first page
+	// need not refresh it.
+	if request.ScanRunID != "" {
+		refresh = false
+	}
 	encoded, _ := json.Marshal(struct {
+		Scan                        asset.ScanRunID
 		Project, Source, NativeType string
 		Scope                       asset.Scope
 		Network                     *asset.ScanTarget
-	}{c.project, request.Source, request.ResourceKind.NativeType, request.Scope, request.NetworkTarget})
+	}{request.ScanRunID, c.project, request.Source, request.ResourceKind.NativeType, request.Scope, request.NetworkTarget})
 	return c.cache.parents.get(string(encoded), productParentTTL, refresh, list)
 }
 

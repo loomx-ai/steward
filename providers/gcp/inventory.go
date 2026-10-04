@@ -169,6 +169,13 @@ func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) 
 	if request.ResourceKind != nil {
 		nativeType = request.ResourceKind.NativeType
 	}
+	region := request.Scope.NativeID
+	if request.Scope.Kind == asset.ScopeGlobal {
+		region = "global"
+	}
+	if request.Scope.Kind != asset.ScopeProject && request.NetworkTarget == nil && request.ScanRunID != "" && c.cache != nil {
+		return r.listRegionAssets(ctx, c, request, nativeType, region)
+	}
 	// Every region shard of a scan reads the same project-wide asset pages and
 	// keeps only its own scope.
 	result, err := c.assetPageResult(withSharedReads(ctx, request.ScanRunID), request.Cursor, nativeType, request.Limit)
@@ -178,10 +185,6 @@ func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) 
 	data := result.Data
 	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, NextCursor: text(data["nextPageToken"]), RequestID: result.RequestID}
 	batch.Complete = batch.NextCursor == ""
-	region := request.Scope.NativeID
-	if request.Scope.Kind == asset.ScopeGlobal {
-		region = "global"
-	}
 	for _, value := range array(data["assets"]) {
 		raw := object(value)
 		// A broad CAI scan indexes unknown kinds. Known kinds have a separate
@@ -194,6 +197,46 @@ func (r *Runtime) list(ctx context.Context, request contracts.InventoryRequest) 
 			continue
 		}
 		item, err := r.inventoryItem(c, raw)
+		if err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+		batch.Items = append(batch.Items, item)
+	}
+	return batch, nil
+}
+
+// listRegionAssets serves a region or global shard from a project-wide asset
+// page that the first shard of the scan to read it files by region, so every
+// other shard decodes only its own region's assets instead of the whole page.
+// It keeps exactly the assets the unsplit page filter keeps.
+func (r *Runtime) listRegionAssets(ctx context.Context, c *client, request contracts.InventoryRequest, nativeType, region string) (contracts.InventoryBatch, error) {
+	key := strings.Join([]string{string(request.ScanRunID), c.project, "assets-by-region", request.Source, nativeType, request.Cursor, strconv.Itoa(request.Limit)}, "\x00")
+	fetch := func(ctx context.Context) (map[string]any, string, error) {
+		result, err := c.assetPageResult(ctx, request.Cursor, nativeType, request.Limit)
+		if err != nil {
+			return nil, result.RequestID, err
+		}
+		// The page token is the empty part: region names are never empty.
+		parts := map[string]any{"": text(result.Data["nextPageToken"])}
+		for _, value := range array(result.Data["assets"]) {
+			raw := object(value)
+			if request.Source == inventorySource && r.usesProductSource(text(raw["assetType"])) {
+				continue
+			}
+			_, location := assetLocation(raw)
+			assets, _ := parts[location].([]any)
+			parts[location] = append(assets, value)
+		}
+		return parts, result.RequestID, nil
+	}
+	parts, requestID, err := c.cache.reads.getParts(ctx, key, fetch, "", region)
+	if err != nil {
+		return contracts.InventoryBatch{}, err
+	}
+	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, NextCursor: text(parts[0]), RequestID: requestID}
+	batch.Complete = batch.NextCursor == ""
+	for _, value := range array(parts[1]) {
+		item, err := r.inventoryItem(c, object(value))
 		if err != nil {
 			return contracts.InventoryBatch{}, err
 		}

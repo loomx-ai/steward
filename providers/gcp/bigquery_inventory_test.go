@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -15,7 +16,10 @@ import (
 func TestBigQueryInventoryReadsNativeDetailsAcrossPages(t *testing.T) {
 	const prefix = "/bigquery/v2/projects/sample-project/datasets"
 	reads := map[string]int{}
+	var mu sync.Mutex
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		mu.Lock()
+		defer mu.Unlock()
 		if req.Method != "GET" || req.URL.Host != "bigquery.googleapis.com" || !strings.HasPrefix(req.URL.Path, prefix) {
 			t.Fatalf("unexpected native request %s", req.URL)
 		}
@@ -196,5 +200,73 @@ func TestRegionShardsSkipGlobalOnlyKindsBeforeReadingTheirParents(t *testing.T) 
 		if err != nil || !batch.Complete || len(batch.Items) != 0 {
 			t.Fatalf("%s: batch=%+v err=%v", kind, batch, err)
 		}
+	}
+}
+
+// Table details are read concurrently but kept in list order.
+func TestBigQueryTableDetailsAreReadConcurrentlyAndEmptyDatasetsSkipped(t *testing.T) {
+	const prefix = "/bigquery/v2/projects/sample-project/datasets"
+	var mu sync.Mutex
+	inFlight, peak := 0, 0
+	release := make(chan struct{})
+	tables := []string{"a", "b", "c", "d"}
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		respond := func(data any) (*http.Response, error) { return dataformResponse(req, 200, data), nil }
+		parts := strings.Split(strings.TrimPrefix(req.URL.Path, prefix), "/")
+		switch {
+		case req.URL.Path == prefix:
+			return respond(map[string]any{"datasets": []any{
+				map[string]any{"datasetReference": map[string]any{"projectId": "sample-project", "datasetId": "empty"}},
+				map[string]any{"datasetReference": map[string]any{"projectId": "sample-project", "datasetId": "full"}},
+			}})
+		case len(parts) == 2:
+			return respond(map[string]any{"datasetReference": map[string]any{"projectId": "123456", "datasetId": parts[1]}, "location": "US"})
+		case len(parts) == 3 && parts[1] == "empty":
+			return respond(map[string]any{})
+		case len(parts) == 3:
+			rows := []any{}
+			for _, table := range tables {
+				rows = append(rows, map[string]any{"tableReference": map[string]any{"projectId": "sample-project", "datasetId": "full", "tableId": table}})
+			}
+			return respond(map[string]any{"tables": rows})
+		case len(parts) == 4:
+			mu.Lock()
+			if inFlight++; inFlight > peak {
+				peak = inFlight
+			}
+			if peak == 2 {
+				select {
+				case <-release:
+				default:
+					close(release)
+				}
+			}
+			mu.Unlock()
+			<-release // the first read waits until a second is in flight
+			mu.Lock()
+			inFlight--
+			mu.Unlock()
+			return respond(map[string]any{"tableReference": map[string]any{"projectId": "123456", "datasetId": "full", "tableId": parts[3]}, "location": "US"})
+		}
+		t.Fatalf("unexpected request %s", req.URL)
+		return nil, nil
+	})
+	request := productRequest(r, "bigquery.googleapis.com/Table", "global")
+	var names []string
+	for {
+		batch, err := r.List(t.Context(), request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, item := range batch.Items {
+			names = append(names, last(item.NativeID))
+		}
+		if batch.Complete {
+			break
+		}
+		request.Cursor = batch.NextCursor
+	}
+	if strings.Join(names, ",") != "a,b,c,d" || peak < 2 {
+		t.Fatalf("tables=%v peak=%d", names, peak)
 	}
 }

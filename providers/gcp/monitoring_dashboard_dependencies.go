@@ -56,6 +56,7 @@ func (c *client) monitoringDashboardPolicyReference(data map[string]any, policy 
 }
 
 func (h *monitoringDependencies) monitoringDashboardPolicyDependencies(ctx context.Context, assets []asset.Asset) (governance.Contribution, error) {
+	indexed := indexManagedAssets(assets)
 	result := governance.Contribution{}
 	targets := []asset.Asset{}
 	for _, value := range assets {
@@ -101,7 +102,7 @@ func (h *monitoringDependencies) monitoringDashboardPolicyDependencies(ctx conte
 			}
 			reason := "monitoring_dashboard_policy_reference_unresolved"
 			if reference == monitoringHasReference {
-				consumer, found, err := findManagedAsset(assets, target, monitoringDashboardType, id)
+				consumer, found, err := findManagedAsset(indexed, target, monitoringDashboardType, id)
 				if err != nil {
 					return result, err
 				}

@@ -27,13 +27,16 @@ func TestScanShardsShareProjectWidePagesWithinOneScan(t *testing.T) {
 			return apiResponse(req, 403, `{}`), nil
 		}
 		if req.URL.Query().Get("pageToken") == "" {
-			return apiResponse(req, 200, `{"readTime":"2026-10-03T00:00:00Z","nextPageToken":"second","assets":[{"name":"//example.googleapis.com/projects/sample-project/locations/us-central1/things/a","assetType":"example.googleapis.com/Thing","resource":{"data":{"name":"a"},"location":"us-central1"}}]}`), nil
+			return apiResponse(req, 200, `{"readTime":"2026-10-03T00:00:00Z","nextPageToken":"second","assets":[{"name":"//example.googleapis.com/projects/sample-project/locations/us-central1/things/a","assetType":"example.googleapis.com/Thing","resource":{"data":{"name":"a"},"location":"us-central1"}},{"name":"//example.googleapis.com/projects/sample-project/locations/global/things/g","assetType":"example.googleapis.com/Thing","resource":{"data":{"name":"g"},"location":"global"}}]}`), nil
 		}
 		return apiResponse(req, 200, `{"readTime":"2026-10-03T00:00:00Z","assets":[{"name":"//example.googleapis.com/projects/sample-project/locations/europe-west1/things/b","assetType":"example.googleapis.com/Thing","resource":{"data":{"name":"b"},"location":"europe-west1"}}]}`), nil
 	})
 	close(release)
 	scan := func(run asset.ScanRunID, region string) []string {
 		request := contracts.InventoryRequest{ConnectionID: "connection", ScanRunID: run, Source: inventorySource, Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: region}, Limit: 100}
+		if region == "global" {
+			request.Scope = asset.Scope{Kind: asset.ScopeGlobal, NativeID: "sample-project/global"}
+		}
 		var names []string
 		for {
 			batch, err := r.List(t.Context(), request)
@@ -50,12 +53,12 @@ func TestScanShardsShareProjectWidePagesWithinOneScan(t *testing.T) {
 		}
 	}
 	var wg sync.WaitGroup
-	results := make([][]string, 4)
-	for i, region := range []string{"us-central1", "europe-west1", "us-central1", "asia-east1"} {
+	results := make([][]string, 5)
+	for i, region := range []string{"us-central1", "europe-west1", "us-central1", "asia-east1", "global"} {
 		wg.Go(func() { results[i] = scan("scan-1", region) })
 	}
 	wg.Wait()
-	if strings.Join(results[0], ",") != "a" || strings.Join(results[1], ",") != "b" || strings.Join(results[2], ",") != "a" || len(results[3]) != 0 {
+	if strings.Join(results[0], ",") != "a" || strings.Join(results[1], ",") != "b" || strings.Join(results[2], ",") != "a" || len(results[3]) != 0 || strings.Join(results[4], ",") != "g" {
 		t.Fatalf("shards reported another scope: %v", results)
 	}
 	if reads.Load() != 2 {

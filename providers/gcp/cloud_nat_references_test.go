@@ -60,7 +60,7 @@ func TestCloudNatHubCEL(t *testing.T) {
 }
 
 func TestCloudNatHubNativeMembership(t *testing.T) {
-	for _, mode := range []string{"paged", "empty", "hybrid", "foreign", "multiple", "denied", "partial", "null", "token-null", "unreachable-null", "cycle", "duplicate", "name", "network", "detail-denied", "detail-missing", "detail-drift", "membership-drift", "router-drift", "router-recreated", "cel-invalid"} {
+	for _, mode := range []string{"paged", "two-nats", "empty", "hybrid", "foreign", "multiple", "denied", "partial", "null", "token-null", "unreachable-null", "cycle", "duplicate", "name", "network", "detail-denied", "detail-missing", "detail-drift", "membership-drift", "router-drift", "router-recreated", "cel-invalid"} {
 		t.Run(mode, func(t *testing.T) {
 			lists, details, routers := 0, 0, 0
 			expression := "nexthop.hub"
@@ -91,6 +91,11 @@ func TestCloudNatHubNativeMembership(t *testing.T) {
 					routers++
 					parent := cloudNatParent(req.URL.Path)
 					parent["nats"] = []any{natHubFixture(expression)}
+					if mode == "two-nats" {
+						second := natHubFixture(expression)
+						second["name"] = "nat-b"
+						parent["nats"] = append(parent["nats"].([]any), second)
+					}
 					if routers > 1 && mode == "router-drift" {
 						parent["description"] = "changed"
 					}
@@ -167,7 +172,14 @@ func TestCloudNatHubNativeMembership(t *testing.T) {
 				return dataformResponse(req, 200, data), nil
 			})
 			batch, err := r.List(t.Context(), productRequest(r, cloudNatType, "us-central1"))
-			success := slices.Contains([]string{"paged", "empty", "hybrid", "foreign", "multiple"}, mode)
+			success := slices.Contains([]string{"paged", "two-nats", "empty", "hybrid", "foreign", "multiple"}, mode)
+			if mode == "two-nats" {
+				// NATs of one router share one membership and router check.
+				if err != nil || len(batch.Items) != 2 || lists != 2 || details != 2 || routers != 2 {
+					t.Fatal("NATs of one router re-read membership", len(batch.Items), err, lists, details, routers)
+				}
+				return
+			}
 			if !success {
 				if err == nil || len(batch.Items) != 0 {
 					t.Fatal("accepted incomplete membership", batch, err)

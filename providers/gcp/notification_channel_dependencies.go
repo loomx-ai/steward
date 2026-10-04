@@ -51,6 +51,7 @@ func (c *client) alertPolicyChannels(data map[string]any) ([]string, error) {
 // It does not prove absence of inaccessible consumers. Non-email cleanup also
 // uses the native non-forced deletion guard; email cleanup remains protected.
 func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Context, assets []asset.Asset) (governance.Contribution, error) {
+	indexed := indexManagedAssets(assets)
 	result := governance.Contribution{}
 	channels := []asset.Asset{}
 	for _, value := range assets {
@@ -108,7 +109,7 @@ func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Con
 					return result, err
 				}
 				if slices.Contains(refs, channel.Identity.NativeID) {
-					budget, found, err := findManagedAsset(assets, channel, billingBudgetType, id)
+					budget, found, err := findManagedAsset(indexed, channel, billingBudgetType, id)
 					if err != nil {
 						return result, err
 					}
@@ -145,7 +146,7 @@ func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Con
 			if !slices.Contains(refs, channel.Identity.NativeID) {
 				continue
 			}
-			policy, found, err := findManagedAsset(assets, channel, alertPolicyType, id)
+			policy, found, err := findManagedAsset(indexed, channel, alertPolicyType, id)
 			if err != nil {
 				return result, err
 			}

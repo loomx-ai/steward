@@ -224,6 +224,7 @@ func (c *client) infraSavedMembers(root asset.Asset) ([]infraMember, error) {
 }
 
 func (s *serviceCascades) contributeInfra(ctx context.Context, root asset.Asset, assets []asset.Asset) (governance.Contribution, error) {
+	indexed := indexManagedAssets(assets)
 	if root.Identity.NativeType == infraGroup {
 		return s.contributeInfraGroup(ctx, root, assets)
 	}
@@ -255,7 +256,7 @@ func (s *serviceCascades) contributeInfra(ctx context.Context, root asset.Asset,
 		if metadata {
 			evidence[graph.LifecycleEvidenceControllerMetadata] = true
 		}
-		managed, found, err := findManagedAsset(assets, root, member.Kind, member.ID)
+		managed, found, err := findManagedAsset(indexed, root, member.Kind, member.ID)
 		if err != nil {
 			return result, err
 		}

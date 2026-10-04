@@ -677,6 +677,7 @@ func (c *client) dataprocMembers(ctx context.Context, root asset.Asset, cluster 
 }
 
 func (h *computeGroups) contributeDataproc(ctx context.Context, assets []asset.Asset) (governance.Contribution, map[string]bool, error) {
+	indexed := indexManagedAssets(assets)
 	result := governance.Contribution{}
 	owned := map[string]bool{}
 	for _, root := range assets {
@@ -697,7 +698,7 @@ func (h *computeGroups) contributeDataproc(ctx context.Context, assets []asset.A
 			if !ok {
 				continue
 			}
-			managed, found, err := findManagedAsset(assets, controller, member.kind, member.id)
+			managed, found, err := findManagedAsset(indexed, controller, member.kind, member.id)
 			if err != nil {
 				return result, owned, err
 			}
