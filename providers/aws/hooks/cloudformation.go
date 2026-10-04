@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -50,71 +51,98 @@ func (h *CloudFormation) Contribute(ctx context.Context, _ asset.ScopeID, assets
 			stacks = append(stacks, value)
 		}
 	}
+	// Stacks are read concurrently; their contributions keep stack order.
+	parts := make([]governance.Contribution, len(stacks))
+	errs := make([]error, len(stacks))
+	var wg sync.WaitGroup
+	slots := make(chan struct{}, cloudFormationStackConcurrency)
+	for index, stack := range stacks {
+		slots <- struct{}{}
+		wg.Add(1)
+		go func() {
+			defer func() { <-slots; wg.Done() }()
+			parts[index], errs[index] = h.stackContribution(ctx, stack, byIdentity, byPhysicalID, byStackLogicalID)
+		}()
+	}
+	wg.Wait()
 	result := governance.Contribution{}
-	for _, stack := range stacks {
-		cursor := ""
-		for {
-			page, err := h.client.ListStackResources(ctx, provideraws.ListStackResourcesRequest{StackID: stack.Identity.NativeID, NextToken: cursor})
-			if err != nil {
-				return governance.Contribution{}, provideraws.NormalizeError(err)
-			}
-			for _, resource := range page.Resources {
-				if resource.NativeType == "" || resource.PhysicalID == "" {
-					continue
-				}
-				policy := graph.CleanupDelegate
-				switch resource.DeletionPolicy {
-				case "Retain", "RetainExceptOnCreate":
-					policy = graph.CleanupRetain
-				case "", "Delete", "Snapshot":
-				default:
-					policy = graph.CleanupUnknown
-				}
-				evidence := map[string]any{
-					"request_id": page.RequestID, "stack_id": stack.Identity.NativeID, "logical_id": resource.LogicalID,
-					"physical_id": resource.PhysicalID, "resource_type": resource.NativeType, "resource_status": resource.Status,
-					"deletion_policy": resource.DeletionPolicy,
-				}
-				identity := asset.Identity{
-					Provider: stack.Identity.Provider, Partition: stack.Identity.Partition, ConnectionID: stack.Identity.ConnectionID,
-					NativeType: resource.NativeType, NativeID: resource.PhysicalID, ScopeKey: stack.Identity.ScopeKey,
-				}
-				resolution := "native_identity"
-				managed, found := byIdentity[identity.Key()]
-				if !found {
-					resolution = "physical_id"
-					managed, found = resolvePhysicalAsset(stack, byPhysicalID[resource.NativeType+"\x00"+resource.PhysicalID])
-				}
-				if !found && resource.LogicalID != "" {
-					resolution = "cloudformation_system_tags"
-					key := cloudFormationTagIdentity(stack.Identity.NativeID, resource.LogicalID, resource.NativeType)
-					managed, found = resolvePhysicalAsset(stack, byStackLogicalID[key])
-				}
-				if !found {
-					result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{
-						Provider: stack.Identity.Provider, ConnectionID: stack.Identity.ConnectionID,
-						NativeType: resource.NativeType, NativeID: resource.PhysicalID, ControllerID: stack.ID,
-						Relationship: graph.RelationshipMemberOf, Evidence: evidence,
-					})
-					continue
-				}
-				evidence["identity_resolution"] = resolution
-				addCloudFormationTagEvidence(evidence, managed, stack.Identity.NativeID, resource.LogicalID)
-				result.Relationships = append(result.Relationships, graph.Relationship{
-					SourceAssetID: managed.ID, TargetAssetID: stack.ID, Type: graph.RelationshipMemberOf,
-					Source: "cloudformation:ListStackResources", Evidence: evidence, Confidence: 1,
-				})
-				result.Bindings = append(result.Bindings, graph.LifecycleBinding{
-					ControllerAssetID: stack.ID, ManagedAssetID: managed.ID, Authority: graph.AuthorityAuthoritative,
-					Ownership: graph.OwnershipExclusive, CleanupPolicy: policy,
-					DirectCleanupAllowed: true, EvidenceSource: "cloudformation:ListStackResources", Evidence: evidence, Confidence: 1,
-				})
-			}
-			if page.NextToken == "" {
-				break
-			}
-			cursor = page.NextToken
+	for index, part := range parts {
+		if errs[index] != nil {
+			return governance.Contribution{}, errs[index]
 		}
+		result.Relationships = append(result.Relationships, part.Relationships...)
+		result.Bindings = append(result.Bindings, part.Bindings...)
+		result.Unresolved = append(result.Unresolved, part.Unresolved...)
+	}
+	return result, nil
+}
+
+const cloudFormationStackConcurrency = 4
+
+func (h *CloudFormation) stackContribution(ctx context.Context, stack asset.Asset, byIdentity map[string]asset.Asset, byPhysicalID, byStackLogicalID map[string][]asset.Asset) (governance.Contribution, error) {
+	result := governance.Contribution{}
+	cursor := ""
+	for {
+		page, err := h.client.ListStackResources(ctx, provideraws.ListStackResourcesRequest{StackID: stack.Identity.NativeID, NextToken: cursor})
+		if err != nil {
+			return governance.Contribution{}, provideraws.NormalizeError(err)
+		}
+		for _, resource := range page.Resources {
+			if resource.NativeType == "" || resource.PhysicalID == "" {
+				continue
+			}
+			policy := graph.CleanupDelegate
+			switch resource.DeletionPolicy {
+			case "Retain", "RetainExceptOnCreate":
+				policy = graph.CleanupRetain
+			case "", "Delete", "Snapshot":
+			default:
+				policy = graph.CleanupUnknown
+			}
+			evidence := map[string]any{
+				"request_id": page.RequestID, "stack_id": stack.Identity.NativeID, "logical_id": resource.LogicalID,
+				"physical_id": resource.PhysicalID, "resource_type": resource.NativeType, "resource_status": resource.Status,
+				"deletion_policy": resource.DeletionPolicy,
+			}
+			identity := asset.Identity{
+				Provider: stack.Identity.Provider, Partition: stack.Identity.Partition, ConnectionID: stack.Identity.ConnectionID,
+				NativeType: resource.NativeType, NativeID: resource.PhysicalID, ScopeKey: stack.Identity.ScopeKey,
+			}
+			resolution := "native_identity"
+			managed, found := byIdentity[identity.Key()]
+			if !found {
+				resolution = "physical_id"
+				managed, found = resolvePhysicalAsset(stack, byPhysicalID[resource.NativeType+"\x00"+resource.PhysicalID])
+			}
+			if !found && resource.LogicalID != "" {
+				resolution = "cloudformation_system_tags"
+				key := cloudFormationTagIdentity(stack.Identity.NativeID, resource.LogicalID, resource.NativeType)
+				managed, found = resolvePhysicalAsset(stack, byStackLogicalID[key])
+			}
+			if !found {
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{
+					Provider: stack.Identity.Provider, ConnectionID: stack.Identity.ConnectionID,
+					NativeType: resource.NativeType, NativeID: resource.PhysicalID, ControllerID: stack.ID,
+					Relationship: graph.RelationshipMemberOf, Evidence: evidence,
+				})
+				continue
+			}
+			evidence["identity_resolution"] = resolution
+			addCloudFormationTagEvidence(evidence, managed, stack.Identity.NativeID, resource.LogicalID)
+			result.Relationships = append(result.Relationships, graph.Relationship{
+				SourceAssetID: managed.ID, TargetAssetID: stack.ID, Type: graph.RelationshipMemberOf,
+				Source: "cloudformation:ListStackResources", Evidence: evidence, Confidence: 1,
+			})
+			result.Bindings = append(result.Bindings, graph.LifecycleBinding{
+				ControllerAssetID: stack.ID, ManagedAssetID: managed.ID, Authority: graph.AuthorityAuthoritative,
+				Ownership: graph.OwnershipExclusive, CleanupPolicy: policy,
+				DirectCleanupAllowed: true, EvidenceSource: "cloudformation:ListStackResources", Evidence: evidence, Confidence: 1,
+			})
+		}
+		if page.NextToken == "" {
+			break
+		}
+		cursor = page.NextToken
 	}
 	return result, nil
 }

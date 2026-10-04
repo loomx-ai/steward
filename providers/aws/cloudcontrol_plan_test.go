@@ -74,8 +74,10 @@ func kindFor(t *testing.T, runtime *Runtime, nativeType string) *asset.ResourceK
 
 func TestCloudControlChildInventoryIteratesEveryParentWithBoundCursor(t *testing.T) {
 	client := &scriptedCloudControl{pages: map[string]CloudControlPage{
-		pageKey("AWS::EKS::Cluster", "", ""):                           {Resources: []CloudControlResource{{Identifier: "prod", Properties: `{"Name":"prod"}`}}, NextToken: "c2"},
-		pageKey("AWS::EKS::Cluster", "", "c2"):                         {Resources: []CloudControlResource{{Identifier: "dev", Properties: `{"Name":"dev"}`}}},
+		pageKey("AWS::EKS::Cluster", "", ""):   {Resources: []CloudControlResource{{Identifier: "prod", Properties: `{"Name":"prod"}`}}, NextToken: "c2"},
+		pageKey("AWS::EKS::Cluster", "", "c2"): {Resources: []CloudControlResource{{Identifier: "dev", Properties: `{"Name":"dev"}`}, {Identifier: "edge", Properties: `{"Name":"edge"}`}}},
+		// A cluster without node groups is passed over within the same call.
+		pageKey("AWS::EKS::Nodegroup", `{"ClusterName":"edge"}`, ""):   {RequestID: "edge-1"},
 		pageKey("AWS::EKS::Nodegroup", `{"ClusterName":"dev"}`, ""):    {RequestID: "dev-1", Resources: []CloudControlResource{{Identifier: "dev|ng-a", Properties: `{"ClusterName":"dev","NodegroupName":"ng-a"}`}}},
 		pageKey("AWS::EKS::Nodegroup", `{"ClusterName":"prod"}`, ""):   {RequestID: "prod-1", NextToken: "n2", Resources: []CloudControlResource{{Identifier: "prod|ng-b", Properties: `{"ClusterName":"prod"}`}}},
 		pageKey("AWS::EKS::Nodegroup", `{"ClusterName":"prod"}`, "n2"): {RequestID: "prod-2", Resources: []CloudControlResource{{Identifier: "prod|ng-c", Properties: `{"ClusterName":"prod"}`}}},
@@ -127,7 +129,7 @@ func TestCloudControlChildInventoryIteratesEveryParentWithBoundCursor(t *testing
 	// silently skip or repeat children, so the shard must restart. A resumed
 	// cursor meets a fresh listing once the cached set expires or the process
 	// restarts.
-	client.pages[pageKey("AWS::EKS::Cluster", "", "c2")] = CloudControlPage{Resources: []CloudControlResource{{Identifier: "dev"}, {Identifier: "stage"}}}
+	client.pages[pageKey("AWS::EKS::Cluster", "", "c2")] = CloudControlPage{Resources: []CloudControlResource{{Identifier: "dev"}, {Identifier: "edge"}, {Identifier: "stage"}}}
 	request.Cursor = cursors[1]
 	if _, err := runtime.List(context.Background(), request); err != nil {
 		t.Fatalf("resume within the cached parent set: %v", err)
@@ -377,5 +379,41 @@ func TestCloudControlEnrichmentKeepsOrderSkipsDeletedAndBatchesGatewayLookups(t 
 	client.resources["AWS::EC2::InternetGateway|igw-20"] = CloudControlResource{Identifier: "other"}
 	if _, err := runtime.EnrichInventoryBatch(context.Background(), request, items); err == nil || !strings.Contains(err.Error(), `"igw-20"`) {
 		t.Fatalf("mismatched identifier error = %v", err)
+	}
+}
+
+func TestCloudControlEnrichmentReadsSubnetAndGroupVPCsInOneDescribe(t *testing.T) {
+	client := &scriptedCloudControl{resources: map[string]CloudControlResource{
+		"AWS::Lambda::Function|a": {Identifier: "a", Properties: `{"VpcConfig":{"SubnetIds":["subnet-1","subnet-2"]}}`},
+		"AWS::Lambda::Function|b": {Identifier: "b", Properties: `{"VpcConfig":{"SubnetIds":["subnet-2","subnet-legacy"]}}`},
+		"AWS::Lambda::Function|c": {Identifier: "c", Properties: `{"VpcConfig":{"SecurityGroupIds":["sg-1"]}}`},
+		"AWS::Lambda::Function|d": {Identifier: "d", Properties: `{"VpcConfig":{"SubnetIds":["subnet-gone"]}}`},
+		// EC2 omits subnet-legacy, so it is still read through Cloud Control.
+		"AWS::EC2::Subnet|subnet-legacy": {Identifier: "subnet-legacy", Properties: `{"VpcId":"vpc-1"}`},
+	}}
+	network := &runtimeNetworkClient{parentVPCs: map[string]string{"subnet-1": "vpc-1", "subnet-2": "vpc-1", "sg-1": "vpc-2"}}
+	source := &runtimeCredentialSource{want: "connection-a", value: contracts.Credential{Values: map[string]string{"access_key_id": "id", "secret_access_key": "secret"}}}
+	runtime, err := newRuntime(source, &runtimeFactory{cloudControl: client, network: network})
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := contracts.InventoryRequest{
+		ConnectionID: "connection-a", Source: cloudControlSource, ResourceKind: kindFor(t, runtime, "AWS::Lambda::Function"),
+		Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: "eu-west-1", Location: "eu-west-1"},
+	}
+	var items []contracts.InventoryItem
+	for _, id := range []string{"a", "b", "c", "d"} {
+		items = append(items, contracts.InventoryItem{NativeType: "AWS::Lambda::Function", NativeID: id, ResourceKind: *request.ResourceKind})
+	}
+	enriched, err := runtime.EnrichInventoryBatch(context.Background(), request, items)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := []any{enriched[0].Normalized["vpc_id"], enriched[1].Normalized["vpc_id"], enriched[2].Normalized["vpc_id"], enriched[3].Normalized["vpc_id"]}
+	if fmt.Sprint(got) != "[vpc-1 vpc-1 vpc-2 <nil>]" {
+		t.Fatalf("vpc ids = %v", got)
+	}
+	if fmt.Sprint(network.parentArgs) != "[[subnet-1 subnet-2 subnet-legacy subnet-gone] [sg-1]]" || client.getCalls != 6 {
+		t.Fatalf("describe args = %v, GetResource calls = %d", network.parentArgs, client.getCalls)
 	}
 }

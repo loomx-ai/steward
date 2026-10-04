@@ -17,7 +17,9 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-const ResourceExplorerPageLimit = 100
+// ResourceExplorerPageLimit stays below the API maximum of 1000: at exactly
+// 1000, ListResources returns no NextToken, which would truncate the listing.
+const ResourceExplorerPageLimit = 500
 
 type SearchRequest struct {
 	Query      string

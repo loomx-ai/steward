@@ -14,6 +14,7 @@ import (
 	awscodebuild "github.com/aws/aws-sdk-go-v2/service/codebuild"
 	awscognito "github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
 	awssecrets "github.com/aws/aws-sdk-go-v2/service/secretsmanager"
+	secretstypes "github.com/aws/aws-sdk-go-v2/service/secretsmanager/types"
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -46,6 +47,7 @@ type CognitoNativeAPI interface {
 
 type SecretsNativeAPI interface {
 	DescribeSecret(context.Context, *awssecrets.DescribeSecretInput, ...func(*awssecrets.Options)) (*awssecrets.DescribeSecretOutput, error)
+	ListSecrets(context.Context, *awssecrets.ListSecretsInput, ...func(*awssecrets.Options)) (*awssecrets.ListSecretsOutput, error)
 }
 
 const (
@@ -327,18 +329,26 @@ var cognitoDomainKind = nativeKind{
 // and replicas of a secret in another Region, are removed by their owner or
 // primary secret.
 func enrichSecrets(ctx context.Context, client SecretsNativeAPI, region string, items []contracts.InventoryItem, indexes []int) error {
+	listed, err := listSecretFacts(ctx, client, items, indexes)
+	if err != nil {
+		return err
+	}
 	for _, index := range indexes {
 		id := items[index].NativeID
-		execution.LogCloudAPIRequest(ctx, "secretsmanager", "DescribeSecret", contracts.CloudLogPayload(ctx, map[string]any{"SecretId": id}))
-		output, err := client.DescribeSecret(ctx, &awssecrets.DescribeSecretInput{SecretId: awssdk.String(id)})
-		if err != nil {
-			execution.LogCloudAPIFailure(ctx, "secretsmanager", "DescribeSecret", err)
-			if nativeNotFound(err, "ResourceNotFoundException") {
-				continue
+		facts, found := listed[id]
+		if !found {
+			execution.LogCloudAPIRequest(ctx, "secretsmanager", "DescribeSecret", contracts.CloudLogPayload(ctx, map[string]any{"SecretId": id}))
+			output, err := client.DescribeSecret(ctx, &awssecrets.DescribeSecretInput{SecretId: awssdk.String(id)})
+			if err != nil {
+				execution.LogCloudAPIFailure(ctx, "secretsmanager", "DescribeSecret", err)
+				if nativeNotFound(err, "ResourceNotFoundException") {
+					continue
+				}
+				return NormalizeError(err)
 			}
-			return NormalizeError(err)
+			facts = [2]*string{output.OwningService, output.PrimaryRegion}
 		}
-		owner, primary := strings.TrimSpace(awssdk.ToString(output.OwningService)), strings.TrimSpace(awssdk.ToString(output.PrimaryRegion))
+		owner, primary := strings.TrimSpace(awssdk.ToString(facts[0])), strings.TrimSpace(awssdk.ToString(facts[1]))
 		items[index].Normalized["owning_service"] = owner
 		items[index].Normalized["primary_region"] = primary
 		reason := ""
@@ -354,4 +364,53 @@ func enrichSecrets(ctx context.Context, client SecretsNativeAPI, region string, 
 		}
 	}
 	return nil
+}
+
+// secretNameFilterValues is the ListSecrets limit on values per filter.
+const secretNameFilterValues = 10
+
+// listSecretFacts reads the owning service and primary Region of the listed
+// secrets through ListSecrets name filters, ten names per call, keyed by ARN.
+// The name filter is a prefix match, so only exact ARN matches are kept; a
+// secret missing from the result is described individually.
+func listSecretFacts(ctx context.Context, client SecretsNativeAPI, items []contracts.InventoryItem, indexes []int) (map[string][2]*string, error) {
+	var names []string
+	for _, index := range indexes {
+		if name := secretNameFromARN(items[index].NativeID); name != "" {
+			names = append(names, name)
+		}
+	}
+	result := map[string][2]*string{}
+	for start := 0; start < len(names); start += secretNameFilterValues {
+		input := &awssecrets.ListSecretsInput{
+			IncludePlannedDeletion: awssdk.Bool(true), MaxResults: awssdk.Int32(100),
+			Filters: []secretstypes.Filter{{Key: secretstypes.FilterNameStringTypeName, Values: names[start:min(start+secretNameFilterValues, len(names))]}},
+		}
+		for {
+			execution.LogCloudAPIRequest(ctx, "secretsmanager", "ListSecrets", contracts.CloudLogPayload(ctx, map[string]any{"Filters": input.Filters, "NextToken": awssdk.ToString(input.NextToken)}))
+			output, err := client.ListSecrets(ctx, input)
+			if err != nil {
+				execution.LogCloudAPIFailure(ctx, "secretsmanager", "ListSecrets", err)
+				return nil, NormalizeError(err)
+			}
+			for _, entry := range output.SecretList {
+				result[awssdk.ToString(entry.ARN)] = [2]*string{entry.OwningService, entry.PrimaryRegion}
+			}
+			if awssdk.ToString(output.NextToken) == "" || awssdk.ToString(output.NextToken) == awssdk.ToString(input.NextToken) {
+				break
+			}
+			input.NextToken = output.NextToken
+		}
+	}
+	return result, nil
+}
+
+// secretNameFromARN strips the partition prefix and the six-character suffix
+// Secrets Manager appends to a secret ARN.
+func secretNameFromARN(arn string) string {
+	parts := strings.SplitN(arn, ":", 7)
+	if len(parts) != 7 || parts[2] != "secretsmanager" || parts[5] != "secret" || len(parts[6]) < 8 || parts[6][len(parts[6])-7] != '-' {
+		return ""
+	}
+	return parts[6][:len(parts[6])-7]
 }

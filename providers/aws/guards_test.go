@@ -2,15 +2,19 @@ package aws
 
 import (
 	"context"
+	"net/http"
 	"testing"
 	"time"
 
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
+	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	awsbackup "github.com/aws/aws-sdk-go-v2/service/backup"
 	awskms "github.com/aws/aws-sdk-go-v2/service/kms"
 	kmstypes "github.com/aws/aws-sdk-go-v2/service/kms/types"
 	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/aws/smithy-go"
+	smithyhttp "github.com/aws/smithy-go/transport/http"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -163,5 +167,43 @@ func TestMotoS3BucketGuard(t *testing.T) {
 	}
 	if preflight, err := driver.Preflight(ctx, guardRequest("AWS::S3::Bucket", "steward-absent-bucket")); err != nil || !preflight.Absent {
 		t.Fatalf("absent bucket preflight=%+v err=%v", preflight, err)
+	}
+}
+
+// redirectingS3 answers like S3 for a bucket outside the client's region.
+type redirectingS3 struct {
+	bucketRegion string
+	output       *awss3.ListObjectVersionsOutput
+}
+
+func (f redirectingS3) ListObjectVersions(_ context.Context, _ *awss3.ListObjectVersionsInput, optFns ...func(*awss3.Options)) (*awss3.ListObjectVersionsOutput, error) {
+	options := awss3.Options{Region: "us-east-1"}
+	for _, fn := range optFns {
+		fn(&options)
+	}
+	if options.Region == f.bucketRegion {
+		return f.output, nil
+	}
+	header := http.Header{}
+	if f.bucketRegion != "" {
+		header.Set("X-Amz-Bucket-Region", f.bucketRegion)
+	}
+	return nil, &awshttp.ResponseError{ResponseError: &smithyhttp.ResponseError{
+		Response: &smithyhttp.Response{Response: &http.Response{StatusCode: http.StatusMovedPermanently, Header: header}},
+		Err:      &smithy.GenericAPIError{Code: "PermanentRedirect", Message: "use the bucket's region"},
+	}}
+}
+
+func TestBucketContentsAreReadInTheBucketRegion(t *testing.T) {
+	ctx := context.Background()
+	full := &awss3.ListObjectVersionsOutput{Versions: []s3types.ObjectVersion{{Key: awssdk.String("report.csv")}}}
+	items := []contracts.InventoryItem{{NativeType: "AWS::S3::Bucket", NativeID: "eu-logs", Normalized: map[string]any{}}}
+	if err := enrichLifecycleFacts(ctx, &NativeClients{S3: redirectingS3{bucketRegion: "eu-west-1", output: full}}, items); err != nil || items[0].Normalized["bucket_empty"] != false || items[0].Normalized["cleanup_protected"] != true {
+		t.Fatalf("bucket outside us-east-1 not inspected: %+v err=%v", items[0].Normalized, err)
+	}
+	// Without a region to retry in, the contents stay unknown: never "empty".
+	items = []contracts.InventoryItem{{NativeType: "AWS::S3::Bucket", NativeID: "lost", Normalized: map[string]any{}}}
+	if err := enrichLifecycleFacts(ctx, &NativeClients{S3: redirectingS3{}}, items); err == nil || items[0].Normalized["bucket_empty"] != nil {
+		t.Fatalf("unresolved redirect was not reported: %+v err=%v", items[0].Normalized, err)
 	}
 }

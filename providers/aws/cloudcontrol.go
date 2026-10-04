@@ -142,50 +142,57 @@ func (i *CloudControlInventory) List(ctx context.Context, request contracts.Inve
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
-	variant := variants[cursor.Variant]
-	requestPayload := map[string]any{"TypeName": typeName, "MaxResults": limit}
-	if cursor.Token != "" {
-		requestPayload["NextToken"] = cursor.Token
-	}
-	if variant.Model != "" {
-		requestPayload["ResourceModel"] = variant.Model
-	}
-	execution.LogCloudAPIRequest(ctx, "cloudcontrol", "ListResources", contracts.CloudLogPayload(ctx, requestPayload))
-	page, err := i.client.ListResources(ctx, CloudControlListRequest{TypeName: typeName, NextToken: cursor.Token, Limit: limit, ResourceModel: variant.Model})
-	if err != nil {
-		execution.LogCloudAPIFailure(ctx, "cloudcontrol", "ListResources", err)
-		return contracts.InventoryBatch{}, NormalizeError(err)
-	}
-	if page.NextToken != "" && page.NextToken == cursor.Token {
-		return contracts.InventoryBatch{}, fmt.Errorf("AWS Cloud Control repeated the %s page token", typeName)
-	}
-	responseResources := make([]any, 0, len(page.Resources))
-	batch := contracts.InventoryBatch{Items: make([]contracts.InventoryItem, 0, len(page.Resources)), RequestID: page.RequestID}
-	if page.NextToken != "" {
-		cursor.Token = page.NextToken
-	} else {
-		cursor.Variant, cursor.Token = cursor.Variant+1, ""
-	}
-	if cursor.Variant < len(variants) {
-		batch.NextCursor = encodeCloudControlCursor(cursor, variants)
-	}
-	batch.Complete = batch.NextCursor == ""
-	for _, resource := range page.Resources {
-		identifier := strings.TrimSpace(resource.Identifier)
-		if identifier == "" {
-			return contracts.InventoryBatch{}, fmt.Errorf("AWS Cloud Control ListResources returned an empty identifier")
+	for {
+		variant := variants[cursor.Variant]
+		requestPayload := map[string]any{"TypeName": typeName, "MaxResults": limit}
+		if cursor.Token != "" {
+			requestPayload["NextToken"] = cursor.Token
 		}
-		item, err := cloudControlItem(resource, *request.ResourceKind, request.Scope)
+		if variant.Model != "" {
+			requestPayload["ResourceModel"] = variant.Model
+		}
+		execution.LogCloudAPIRequest(ctx, "cloudcontrol", "ListResources", contracts.CloudLogPayload(ctx, requestPayload))
+		page, err := i.client.ListResources(ctx, CloudControlListRequest{TypeName: typeName, NextToken: cursor.Token, Limit: limit, ResourceModel: variant.Model})
 		if err != nil {
-			return contracts.InventoryBatch{}, err
+			execution.LogCloudAPIFailure(ctx, "cloudcontrol", "ListResources", err)
+			return contracts.InventoryBatch{}, NormalizeError(err)
 		}
-		responseResources = append(responseResources, map[string]any{"Identifier": identifier, "Properties": item.Raw["Properties"]})
-		batch.Items = append(batch.Items, item)
+		if page.NextToken != "" && page.NextToken == cursor.Token {
+			return contracts.InventoryBatch{}, fmt.Errorf("AWS Cloud Control repeated the %s page token", typeName)
+		}
+		responseResources := make([]any, 0, len(page.Resources))
+		batch := contracts.InventoryBatch{Items: make([]contracts.InventoryItem, 0, len(page.Resources)), RequestID: page.RequestID}
+		if page.NextToken != "" {
+			cursor.Token = page.NextToken
+		} else {
+			cursor.Variant, cursor.Token = cursor.Variant+1, ""
+		}
+		if cursor.Variant < len(variants) {
+			batch.NextCursor = encodeCloudControlCursor(cursor, variants)
+		}
+		batch.Complete = batch.NextCursor == ""
+		for _, resource := range page.Resources {
+			identifier := strings.TrimSpace(resource.Identifier)
+			if identifier == "" {
+				return contracts.InventoryBatch{}, fmt.Errorf("AWS Cloud Control ListResources returned an empty identifier")
+			}
+			item, err := cloudControlItem(resource, *request.ResourceKind, request.Scope)
+			if err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			responseResources = append(responseResources, map[string]any{"Identifier": identifier, "Properties": item.Raw["Properties"]})
+			batch.Items = append(batch.Items, item)
+		}
+		execution.LogCloudAPIResponse(ctx, "cloudcontrol", "ListResources", contracts.CloudLogPayload(ctx, map[string]any{
+			"RequestId": page.RequestID, "NextToken": page.NextToken, "TypeName": typeName, "ResourceDescriptions": responseResources,
+		}))
+		// A parent without children moves straight on to the next parent
+		// rather than returning an empty batch through the worker.
+		if len(batch.Items) == 0 && page.NextToken == "" && !batch.Complete {
+			continue
+		}
+		return batch, nil
 	}
-	execution.LogCloudAPIResponse(ctx, "cloudcontrol", "ListResources", contracts.CloudLogPayload(ctx, map[string]any{
-		"RequestId": page.RequestID, "NextToken": page.NextToken, "TypeName": typeName, "ResourceDescriptions": responseResources,
-	}))
-	return batch, nil
 }
 
 func cloudControlItem(resource CloudControlResource, kind asset.ResourceKind, scope asset.Scope) (contracts.InventoryItem, error) {
@@ -281,7 +288,10 @@ func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.In
 		return nil, err
 	}
 	result := make([]contracts.InventoryItem, 0, len(items))
-	subnetVPCs := map[string]string{}
+	subnetVPCs, err := r.prefetchNetworkParents(ctx, request.ConnectionID, region, details)
+	if err != nil {
+		return nil, err
+	}
 	var gateways []string
 	for _, detail := range details {
 		if detail == nil {
@@ -327,6 +337,44 @@ func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.In
 		}
 	}
 	return result, nil
+}
+
+// prefetchNetworkParents reads, in one EC2 describe per kind, the VPC of every
+// subnet or security group that enrichCloudControlNetwork would otherwise read
+// one Cloud Control GetResource at a time. IDs EC2 does not return are left
+// out, so they still take the GetResource path and its not-found handling.
+func (r *Runtime) prefetchNetworkParents(ctx context.Context, connectionID asset.ConnectionID, region string, details []*contracts.InventoryItem) (map[string]string, error) {
+	seen := map[string]bool{}
+	var subnets, groups []string
+	for _, detail := range details {
+		if detail == nil || stringValue(detail.Normalized["vpc_id"]) != "" {
+			continue
+		}
+		ids, _ := detail.Normalized["subnet_ids"].([]string)
+		target := &subnets
+		if len(ids) == 0 {
+			ids, _ = detail.Normalized["security_group_ids"].([]string)
+			target = &groups
+		}
+		for _, id := range ids {
+			if !seen[id] {
+				seen[id] = true
+				*target = append(*target, id)
+			}
+		}
+	}
+	if len(seen) == 0 {
+		return map[string]string{}, nil
+	}
+	network, err := r.networkClient(ctx, connectionID, region)
+	if err != nil {
+		return nil, err
+	}
+	parents, err := network.ParentVPCs(ctx, subnets, groups)
+	if err != nil {
+		return nil, NormalizeError(err)
+	}
+	return parents, nil
 }
 
 const cloudControlDetailConcurrency = 8

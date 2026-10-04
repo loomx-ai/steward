@@ -161,6 +161,56 @@ func (f fakeSecretsAPI) DescribeSecret(_ context.Context, input *awssecrets.Desc
 	return nil, &secretstypes.ResourceNotFoundException{Message: awssdk.String("missing")}
 }
 
+func (fakeSecretsAPI) ListSecrets(context.Context, *awssecrets.ListSecretsInput, ...func(*awssecrets.Options)) (*awssecrets.ListSecretsOutput, error) {
+	return &awssecrets.ListSecretsOutput{}, nil
+}
+
+// listedSecretsAPI answers ListSecrets name filters by prefix, as AWS does.
+type listedSecretsAPI struct {
+	fakeSecretsAPI
+	entries   []secretstypes.SecretListEntry
+	listCalls int
+}
+
+func (f *listedSecretsAPI) ListSecrets(_ context.Context, input *awssecrets.ListSecretsInput, _ ...func(*awssecrets.Options)) (*awssecrets.ListSecretsOutput, error) {
+	f.listCalls++
+	output := &awssecrets.ListSecretsOutput{}
+	for _, entry := range f.entries {
+		for _, prefix := range input.Filters[0].Values {
+			if strings.HasPrefix(awssdk.ToString(entry.Name), prefix) {
+				output.SecretList = append(output.SecretList, entry)
+				break
+			}
+		}
+	}
+	return output, nil
+}
+
+func TestSecretFactsComeFromListSecretsWithDescribeFallback(t *testing.T) {
+	arn := func(name string) string {
+		return "arn:aws:secretsmanager:us-east-1:123456789012:secret:" + name + "-AbCdEf"
+	}
+	api := &listedSecretsAPI{
+		// "app-old" is not listed (for example, created after the list); it is described.
+		fakeSecretsAPI: fakeSecretsAPI{arn("app-old"): {OwningService: awssdk.String("rds")}},
+		entries: []secretstypes.SecretListEntry{
+			{ARN: awssdk.String(arn("app")), Name: awssdk.String("app"), PrimaryRegion: awssdk.String("eu-west-1")},
+			{ARN: awssdk.String(arn("app-db")), Name: awssdk.String("app-db"), OwningService: awssdk.String("rds")},
+		},
+	}
+	var items []contracts.InventoryItem
+	for _, name := range []string{"app", "app-old"} {
+		items = append(items, contracts.InventoryItem{NativeType: secretType, NativeID: arn(name), Location: "us-east-1", Normalized: map[string]any{}})
+	}
+	if err := enrichLifecycleFacts(context.Background(), &NativeClients{Secrets: api}, items); err != nil {
+		t.Fatal(err)
+	}
+	if api.listCalls != 1 || items[0].Normalized["primary_region"] != "eu-west-1" || items[0].Normalized["owning_service"] != "" ||
+		items[0].Normalized["cleanup_protection_reason"] != "secret_replica" || items[1].Normalized["owning_service"] != "rds" {
+		t.Fatalf("calls=%d items=%+v / %+v", api.listCalls, items[0].Normalized, items[1].Normalized)
+	}
+}
+
 // Secrets that another service owns, and replicas of a secret whose primary
 // is in another Region, are removed by their owner or primary.
 func TestSecretsOwnedByServicesOrReplicatedAreProtected(t *testing.T) {

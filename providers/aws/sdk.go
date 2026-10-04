@@ -248,6 +248,37 @@ func (c *networkSDK) InternetGatewayVPCs(ctx context.Context, ids []string) (map
 	return result, nil
 }
 
+// ParentVPCs filters rather than naming IDs, so an unknown ID is left out
+// instead of failing the whole describe.
+func (c *networkSDK) ParentVPCs(ctx context.Context, subnetIDs, groupIDs []string) (map[string]string, error) {
+	result := map[string]string{}
+	for start := 0; start < len(subnetIDs); start += describeBatchSize {
+		filter := ec2types.Filter{Name: awssdk.String("subnet-id"), Values: subnetIDs[start:min(start+describeBatchSize, len(subnetIDs))]}
+		for pages := awsec2.NewDescribeSubnetsPaginator(c.client, &awsec2.DescribeSubnetsInput{Filters: []ec2types.Filter{filter}}); pages.HasMorePages(); {
+			output, err := pages.NextPage(ctx)
+			if err != nil {
+				return nil, err
+			}
+			for _, subnet := range output.Subnets {
+				result[awssdk.ToString(subnet.SubnetId)] = awssdk.ToString(subnet.VpcId)
+			}
+		}
+	}
+	for start := 0; start < len(groupIDs); start += describeBatchSize {
+		filter := ec2types.Filter{Name: awssdk.String("group-id"), Values: groupIDs[start:min(start+describeBatchSize, len(groupIDs))]}
+		for pages := awsec2.NewDescribeSecurityGroupsPaginator(c.client, &awsec2.DescribeSecurityGroupsInput{Filters: []ec2types.Filter{filter}}); pages.HasMorePages(); {
+			output, err := pages.NextPage(ctx)
+			if err != nil {
+				return nil, err
+			}
+			for _, group := range output.SecurityGroups {
+				result[awssdk.ToString(group.GroupId)] = awssdk.ToString(group.VpcId)
+			}
+		}
+	}
+	return result, nil
+}
+
 func (c *networkSDK) VPNGatewayVPCs(ctx context.Context, id string) ([]string, error) {
 	output, err := c.client.DescribeVpnGateways(ctx, &awsec2.DescribeVpnGatewaysInput{VpnGatewayIds: []string{id}})
 	if err != nil {
@@ -409,7 +440,18 @@ func (c *resourceExplorerSDK) Search(ctx context.Context, request SearchRequest)
 
 const timeFormat = "2006-01-02T15:04:05.999999999Z07:00"
 
-type cloudFormationSDK struct{ client *awscfn.Client }
+type cloudFormationSDK struct {
+	client *awscfn.Client
+	// policies holds the parsed template of each stack being paged, read on
+	// its first page and dropped after its last, so a stack's template is
+	// fetched and decoded once rather than once per resource page.
+	mu       sync.Mutex
+	policies map[string]map[string]string
+}
+
+// maxPagedStackTemplates bounds templates kept for stacks whose paging was
+// abandoned before its last page.
+const maxPagedStackTemplates = 64
 
 type cloudControlSDK struct{ client *awscloudcontrol.Client }
 
@@ -516,33 +558,34 @@ func (c *cloudFormationSDK) ListStackResources(ctx context.Context, request List
 		}
 		return StackResourcePage{}, err
 	}
-	// Membership alone does not promise deletion: the template can retain a
-	// resource. Read the processed template so transforms are accounted for.
-	template, err := c.client.GetTemplate(ctx, &awscfn.GetTemplateInput{
-		StackName: input.StackName, TemplateStage: cfntypes.TemplateStageProcessed,
-	})
-	if err != nil {
-		if cloudFormationStackNotFound(err) {
-			return StackResourcePage{}, nil
+	c.mu.Lock()
+	policies, cached := c.policies[request.StackID]
+	c.mu.Unlock()
+	if !cached || request.NextToken == "" {
+		if policies, err = c.deletionPolicies(ctx, input.StackName); err != nil {
+			if cloudFormationStackNotFound(err) {
+				return StackResourcePage{}, nil
+			}
+			return StackResourcePage{}, err
 		}
-		return StackResourcePage{}, err
 	}
-	var model struct {
-		Resources map[string]struct {
-			DeletionPolicy string `yaml:"DeletionPolicy"`
-		} `yaml:"Resources"`
+	c.mu.Lock()
+	if awssdk.ToString(output.NextToken) == "" {
+		delete(c.policies, request.StackID)
+	} else {
+		if c.policies == nil || len(c.policies) >= maxPagedStackTemplates {
+			c.policies = map[string]map[string]string{}
+		}
+		c.policies[request.StackID] = policies
 	}
-	if err := yaml.Unmarshal([]byte(awssdk.ToString(template.TemplateBody)), &model); err != nil {
-		return StackResourcePage{}, fmt.Errorf("decode CloudFormation template: %w", err)
-	}
+	c.mu.Unlock()
 	requestID, _ := awsmiddleware.GetRequestIDMetadata(output.ResultMetadata)
 	page := StackResourcePage{RequestID: requestID, NextToken: awssdk.ToString(output.NextToken), Resources: make([]StackResource, 0, len(output.StackResourceSummaries))}
 	for _, resource := range output.StackResourceSummaries {
 		if resource.ResourceStatus == cfntypes.ResourceStatusDeleteComplete || resource.ResourceStatus == cfntypes.ResourceStatusDeleteSkipped {
 			continue
 		}
-		definition, found := model.Resources[awssdk.ToString(resource.LogicalResourceId)]
-		policy := definition.DeletionPolicy
+		policy, found := policies[awssdk.ToString(resource.LogicalResourceId)]
 		if !found {
 			policy = "Unknown"
 		}
@@ -553,6 +596,31 @@ func (c *cloudFormationSDK) ListStackResources(ctx context.Context, request List
 		})
 	}
 	return page, nil
+}
+
+// deletionPolicies maps each template resource to its DeletionPolicy.
+// Membership alone does not promise deletion: the template can retain a
+// resource. Read the processed template so transforms are accounted for.
+func (c *cloudFormationSDK) deletionPolicies(ctx context.Context, stackName *string) (map[string]string, error) {
+	template, err := c.client.GetTemplate(ctx, &awscfn.GetTemplateInput{
+		StackName: stackName, TemplateStage: cfntypes.TemplateStageProcessed,
+	})
+	if err != nil {
+		return nil, err
+	}
+	var model struct {
+		Resources map[string]struct {
+			DeletionPolicy string `yaml:"DeletionPolicy"`
+		} `yaml:"Resources"`
+	}
+	if err := yaml.Unmarshal([]byte(awssdk.ToString(template.TemplateBody)), &model); err != nil {
+		return nil, fmt.Errorf("decode CloudFormation template: %w", err)
+	}
+	policies := make(map[string]string, len(model.Resources))
+	for logicalID, definition := range model.Resources {
+		policies[logicalID] = definition.DeletionPolicy
+	}
+	return policies, nil
 }
 
 func (c *cloudFormationSDK) DescribeStack(ctx context.Context, stackID string) (StackDescription, string, error) {

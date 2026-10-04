@@ -12,6 +12,7 @@ import (
 
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	awscredentials "github.com/aws/aws-sdk-go-v2/credentials"
+	awscfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
 	awsorganizations "github.com/aws/aws-sdk-go-v2/service/organizations"
 	orgtypes "github.com/aws/aws-sdk-go-v2/service/organizations/types"
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -482,5 +483,54 @@ func TestOrganizationalUnitInventoryListsEveryTreeLevelInHomeRegion(t *testing.T
 	}
 	if strings.Join(found, ",") != "ou-root-a<r-root" || factory.cloudRegion != "us-east-1" || factory.nativeRegion != "us-east-1" {
 		t.Fatalf("found=%v cloud=%s native=%s", found, factory.cloudRegion, factory.nativeRegion)
+	}
+}
+
+// A stack's template is read once however many resource pages it has.
+func TestCloudFormationStackTemplateIsReadOncePerStack(t *testing.T) {
+	var mu sync.Mutex
+	calls := map[string]int{}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mu.Lock()
+		defer mu.Unlock()
+		form := formAction(t, r)
+		calls[form.Get("Action")]++
+		w.Header().Set("Content-Type", "text/xml")
+		member := func(logical string) string {
+			return `<member><LogicalResourceId>` + logical + `</LogicalResourceId><PhysicalResourceId>p-` + logical + `</PhysicalResourceId><ResourceType>AWS::SQS::Queue</ResourceType><ResourceStatus>CREATE_COMPLETE</ResourceStatus><LastUpdatedTimestamp>2026-01-01T00:00:00Z</LastUpdatedTimestamp></member>`
+		}
+		switch form.Get("Action") {
+		case "GetTemplate":
+			_, _ = io.WriteString(w, "<GetTemplateResponse><GetTemplateResult><TemplateBody>Resources:\n  Kept:\n    DeletionPolicy: Retain\n  Gone: {}\n</TemplateBody></GetTemplateResult></GetTemplateResponse>")
+		case "ListStackResources":
+			if form.Get("NextToken") == "" {
+				_, _ = io.WriteString(w, `<ListStackResourcesResponse><ListStackResourcesResult><StackResourceSummaries>`+member("Kept")+`</StackResourceSummaries><NextToken>page-2</NextToken></ListStackResourcesResult></ListStackResourcesResponse>`)
+			} else {
+				_, _ = io.WriteString(w, `<ListStackResourcesResponse><ListStackResourcesResult><StackResourceSummaries>`+member("Gone")+member("Extra")+`</StackResourceSummaries></ListStackResourcesResult></ListStackResourcesResponse>`)
+			}
+		default:
+			t.Errorf("unexpected action %s", form.Get("Action"))
+		}
+	}))
+	t.Cleanup(server.Close)
+	client := &cloudFormationSDK{client: awscfn.NewFromConfig(awssdk.Config{
+		Region: "us-east-1", BaseEndpoint: awssdk.String(server.URL), RetryMaxAttempts: 1,
+		Credentials: awscredentials.NewStaticCredentialsProvider("AKID", "SECRET", ""),
+	})}
+	var policies []string
+	for token := ""; ; {
+		page, err := client.ListStackResources(context.Background(), ListStackResourcesRequest{StackID: "stack", NextToken: token})
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, resource := range page.Resources {
+			policies = append(policies, resource.LogicalID+"="+resource.DeletionPolicy)
+		}
+		if token = page.NextToken; token == "" {
+			break
+		}
+	}
+	if strings.Join(policies, ",") != "Kept=Retain,Gone=,Extra=Unknown" || calls["GetTemplate"] != 1 || calls["ListStackResources"] != 2 || len(client.policies) != 0 {
+		t.Fatalf("policies=%v calls=%v cached=%d", policies, calls, len(client.policies))
 	}
 }

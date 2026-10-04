@@ -3,7 +3,6 @@ package aws
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"regexp"
 	"sort"
@@ -644,10 +643,6 @@ func stringSliceValue(value any) []string {
 func enrichBucketContents(ctx context.Context, client S3NativeAPI, item *contracts.InventoryItem) error {
 	outcome, err := s3BucketGuard(client)(ctx, item.NativeID)
 	if err != nil {
-		var providerError *contracts.ProviderCallError
-		if errors.As(err, &providerError) && (providerError.Provider.Code == "PermanentRedirect" || providerError.Provider.Code == "AuthorizationHeaderMalformed") {
-			return nil // A bucket in another region is checked by its own regional scan.
-		}
 		return err
 	}
 	if outcome.pending {

@@ -139,6 +139,8 @@ type NetworkClient interface {
 	ListVSwitches(context.Context, NetworkListRequest) (NetworkPage, error)
 	// InternetGatewayVPCs returns the attached VPC IDs of each gateway by ID.
 	InternetGatewayVPCs(context.Context, []string) (map[string][]string, error)
+	// ParentVPCs returns the VPC ID of each found subnet and security group.
+	ParentVPCs(ctx context.Context, subnetIDs, groupIDs []string) (map[string]string, error)
 	DetachInternetGateway(context.Context, string, string) error
 	VPNGatewayVPCs(context.Context, string) ([]string, error)
 	DetachVPNGateway(context.Context, string, string) error

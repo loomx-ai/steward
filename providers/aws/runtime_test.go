@@ -150,6 +150,8 @@ type runtimeNetworkClient struct {
 	vswitches  NetworkPage
 	lastQuery  NetworkListRequest
 	listedKind asset.ScanTargetKind
+	parentVPCs map[string]string
+	parentArgs [][]string
 }
 
 func (c *runtimeNetworkClient) ListVPCs(_ context.Context, request NetworkListRequest) (NetworkPage, error) {
@@ -265,6 +267,16 @@ func TestRuntimeRoutesAuthoritativeCloudControlInventoryAndDeduplicatesBroadInde
 
 func (*runtimeNetworkClient) InternetGatewayVPCs(context.Context, []string) (map[string][]string, error) {
 	return nil, nil
+}
+func (c *runtimeNetworkClient) ParentVPCs(_ context.Context, subnetIDs, groupIDs []string) (map[string]string, error) {
+	c.parentArgs = append(c.parentArgs, subnetIDs, groupIDs)
+	result := map[string]string{}
+	for _, id := range append(append([]string(nil), subnetIDs...), groupIDs...) {
+		if vpc, ok := c.parentVPCs[id]; ok {
+			result[id] = vpc
+		}
+	}
+	return result, nil
 }
 func (*runtimeNetworkClient) VPNGatewayVPCs(context.Context, string) ([]string, error) {
 	return nil, nil

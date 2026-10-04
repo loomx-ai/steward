@@ -2,11 +2,13 @@ package aws
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
+	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	awsbackup "github.com/aws/aws-sdk-go-v2/service/backup"
 	awskms "github.com/aws/aws-sdk-go-v2/service/kms"
 	kmstypes "github.com/aws/aws-sdk-go-v2/service/kms/types"
@@ -166,9 +168,18 @@ func backupVaultGuard(client BackupNativeAPI) deleteGuard {
 // versions and delete markers count even when versioning is suspended, so the
 // check lists versions rather than current objects. Steward does not empty
 // buckets: removing data is left to an explicit, separate decision.
+//
+// A global-scope bucket is inspected through the home region client; a bucket
+// in another region answers with a redirect naming its region, and the check is
+// repeated there. Without that region the redirect error is returned, so the
+// bucket's contents stay unknown rather than being read as empty.
 func s3BucketGuard(client S3NativeAPI) deleteGuard {
 	return func(ctx context.Context, bucket string) (guardOutcome, error) {
-		output, err := client.ListObjectVersions(ctx, &awss3.ListObjectVersionsInput{Bucket: awssdk.String(bucket), MaxKeys: awssdk.Int32(1)})
+		input := &awss3.ListObjectVersionsInput{Bucket: awssdk.String(bucket), MaxKeys: awssdk.Int32(1)}
+		output, err := client.ListObjectVersions(ctx, input)
+		if region := s3RedirectRegion(err); region != "" {
+			output, err = client.ListObjectVersions(ctx, input, func(o *awss3.Options) { o.Region = region })
+		}
 		if nativeNotFound(err, "NoSuchBucket") {
 			return guardOutcome{pending: true, evidence: map[string]any{"bucket_state": "absent"}}, nil
 		}
@@ -180,6 +191,16 @@ func s3BucketGuard(client S3NativeAPI) deleteGuard {
 		}
 		return guardOutcome{evidence: map[string]any{"bucket_empty": true}}, nil
 	}
+}
+
+// s3RedirectRegion is the bucket region S3 names in the x-amz-bucket-region
+// header of a wrong-region error.
+func s3RedirectRegion(err error) string {
+	var response *awshttp.ResponseError
+	if err == nil || !errors.As(err, &response) || response.Response == nil {
+		return ""
+	}
+	return strings.TrimSpace(response.Response.Header.Get("X-Amz-Bucket-Region"))
 }
 
 // A secret scheduled for deletion stays readable until its recovery window
