@@ -153,7 +153,7 @@ export function AssetsView() {
     queryFn: listProviderCatalog,
   });
   const regions = useQuery({
-    queryKey: ["connection-regions", connection.id, "asset-list"],
+    queryKey: ["connection-regions", connection.id, "all"],
     queryFn: () => listConnectionRegions(connection.id),
   });
   const rows = assets.data?.items ?? [];

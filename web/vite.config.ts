@@ -55,5 +55,20 @@ export default defineConfig({
   build: {
     outDir: "../internal/webui/dist",
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        // Library code changes far less often than the app, so it keeps its
+        // cached hash across releases.
+        manualChunks(id) {
+          if (
+            /[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler|@tanstack)[\\/]/.test(
+              id,
+            )
+          ) {
+            return "vendor";
+          }
+        },
+      },
+    },
   },
 });

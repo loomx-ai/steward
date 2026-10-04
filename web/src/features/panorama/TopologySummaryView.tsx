@@ -10,6 +10,7 @@ import {
 import {
   Background,
   ReactFlow,
+  ReactFlowProvider,
   type Node,
   type NodeProps,
   type ReactFlowInstance,
@@ -29,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { selectorKey } from "../cleanup/selection";
 import { BoxSelectionActionBar } from "./BoxSelectionActionBar";
 import { completeBoxSelection, type CanvasMode } from "./boxSelection";
-import { CanvasToolbar } from "./CanvasToolbar";
+import { ZoomAwareCanvasToolbar } from "./CanvasToolbar";
 import { cloudConsoleURL } from "./consoleLinks";
 import { isCleanupTargetPending, type CleanupTarget } from "./cleanupSelection";
 import { useCleanupSelection } from "./CleanupSelectionContext";
@@ -54,6 +55,9 @@ const SUMMARY_HEIGHT = 72;
 const SUMMARY_X_GAP = 20;
 const SUMMARY_Y_GAP = 16;
 const SUMMARY_MAX_ZOOM = 2.5;
+const SUMMARY_FIT_VIEW_OPTIONS = { padding: 0.06, maxZoom: SUMMARY_MAX_ZOOM };
+const SUMMARY_PRO_OPTIONS = { hideAttribution: true };
+const NO_EDGES: never[] = [];
 const SUMMARY_STACK_FIT_PADDING = 0.04;
 const EXPANDED_COLUMNS = 4;
 const EMPTY_SCOPE_EXPANDED_HEADER_HEIGHT = 40;
@@ -614,7 +618,6 @@ export function TopologySummaryView({
   const suppressNodeClick = useRef(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 1200, height: 800 });
-  const [zoom, setZoom] = useState(1);
   const pendingStackFocus = useRef<PendingStackFocus | undefined>(undefined);
   const pendingViewportTransition = useRef<
     PendingViewportTransition | undefined
@@ -1343,7 +1346,6 @@ export function TopologySummaryView({
   }, []);
   const changeZoom = useCallback((nextZoom: number) => {
     const clampedZoom = Math.min(SUMMARY_MAX_ZOOM, Math.max(0.02, nextZoom));
-    setZoom(clampedZoom);
     void flow.current?.zoomTo(clampedZoom);
   }, []);
 
@@ -1359,67 +1361,67 @@ export function TopologySummaryView({
           "[&_.react-flow__pane]:cursor-grab [&_.react-flow__pane:active]:cursor-grabbing",
       )}
     >
-      <ReactFlow
-        data-testid="topology-summary-canvas"
-        nodes={nodes}
-        edges={[]}
-        nodeTypes={summaryNodeTypes}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        nodesFocusable={false}
-        elementsSelectable={mode === "select"}
-        selectionOnDrag={mode === "select"}
-        panOnDrag={mode === "pan" ? true : [1]}
-        selectionKeyCode={null}
-        multiSelectionKeyCode="Shift"
-        proOptions={{ hideAttribution: true }}
-        onClickCapture={(event) => {
-          if (
-            !suppressNodeClick.current ||
-            !(event.target instanceof Element) ||
-            !event.target.closest(".react-flow__node")
-          ) {
-            return;
-          }
-          suppressNodeClick.current = false;
-          event.preventDefault();
-          event.stopPropagation();
-        }}
-        onPointerDownCapture={handleNodePanStart}
-        onPointerMoveCapture={handleNodePanMove}
-        onPointerUpCapture={finishNodePan}
-        onPointerCancelCapture={finishNodePan}
-        onNodeClick={() => undefined}
-        onPaneClick={handlePaneClick}
-        onSelectionChange={({ nodes: selectedNodes }) => {
-          selectedFlowNodes.current = selectedNodes;
-        }}
-        onSelectionEnd={handleSelectionEnd}
-        onInit={(instance) => {
-          flow.current = instance;
-          void instance.fitView({
-            padding: 0.06,
-            maxZoom: SUMMARY_MAX_ZOOM,
-          });
-        }}
-        onMove={(_event, viewport) => setZoom(viewport.zoom)}
-        fitView
-        fitViewOptions={{ padding: 0.06, maxZoom: SUMMARY_MAX_ZOOM }}
-        minZoom={0.02}
-        maxZoom={SUMMARY_MAX_ZOOM}
-      >
-        <Background />
-      </ReactFlow>
-      <CanvasToolbar
-        mode={mode}
-        zoom={zoom}
-        onZoomChange={changeZoom}
-        onModeChange={handleModeChange}
-        onEscape={handleEscape}
-        onZoomOut={zoomOut}
-        onFitView={fitView}
-        onZoomIn={zoomIn}
-      />
+      <ReactFlowProvider>
+        <ReactFlow
+          data-testid="topology-summary-canvas"
+          nodes={nodes}
+          edges={NO_EDGES}
+          nodeTypes={summaryNodeTypes}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          nodesFocusable={false}
+          elementsSelectable={mode === "select"}
+          selectionOnDrag={mode === "select"}
+          panOnDrag={mode === "pan" ? true : [1]}
+          selectionKeyCode={null}
+          multiSelectionKeyCode="Shift"
+          proOptions={SUMMARY_PRO_OPTIONS}
+          onClickCapture={(event) => {
+            if (
+              !suppressNodeClick.current ||
+              !(event.target instanceof Element) ||
+              !event.target.closest(".react-flow__node")
+            ) {
+              return;
+            }
+            suppressNodeClick.current = false;
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+          onPointerDownCapture={handleNodePanStart}
+          onPointerMoveCapture={handleNodePanMove}
+          onPointerUpCapture={finishNodePan}
+          onPointerCancelCapture={finishNodePan}
+          onNodeClick={() => undefined}
+          onPaneClick={handlePaneClick}
+          onSelectionChange={({ nodes: selectedNodes }) => {
+            selectedFlowNodes.current = selectedNodes;
+          }}
+          onSelectionEnd={handleSelectionEnd}
+          onInit={(instance) => {
+            flow.current = instance;
+            void instance.fitView({
+              padding: 0.06,
+              maxZoom: SUMMARY_MAX_ZOOM,
+            });
+          }}
+          fitView
+          fitViewOptions={SUMMARY_FIT_VIEW_OPTIONS}
+          minZoom={0.02}
+          maxZoom={SUMMARY_MAX_ZOOM}
+        >
+          <Background />
+        </ReactFlow>
+        <ZoomAwareCanvasToolbar
+          mode={mode}
+          onZoomChange={changeZoom}
+          onModeChange={handleModeChange}
+          onEscape={handleEscape}
+          onZoomOut={zoomOut}
+          onFitView={fitView}
+          onZoomIn={zoomIn}
+        />
+      </ReactFlowProvider>
       <BoxSelectionActionBar
         candidateKeys={candidateTargets.map((target) => target.key)}
         onAdd={() => addTargets(candidateTargets)}

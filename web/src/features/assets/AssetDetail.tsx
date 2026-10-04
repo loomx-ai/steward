@@ -95,7 +95,7 @@ export function AssetDetail() {
     queryFn: listProviderCatalog,
   });
   const regions = useQuery({
-    queryKey: ["connection-regions", connection.id, "asset-detail"],
+    queryKey: ["connection-regions", connection.id, "all"],
     queryFn: () => listConnectionRegions(connection.id),
   });
   const relatedIDs = useMemo(

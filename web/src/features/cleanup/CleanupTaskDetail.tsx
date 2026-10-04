@@ -375,6 +375,14 @@ export function CleanupTaskDetail() {
       ),
     ];
   }, [aggregate, baseResourceRows]);
+  // Assets already fetched for this task snapshot, so a progress update that
+  // adds a few IDs fetches only those. Reset by replacing the map so an
+  // in-flight fetch cannot repopulate it with rows from before the reset.
+  const fetchedAssets = useRef({
+    scope: "",
+    byID: new Map<string, Asset | null>(),
+  });
+  const assetsScope = `${connection.id}/${id}/${aggregate?.task.snapshot_hash ?? ""}`;
   const assets = useQuery({
     queryKey: [
       "cln-detail-assets",
@@ -383,18 +391,44 @@ export function CleanupTaskDetail() {
       aggregate?.task.snapshot_hash,
       assetIDs,
     ],
-    queryFn: () => findAssets(connection.id, assetIDs),
+    queryFn: async () => {
+      if (fetchedAssets.current.scope !== assetsScope) {
+        fetchedAssets.current = { scope: assetsScope, byID: new Map() };
+      }
+      const { byID } = fetchedAssets.current;
+      const missing = assetIDs.filter((assetID) => !byID.has(assetID));
+      if (missing.length > 0) {
+        const found = new Map(
+          (await findAssets(connection.id, missing)).map((asset) => [
+            asset.id,
+            asset,
+          ]),
+        );
+        for (const assetID of missing) {
+          byID.set(assetID, found.get(assetID) ?? null);
+        }
+      }
+      return assetIDs.flatMap((assetID) => byID.get(assetID) ?? []);
+    },
     enabled: assetIDs.length > 0,
+    // Refreshed by the invalidation below once actions settle.
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
   });
-  const actionStatusKey = (actions.data?.items ?? [])
-    .map((action) => `${action.id}:${action.status}`)
-    .sort()
-    .join("|");
+  const actionStatusKey = useMemo(
+    () =>
+      (actions.data?.items ?? [])
+        .map((action) => `${action.id}:${action.status}`)
+        .sort()
+        .join("|"),
+    [actions.data?.items],
+  );
   useEffect(() => {
     if (!actions.data) return;
     const previouslyActive = activeActionsRef.current;
     activeActionsRef.current = hasActiveActions;
     if (!previouslyActive || hasActiveActions) return;
+    fetchedAssets.current = { scope: "", byID: new Map() };
     void queryClient.invalidateQueries({
       queryKey: ["cln-detail-assets", connection.id, id],
     });
@@ -419,7 +453,7 @@ export function CleanupTaskDetail() {
     queryFn: listProviderCatalog,
   });
   const regions = useQuery({
-    queryKey: ["connection-regions", connection.id, "cleanup-detail"],
+    queryKey: ["connection-regions", connection.id, "all"],
     queryFn: () => listConnectionRegions(connection.id),
   });
   const connectionRegions = useMemo(

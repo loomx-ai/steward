@@ -9,7 +9,6 @@ const collectionRoutes = [
   "../src/features/assets/AssetsView.tsx",
   "../src/features/scans/ScansView.tsx",
   "../src/features/cleanup/CleanupView.tsx",
-  "../src/features/executions/ExecutionsView.tsx",
   "../src/features/findings/FindingsView.tsx",
   "../src/features/audits/AuditsView.tsx",
 ];
@@ -69,14 +68,12 @@ test("interactive table rows keep native row semantics and cell controls", () =>
   assert.match(table, /aria-selected:bg-muted/);
 
   for (const path of [
-    "../src/features/executions/ExecutionsView.tsx",
     "../src/features/findings/FindingsView.tsx",
   ]) {
     const source = read(path);
     assert.match(source, /className="group cursor-pointer"/, path);
   }
   for (const path of [
-    "../src/features/executions/ExecutionsView.tsx",
     "../src/features/findings/FindingsView.tsx",
     "../src/features/audits/AuditsView.tsx",
   ]) {
@@ -105,7 +102,6 @@ test("interactive table rows keep native row semantics and cell controls", () =>
   assert.ok(taskRow);
   assert.doesNotMatch(taskRow, /onClick=/);
   for (const path of [
-    "../src/features/executions/ExecutionsView.tsx",
     "../src/features/findings/FindingsView.tsx",
     "../src/features/audits/AuditsView.tsx",
   ]) {
@@ -117,7 +113,6 @@ test("details and cleanup workflow use reading or list layouts", () => {
   const expected = new Map([
     ["../src/features/assets/AssetDetail.tsx", "reading"],
     ["../src/features/cleanup/CleanupTaskDetail.tsx", "reading"],
-    ["../src/features/executions/ExecutionDetail.tsx", "list"],
   ]);
   for (const [path, mode] of expected) {
     const source = read(path);
@@ -130,7 +125,6 @@ test("detail routes register titles while task creation uses a shared dialog", (
   const detailRoutes = [
     "../src/features/assets/AssetDetail.tsx",
     "../src/features/cleanup/CleanupTaskDetail.tsx",
-    "../src/features/executions/ExecutionDetail.tsx",
   ];
   for (const path of detailRoutes) {
     const source = read(path);

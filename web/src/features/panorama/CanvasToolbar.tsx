@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useStore, type ReactFlowState } from "@xyflow/react";
 import {
   Hand,
   Maximize2,
@@ -52,6 +53,17 @@ export interface CanvasToolbarProps {
   onZoomOut: () => void;
   onFitView: () => void;
   onZoomIn: () => void;
+}
+
+const selectZoom = (state: ReactFlowState) => state.transform[2];
+
+// Reads the zoom from the flow store so panning and zooming re-render only the
+// toolbar, not the whole canvas. Must render inside a ReactFlowProvider.
+export function ZoomAwareCanvasToolbar(
+  props: Omit<CanvasToolbarProps, "zoom">,
+) {
+  const zoom = useStore(selectZoom);
+  return <CanvasToolbar {...props} zoom={zoom} />;
 }
 
 function isEditableElement(target: EventTarget | null): boolean {

@@ -2,15 +2,15 @@ package webui
 
 import (
 	"bytes"
+	"compress/gzip"
 	"crypto/sha256"
 	"encoding/hex"
 	"io/fs"
+	"mime"
 	"net/http"
 	"path"
 	"strings"
 	"time"
-
-	"github.com/go-chi/chi/v5/middleware"
 )
 
 // placeholderIndex is served when the binary was built without the embedded
@@ -43,42 +43,67 @@ func Handler() http.Handler {
 }
 
 func handler(sub fs.FS) http.Handler {
-	index, err := fs.ReadFile(sub, "index.html")
-	if err != nil {
+	if _, err := fs.Stat(sub, "index.html"); err != nil {
 		return placeholderHandler()
 	}
 	// Embedded files carry no modification time, so validators come from
-	// their content instead.
-	etags := contentETags(sub)
-	fileServer := http.FileServer(http.FS(sub))
-	return middleware.Compress(5)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// their content. Text files are gzipped once here instead of per request.
+	files := loadBundle(sub)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		name := strings.TrimPrefix(path.Clean(r.URL.Path), "/")
-		if name == "." || name == "" || name == "index.html" {
-			serveIndex(w, r, index, etags["index.html"])
-			return
+		if name == "." || name == "" {
+			name = "index.html"
 		}
 		// Only regular files come from the bundle. Directories, such as the
 		// bundle's assets/ folder that shares its name with the Resources
 		// route, fall through to the console instead of a file listing.
-		if info, err := fs.Stat(sub, name); err == nil && !info.IsDir() {
-			w.Header().Set("ETag", etags[name])
-			if strings.HasPrefix(name, "assets/") {
-				// Built bundle files are content-hashed by name.
-				w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
-			}
-			fileServer.ServeHTTP(w, r)
-			return
-		}
-		if missingBundleFile(name) {
+		file, ok := files[name]
+		if !ok && missingBundleFile(name) {
 			http.NotFound(w, r)
 			return
 		}
-		serveIndex(w, r, index, etags["index.html"])
-	}))
+		switch {
+		case !ok || name == "index.html":
+			// Browsers revalidate the console shell so a new build's hashed
+			// bundle names are picked up on the next load.
+			name, file = "index.html", files["index.html"]
+			w.Header().Set("Cache-Control", "no-cache")
+		case strings.HasPrefix(name, "assets/"):
+			// Built bundle files are content-hashed by name.
+			w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+		default:
+			// Icons and brand images keep stable names across releases.
+			w.Header().Set("Cache-Control", "public, max-age=86400")
+		}
+		file.serve(w, r, name)
+	})
 }
 
-func contentETags(sub fs.FS) map[string]string {
-	etags := map[string]string{}
+type bundleFile struct {
+	data, gzipped []byte
+	etag          string
+}
+
+func (f bundleFile) serve(w http.ResponseWriter, r *http.Request, name string) {
+	data, etag := f.data, f.etag
+	if f.gzipped != nil {
+		w.Header().Add("Vary", "Accept-Encoding")
+		if acceptsGzip(r.Header.Get("Accept-Encoding")) {
+			data, etag = f.gzipped, strings.TrimSuffix(etag, `"`)+`-gzip"`
+			w.Header().Set("Content-Encoding", "gzip")
+		}
+	}
+	contentType := mime.TypeByExtension(path.Ext(name))
+	if contentType == "" {
+		contentType = http.DetectContentType(f.data)
+	}
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("ETag", etag)
+	http.ServeContent(w, r, name, time.Time{}, bytes.NewReader(data))
+}
+
+func loadBundle(sub fs.FS) map[string]bundleFile {
+	files := map[string]bundleFile{}
 	_ = fs.WalkDir(sub, ".", func(name string, entry fs.DirEntry, err error) error {
 		if err != nil || entry.IsDir() {
 			return nil
@@ -88,10 +113,39 @@ func contentETags(sub fs.FS) map[string]string {
 			return nil
 		}
 		digest := sha256.Sum256(data)
-		etags[name] = `"` + hex.EncodeToString(digest[:16]) + `"`
+		file := bundleFile{data: data, etag: `"` + hex.EncodeToString(digest[:16]) + `"`}
+		switch path.Ext(name) {
+		case ".html", ".js", ".css", ".svg", ".json", ".ico", ".txt":
+			if gzipped := gzipBytes(data); len(gzipped) < len(data) {
+				file.gzipped = gzipped
+			}
+		}
+		files[name] = file
 		return nil
 	})
-	return etags
+	return files
+}
+
+func gzipBytes(data []byte) []byte {
+	var buf bytes.Buffer
+	writer, _ := gzip.NewWriterLevel(&buf, gzip.BestCompression)
+	_, _ = writer.Write(data)
+	_ = writer.Close()
+	return buf.Bytes()
+}
+
+// acceptsGzip reports whether an Accept-Encoding header allows gzip, honoring
+// an explicit q=0 refusal.
+func acceptsGzip(header string) bool {
+	for _, part := range strings.Split(header, ",") {
+		coding, params, _ := strings.Cut(strings.TrimSpace(part), ";")
+		if !strings.EqualFold(strings.TrimSpace(coding), "gzip") {
+			continue
+		}
+		q, ok := strings.CutPrefix(strings.ReplaceAll(strings.TrimSpace(params), " ", ""), "q=")
+		return !ok || strings.Trim(q, "0.") != ""
+	}
+	return false
 }
 
 // missingBundleFile tells a request for a built file that no longer exists,

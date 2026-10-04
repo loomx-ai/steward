@@ -5,10 +5,6 @@ import { MemoryRouter, useLocation } from "react-router-dom";
 import { beforeEach, expect, it, vi } from "vitest";
 import { listCleanupTasks } from "@/api/client";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
-import {
-  executionTimeline,
-  isExecutionActive,
-} from "../executions/ExecutionDetail";
 import { CleanupView } from "../cleanup/CleanupView";
 
 vi.mock("@/api/client", async (importOriginal) => ({
@@ -69,17 +65,6 @@ function renderCleanupTasks() {
     </QueryClientProvider>,
   );
 }
-
-it("polls only active executions and projects a stable timeline", () => {
-  expect(isExecutionActive("running")).toBe(true);
-  expect(isExecutionActive("succeeded")).toBe(false);
-  expect(executionTimeline("running").map((item) => item.state)).toEqual([
-    "complete",
-    "active",
-    "pending",
-  ]);
-  expect(executionTimeline("failed").at(-1)?.state).toBe("error");
-});
 
 it("uses a native cleanup task link for Enter navigation", async () => {
   const user = userEvent.setup();

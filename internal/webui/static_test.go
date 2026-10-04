@@ -1,6 +1,8 @@
 package webui
 
 import (
+	"compress/gzip"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -87,8 +89,26 @@ func TestBundleHandlerCachesHashedAssetsAndRevalidatesTheShell(t *testing.T) {
 
 	asset := serve("/assets/index-abc.js", map[string]string{"Accept-Encoding": "gzip"})
 	if asset.Code != http.StatusOK || asset.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" ||
-		asset.Header().Get("Content-Encoding") != "gzip" {
+		asset.Header().Get("Content-Encoding") != "gzip" || asset.Header().Get("Vary") != "Accept-Encoding" ||
+		!strings.HasPrefix(asset.Header().Get("Content-Type"), "text/javascript") {
 		t.Fatalf("asset status=%d headers=%v", asset.Code, asset.Header())
+	}
+	reader, err := gzip.NewReader(asset.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if body, _ := io.ReadAll(reader); string(body) != strings.Repeat("console.log(1);", 100) {
+		t.Fatalf("gzipped body = %q", body)
+	}
+	plain := serve("/assets/index-abc.js", map[string]string{"Accept-Encoding": "gzip;q=0"})
+	if plain.Header().Get("Content-Encoding") != "" || plain.Header().Get("ETag") == asset.Header().Get("ETag") ||
+		plain.Body.String() != strings.Repeat("console.log(1);", 100) {
+		t.Fatalf("identity headers=%v", plain.Header())
+	}
+	if revalidated := serve("/assets/index-abc.js", map[string]string{
+		"Accept-Encoding": "gzip", "If-None-Match": asset.Header().Get("ETag"),
+	}); revalidated.Code != http.StatusNotModified {
+		t.Fatalf("gzip revalidation status=%d", revalidated.Code)
 	}
 
 	for _, target := range []string{"/", "/scans/schedules/sch-1"} {
@@ -104,7 +124,7 @@ func TestBundleHandlerCachesHashedAssetsAndRevalidatesTheShell(t *testing.T) {
 
 	icon := serve("/favicon.ico", nil)
 	etag := icon.Header().Get("ETag")
-	if icon.Code != http.StatusOK || etag == "" || icon.Header().Get("Cache-Control") != "" {
+	if icon.Code != http.StatusOK || etag == "" || icon.Header().Get("Cache-Control") != "public, max-age=86400" {
 		t.Fatalf("icon status=%d headers=%v", icon.Code, icon.Header())
 	}
 	if revalidated := serve("/favicon.ico", map[string]string{"If-None-Match": etag}); revalidated.Code != http.StatusNotModified {

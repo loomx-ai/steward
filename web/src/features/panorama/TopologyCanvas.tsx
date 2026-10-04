@@ -11,12 +11,10 @@ import {
   Background,
   ReactFlow,
   ReactFlowProvider,
-  useStore,
   type Edge,
   type NodeMouseHandler,
   type OnSelectionChangeFunc,
   type ReactFlowInstance,
-  type ReactFlowState,
   type Viewport,
 } from "@xyflow/react";
 import type {
@@ -37,7 +35,7 @@ import {
   prioritizeBoxSelectionTargets,
   type CanvasMode,
 } from "./boxSelection";
-import { CanvasToolbar, type CanvasToolbarProps } from "./CanvasToolbar";
+import { ZoomAwareCanvasToolbar } from "./CanvasToolbar";
 import { cleanupPendingMatcher, type CleanupTarget } from "./cleanupSelection";
 import { cleanupTargetContainsKey } from "./cleanupLocation";
 import { cloudConsoleURL } from "./consoleLinks";
@@ -1930,15 +1928,6 @@ export function TopologyCanvas({
       <ProjectionWarningStatus warnings={warnings} />
     </div>
   );
-}
-
-const selectZoom = (state: ReactFlowState) => state.transform[2];
-
-// Reads the zoom from the flow store so panning and zooming re-render only the
-// toolbar, not the whole canvas.
-function ZoomAwareCanvasToolbar(props: Omit<CanvasToolbarProps, "zoom">) {
-  const zoom = useStore(selectZoom);
-  return <CanvasToolbar {...props} zoom={zoom} />;
 }
 
 function ProjectionWarningStatus({
