@@ -163,7 +163,7 @@ func monitorResourceReferences(kind, self string, raw map[string]any) (map[strin
 	return refs, nil
 }
 
-func (c *client) contributeMonitorReferences(ctx context.Context, parent asset.Asset, assets []asset.Asset) (contribution governance.Contribution, err error) {
+func (c *client) contributeMonitorReferences(ctx context.Context, parent asset.Asset, assets []asset.Asset, index *assetIndex) (contribution governance.Contribution, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	id, scope, kind, err := monitorResourceID(parent.Identity.NativeID)
 	if err != nil || id != parent.Identity.NativeID || !strings.HasPrefix(id, c.root()+"/") || kind != parent.Identity.NativeType || parent.ID == "" || parent.Identity.Provider != asset.ProviderAzure || parent.Identity.ConnectionID == "" || parent.Identity.Partition == "" || text(parent.Normalized[monitorConfigurationProof]) == "" || text(parent.Normalized[monitorGroupProof]) == "" {
@@ -193,7 +193,7 @@ func (c *client) contributeMonitorReferences(ctx context.Context, parent asset.A
 	if err := c.monitorReferencesUnchanged(parent, refs); err != nil {
 		return contribution, err
 	}
-	contribution, err = c.contributeNativeReferences(parent, assets, refs, "azure:monitor-reference")
+	contribution, err = c.contributeIndexedReferences(parent, assets, index, refs, "azure:monitor-reference")
 	if err != nil {
 		return contribution, err
 	}
@@ -202,18 +202,17 @@ func (c *client) contributeMonitorReferences(ctx context.Context, parent asset.A
 	// ownership or automatically select it through the reverse relationship.
 	for _, reference := range contribution.Relationships {
 		controllers := map[string]any{}
-		for _, target := range assets {
-			if target.ID != reference.TargetAssetID {
-				continue
-			}
-			for _, controller := range assets {
+		for _, t := range index.byID[reference.TargetAssetID] {
+			target := &assets[t]
+			for _, i := range index.monitorControllers {
+				controller := &assets[i]
 				if controller.Identity.Provider != parent.Identity.Provider || controller.Identity.ConnectionID != parent.Identity.ConnectionID || controller.Identity.Partition != parent.Identity.Partition {
 					continue
 				}
 				if controller.Identity.NativeType == groupType && text(controller.Normalized["_resource_group_configuration"]) != "" && text(controller.Normalized["_managed_group_owner"]) == "" && inResourceGroup(parent.Identity.NativeID, controller.Identity.NativeID) && (target.ID == controller.ID || inResourceGroup(target.Identity.NativeID, controller.Identity.NativeID)) {
 					controllers[string(controller.ID)] = true
 				}
-				if group, ok := c.monitorControllerGroup(controller); ok && inResourceGroup(parent.Identity.NativeID, group) && (target.ID == controller.ID || inResourceGroup(target.Identity.NativeID, group)) {
+				if group, ok := c.monitorControllerGroup(*controller); ok && inResourceGroup(parent.Identity.NativeID, group) && (target.ID == controller.ID || inResourceGroup(target.Identity.NativeID, group)) {
 					controllers[string(controller.ID)] = true
 				}
 			}

@@ -207,23 +207,38 @@ func aksExternalRelation(parent, child asset.Asset) bool {
 	}) && serviceChildRelation(parent, child)
 }
 
+// The closure is order independent, so a worklist visits each member once and
+// only tests children whose type aksExternalRelation can accept.
 func managedGroupFrozenMembers(group string, assets []asset.Asset) map[string]bool {
 	members := map[string]bool{}
-	for _, value := range assets {
-		if inResourceGroup(value.Identity.NativeID, group) {
-			members[strings.ToLower(value.Identity.NativeID)] = true
+	byID, byKind := map[string][]int{}, map[string][]int{}
+	var queue []string
+	for i, value := range assets {
+		id := strings.ToLower(value.Identity.NativeID)
+		byID[id] = append(byID[id], i)
+		kind := strings.ToLower(value.Identity.NativeType)
+		byKind[kind] = append(byKind[kind], i)
+		if !members[id] && inResourceGroup(value.Identity.NativeID, group) {
+			members[id] = true
+			queue = append(queue, id)
 		}
 	}
-	for changed := true; changed; {
-		changed = false
-		for _, parent := range assets {
-			if !members[strings.ToLower(parent.Identity.NativeID)] {
-				continue
+	for len(queue) > 0 {
+		id := queue[0]
+		queue = queue[1:]
+		for _, p := range byID[id] {
+			parent := assets[p]
+			kinds := serviceChildKinds(parent.Identity.NativeType)
+			if strings.EqualFold(parent.Identity.NativeType, vnetType) {
+				kinds = append(slices.Clip(kinds), privateDNSLinkType)
 			}
-			for _, child := range assets {
-				id := strings.ToLower(child.Identity.NativeID)
-				if !members[id] && aksExternalRelation(parent, child) {
-					members[id], changed = true, true
+			for _, kind := range kinds {
+				for _, c := range byKind[strings.ToLower(kind)] {
+					child := strings.ToLower(assets[c].Identity.NativeID)
+					if !members[child] && aksExternalRelation(parent, assets[c]) {
+						members[child] = true
+						queue = append(queue, child)
+					}
 				}
 			}
 		}
@@ -371,6 +386,19 @@ func managedGroupMembers(assets []asset.Asset) map[managedGroupMemberKey]bool {
 		}
 	}
 	fleetMembers := maps.Clone(result)
+	// Clusters sharing a connection, partition and group share one closure.
+	type scope struct {
+		connection       asset.ConnectionID
+		partition, group string
+	}
+	candidates := map[scope][]asset.Asset{}
+	frozen := map[scope]map[string]bool{}
+	for _, value := range assets {
+		if value.Identity.Provider == asset.ProviderAzure {
+			key := scope{value.Identity.ConnectionID, value.Identity.Partition, ""}
+			candidates[key] = append(candidates[key], value)
+		}
+	}
 	for _, cluster := range assets {
 		if fleetMembers[managedGroupKey(cluster.Identity, cluster.Identity.NativeID)] {
 			continue // A Fleet Hub cannot introduce another unsigned group hint.
@@ -393,13 +421,13 @@ func managedGroupMembers(assets []asset.Asset) map[managedGroupMemberKey]bool {
 		if err != nil {
 			continue
 		}
-		candidates := []asset.Asset{}
-		for _, value := range assets {
-			if value.Identity.Provider == cluster.Identity.Provider && value.Identity.ConnectionID == cluster.Identity.ConnectionID && value.Identity.Partition == cluster.Identity.Partition {
-				candidates = append(candidates, value)
-			}
+		key := scope{cluster.Identity.ConnectionID, cluster.Identity.Partition, group}
+		members, done := frozen[key]
+		if !done {
+			members = managedGroupFrozenMembers(group, candidates[scope{key.connection, key.partition, ""}])
+			frozen[key] = members
 		}
-		for id := range managedGroupFrozenMembers(group, candidates) {
+		for id := range members {
 			result[managedGroupKey(cluster.Identity, id)] = true
 		}
 	}

@@ -5,9 +5,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net/http"
+	"reflect"
 	"slices"
+	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -311,7 +315,10 @@ func TestChildFanoutRejectsChangedParentsAndIncompleteDiscovery(t *testing.T) {
 			parents[0]["etag"], parents[1]["etag"] = "alpha-original", "beta-original"
 			childListCalled := false
 			requests := []string{}
+			var mu sync.Mutex
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				mu.Lock()
+				defer mu.Unlock()
 				path := strings.ToLower(req.URL.Path)
 				requests = append(requests, path)
 				if path == root+"/providers/microsoft.network/virtualnetworks" {
@@ -545,5 +552,171 @@ func TestInventoryPagesShareRecentGroupsAndLocks(t *testing.T) {
 	c.protection.expires = time.Time{}
 	if _, err := r.List(context.Background(), productRequest(r, vmType)); err != nil || groups != 2 || locks != 3 {
 		t.Fatalf("expired read groups=%d locks=%d error=%v", groups, locks, err)
+	}
+}
+
+// subnetFixture serves one East US virtual network whose subnets the pages
+// list, and counts every request path.
+func subnetFixture(t *testing.T, pages [][]string) (*Runtime, map[string]int) {
+	t.Helper()
+	root := "/subscriptions/" + testSubscription
+	parent := nativeResource(vnetType, "parent", "eastus", map[string]any{})
+	parentID := text(parent["id"])
+	collection := parentID + "/subnets"
+	calls := map[string]int{}
+	var mu sync.Mutex
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		path := strings.ToLower(req.URL.Path)
+		mu.Lock()
+		calls[path]++
+		mu.Unlock()
+		var data any
+		switch {
+		case path == root+"/providers/microsoft.network/virtualnetworks":
+			data = map[string]any{"value": []any{parent}}
+		case path == strings.ToLower(parentID):
+			data = parent
+		case path == strings.ToLower(collection):
+			page, _ := strconv.Atoi(req.URL.Query().Get("page"))
+			values := []any{}
+			for _, name := range pages[page] {
+				values = append(values, map[string]any{"id": collection + "/" + name, "name": name})
+			}
+			result := map[string]any{"value": values}
+			if page+1 < len(pages) {
+				result["nextLink"] = apiURL(collection, "2024-05-01") + "&page=" + strconv.Itoa(page+1)
+			}
+			data = result
+		case strings.HasPrefix(path, strings.ToLower(collection)+"/"):
+			data = map[string]any{"id": collection + "/" + last(req.URL.Path), "name": last(req.URL.Path), "properties": map[string]any{"provisioningState": "Succeeded"}}
+		case path == root+"/resourcegroups", path == root+"/providers/microsoft.authorization/locks":
+			data = map[string]any{"value": []any{}}
+		default:
+			t.Fatalf("unexpected request %s", req.URL)
+		}
+		return jsonResponse(200, data, nil), nil
+	})
+	return r, calls
+}
+
+func listAllProduct(t *testing.T, r *Runtime, request contracts.InventoryRequest) ([]contracts.InventoryItem, error) {
+	t.Helper()
+	var items []contracts.InventoryItem
+	for {
+		batch, err := r.List(context.Background(), request)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, batch.Items...)
+		if batch.Complete {
+			return items, nil
+		}
+		request.Cursor = batch.NextCursor
+	}
+}
+
+// Cross-page duplicate detection no longer rides in the cursor, which capped a
+// target at about 1,400 children.
+func TestProductChildPagesBeyondCursorBound(t *testing.T) {
+	// The cursor after the third page would have carried 2,100 hashes.
+	pages := make([][]string, 4)
+	for i := range 2800 {
+		pages[i/700] = append(pages[i/700], fmt.Sprintf("subnet%04d", i))
+	}
+	r, _ := subnetFixture(t, pages)
+	request := productRequest(r, subnetType)
+	items, err := listAllProduct(t, r, request)
+	if err != nil || len(items) != 2800 {
+		t.Fatalf("items=%d error=%v", len(items), err)
+	}
+	pages[3] = append(pages[3], "subnet0001")
+	r, _ = subnetFixture(t, pages)
+	if _, err := listAllProduct(t, r, request); err == nil || !strings.Contains(err.Error(), "duplicate resource across pages") {
+		t.Fatalf("duplicate across pages accepted: %v", err)
+	}
+}
+
+// The region shards of one scan list each parent kind once, and skip a parent
+// whose children an earlier shard's complete walk placed in other regions.
+func TestProductRegionShardsShareScanParentsAndPlacements(t *testing.T) {
+	pages := [][]string{{"a", "b"}, {"c"}}
+	baseline, _ := subnetFixture(t, pages)
+	request := productRequest(baseline, subnetType)
+	request.Scope = asset.Scope{Kind: asset.ScopeRegion, NativeID: "eastus"}
+	want, err := listAllProduct(t, baseline, request)
+	if err != nil || len(want) != 3 {
+		t.Fatalf("baseline=%d error=%v", len(want), err)
+	}
+	r, calls := subnetFixture(t, pages)
+	root := "/subscriptions/" + testSubscription
+	parentID := strings.ToLower(resourceID(vnetType, "parent"))
+	request.ScanRunID = "scan"
+	got, err := listAllProduct(t, r, request)
+	if err != nil || !reflect.DeepEqual(got, want) {
+		t.Fatalf("scan items differ: %v", err)
+	}
+	before := maps.Clone(calls)
+	for _, region := range []string{"westus", "northeurope"} {
+		request.Scope.NativeID = region
+		if items, err := listAllProduct(t, r, request); err != nil || len(items) != 0 {
+			t.Fatalf("%s items=%d error=%v", region, len(items), err)
+		}
+	}
+	if !maps.Equal(calls, before) || calls[root+"/providers/microsoft.network/virtualnetworks"] != 1 || calls[parentID+"/subnets"] != 2 || calls[parentID+"/subnets/a"] != 1 {
+		t.Fatalf("region shards repeated scan reads: before=%v after=%v", before, calls)
+	}
+	// Another scan shares nothing.
+	request.ScanRunID = "next"
+	if items, err := listAllProduct(t, r, request); err != nil || len(items) != 0 || calls[parentID+"/subnets"] != 4 {
+		t.Fatalf("next scan items=%d calls=%v error=%v", len(items), calls, err)
+	}
+}
+
+// Concurrent shards of one scan wait for a single parent listing.
+func TestProductConcurrentShardsShareOneParentListing(t *testing.T) {
+	r, calls := subnetFixture(t, [][]string{{"a"}})
+	var wg sync.WaitGroup
+	for _, region := range []string{"eastus", "westus", "centralus", "northeurope"} {
+		wg.Go(func() {
+			request := productRequest(r, subnetType)
+			request.ScanRunID = "scan"
+			request.Scope = asset.Scope{Kind: asset.ScopeRegion, NativeID: region}
+			if _, err := listAllProduct(t, r, request); err != nil {
+				t.Error(region, err)
+			}
+		})
+	}
+	wg.Wait()
+	if listed := calls["/subscriptions/"+testSubscription+"/providers/microsoft.network/virtualnetworks"]; listed != 1 {
+		t.Fatalf("parents listed %d times", listed)
+	}
+}
+
+func TestRegionIndexFiltersResourcesByLocation(t *testing.T) {
+	root := "/subscriptions/" + testSubscription
+	var filters []string
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		values := []any{}
+		switch strings.ToLower(req.URL.Path) {
+		case root + "/resources":
+			filters = append(filters, req.URL.Query().Get("$filter"))
+			values = []any{nativeResource("Microsoft.Example/things", "east", "eastus", map[string]any{}), nativeResource("Microsoft.Example/things", "west", "westus", map[string]any{})}
+		case root + "/resourcegroups", root + "/providers/microsoft.authorization/locks":
+		default:
+			t.Fatalf("unexpected request %s", req.URL)
+		}
+		return jsonResponse(200, map[string]any{"value": values}, nil), nil
+	})
+	request := contracts.InventoryRequest{ConnectionID: "connection", Source: inventorySource, Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: "eastus"}}
+	batch, err := r.List(context.Background(), request)
+	if err != nil || len(batch.Items) != 1 || batch.Items[0].Location != "eastus" {
+		t.Fatalf("batch=%+v error=%v", batch, err)
+	}
+	request.NetworkTarget = &asset.ScanTarget{Kind: asset.ScanTargetVPC, RegionID: "eastus", NativeID: resourceID(vnetType, "vnet")}
+	if _, err := r.List(context.Background(), request); err != nil {
+		t.Fatal(err)
+	}
+	if !slices.Equal(filters, []string{"location eq 'eastus'", ""}) {
+		t.Fatalf("filters=%q", filters)
 	}
 }

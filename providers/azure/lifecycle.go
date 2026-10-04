@@ -126,6 +126,7 @@ func NewResourceAttachments() *ResourceAttachments { return &ResourceAttachments
 func (*ResourceAttachments) Contribute(_ context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
 	aksMembers := managedGroupMembers(assets)
+	byIdentity := newAssetIndex(assets).byIdentity
 	for _, controller := range assets {
 		if controller.Identity.Provider != asset.ProviderAzure || (controller.Identity.NativeType != vmType && controller.Identity.NativeType != nicType) {
 			continue
@@ -140,14 +141,12 @@ func (*ResourceAttachments) Contribute(_ context.Context, _ asset.ScopeID, asset
 			}
 			evidence := map[string]any{"resource_type": attachment.kind, "instance_id": attachment.id, "attachment_slot": attachment.slot, "delete_by_default": attachment.delete, "lifecycle_kind": "azure_attached_resource_delete"}
 			var managed *asset.Asset
-			for i := range assets {
-				candidate := &assets[i]
-				if candidate.Identity.Provider == controller.Identity.Provider && candidate.Identity.ConnectionID == controller.Identity.ConnectionID && candidate.Identity.Partition == controller.Identity.Partition && strings.EqualFold(candidate.Identity.NativeID, attachment.id) && strings.EqualFold(candidate.Identity.NativeType, attachment.kind) {
-					if managed != nil {
-						return result, fmt.Errorf("ambiguous Azure attachment identity")
-					}
-					managed = candidate
-				}
+			switch matches := byIdentity[serviceAssetKeyOf(controller.Identity, attachment.kind, attachment.id)]; len(matches) {
+			case 0:
+			case 1:
+				managed = &assets[matches[0]]
+			default:
+				return result, fmt.Errorf("ambiguous Azure attachment identity")
 			}
 			if managed == nil {
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: controller.Identity.Provider, ConnectionID: controller.Identity.ConnectionID, NativeType: attachment.kind, NativeID: attachment.id, ControllerID: controller.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})

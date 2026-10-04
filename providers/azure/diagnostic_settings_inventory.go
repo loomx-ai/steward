@@ -249,43 +249,31 @@ func (r *Runtime) listDiagnosticSettings(ctx context.Context, c *client, request
 			return batch, serviceDenied("invalid_diagnostic_inventory_cursor")
 		}
 	}
-	first, before, provenance, err := r.diagnosticInventorySnapshot(ctx, c, request)
-	if err != nil {
-		return batch, err
-	}
-	_, after, _, err := r.diagnosticInventorySnapshot(ctx, c, request)
-	if err != nil {
-		return batch, err
-	}
-	if c.privateConfiguration(before) != c.privateConfiguration(after) {
-		return batch, serviceDenied("diagnostic_collection_changed_during_scan")
-	}
-	boundary := request
-	boundary.Cursor, boundary.Limit = "", 0
-	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": before})
-	if request.Cursor != "" && (cursor.Fingerprint != fingerprint || cursor.Target >= len(first)) {
-		return batch, serviceDenied("diagnostic_inventory_cursor_changed")
-	}
-	limit := request.Limit
-	if limit <= 0 {
-		limit = 1000
-	}
-	end := cursor.Target + min(limit, len(first)-cursor.Target)
-	batch = contracts.InventoryBatch{Items: first[cursor.Target:end], Complete: end == len(first), RequestID: provenance}
-	if batch.Complete {
+	return r.inventorySnapshotPage(c, request, cursor, "diagnostic_inventory_cursor_changed", func() (inventorySnapshot, error) {
+		first, before, provenance, err := r.diagnosticInventorySnapshot(ctx, c, request)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		_, after, _, err := r.diagnosticInventorySnapshot(ctx, c, request)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		if c.privateConfiguration(before) != c.privateConfiguration(after) {
+			return inventorySnapshot{}, serviceDenied("diagnostic_collection_changed_during_scan")
+		}
+		boundary := request
+		boundary.Cursor, boundary.Limit = "", 0
+		fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": before})
+		snapshot := inventorySnapshot{items: first, provenance: provenance, fingerprint: fingerprint}
 		// Every known ID was read directly in both observations. A missing
 		// binding therefore means its own GET returned 404, independent of the
 		// source/group indexes and of the requested region/network projection.
 		bindings := object(before["settings"])
 		for _, id := range request.KnownNativeIDs {
 			if bindings[id] == nil {
-				batch.AbsentNativeIDs = append(batch.AbsentNativeIDs, id)
+				snapshot.absent = append(snapshot.absent, id)
 			}
 		}
-	} else {
-		cursor.Fingerprint, cursor.Target = fingerprint, end
-		encoded, _ := json.Marshal(cursor)
-		batch.NextCursor = base64.RawURLEncoding.EncodeToString(encoded)
-	}
-	return batch, nil
+		return snapshot, nil
+	})
 }

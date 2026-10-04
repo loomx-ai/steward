@@ -227,42 +227,28 @@ func (r *Runtime) listInsightsWorkbooks(ctx context.Context, c *client, request 
 			return batch, serviceDenied("invalid_workbook_cursor")
 		}
 	}
-	first, absent, provenance, err := r.workbookInventorySnapshot(ctx, c, request)
-	if err != nil {
-		return batch, err
-	}
-	second, afterAbsent, _, err := r.workbookInventorySnapshot(ctx, c, request)
-	if err != nil {
-		return batch, err
-	}
-	bindings := func(items []contracts.InventoryItem) map[string]any {
-		result := map[string]any{}
-		for _, item := range items {
-			result[item.NativeID] = map[string]any{"configuration": item.Normalized[insightsWorkbookProof], "group": item.Normalized["_insights_workbook_group"], "protected": item.Normalized["cleanup_protection_reason"]}
+	return r.inventorySnapshotPage(c, request, cursor, "workbook_cursor_changed", func() (inventorySnapshot, error) {
+		first, absent, provenance, err := r.workbookInventorySnapshot(ctx, c, request)
+		if err != nil {
+			return inventorySnapshot{}, err
 		}
-		return result
-	}
-	if !slices.Equal(absent, afterAbsent) || c.privateConfiguration(bindings(first)) != c.privateConfiguration(bindings(second)) {
-		return batch, serviceDenied("workbook_collection_changed_during_scan")
-	}
-	boundary := request
-	boundary.Cursor, boundary.Limit = "", 0
-	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": bindings(first), "absent": absent})
-	if request.Cursor != "" && (cursor.Fingerprint != fingerprint || cursor.Target >= len(first)) {
-		return batch, serviceDenied("workbook_cursor_changed")
-	}
-	limit := request.Limit
-	if limit <= 0 {
-		limit = 1000
-	}
-	end := cursor.Target + min(limit, len(first)-cursor.Target)
-	batch = contracts.InventoryBatch{Items: first[cursor.Target:end], Complete: end == len(first), RequestID: provenance}
-	if batch.Complete {
-		batch.AbsentNativeIDs = absent
-	} else {
-		cursor.Fingerprint, cursor.Target = fingerprint, end
-		encoded, _ := json.Marshal(cursor)
-		batch.NextCursor = base64.RawURLEncoding.EncodeToString(encoded)
-	}
-	return batch, nil
+		second, afterAbsent, _, err := r.workbookInventorySnapshot(ctx, c, request)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		bindings := func(items []contracts.InventoryItem) map[string]any {
+			result := map[string]any{}
+			for _, item := range items {
+				result[item.NativeID] = map[string]any{"configuration": item.Normalized[insightsWorkbookProof], "group": item.Normalized["_insights_workbook_group"], "protected": item.Normalized["cleanup_protection_reason"]}
+			}
+			return result
+		}
+		if !slices.Equal(absent, afterAbsent) || c.privateConfiguration(bindings(first)) != c.privateConfiguration(bindings(second)) {
+			return inventorySnapshot{}, serviceDenied("workbook_collection_changed_during_scan")
+		}
+		boundary := request
+		boundary.Cursor, boundary.Limit = "", 0
+		fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": bindings(first), "absent": absent})
+		return inventorySnapshot{items: first, provenance: provenance, absent: absent, fingerprint: fingerprint}, nil
+	})
 }

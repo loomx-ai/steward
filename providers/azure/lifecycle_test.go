@@ -557,3 +557,29 @@ func TestAzureRetainedNICWaitsForReadbackAndKeepsPublicIPWithoutMutation(t *test
 		})
 	}
 }
+
+func TestAzureAttachmentIndexFoldsCaseAndRejectsAmbiguity(t *testing.T) {
+	assets := attachmentAssets(t, attachmentResources())
+	want, err := NewResourceAttachments().Contribute(t.Context(), "scope", assets)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := range assets {
+		if assets[i].ID == "boot" {
+			mixed := strings.Replace(assets[i].Identity.NativeID, "/disks/boot", "/DISKS/Boot", 1)
+			if mixed == assets[i].Identity.NativeID {
+				t.Fatal("fixture identity is not lowercase")
+			}
+			assets[i].Identity.NativeID = mixed
+		}
+	}
+	got, err := NewResourceAttachments().Contribute(t.Context(), "scope", assets)
+	if err != nil || !reflect.DeepEqual(got, want) {
+		t.Fatal("mixed-case attachment identity changed the contribution", err)
+	}
+	duplicate := assets[1]
+	duplicate.ID = "boot-copy"
+	if _, err := NewResourceAttachments().Contribute(t.Context(), "scope", append(assets, duplicate)); err == nil || !strings.Contains(err.Error(), "ambiguous") {
+		t.Fatal("ambiguous attachment accepted", err)
+	}
+}

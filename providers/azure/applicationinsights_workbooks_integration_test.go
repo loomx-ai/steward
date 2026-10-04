@@ -2,9 +2,11 @@ package azure
 
 import (
 	"encoding/json"
+	"fmt"
 	"maps"
 	"net/http"
 	"path/filepath"
+	"reflect"
 	"slices"
 	"strings"
 	"testing"
@@ -181,7 +183,7 @@ func TestApplicationInsightsWorkbookSharedReferenceGraph(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			contribution, err := c.contributeWorkbookReferences(t.Context(), workbook, values)
+			contribution, err := c.contributeWorkbookReferences(t.Context(), workbook, values, newAssetIndex(values))
 			if err != nil || len(contribution.Relationships) != 3 || len(contribution.Unresolved)+len(contribution.Bindings) != 0 {
 				t.Fatal("native shared references failed", contribution, err)
 			}
@@ -254,7 +256,7 @@ func TestApplicationInsightsWorkbookReferenceBoundaries(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			result, err := c.contributeWorkbookReferences(t.Context(), workbook, values)
+			result, err := c.contributeWorkbookReferences(t.Context(), workbook, values, newAssetIndex(values))
 			if mode == "duplicate" || mode == "content-drift" {
 				if err == nil {
 					t.Fatal("changed/ambiguous workbook reference accepted", result)
@@ -397,6 +399,27 @@ func TestApplicationInsightsComponentManagedWorkbook(t *testing.T) {
 					t.Fatal("managed workbook absence failed after restart", wait, err)
 				}
 			})
+		}
+	}
+}
+
+func TestNativeReferenceIndexMatchesScan(t *testing.T) {
+	c := &client{subscription: testSubscription}
+	parent := actionAsset(diagnosticSettingsType, "parent")
+	target := actionAsset(diskType, "target")
+	target.Identity.NativeID = strings.Replace(target.Identity.NativeID, "/disks/target", "/DISKS/Target", 1)
+	refs := map[string][]string{strings.ToLower(diskType): {strings.ToLower(target.Identity.NativeID), c.root() + "/resourcegroups/test/providers/microsoft.compute/disks/absent"}}
+	for _, assets := range [][]asset.Asset{{parent, target}, {parent, target, func() asset.Asset { copy := target; copy.ID = "copy"; return copy }()}} {
+		want, wantErr := c.contributeNativeReferences(parent, assets, refs, "test")
+		got, gotErr := c.contributeIndexedReferences(parent, assets, newAssetIndex(assets), refs, "test")
+		if fmt.Sprint(gotErr) != fmt.Sprint(wantErr) || !reflect.DeepEqual(got, want) {
+			t.Fatal("indexed references differ from the scan", got, gotErr, want, wantErr)
+		}
+		if len(assets) == 2 && (len(got.Relationships) != 1 || got.Relationships[0].TargetAssetID != target.ID || len(got.Unresolved) != 1) {
+			t.Fatal("mixed-case reference not resolved", got)
+		}
+		if len(assets) == 3 && wantErr == nil {
+			t.Fatal("ambiguous reference accepted")
 		}
 	}
 }

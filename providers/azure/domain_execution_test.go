@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -24,7 +25,12 @@ import (
 func TestDomainRegisteredWorkersAndDurableDelay(t *testing.T) {
 	s, r, _ := domainScenario(t, true)
 	var logs []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	var logsMu sync.Mutex
+	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) {
+		logsMu.Lock()
+		logs = append(logs, entry)
+		logsMu.Unlock()
+	}))
 	path := filepath.Join(t.TempDir(), "registered-domains.db")
 	repository, err := sqlite.Open(path, "../../migrations")
 	if err != nil {

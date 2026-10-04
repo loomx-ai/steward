@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -74,7 +75,10 @@ func newInsightsInventoryFixture(t *testing.T) *insightsInventoryFixture {
 	// LIST example has duplicate names and is tested separately without repair.
 	detection := insightsScopedExample(t, "stable/2015-05-01/examples/ProactiveDetectionConfigurationGet.json", f.parentID)
 	f.detections = map[string]map[string]any{text(detection["name"]): detection}
+	var mu sync.Mutex // graph contributors read members concurrently
 	f.runtime = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		mu.Lock()
+		defer mu.Unlock()
 		if f.before != nil {
 			f.before(req)
 		}

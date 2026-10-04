@@ -25,6 +25,37 @@ type Runtime struct {
 	clients        map[asset.ConnectionID]*client
 	synapseClients map[asset.ConnectionID]*synapseDataClient
 	targetCache    productTargetCache
+	productScan    productScanCache
+	specsMu        sync.Mutex
+	specs          map[string]int
+	specsOf        *spec.CompiledSpec
+	specsLen       int
+}
+
+// specIndex finds a bundle spec by native type without scanning every spec.
+// It keeps the first case-insensitive match, as the linear scan did, and is
+// rebuilt if the bundle's spec slice is replaced.
+func (r *Runtime) specIndex(nativeType string) (spec.CompiledSpec, bool) {
+	if len(r.bundle.Specs) == 0 {
+		return spec.CompiledSpec{}, false
+	}
+	r.specsMu.Lock()
+	if r.specs == nil || r.specsOf != &r.bundle.Specs[0] || r.specsLen != len(r.bundle.Specs) {
+		r.specs = make(map[string]int, len(r.bundle.Specs))
+		for i, compiled := range r.bundle.Specs {
+			key := strings.ToLower(compiled.ResourceKind.NativeType)
+			if _, ok := r.specs[key]; !ok {
+				r.specs[key] = i
+			}
+		}
+		r.specsOf, r.specsLen = &r.bundle.Specs[0], len(r.bundle.Specs)
+	}
+	i, ok := r.specs[strings.ToLower(nativeType)]
+	r.specsMu.Unlock()
+	if !ok || i >= len(r.bundle.Specs) {
+		return spec.CompiledSpec{}, false
+	}
+	return r.bundle.Specs[i], true
 }
 
 func NewRuntime(credentials contracts.CredentialSource) (*Runtime, error) {
@@ -194,10 +225,8 @@ func (r *Runtime) DiscoverRegions(ctx context.Context, id asset.ConnectionID) ([
 	return result, nil
 }
 func (r *Runtime) resourceKind(nativeType string) asset.ResourceKind {
-	for _, compiled := range r.bundle.Specs {
-		if strings.EqualFold(compiled.ResourceKind.NativeType, nativeType) {
-			return compiled.ResourceKind
-		}
+	if compiled, ok := r.specIndex(nativeType); ok {
+		return compiled.ResourceKind
 	}
 	return asset.ResourceKind{ID: asset.ResourceKindID("azure:" + strings.ToLower(nativeType)), Provider: asset.ProviderAzure, NativeType: strings.ToLower(nativeType), DisplayName: last(nativeType), ScopeKinds: both, Capabilities: asset.CapabilitySet{asset.CapabilityIndexed}, BundleRevision: r.bundle.Revision}
 }

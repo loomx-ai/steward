@@ -379,3 +379,57 @@ func TestAKSDependentCollectionNotFoundIsNotClusterAbsence(t *testing.T) {
 		t.Fatalf("missing collection mistaken for cluster absence: %+v %v", check, err)
 	}
 }
+
+// The pre-index fixed point, kept as the reference for the worklist closure.
+func managedGroupFrozenMembersReference(group string, assets []asset.Asset) map[string]bool {
+	members := map[string]bool{}
+	for _, value := range assets {
+		if inResourceGroup(value.Identity.NativeID, group) {
+			members[strings.ToLower(value.Identity.NativeID)] = true
+		}
+	}
+	for changed := true; changed; {
+		changed = false
+		for _, parent := range assets {
+			if !members[strings.ToLower(parent.Identity.NativeID)] {
+				continue
+			}
+			for _, child := range assets {
+				id := strings.ToLower(child.Identity.NativeID)
+				if !members[id] && aksExternalRelation(parent, child) {
+					members[id], changed = true, true
+				}
+			}
+		}
+	}
+	return members
+}
+
+func TestManagedGroupFrozenMembersMatchesFixedPoint(t *testing.T) {
+	_, _, assets := nestedAKSScenario(t)
+	// Mixed-case IDs must fold exactly as the EqualFold/ToLower scans did.
+	for i := range assets {
+		if i%2 == 1 {
+			assets[i].Identity.NativeID = strings.Replace(assets[i].Identity.NativeID, "/resourcegroups/", "/resourceGroups/", 1)
+		}
+	}
+	groups := map[string]bool{}
+	for _, value := range assets {
+		if parts := strings.Split(value.Identity.NativeID, "/"); len(parts) >= 5 {
+			groups[strings.Join(parts[:5], "/")] = true
+		}
+	}
+	external := false
+	for group := range groups {
+		got, want := managedGroupFrozenMembers(group, assets), managedGroupFrozenMembersReference(group, assets)
+		if fmt.Sprint(got) != fmt.Sprint(want) {
+			t.Fatalf("closure for %s changed:\n got %v\nwant %v", group, got, want)
+		}
+		for id := range got {
+			external = external || !inResourceGroup(id, group)
+		}
+	}
+	if !external {
+		t.Fatal("fixture no longer exercises an external cascade")
+	}
+}

@@ -1,6 +1,7 @@
 package azure
 
 import (
+	"fmt"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/plan"
 	"maps"
@@ -16,7 +17,7 @@ func TestResourceGroupPublicMonitorLifecycle(t *testing.T) {
 }
 
 func TestResourceGroupGraphBoundaries(t *testing.T) {
-	for _, mode := range []string{"native", "nested", "unselected", "unknown", "omitted", "duplicate", "wrong-kind", "foreign", "forbidden", "changed", "paged", "repeated-page", "other-connection"} {
+	for _, mode := range []string{"native", "nested", "unselected", "unknown", "omitted", "duplicate", "wrong-kind", "foreign", "forbidden", "changed", "paged", "repeated-page", "other-connection", "mixed-case-asset", "duplicate-asset"} {
 		t.Run(mode, func(t *testing.T) {
 			groupID := "/subscriptions/" + testSubscription + "/resourcegroups/test"
 			groupRaw := map[string]any{"id": groupID, "name": "test", "type": groupType, "location": "eastus", "properties": map[string]any{"provisioningState": "Succeeded"}}
@@ -103,13 +104,30 @@ func TestResourceGroupGraphBoundaries(t *testing.T) {
 			if mode == "other-connection" {
 				values[0].Identity.ConnectionID = "other"
 			}
-			contributed, err := c.contributeResourceGroups(t.Context(), "connection", values)
-			fails := mode == "omitted" || mode == "duplicate" || mode == "wrong-kind" || mode == "foreign" || mode == "forbidden" || mode == "changed" || mode == "repeated-page"
+			if mode == "mixed-case-asset" {
+				// Members bucket by case-folded group prefix; a sibling group
+				// sharing the name prefix is not a member.
+				values[1].Identity.NativeID = strings.Replace(disk.Identity.NativeID, "/resourcegroups/test/", "/resourceGroups/TEST/", 1)
+				sibling := actionAsset(diskType, "sibling")
+				sibling.Identity.NativeID = strings.Replace(sibling.Identity.NativeID, "/test/", "/test-other/", 1)
+				values = append(values, sibling)
+			}
+			if mode == "duplicate-asset" {
+				copy := disk
+				copy.ID = "disk-copy"
+				copy.Identity.NativeID = strings.Replace(disk.Identity.NativeID, "/disks/", "/DISKS/", 1)
+				values = append(values, copy)
+			}
+			contributed, err := c.contributeResourceGroups(t.Context(), "connection", values, managedGroupMembers(values))
+			fails := mode == "duplicate-asset" || mode == "omitted" || mode == "duplicate" || mode == "wrong-kind" || mode == "foreign" || mode == "forbidden" || mode == "changed" || mode == "repeated-page"
 			if fails {
-				if err == nil || len(contributed.Bindings)+len(contributed.Unresolved) != 0 {
+				if err == nil || len(contributed.Bindings)+len(contributed.Unresolved) != 0 || mode == "duplicate-asset" && (lists != 0 || !strings.Contains(err.Error(), "resource_group_graph_duplicate_asset")) {
 					t.Fatal("invalid native graph accepted", contributed, err)
 				}
 				return
+			}
+			if mode == "mixed-case-asset" && (len(contributed.Bindings) != 1 || contributed.Bindings[0].ManagedAssetID != disk.ID) {
+				t.Fatal("mixed-case member not bound", contributed)
 			}
 			if err != nil {
 				t.Fatal(err)
@@ -162,5 +180,24 @@ func TestResourceGroupGraphBoundaries(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestReadsInOrderReportsEarliestFailure(t *testing.T) {
+	var reads []func() (map[string]any, error)
+	for i := range 20 {
+		reads = append(reads, func() (map[string]any, error) {
+			if i == 7 || i == 15 {
+				return nil, fmt.Errorf("read %d", i)
+			}
+			return map[string]any{"i": i}, nil
+		})
+	}
+	if _, err := readsInOrder(reads); err == nil || err.Error() != "read 7" {
+		t.Fatal("not the earliest failure", err)
+	}
+	results, err := readsInOrder(reads[:7])
+	if err != nil || len(results) != 7 || results[6]["i"] != 6 {
+		t.Fatal("results out of order", results, err)
 	}
 }

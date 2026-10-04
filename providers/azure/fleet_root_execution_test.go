@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -23,7 +24,12 @@ import (
 
 func TestFleetRootRegisteredWorkersAndResidualRecovery(t *testing.T) {
 	var logs []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	var mu sync.Mutex // graph contributors read members concurrently
+	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) {
+		mu.Lock()
+		defer mu.Unlock()
+		logs = append(logs, entry)
+	}))
 	h := newFleetHubMembersFixture(t)
 	mesh := fleetTestBody(t, fleetMeshType, "mesh1")
 	object(mesh["properties"])["memberSelector"] = map[string]any{"byLabel": ""}

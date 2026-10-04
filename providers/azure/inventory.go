@@ -285,6 +285,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	path := c.root() + "/resources"
 	endpoint := apiURL(path, resourcesVersion)
+	region := strings.ToLower(request.Scope.NativeID)
+	// ARM filters the subscription's resources by location. Every row it
+	// drops is one the region check below drops; network shards also keep
+	// global rows, so they list everything.
+	if request.Scope.Kind == asset.ScopeRegion && request.NetworkTarget == nil {
+		endpoint += "&$filter=" + url.QueryEscape("location eq '"+strings.ReplaceAll(region, "'", "''")+"'")
+	}
 	if request.Cursor != "" {
 		decoded, err := base64.RawURLEncoding.DecodeString(request.Cursor)
 		if err != nil || len(decoded) > 16<<10 {
@@ -308,7 +315,6 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	if next != "" {
 		batch.NextCursor = base64.RawURLEncoding.EncodeToString([]byte(next))
 	}
-	region := strings.ToLower(request.Scope.NativeID)
 	if request.Scope.Kind == asset.ScopeGlobal {
 		region = "global"
 	}
@@ -349,6 +355,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 			}
 		}
 	}
+	type listedRow struct {
+		raw     map[string]any
+		kind    resourceType
+		known   bool
+		readURL string
+	}
+	rows := []listedRow{}
 	for _, value := range values {
 		raw := object(value)
 		if raw == nil {
@@ -361,12 +374,26 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		if request.Source == inventorySource && known {
 			continue
 		}
+		row := listedRow{raw: raw, kind: kind, known: known}
 		if known {
-			resourceURL, err := c.resourceURL(kind, text(raw["id"]))
+			row.readURL, err = c.resourceURL(kind, text(raw["id"]))
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
-			detail, err := c.request(ctx, "GET", resourceURL)
+		}
+		rows = append(rows, row)
+	}
+	details, readErrs := readConcurrently(len(rows), func(i int) (response, error) {
+		if !rows[i].known {
+			return response{}, nil
+		}
+		return c.request(ctx, "GET", rows[i].readURL)
+	})
+	for i, row := range rows {
+		raw, kind := row.raw, row.kind
+		var live map[string]any
+		if row.known {
+			detail, err := details[i], readErrs[i]
 			if isNotFound(err) {
 				continue
 			} // Resource removed after the list snapshot.
@@ -376,11 +403,14 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 			if !validResourceResponse(detail, text(raw["id"]), kind.NativeType) {
 				return contracts.InventoryBatch{}, fmt.Errorf("Azure resource detail identity mismatch")
 			}
+			if HasServiceCascade(kind.NativeType) {
+				live = batchClone(detail.data)
+			}
 			raw = detail.data
 			raw["id"] = responseID(kind.NativeType, text(raw["id"]))
 			raw["type"] = kind.NativeType
 			if text(raw["location"]) == "" && !isCosmosType(kind.NativeType) {
-				raw["location"] = resourceRegion(object(value))
+				raw["location"] = resourceRegion(row.raw)
 			}
 		}
 		if err := appendItem(raw); err != nil {
@@ -388,7 +418,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		}
 		// ARM's subscription list omits some child resources. Enumerate the
 		// children whose lifecycle and dependencies Steward models explicitly.
-		children, err := c.children(ctx, kind, raw)
+		children, err := c.childrenOf(ctx, kind, raw, live)
 		if err != nil {
 			return contracts.InventoryBatch{}, err
 		}
@@ -493,6 +523,13 @@ func resourceRegion(raw map[string]any) string {
 	return location
 }
 func (c *client) children(ctx context.Context, kind resourceType, raw map[string]any) ([]map[string]any, error) {
+	return c.childrenOf(ctx, kind, raw, nil)
+}
+
+// childrenOf is children for a caller which already holds the resource's
+// validated live body. It must be the caller's own deep copy, read just now:
+// the service walk receives it in place of reading the resource again.
+func (c *client) childrenOf(ctx context.Context, kind resourceType, raw, live map[string]any) ([]map[string]any, error) {
 	id, _, err := parseID(text(raw["id"]))
 	if err != nil {
 		return nil, err
@@ -500,21 +537,24 @@ func (c *client) children(ctx context.Context, kind resourceType, raw map[string
 	var values []any
 	verifiedChildren := map[string]bool{}
 	if HasServiceCascade(kind.NativeType) {
-		endpoint, err := c.resourceURL(kind, responseID(kind.NativeType, text(raw["id"])))
-		if err != nil {
+		if live == nil {
+			endpoint, err := c.resourceURL(kind, responseID(kind.NativeType, text(raw["id"])))
+			if err != nil {
+				return nil, err
+			}
+			current, err := c.request(ctx, "GET", endpoint)
+			if err != nil {
+				return nil, err
+			}
+			if !validResourceResponse(current, id, kind.NativeType) {
+				return nil, fmt.Errorf("Azure service parent identity mismatch")
+			}
+			live = current.data
+		}
+		if err := serviceListedIncarnation(raw, live); err != nil {
 			return nil, err
 		}
-		current, err := c.request(ctx, "GET", endpoint)
-		if err != nil {
-			return nil, err
-		}
-		if !validResourceResponse(current, id, kind.NativeType) {
-			return nil, fmt.Errorf("Azure service parent identity mismatch")
-		}
-		if err := serviceListedIncarnation(raw, current.data); err != nil {
-			return nil, err
-		}
-		children, err := c.serviceChildren(ctx, asset.Identity{NativeType: kind.NativeType, NativeID: id}, current.data)
+		children, err := c.serviceChildren(ctx, asset.Identity{NativeType: kind.NativeType, NativeID: id}, live)
 		if err != nil {
 			return nil, err
 		}

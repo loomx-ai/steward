@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -56,7 +57,10 @@ func newFleetFixture(t *testing.T) *fleetFixture {
 		}
 		f.resources[text(raw["id"])] = raw
 	}
+	var mu sync.Mutex // graph contributors read members concurrently
 	f.runtime = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		mu.Lock()
+		defer mu.Unlock()
 		path := strings.ToLower(req.URL.Path)
 		f.calls[req.Method+" "+path]++
 		if f.override != nil {

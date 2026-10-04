@@ -175,7 +175,7 @@ func TestMonitorGraphBoundaries(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			contribution, err := c.contributeMonitorReferences(t.Context(), parent, values)
+			contribution, err := c.contributeMonitorReferences(t.Context(), parent, values, newAssetIndex(values))
 			if wantError {
 				if err == nil || isNotFound(err) {
 					t.Fatal("changed native graph accepted or treated as absence", mode, contribution, err)

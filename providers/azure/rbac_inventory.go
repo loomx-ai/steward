@@ -246,33 +246,21 @@ func (r *Runtime) listRBAC(ctx context.Context, c *client, request contracts.Inv
 			return batch, serviceDenied("invalid_rbac_inventory_cursor")
 		}
 	}
-	items, before, provenance, err := r.rbacInventorySnapshot(ctx, c, request)
-	if err != nil {
-		return batch, err
-	}
-	_, after, _, err := r.rbacInventorySnapshot(ctx, c, request)
-	if err != nil {
-		return batch, err
-	}
-	if c.privateConfiguration(before) != c.privateConfiguration(after) {
-		return batch, serviceDenied("rbac_collection_changed_during_scan")
-	}
-	boundary := request
-	boundary.Cursor, boundary.Limit = "", 0
-	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": before})
-	if request.Cursor != "" && (cursor.Fingerprint != fingerprint || cursor.Target >= len(items)) {
-		return batch, serviceDenied("rbac_inventory_cursor_changed")
-	}
-	limit := request.Limit
-	if limit <= 0 {
-		limit = 1000
-	}
-	end := cursor.Target + min(limit, len(items)-cursor.Target)
-	batch = contracts.InventoryBatch{Items: items[cursor.Target:end], Complete: end == len(items), RequestID: provenance}
-	if !batch.Complete {
-		cursor.Fingerprint, cursor.Target = fingerprint, end
-		data, _ := json.Marshal(cursor)
-		batch.NextCursor = base64.RawURLEncoding.EncodeToString(data)
-	}
-	return batch, nil
+	return r.inventorySnapshotPage(c, request, cursor, "rbac_inventory_cursor_changed", func() (inventorySnapshot, error) {
+		items, before, provenance, err := r.rbacInventorySnapshot(ctx, c, request)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		_, after, _, err := r.rbacInventorySnapshot(ctx, c, request)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		if c.privateConfiguration(before) != c.privateConfiguration(after) {
+			return inventorySnapshot{}, serviceDenied("rbac_collection_changed_during_scan")
+		}
+		boundary := request
+		boundary.Cursor, boundary.Limit = "", 0
+		fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": before})
+		return inventorySnapshot{items: items, provenance: provenance, fingerprint: fingerprint}, nil
+	})
 }

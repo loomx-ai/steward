@@ -409,6 +409,16 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	if !execution.JobLogEnabled(ctx) {
 		return out, nil
 	}
+	if read && len(payload) > readLogBodyBytes {
+		// A list page can be megabytes; redacting and copying it only for the
+		// job log costs more than the read. Log its size, never a raw prefix.
+		summary := map[string]any{"truncated": true, "bytes": len(payload)}
+		if rows, ok := out.data["value"].([]any); ok {
+			summary["value_count"] = len(rows)
+		}
+		execution.LogCloudAPIResponse(ctx, u.Host, method, map[string]any{"request_id": out.requestID, "status_code": out.status, "body": summary})
+		return out, nil
+	}
 	responseLog := map[string]any{"request_id": out.requestID, "status_code": out.status, "body": out.data}
 	if ctx.Value(fleetHubReadContextKey{}) == true {
 		// Hub ownership needs full native AKS/group bodies internally. The
@@ -422,6 +432,10 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	execution.LogCloudAPIResponse(ctx, u.Host, method, safeAPIPayload(responseLog, endpoint))
 	return out, nil
 }
+
+// readLogBodyBytes caps the read (GET/HEAD) response bodies copied into job
+// logs. Mutation responses always keep their full redacted body.
+const readLogBodyBytes = 4 << 10
 
 // Throttled or briefly unavailable reads of inventory and graph contribution
 // are retried here; one 429 would otherwise fail a scan shard or degrade the

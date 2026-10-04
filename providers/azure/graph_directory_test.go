@@ -2,11 +2,14 @@ package azure
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -210,5 +213,40 @@ func TestGraphDirectoryReconciliationAndBoundaries(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestGraphGroupMembersReadConcurrentlyAndFailClosed(t *testing.T) {
+	for _, fail := range []bool{false, true} {
+		f := newGraphFixture(t)
+		for i := range 30 {
+			id := fmt.Sprintf("00000000-0000-4000-8000-%012d", i)
+			f.groups[id] = map[string]any{"id": id, "displayName": id}
+		}
+		var inFlight, peak atomic.Int32
+		f.override = func(q *http.Request) (*http.Response, bool) {
+			if !strings.HasSuffix(q.URL.Path, "/members") {
+				return nil, false
+			}
+			now := inFlight.Add(1)
+			defer inFlight.Add(-1)
+			for old := peak.Load(); now > old && !peak.CompareAndSwap(old, now); old = peak.Load() {
+			}
+			time.Sleep(5 * time.Millisecond)
+			if fail && strings.Contains(q.URL.Path, "000000000017") {
+				return jsonResponse(403, map[string]any{"error": map[string]any{"code": "Authorization_RequestDenied"}}, nil), true
+			}
+			return nil, false
+		}
+		batch, err := f.runtime.List(t.Context(), graphRequest(f, graphGroupType))
+		if fail {
+			if err == nil || len(batch.Items) != 0 {
+				t.Fatal("failed member read produced a listing", batch)
+			}
+			continue
+		}
+		if err != nil || len(batch.Items) != 32 || peak.Load() < 2 || peak.Load() > graphItemConcurrency {
+			t.Fatal(err, len(batch.Items), peak.Load())
+		}
 	}
 }

@@ -129,7 +129,7 @@ func TestMonitorReceiverNativeResolutionAndProjection(t *testing.T) {
 			t.Fatal("receiver was assigned the Action Group's resource group", kind, refs)
 		}
 		target := asset.Asset{ID: asset.AssetID(id), Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: parent.Identity.ConnectionID, Partition: parent.Identity.Partition, NativeID: id, NativeType: kind}}
-		contribution, err := c.contributeMonitorReferences(t.Context(), parent, []asset.Asset{parent, target})
+		contribution, err := c.contributeMonitorReferences(t.Context(), parent, []asset.Asset{parent, target}, newAssetIndex([]asset.Asset{parent, target}))
 		if err != nil || len(contribution.Relationships) != 2 || len(contribution.Bindings) != 0 {
 			t.Fatal("receiver shared relationship missing", kind, contribution, err)
 		}
@@ -195,7 +195,7 @@ func TestMonitorReceiverUnresolvedAndForeignBoundaries(t *testing.T) {
 			} else if !slices.Equal(stringValues(refs[insightsWorkspaceType]), []string{f.workspaceID}) {
 				t.Fatal("unqualified native customer ID did not resolve")
 			}
-			contribution, err := c.contributeMonitorReferences(t.Context(), parent, []asset.Asset{parent})
+			contribution, err := c.contributeMonitorReferences(t.Context(), parent, []asset.Asset{parent}, newAssetIndex([]asset.Asset{parent}))
 			if err != nil || len(contribution.Unresolved) != 3 || len(contribution.Relationships)+len(contribution.Bindings) != 0 {
 				t.Fatal("unresolved receiver acquired ownership", contribution, err)
 			}
@@ -252,7 +252,7 @@ func TestMonitorReceiverResolutionDrift(t *testing.T) {
 				t.Fatal("receiver remapping did not invalidate source cursor", batch, err)
 			}
 			c, _ := f.runtime.resolve(t.Context(), "connection")
-			if _, err := c.contributeMonitorReferences(t.Context(), parent, []asset.Asset{parent}); err == nil {
+			if _, err := c.contributeMonitorReferences(t.Context(), parent, []asset.Asset{parent}, newAssetIndex([]asset.Asset{parent})); err == nil {
 				t.Fatal("receiver remapping changed the reviewed graph")
 			}
 			_, err = driver.Execute(t.Context(), contracts.ActionRequest{Action: "delete", Asset: parent})

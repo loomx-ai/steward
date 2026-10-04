@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/catalog"
@@ -186,6 +187,49 @@ func (r *Runtime) graphItem(ctx context.Context, c *client, nativeType string, r
 	}, nil
 }
 
+// graphItems builds rows in order with bounded concurrency, since each group
+// costs a member read. Any failed row fails the whole listing.
+func (r *Runtime) graphItems(ctx context.Context, c *client, nativeType string, rows []map[string]any) ([]contracts.InventoryItem, error) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	items := make([]contracts.InventoryItem, len(rows))
+	slots := make(chan struct{}, graphItemConcurrency)
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	var first error
+	for i, raw := range rows {
+		if ctx.Err() != nil {
+			break
+		}
+		slots <- struct{}{}
+		wg.Add(1)
+		go func() {
+			defer func() { <-slots; wg.Done() }()
+			item, err := r.graphItem(ctx, c, nativeType, raw)
+			if err != nil {
+				mu.Lock()
+				if first == nil {
+					first = err
+					cancel()
+				}
+				mu.Unlock()
+				return
+			}
+			items[i] = item
+		}()
+	}
+	wg.Wait()
+	if first != nil {
+		return nil, first
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const graphItemConcurrency = 8
+
 func (r *Runtime) listGraphDirectory(ctx context.Context, c *client, request contracts.InventoryRequest) (batch contracts.InventoryBatch, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	kind, ok := graphKind{}, false
@@ -222,11 +266,9 @@ func (r *Runtime) listGraphDirectory(ctx context.Context, c *client, request con
 			return contracts.InventoryBatch{}, serviceDenied("duplicate_graph_directory_object")
 		}
 		listed[objectID] = true
-		item, err := r.graphItem(ctx, c, nativeType, raw)
-		if err != nil {
-			return contracts.InventoryBatch{}, err
-		}
-		batch.Items = append(batch.Items, item)
+	}
+	if batch.Items, err = r.graphItems(ctx, c, nativeType, rows); err != nil {
+		return contracts.InventoryBatch{}, err
 	}
 	missing := make([]string, 0, len(known))
 	for objectID := range known {

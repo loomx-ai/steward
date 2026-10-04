@@ -467,6 +467,7 @@ func serviceDenied(reason string) error {
 func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	ctx = withReadMemo(withReadRetries(ctx))
 	result := governance.Contribution{}
+	index := newAssetIndex(assets)
 	if _, err := s.client.fleetHubOwners(assets); err != nil {
 		return result, contracts.DependencyReadError(err)
 	}
@@ -533,7 +534,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeIncomingMigrations(ctx, assets, &result); err != nil {
 		return result, err
 	}
-	if err := s.contributeCDNReferences(ctx, assets, &result); err != nil {
+	if err := s.contributeCDNReferences(ctx, assets, index, &result); err != nil {
 		return result, err
 	}
 	if err := s.contributeAPIMReferences(ctx, assets, &result); err != nil {
@@ -552,11 +553,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		return dnsExternalController(parents[i].Identity.NativeType) && !dnsExternalController(parents[j].Identity.NativeType)
 	})
 	dnsOwners := map[string]asset.AssetID{}
-	byIdentity := map[serviceAssetKey][]int{}
-	for i, candidate := range assets {
-		key := serviceAssetKeyOf(candidate.Identity, candidate.Identity.NativeType, candidate.Identity.NativeID)
-		byIdentity[key] = append(byIdentity[key], i)
-	}
+	byIdentity := index.byIdentity
 	for _, parent := range parents {
 		if parent.Identity.Provider == asset.ProviderAzure && (parent.Identity.NativeType == recoveryServicesItem || parent.Identity.NativeType == recoveryServicesContainer) {
 			contribution, err := s.client.contributeRecoverySources(ctx, s.connectionID, parent, assets)
@@ -658,7 +655,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err != nil {
 				return result, err
 			}
-			contribution, err := s.client.contributeNativeReferences(parent, assets, refs, "azure:elastic-san-reference")
+			contribution, err := s.client.contributeIndexedReferences(parent, assets, index, refs, "azure:elastic-san-reference")
 			if err != nil {
 				return result, err
 			}
@@ -671,7 +668,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err != nil {
 				return result, err
 			}
-			contribution, err := s.client.contributeNativeReferences(parent, assets, refs, "azure:local-reference")
+			contribution, err := s.client.contributeIndexedReferences(parent, assets, index, refs, "azure:local-reference")
 			if err != nil {
 				return result, err
 			}
@@ -684,7 +681,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err != nil {
 				return result, err
 			}
-			contribution, err := s.client.contributeNativeReferences(parent, assets, refs, "azure:hybrid-compute-reference")
+			contribution, err := s.client.contributeIndexedReferences(parent, assets, index, refs, "azure:hybrid-compute-reference")
 			if err != nil {
 				return result, err
 			}
@@ -697,7 +694,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err != nil {
 				return result, err
 			}
-			contribution, err := s.client.contributeNativeReferences(parent, assets, refs, "azure:defender-plan-reference")
+			contribution, err := s.client.contributeIndexedReferences(parent, assets, index, refs, "azure:defender-plan-reference")
 			if err != nil {
 				return result, err
 			}
@@ -746,7 +743,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		if parent.Identity.Provider == asset.ProviderAzure && monitorResourceKind(parent.Identity.NativeType) != "" {
 			_, registered := findType(parent.Identity.NativeType)
 			if registered || parent.Normalized[monitorConfigurationProof] != nil {
-				contribution, err := s.client.contributeMonitorReferences(ctx, parent, assets)
+				contribution, err := s.client.contributeMonitorReferences(ctx, parent, assets, index)
 				if err != nil {
 					return result, err
 				}
@@ -756,7 +753,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			}
 		}
 		if parent.Identity.Provider == asset.ProviderAzure && insightsWorkbookKind(parent.Identity.NativeType) != "" {
-			contribution, err := s.client.contributeWorkbookReferences(ctx, parent, assets)
+			contribution, err := s.client.contributeWorkbookReferences(ctx, parent, assets, index)
 			if err != nil {
 				return result, err
 			}
@@ -930,7 +927,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 		}
 	}
-	groups, err := s.client.contributeResourceGroups(ctx, s.connectionID, assets)
+	groups, err := s.client.contributeResourceGroups(ctx, s.connectionID, assets, aksMembers)
 	if err != nil {
 		return governance.Contribution{}, err
 	}
@@ -950,6 +947,33 @@ type serviceAssetKey struct {
 
 func serviceAssetKeyOf(owner asset.Identity, nativeType, nativeID string) serviceAssetKey {
 	return serviceAssetKey{owner.Provider, owner.ConnectionID, owner.Partition, strings.ToLower(nativeType), strings.ToLower(nativeID)}
+}
+
+// assetIndex is built once per contribution so per-parent lookups do not
+// rescan every asset. ToLower keys stand in for the strings.EqualFold scans
+// they replace; ARM types and IDs are ASCII, so the two agree. Each slice
+// holds asset positions in input order.
+type assetIndex struct {
+	byIdentity map[serviceAssetKey][]int
+	byID       map[asset.AssetID][]int
+	// Resource groups and managed-group controllers (AKS, Monitor
+	// workspaces, Application Insights): the only possible monitor
+	// cleanup controllers.
+	monitorControllers []int
+}
+
+func newAssetIndex(assets []asset.Asset) *assetIndex {
+	index := &assetIndex{byIdentity: map[serviceAssetKey][]int{}, byID: map[asset.AssetID][]int{}}
+	for i, value := range assets {
+		key := serviceAssetKeyOf(value.Identity, value.Identity.NativeType, value.Identity.NativeID)
+		index.byIdentity[key] = append(index.byIdentity[key], i)
+		index.byID[value.ID] = append(index.byID[value.ID], i)
+		switch value.Identity.NativeType {
+		case groupType, aksType, monitorWorkspaceType, applicationInsightsType:
+			index.monitorControllers = append(index.monitorControllers, i)
+		}
+	}
+	return index
 }
 
 func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]contracts.ActionImpact, error) {

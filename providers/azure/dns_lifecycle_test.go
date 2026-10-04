@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -128,6 +129,8 @@ type dnsScenario struct {
 	status       map[string]int
 	deleteStatus int
 	handle       func(*http.Request) (*http.Response, bool)
+	// Inventory detail reads run concurrently; the scenario state is unguarded.
+	mu sync.Mutex
 }
 
 func newDNSScenario() *dnsScenario {
@@ -155,6 +158,8 @@ func (s *dnsScenario) add(raw map[string]any, version string) {
 func (s *dnsScenario) runtime(t *testing.T) *Runtime {
 	t.Helper()
 	return protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		s.mu.Lock()
+		defer s.mu.Unlock()
 		id := strings.ToLower(req.URL.Path)
 		if version := s.version[id]; version != "" && req.URL.Query().Get("api-version") != version {
 			t.Fatalf("wrong native resource API version %s", req.URL)

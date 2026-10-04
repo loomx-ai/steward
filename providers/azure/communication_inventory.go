@@ -714,35 +714,21 @@ func (r *Runtime) listCommunication(ctx context.Context, c *client, request cont
 			return batch, serviceDenied("invalid_communication_inventory_cursor")
 		}
 	}
-	items, absent, before, err := r.communicationInventorySnapshot(ctx, c, request)
-	if err != nil {
-		return batch, err
-	}
-	_, afterAbsent, after, err := r.communicationInventorySnapshot(ctx, c, request)
-	if err != nil {
-		return batch, err
-	}
-	if !slices.Equal(absent, afterAbsent) || c.privateConfiguration(before) != c.privateConfiguration(after) {
-		return batch, serviceDenied("communication_collection_changed_during_scan")
-	}
-	boundary := request
-	boundary.Cursor, boundary.Limit = "", 0
-	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": before, "absent": absent})
-	if request.Cursor != "" && (cursor.Fingerprint != fingerprint || cursor.Target >= len(items)) {
-		return batch, serviceDenied("communication_inventory_cursor_changed")
-	}
-	limit := request.Limit
-	if limit <= 0 {
-		limit = 1000
-	}
-	end := cursor.Target + min(limit, len(items)-cursor.Target)
-	batch = contracts.InventoryBatch{Items: items[cursor.Target:end], Complete: end == len(items)}
-	if batch.Complete {
-		batch.AbsentNativeIDs = absent
-	} else {
-		cursor.Fingerprint, cursor.Target = fingerprint, end
-		data, _ := json.Marshal(cursor)
-		batch.NextCursor = base64.RawURLEncoding.EncodeToString(data)
-	}
-	return batch, nil
+	return r.inventorySnapshotPage(c, request, cursor, "communication_inventory_cursor_changed", func() (inventorySnapshot, error) {
+		items, absent, before, err := r.communicationInventorySnapshot(ctx, c, request)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		_, afterAbsent, after, err := r.communicationInventorySnapshot(ctx, c, request)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		if !slices.Equal(absent, afterAbsent) || c.privateConfiguration(before) != c.privateConfiguration(after) {
+			return inventorySnapshot{}, serviceDenied("communication_collection_changed_during_scan")
+		}
+		boundary := request
+		boundary.Cursor, boundary.Limit = "", 0
+		fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": before, "absent": absent})
+		return inventorySnapshot{items: items, absent: absent, fingerprint: fingerprint}, nil
+	})
 }

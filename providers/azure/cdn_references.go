@@ -189,11 +189,17 @@ func (c *client) cdnIncomingIndex(ctx context.Context, target asset.Identity, pr
 	return index, nil
 }
 
-func (s *serviceCascades) contributeCDNReferences(ctx context.Context, assets []asset.Asset, result *governance.Contribution) error {
+func (s *serviceCascades) contributeCDNReferences(ctx context.Context, assets []asset.Asset, known *assetIndex, result *governance.Contribution) error {
 	// Share each native referring collection within this contribution. Listing
 	// every route once per domain would make profile scans quadratic.
 	profiles := map[string]map[string]any{}
 	indexes := map[string]map[string][]serviceChild{}
+	var cdnControllers []*asset.Asset // only profiles and endpoints can cascade
+	for i := range assets {
+		if kind := assets[i].Identity.NativeType; kind == cdnProfileType || kind == cdnEndpointType {
+			cdnControllers = append(cdnControllers, &assets[i])
+		}
+	}
 	for _, target := range assets {
 		if target.Identity.Provider != asset.ProviderAzure || len(cdnIncomingKinds(target.Identity.NativeType)) == 0 {
 			continue
@@ -231,7 +237,7 @@ func (s *serviceCascades) contributeCDNReferences(ctx context.Context, assets []
 			}
 			evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
 			controllers := map[string]any{}
-			for _, controller := range assets {
+			for _, controller := range cdnControllers {
 				if controller.Identity.Provider != target.Identity.Provider || controller.Identity.ConnectionID != target.Identity.ConnectionID || controller.Identity.Partition != target.Identity.Partition {
 					continue
 				}
@@ -244,14 +250,12 @@ func (s *serviceCascades) contributeCDNReferences(ctx context.Context, assets []
 			}
 			evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = controllers
 			var referrer *asset.Asset
-			for i := range assets {
-				candidate := &assets[i]
-				if candidate.Identity.Provider == target.Identity.Provider && candidate.Identity.ConnectionID == target.Identity.ConnectionID && candidate.Identity.Partition == target.Identity.Partition && strings.EqualFold(candidate.Identity.NativeType, child.kind) && strings.EqualFold(candidate.Identity.NativeID, child.id) {
-					if referrer != nil {
-						return fmt.Errorf("ambiguous Azure CDN reference")
-					}
-					referrer = candidate
-				}
+			switch matches := known.byIdentity[serviceAssetKeyOf(target.Identity, child.kind, child.id)]; len(matches) {
+			case 0:
+			case 1:
+				referrer = &assets[matches[0]]
+			default:
+				return fmt.Errorf("ambiguous Azure CDN reference")
 			}
 			if referrer == nil {
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})

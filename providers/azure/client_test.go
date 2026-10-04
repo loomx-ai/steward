@@ -209,6 +209,29 @@ func TestCloudLogsAndResponsesRemoveValueSecrets(t *testing.T) {
 	}
 }
 
+func TestLargeReadResponseLogsSummaryOnly(t *testing.T) {
+	entries := []execution.JobLogEntry{}
+	ctx := execution.WithJobLogSink(context.Background(), execution.JobLogSinkFunc(func(_ context.Context, e execution.JobLogEntry) { entries = append(entries, e) }))
+	rows := []any{}
+	for range 100 {
+		rows = append(rows, map[string]any{"id": "resource", "properties": map[string]any{"customData": "startup-secret", "padding": strings.Repeat("x", 64)}})
+	}
+	c := directClient(func(r *http.Request) (*http.Response, error) {
+		return jsonResponse(200, map[string]any{"value": rows}, http.Header{"X-Ms-Request-Id": {"request-safe"}}), nil
+	})
+	res, err := c.request(ctx, "GET", apiURL(c.root()+"/resources", resourcesVersion))
+	if err != nil || len(array(res.data["value"])) != 100 {
+		t.Fatal(err, res.data)
+	}
+	body := object(entries[len(entries)-1].Payload["body"])
+	if body["truncated"] != true || body["value_count"] != 100 || body["bytes"].(int) <= readLogBodyBytes || entries[len(entries)-1].Payload["request_id"] != "request-safe" {
+		t.Fatal("large read logged without summary", entries[len(entries)-1].Payload)
+	}
+	if encoded, _ := json.Marshal(entries); strings.Contains(string(encoded), "startup-secret") || strings.Contains(string(encoded), "xxxx") {
+		t.Fatal("large read body reached the job log")
+	}
+}
+
 func TestConcurrentRequestsShareOneTokenRefresh(t *testing.T) {
 	var exchanges atomic.Int32
 	base := roundTripFunc(func(r *http.Request) (*http.Response, error) {

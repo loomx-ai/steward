@@ -294,3 +294,53 @@ func TestRBACInventoryRejectsChangedPagesAndIncompleteReads(t *testing.T) {
 		})
 	}
 }
+
+func TestRBACInventoryLaterPagesReuseScanSnapshot(t *testing.T) {
+	f := newRBACFixture(t)
+	calls := func() (total int) {
+		for _, count := range f.calls {
+			total += count
+		}
+		return total
+	}
+	pages := func(run asset.ScanRunID) (items []contracts.InventoryItem, later int) {
+		request := productRequest(f.runtime, rbacAssignmentType)
+		request.ScanRunID, request.Limit = run, 1
+		for {
+			before := calls()
+			batch, err := f.runtime.List(t.Context(), request)
+			if err != nil {
+				t.Fatal("RBAC page failed", err)
+			}
+			if request.Cursor != "" {
+				later += calls() - before
+			}
+			items = append(items, batch.Items...)
+			if batch.Complete {
+				return items, later
+			}
+			request.Cursor = batch.NextCursor
+		}
+	}
+	uncached, rebuilt := pages("")
+	cached, reused := pages("scn-snapshot-reuse")
+	if len(uncached) < 2 || rebuilt == 0 || reused != 0 {
+		t.Fatal("later pages rebuilt the scan snapshot", len(uncached), rebuilt, reused)
+	}
+	// RBAC builds NetworkReferences in map order on every observation.
+	for _, item := range slices.Concat(uncached, cached) {
+		slices.Sort(item.NetworkReferences)
+	}
+	want, _ := json.Marshal(uncached)
+	got, _ := json.Marshal(cached)
+	if string(want) != string(got) {
+		t.Fatal("cached pages changed inventory")
+	}
+	inventorySnapshots.Lock()
+	defer inventorySnapshots.Unlock()
+	for key := range inventorySnapshots.entries {
+		if key.run == "scn-snapshot-reuse" {
+			t.Fatal("last page kept the scan snapshot cached")
+		}
+	}
+}

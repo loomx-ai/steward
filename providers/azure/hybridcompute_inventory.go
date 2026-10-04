@@ -207,39 +207,27 @@ func (r *Runtime) listHybridCompute(ctx context.Context, c *client, request cont
 			return batch, serviceDenied("invalid_hybrid_compute_cursor")
 		}
 	}
-	items, before, provenance, err := r.hybridComputeSnapshot(ctx, c, request)
-	if err != nil {
-		return batch, err
-	}
-	_, after, _, err := r.hybridComputeSnapshot(ctx, c, request)
-	if err != nil {
-		return batch, err
-	}
-	if c.privateConfiguration(before) != c.privateConfiguration(after) {
-		return batch, serviceDenied("hybrid_compute_inventory_changed_during_scan")
-	}
-	boundary := request
-	boundary.Cursor, boundary.Limit = "", 0
-	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": before})
-	if request.Cursor != "" && (cursor.Fingerprint != fingerprint || cursor.Target >= len(items)) {
-		return batch, serviceDenied("hybrid_compute_cursor_changed")
-	}
-	limit := request.Limit
-	if limit <= 0 {
-		limit = 1000
-	}
-	end := cursor.Target + min(limit, len(items)-cursor.Target)
-	batch = contracts.InventoryBatch{Items: items[cursor.Target:end], Complete: end == len(items), RequestID: provenance}
-	if batch.Complete {
+	return r.inventorySnapshotPage(c, request, cursor, "hybrid_compute_cursor_changed", func() (inventorySnapshot, error) {
+		items, before, provenance, err := r.hybridComputeSnapshot(ctx, c, request)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		_, after, _, err := r.hybridComputeSnapshot(ctx, c, request)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		if c.privateConfiguration(before) != c.privateConfiguration(after) {
+			return inventorySnapshot{}, serviceDenied("hybrid_compute_inventory_changed_during_scan")
+		}
+		boundary := request
+		boundary.Cursor, boundary.Limit = "", 0
+		fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": before})
+		snapshot := inventorySnapshot{items: items, provenance: provenance, fingerprint: fingerprint}
 		for _, id := range request.KnownNativeIDs {
 			if before[id] == nil {
-				batch.AbsentNativeIDs = append(batch.AbsentNativeIDs, id)
+				snapshot.absent = append(snapshot.absent, id)
 			}
 		}
-	} else {
-		cursor.Fingerprint, cursor.Target = fingerprint, end
-		encoded, _ := json.Marshal(cursor)
-		batch.NextCursor = base64.RawURLEncoding.EncodeToString(encoded)
-	}
-	return batch, nil
+		return snapshot, nil
+	})
 }

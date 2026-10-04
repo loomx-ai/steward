@@ -37,6 +37,7 @@ func (c *client) diagnosticSourceCandidates(ctx context.Context) (map[string]map
 			return nil
 		}
 		mapping, known := findType(kind)
+		var live map[string]any
 		if known && kind != strings.ToLower(diagnosticSettingsType) {
 			endpoint, err := c.resourceURL(mapping, responseID(mapping.NativeType, text(raw["id"])))
 			if err != nil {
@@ -57,6 +58,9 @@ func (c *client) diagnosticSourceCandidates(ctx context.Context) (map[string]map
 			if wireErr != nil || currentErr != nil || wire != currentWire {
 				return serviceDenied("diagnostic_source_index_name_changed")
 			}
+			if HasServiceCascade(mapping.NativeType) {
+				live = batchClone(current.data)
+			}
 			raw = maps.Clone(current.data)
 			raw["id"] = responseID(mapping.NativeType, text(current.data["id"]))
 		}
@@ -64,7 +68,7 @@ func (c *client) diagnosticSourceCandidates(ctx context.Context) (map[string]map
 		if !known || strings.EqualFold(kind, diagnosticSettingsType) {
 			return nil
 		}
-		children, err := c.children(ctx, mapping, raw)
+		children, err := c.childrenOf(ctx, mapping, raw, live)
 		if err != nil {
 			return err
 		}

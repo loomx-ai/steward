@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -18,34 +19,62 @@ const resourceGroupCascadeSource = "azure:resource-group-native-delete"
 
 // Group effects are activated only by selecting the group. They do not replace
 // exclusive product ownership or turn independent member selection into group deletion.
-func (c *client) contributeResourceGroups(ctx context.Context, connection asset.ConnectionID, assets []asset.Asset) (out governance.Contribution, err error) {
+//
+// managed is managedGroupMembers(assets): the service/cluster contributors
+// validate these native controller hints; managed groups must keep their
+// owning product's complete lifecycle.
+func (c *client) contributeResourceGroups(ctx context.Context, connection asset.ConnectionID, assets []asset.Asset, managed map[managedGroupMemberKey]bool) (out governance.Contribution, err error) {
 	defer func() {
 		if err != nil {
 			out = governance.Contribution{}
 			err = contracts.DependencyReadError(err)
 		}
 	}()
-	// The service/cluster contributors validate these native controller hints;
-	// managed groups must keep their owning product's complete lifecycle.
-	managed := managedGroupMembers(assets)
-	for _, group := range assets {
+	type members struct {
+		known     map[string]asset.Asset
+		duplicate bool
+	}
+	groups := map[string][]int{} // lowercase group ID -> eligible groups
+	buckets := map[int]*members{}
+	for i, group := range assets {
 		if group.Identity.ConnectionID != connection || group.Identity.Provider != asset.ProviderAzure || group.Identity.NativeType != groupType {
 			continue
 		}
 		if managed[managedGroupKey(group.Identity, group.Identity.NativeID)] || text(group.Normalized["_resource_group_configuration"]) == "" || text(group.Normalized["_managed_group_owner"]) != "" {
 			continue
 		}
-		known := map[string]asset.Asset{}
-		for _, member := range assets {
-			if member.Identity.Provider != group.Identity.Provider || member.Identity.ConnectionID != group.Identity.ConnectionID || member.Identity.Partition != group.Identity.Partition || !inResourceGroup(member.Identity.NativeID, group.Identity.NativeID) || member.ID == group.ID {
-				continue
+		id := strings.ToLower(group.Identity.NativeID)
+		groups[id] = append(groups[id], i)
+		buckets[i] = &members{known: map[string]asset.Asset{}}
+	}
+	// One pass over assets: inResourceGroup(id, g) holds exactly when the
+	// lowercase g is the lowercase id or one of its "/"-delimited prefixes.
+	for _, member := range assets {
+		id := strings.ToLower(member.Identity.NativeID)
+		for end := len(id); end >= 0; end = strings.LastIndexByte(id[:end], '/') {
+			for _, g := range groups[id[:end]] {
+				group, bucket := assets[g], buckets[g]
+				if member.Identity.Provider != group.Identity.Provider || member.Identity.ConnectionID != group.Identity.ConnectionID || member.Identity.Partition != group.Identity.Partition || member.ID == group.ID {
+					continue
+				}
+				if _, exists := bucket.known[id]; exists {
+					bucket.duplicate = true
+				}
+				if !bucket.duplicate {
+					bucket.known[id] = member
+				}
 			}
-			id := strings.ToLower(member.Identity.NativeID)
-			if _, exists := known[id]; exists {
-				return out, serviceDenied("resource_group_graph_duplicate_asset")
-			}
-			known[id] = member
 		}
+	}
+	for g, group := range assets {
+		bucket := buckets[g]
+		if bucket == nil {
+			continue
+		}
+		if bucket.duplicate {
+			return out, serviceDenied("resource_group_graph_duplicate_asset")
+		}
+		known := bucket.known
 		var previous map[string]map[string]any
 		for pass := 0; pass < 2; pass++ {
 			current, err := c.resourceGroupGraphMembers(ctx, group, known)
@@ -133,33 +162,55 @@ func (c *client) resourceGroupGraphMembers(ctx context.Context, group asset.Asse
 		if operationLocation(res.header) != "" {
 			return nil, serviceDenied("resource_group_graph_incomplete_index")
 		}
+		// Member reads run concurrently per page. A row's own rejection is
+		// reported only after earlier rows' reads, as a serial loop would.
+		var reads []func() (map[string]any, error)
+		var readIDs []string
+		flush := func(rejection error) error {
+			results, err := readsInOrder(reads)
+			if err != nil {
+				return err
+			}
+			for i, raw := range results {
+				values[readIDs[i]] = raw
+			}
+			reads, readIDs = nil, nil
+			return rejection
+		}
 		for _, value := range rows {
 			raw := object(value)
 			id, kind, err := deploymentStackMemberID(text(raw["id"]))
 			if err != nil || !inResourceGroup(id, group.Identity.NativeID) || id == strings.ToLower(group.Identity.NativeID) || !validResponseType(kind, text(raw["type"])) || values[id] != nil {
-				return nil, serviceDenied("resource_group_graph_invalid_member")
+				return nil, flush(serviceDenied("resource_group_graph_invalid_member"))
 			}
 			_, registered := findType(kind)
 			if member, found := known[id]; found && registered {
 				if !strings.EqualFold(member.Identity.NativeType, kind) {
-					return nil, serviceDenied("resource_group_graph_kind_changed")
+					return nil, flush(serviceDenied("resource_group_graph_kind_changed"))
 				}
-				live, err := c.deploymentStackMemberRead(ctx, member)
-				if err != nil {
-					return nil, err
-				}
-				if err := serviceListedIncarnation(raw, live.data); err != nil {
-					return nil, err
-				}
-				raw = live.data
-			} else if monitorResourceKind(kind) != "" {
-				live, err := c.monitorResourceRead(ctx, monitorResourceKind(kind), id)
-				if err != nil {
-					return nil, err
-				}
-				raw = live.data
+				listed := raw
+				reads = append(reads, func() (map[string]any, error) {
+					live, err := c.deploymentStackMemberRead(ctx, member)
+					if err != nil {
+						return nil, err
+					}
+					if err := serviceListedIncarnation(listed, live.data); err != nil {
+						return nil, err
+					}
+					return live.data, nil
+				})
+				readIDs = append(readIDs, id)
+			} else if monitorKind := monitorResourceKind(kind); monitorKind != "" {
+				reads = append(reads, func() (map[string]any, error) {
+					live, err := c.monitorResourceRead(ctx, monitorKind, id)
+					return live.data, err
+				})
+				readIDs = append(readIDs, id)
 			}
-			values[id] = raw
+			values[id] = raw // listed row marks the ID until its read replaces it
+		}
+		if err := flush(nil); err != nil {
+			return nil, err
 		}
 		next = following
 	}
@@ -191,4 +242,27 @@ func (c *client) resourceGroupGraphMembers(ctx context.Context, group asset.Asse
 		return nil, err
 	}
 	return values, nil
+}
+
+// readsInOrder runs reads at most eight at a time and, like the serial loop it
+// replaces, reports the earliest failure in input order.
+func readsInOrder(reads []func() (map[string]any, error)) ([]map[string]any, error) {
+	results := make([]map[string]any, len(reads))
+	errs := make([]error, len(reads))
+	slots := make(chan struct{}, 8)
+	var wg sync.WaitGroup
+	for i, read := range reads {
+		slots <- struct{}{}
+		wg.Go(func() {
+			defer func() { <-slots }()
+			results[i], errs[i] = read()
+		})
+	}
+	wg.Wait()
+	for _, err := range errs {
+		if err != nil {
+			return nil, err
+		}
+	}
+	return results, nil
 }

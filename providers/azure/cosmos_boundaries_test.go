@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -186,7 +187,12 @@ func TestCosmosSensitiveBodiesNeverReachInventoryOrLogs(t *testing.T) {
 	s, r, assets := cosmosScenario(t)
 	secrets := map[string]string{cosmosStoredProcedureType: "private-cosmos-javascript", cosmosKeyType: "private-cosmos-wrapped-key", cosmosCassandraType: "private-cosmos-admin-password", cosmosDataCenterType: "private-cosmos-yaml"}
 	var logs []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(context.Background(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	var logsMu sync.Mutex
+	ctx := execution.WithJobLogSink(context.Background(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) {
+		logsMu.Lock()
+		logs = append(logs, entry)
+		logsMu.Unlock()
+	}))
 	for kind, secret := range secrets {
 		target := cdnAsset(t, assets, kind)
 		props := object(s.records[target.Identity.NativeID]["properties"])
