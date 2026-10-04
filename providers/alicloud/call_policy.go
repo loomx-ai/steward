@@ -31,6 +31,13 @@ const (
 
 	destructivePreconnectRetryCount = 2
 
+	// Throttling outlasts the short transient retries above: a throttled
+	// query backs off exponentially from one second, capped per wait, over
+	// more attempts.
+	throttledQueryRetryCount   = 5
+	throttledQueryRetryDelay   = time.Second
+	throttledQueryRetryCeiling = 20 * time.Second
+
 	// enrichmentConcurrency bounds the per-item reads one inventory batch runs
 	// at a time. Each read keeps its own retry and throttling backoff.
 	enrichmentConcurrency = 4
@@ -79,7 +86,7 @@ func callCloudProductQuery[T any](
 		return zero, err
 	}
 	var lastErr error
-	for attempt := 0; attempt <= cloudProductQueryRetryCount; attempt++ {
+	for attempt := 0; ; attempt++ {
 		attemptCtx, cancel := context.WithTimeout(ctx, cloudProductQueryTimeout)
 		result, err := call(attemptCtx, runtimeOptions(cloudProductQueryTimeout))
 		cancel()
@@ -90,7 +97,7 @@ func callCloudProductQuery[T any](
 		if err := ctx.Err(); err != nil {
 			return zero, err
 		}
-		if attempt == cloudProductQueryRetryCount || !isRetryableQueryError(err) {
+		if attempt >= queryRetryLimit(cloudProductQueryRetryCount, err) || !isRetryableQueryError(err) {
 			break
 		}
 		for _, observer := range observers {
@@ -115,7 +122,7 @@ func callResourceCenterQuery[T any](
 		return zero, err
 	}
 	var lastErr error
-	for attempt := 0; attempt <= resourceCenterRetryCount; attempt++ {
+	for attempt := 0; ; attempt++ {
 		attemptCtx, cancel := context.WithTimeout(ctx, resourceCenterCallTimeout)
 		result, err := call(attemptCtx, runtimeOptions(resourceCenterCallTimeout))
 		cancel()
@@ -126,7 +133,7 @@ func callResourceCenterQuery[T any](
 		if err := ctx.Err(); err != nil {
 			return zero, err
 		}
-		if attempt == resourceCenterRetryCount || !isRetryableQueryError(err) {
+		if attempt >= queryRetryLimit(resourceCenterRetryCount, err) || !isRetryableQueryError(err) {
 			break
 		}
 		for _, observer := range observers {
@@ -223,8 +230,23 @@ func isRetryableQueryError(err error) bool {
 	}
 }
 
+func queryThrottled(err error) bool {
+	var providerCall *contracts.ProviderCallError
+	return errors.As(NormalizeError(err), &providerCall) && providerCall.Provider.Category == execution.ErrorThrottled
+}
+
+func queryRetryLimit(retries int, err error) int {
+	if queryThrottled(err) {
+		return max(retries, throttledQueryRetryCount)
+	}
+	return retries
+}
+
 func queryRetryDelay(attempt int, err error) time.Duration {
 	delay := cloudProductQueryRetryDelay << attempt
+	if queryThrottled(err) {
+		delay = min(throttledQueryRetryDelay<<attempt, throttledQueryRetryCeiling)
+	}
 	var providerCall *contracts.ProviderCallError
 	if errors.As(NormalizeError(err), &providerCall) && providerCall.RetryAfter > delay {
 		delay = providerCall.RetryAfter
