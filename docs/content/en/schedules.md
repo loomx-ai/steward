@@ -103,7 +103,7 @@ Admins manage these under **Settings** → **Scheduled scans**:
 
 - **Default for new connections**: when on, a connection's first successful validation creates a "Daily full scan" of all active regions plus global, at a random time between 01:00 and 06:00 so connections do not all scan at once. It is off by default and does not touch existing connections.
 - **Default time zone**: the time zone new schedules start in.
-- **Keep scheduled scans for**: 7, 30 or 90 days, or forever; 30 days by default. Only scans started by schedules, with their logs and changes, are removed. Manual scans are not affected, and each schedule's latest successful scan is always kept.
+- **Keep scans for**: 7, 30 or 90 days, or forever; 30 days by default. Older finished scans, scheduled or manual, are removed with their logs and changes. Each schedule's latest successful scan, and each connection's latest successful and latest complete manual scans, are always kept.
 - **All scheduled scans**: every connection's schedules, state, next run and last complete scan. Click a connection to switch to it and open its schedules.
 
 <span id="notifications"></span>

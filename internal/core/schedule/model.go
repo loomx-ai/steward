@@ -159,8 +159,8 @@ type Settings struct {
 	// DefaultScheduleEnabled creates a daily complete scan for each connection
 	// the first time it passes validation.
 	DefaultScheduleEnabled bool `json:"default_schedule_enabled"`
-	// RetentionDays bounds how long scans started by schedules are kept. Zero
-	// keeps them forever.
+	// RetentionDays bounds how long finished scans, scheduled or manual, are
+	// kept. Zero keeps them forever.
 	RetentionDays   int       `json:"retention_days"`
 	DefaultTimezone string    `json:"default_timezone,omitempty"`
 	UpdatedBy       string    `json:"updated_by,omitempty"`

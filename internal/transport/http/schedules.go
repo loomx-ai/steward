@@ -314,6 +314,15 @@ func (a *API) scheduleOverview(response http.ResponseWriter, request *http.Reque
 	for _, view := range views {
 		byConnection[view.ConnectionID] = append(byConnection[view.ConnectionID], view)
 	}
+	connectionIDs := make([]asset.ConnectionID, 0, len(connections.Items))
+	for _, connection := range connections.Items {
+		connectionIDs = append(connectionIDs, connection.ID)
+	}
+	completeScans, err := a.dependencies.Repositories.Schedules().LatestCompleteScans(ctx, connectionIDs)
+	if err != nil {
+		repositoryError(response, err)
+		return
+	}
 	result := make([]connectionScheduleOverview, 0, len(connections.Items))
 	for _, connection := range connections.Items {
 		if connection.Status == asset.ConnectionDeleted {
@@ -326,17 +335,12 @@ func (a *API) scheduleOverview(response http.ResponseWriter, request *http.Reque
 		if item.Schedules == nil {
 			item.Schedules = []scheduleView{}
 		}
-		latest, err := a.dependencies.Repositories.Schedules().LatestCompleteScan(ctx, connection.ID)
-		switch {
-		case err == nil:
+		if latest, ok := completeScans[connection.ID]; ok {
 			at := latest.CreatedAt
 			if latest.FinishedAt != nil {
 				at = *latest.FinishedAt
 			}
 			item.LastCompleteScanAt = &at
-		case !errors.Is(err, persistence.ErrNotFound):
-			repositoryError(response, err)
-			return
 		}
 		result = append(result, item)
 	}

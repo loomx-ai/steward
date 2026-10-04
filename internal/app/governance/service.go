@@ -148,11 +148,18 @@ func (s *Service) RebuildGraphFromAssets(ctx context.Context, scopeID asset.Scop
 			}
 		}
 	}
+	// Contributors only read their input, so they share one copy. The one
+	// known write, GCP identityValidate defaulting a member's empty roles to
+	// MEMBER, stores what every reader of that field already assumes.
+	var shared []asset.Asset
+	if len(contributors) > 0 {
+		shared = cloneAssets(assets)
+	}
 	for _, contributor := range contributors {
 		if contributor == nil {
 			continue
 		}
-		contribution, err := contributor.Contribute(ctx, scopeID, cloneAssets(assets))
+		contribution, err := contributor.Contribute(ctx, scopeID, shared)
 		if err != nil {
 			return GraphResult{}, err
 		}
@@ -390,9 +397,9 @@ func lifecycleBindingID(revision string, controllerID, managedID asset.AssetID, 
 	return graph.LifecycleBindingID(idgen.MustNew("lcb"))
 }
 
-// cloneAssets gives a contributor its own deep copy so one contributor cannot
-// change what later contributors or finding evaluation see. Asset documents
-// are decoded JSON, so maps and slices are the only containers to copy.
+// cloneAssets deep-copies the assets handed to contributors so they cannot
+// change what finding evaluation sees. Asset documents are decoded JSON, so
+// maps and slices are the only containers to copy.
 func cloneAssets(values []asset.Asset) []asset.Asset {
 	result := make([]asset.Asset, len(values))
 	for index, value := range values {

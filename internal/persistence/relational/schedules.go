@@ -314,6 +314,40 @@ func (s *Store) LatestCompleteScan(ctx context.Context, connectionID asset.Conne
 	return asset.ScanRun{}, persistence.ErrNotFound
 }
 
+func (s *Store) LatestCompleteScans(ctx context.Context, connectionIDs []asset.ConnectionID) (map[asset.ConnectionID]asset.ScanRun, error) {
+	result := make(map[asset.ConnectionID]asset.ScanRun, len(connectionIDs))
+	if len(connectionIDs) == 0 {
+		return result, nil
+	}
+	ids := make([]string, len(connectionIDs))
+	for index, id := range connectionIDs {
+		ids[index] = string(id)
+	}
+	succeeded, allRegions := string(asset.ScanSucceeded), string(asset.ScanAllActiveRegions)
+	// ResourceKindIDs is omitted from the payload when empty, and its key
+	// cannot appear unescaped elsewhere.
+	var rows []scanRunRow
+	if err := s.db.WithContext(ctx).Table("scan_tasks AS tasks").
+		Where(`tasks.connection_id IN ? AND tasks.status = ? AND tasks.scope_mode = ? AND tasks.payload NOT LIKE '%"resource_kind_ids":%'`, ids, succeeded, allRegions).
+		Where(`NOT EXISTS (
+			SELECT 1 FROM scan_tasks AS newer
+			WHERE newer.connection_id = tasks.connection_id AND newer.status = ? AND newer.scope_mode = ?
+			  AND newer.payload NOT LIKE '%"resource_kind_ids":%'
+			  AND (newer.created_at > tasks.created_at OR (newer.created_at = tasks.created_at AND newer.id > tasks.id))
+		)`, succeeded, allRegions).
+		Find(&rows).Error; err != nil {
+		return nil, err
+	}
+	for _, row := range rows {
+		run, err := decode[asset.ScanRun](row.Payload)
+		if err != nil {
+			return nil, err
+		}
+		result[run.ConnectionID] = run
+	}
+	return result, nil
+}
+
 func (s *Store) ListExpiredScheduledScans(ctx context.Context, before time.Time, limit int) ([]asset.ScanTaskID, error) {
 	var ids []string
 	if err := s.db.WithContext(ctx).Table("scan_tasks AS tasks").
@@ -323,6 +357,37 @@ func (s *Store) ListExpiredScheduledScans(ctx context.Context, before time.Time,
 			WHERE newer.schedule_id = tasks.schedule_id AND newer.status = ?
 			  AND (newer.created_at > tasks.created_at OR (newer.created_at = tasks.created_at AND newer.id > tasks.id))
 		))`, string(asset.ScanSucceeded), string(asset.ScanSucceeded)).
+		Order("tasks.created_at ASC, tasks.id ASC").Limit(normalizeLimit(limit)).
+		Pluck("tasks.id", &ids).Error; err != nil {
+		return nil, err
+	}
+	result := make([]asset.ScanTaskID, len(ids))
+	for index, id := range ids {
+		result[index] = asset.ScanTaskID(id)
+	}
+	return result, nil
+}
+
+func (s *Store) ListExpiredManualScans(ctx context.Context, before time.Time, limit int) ([]asset.ScanTaskID, error) {
+	succeeded := string(asset.ScanSucceeded)
+	allRegions := string(asset.ScanAllActiveRegions)
+	var ids []string
+	if err := s.db.WithContext(ctx).Table("scan_tasks AS tasks").
+		Where("tasks.schedule_id IS NULL AND tasks.created_at < ? AND tasks.status IN ?", before, terminalScanStatuses).
+		Where(`NOT (tasks.status = ? AND NOT EXISTS (
+			SELECT 1 FROM scan_tasks AS newer
+			WHERE newer.connection_id = tasks.connection_id AND newer.schedule_id IS NULL AND newer.status = ?
+			  AND (newer.created_at > tasks.created_at OR (newer.created_at = tasks.created_at AND newer.id > tasks.id))
+		))`, succeeded, succeeded).
+		// Scan coverage and the schedule overview look for the newest complete
+		// scan, so keep that one too. ResourceKindIDs is omitted from the
+		// payload when empty, and its key cannot appear unescaped elsewhere.
+		Where(`NOT (tasks.status = ? AND tasks.scope_mode = ? AND tasks.payload NOT LIKE '%"resource_kind_ids":%' AND NOT EXISTS (
+			SELECT 1 FROM scan_tasks AS newer
+			WHERE newer.connection_id = tasks.connection_id AND newer.schedule_id IS NULL AND newer.status = ?
+			  AND newer.scope_mode = ? AND newer.payload NOT LIKE '%"resource_kind_ids":%'
+			  AND (newer.created_at > tasks.created_at OR (newer.created_at = tasks.created_at AND newer.id > tasks.id))
+		))`, succeeded, allRegions, succeeded, allRegions).
 		Order("tasks.created_at ASC, tasks.id ASC").Limit(normalizeLimit(limit)).
 		Pluck("tasks.id", &ids).Error; err != nil {
 		return nil, err

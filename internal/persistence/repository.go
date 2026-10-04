@@ -201,6 +201,9 @@ type InventoryRepository interface {
 	ConnectionInventoryVersion(context.Context, asset.ConnectionID) (string, error)
 	// ListAssetIDsObservedByRun returns every asset any shard of the run observed.
 	ListAssetIDsObservedByRun(context.Context, asset.ScanRunID) ([]asset.AssetID, error)
+	// ListAssetIDsObservedByTarget returns the assets observed by the shards
+	// of a target, source, scope and kind since its latest authoritative
+	// success, including that success.
 	ListAssetIDsObservedByTarget(context.Context, asset.ConnectionID, string, string, asset.ScopeID, asset.ResourceKindID) ([]asset.AssetID, error)
 }
 
@@ -226,6 +229,8 @@ type FindingRepository interface {
 	WithinFindingTx(context.Context, func(FindingRepository) error) error
 	PutFinding(context.Context, finding.Finding) error
 	ListFindingsByAsset(context.Context, asset.AssetID) ([]finding.Finding, error)
+	// ListFindingsByAssetIDs is ListFindingsByAsset for many assets at once.
+	ListFindingsByAssetIDs(context.Context, []asset.AssetID) (map[asset.AssetID][]finding.Finding, error)
 	ListFindingsForAsset(context.Context, asset.ConnectionID, asset.AssetID) ([]finding.Finding, error)
 	CountOpenFindingsByAssetIDs(context.Context, []asset.AssetID) (map[asset.AssetID]int, error)
 	ListFindings(context.Context, ListOptions) (Page[finding.Finding], error)
@@ -234,6 +239,8 @@ type FindingRepository interface {
 type CleanupTaskRepository interface {
 	CreateTask(context.Context, plan.CleanupTask, []plan.CleanupTaskStep, []plan.ImpactItem) error
 	GetTask(context.Context, plan.CleanupTaskID) (CleanupTaskAggregate, error)
+	// GetTaskHeader reads the task row alone, without steps or impact items.
+	GetTaskHeader(context.Context, plan.CleanupTaskID) (plan.CleanupTask, error)
 	ListTasks(context.Context, ListOptions) (Page[plan.CleanupTask], error)
 	ReplaceTask(context.Context, plan.CleanupTask, []plan.CleanupTaskStep, []plan.ImpactItem) error
 	UpdateTask(context.Context, plan.CleanupTask) error
@@ -249,6 +256,9 @@ type ExecutionRepository interface {
 	GetExecutionByIdempotencyKey(context.Context, string) (execution.ExecutionAttempt, error)
 	ListExecutions(context.Context, ListOptions) (Page[execution.ExecutionAttempt], error)
 	ListCleanupTaskExecutions(context.Context, asset.ConnectionID, string, ListOptions) (Page[execution.ExecutionAttempt], error)
+	// LatestCleanupTaskExecutions maps each listed cleanup task that has an
+	// execution attempt to its newest one.
+	LatestCleanupTaskExecutions(context.Context, asset.ConnectionID, []string) (map[string]execution.ExecutionAttempt, error)
 	LockExecution(context.Context, execution.ExecutionID) error
 	UpdateExecution(context.Context, execution.ExecutionAttempt) error
 	AppendAction(context.Context, execution.ActionAttempt) error
@@ -257,6 +267,7 @@ type ExecutionRepository interface {
 	ListActions(context.Context, execution.ExecutionID) ([]execution.ActionAttempt, error)
 	ListExecutionActions(context.Context, asset.ConnectionID, execution.ExecutionID) ([]execution.ActionAttempt, error)
 	CountInFlightActions(context.Context, execution.ExecutionID) (int, error)
+	CountActionsByStatus(context.Context, execution.ExecutionID) (map[execution.ActionStatus]int, error)
 	UpdateAction(context.Context, execution.ActionAttempt) error
 	AppendOutbox(context.Context, execution.OutboxEvent) error
 	ListPendingOutbox(context.Context, int) ([]execution.OutboxEvent, error)
@@ -315,9 +326,16 @@ type ScheduleRepository interface {
 	// LatestCompleteScan is the newest succeeded scan of every enabled region
 	// plus global resources and all resource types.
 	LatestCompleteScan(context.Context, asset.ConnectionID) (asset.ScanRun, error)
+	// LatestCompleteScans is LatestCompleteScan for many connections; a
+	// connection without a complete scan has no entry.
+	LatestCompleteScans(context.Context, []asset.ConnectionID) (map[asset.ConnectionID]asset.ScanRun, error)
 	// ListExpiredScheduledScans lists finished scans started by schedules
 	// before the cutoff, except each schedule's latest succeeded scan.
 	ListExpiredScheduledScans(context.Context, time.Time, int) ([]asset.ScanTaskID, error)
+	// ListExpiredManualScans lists finished manual scans started before the
+	// cutoff, except each connection's latest succeeded manual scan and its
+	// latest succeeded complete manual scan.
+	ListExpiredManualScans(context.Context, time.Time, int) ([]asset.ScanTaskID, error)
 	// DeleteScan removes a finished scan with its targets, jobs, logs, changes
 	// and the observations that later scans have superseded.
 	DeleteScan(context.Context, asset.ScanTaskID) error

@@ -44,6 +44,19 @@ func TestHotStatementsUseIndexes(t *testing.T) {
 			"USING INDEX idx_asset_changes_scan_cursor ", true},
 		{`SELECT * FROM assets WHERE closed_at IS NULL AND connection_id = 'connection' AND scope_id IN ('a', 'b') ORDER BY id ASC`,
 			"USING INDEX idx_assets_connection_scope ", false},
+		{`SELECT * FROM findings WHERE (last_seen_at > 1 OR (last_seen_at = 1 AND id > 'f')) ORDER BY last_seen_at ASC, id ASC LIMIT 51`,
+			"USING INDEX idx_findings_cursor ", true},
+		{`SELECT * FROM assets WHERE closed_at IS NULL ORDER BY first_seen_at ASC, id ASC LIMIT 51`,
+			"USING INDEX idx_assets_list_cursor ", true},
+		{`SELECT COUNT(*), SUM(revision) FROM findings WHERE asset_id IN (SELECT id FROM assets WHERE connection_id = 'connection')`,
+			"USING COVERING INDEX idx_findings_asset_revision ", false},
+		{`SELECT DISTINCT observations.asset_id FROM scan_shards AS shards
+			JOIN scan_tasks AS tasks ON tasks.id = shards.scan_task_id
+			JOIN asset_observations AS observations ON observations.scan_shard_id = shards.id
+			WHERE shards.scope_id = 'scope' AND shards.target_key = 'vpc' AND shards.source = 'source' AND shards.resource_kind_id = '' AND tasks.connection_id = 'connection'`,
+			"USING INDEX idx_scan_shards_scope_target ", false},
+		{`SELECT * FROM scopes WHERE connection_id = 'connection' AND parent_id = 'scope'`,
+			"USING INDEX idx_scopes_connection_parent ", false},
 	} {
 		rows, err := db.Query("EXPLAIN QUERY PLAN " + test.statement)
 		if err != nil {

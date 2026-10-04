@@ -163,6 +163,38 @@ func (s *Store) ListExecutions(ctx context.Context, options persistence.ListOpti
 	return decodePage[executionAttemptRow, execution.ExecutionAttempt](rows, limit, func(row executionAttemptRow) time.Time { return row.CreatedAt }, func(row executionAttemptRow) string { return row.ID }, func(row executionAttemptRow) string { return row.Payload })
 }
 
+func (s *Store) LatestCleanupTaskExecutions(
+	ctx context.Context,
+	connectionID asset.ConnectionID,
+	cleanupTaskIDs []string,
+) (map[string]execution.ExecutionAttempt, error) {
+	result := make(map[string]execution.ExecutionAttempt, len(cleanupTaskIDs))
+	if len(cleanupTaskIDs) == 0 {
+		return result, nil
+	}
+	var rows []executionAttemptRow
+	if err := s.db.WithContext(ctx).
+		Table("execution_attempts").
+		Where("connection_id = ? AND cleanup_task_id IN ?", string(connectionID), cleanupTaskIDs).
+		Order("created_at ASC, id ASC").
+		Find(&rows).Error; err != nil {
+		return nil, err
+	}
+	// Rows are oldest first; the first of equally old attempts wins.
+	latestAt := make(map[string]time.Time, len(cleanupTaskIDs))
+	for _, row := range rows {
+		if at, exists := latestAt[row.CleanupTaskID]; exists && !row.CreatedAt.After(at) {
+			continue
+		}
+		value, err := decode[execution.ExecutionAttempt](row.Payload)
+		if err != nil {
+			return nil, err
+		}
+		result[row.CleanupTaskID], latestAt[row.CleanupTaskID] = value, row.CreatedAt
+	}
+	return result, nil
+}
+
 func (s *Store) ListCleanupTaskExecutions(
 	ctx context.Context,
 	connectionID asset.ConnectionID,
@@ -339,6 +371,27 @@ func (s *Store) CountInFlightActions(ctx context.Context, executionID execution.
 		Where("execution_id = ? AND status IN ?", string(executionID), statuses).
 		Count(&count).Error
 	return int(count), err
+}
+
+func (s *Store) CountActionsByStatus(ctx context.Context, executionID execution.ExecutionID) (map[execution.ActionStatus]int, error) {
+	var rows []struct {
+		Status string
+		Count  int
+	}
+	err := s.db.WithContext(ctx).
+		Table("action_attempts").
+		Select("status, COUNT(*) AS count").
+		Where("execution_id = ?", string(executionID)).
+		Group("status").
+		Scan(&rows).Error
+	if err != nil {
+		return nil, err
+	}
+	result := make(map[execution.ActionStatus]int, len(rows))
+	for _, row := range rows {
+		result[execution.ActionStatus(row.Status)] = row.Count
+	}
+	return result, nil
 }
 
 func (s *Store) UpdateAction(ctx context.Context, attempt execution.ActionAttempt) error {
@@ -561,11 +614,9 @@ func (s *Store) FindLatestByType(ctx context.Context, connectionID asset.Connect
 }
 
 func (s *Store) ClaimNext(ctx context.Context, owner string, now time.Time, leaseDuration time.Duration, allowedTypes ...execution.JobType) (execution.Job, error) {
-	var claimed execution.Job
-	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		condition := "run_at <= ? AND (status = ? OR (status = ? AND lease_until <= ?))"
-		var row jobRow
-		query := tx.Table("jobs").Where(condition, now, string(execution.JobPending), string(execution.JobRunning), now)
+	condition := "run_at <= ? AND (status = ? OR (status = ? AND lease_until <= ?))"
+	claimable := func(db *gorm.DB) *gorm.DB {
+		query := db.Table("jobs").Where(condition, now, string(execution.JobPending), string(execution.JobRunning), now)
 		if len(allowedTypes) > 0 {
 			values := make([]string, 0, len(allowedTypes))
 			for _, jobType := range allowedTypes {
@@ -573,7 +624,22 @@ func (s *Store) ClaimNext(ctx context.Context, owner string, now time.Time, leas
 			}
 			query = query.Where("job_type IN ?", values)
 		}
-		if err := query.Order("run_at ASC, id ASC").Take(&row).Error; err != nil {
+		return query
+	}
+	// An idle poll must not take SQLite's single write connection: probe on
+	// the read path first and open the claim transaction only when a job is
+	// claimable. The transaction re-checks, so a lost race is still ErrNotFound.
+	var probe []string
+	if err := claimable(s.db.WithContext(ctx)).Limit(1).Pluck("id", &probe).Error; err != nil {
+		return execution.Job{}, err
+	}
+	if len(probe) == 0 {
+		return execution.Job{}, persistence.ErrNotFound
+	}
+	var claimed execution.Job
+	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var row jobRow
+		if err := claimable(tx).Order("run_at ASC, id ASC").Take(&row).Error; err != nil {
 			return mapError(err)
 		}
 		job, err := decode[execution.Job](row.Payload)

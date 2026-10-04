@@ -42,7 +42,11 @@ func (e *FindingEngine) Evaluate(ctx context.Context, value asset.Asset, compile
 		return fmt.Errorf("finding evaluation requires observed time")
 	}
 	return e.repository.WithinFindingTx(ctx, func(repository persistence.FindingRepository) error {
-		return evaluate(ctx, repository, value, compiled, evaluation)
+		existing, err := repository.ListFindingsByAsset(ctx, value.ID)
+		if err != nil {
+			return err
+		}
+		return evaluate(ctx, repository, value, compiled, evaluation, existing)
 	})
 }
 
@@ -71,8 +75,25 @@ func (e *FindingEngine) EvaluateAll(ctx context.Context, items []AssetEvaluation
 	for start := 0; start < len(items); start += findingTxChunk {
 		chunk := items[start:min(start+findingTxChunk, len(items))]
 		if err := e.repository.WithinFindingTx(ctx, func(repository persistence.FindingRepository) error {
+			ids := make([]asset.AssetID, len(chunk))
+			for index, item := range chunk {
+				ids[index] = item.Asset.ID
+			}
+			prefetched, err := repository.ListFindingsByAssetIDs(ctx, ids)
+			if err != nil {
+				return err
+			}
+			evaluated := make(map[asset.AssetID]struct{}, len(chunk))
 			for _, item := range chunk {
-				if err := evaluate(ctx, repository, item.Asset, item.Compiled, item.Evaluation); err != nil {
+				existing := prefetched[item.Asset.ID]
+				// A repeated asset must see what its earlier item wrote.
+				if _, repeated := evaluated[item.Asset.ID]; repeated {
+					if existing, err = repository.ListFindingsByAsset(ctx, item.Asset.ID); err != nil {
+						return err
+					}
+				}
+				evaluated[item.Asset.ID] = struct{}{}
+				if err := evaluate(ctx, repository, item.Asset, item.Compiled, item.Evaluation, existing); err != nil {
 					return err
 				}
 			}
@@ -84,11 +105,7 @@ func (e *FindingEngine) EvaluateAll(ctx context.Context, items []AssetEvaluation
 	return nil
 }
 
-func evaluate(ctx context.Context, repository persistence.FindingRepository, value asset.Asset, compiled spec.CompiledSpec, evaluation Evaluation) error {
-	existing, err := repository.ListFindingsByAsset(ctx, value.ID)
-	if err != nil {
-		return err
-	}
+func evaluate(ctx context.Context, repository persistence.FindingRepository, value asset.Asset, compiled spec.CompiledSpec, evaluation Evaluation, existing []finding.Finding) error {
 	byRule := make(map[string]finding.Finding, len(existing))
 	for _, current := range existing {
 		if current.Evidence["engine"] == findingEngine {

@@ -128,11 +128,15 @@ func (s *Service) Query(ctx context.Context, query Query) (core.Response, error)
 		return core.Response{}, fmt.Errorf("topology repositories and bundle catalog are required")
 	}
 
-	input, err := s.loadInput(ctx, query, focus)
+	var findings string
+	input, err := s.loadInput(ctx, query, focus, &findings)
 	if err != nil {
 		return core.Response{}, err
 	}
-	revision := revisionKey(input, query)
+	if findings == "" {
+		findings = findingCountsDigest(input.FindingCounts)
+	}
+	revision := revisionKey(input, findings, query)
 	if query.Cursor != "" {
 		cursor, decodeErr := decodeCursor(query.Cursor)
 		if decodeErr != nil {
@@ -160,7 +164,9 @@ func (s *Service) Query(ctx context.Context, query Query) (core.Response, error)
 	return response, nil
 }
 
-func (s *Service) loadInput(ctx context.Context, query Query, focus core.Focus) (core.Input, error) {
+// loadInput sets findings to the digest of the input's finding counts when it
+// has one cached.
+func (s *Service) loadInput(ctx context.Context, query Query, focus core.Focus, findings *string) (core.Input, error) {
 	connection, err := s.repositories.Connections().GetConnection(ctx, query.ConnectionID)
 	if err != nil {
 		return core.Input{}, err
@@ -223,6 +229,7 @@ func (s *Service) loadInput(ctx context.Context, query Query, focus core.Focus) 
 		s.inputs.put(cacheKey, loaded)
 	}
 	assets, relationships, bindings, counts := loaded.assets, loaded.relationships, loaded.bindings, loaded.findingCounts
+	*findings = loaded.findingDigest
 	graphRevisions, err := s.repositories.Graph().ListGraphRevisionsByConnection(ctx, query.ConnectionID)
 	if err != nil {
 		return core.Input{}, err
@@ -246,7 +253,7 @@ func (s *Service) loadInput(ctx context.Context, query Query, focus core.Focus) 
 		ResourceQueryApplied: query.resourceFilter != nil,
 		Risk:                 query.Risk, Limit: query.Limit,
 		Revision: core.Revision{
-			Inventory: inventoryRevision(regions, scopes, assets), Graph: graphRevision(graphRevisions),
+			Inventory: inventoryRevision(regions, scopes, loaded.assetDigest), Graph: graphRevision(graphRevisions),
 			SpecBundle: bundleRevision, ProjectedAt: s.clock(),
 		},
 		Coverage: coverage,
@@ -336,7 +343,10 @@ func (s *Service) loadFocusedInventory(
 			return loadedInventory{}, err
 		}
 	}
-	return loadedInventory{assets: assets, relationships: relationships, bindings: bindings, findingCounts: counts}, nil
+	return loadedInventory{
+		assets: assets, relationships: relationships, bindings: bindings, findingCounts: counts,
+		assetDigest: assetRevisionDigest(assets), findingDigest: findingCountsDigest(counts),
+	}, nil
 }
 
 func (s *Service) loadMemberOfDescendants(
@@ -790,16 +800,33 @@ func cloneLocalizedFields(values map[string]map[string]string) map[string]map[st
 	return cloned
 }
 
-func inventoryRevision(regions []asset.ConnectionRegion, scopes []asset.Scope, assets []asset.Asset) string {
-	values := make([]string, 0, len(regions)+len(scopes)+len(assets))
+// inventoryRevision combines the regions and scopes with assetDigest, the
+// assetRevisionDigest cached with the assets.
+func inventoryRevision(regions []asset.ConnectionRegion, scopes []asset.Scope, assetDigest string) string {
+	values := make([]string, 0, len(regions)+len(scopes)+1)
 	for _, region := range regions {
 		values = append(values, "region:"+region.ID+":"+region.RegionID+":"+string(region.Lifecycle)+":"+fmt.Sprint(region.Revision))
 	}
 	for _, scope := range scopes {
 		values = append(values, "scope:"+string(scope.ID)+":"+scope.UpdatedAt.UTC().Format(time.RFC3339Nano))
 	}
+	sort.Strings(values)
+	return digestStrings(append(values, "assets:"+assetDigest))
+}
+
+func assetRevisionDigest(assets []asset.Asset) string {
+	values := make([]string, 0, len(assets))
 	for _, value := range assets {
-		values = append(values, "asset:"+string(value.ID)+":"+string(value.CurrentObservationID)+":"+value.LastSeenAt.UTC().Format(time.RFC3339Nano))
+		values = append(values, string(value.ID)+":"+string(value.CurrentObservationID)+":"+value.LastSeenAt.UTC().Format(time.RFC3339Nano))
+	}
+	sort.Strings(values)
+	return digestStrings(values)
+}
+
+func findingCountsDigest(counts map[asset.AssetID]int) string {
+	values := make([]string, 0, len(counts))
+	for assetID, count := range counts {
+		values = append(values, string(assetID)+":"+fmt.Sprint(count))
 	}
 	sort.Strings(values)
 	return digestStrings(values)
@@ -833,12 +860,7 @@ func graphRevision(revisions map[asset.ScopeID]string) string {
 	return digestStrings(values)
 }
 
-func revisionKey(input core.Input, query Query) string {
-	findingValues := make([]string, 0, len(input.FindingCounts))
-	for assetID, count := range input.FindingCounts {
-		findingValues = append(findingValues, string(assetID)+":"+fmt.Sprint(count))
-	}
-	sort.Strings(findingValues)
+func revisionKey(input core.Input, findings string, query Query) string {
 	lastComplete := ""
 	if input.Coverage.LastCompleteScanAt != nil {
 		lastComplete = input.Coverage.LastCompleteScanAt.UTC().Format(time.RFC3339Nano)
@@ -847,7 +869,7 @@ func revisionKey(input core.Input, query Query) string {
 		input.Revision.Inventory,
 		input.Revision.Graph,
 		input.Revision.SpecBundle,
-		digestStrings(findingValues),
+		findings,
 		input.Coverage.Status,
 		fmt.Sprint(input.Coverage.FailedShards),
 		lastComplete,
@@ -885,6 +907,10 @@ type loadedInventory struct {
 	relationships []graph.Relationship
 	bindings      []graph.LifecycleBinding
 	findingCounts map[asset.AssetID]int
+	// assetDigest and findingDigest digest assets and findingCounts once, so
+	// a cache hit does not rehash them.
+	assetDigest   string
+	findingDigest string
 }
 
 // inputCache is a small LRU of loaded inventories. Its keys embed the

@@ -984,7 +984,7 @@ func (s *Store) ConsolidateScopes(ctx context.Context, canonicalID asset.ScopeID
 		for _, duplicateRow := range duplicateRows {
 			duplicateID := asset.ScopeID(duplicateRow.ID)
 			var childRows []scopeRow
-			if err := tx.Table("scopes").Where("parent_id = ?", duplicateRow.ID).Find(&childRows).Error; err != nil {
+			if err := tx.Table("scopes").Where("connection_id = ? AND parent_id = ?", duplicateRow.ConnectionID, duplicateRow.ID).Find(&childRows).Error; err != nil {
 				return err
 			}
 			for _, row := range childRows {
@@ -1006,7 +1006,7 @@ func (s *Store) ConsolidateScopes(ctx context.Context, canonicalID asset.ScopeID
 			if err := tx.Table("assets").Where("scope_id = ?", string(duplicateID)).Find(&assetRows).Error; err != nil {
 				return err
 			}
-			for _, row := range assetRows {
+			for index, row := range assetRows {
 				value, err := decode[asset.Asset](row.Payload)
 				if err != nil {
 					return err
@@ -1016,33 +1016,33 @@ func (s *Store) ConsolidateScopes(ctx context.Context, canonicalID asset.ScopeID
 				value.Dirty = row.Dirty
 				value.Identity.ScopeKey = row.ScopeKey
 				value.ScopeID = canonicalID
-				payload, err := encodeAsset(value)
-				if err != nil {
+				if assetRows[index].Payload, err = encodeAsset(value); err != nil {
 					return err
 				}
-				if err := tx.Table("assets").Where("id = ?", row.ID).Updates(map[string]any{"scope_id": string(canonicalID), "payload": payload, "revision": gorm.Expr("revision + 1")}).Error; err != nil {
-					return err
-				}
+				assetRows[index].ScopeID = string(canonicalID)
+			}
+			if err := upsertRevised(tx, "assets", assetRows, []string{"scope_id", "payload"}); err != nil {
+				return err
 			}
 
 			var shardRows []scanShardRow
 			if err := tx.Table("scan_shards").Where("scope_id = ?", string(duplicateID)).Find(&shardRows).Error; err != nil {
 				return err
 			}
-			for _, row := range shardRows {
+			for index, row := range shardRows {
 				value, err := decode[asset.ScanShard](row.Payload)
 				if err != nil {
 					return err
 				}
 				value.ScopeID = canonicalID
 				value.Coverage.ScopeID = canonicalID
-				payload, err := encode(value)
-				if err != nil {
+				if shardRows[index].Payload, err = encode(value); err != nil {
 					return err
 				}
-				if err := tx.Table("scan_shards").Where("id = ?", row.ID).Updates(map[string]any{"scope_id": string(canonicalID), "payload": payload}).Error; err != nil {
-					return err
-				}
+				shardRows[index].ScopeID = string(canonicalID)
+			}
+			if err := upsertInBatches(tx, "scan_shards", shardRows, []string{"scope_id", "payload"}); err != nil {
+				return err
 			}
 
 		}
@@ -2252,19 +2252,26 @@ func (s *Store) ListAssetIDsObservedByRun(ctx context.Context, runID asset.ScanR
 	return result, nil
 }
 
+// ListAssetIDsObservedByTarget reads the target's shards from its latest
+// authoritative success on. That success already closed every asset it did
+// not see, so older observations only name assets it closed or that have
+// since been seen elsewhere.
 func (s *Store) ListAssetIDsObservedByTarget(ctx context.Context, connectionID asset.ConnectionID, targetKey, source string, scopeID asset.ScopeID, kindID asset.ResourceKindID) ([]asset.AssetID, error) {
-	query := s.db.WithContext(ctx).Table("asset_observations AS observations").
-		Select("DISTINCT observations.asset_id").
-		Joins("JOIN scan_shards AS shards ON shards.id = observations.scan_shard_id").
-		Joins("JOIN scan_tasks AS tasks ON tasks.id = shards.scan_task_id").
-		Where("tasks.connection_id = ? AND shards.target_key = ? AND shards.source = ? AND shards.scope_id = ?", string(connectionID), targetKey, source, string(scopeID))
-	if kindID == "" {
-		query = query.Where("shards.resource_kind_id = ''")
-	} else {
-		query = query.Where("shards.resource_kind_id = ?", string(kindID))
+	target := func(alias string) *gorm.DB {
+		return s.db.WithContext(ctx).Table("scan_shards AS "+alias).
+			Joins("JOIN scan_tasks AS "+alias+"_tasks ON "+alias+"_tasks.id = "+alias+".scan_task_id").
+			Where(alias+".scope_id = ? AND "+alias+".target_key = ? AND "+alias+".source = ? AND "+alias+".resource_kind_id = ? AND "+alias+"_tasks.connection_id = ?",
+				string(scopeID), targetKey, source, string(kindID), string(connectionID))
 	}
+	latestSuccess := target("anchor").Select("anchor.created_at").
+		Where("anchor.status = ? AND anchor.authoritative = ?", string(asset.ShardSucceeded), true).
+		Order("anchor.created_at DESC").Limit(1)
 	var ids []string
-	if err := query.Order("observations.asset_id ASC").Pluck("observations.asset_id", &ids).Error; err != nil {
+	if err := target("shards").
+		Joins("JOIN asset_observations AS observations ON observations.scan_shard_id = shards.id").
+		Where("shards.created_at >= COALESCE((?), shards.created_at)", latestSuccess).
+		Distinct("observations.asset_id").
+		Order("observations.asset_id ASC").Pluck("observations.asset_id", &ids).Error; err != nil {
 		return nil, err
 	}
 	result := make([]asset.AssetID, len(ids))

@@ -161,10 +161,11 @@ func TestScanTaskReadModelMigrationUpgradesExistingDatabase(t *testing.T) {
 			id VARCHAR(128) PRIMARY KEY,
 			connection_id VARCHAR(128),
 			scope_id VARCHAR(128),
+			first_seen_at TIMESTAMP,
 			closed_at TIMESTAMP
 		)`,
 		`CREATE TABLE asset_observations (id VARCHAR(128) PRIMARY KEY, scan_task_id VARCHAR(128) NOT NULL, payload TEXT NOT NULL)`,
-		`CREATE TABLE findings (id VARCHAR(128) PRIMARY KEY)`,
+		`CREATE TABLE findings (id VARCHAR(128) PRIMARY KEY, asset_id VARCHAR(128), last_seen_at TIMESTAMP)`,
 		`CREATE TABLE job_logs (
 			id VARCHAR(128) PRIMARY KEY,
 			aggregate_type VARCHAR(64),

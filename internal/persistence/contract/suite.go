@@ -93,6 +93,9 @@ func Run(t *testing.T, factory Factory) {
 		if complete, err := schedules.LatestCompleteScan(ctx, "con-1"); err != nil || complete.ID != "scn-new" {
 			t.Fatalf("latest complete = %#v, %v", complete, err)
 		}
+		if complete, err := schedules.LatestCompleteScans(ctx, []asset.ConnectionID{"con-1", "con-2"}); err != nil || len(complete) != 1 || complete["con-1"].ID != "scn-new" {
+			t.Fatalf("latest complete scans = %#v, %v", complete, err)
+		}
 		summaries, err := schedules.ListScanSummaries(ctx, []asset.ScanTaskID{"scn-new", "scn-missing"})
 		if err != nil || len(summaries) != 1 || summaries[0].ScanRun.ID != "scn-new" {
 			t.Fatalf("summaries = %#v, %v", summaries, err)
@@ -109,6 +112,21 @@ func Run(t *testing.T, factory Factory) {
 		expired, err := schedules.ListExpiredScheduledScans(ctx, now.AddDate(0, 0, -30), 10)
 		if err != nil || len(expired) != 2 || expired[0] != "scn-old" || expired[1] != "scn-old-failed" {
 			t.Fatalf("expired = %#v, %v", expired, err)
+		}
+		for _, scan := range []asset.ScanRun{
+			{ID: "man-full-old", Status: asset.ScanSucceeded, ScopeMode: asset.ScanAllActiveRegions, CreatedAt: now.AddDate(0, 0, -50)},
+			{ID: "man-full", Status: asset.ScanSucceeded, ScopeMode: asset.ScanAllActiveRegions, CreatedAt: now.AddDate(0, 0, -45)},
+			{ID: "man-failed", Status: asset.ScanFailed, ScopeMode: asset.ScanAllActiveRegions, CreatedAt: now.AddDate(0, 0, -42)},
+			{ID: "man-kind", Status: asset.ScanSucceeded, ScopeMode: asset.ScanAllActiveRegions, ResourceKindIDs: []asset.ResourceKindID{"kind"}, CreatedAt: now.AddDate(0, 0, -40)},
+		} {
+			scan.ConnectionID = "con-manual"
+			if err := repositories.Inventory().CreateScanRun(ctx, scan); err != nil {
+				t.Fatal(err)
+			}
+		}
+		// The latest successful and the latest complete manual scan stay.
+		if manualExpired, err := schedules.ListExpiredManualScans(ctx, now.AddDate(0, 0, -30), 10); err != nil || len(manualExpired) != 2 || manualExpired[0] != "man-full-old" || manualExpired[1] != "man-failed" {
+			t.Fatalf("expired manual = %#v, %v", manualExpired, err)
 		}
 		if err := repositories.Inventory().RecordAssetChanges(ctx, []asset.AssetChange{{ID: "chg-old", ConnectionID: "con-1", ScanTaskID: "scn-old", AssetID: "ast-1", Type: asset.ChangeAdded, ResourceKindID: "kind", ChangedAt: now}}); err != nil {
 			t.Fatal(err)
@@ -1162,6 +1180,32 @@ func Run(t *testing.T, factory Factory) {
 		if ids, err := repositories.Inventory().ListAssetIDsObservedByRun(ctx, "scan-other"); err != nil || len(ids) != 0 {
 			t.Fatalf("other run observed asset IDs = %+v, err = %v", ids, err)
 		}
+		// A target's shards count from its latest authoritative success on.
+		if err := repositories.Inventory().CreateScanRun(ctx, asset.ScanRun{ID: "scan-net", ConnectionID: "conn-app", Status: asset.ScanRunning, CreatedAt: now}); err != nil {
+			t.Fatal(err)
+		}
+		for index, shard := range []asset.ScanShard{
+			{ID: "shard-net-old", Source: "config", Status: asset.ShardSucceeded, Authoritative: true},
+			{ID: "shard-net-done", Source: "config", Status: asset.ShardSucceeded, Authoritative: true},
+			{ID: "shard-net-failed", Source: "config", Status: asset.ShardFailed},
+			{ID: "shard-net-other", Source: "other", Status: asset.ShardSucceeded, Authoritative: true},
+		} {
+			shard.ScanRunID, shard.TargetKey, shard.Provider, shard.ScopeID = "scan-net", "vpc:app", asset.ProviderAWS, "scope-app"
+			shard.CreatedAt = now.Add(time.Duration(index) * time.Minute)
+			if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+				t.Fatal(err)
+			}
+			observation := asset.Observation{ID: asset.ObservationID("obs-" + shard.ID), AssetID: asset.AssetID("asset-" + shard.ID), ScanRunID: "scan-net", ScanShardID: shard.ID, ObservedAt: now, Source: shard.Source}
+			if err := repositories.Inventory().AppendObservations(ctx, []asset.Observation{observation}); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if ids, err := repositories.Inventory().ListAssetIDsObservedByTarget(ctx, "conn-app", "vpc:app", "config", "scope-app", ""); err != nil || len(ids) != 2 || ids[0] != "asset-shard-net-done" || ids[1] != "asset-shard-net-failed" {
+			t.Fatalf("target observed asset IDs = %+v, err = %v", ids, err)
+		}
+		if ids, err := repositories.Inventory().ListAssetIDsObservedByTarget(ctx, "conn-other", "vpc:app", "config", "scope-app", ""); err != nil || len(ids) != 0 {
+			t.Fatalf("other connection target observed asset IDs = %+v, err = %v", ids, err)
+		}
 		err = repositories.Findings().WithinFindingTx(ctx, func(tx persistence.FindingRepository) error {
 			if err := tx.PutFinding(ctx, finding.Finding{ID: "finding-rolled-back", AssetID: active.ID, RuleID: "rule", Status: finding.StatusOpen, Severity: finding.SeverityHigh, FirstSeenAt: now, LastSeenAt: now}); err != nil {
 				return err
@@ -1189,6 +1233,9 @@ func Run(t *testing.T, factory Factory) {
 		)
 		if err != nil || openFindingCounts[active.ID] != 1 || len(openFindingCounts) != 1 {
 			t.Fatalf("open finding counts = %+v, err = %v", openFindingCounts, err)
+		}
+		if byAsset, err := repositories.Findings().ListFindingsByAssetIDs(ctx, []asset.AssetID{active.ID, "asset-missing", active.ID}); err != nil || len(byAsset[active.ID]) != 1 || byAsset[active.ID][0].ID != persistedFinding.ID || len(byAsset["asset-missing"]) != 0 {
+			t.Fatalf("findings by asset IDs = %+v, err = %v", byAsset, err)
 		}
 		findingPage, err := repositories.Findings().ListFindings(ctx, persistence.ListOptions{Limit: 10})
 		if err != nil || len(findingPage.Items) != 1 || findingPage.Items[0].ID != persistedFinding.ID {

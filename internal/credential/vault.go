@@ -84,6 +84,11 @@ func (v *Vault) Resolve(ctx context.Context, connectionID asset.ConnectionID) (c
 	if err != nil {
 		return contracts.Credential{}, fmt.Errorf("%w: %v", ErrUnavailable, err)
 	}
+	return v.open(ctx, record)
+}
+
+// open decrypts a sealed record and, for OIDC, binds it to workload identity.
+func (v *Vault) open(ctx context.Context, record asset.ConnectionCredential) (contracts.Credential, error) {
 	if record.EnvelopeVersion != EnvelopeVersion {
 		return contracts.Credential{}, fmt.Errorf("%w: unsupported envelope version %d", ErrUnavailable, record.EnvelopeVersion)
 	}

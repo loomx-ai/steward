@@ -241,7 +241,9 @@ func (c mutatingContributor) Contribute(_ context.Context, _ asset.ScopeID, valu
 	return governance.Contribution{}, nil
 }
 
-func TestGraphRebuildIsolatesContributorsFromEachOthersMutations(t *testing.T) {
+// Contributors share one copy of the assets; only the caller's assets are
+// isolated from their writes.
+func TestGraphRebuildIsolatesCallerFromContributorMutations(t *testing.T) {
 	t.Parallel()
 
 	assets := []asset.Asset{{
@@ -255,7 +257,7 @@ func TestGraphRebuildIsolatesContributorsFromEachOthersMutations(t *testing.T) {
 	if _, err := service.RebuildGraphFromAssets(context.Background(), "scope-root", "connection-1", "graph-1", spec.Bundle{}, []governance.Contributor{contributor, contributor}, assets); err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(seen, []any{"original", "original"}) {
+	if !reflect.DeepEqual(seen, []any{"original", "mutated"}) {
 		t.Fatalf("contributors saw %v", seen)
 	}
 	if assets[0].Normalized["nested"].(map[string]any)["value"] != "original" || assets[0].Tags["owner"] != "team" {

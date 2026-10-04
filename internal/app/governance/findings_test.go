@@ -35,6 +35,14 @@ func (r *findingRepository) ListFindingsByAsset(_ context.Context, assetID asset
 	return result, nil
 }
 
+func (r *findingRepository) ListFindingsByAssetIDs(ctx context.Context, assetIDs []asset.AssetID) (map[asset.AssetID][]finding.Finding, error) {
+	result := make(map[asset.AssetID][]finding.Finding, len(assetIDs))
+	for _, id := range assetIDs {
+		result[id], _ = r.ListFindingsByAsset(ctx, id)
+	}
+	return result, nil
+}
+
 func (r *findingRepository) ListFindingsForAsset(ctx context.Context, _ asset.ConnectionID, assetID asset.AssetID) ([]finding.Finding, error) {
 	return r.ListFindingsByAsset(ctx, assetID)
 }

@@ -19,7 +19,7 @@ Steward 通过环境变量配置。`steward server start` 也以命令行参数�
 | `STEWARD_CREDENTIAL_MASTER_KEY` | 32 字节密钥的 Base64 编码，用于加密已保存的云凭证。本机模式配合 SQLite 时会在数据目录自动生成 `credential-master-key`；Token 模式和 PostgreSQL 必须设置此变量。只要数据还在，就必须一直保留这个密钥。 | — |
 | `STEWARD_DB_DRIVER` | `sqlite` 或 `postgres` | `sqlite` |
 | `STEWARD_DB_DSN` | SQLite 文件路径或 PostgreSQL 连接串 | 数据目录中的 `steward.db` |
-| `STEWARD_DB_MAX_CONNS` | PostgreSQL 连接池上限，正整数。应低于数据库角色的连接数限制。 | 不限制 |
+| `STEWARD_DB_MAX_CONNS` | PostgreSQL 连接池上限，正整数。应低于数据库角色的连接数限制。 | 20 |
 | `STEWARD_SCAN_CONCURRENCY` | 同时执行的扫描项数量，正整数 | `4` |
 | `STEWARD_PUBLIC_URL` | 访问 Steward 的地址，例如 `https://steward.example.com`。设置后，[失败通知](./schedules.md#notifications)中会附带扫描详情链接 | — |
 

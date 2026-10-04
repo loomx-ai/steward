@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -145,21 +146,34 @@ func (s *Store) ListUnresolvedByConnection(ctx context.Context, connectionID ass
 	if err := s.db.WithContext(ctx).Table("graph_revisions").Where("scope_id IN (?)", scopes).Order("scope_id ASC").Find(&rows).Error; err != nil {
 		return nil, err
 	}
-	var ids []string
-	if err := s.db.WithContext(ctx).Table("assets").Where("connection_id = ? AND closed_at IS NULL", string(connectionID)).Pluck("id", &ids).Error; err != nil {
-		return nil, err
-	}
-	active := make(map[asset.AssetID]bool, len(ids))
-	for _, id := range ids {
-		active[asset.AssetID(id)] = true
-	}
-	result := []graph.UnresolvedReference{}
-	for _, row := range rows {
-		var references []graph.UnresolvedReference
-		if err := json.Unmarshal([]byte(row.UnresolvedPayload), &references); err != nil {
+	decoded := make([][]graph.UnresolvedReference, len(rows))
+	var controllerIDs []string
+	for index, row := range rows {
+		if err := json.Unmarshal([]byte(row.UnresolvedPayload), &decoded[index]); err != nil {
 			return nil, fmt.Errorf("decode unresolved graph references: %w", err)
 		}
-		for _, reference := range references {
+		for _, reference := range decoded[index] {
+			if reference.ConnectionID == connectionID {
+				controllerIDs = append(controllerIDs, string(reference.ControllerID))
+			}
+		}
+	}
+	slices.Sort(controllerIDs)
+	controllerIDs = slices.Compact(controllerIDs)
+	active := make(map[asset.AssetID]bool, len(controllerIDs))
+	for start := 0; start < len(controllerIDs); start += topologyGraphAssetBatchSize {
+		var ids []string
+		batch := controllerIDs[start:min(start+topologyGraphAssetBatchSize, len(controllerIDs))]
+		if err := s.db.WithContext(ctx).Table("assets").Where("id IN ? AND connection_id = ? AND closed_at IS NULL", batch, string(connectionID)).Pluck("id", &ids).Error; err != nil {
+			return nil, err
+		}
+		for _, id := range ids {
+			active[asset.AssetID(id)] = true
+		}
+	}
+	result := []graph.UnresolvedReference{}
+	for index, row := range rows {
+		for _, reference := range decoded[index] {
 			if reference.ConnectionID == connectionID && active[reference.ControllerID] {
 				reference.GraphRevision = row.GraphRevision
 				result = append(result, reference)

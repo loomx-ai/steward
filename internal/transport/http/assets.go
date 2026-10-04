@@ -247,7 +247,10 @@ func loadAssetRelationshipNeighborhood(
 		next := make([]asset.AssetID, 0)
 		for _, relationship := range relationships {
 			relationshipsByID[relationship.ID] = relationship
-			for _, currentID := range frontier {
+			for _, currentID := range [2]asset.AssetID{relationship.SourceAssetID, relationship.TargetAssetID} {
+				if _, current := frontierSet[currentID]; !current {
+					continue
+				}
 				peerID, connected := relationshipPeer(relationship, currentID)
 				if !connected {
 					continue
@@ -263,7 +266,10 @@ func loadAssetRelationshipNeighborhood(
 		}
 		for _, binding := range bindings {
 			bindingsByID[binding.ID] = binding
-			for _, currentID := range frontier {
+			for _, currentID := range [2]asset.AssetID{binding.ControllerAssetID, binding.ManagedAssetID} {
+				if _, current := frontierSet[currentID]; !current {
+					continue
+				}
 				peerID, connected := lifecyclePeer(binding, currentID)
 				if !connected {
 					continue

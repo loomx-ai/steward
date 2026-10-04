@@ -19,7 +19,7 @@ Steward is configured with environment variables. `steward server start` also ac
 | `STEWARD_CREDENTIAL_MASTER_KEY` | Base64-encoded 32-byte key that encrypts stored cloud credentials. Local mode with SQLite creates `credential-master-key` in the data directory automatically; token mode and PostgreSQL need this variable. Keep it for as long as you keep the data. | — |
 | `STEWARD_DB_DRIVER` | `sqlite` or `postgres` | `sqlite` |
 | `STEWARD_DB_DSN` | SQLite file path or PostgreSQL connection string | `steward.db` in the data directory |
-| `STEWARD_DB_MAX_CONNS` | PostgreSQL connection pool limit, a positive integer. Keep it below the database role's connection limit. | Unlimited |
+| `STEWARD_DB_MAX_CONNS` | PostgreSQL connection pool limit, a positive integer. Keep it below the database role's connection limit. | 20 |
 | `STEWARD_SCAN_CONCURRENCY` | Number of scan items run at the same time, a positive integer | `4` |
 | `STEWARD_PUBLIC_URL` | The address people use to open Steward, such as `https://steward.example.com`. [Failure notifications](./schedules.md#notifications) link to the scan when it is set | — |
 

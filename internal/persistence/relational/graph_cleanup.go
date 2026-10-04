@@ -371,6 +371,32 @@ func (s *Store) ListFindingsByAsset(ctx context.Context, assetID asset.AssetID) 
 	return decodeRows[findingRow, finding.Finding](rows, func(row findingRow) string { return row.Payload })
 }
 
+func (s *Store) ListFindingsByAssetIDs(ctx context.Context, assetIDs []asset.AssetID) (map[asset.AssetID][]finding.Finding, error) {
+	result := make(map[asset.AssetID][]finding.Finding)
+	unique := make([]string, 0, len(assetIDs))
+	for _, id := range assetIDs {
+		if _, ok := result[id]; !ok {
+			result[id] = nil
+			unique = append(unique, string(id))
+		}
+	}
+	for start := 0; start < len(unique); start += topologyGraphAssetBatchSize {
+		ids := unique[start:min(start+topologyGraphAssetBatchSize, len(unique))]
+		var rows []findingRow
+		if err := s.db.WithContext(ctx).Table("findings").Where("asset_id IN ?", ids).Order("asset_id ASC, last_seen_at DESC, id ASC").Find(&rows).Error; err != nil {
+			return nil, err
+		}
+		for _, row := range rows {
+			value, err := decode[finding.Finding](row.Payload)
+			if err != nil {
+				return nil, err
+			}
+			result[asset.AssetID(row.AssetID)] = append(result[asset.AssetID(row.AssetID)], value)
+		}
+	}
+	return result, nil
+}
+
 func (s *Store) ListFindingsForAsset(ctx context.Context, connectionID asset.ConnectionID, assetID asset.AssetID) ([]finding.Finding, error) {
 	parentAsset := s.db.WithContext(ctx).
 		Table("assets").
@@ -483,36 +509,42 @@ func (s *Store) CreateTask(ctx context.Context, value plan.CleanupTask, steps []
 		if err := mapCreateError(tx.Table("cleanup_tasks").Create(&row).Error); err != nil {
 			return err
 		}
-		for index, step := range steps {
-			payload, err := encode(step)
-			if err != nil {
-				return err
-			}
-			stepRow := cleanupTaskRow{ID: string(step.ID), CleanupTaskID: string(value.ID), RowKind: "step", Position: index, Payload: payload}
-			if err := mapCreateError(tx.Table("cleanup_task_rows").Create(&stepRow).Error); err != nil {
-				return err
-			}
-		}
-		for index, impact := range impacts {
-			payload, err := encode(impact)
-			if err != nil {
-				return err
-			}
-			impactRow := cleanupTaskRow{ID: string(impact.ID), CleanupTaskID: string(value.ID), RowKind: "impact", Position: index, Payload: payload}
-			if err := mapCreateError(tx.Table("cleanup_task_rows").Create(&impactRow).Error); err != nil {
-				return err
-			}
-		}
-		return nil
+		return insertCleanupTaskRows(tx, value.ID, steps, impacts)
 	})
 }
 
-func (s *Store) GetTask(ctx context.Context, id plan.CleanupTaskID) (persistence.CleanupTaskAggregate, error) {
+func insertCleanupTaskRows(tx *gorm.DB, taskID plan.CleanupTaskID, steps []plan.CleanupTaskStep, impacts []plan.ImpactItem) error {
+	rows := make([]cleanupTaskRow, 0, len(steps)+len(impacts))
+	for index, step := range steps {
+		payload, err := encode(step)
+		if err != nil {
+			return err
+		}
+		rows = append(rows, cleanupTaskRow{ID: string(step.ID), CleanupTaskID: string(taskID), RowKind: "step", Position: index, Payload: payload})
+	}
+	for index, impact := range impacts {
+		payload, err := encode(impact)
+		if err != nil {
+			return err
+		}
+		rows = append(rows, cleanupTaskRow{ID: string(impact.ID), CleanupTaskID: string(taskID), RowKind: "impact", Position: index, Payload: payload})
+	}
+	if len(rows) == 0 {
+		return nil
+	}
+	return mapCreateError(tx.Table("cleanup_task_rows").CreateInBatches(rows, upsertBatchSize).Error)
+}
+
+func (s *Store) GetTaskHeader(ctx context.Context, id plan.CleanupTaskID) (plan.CleanupTask, error) {
 	var row cleanupTaskRecord
 	if err := s.db.WithContext(ctx).Table("cleanup_tasks").Where("id = ?", string(id)).Take(&row).Error; err != nil {
-		return persistence.CleanupTaskAggregate{}, mapError(err)
+		return plan.CleanupTask{}, mapError(err)
 	}
-	value, err := decode[plan.CleanupTask](row.Payload)
+	return decode[plan.CleanupTask](row.Payload)
+}
+
+func (s *Store) GetTask(ctx context.Context, id plan.CleanupTaskID) (persistence.CleanupTaskAggregate, error) {
+	value, err := s.GetTaskHeader(ctx, id)
 	if err != nil {
 		return persistence.CleanupTaskAggregate{}, err
 	}
@@ -578,27 +610,7 @@ func (s *Store) ReplaceTask(ctx context.Context, value plan.CleanupTask, steps [
 		if err := tx.Table("cleanup_task_rows").Where("cleanup_task_id = ?", string(value.ID)).Delete(&cleanupTaskRow{}).Error; err != nil {
 			return err
 		}
-		for index, step := range steps {
-			stepPayload, err := encode(step)
-			if err != nil {
-				return err
-			}
-			row := cleanupTaskRow{ID: string(step.ID), CleanupTaskID: string(value.ID), RowKind: "step", Position: index, Payload: stepPayload}
-			if err := mapCreateError(tx.Table("cleanup_task_rows").Create(&row).Error); err != nil {
-				return err
-			}
-		}
-		for index, impact := range impacts {
-			impactPayload, err := encode(impact)
-			if err != nil {
-				return err
-			}
-			row := cleanupTaskRow{ID: string(impact.ID), CleanupTaskID: string(value.ID), RowKind: "impact", Position: index, Payload: impactPayload}
-			if err := mapCreateError(tx.Table("cleanup_task_rows").Create(&row).Error); err != nil {
-				return err
-			}
-		}
-		return nil
+		return insertCleanupTaskRows(tx, value.ID, steps, impacts)
 	})
 }
 
@@ -657,10 +669,12 @@ func (s *Store) CleanupTaskVersion(ctx context.Context, connectionID asset.Conne
 	if err := db.Table("cleanup_task_rows").Select(selectRevisionTotals).Where("cleanup_task_id = ?", string(id)).Scan(&rows).Error; err != nil {
 		return "", err
 	}
-	if err := db.Table("execution_attempts").Select(selectRevisionTotals).Where("cleanup_task_id = ?", string(id)).Scan(&executions).Error; err != nil {
+	// connection_id lets both execution queries use the
+	// (connection_id, cleanup_task_id) index instead of scanning.
+	if err := db.Table("execution_attempts").Select(selectRevisionTotals).Where("connection_id = ? AND cleanup_task_id = ?", string(connectionID), string(id)).Scan(&executions).Error; err != nil {
 		return "", err
 	}
-	taskExecutions := db.Table("execution_attempts").Select("id").Where("cleanup_task_id = ?", string(id))
+	taskExecutions := db.Table("execution_attempts").Select("id").Where("connection_id = ? AND cleanup_task_id = ?", string(connectionID), string(id))
 	if err := db.Table("action_attempts").Select(selectRevisionTotals).Where("execution_id IN (?)", taskExecutions).Scan(&actions).Error; err != nil {
 		return "", err
 	}

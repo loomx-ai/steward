@@ -10,13 +10,14 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// unboundedIdleConns is how many idle connections an uncapped pool keeps so
-// bursts reuse connections instead of reconnecting past database/sql's default
-// of two.
-const unboundedIdleConns = 16
+// defaultMaxConns caps the pool when no limit is configured, well below
+// PostgreSQL's default max_connections of 100, so a burst queues instead of
+// exhausting the server.
+const defaultMaxConns = 20
 
-// Open connects to PostgreSQL. A positive maxConns caps the connection pool so
-// callers queue instead of exceeding a role's CONNECTION LIMIT.
+// Open connects to PostgreSQL. maxConns caps the connection pool so callers
+// queue instead of exceeding a role's CONNECTION LIMIT; zero or less means
+// defaultMaxConns.
 func Open(dsn, migrationsDirectory string, maxConns int) (*Repositories, error) {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{TranslateError: true, Logger: logger.Default.LogMode(logger.Silent)})
 	if err != nil {
@@ -26,12 +27,11 @@ func Open(dsn, migrationsDirectory string, maxConns int) (*Repositories, error) 
 	if err != nil {
 		return nil, fmt.Errorf("get postgres database: %w", err)
 	}
-	idleConns := unboundedIdleConns
-	if maxConns > 0 {
-		sqlDB.SetMaxOpenConns(maxConns)
-		idleConns = maxConns
+	if maxConns <= 0 {
+		maxConns = defaultMaxConns
 	}
-	sqlDB.SetMaxIdleConns(idleConns)
+	sqlDB.SetMaxOpenConns(maxConns)
+	sqlDB.SetMaxIdleConns(maxConns)
 	sqlDB.SetConnMaxIdleTime(5 * time.Minute)
 	if err := persistence.Migrate(sqlDB, "postgres", migrationsDirectory); err != nil {
 		_ = sqlDB.Close()

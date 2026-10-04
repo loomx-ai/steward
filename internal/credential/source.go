@@ -47,6 +47,19 @@ func (s *ValidatedSource) Resolve(ctx context.Context, connectionID asset.Connec
 	if err != nil {
 		return contracts.Credential{}, err
 	}
+	// The vault decrypts the record just read, so nothing can change between
+	// the snapshot and the credential. OIDC binding calls out and still gets
+	// the re-read below.
+	if s.vault != nil && beforeCredential.Type != asset.CredentialOIDC {
+		resolved, err := s.vault.open(ctx, beforeCredential)
+		if err != nil {
+			return contracts.Credential{}, err
+		}
+		resolved.ConnectionID = before.ID
+		resolved.Site = before.Site
+		resolved.Version = SnapshotVersion(before, beforeCredential)
+		return resolved, nil
+	}
 	resolved, err := s.source.Resolve(ctx, connectionID)
 	if err != nil {
 		return contracts.Credential{}, err

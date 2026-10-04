@@ -452,9 +452,13 @@ func selectedConnection(request *http.Request) (asset.CloudConnection, bool) {
 	return connection, ok
 }
 
+// maxRequestBody bounds a JSON request body. The largest legitimate bodies,
+// cleanup selections of explicit assets, stay far below it.
+const maxRequestBody = 8 << 20
+
 func decodeJSON(request *http.Request, target any) error {
 	defer request.Body.Close()
-	decoder := json.NewDecoder(request.Body)
+	decoder := json.NewDecoder(http.MaxBytesReader(nil, request.Body, maxRequestBody))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(target); err != nil {
 		return err

@@ -1,5 +1,5 @@
 // Package scheduling runs recurring scans: it starts scans at their planned
-// times, applies each schedule's rules and keeps scheduled scan history bounded.
+// times, applies each schedule's rules and keeps scan history bounded.
 package scheduling
 
 import (
@@ -798,18 +798,23 @@ func (s *Service) applyRetention(ctx context.Context, now time.Time) error {
 		return err
 	}
 	cutoff := now.AddDate(0, 0, -settings.RetentionDays)
-	for batch := 0; batch < 20; batch++ {
-		ids, err := s.repositories.Schedules().ListExpiredScheduledScans(ctx, cutoff, 50)
-		if err != nil {
-			return err
-		}
-		for _, id := range ids {
-			if err := s.repositories.Schedules().DeleteScan(ctx, id); err != nil && !errors.Is(err, persistence.ErrNotFound) && !errors.Is(err, persistence.ErrConflict) {
+	schedules := s.repositories.Schedules()
+	for _, listExpired := range []func(context.Context, time.Time, int) ([]asset.ScanTaskID, error){
+		schedules.ListExpiredScheduledScans, schedules.ListExpiredManualScans,
+	} {
+		for batch := 0; batch < 20; batch++ {
+			ids, err := listExpired(ctx, cutoff, 50)
+			if err != nil {
 				return err
 			}
-		}
-		if len(ids) < 50 {
-			break
+			for _, id := range ids {
+				if err := schedules.DeleteScan(ctx, id); err != nil && !errors.Is(err, persistence.ErrNotFound) && !errors.Is(err, persistence.ErrConflict) {
+					return err
+				}
+			}
+			if len(ids) < 50 {
+				break
+			}
 		}
 	}
 	return s.repositories.Schedules().DeleteRunsBefore(ctx, cutoff)
