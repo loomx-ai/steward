@@ -153,7 +153,7 @@ func dataFactoryARMReference(refs map[string][]string, expected string, value an
 	return nil
 }
 
-func (c *client) dataFactoryReferences(ctx context.Context, id, kind string, raw map[string]any, indexes map[string][]serviceChild) (map[string][]string, error) {
+func (c *client) dataFactoryReferences(ctx context.Context, id, kind string, raw map[string]any, indexes *apimIndexes) (map[string][]string, error) {
 	refs, err := dataFactoryTypedReferences(id, kind, raw)
 	if err != nil {
 		return nil, err

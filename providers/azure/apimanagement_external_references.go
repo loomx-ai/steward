@@ -30,20 +30,23 @@ func apimVaultOrigin(value string) (string, error) {
 	return "https://" + strings.ToLower(u.Host), nil
 }
 
-func (c *client) apimExternalReference(ctx context.Context, kind, selector string, indexes map[string][]serviceChild) (string, error) {
+func (c *client) apimExternalReference(ctx context.Context, kind, selector string, indexes *apimIndexes) (string, error) {
 	if kind == apimIdentityType && !uuidPattern.MatchString(selector) {
 		return "", serviceDenied("invalid_apim_identity_client_id")
 	}
-	values, loaded := indexes[kind]
-	if !loaded {
+	values, err := indexes.load(kind, func() ([]serviceChild, error) {
 		rows, err := c.subscriptionReferenceIndex(ctx, kind)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
+		var values []serviceChild
 		for _, row := range rows {
 			values = append(values, serviceChild{id: strings.ToLower(text(row["id"])), kind: kind, data: row})
 		}
-		indexes[kind] = values
+		return values, nil
+	})
+	if err != nil {
+		return "", err
 	}
 	matches := func(raw map[string]any) bool {
 		if kind == apimIdentityType {
@@ -75,7 +78,7 @@ func (c *client) apimExternalReference(ctx context.Context, kind, selector strin
 	return found, nil
 }
 
-func (c *client) apimExternalReferences(ctx context.Context, kind string, raw map[string]any, indexes map[string][]serviceChild, refs map[string][]string) error {
+func (c *client) apimExternalReferences(ctx context.Context, kind string, raw map[string]any, indexes *apimIndexes, refs map[string][]string) error {
 	add := func(kind string, value any) error {
 		if value == nil || value == "" {
 			return nil // Null identifies the service's system-assigned identity.

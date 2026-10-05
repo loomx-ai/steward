@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"maps"
+	"math/rand/v2"
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -406,5 +409,155 @@ func TestRBACIncomingReadsOnlyRowsThatReferenceTheTarget(t *testing.T) {
 				t.Fatal("built-in role definition was read", got)
 			}
 		})
+	}
+}
+
+// Every custom role is detail-read once per observation, inside the shared
+// role index: concurrent delete checks read each role once between them.
+func TestRBACIncomingCustomRoleDetailsAreShared(t *testing.T) {
+	f, _, target, _ := rbacStorageTarget(t)
+	root := "/subscriptions/" + testSubscription
+	roles := []string{rbacTestRoleID()}
+	for i := range 20 {
+		raw := rbacTestBody(t, rbacRoleType, root, fmt.Sprintf("dddddddd-0000-0000-0000-%012d", i))
+		object(raw["properties"])["assignableScopes"] = []any{root + "/resourcegroups/test"}
+		id := strings.ToLower(text(raw["id"]))
+		f.resources[id], roles = raw, append(roles, id)
+	}
+	builtin := "GET " + root + "/providers/microsoft.authorization/roledefinitions/" + rbacTestBuiltinName
+	c, err := f.runtime.resolve(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	clear(f.calls)
+	for range 2 {
+		if _, err := c.rbacIncomingObservation(t.Context(), []asset.Asset{target}, nil); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, id := range roles {
+		if got := f.calls["GET "+id]; got != 2 {
+			t.Fatal("custom role not read exactly once per observation", id, got)
+		}
+	}
+	if f.calls[builtin] != 0 {
+		t.Fatal("built-in role was read", f.calls[builtin])
+	}
+
+	// One caller's role index is running; five more queue behind it and share
+	// the next one, so each role is read twice, not six times.
+	list := root + "/providers/" + strings.ToLower(rbacRoleType)
+	started, release := make(chan struct{}), make(chan struct{})
+	var once sync.Once
+	f.before = func(req *http.Request) {
+		if req.Method == "GET" && strings.ToLower(req.URL.Path) == list {
+			once.Do(func() { close(started); <-release })
+		}
+	}
+	clear(f.calls)
+	errs := make(chan error, 6)
+	observe := func() { _, err := c.rbacIncomingObservation(t.Context(), []asset.Asset{target}, nil); errs <- err }
+	go observe()
+	<-started
+	for range 5 {
+		go observe()
+	}
+	for {
+		sharedReads.Lock()
+		queued := sharedReads.queued[sharedReadKey{c, "rbac-index:" + rbacRoleType}]
+		sharedReads.Unlock()
+		if queued != nil {
+			break
+		}
+		time.Sleep(time.Millisecond)
+	}
+	time.Sleep(50 * time.Millisecond) // Let the other callers join the queued read.
+	close(release)
+	for range 6 {
+		if err := <-errs; err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, id := range roles {
+		if got := f.calls["GET "+id]; got != 2 {
+			t.Fatal("concurrent callers did not share custom role reads", id, got)
+		}
+	}
+}
+
+// The target index answers exactly what the per-(row, target) walk over
+// rbacPrincipalMatches did, including which error stops it first.
+func TestRBACTargetIndexMatchesPerTargetWalk(t *testing.T) {
+	c := directClient(nil)
+	principals := []string{}
+	for i := range 4 {
+		principals = append(principals, fmt.Sprintf("%08d-0000-0000-0000-000000000000", i))
+	}
+	identity := func(name, principal string, proved bool) asset.Asset {
+		wire := "/subscriptions/" + testSubscription + "/resourceGroups/ids/providers/Microsoft.ManagedIdentity/userAssignedIdentities/" + name
+		id, _, _ := parseID(wire)
+		value := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, NativeID: id, NativeType: rbacUserIdentityType}, Normalized: map[string]any{}}
+		if proved {
+			raw := map[string]any{"id": wire, "properties": map[string]any{"principalId": principal, "tenantId": testTenant, "clientId": rbacTestClientID}}
+			if err := c.rbacIdentityInventory(id, rbacUserIdentityType, raw, value.Normalized); err != nil {
+				t.Fatal(err)
+			}
+		}
+		return value
+	}
+	old := func(targets []asset.Asset, refs map[string][]string) ([]int, error) {
+		var linked []int
+		for i, target := range targets {
+			matched := slices.Contains(refs[target.Identity.NativeType], target.Identity.NativeID)
+			for _, reference := range refs[rbacPrincipalType] {
+				matches, err := c.rbacPrincipalMatches(target, reference)
+				if err != nil {
+					return nil, err
+				}
+				matched = matched || matches
+			}
+			if matched {
+				linked = append(linked, i)
+			}
+		}
+		return linked, nil
+	}
+	random := rand.New(rand.NewPCG(1, 2))
+	failures := 0
+	for trial := range 5000 {
+		var targets []asset.Asset
+		for i := range 1 + random.IntN(6) {
+			switch random.IntN(8) {
+			case 0:
+				targets = append(targets, identity(fmt.Sprintf("bad%d", i), "", false))
+			case 1:
+				targets = append(targets, asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, NativeID: rbacTestRoleID(), NativeType: rbacRoleType}})
+			default:
+				targets = append(targets, identity(fmt.Sprintf("id%d", random.IntN(4)), principals[random.IntN(len(principals))], true))
+			}
+		}
+		refs := map[string][]string{}
+		for range random.IntN(4) {
+			switch random.IntN(5) {
+			case 0:
+				refs[rbacPrincipalType] = append(refs[rbacPrincipalType], "principal-id:INVALID")
+			case 1:
+				target := targets[random.IntN(len(targets))]
+				refs[target.Identity.NativeType] = append(refs[target.Identity.NativeType], target.Identity.NativeID)
+			default:
+				refs[rbacPrincipalType] = append(refs[rbacPrincipalType], rbacPrincipalSelector(testTenant, principals[random.IntN(len(principals))]))
+			}
+		}
+		want, wantErr := old(targets, refs)
+		got, gotErr := c.rbacTargetIndex(targets).linked(refs)
+		if fmt.Sprint(wantErr) != fmt.Sprint(gotErr) || len(want)+len(got) != 0 && !slices.Equal(want, got) {
+			t.Fatal("target index disagrees with the per-target walk", trial, want, wantErr, got, gotErr)
+		}
+		if wantErr != nil {
+			failures++
+		}
+	}
+	if failures == 0 || failures == 5000 {
+		t.Fatal("fixtures did not exercise both outcomes", failures)
 	}
 }

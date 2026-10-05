@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 )
@@ -17,12 +18,51 @@ func apimPolicyExpression(value string) bool {
 	return strings.Contains(value, "{{") || strings.Contains(value, "@(") || strings.Contains(value, "@{")
 }
 
-func (c *client) apimReferenceCollection(ctx context.Context, owner, name string, indexes map[string][]serviceChild) ([]serviceChild, error) {
-	_, namespaceKind, _ := parseID(owner)
-	key := owner + "/" + strings.ToLower(name)
-	if values, exists := indexes[key]; exists {
-		return values, nil
+// apimIndexes caches the collections one review resolves references against.
+// Concurrent readers of a key share its load; the lock guards only the map,
+// never a read. A failed load is not kept.
+type apimIndexes struct {
+	mu    sync.Mutex
+	loads map[string]*apimIndexLoad
+}
+
+type apimIndexLoad struct {
+	done   chan struct{}
+	values []serviceChild
+	err    error
+}
+
+func (x *apimIndexes) load(key string, read func() ([]serviceChild, error)) ([]serviceChild, error) {
+	x.mu.Lock()
+	if x.loads == nil {
+		x.loads = map[string]*apimIndexLoad{}
 	}
+	load, loading := x.loads[key]
+	if !loading {
+		load = &apimIndexLoad{done: make(chan struct{})}
+		x.loads[key] = load
+	}
+	x.mu.Unlock()
+	if loading {
+		<-load.done
+		return load.values, load.err
+	}
+	load.values, load.err = read()
+	if load.err != nil {
+		x.mu.Lock()
+		delete(x.loads, key)
+		x.mu.Unlock()
+	}
+	close(load.done)
+	return load.values, load.err
+}
+
+func (c *client) apimReferenceCollection(ctx context.Context, owner, name string, indexes *apimIndexes) ([]serviceChild, error) {
+	return indexes.load(owner+"/"+strings.ToLower(name), func() ([]serviceChild, error) { return c.apimReadReferenceCollection(ctx, owner, name) })
+}
+
+func (c *client) apimReadReferenceCollection(ctx context.Context, owner, name string) ([]serviceChild, error) {
+	_, namespaceKind, _ := parseID(owner)
 	parent, err := c.apimResource(ctx, owner)
 	if err != nil {
 		return nil, err
@@ -50,13 +90,12 @@ func (c *client) apimReferenceCollection(ctx context.Context, owner, name string
 	if c.privateConfiguration(apimSnapshot(namespaceKind, parent)) != c.privateConfiguration(apimSnapshot(namespaceKind, after)) {
 		return nil, serviceDenied("apim_reference_parent_changed")
 	}
-	indexes[key] = values
 	return values, nil
 }
 
 // Both selectors may be expressions. A literal connection ID is scoped to its
 // provider; dynamic selectors retain all current possibilities for review.
-func (c *client) apimAuthorizationReferences(ctx context.Context, root string, attributes map[string]string, indexes map[string][]serviceChild) ([]string, error) {
+func (c *client) apimAuthorizationReferences(ctx context.Context, root string, attributes map[string]string, indexes *apimIndexes) ([]string, error) {
 	provider, authorization := attributes["provider-id"], attributes["authorization-id"]
 	if provider == "" || authorization == "" {
 		return nil, serviceDenied("invalid_apim_policy_authorization")
@@ -108,13 +147,13 @@ func (c *client) apimAuthorizationReferences(ctx context.Context, root string, a
 // Expression-valued identifiers may select any current resource in the named
 // collection. Reviewing the policy as a prerequisite preserves that uncertainty.
 // No policy expression, external XML link or named-value secret is executed.
-func (c *client) apimResolvedReferences(ctx context.Context, kind, id string, raw map[string]any, indexes map[string][]serviceChild, external map[string][]string) ([]string, error) {
+func (c *client) apimResolvedReferences(ctx context.Context, kind, id string, raw map[string]any, indexes *apimIndexes, external map[string][]string) ([]string, error) {
 	refs, err := apimReferences(kind, id, raw)
 	if err != nil {
 		return nil, err
 	}
 	if indexes == nil {
-		indexes = map[string][]serviceChild{}
+		indexes = &apimIndexes{}
 	}
 	if external == nil {
 		external = map[string][]string{}

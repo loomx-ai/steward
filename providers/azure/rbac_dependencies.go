@@ -30,17 +30,40 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 	var locks []any
 	var pim map[string]map[string]any
 	cache := map[string]diagnosticContextState{}
+	index := c.rbacTargetIndex(targets)
 	for _, kind := range kinds {
 		// Concurrent delete checks coalesce these lists; see liveShared.
 		rows, err := liveShared(ctx, c, "rbac-index:"+kind, func() (map[string]map[string]any, error) {
 			rows, _, err := c.rbacList(ctx, kind, c.root())
-			return rows, err
+			if err != nil || kind != rbacRoleType {
+				return rows, err
+			}
+			// A custom role's assignableScopes are mutable: a lagging list
+			// must not hide a scope just added, so every custom role is read
+			// and must agree. Built-in roles are Microsoft-managed.
+			var custom []string
+			for _, id := range slices.Sorted(maps.Keys(rows)) {
+				if rbacCustomRole(rows[id]) {
+					custom = append(custom, id)
+				}
+			}
+			details, errs := readConcurrently(len(custom), func(i int) (map[string]any, error) { return c.rbacDetail(ctx, kind, rows[custom[i]]) })
+			for i, id := range custom {
+				if errs[i] != nil {
+					return nil, errs[i]
+				}
+				rows[id] = details[i]
+			}
+			return rows, nil
 		})
 		if err != nil {
 			return nil, err
 		}
 		rows = maps.Clone(rows) // Shared: add known sources to a copy.
 		read, recorded := map[string]bool{}, map[string]bool{}
+		for id, raw := range rows {
+			read[id] = kind == rbacRoleType && rbacCustomRole(raw) // Read above.
+		}
 		for _, value := range known {
 			if value.Identity.Provider != asset.ProviderAzure || value.Identity.NativeType != kind || !strings.HasPrefix(value.Identity.NativeID, c.root()+"/") {
 				continue
@@ -49,16 +72,15 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 			if err != nil {
 				return nil, err
 			}
-			for _, target := range targets {
-				recorded[value.Identity.NativeID] = recorded[value.Identity.NativeID] || slices.Contains(stringValues(refs[target.Identity.NativeType]), target.Identity.NativeID)
-				for _, reference := range stringValues(refs[rbacPrincipalType]) {
-					matches, err := c.rbacPrincipalMatches(target, reference)
-					if err != nil {
-						return nil, err
-					}
-					recorded[value.Identity.NativeID] = recorded[value.Identity.NativeID] || matches
-				}
+			values := map[string][]string{}
+			for k, v := range refs {
+				values[k] = stringValues(v)
 			}
+			linked, err := index.linked(values)
+			if err != nil {
+				return nil, err
+			}
+			recorded[value.Identity.NativeID] = recorded[value.Identity.NativeID] || len(linked) > 0
 			if rows[value.Identity.NativeID] != nil {
 				continue
 			}
@@ -92,36 +114,18 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 				}
 			}
 		}
-		linked := func(target asset.Asset, refs map[string][]string) (bool, error) {
-			linked := slices.Contains(refs[target.Identity.NativeType], target.Identity.NativeID)
-			for _, reference := range refs[rbacPrincipalType] {
-				matches, err := c.rbacPrincipalMatches(target, reference)
-				if err != nil {
-					return false, err
-				}
-				linked = linked || matches
-			}
-			return linked, nil
-		}
 		for _, id := range slices.Sorted(maps.Keys(rows)) {
 			raw := rows[id]
 			refs, err := c.rbacReferences(kind, id, raw)
 			if err != nil {
 				return nil, err
 			}
+			linked, err := index.linked(refs)
+			if err != nil {
+				return nil, err
+			}
 			if !read[id] {
-				// A custom role's assignableScopes are mutable: a lagging list
-				// must not hide a scope just added, so every custom role is
-				// read and must agree. Built-in roles are Microsoft-managed.
-				relevant := recorded[id] || kind == rbacRoleType && text(object(raw["properties"])["type"]) != "BuiltInRole"
-				for _, target := range targets {
-					matches, err := linked(target, refs)
-					if err != nil {
-						return nil, err
-					}
-					relevant = relevant || matches
-				}
-				if !relevant {
+				if !recorded[id] && len(linked) == 0 {
 					continue
 				}
 				if raw, err = c.rbacDetail(ctx, kind, raw); err != nil {
@@ -130,16 +134,13 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 				if refs, err = c.rbacReferences(kind, id, raw); err != nil {
 					return nil, err
 				}
-			}
-			var state map[string]any
-			for _, target := range targets {
-				matches, err := linked(target, refs)
-				if err != nil {
+				if linked, err = index.linked(refs); err != nil {
 					return nil, err
 				}
-				if !matches {
-					continue
-				}
+			}
+			var state map[string]any
+			for _, i := range linked {
+				target := targets[i]
 				if state == nil {
 					if pim == nil {
 						locks, err = c.managementLocks(ctx)
@@ -160,6 +161,73 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 		}
 	}
 	return incoming, nil
+}
+
+func rbacCustomRole(raw map[string]any) bool {
+	return text(object(raw["properties"])["type"]) != "BuiltInRole"
+}
+
+// rbacTargets answers which of one observation's targets a row's references
+// link, proving each target's identity once rather than once per row.
+type rbacTargets struct {
+	count             int
+	byID, byPrincipal map[string][]int
+	firstBad          bool  // targets[0] is an identity target without a valid proof
+	bad               error // the first such target's proof error
+}
+
+func (c *client) rbacTargetIndex(targets []asset.Asset) *rbacTargets {
+	index := &rbacTargets{count: len(targets), byID: map[string][]int{}, byPrincipal: map[string][]int{}}
+	for i, target := range targets {
+		key := target.Identity.NativeType + "\x00" + target.Identity.NativeID
+		index.byID[key] = append(index.byID[key], i)
+		if !rbacIdentityTarget(target) {
+			continue
+		}
+		metadata, err := c.rbacRecordedIdentity(target)
+		if err != nil {
+			index.firstBad = index.firstBad || i == 0
+			if index.bad == nil {
+				index.bad = err
+			}
+			continue
+		}
+		principal := text(metadata["principal"])
+		index.byPrincipal[principal] = append(index.byPrincipal[principal], i)
+	}
+	return index
+}
+
+// linked returns, in target order, the targets refs name directly or by
+// principal. Its error is the one the per-target walk "for each target, for
+// each principal reference, rbacPrincipalMatches" stops at first.
+func (x *rbacTargets) linked(refs map[string][]string) ([]int, error) {
+	if principals := refs[rbacPrincipalType]; len(principals) > 0 && x.count > 0 {
+		invalid := slices.IndexFunc(principals, func(reference string) bool { return !validRBACPrincipalSelector(rbacPrincipalType, reference) })
+		if x.firstBad && invalid != 0 {
+			return nil, x.bad
+		}
+		if invalid >= 0 {
+			return nil, serviceDenied("invalid_rbac_principal_reference")
+		}
+		if x.bad != nil {
+			return nil, x.bad
+		}
+	}
+	seen := map[int]bool{}
+	for kind, ids := range refs {
+		for _, id := range ids {
+			for _, i := range x.byID[kind+"\x00"+id] {
+				seen[i] = true
+			}
+		}
+	}
+	for _, reference := range refs[rbacPrincipalType] {
+		for _, i := range x.byPrincipal[reference] {
+			seen[i] = true
+		}
+	}
+	return slices.Sorted(maps.Keys(seen)), nil
 }
 
 func (c *client) rbacIncomingUnchanged(value asset.Asset, entry monitorIncomingSource) error {

@@ -348,12 +348,15 @@ func rbacListQuery(endpoint, initial string) error {
 
 // rbacIndex is rbacList with every row confirmed by its own GET. The GETs run
 // concurrently; the first failure in ID order fails the whole index.
+// Built-in roles keep their list row: Microsoft-managed, assignable at "/",
+// and always protected; every proof the inventory derives from a row is a
+// function of rbacSnapshot, which rbacDetail would only have confirmed equal.
 func (c *client) rbacIndex(ctx context.Context, kind, scope string) (map[string]map[string]any, string, error) {
 	rows, provenance, err := c.rbacList(ctx, kind, scope)
 	if err != nil {
 		return nil, "", err
 	}
-	ids := slices.Sorted(maps.Keys(rows))
+	ids := slices.DeleteFunc(slices.Sorted(maps.Keys(rows)), func(id string) bool { return kind == rbacRoleType && !rbacCustomRole(rows[id]) })
 	details, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return c.rbacDetail(ctx, kind, rows[ids[i]]) })
 	for i, id := range ids {
 		if errs[i] != nil {

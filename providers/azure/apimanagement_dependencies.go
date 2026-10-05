@@ -98,8 +98,8 @@ func (c *client) apimIncomingIndexFor(ctx context.Context, rootID string, kinds 
 // policies) are walked concurrently; deeper levels stay serial.
 func (c *client) apimIncomingWalk(ctx context.Context, rootID string, kinds []string) (map[string][]serviceChild, error) {
 	resolved := map[string][]string{}
-	indexes := map[string][]serviceChild{}
-	var mu sync.Mutex // Guards resolved and the indexes cache across subtrees.
+	indexes := &apimIndexes{}
+	var mu sync.Mutex // Guards resolved across subtrees.
 	var collect func(asset.Identity, map[string]any, bool) ([]serviceChild, error)
 	collect = func(parent asset.Identity, raw map[string]any, concurrent bool) ([]serviceChild, error) {
 		if err := apimReady(parent.NativeType, raw); err != nil {
@@ -134,15 +134,13 @@ func (c *client) apimIncomingWalk(ctx context.Context, rootID string, kinds []st
 				return nil, err
 			}
 			if slices.Contains(kinds, child.kind) {
-				mu.Lock()
 				refs, err := c.apimResolvedReferences(ctx, child.kind, child.id, child.data, indexes, nil)
-				if err == nil {
-					resolved[child.id] = refs
-				}
-				mu.Unlock()
 				if err != nil {
 					return nil, err
 				}
+				mu.Lock()
+				resolved[child.id] = refs
+				mu.Unlock()
 				result = append(result, child)
 			}
 			if slices.ContainsFunc(kinds, func(kind string) bool { return strings.HasPrefix(kind, child.kind+"/") }) {
@@ -221,7 +219,7 @@ func (c *client) apimIncomingWalk(ctx context.Context, rootID string, kinds []st
 	}
 	firstReferences := c.privateConfiguration(map[string]any{"references": resolved})
 	firstLinks := linkConfiguration
-	resolved, indexes = map[string][]string{}, map[string][]serviceChild{}
+	resolved, indexes = map[string][]string{}, &apimIndexes{}
 	second, err := collectAll()
 	if err != nil {
 		return nil, err

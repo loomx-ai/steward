@@ -445,3 +445,21 @@ func TestRBACIndexReadsDetailsConcurrentlyAndFailsInOrder(t *testing.T) {
 		}
 	}
 }
+
+// The role inventory GETs each custom role once per snapshot (two per scan)
+// and keeps the list row of a Microsoft-managed built-in role.
+func TestRBACRoleInventorySkipsBuiltInDetails(t *testing.T) {
+	f := newRBACFixture(t)
+	builtin := "GET /subscriptions/" + testSubscription + "/providers/microsoft.authorization/roledefinitions/" + rbacTestBuiltinName
+	batch, err := f.runtime.List(t.Context(), productRequest(f.runtime, rbacRoleType))
+	if err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, item := range batch.Items {
+		found = found || strings.HasSuffix(item.NativeID, rbacTestBuiltinName) && item.Normalized["cleanup_protection_reason"] == "azure_rbac_builtin_role"
+	}
+	if !found || f.calls[builtin] != 0 || f.calls["GET "+rbacTestRoleID()] != 2 {
+		t.Fatal("role inventory detail reads", found, f.calls[builtin], f.calls["GET "+rbacTestRoleID()])
+	}
+}

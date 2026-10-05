@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync/atomic"
 	"testing"
 )
 
@@ -158,7 +159,8 @@ func TestRBACIndexUsesNativeReadsAndBindsPagination(t *testing.T) {
 				first := rbacTestBody(t, kind, root, rbacTestRoleName)
 				second := rbacTestBody(t, kind, root, rbacTestAssignmentName)
 				id1, id2 := strings.ToLower(text(first["id"])), strings.ToLower(text(second["id"]))
-				gets, lists := 0, 0
+				var gets atomic.Int32 // Detail GETs run concurrently.
+				lists := 0
 				if mode == "alias" && kind == rbacRoleType {
 					first["id"] = "/providers/Microsoft.Authorization/roleDefinitions/" + rbacTestRoleName
 				}
@@ -168,7 +170,7 @@ func TestRBACIndexUsesNativeReadsAndBindsPagination(t *testing.T) {
 					}
 					path := strings.ToLower(r.URL.Path)
 					if path == id1 || path == id2 {
-						gets++
+						gets.Add(1)
 						if mode == "read-missing" {
 							return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceNotFound"}}, nil), nil
 						}
@@ -245,8 +247,8 @@ func TestRBACIndexUsesNativeReadsAndBindsPagination(t *testing.T) {
 				rows, requestID, err := c.rbacIndex(t.Context(), kind, root)
 				good := mode == "paged" || mode == "alias" || mode == "inherited"
 				if good {
-					if err != nil || len(rows) != 2 || gets != 2 || lists != 2 || requestID != "rbac-index-request" {
-						t.Fatal("native index failed", len(rows), gets, lists, requestID, err)
+					if err != nil || len(rows) != 2 || gets.Load() != 2 || lists != 2 || requestID != "rbac-index-request" {
+						t.Fatal("native index failed", len(rows), gets.Load(), lists, requestID, err)
 					}
 				} else if err == nil || rows != nil {
 					t.Fatal("unsafe index accepted", rows, err)

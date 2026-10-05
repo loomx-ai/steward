@@ -183,7 +183,7 @@ func (c *client) dataFactoryRelations(ctx context.Context, trees map[string]data
 			}
 		}
 	}
-	incoming, external := map[string]any{}, map[string][]serviceChild{}
+	incoming, external := map[string]any{}, &apimIndexes{}
 	for _, root := range slices.Sorted(maps.Keys(trees)) {
 		tree := trees[root]
 		for _, id := range slices.Sorted(maps.Keys(tree.members)) {

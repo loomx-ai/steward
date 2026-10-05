@@ -2,10 +2,14 @@ package azure
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -199,7 +203,7 @@ func TestAPIMExternalReferenceIndexBoundaries(t *testing.T) {
 					}
 				}
 				c, _ := r.resolve(t.Context(), "connection")
-				ref, err := c.apimExternalReference(t.Context(), kind, selector, map[string][]serviceChild{})
+				ref, err := c.apimExternalReference(t.Context(), kind, selector, &apimIndexes{})
 				if mode == "paged" {
 					if err != nil || ref != id {
 						t.Fatal("paginated resource was not resolved", ref, err)
@@ -291,5 +295,45 @@ func TestAPIMLoggerManagedIdentityUsesClientIDAndSystemAssignedSentinel(t *testi
 				}
 			})
 		}
+	}
+}
+
+// Concurrent readers of one key share its load; another key loads alongside
+// it rather than behind a lock; a failed load is retried, not kept.
+func TestAPIMIndexesShareLoadsWithoutHoldingTheLock(t *testing.T) {
+	var indexes apimIndexes
+	var reads atomic.Int32
+	other := make(chan struct{})
+	slow := func() ([]serviceChild, error) {
+		reads.Add(1)
+		<-other // Only returns once the other key's load ran concurrently.
+		return []serviceChild{{id: "a"}}, nil
+	}
+	var wg sync.WaitGroup
+	for range 8 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if values, err := indexes.load("a", slow); err != nil || len(values) != 1 {
+				t.Error(values, err)
+			}
+		}()
+	}
+	for reads.Load() == 0 {
+		time.Sleep(time.Millisecond)
+	}
+	if _, err := indexes.load("b", func() ([]serviceChild, error) { close(other); return nil, nil }); err != nil {
+		t.Fatal(err)
+	}
+	wg.Wait()
+	if reads.Load() != 1 {
+		t.Fatal("concurrent readers did not share one load", reads.Load())
+	}
+	failed := errors.New("throttled")
+	if _, err := indexes.load("c", func() ([]serviceChild, error) { return nil, failed }); !errors.Is(err, failed) {
+		t.Fatal(err)
+	}
+	if values, err := indexes.load("c", func() ([]serviceChild, error) { return []serviceChild{{id: "c"}}, nil }); err != nil || len(values) != 1 {
+		t.Fatal("a failed load was kept", values, err)
 	}
 }
