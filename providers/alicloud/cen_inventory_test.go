@@ -2,6 +2,7 @@ package alicloud
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -449,4 +450,64 @@ func containsCENTestReference(values []string, want string) bool {
 		}
 	}
 	return false
+}
+
+func TestCENTopologyKindsOfOneScanShareOneCollection(t *testing.T) {
+	t.Parallel()
+
+	failNext := true
+	factory := &topologyRuntimeFactory{}
+	responses := cenTopologyResponses()
+	factory.invoke = func(invocation contracts.Invocation) (contracts.InvocationResult, error) {
+		if invocation.Operation == "AlibabaCloud.CEN.DescribeCens" && failNext {
+			failNext = false
+			return contracts.InvocationResult{}, &APIError{Code: "Throttling.User", Message: "slow down", StatusCode: 400}
+		}
+		result, ok := responses[invocation.Operation]
+		if !ok {
+			return contracts.InvocationResult{}, errors.New("unexpected operation")
+		}
+		return result, nil
+	}
+	source := &credentialSource{wantConnection: "connection-a", value: contracts.Credential{
+		Type: asset.CredentialAliCloudAccessKey, Values: map[string]string{"access_key_id": "id", "access_key_secret": "secret"},
+	}}
+	runtime, err := newRuntime(source, factory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	list := func(run asset.ScanRunID, nativeType string) (contracts.InventoryBatch, error) {
+		kind := runtime.resourceKindByNativeType[nativeType]
+		return runtime.List(context.Background(), contracts.InventoryRequest{
+			ConnectionID: "connection-a", ScanRunID: run, Source: "cen-topology", ResourceKind: &kind,
+			Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: "cn-hangzhou", Location: "cn-hangzhou"},
+		})
+	}
+	// A failed collection is not kept: the next shard collects again.
+	if _, err := list("run-1", CENTransitRouterVPCAttachmentNativeType); err == nil {
+		t.Fatal("failed collection did not fail the shard")
+	}
+	failed := len(factory.calls)
+	first, err := list("run-1", CENTransitRouterVPCAttachmentNativeType)
+	if err != nil || len(first.Items) == 0 {
+		t.Fatalf("batch = %+v err=%v", first, err)
+	}
+	collection := len(factory.calls) - failed
+	first.Items[0].Normalized["mutated"] = true
+	again, err := list("run-1", CENTransitRouterVPCAttachmentNativeType)
+	if err != nil || len(again.Items) != len(first.Items) || again.Items[0].Normalized["mutated"] != nil {
+		t.Fatalf("shared collection was not isolated per shard: %+v err=%v", again, err)
+	}
+	for _, nativeType := range []string{CENTransitRouterNativeType, CENTransitRouterVBRAttachmentNativeType} {
+		if _, err := list("run-1", nativeType); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if len(factory.calls) != failed+collection {
+		t.Fatalf("kinds of one scan recollected the topology: %d calls, want %d", len(factory.calls), failed+collection)
+	}
+	// Another scan never reads this scan's collection.
+	if _, err := list("run-2", CENTransitRouterVPCAttachmentNativeType); err != nil || len(factory.calls) != failed+2*collection {
+		t.Fatalf("calls = %d err=%v", len(factory.calls), err)
+	}
 }

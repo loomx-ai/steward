@@ -43,10 +43,10 @@ const (
 	enrichmentConcurrency = 4
 )
 
-// forEachConcurrently calls read for indexes 0..count-1, at most
+// ForEachConcurrently calls read for indexes 0..count-1, at most
 // enrichmentConcurrency at a time. After a failure no further reads start, and
 // the lowest failing index's error is returned, as a serial loop would.
-func forEachConcurrently(count int, read func(int) error) error {
+func ForEachConcurrently(count int, read func(int) error) error {
 	errs := make([]error, count)
 	var failed atomic.Bool
 	var wg sync.WaitGroup

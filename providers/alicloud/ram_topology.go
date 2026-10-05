@@ -51,7 +51,7 @@ func (r *Runtime) enrichRAMTopology(
 	if err != nil {
 		return nil, err
 	}
-	err = forEachConcurrently(len(indices), func(position int) error {
+	err = ForEachConcurrently(len(indices), func(position int) error {
 		item := &items[indices[position]]
 		name := strings.TrimSpace(item.NativeID)
 		switch item.NativeType {

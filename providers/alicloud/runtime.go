@@ -57,6 +57,7 @@ type Runtime struct {
 	bundle                   spec.Bundle
 	parentCache              fanoutParentCache
 	resourceCenterSearches   resourceCenterSearchCache
+	cenTopologies            cenTopologyCache
 }
 
 var _ contracts.InventoryBatchEnricher = (*Runtime)(nil)
@@ -377,6 +378,13 @@ func (r *Runtime) resourceKind(nativeType string) asset.ResourceKind {
 }
 
 func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (contracts.InvocationResult, error) {
+	return r.invoke(ctx, nil, invocation)
+}
+
+// invoke calls an operation with credential, or with the connection's
+// credential resolved for this call when credential is nil. Callers making
+// many reads for one batch resolve the credential once and pass it.
+func (r *Runtime) invoke(ctx context.Context, credential *contracts.Credential, invocation contracts.Invocation) (contracts.InvocationResult, error) {
 	operation, ok := r.catalog.Operation(strings.TrimSpace(invocation.Operation))
 	if !ok {
 		return contracts.InvocationResult{}, fmt.Errorf("Alibaba Cloud operation %q is not in the generated catalog", invocation.Operation)
@@ -385,9 +393,12 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if err != nil {
 		return contracts.InvocationResult{}, err
 	}
-	credential, err := r.resolveCredential(ctx, invocation.ConnectionID)
-	if err != nil {
-		return contracts.InvocationResult{}, err
+	if credential == nil {
+		resolved, err := r.resolveCredential(ctx, invocation.ConnectionID)
+		if err != nil {
+			return contracts.InvocationResult{}, err
+		}
+		credential = &resolved
 	}
 	canonical := invocation
 	canonical.Operation = operation.Key()
@@ -401,7 +412,7 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if !read {
 		contracts.NoteWrite(ctx)
 	}
-	result, err := r.factory.Invoke(ctx, credential, region, operation, canonical)
+	result, err := r.factory.Invoke(ctx, *credential, region, operation, canonical)
 	if err != nil {
 		normalized := NormalizeError(err)
 		annotateProviderErrorOperation(normalized, canonical.Operation)

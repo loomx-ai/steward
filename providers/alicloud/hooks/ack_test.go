@@ -127,3 +127,37 @@ func readACKFixture(t *testing.T) ackFixture {
 	}
 	return fixture
 }
+
+// perClusterACK reports one auto-created node per cluster, named after it.
+type perClusterACK struct{ ackClient }
+
+func (perClusterACK) DescribeClusterResources(context.Context, string, bool) ([]alicloud.ClusterResource, string, error) {
+	return nil, "req", nil
+}
+
+func (perClusterACK) DescribeClusterNodes(_ context.Context, cluster string) ([]alicloud.ClusterNode, string, error) {
+	return []alicloud.ClusterNode{{InstanceID: "i-" + cluster}}, "req", nil
+}
+
+func TestACKLifecycleKeepsClusterOrderAcrossConcurrentReads(t *testing.T) {
+	t.Parallel()
+
+	var clusters []asset.Asset
+	var want []string
+	for _, id := range []string{"c-f", "c-a", "c-e", "c-b", "c-d", "c-c"} {
+		clusters = append(clusters, ackAsset(asset.AssetID("cluster-"+id), alicloud.ACKClusterNativeType, id))
+		want = append(want, "i-"+id)
+	}
+	contribution, err := hooks.NewACK(&perClusterACK{}, "cn-hangzhou").Contribute(context.Background(), "scope-root", clusters)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(contribution.Unresolved) != len(want) {
+		t.Fatalf("unresolved = %+v", contribution.Unresolved)
+	}
+	for index, reference := range contribution.Unresolved {
+		if reference.NativeID != want[index] {
+			t.Fatalf("unresolved[%d] = %s, want %s", index, reference.NativeID, want[index])
+		}
+	}
+}

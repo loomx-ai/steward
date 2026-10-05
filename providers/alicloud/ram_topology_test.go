@@ -147,7 +147,7 @@ func TestForEachConcurrentlyBoundsReadsAndReportsTheFirstFailureInOrder(t *testi
 
 	var running, peak atomic.Int32
 	results := make([]int, 20)
-	err := forEachConcurrently(len(results), func(index int) error {
+	err := ForEachConcurrently(len(results), func(index int) error {
 		now := running.Add(1)
 		defer running.Add(-1)
 		for {
@@ -166,7 +166,7 @@ func TestForEachConcurrentlyBoundsReadsAndReportsTheFirstFailureInOrder(t *testi
 
 	// Index 6 fails after index 7 does; a serial loop would have stopped at 6.
 	var started atomic.Int32
-	err = forEachConcurrently(100, func(index int) error {
+	err = ForEachConcurrently(100, func(index int) error {
 		started.Add(1)
 		switch index {
 		case 6:

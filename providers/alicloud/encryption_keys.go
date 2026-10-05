@@ -80,35 +80,45 @@ func (r *Runtime) enrichEncryptionKeys(
 	if strings.TrimSpace(request.Source) == "resource-center" {
 		return items, nil
 	}
-	var region string
+	var indexes []int
 	for index := range items {
-		lookups := encryptionKeyLookups[items[index].NativeType]
-		nativeID := strings.TrimSpace(items[index].NativeID)
-		if len(lookups) == 0 || nativeID == "" {
-			continue
+		if len(encryptionKeyLookups[items[index].NativeType]) > 0 && strings.TrimSpace(items[index].NativeID) != "" {
+			indexes = append(indexes, index)
 		}
-		if region == "" {
-			resolved, err := inventoryRegion(request)
-			if err != nil {
-				return nil, err
-			}
-			region = resolved
-		}
-		for _, lookup := range lookups {
+	}
+	if len(indexes) == 0 {
+		return items, nil
+	}
+	region, err := inventoryRegion(request)
+	if err != nil {
+		return nil, err
+	}
+	credential, err := r.resolveCredential(ctx, request.ConnectionID)
+	if err != nil {
+		return nil, err
+	}
+	err = ForEachConcurrently(len(indexes), func(position int) error {
+		item := &items[indexes[position]]
+		nativeID := strings.TrimSpace(item.NativeID)
+		for _, lookup := range encryptionKeyLookups[item.NativeType] {
 			for current := &lookup; current != nil; {
-				key, next, err := r.readEncryptionKey(ctx, request, region, nativeID, *current)
+				key, next, err := r.readEncryptionKey(ctx, request, &credential, region, nativeID, *current)
 				if err != nil {
-					return nil, err
+					return err
 				}
 				if key != "" {
-					if items[index].Normalized == nil {
-						items[index].Normalized = make(map[string]any)
+					if item.Normalized == nil {
+						item.Normalized = make(map[string]any)
 					}
-					items[index].Normalized[current.keyField] = key
+					item.Normalized[current.keyField] = key
 				}
 				current = next
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 	return items, nil
 }
@@ -118,10 +128,11 @@ func (r *Runtime) enrichEncryptionKeys(
 func (r *Runtime) readEncryptionKey(
 	ctx context.Context,
 	request contracts.InventoryRequest,
+	credential *contracts.Credential,
 	region, nativeID string,
 	lookup encryptionKeyLookup,
 ) (string, *encryptionKeyLookup, error) {
-	result, err := r.Invoke(ctx, contracts.Invocation{
+	result, err := r.invoke(ctx, credential, contracts.Invocation{
 		ConnectionID: request.ConnectionID,
 		Operation:    lookup.operation,
 		Scope:        map[string]string{"region": region},

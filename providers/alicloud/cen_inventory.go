@@ -7,7 +7,10 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
+	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
@@ -23,6 +26,7 @@ type cenTopologyCollector struct {
 	ctx        context.Context
 	request    contracts.InventoryRequest
 	region     string
+	credential *contracts.Credential
 	items      []contracts.InventoryItem
 	requestIDs []string
 	// DescribeCenRouteMaps identifies the route table but omits its transit
@@ -82,27 +86,50 @@ func (r *Runtime) listCENTopology(
 	if err != nil {
 		return contracts.InventoryBatch{}, fmt.Errorf("Alibaba Cloud CEN topology: %w", err)
 	}
-	collector := &cenTopologyCollector{
-		runtime:                   r,
-		ctx:                       ctx,
-		request:                   request,
-		region:                    region,
-		detailedChildInstances:    map[string]struct{}{},
-		transitRouterByRouteTable: map[string]string{},
-		transitRoutersByCEN:       map[string][]string{},
-	}
-	if err := collector.collect(); err != nil {
+	credential, err := r.resolveCredential(ctx, request.ConnectionID)
+	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
-	if request.ResourceKind != nil {
-		filtered := make([]contracts.InventoryItem, 0, len(collector.items))
-		for _, item := range collector.items {
-			if item.NativeType == request.ResourceKind.NativeType {
-				filtered = append(filtered, item)
-			}
+	collect := func(ctx context.Context) (*cenTopologyCollector, error) {
+		collector := &cenTopologyCollector{
+			runtime:                   r,
+			ctx:                       ctx,
+			request:                   request,
+			region:                    region,
+			credential:                &credential,
+			detailedChildInstances:    map[string]struct{}{},
+			transitRouterByRouteTable: map[string]string{},
+			transitRoutersByCEN:       map[string][]string{},
 		}
-		collector.items = filtered
+		return collector, collector.collect()
 	}
+	var collector *cenTopologyCollector
+	if request.ScanRunID == "" {
+		collector, err = collect(ctx)
+	} else {
+		// The cen-topology kinds of one scan and region share one collection.
+		key := cenTopologyKey{
+			run: request.ScanRunID, connection: request.ConnectionID, credential: credentialFingerprint(credential),
+			region: region, scope: request.Scope,
+		}
+		collector, err = r.cenTopologies.get(ctx, key, func() (*cenTopologyCollector, error) {
+			// The collection serves other shards too, so one shard's
+			// cancellation must not fail it for them.
+			return collect(context.WithoutCancel(ctx))
+		})
+	}
+	if err != nil {
+		return contracts.InventoryBatch{}, err
+	}
+	// The shared collection stays unmodified: filter and sort a copy, and
+	// hand the shard its own items below.
+	items := make([]contracts.InventoryItem, 0, len(collector.items))
+	for _, item := range collector.items {
+		if request.ResourceKind == nil || item.NativeType == request.ResourceKind.NativeType {
+			items = append(items, item)
+		}
+	}
+	collector = &cenTopologyCollector{items: items, requestIDs: collector.requestIDs}
 	sort.Slice(collector.items, func(i, j int) bool {
 		if collector.items[i].NativeType != collector.items[j].NativeType {
 			return collector.items[i].NativeType < collector.items[j].NativeType
@@ -136,12 +163,89 @@ func (r *Runtime) listCENTopology(
 	if len(collector.requestIDs) > 0 {
 		requestID = collector.requestIDs[0]
 	}
+	page, err := cloneInventoryItems(collector.items[offset:end])
+	if err != nil {
+		return contracts.InventoryBatch{}, err
+	}
 	return contracts.InventoryBatch{
-		Items:      append([]contracts.InventoryItem(nil), collector.items[offset:end]...),
+		Items:      page,
 		NextCursor: next,
 		RequestID:  requestID,
 		Complete:   next == "",
 	}, nil
+}
+
+// cenTopologyTTL bounds how long a scan's shared CEN collection serves the
+// kind shards of its region.
+const cenTopologyTTL = 15 * time.Minute
+
+type cenTopologyKey struct {
+	run        asset.ScanRunID
+	connection asset.ConnectionID
+	credential string
+	region     string
+	scope      asset.Scope
+}
+
+type cenTopology struct {
+	done      chan struct{}
+	collector *cenTopologyCollector
+	err       error
+	expires   time.Time
+}
+
+// cenTopologyCache lets the cen-topology kinds of one scan and region share
+// one collection, as resourceCenterSearchCache does for searches. Concurrent
+// shards wait for one collection; a failed collection fails every waiting
+// shard and is not kept, so no shard reads a failure as an empty topology.
+type cenTopologyCache struct {
+	mu      sync.Mutex
+	entries map[cenTopologyKey]*cenTopology
+}
+
+func (c *cenTopologyCache) get(ctx context.Context, key cenTopologyKey, collect func() (*cenTopologyCollector, error)) (*cenTopologyCollector, error) {
+	now := time.Now()
+	c.mu.Lock()
+	entry := c.entries[key]
+	owner := entry == nil || (entry.finished() && !now.Before(entry.expires))
+	if owner {
+		for cached, value := range c.entries {
+			if value.finished() && !now.Before(value.expires) {
+				delete(c.entries, cached)
+			}
+		}
+		if c.entries == nil {
+			c.entries = map[cenTopologyKey]*cenTopology{}
+		}
+		entry = &cenTopology{done: make(chan struct{})}
+		c.entries[key] = entry
+	}
+	c.mu.Unlock()
+	if owner {
+		collector, err := collect()
+		c.mu.Lock()
+		entry.collector, entry.err, entry.expires = collector, err, time.Now().Add(cenTopologyTTL)
+		if err != nil && c.entries[key] == entry {
+			delete(c.entries, key)
+		}
+		c.mu.Unlock()
+		close(entry.done)
+	}
+	select {
+	case <-entry.done:
+		return entry.collector, entry.err
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+}
+
+func (t *cenTopology) finished() bool {
+	select {
+	case <-t.done:
+		return true
+	default:
+		return false
+	}
 }
 
 func cenTopologyOffset(cursor string) (int, error) {
@@ -827,7 +931,7 @@ func (c *cenTopologyCollector) invoke(
 	operation string,
 	parameters map[string]any,
 ) (contracts.InvocationResult, error) {
-	result, err := c.runtime.Invoke(c.ctx, contracts.Invocation{
+	result, err := c.runtime.invoke(c.ctx, c.credential, contracts.Invocation{
 		ConnectionID: c.request.ConnectionID,
 		Operation:    operation,
 		Scope:        map[string]string{"region": c.region},

@@ -35,55 +35,71 @@ func (h *ACK) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.As
 			clusters = append(clusters, value)
 		}
 	}
+	// Clusters are read concurrently; their contributions keep cluster order.
+	parts := make([]governance.Contribution, len(clusters))
+	if err := alicloud.ForEachConcurrently(len(clusters), func(index int) (err error) {
+		parts[index], err = h.clusterContribution(ctx, clusters[index], byIdentity)
+		return err
+	}); err != nil {
+		return governance.Contribution{}, err
+	}
 	result := governance.Contribution{}
-	for _, cluster := range clusters {
-		resources, requestID, err := h.client.DescribeClusterResources(ctx, cluster.Identity.NativeID, true)
-		if err != nil {
-			normalized := alicloud.NormalizeError(err)
-			if providerResourceGone(normalized) {
-				continue
-			}
-			return governance.Contribution{}, normalized
+	for _, part := range parts {
+		result.Relationships = append(result.Relationships, part.Relationships...)
+		result.Bindings = append(result.Bindings, part.Bindings...)
+		result.Unresolved = append(result.Unresolved, part.Unresolved...)
+	}
+	return result, nil
+}
+
+func (h *ACK) clusterContribution(ctx context.Context, cluster asset.Asset, byIdentity map[string]asset.Asset) (governance.Contribution, error) {
+	result := governance.Contribution{}
+	resources, requestID, err := h.client.DescribeClusterResources(ctx, cluster.Identity.NativeID, true)
+	if err != nil {
+		normalized := alicloud.NormalizeError(err)
+		if providerResourceGone(normalized) {
+			return result, nil
 		}
-		seen := make(map[string]struct{}, len(resources))
-		for _, resource := range resources {
-			nativeType := NormalizeResourceType(resource.ResourceType)
-			key := nativeType + "\x00" + resource.InstanceID
-			if _, duplicate := seen[key]; duplicate || nativeType == "" || resource.InstanceID == "" {
-				continue
-			}
-			seen[key] = struct{}{}
-			ownership, policy, confidence := classifyResource(resource)
-			evidence := map[string]any{
-				"request_id": requestID, "cluster_id": cluster.Identity.NativeID, "auto_create": resource.AutoCreate,
-				"resource_type": nativeType, "instance_id": resource.InstanceID,
-				"creator_type": resource.CreatorType, "delete_by_default": resource.DeleteBehavior.DeleteByDefault,
-				"delete_behavior_changeable": resource.DeleteBehavior.Changeable, "resource_state": resource.State,
-			}
-			appendLifecycle(&result, cluster, byIdentity, nativeType, resource.InstanceID, "ack:DescribeClusterResources", ownership, policy, confidence, evidence)
+		return governance.Contribution{}, normalized
+	}
+	seen := make(map[string]struct{}, len(resources))
+	for _, resource := range resources {
+		nativeType := NormalizeResourceType(resource.ResourceType)
+		key := nativeType + "\x00" + resource.InstanceID
+		if _, duplicate := seen[key]; duplicate || nativeType == "" || resource.InstanceID == "" {
+			continue
 		}
-		nodes, nodeRequestID, err := h.client.DescribeClusterNodes(ctx, cluster.Identity.NativeID)
-		if err != nil {
-			normalized := alicloud.NormalizeError(err)
-			if providerResourceGone(normalized) {
-				continue
-			}
-			return governance.Contribution{}, normalized
+		seen[key] = struct{}{}
+		ownership, policy, confidence := classifyResource(resource)
+		evidence := map[string]any{
+			"request_id": requestID, "cluster_id": cluster.Identity.NativeID, "auto_create": resource.AutoCreate,
+			"resource_type": nativeType, "instance_id": resource.InstanceID,
+			"creator_type": resource.CreatorType, "delete_by_default": resource.DeleteBehavior.DeleteByDefault,
+			"delete_behavior_changeable": resource.DeleteBehavior.Changeable, "resource_state": resource.State,
 		}
-		for _, node := range nodes {
-			key := "ACS::ECS::Instance\x00" + node.InstanceID
-			if _, duplicate := seen[key]; duplicate || node.InstanceID == "" {
-				continue
-			}
-			seen[key] = struct{}{}
-			ownership, policy, confidence := classifyNode(node)
-			evidence := map[string]any{
-				"request_id": nodeRequestID, "cluster_id": cluster.Identity.NativeID,
-				"resource_type": "ACS::ECS::Instance", "instance_id": node.InstanceID,
-				"nodepool_id": node.NodePoolID, "source": node.Source, "auto_created": node.AutoCreated,
-			}
-			appendLifecycle(&result, cluster, byIdentity, "ACS::ECS::Instance", node.InstanceID, "ack:DescribeClusterNodes", ownership, policy, confidence, evidence)
+		appendLifecycle(&result, cluster, byIdentity, nativeType, resource.InstanceID, "ack:DescribeClusterResources", ownership, policy, confidence, evidence)
+	}
+	nodes, nodeRequestID, err := h.client.DescribeClusterNodes(ctx, cluster.Identity.NativeID)
+	if err != nil {
+		normalized := alicloud.NormalizeError(err)
+		if providerResourceGone(normalized) {
+			return result, nil
 		}
+		return governance.Contribution{}, normalized
+	}
+	for _, node := range nodes {
+		key := "ACS::ECS::Instance\x00" + node.InstanceID
+		if _, duplicate := seen[key]; duplicate || node.InstanceID == "" {
+			continue
+		}
+		seen[key] = struct{}{}
+		ownership, policy, confidence := classifyNode(node)
+		evidence := map[string]any{
+			"request_id": nodeRequestID, "cluster_id": cluster.Identity.NativeID,
+			"resource_type": "ACS::ECS::Instance", "instance_id": node.InstanceID,
+			"nodepool_id": node.NodePoolID, "source": node.Source, "auto_created": node.AutoCreated,
+		}
+		appendLifecycle(&result, cluster, byIdentity, "ACS::ECS::Instance", node.InstanceID, "ack:DescribeClusterNodes", ownership, policy, confidence, evidence)
 	}
 	return result, nil
 }

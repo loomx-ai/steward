@@ -106,6 +106,10 @@ func TestInventoryReadsDatabaseEncryptionKeys(t *testing.T) {
 	if len(factory.calls) != 9 {
 		t.Errorf("calls = %d, want 9: %+v", len(factory.calls), factory.calls)
 	}
+	// The batch resolves the connection credential once for all its reads.
+	if resolves := runtime.credentials.(*credentialSource).calls; resolves != 1 {
+		t.Errorf("credential resolves = %d, want 1", resolves)
+	}
 }
 
 func TestInventoryEncryptionKeyErrors(t *testing.T) {

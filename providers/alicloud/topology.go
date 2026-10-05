@@ -198,7 +198,7 @@ func (r *Runtime) loadTopologyDetails(
 	}
 	operation := detailOperationName(definition)
 	batches := make([]map[string]map[string]any, (len(ids)+batchLimit-1)/batchLimit)
-	err := forEachConcurrently(len(batches), func(batch int) error {
+	err := ForEachConcurrently(len(batches), func(batch int) error {
 		start := batch * batchLimit
 		batchIDs := ids[start:min(start+batchLimit, len(ids))]
 		var normalized map[string]any

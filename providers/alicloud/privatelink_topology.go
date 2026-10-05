@@ -57,7 +57,7 @@ func (r *Runtime) enrichPrivateLinkEndpointTopology(
 		)
 	}
 
-	err = forEachConcurrently(len(indices), func(position int) error {
+	err = ForEachConcurrently(len(indices), func(position int) error {
 		index := indices[position]
 		endpointID := strings.TrimSpace(items[index].NativeID)
 		zones, eniIDs, err := r.loadPrivateLinkEndpointZones(
@@ -263,7 +263,7 @@ func (r *Runtime) enrichEndpointServiceTopology(
 		)
 	}
 
-	err = forEachConcurrently(len(indices), func(position int) error {
+	err = ForEachConcurrently(len(indices), func(position int) error {
 		index := indices[position]
 		serviceID := strings.TrimSpace(items[index].NativeID)
 		resources, err := r.loadEndpointServiceResources(
