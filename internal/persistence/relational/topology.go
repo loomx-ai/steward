@@ -131,7 +131,7 @@ func (s *Store) ListLifecycleBindingsByConnection(ctx context.Context, connectio
 func (s *Store) ListGraphRevisionsByConnection(ctx context.Context, connectionID asset.ConnectionID) (map[asset.ScopeID]string, error) {
 	var rows []graphRevisionRow
 	scopes := s.db.WithContext(ctx).Table("scopes").Select("id").Where("connection_id = ? AND (superseded_by_scope_id IS NULL OR superseded_by_scope_id = '')", string(connectionID))
-	if err := s.db.WithContext(ctx).Table("graph_revisions").Where("scope_id IN (?)", scopes).Order("scope_id ASC").Find(&rows).Error; err != nil {
+	if err := s.db.WithContext(ctx).Table("graph_revisions").Select("scope_id, graph_revision").Where("scope_id IN (?)", scopes).Order("scope_id ASC").Find(&rows).Error; err != nil {
 		return nil, err
 	}
 	result := make(map[asset.ScopeID]string, len(rows))
