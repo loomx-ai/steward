@@ -2,12 +2,14 @@ package azure
 
 import (
 	"encoding/json"
+	"errors"
 	"maps"
 	"net/http"
 	"slices"
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -268,7 +270,7 @@ func TestDiagnosticInventoryIncompleteAndChangingCollections(t *testing.T) {
 				if path == settingID && mode == "private-change" && call >= 3 {
 					object(f.settings[settingID]["properties"])["ordinaryAuthoredField"] = "private drift"
 				}
-				if path == groupID && mode == "group-change" && call >= 3 {
+				if path == groupID && mode == "group-change" && call >= 2 { // Read once per snapshot.
 					f.groups[groupID]["managedBy"] = resourceID(aksType, "new-controller")
 				}
 				if path == sourceID+"/providers/microsoft.insights/diagnosticsettings" {
@@ -324,6 +326,124 @@ func TestDiagnosticStorageServiceScopes(t *testing.T) {
 		}
 		if !slices.Contains(stringValues(object(item.Normalized["_diagnostic_references"])[storageType]), id) {
 			t.Fatal("service setting did not protect its storage-account ancestor")
+		}
+	}
+}
+
+// Settings sharing a source scope read its context once per snapshot and per
+// observation, beside the walk's own source read.
+func TestDiagnosticContextReadOncePerScope(t *testing.T) {
+	f := newDiagnosticFixture(t)
+	source := slices.Sorted(maps.Keys(f.sources))[0]
+	group := "/subscriptions/" + testSubscription + "/resourcegroups/test"
+	c, err := f.runtime.resolve(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	clear(f.calls)
+	items, _, _, err := f.runtime.diagnosticInventorySnapshot(t.Context(), c, f.request())
+	if err != nil || len(items) != 3 {
+		t.Fatal("snapshot changed", len(items), err)
+	}
+	if f.calls["GET "+source] != 2 || f.calls["GET "+group] != 1 {
+		t.Fatal("snapshot repeated a scope's context reads", f.calls["GET "+source], f.calls["GET "+group])
+	}
+	storage := nativeResource(storageType, "diagnosticarchive", "westus", map[string]any{"provisioningState": "Succeeded"})
+	storage["kind"] = "StorageV2"
+	for _, raw := range f.settings {
+		object(raw["properties"])["storageAccountId"] = strings.ToLower(text(storage["id"]))
+	}
+	f.override = func(req *http.Request) (*http.Response, bool) {
+		if req.Method == "GET" && strings.EqualFold(req.URL.Path, text(storage["id"])) {
+			return jsonResponse(200, storage, nil), true
+		}
+		return nil, false
+	}
+	target := dnsAsset(t, f.runtime, storage)
+	clear(f.calls)
+	incoming, err := c.diagnosticIncomingObservation(t.Context(), []asset.Asset{target}, nil)
+	if err != nil || len(incoming[target.Identity.NativeID]) != 3 {
+		t.Fatal("observation lost a linked setting", incoming, err)
+	}
+	if f.calls["GET "+source] != 2 || f.calls["GET "+group] != 1 {
+		t.Fatal("observation repeated a scope's context reads", f.calls["GET "+source], f.calls["GET "+group])
+	}
+}
+
+// Contexts are read concurrently within the bound, once per scope, and each
+// lookup sees its own scope's result, so the first error in caller order wins.
+func TestDiagnosticContextsReadConcurrentlyInOrder(t *testing.T) {
+	f, vaults, _, _ := diagnosticDiscoveryFixture(t, 12)
+	var scopes []string
+	for _, id := range vaults {
+		wire, err := diagnosticSourceWire(text(f.sources[id]["id"]))
+		if err != nil {
+			t.Fatal(err)
+		}
+		scopes = append(scopes, wire)
+	}
+	scopes = append(scopes, scopes...)
+	c, err := f.runtime.resolve(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var mu sync.Mutex
+	inFlight, peak := 0, 0
+	transport := c.http.Transport
+	c.http.Transport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		if slices.Contains(vaults, strings.ToLower(req.URL.Path)) {
+			mu.Lock()
+			inFlight++
+			peak = max(peak, inFlight)
+			mu.Unlock()
+			defer func() { mu.Lock(); inFlight--; mu.Unlock() }()
+			time.Sleep(5 * time.Millisecond)
+		}
+		return transport.RoundTrip(req)
+	})
+	lookup := c.diagnosticContexts(t.Context(), scopes)
+	for _, scope := range scopes {
+		if state, err := lookup(scope); err != nil || !state.verified {
+			t.Fatal("context lookup failed", scope, err)
+		}
+	}
+	for _, id := range vaults {
+		if f.calls["GET "+id] != 1 {
+			t.Fatal("scope context not read exactly once", id, f.calls["GET "+id])
+		}
+	}
+	if peak < 2 || peak > detailReadConcurrency {
+		t.Fatal("context reads were not concurrent within the bound", peak)
+	}
+	f.override = func(req *http.Request) (*http.Response, bool) {
+		switch strings.ToLower(req.URL.Path) {
+		case vaults[2]:
+			return jsonResponse(403, map[string]any{"error": map[string]any{"code": "FirstDenied", "message": "first"}}, nil), true
+		case vaults[9]:
+			return jsonResponse(403, map[string]any{"error": map[string]any{"code": "LaterDenied", "message": "later"}}, nil), true
+		}
+		return nil, false
+	}
+	for range 5 {
+		clear(f.calls)
+		lookup := c.diagnosticContexts(t.Context(), scopes)
+		var first error
+		for i, scope := range scopes {
+			_, err := lookup(scope)
+			if first == nil {
+				first = err
+			}
+			if (err != nil) != (i%12 == 2 || i%12 == 9) || errors.Is(err, errReadNotStarted) {
+				t.Fatal("lookup did not report its own scope's result", i, err)
+			}
+		}
+		if first == nil || !strings.Contains(first.Error(), "FirstDenied") {
+			t.Fatal("first failing scope in order was not reported first", first)
+		}
+		for _, id := range vaults {
+			if f.calls["GET "+id] != 1 {
+				t.Fatal("scope context not read exactly once after a failure", id, f.calls["GET "+id])
+			}
 		}
 	}
 }

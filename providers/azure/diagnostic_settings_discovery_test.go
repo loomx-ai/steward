@@ -7,6 +7,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -74,8 +75,115 @@ func TestDiagnosticSourceWalkReadsEachSourceOnce(t *testing.T) {
 	if f.calls["GET "+network+"/subnets"] != 1 || f.calls["GET /subscriptions/"+testSubscription+"/resources"] != 1 {
 		t.Fatal("child or index list repeated", f.calls)
 	}
-	if peak < 2 || peak > detailReadConcurrency {
+	if peak < 2 || peak > diagnosticSourceConcurrency {
 		t.Fatal("source reads were not concurrent within the bound", peak)
+	}
+}
+
+// diagnosticSubtreeFixture indexes one network whose subnets are listed only as
+// its children, served by serve.
+func diagnosticSubtreeFixture(t *testing.T, subnets int, serve func(i int) *http.Response) (*diagnosticFixture, []string) {
+	t.Helper()
+	f := newDiagnosticFixture(t)
+	clear(f.sources)
+	network := nativeResource(vnetType, "net", "westus", map[string]any{"provisioningState": "Succeeded"})
+	networkID := strings.ToLower(text(network["id"]))
+	f.sources[networkID] = network
+	var ids []string
+	var values []any
+	for i := range subnets {
+		name := fmt.Sprintf("s%02d", i)
+		values = append(values, map[string]any{"id": text(network["id"]) + "/subnets/" + name, "name": name, "type": subnetType, "properties": map[string]any{"provisioningState": "Succeeded"}})
+		ids = append(ids, networkID+"/subnets/"+name)
+	}
+	f.override = func(req *http.Request) (*http.Response, bool) {
+		path := strings.ToLower(req.URL.Path)
+		if req.Method == "GET" && path == networkID+"/subnets" {
+			return jsonResponse(200, map[string]any{"value": values}, nil), true
+		}
+		if i := slices.Index(ids, path); req.Method == "GET" && i >= 0 {
+			if response := serve(i); response != nil {
+				return response, true
+			}
+			return jsonResponse(200, values[i], nil), true
+		}
+		return nil, false
+	}
+	return f, ids
+}
+
+// Children are expanded concurrently under the walk's one bound, each read
+// once, and the walk keeps every child.
+func TestDiagnosticSourceWalkExpandsChildrenConcurrently(t *testing.T) {
+	f, subnets := diagnosticSubtreeFixture(t, 40, func(int) *http.Response { return nil })
+	c, err := f.runtime.resolve(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var mu sync.Mutex
+	inFlight, peak := 0, 0
+	transport := c.http.Transport
+	c.http.Transport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		mu.Lock()
+		inFlight++
+		peak = max(peak, inFlight)
+		mu.Unlock()
+		defer func() { mu.Lock(); inFlight--; mu.Unlock() }()
+		time.Sleep(5 * time.Millisecond)
+		return transport.RoundTrip(req)
+	})
+	clear(f.calls)
+	sources, err := c.diagnosticSourceCandidates(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, id := range subnets {
+		if sources[id] == nil || f.calls["GET "+id] != 1 {
+			t.Fatal("child not discovered by exactly one read", id, sources[id] != nil, f.calls["GET "+id])
+		}
+	}
+	if peak < 2 || peak > diagnosticSourceConcurrency {
+		t.Fatal("child reads were not concurrent within the walk's bound", peak)
+	}
+}
+
+// Within a subtree the first failing child in order is reported; once the
+// merge reaches it, reads still outstanding are canceled.
+func TestDiagnosticSourceWalkCancelsAfterFirstChildFailure(t *testing.T) {
+	var timedOut atomic.Int32
+	f, _ := diagnosticSubtreeFixture(t, 10, func(i int) *http.Response {
+		switch i {
+		case 1:
+			return jsonResponse(403, map[string]any{"error": map[string]any{"code": "FirstDenied", "message": "first"}}, nil)
+		case 6:
+			return jsonResponse(403, map[string]any{"error": map[string]any{"code": "LaterDenied", "message": "later"}}, nil)
+		}
+		return nil
+	})
+	c, err := f.runtime.resolve(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	transport := c.http.Transport
+	c.http.Transport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		// Children after the failure hang (outside the fixture's lock) until canceled.
+		if name := last(req.URL.Path); strings.Contains(req.URL.Path, "/subnets/") && name > "s01" && name != "s06" {
+			select {
+			case <-req.Context().Done():
+				return nil, req.Context().Err()
+			case <-time.After(5 * time.Second):
+				timedOut.Add(1)
+			}
+		}
+		return transport.RoundTrip(req)
+	})
+	for range 5 {
+		if sources, err := c.diagnosticSourceCandidates(t.Context()); err == nil || !strings.Contains(err.Error(), "FirstDenied") || sources != nil {
+			t.Fatal("first failing child was not the reported error", err)
+		}
+	}
+	if timedOut.Load() != 0 {
+		t.Fatal("outstanding reads were not canceled after the first failure", timedOut.Load())
 	}
 }
 

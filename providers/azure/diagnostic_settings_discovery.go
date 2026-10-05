@@ -21,38 +21,54 @@ func (c *client) diagnosticSourceCandidates(ctx context.Context) (map[string]map
 	return maps.Clone(sources), err
 }
 
+// diagnosticSourceConcurrency bounds one walk's in-flight source reads.
+const diagnosticSourceConcurrency = 16
+
+// diagnosticSourceAhead bounds how many index rows' subtrees run ahead of the
+// ordered merge, so a large subscription does not park a goroutine per row.
+const diagnosticSourceAhead = 4 * diagnosticSourceConcurrency
+
+// diagnosticWalk is one walk's shared state. Only HTTP reads hold a slot;
+// waiting on a shared read or on children holds none, so the walk cannot
+// deadlock on its own bound.
+type diagnosticWalk struct {
+	ctx   context.Context
+	reads sync.Map
+	slots chan struct{}
+	wg    sync.WaitGroup
+}
+
 // diagnosticSourceNode holds one visit's reads, made before the ordered merge
 // that decides, as the serial visit did, which listing of a source is kept.
+// done closes once the node's own reads are made and its children started.
 type diagnosticSourceNode struct {
 	raw, stored map[string]any
 	id, kind    string
-	expanded    bool // false: not read ahead; the merge reads it if it gets there
 	early       bool // err precedes the duplicate check
 	err         error
 	children    []*diagnosticSourceNode
+	done        chan struct{}
 }
 
-// Each index row's subtree is read concurrently (serially within), then merged
-// in index order. The merge is the serial visit over those reads, so the same
-// listing wins and the first error in visit order is returned; a subtree the
-// read-ahead skipped after a failure is read when the merge reaches it. Reads
-// of one endpoint are shared within the walk, so a source listed both in the
-// index and as a child is read once, as the serial visit did.
+// Every node, at any depth, is read concurrently within one per-walk bound and
+// merged in visit order, waiting on each node as the merge reaches it. The
+// merge is the serial visit over those reads, so the same listing wins and the
+// first error in visit order is returned; a node read ahead past that error is
+// only discarded. Reads of one endpoint are shared within the walk, so a source
+// listed both in the index and as a child is read once, as the serial visit
+// did. Once the merge decides, outstanding reads are canceled.
 func (c *client) diagnosticSourceWalk(ctx context.Context) (map[string]map[string]any, error) {
 	rows, err := c.insightsARMIndex(ctx, c.root()+"/resources")
 	if err != nil {
 		return nil, err
 	}
-	reads := &sync.Map{}
-	nodes, _ := readConcurrently(len(rows), func(i int) (*diagnosticSourceNode, error) {
-		return c.diagnosticSourceExpand(ctx, object(rows[i]), reads)
-	})
+	ctx, cancel := context.WithCancel(ctx)
+	w := &diagnosticWalk{ctx: ctx, slots: make(chan struct{}, diagnosticSourceConcurrency)}
+	defer func() { cancel(); w.wg.Wait() }()
 	sources := map[string]map[string]any{}
 	var merge func(*diagnosticSourceNode) error
 	merge = func(n *diagnosticSourceNode) error {
-		if !n.expanded {
-			n, _ = c.diagnosticSourceExpand(ctx, n.raw, reads)
-		}
+		<-n.done
 		if n.early {
 			return n.err
 		}
@@ -88,62 +104,71 @@ func (c *client) diagnosticSourceWalk(ctx context.Context) (map[string]map[strin
 		}
 		return nil
 	}
+	nodes := make([]*diagnosticSourceNode, len(rows))
 	seen := map[string]bool{}
 	for i, value := range rows {
+		for j := i; j < min(i+diagnosticSourceAhead, len(rows)); j++ {
+			if nodes[j] == nil {
+				nodes[j] = c.diagnosticSourceExpand(w, object(rows[j]))
+			}
+		}
 		raw := object(value)
 		id, _, err := parseID(text(raw["id"]))
 		if err != nil || seen[id] {
 			return nil, serviceDenied("duplicate_diagnostic_source_index_identity")
 		}
 		seen[id] = true
-		node := nodes[i]
-		if node == nil { // Not started after an earlier failure.
-			node = &diagnosticSourceNode{raw: raw}
-		}
-		if err := merge(node); err != nil {
+		if err := merge(nodes[i]); err != nil {
 			return nil, err
 		}
 	}
 	return sources, nil
 }
 
-// diagnosticSourceExpand makes one serial visit's reads for raw and its
-// subtree, returning the subtree's first error. After a failing child the
-// remaining children are left unread.
-func (c *client) diagnosticSourceExpand(ctx context.Context, raw map[string]any, reads *sync.Map) (*diagnosticSourceNode, error) {
-	n := &diagnosticSourceNode{raw: raw, expanded: true, early: true}
+// diagnosticSourceExpand starts one node's reads and, once they succeed, its
+// children's. The returned node is complete when its done channel closes.
+func (c *client) diagnosticSourceExpand(w *diagnosticWalk, raw map[string]any) *diagnosticSourceNode {
+	n := &diagnosticSourceNode{raw: raw, early: true, done: make(chan struct{})}
+	w.wg.Add(1)
+	go func() {
+		defer w.wg.Done()
+		defer close(n.done)
+		n.err = c.diagnosticSourceVisit(w, n)
+	}()
+	return n
+}
+
+func (c *client) diagnosticSourceVisit(w *diagnosticWalk, n *diagnosticSourceNode) error {
+	raw := n.raw
 	id, kind, err := parseID(text(raw["id"]))
 	if err != nil || !strings.HasPrefix(id, c.root()+"/") || text(raw["type"]) != "" && !validResponseType(kind, text(raw["type"])) || diagnosticSourceMetadata(raw) != nil {
-		n.err = serviceDenied("invalid_diagnostic_source_index_identity")
-		return n, n.err
+		return serviceDenied("invalid_diagnostic_source_index_identity")
 	}
 	if rbacResourceKind(kind) != "" {
-		n.err = rbacListedIdentity(raw)
-		return n, n.err
+		return rbacListedIdentity(raw)
 	}
 	n.id, n.kind, n.early, n.stored = id, kind, false, raw
-	fail := func(err error) (*diagnosticSourceNode, error) { n.err = err; return n, err }
 	mapping, known := findType(kind)
 	var live map[string]any
 	endpoint := ""
 	if known && kind != strings.ToLower(diagnosticSettingsType) {
 		if endpoint, err = c.resourceURL(mapping, responseID(mapping.NativeType, text(raw["id"]))); err != nil {
-			return fail(err)
+			return err
 		}
-		current, err := walkShared(reads, "GET "+endpoint, func() (response, error) { return c.request(ctx, "GET", endpoint) })
+		current, err := walkShared(w, "GET "+endpoint, func() (response, error) { return c.request(w.ctx, "GET", endpoint) })
 		if err != nil {
-			return fail(err)
+			return err
 		}
 		if !insightsARMReadValid(current, id, kind) || diagnosticSourceMetadata(current.data) != nil || serviceListedIncarnation(raw, current.data) != nil {
-			return fail(serviceDenied("diagnostic_source_index_changed"))
+			return serviceDenied("diagnostic_source_index_changed")
 		}
 		if isCosmosType(kind) && cosmosListedIncarnation(kind, raw, current.data) != nil {
-			return fail(serviceDenied("diagnostic_source_index_changed"))
+			return serviceDenied("diagnostic_source_index_changed")
 		}
 		wire, wireErr := diagnosticSourceWire(text(raw["id"]))
 		currentWire, currentErr := diagnosticSourceWire(responseID(mapping.NativeType, text(current.data["id"])))
 		if wireErr != nil || currentErr != nil || wire != currentWire {
-			return fail(serviceDenied("diagnostic_source_index_name_changed"))
+			return serviceDenied("diagnostic_source_index_name_changed")
 		}
 		if HasServiceCascade(mapping.NativeType) {
 			live = batchClone(current.data)
@@ -152,31 +177,34 @@ func (c *client) diagnosticSourceExpand(ctx context.Context, raw map[string]any,
 		n.stored["id"] = responseID(mapping.NativeType, text(current.data["id"]))
 	}
 	if !known || strings.EqualFold(kind, diagnosticSettingsType) {
-		return n, nil
+		return nil
 	}
-	children, err := walkShared(reads, "children "+endpoint, func() ([]map[string]any, error) { return c.childrenOf(ctx, mapping, n.stored, live) })
+	children, err := walkShared(w, "children "+endpoint, func() ([]map[string]any, error) { return c.childrenOf(w.ctx, mapping, n.stored, live) })
 	if err != nil {
-		return fail(err)
+		return err
 	}
-	for i, child := range children {
-		node, err := c.diagnosticSourceExpand(ctx, child, reads)
-		n.children = append(n.children, node)
-		if err != nil {
-			for _, rest := range children[i+1:] {
-				n.children = append(n.children, &diagnosticSourceNode{raw: rest})
-			}
-			return n, err
-		}
+	for _, child := range children {
+		n.children = append(n.children, c.diagnosticSourceExpand(w, child))
 	}
-	return n, nil
+	return nil
 }
 
-// walkShared runs read once per key within one walk; later callers wait for
-// and share its result. read must not itself wait on another key.
-func walkShared[T any](reads *sync.Map, key string, read func() (T, error)) (T, error) {
-	value, _ := reads.LoadOrStore(key, &walkRead{})
+// walkShared runs read once per key within one walk, holding one of the walk's
+// slots; later callers wait for and share its result without a slot. read
+// must not itself wait on another key.
+func walkShared[T any](w *diagnosticWalk, key string, read func() (T, error)) (T, error) {
+	value, _ := w.reads.LoadOrStore(key, &walkRead{})
 	shared := value.(*walkRead)
-	shared.once.Do(func() { shared.value, shared.err = read() })
+	shared.once.Do(func() {
+		select {
+		case w.slots <- struct{}{}:
+			defer func() { <-w.slots }()
+		case <-w.ctx.Done():
+		}
+		if shared.err = w.ctx.Err(); shared.err == nil { // A free slot may race the cancel.
+			shared.value, shared.err = read()
+		}
+	})
 	result, _ := shared.value.(T)
 	return result, shared.err
 }

@@ -102,6 +102,32 @@ func (c *client) diagnosticContext(ctx context.Context, scope string) (diagnosti
 	return result, nil
 }
 
+// diagnosticContexts reads each distinct scope's context once, concurrently,
+// for one snapshot or observation. Callers look scopes up in their own order,
+// so each sees exactly the result (and first error) its serial read would; a
+// scope not started after another scope failed is read when looked up.
+func (c *client) diagnosticContexts(ctx context.Context, scopes []string) func(string) (diagnosticContextState, error) {
+	unique := []string{}
+	position := map[string]int{}
+	for _, scope := range scopes {
+		if _, ok := position[scope]; !ok {
+			position[scope] = len(unique)
+			unique = append(unique, scope)
+		}
+	}
+	states, errs := readConcurrently(len(unique), func(i int) (diagnosticContextState, error) { return c.diagnosticContext(ctx, unique[i]) })
+	return func(scope string) (diagnosticContextState, error) {
+		i, ok := position[scope]
+		if !ok {
+			return c.diagnosticContext(ctx, scope)
+		}
+		if errs[i] == errReadNotStarted {
+			states[i], errs[i] = c.diagnosticContext(ctx, scope)
+		}
+		return states[i], errs[i]
+	}
+}
+
 func (c *client) diagnosticReferenceBinding(id, configuration, context string, refs map[string]any) string {
 	return c.privateConfiguration(map[string]any{"id": id, "kind": diagnosticSettingsType, "configuration": configuration, "context": context, "references": refs})
 }
@@ -121,7 +147,7 @@ func (c *client) diagnosticPlannedWire(id string, normalized map[string]any) (st
 	return wire, nil
 }
 
-func (r *Runtime) diagnosticInventoryItem(ctx context.Context, c *client, raw map[string]any, locks []any) (contracts.InventoryItem, error) {
+func (r *Runtime) diagnosticInventoryItem(c *client, raw map[string]any, locks []any, contexts func(string) (diagnosticContextState, error)) (contracts.InventoryItem, error) {
 	id, scope, kind, err := diagnosticResourceID(text(raw["id"]))
 	if err != nil || kind != diagnosticSettingsType || !strings.HasPrefix(id, c.root()+"/") || diagnosticIdentity(raw, id, kind) != nil {
 		return contracts.InventoryItem{}, serviceDenied("invalid_diagnostic_inventory_identity")
@@ -130,7 +156,7 @@ func (r *Runtime) diagnosticInventoryItem(ctx context.Context, c *client, raw ma
 	if err != nil {
 		return contracts.InventoryItem{}, err
 	}
-	state, err := c.diagnosticContext(ctx, diagnosticWireScope(wire))
+	state, err := contexts(diagnosticWireScope(wire))
 	if err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
@@ -208,8 +234,15 @@ func (r *Runtime) diagnosticInventorySnapshot(ctx context.Context, c *client, re
 	for id, raw := range sources {
 		sourceBindings[id] = diagnosticSourceStamp(raw)
 	}
-	for _, id := range slices.Sorted(maps.Keys(settings)) {
-		item, err := r.diagnosticInventoryItem(ctx, c, settings[id], locks)
+	ids, scopes := slices.Sorted(maps.Keys(settings)), []string{}
+	for _, id := range ids {
+		if wire, err := diagnosticWireID(text(settings[id]["id"])); err == nil {
+			scopes = append(scopes, diagnosticWireScope(wire))
+		}
+	}
+	contexts := c.diagnosticContexts(ctx, scopes)
+	for _, id := range ids {
+		item, err := r.diagnosticInventoryItem(c, settings[id], locks, contexts)
 		if err != nil {
 			return nil, nil, "", err
 		}

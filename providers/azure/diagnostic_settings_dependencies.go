@@ -53,7 +53,28 @@ func (c *client) diagnosticIncomingObservation(ctx context.Context, targets, kno
 	for i, target := range targets {
 		byID[target.Identity.NativeID] = append(byID[target.Identity.NativeID], i)
 	}
-	for _, id := range slices.Sorted(maps.Keys(settings)) {
+	// Linked settings' contexts are read up front, concurrently and once per
+	// scope; the loop below still takes results and the first error in order.
+	ids, linkedScopes := slices.Sorted(maps.Keys(settings)), []string{}
+	for _, id := range ids {
+		refs, err := diagnosticReferences(id, settings[id])
+		if err != nil {
+			break // Reported in order below.
+		}
+		linked := false
+		for kind, references := range refs {
+			for _, reference := range references {
+				for _, i := range byID[reference] {
+					linked = linked || strings.EqualFold(kind, targets[i].Identity.NativeType)
+				}
+			}
+		}
+		if wire, err := diagnosticWireID(text(settings[id]["id"])); linked && err == nil {
+			linkedScopes = append(linkedScopes, diagnosticWireScope(wire))
+		}
+	}
+	contexts := c.diagnosticContexts(ctx, linkedScopes)
+	for _, id := range ids {
 		raw := settings[id]
 		refs, err := diagnosticReferences(id, raw)
 		if err != nil {
@@ -77,7 +98,7 @@ func (c *client) diagnosticIncomingObservation(ctx context.Context, targets, kno
 				if err != nil {
 					return nil, err
 				}
-				current, err := c.diagnosticContext(ctx, diagnosticWireScope(wire))
+				current, err := contexts(diagnosticWireScope(wire))
 				if err != nil {
 					return nil, err
 				}
