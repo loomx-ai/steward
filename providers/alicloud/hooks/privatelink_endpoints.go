@@ -34,6 +34,8 @@ func (*PrivateLinkEndpoints) Contribute(
 	ordered := append([]asset.Asset(nil), assets...)
 	sort.Slice(ordered, func(i, j int) bool { return ordered[i].ID < ordered[j].ID })
 
+	byNativeID := indexAssetsByNativeID(ordered)
+	systemGroupsByName := privateLinkSystemSecurityGroupsByName(ordered)
 	result := governance.Contribution{}
 	for _, endpoint := range ordered {
 		if endpoint.Identity.Provider != asset.ProviderAliCloud ||
@@ -56,7 +58,7 @@ func (*PrivateLinkEndpoints) Contribute(
 					}
 				}
 			}
-			managed, resolved := resolvePrivateLinkENI(endpoint, eniID, ordered)
+			managed, resolved := resolveScopedAsset(endpoint, networkInterfaceNativeType, eniID, byNativeID)
 			if !resolved {
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{
 					Provider: endpoint.Identity.Provider, ConnectionID: endpoint.Identity.ConnectionID,
@@ -82,7 +84,7 @@ func (*PrivateLinkEndpoints) Contribute(
 				EvidenceSource: privateLinkEndpointEvidence, Evidence: evidence, Confidence: 1,
 			})
 		}
-		for _, securityGroup := range privateLinkSystemSecurityGroups(endpoint, ordered) {
+		for _, securityGroup := range privateLinkSystemSecurityGroups(endpoint, systemGroupsByName) {
 			evidence := map[string]any{
 				"source":            privateLinkSystemSecurityGroupSource,
 				"endpoint_id":       endpoint.Identity.NativeID,
@@ -116,19 +118,12 @@ func (*PrivateLinkEndpoints) Contribute(
 	return result, nil
 }
 
-func privateLinkSystemSecurityGroups(
-	endpoint asset.Asset,
-	assets []asset.Asset,
-) []asset.Asset {
-	wantName := privateLinkSystemSecurityGroupPrefix +
-		strings.TrimSpace(endpoint.Identity.NativeID)
-	result := make([]asset.Asset, 0, 1)
+// privateLinkSystemSecurityGroupsByName groups the service-managed security
+// groups by name, keeping the input order within each name.
+func privateLinkSystemSecurityGroupsByName(assets []asset.Asset) map[string][]asset.Asset {
+	result := make(map[string][]asset.Asset)
 	for _, candidate := range assets {
-		if candidate.Identity.Provider != endpoint.Identity.Provider ||
-			candidate.Identity.ConnectionID != endpoint.Identity.ConnectionID ||
-			candidate.Identity.Partition != endpoint.Identity.Partition ||
-			candidate.Identity.NativeType != securityGroupNativeType ||
-			!sameLifecycleScope(endpoint, candidate) ||
+		if candidate.Identity.NativeType != securityGroupNativeType ||
 			!normalizedBool(candidate.Normalized[alicloud.NormalizedServiceManagedField]) {
 			continue
 		}
@@ -136,9 +131,26 @@ func privateLinkSystemSecurityGroups(
 		if name == "" {
 			name = strings.TrimSpace(normalizedScalar(candidate.Normalized["name"]))
 		}
-		if name == wantName {
-			result = append(result, candidate)
+		result[name] = append(result[name], candidate)
+	}
+	return result
+}
+
+func privateLinkSystemSecurityGroups(
+	endpoint asset.Asset,
+	groupsByName map[string][]asset.Asset,
+) []asset.Asset {
+	wantName := privateLinkSystemSecurityGroupPrefix +
+		strings.TrimSpace(endpoint.Identity.NativeID)
+	result := make([]asset.Asset, 0, 1)
+	for _, candidate := range groupsByName[wantName] {
+		if candidate.Identity.Provider != endpoint.Identity.Provider ||
+			candidate.Identity.ConnectionID != endpoint.Identity.ConnectionID ||
+			candidate.Identity.Partition != endpoint.Identity.Partition ||
+			!sameLifecycleScope(endpoint, candidate) {
+			continue
 		}
+		result = append(result, candidate)
 	}
 	return result
 }
@@ -156,27 +168,4 @@ func privateLinkZonesByENI(endpoint asset.Asset) map[string]map[string]any {
 		}
 	}
 	return result
-}
-
-func resolvePrivateLinkENI(
-	endpoint asset.Asset,
-	eniID string,
-	assets []asset.Asset,
-) (asset.Asset, bool) {
-	var result asset.Asset
-	for _, candidate := range assets {
-		if candidate.Identity.Provider != endpoint.Identity.Provider ||
-			candidate.Identity.ConnectionID != endpoint.Identity.ConnectionID ||
-			candidate.Identity.Partition != endpoint.Identity.Partition ||
-			candidate.Identity.NativeType != networkInterfaceNativeType ||
-			strings.TrimSpace(candidate.Identity.NativeID) != strings.TrimSpace(eniID) ||
-			!sameLifecycleScope(endpoint, candidate) {
-			continue
-		}
-		if result.ID != "" {
-			return asset.Asset{}, false
-		}
-		result = candidate
-	}
-	return result, result.ID != ""
 }

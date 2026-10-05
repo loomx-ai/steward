@@ -33,6 +33,14 @@ func (*ARMSEnvironments) Contribute(
 	ordered := append([]asset.Asset(nil), assets...)
 	sort.Slice(ordered, func(i, j int) bool { return ordered[i].ID < ordered[j].ID })
 
+	// ENIs grouped by VPC and vSwitch, which an environment must both match.
+	networkInterfacesByNetwork := make(map[[2]string][]asset.Asset)
+	for _, networkInterface := range ordered {
+		if networkInterface.Identity.NativeType == networkInterfaceNativeType {
+			key := [2]string{diskStringValue(networkInterface, "vpc_id"), diskStringValue(networkInterface, "vswitch_id")}
+			networkInterfacesByNetwork[key] = append(networkInterfacesByNetwork[key], networkInterface)
+		}
+	}
 	candidatesByENI := make(map[asset.AssetID][]armsEnvironmentENICandidate)
 	for _, environment := range ordered {
 		if environment.Identity.Provider != asset.ProviderAliCloud ||
@@ -42,7 +50,8 @@ func (*ARMSEnvironments) Contribute(
 			continue
 		}
 		matches := make([]asset.Asset, 0, 1)
-		for _, networkInterface := range ordered {
+		network := [2]string{diskStringValue(environment, "vpcId"), diskStringValue(environment, "vSwitchId")}
+		for _, networkInterface := range networkInterfacesByNetwork[network] {
 			if armsEnvironmentNetworkInterfaceMatches(environment, networkInterface) {
 				matches = append(matches, networkInterface)
 			}
