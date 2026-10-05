@@ -14,7 +14,7 @@ How it works:
 
 This is workload authentication between servers. It is not the same as [browser sign-in](./connections.md#browser).
 
-The **OIDC workload identity** option appears in the connection form only after the server operator has configured it. In Steward Cloud, it appears only if LoomX has enabled it for your workspace.
+The **OIDC workload identity** option appears in the connection form only after the server operator has configured it. In Steward Cloud, it appears only once LoomX has enabled it.
 
 ## Enable OIDC on the server
 

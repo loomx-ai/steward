@@ -14,7 +14,7 @@ OIDC 连接让 Steward 在不保存长期 AccessKey 的情况下访问你的云�
 
 这是服务之间的工作负载认证，与[浏览器登录](./connections.md#browser)不同。
 
-只有服务运维者完成配置后，连接表单中才会出现 **OIDC 工作负载身份** 选项。在 Steward Cloud 中，只有 LoomX 为你的工作空间开启后才会出现。
+只有服务运维者完成配置后，连接表单中才会出现 **OIDC 工作负载身份** 选项。在 Steward Cloud 中，只有 LoomX 开启后才会出现。
 
 ## 在服务端启用 OIDC
 
