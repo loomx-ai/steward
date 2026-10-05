@@ -102,51 +102,60 @@ func describeConfigRules(ctx context.Context, client ConfigNativeAPI, names []st
 // enrichConformancePacks records the rules each pack deployed, so deleting the
 // pack shows them as deleted with it.
 func enrichConformancePacks(ctx context.Context, client ConfigNativeAPI, items []contracts.InventoryItem, indexes []int) error {
-	for _, index := range indexes {
-		name := items[index].NativeID
-		if strings.HasPrefix(name, organizationConformancePackPrefix) {
+	packRules := make([][]string, len(indexes))
+	if err := forEachConcurrently(len(indexes), lifecycleReadConcurrency, func(i int) (err error) {
+		packRules[i], err = conformancePackRules(ctx, client, items[indexes[i]].NativeID)
+		return err
+	}); err != nil {
+		return err
+	}
+	for i, index := range indexes {
+		if strings.HasPrefix(items[index].NativeID, organizationConformancePackPrefix) {
 			actionable := false
 			items[index].Actionable = &actionable
 			items[index].Normalized["cleanup_protection_reason"] = "organization_conformance_pack_member"
 		}
-		rules := map[string]bool{}
-		token := ""
-		missing := false
-		for {
-			input := &awsconfigservice.DescribeConformancePackComplianceInput{ConformancePackName: awssdk.String(name), Limit: 1000}
-			if token != "" {
-				input.NextToken = awssdk.String(token)
-			}
-			execution.LogCloudAPIRequest(ctx, "config", "DescribeConformancePackCompliance", contracts.CloudLogPayload(ctx, map[string]any{"ConformancePackName": name, "NextToken": token}))
-			output, err := client.DescribeConformancePackCompliance(ctx, input)
-			if err != nil {
-				execution.LogCloudAPIFailure(ctx, "config", "DescribeConformancePackCompliance", err)
-				if nativeNotFound(err, "NoSuchConformancePackException") {
-					missing = true
-					break
-				}
-				return NormalizeError(err)
-			}
-			for _, rule := range output.ConformancePackRuleComplianceList {
-				if value := awssdk.ToString(rule.ConfigRuleName); value != "" {
-					rules[value] = true
-				}
-			}
-			next := awssdk.ToString(output.NextToken)
-			if next == "" || next == token {
-				break
-			}
-			token = next
+		if packRules[i] != nil {
+			items[index].Normalized[conformancePackRulesField] = packRules[i]
 		}
-		if missing {
-			continue
-		}
-		names := make([]string, 0, len(rules))
-		for rule := range rules {
-			names = append(names, rule)
-		}
-		sort.Strings(names)
-		items[index].Normalized[conformancePackRulesField] = names
 	}
 	return nil
+}
+
+// conformancePackRules returns the pack's sorted rule names, or nil when the
+// pack was deleted since listing.
+func conformancePackRules(ctx context.Context, client ConfigNativeAPI, name string) ([]string, error) {
+	rules := map[string]bool{}
+	token := ""
+	for {
+		input := &awsconfigservice.DescribeConformancePackComplianceInput{ConformancePackName: awssdk.String(name), Limit: 1000}
+		if token != "" {
+			input.NextToken = awssdk.String(token)
+		}
+		execution.LogCloudAPIRequest(ctx, "config", "DescribeConformancePackCompliance", contracts.CloudLogPayload(ctx, map[string]any{"ConformancePackName": name, "NextToken": token}))
+		output, err := client.DescribeConformancePackCompliance(ctx, input)
+		if err != nil {
+			execution.LogCloudAPIFailure(ctx, "config", "DescribeConformancePackCompliance", err)
+			if nativeNotFound(err, "NoSuchConformancePackException") {
+				return nil, nil
+			}
+			return nil, NormalizeError(err)
+		}
+		for _, rule := range output.ConformancePackRuleComplianceList {
+			if value := awssdk.ToString(rule.ConfigRuleName); value != "" {
+				rules[value] = true
+			}
+		}
+		next := awssdk.ToString(output.NextToken)
+		if next == "" || next == token {
+			break
+		}
+		token = next
+	}
+	names := make([]string, 0, len(rules))
+	for rule := range rules {
+		names = append(names, rule)
+	}
+	sort.Strings(names)
+	return names, nil
 }

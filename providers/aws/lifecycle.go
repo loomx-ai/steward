@@ -235,7 +235,7 @@ func describeInstanceDocuments(ctx context.Context, client LifecycleEC2API, ids 
 		if token != "" {
 			input.NextToken = awssdk.String(token)
 		}
-		execution.LogCloudAPIRequest(ctx, "ec2", "DescribeInstances", contracts.CloudLogPayload(ctx, map[string]any{"InstanceIds": ids, "NextToken": token}))
+		execution.LogCloudAPIRequest(ctx, "ec2", "DescribeInstances", contracts.CloudLogPayload(ctx, map[string]any{"Filters": map[string]any{"instance-id": ids}, "NextToken": token}))
 		output, err := client.DescribeInstances(ctx, input)
 		if err != nil {
 			execution.LogCloudAPIFailure(ctx, "ec2", "DescribeInstances", err)
@@ -263,19 +263,9 @@ func enrichNetworkInterfaces(ctx context.Context, client LifecycleEC2API, items 
 		for _, index := range batch {
 			ids = append(ids, items[index].NativeID)
 		}
-		execution.LogCloudAPIRequest(ctx, "ec2", "DescribeNetworkInterfaces", contracts.CloudLogPayload(ctx, map[string]any{"NetworkInterfaceIds": ids}))
-		output, err := client.DescribeNetworkInterfaces(ctx, &awsec2.DescribeNetworkInterfacesInput{NetworkInterfaceIds: ids})
+		found, err := describeNetworkInterfaceDocuments(ctx, client, ids)
 		if err != nil {
-			execution.LogCloudAPIFailure(ctx, "ec2", "DescribeNetworkInterfaces", err)
-			return NormalizeError(err)
-		}
-		found := map[string]map[string]any{}
-		for _, value := range output.NetworkInterfaces {
-			document, err := nativeDocument(value)
-			if err != nil {
-				return err
-			}
-			found[awssdk.ToString(value.NetworkInterfaceId)] = document
+			return err
 		}
 		for _, index := range batch {
 			live, ok := found[items[index].NativeID]
@@ -300,6 +290,37 @@ func enrichNetworkInterfaces(ctx context.Context, client LifecycleEC2API, items 
 		}
 	}
 	return nil
+}
+
+// describeNetworkInterfaceDocuments filters by network-interface-id for the
+// same reason as describeInstanceDocuments: an interface deleted since the
+// inventory read (Lambda/ECS/EKS churn) is left out instead of failing the
+// batch. Callers pass at most describeBatchSize IDs, the per-filter value limit.
+func describeNetworkInterfaceDocuments(ctx context.Context, client LifecycleEC2API, ids []string) (map[string]map[string]any, error) {
+	result := map[string]map[string]any{}
+	token := ""
+	for {
+		input := &awsec2.DescribeNetworkInterfacesInput{Filters: []ec2types.Filter{{Name: awssdk.String("network-interface-id"), Values: ids}}}
+		if token != "" {
+			input.NextToken = awssdk.String(token)
+		}
+		execution.LogCloudAPIRequest(ctx, "ec2", "DescribeNetworkInterfaces", contracts.CloudLogPayload(ctx, map[string]any{"Filters": map[string]any{"network-interface-id": ids}, "NextToken": token}))
+		output, err := client.DescribeNetworkInterfaces(ctx, input)
+		if err != nil {
+			execution.LogCloudAPIFailure(ctx, "ec2", "DescribeNetworkInterfaces", err)
+			return nil, NormalizeError(err)
+		}
+		for _, value := range output.NetworkInterfaces {
+			document, err := nativeDocument(value)
+			if err != nil {
+				return nil, err
+			}
+			result[awssdk.ToString(value.NetworkInterfaceId)] = document
+		}
+		if token = awssdk.ToString(output.NextToken); token == "" {
+			return result, nil
+		}
+	}
 }
 
 func enrichAutoScalingGroups(ctx context.Context, client AutoScalingNativeAPI, items []contracts.InventoryItem, indexes []int) error {

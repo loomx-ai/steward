@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
@@ -273,5 +274,68 @@ func TestEnrichInstancesSkipsPurgedInstanceInOneCall(t *testing.T) {
 	// A purged instance keeps its inventory facts, as the per-ID NotFound path left it.
 	if items[1].State != "running" || len(items[1].Normalized) != 0 {
 		t.Fatalf("purged instance changed: %+v", items[1])
+	}
+}
+
+// filteringInterfacesEC2 behaves like EC2: named IDs fail the whole call when
+// one is unknown, a network-interface-id filter skips unknown IDs. It pages
+// one interface per call to exercise NextToken.
+type filteringInterfacesEC2 struct {
+	LifecycleEC2API
+	live  map[string]bool
+	calls int
+}
+
+func (f *filteringInterfacesEC2) DescribeNetworkInterfaces(_ context.Context, input *awsec2.DescribeNetworkInterfacesInput, _ ...func(*awsec2.Options)) (*awsec2.DescribeNetworkInterfacesOutput, error) {
+	f.calls++
+	if len(input.NetworkInterfaceIds) > 0 {
+		return nil, &APIError{Code: "InvalidNetworkInterfaceID.NotFound", StatusCode: 400}
+	}
+	var matches []string
+	for _, filter := range input.Filters {
+		if awssdk.ToString(filter.Name) != "network-interface-id" {
+			continue
+		}
+		for _, id := range filter.Values {
+			if f.live[id] {
+				matches = append(matches, id)
+			}
+		}
+	}
+	page := 0
+	if input.NextToken != nil {
+		page = len(awssdk.ToString(input.NextToken))
+	}
+	output := &awsec2.DescribeNetworkInterfacesOutput{}
+	if page < len(matches) {
+		output.NetworkInterfaces = []ec2types.NetworkInterface{{NetworkInterfaceId: awssdk.String(matches[page]), RequesterManaged: awssdk.Bool(true), InterfaceType: ec2types.NetworkInterfaceTypeLambda}}
+	}
+	if page+1 < len(matches) {
+		output.NextToken = awssdk.String(strings.Repeat("n", page+1))
+	}
+	return output, nil
+}
+
+func TestEnrichNetworkInterfacesSkipsDeletedInterface(t *testing.T) {
+	client := &filteringInterfacesEC2{live: map[string]bool{"eni-1": true, "eni-3": true}}
+	items := []contracts.InventoryItem{
+		{NativeID: "eni-1", Normalized: map[string]any{}},
+		{NativeID: "eni-2", Normalized: map[string]any{}},
+		{NativeID: "eni-3", Normalized: map[string]any{}},
+	}
+	if err := enrichNetworkInterfaces(context.Background(), client, items, []int{0, 1, 2}); err != nil {
+		t.Fatal(err)
+	}
+	if client.calls != 2 {
+		t.Fatalf("DescribeNetworkInterfaces calls = %d, want 2 pages", client.calls)
+	}
+	for _, index := range []int{0, 2} {
+		if items[index].Normalized[requesterManagedField] != true || items[index].Normalized["interface_type"] != "lambda" || items[index].Actionable == nil || *items[index].Actionable {
+			t.Fatalf("live interface %s not enriched: %+v", items[index].NativeID, items[index])
+		}
+	}
+	// A deleted interface keeps its inventory facts, as a deleted instance does.
+	if items[1].Actionable != nil || len(items[1].Normalized) != 0 {
+		t.Fatalf("deleted interface changed: %+v", items[1])
 	}
 }
