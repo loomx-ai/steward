@@ -254,7 +254,13 @@ func (s *Store) WithinFindingTx(ctx context.Context, fn func(persistence.Finding
 }
 
 func (s *Store) ReplaceGraph(ctx context.Context, scopeID asset.ScopeID, revision string, relationships []graph.Relationship, bindings []graph.LifecycleBinding, unresolved ...graph.UnresolvedReference) error {
-	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	return s.transaction(ctx, func(store *Store) error {
+		tx := store.db
+		var connectionIDs []string
+		if err := tx.Table("scopes").Where("id = ?", string(scopeID)).Pluck("connection_id", &connectionIDs).Error; err != nil {
+			return err
+		}
+		store.touch(connectionIDs...)
 		closedAt := time.Now().UTC()
 		payload, err := encode(unresolved)
 		if err != nil {
@@ -412,7 +418,19 @@ func (s *Store) CloseAssetTopology(ctx context.Context, assetID asset.AssetID, c
 	if assetID == "" || closedAt.IsZero() {
 		return errors.New("asset topology closure requires asset ID and closure time")
 	}
-	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	return s.transaction(ctx, func(store *Store) error {
+		tx := store.db
+		// The asset's connection, and that of any scope whose open rows the
+		// closure touches.
+		var connectionIDs []string
+		if err := tx.Raw(`SELECT connection_id FROM assets WHERE id = ?
+			UNION SELECT connection_id FROM scopes WHERE id IN (
+				SELECT scope_id FROM relationships WHERE closed_at IS NULL AND (source_asset_id = ? OR target_asset_id = ?)
+				UNION SELECT scope_id FROM lifecycle_bindings WHERE closed_at IS NULL AND (controller_asset_id = ? OR managed_asset_id = ?))`,
+			string(assetID), string(assetID), string(assetID), string(assetID), string(assetID)).Scan(&connectionIDs).Error; err != nil {
+			return err
+		}
+		store.touch(connectionIDs...)
 		if err := tx.
 			Table("relationships").
 			Where(
@@ -587,7 +605,28 @@ func (s *Store) PutFindings(ctx context.Context, values []finding.Finding) error
 		positions[row.ID] = len(rows)
 		rows = append(rows, row)
 	}
-	return upsertRevised(s.db.WithContext(ctx), "findings", rows, []string{"status", "severity", "last_seen_at", "closed_at", "payload"})
+	return s.write(ctx, func(store *Store) error {
+		assetIDs := make(map[string]struct{}, len(rows))
+		for _, row := range rows {
+			assetIDs[row.AssetID] = struct{}{}
+		}
+		if err := store.touchAssetConnections(slices.Sorted(maps.Keys(assetIDs))); err != nil {
+			return err
+		}
+		return upsertRevised(store.db, "findings", rows, []string{"status", "severity", "last_seen_at", "closed_at", "payload"})
+	})
+}
+
+// touchAssetConnections touches the connections that own assetIDs.
+func (s *Store) touchAssetConnections(assetIDs []string) error {
+	for start := 0; start < len(assetIDs); start += upsertBatchSize {
+		var connectionIDs []string
+		if err := s.db.Table("assets").Distinct("connection_id").Where("id IN ?", assetIDs[start:min(start+upsertBatchSize, len(assetIDs))]).Pluck("connection_id", &connectionIDs).Error; err != nil {
+			return err
+		}
+		s.touch(connectionIDs...)
+	}
+	return nil
 }
 
 func (s *Store) ListFindingsByAsset(ctx context.Context, assetID asset.AssetID) ([]finding.Finding, error) {
@@ -894,6 +933,15 @@ func (s *Store) UpdateImpactItems(ctx context.Context, cleanupTaskID plan.Cleanu
 		return nil
 	})
 }
+
+// revisionTotals is a table's row count and revision sum. Where every update
+// bumps a row's revision, the pair changes whenever the rows do.
+type revisionTotals struct {
+	Rows      int64 `gorm:"column:row_count"`
+	Revisions int64 `gorm:"column:revision_sum"`
+}
+
+const selectRevisionTotals = "COUNT(*) AS row_count, CAST(COALESCE(SUM(revision), 0) AS BIGINT) AS revision_sum"
 
 // CleanupTaskVersion changes whenever the task, its steps and impact rows, its
 // executions or their actions do: every update bumps a row revision, rows are

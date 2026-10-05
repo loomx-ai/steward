@@ -1309,6 +1309,29 @@ func Run(t *testing.T, factory Factory) {
 			"graph replace": func() error {
 				return repositories.Graph().ReplaceGraph(ctx, "scope-app", "graph-app", nil, nil)
 			},
+			"findings batch": func() error {
+				return repositories.Findings().PutFindings(ctx, []finding.Finding{persistedFinding})
+			},
+			"topology closure": func() error {
+				return repositories.Graph().CloseAssetTopology(ctx, active.ID, now)
+			},
+			// Writers inside an application transaction bump on its commit.
+			"nested asset rewrite": func() error {
+				return repositories.WithTx(ctx, func(tx persistence.Repositories) error {
+					return tx.Inventory().PutAsset(ctx, active)
+				})
+			},
+			"scope consolidation": func() error {
+				for _, scope := range []asset.Scope{
+					{ID: "scope-app-region", ConnectionID: "conn-app", Kind: asset.ScopeRegion, NativeID: "us-east-1", CreatedAt: now, UpdatedAt: now},
+					{ID: "scope-app-region-old", ConnectionID: "conn-app", Kind: asset.ScopeRegion, NativeID: "legacy-us-east-1", CreatedAt: now, UpdatedAt: now},
+				} {
+					if err := repositories.Inventory().PutScope(ctx, scope); err != nil {
+						return err
+					}
+				}
+				return repositories.Inventory().ConsolidateScopes(ctx, "scope-app-region", []asset.ScopeID{"scope-app-region-old"}, "")
+			},
 		} {
 			if err := mutate(); err != nil {
 				t.Fatalf("%s: %v", name, err)

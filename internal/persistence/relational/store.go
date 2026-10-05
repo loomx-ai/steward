@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -25,6 +27,65 @@ type Store struct {
 	// aliases memoizes scope aliases for one transaction, nested savepoints
 	// included; nil outside a transaction, where every call reads them fresh.
 	aliases *aliasMemo
+	// touched collects the connections whose inventory the transaction
+	// changed; nil outside a transaction.
+	touched *touchedConnections
+}
+
+// touchedConnections is bumped in inventory_versions as the outermost
+// transaction's last statement, in sorted order, so the counter rows are
+// locked last and briefly and two writers can never deadlock on them.
+type touchedConnections struct {
+	mu  sync.Mutex
+	ids map[string]struct{}
+}
+
+// touch records that this transaction changed the topology inputs (assets,
+// findings, relationships, lifecycle bindings, graph revisions) of
+// connections. Every writer of those tables calls it inside transaction().
+func (s *Store) touch(connectionIDs ...string) {
+	s.touched.mu.Lock()
+	defer s.touched.mu.Unlock()
+	if s.touched.ids == nil {
+		s.touched.ids = make(map[string]struct{})
+	}
+	for _, id := range connectionIDs {
+		if id != "" {
+			s.touched.ids[id] = struct{}{}
+		}
+	}
+}
+
+// write runs fn in the caller's transaction, or in a new one outside a
+// transaction, so a writer can touch connections without a savepoint.
+func (s *Store) write(ctx context.Context, fn func(*Store) error) error {
+	if s.touched != nil {
+		return fn(&Store{db: s.db.WithContext(ctx), aliases: s.aliases, touched: s.touched})
+	}
+	return s.transaction(ctx, fn)
+}
+
+func (t *touchedConnections) bump(tx *gorm.DB) error {
+	t.mu.Lock()
+	ids := slices.Sorted(maps.Keys(t.ids))
+	t.ids = nil
+	t.mu.Unlock()
+	if len(ids) == 0 {
+		return nil
+	}
+	rows := make([]inventoryVersionRow, len(ids))
+	for index, id := range ids {
+		rows[index] = inventoryVersionRow{ConnectionID: id, Version: 1}
+	}
+	return tx.Table("inventory_versions").Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "connection_id"}},
+		DoUpdates: clause.Assignments(map[string]any{"version": gorm.Expr("inventory_versions.version + 1")}),
+	}).CreateInBatches(rows, upsertBatchSize).Error
+}
+
+type inventoryVersionRow struct {
+	ConnectionID string `gorm:"column:connection_id;primaryKey"`
+	Version      int64  `gorm:"column:version"`
 }
 
 type aliasMemo struct {
@@ -51,14 +112,24 @@ func (s *Store) inTx(tx *gorm.DB) *Store {
 	if memo == nil {
 		memo = &aliasMemo{}
 	}
-	return &Store{db: tx, aliases: memo}
+	touched := s.touched
+	if touched == nil {
+		touched = &touchedConnections{}
+	}
+	return &Store{db: tx, aliases: memo, touched: touched}
 }
 
 func (s *Store) transaction(ctx context.Context, fn func(*Store) error) error {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		store := s.inTx(tx)
 		defer store.aliases.reset()
-		return fn(store)
+		if err := fn(store); err != nil {
+			return err
+		}
+		if s.touched == nil {
+			return store.touched.bump(tx)
+		}
+		return nil
 	})
 }
 
@@ -880,11 +951,13 @@ func (s *Store) ConsolidateScopes(ctx context.Context, canonicalID asset.ScopeID
 	if s.aliases != nil {
 		defer s.aliases.reset()
 	}
-	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	return s.transaction(ctx, func(store *Store) error {
+		tx := store.db
 		var canonicalRow scopeRow
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Table("scopes").Where("id = ?", string(canonicalID)).Take(&canonicalRow).Error; err != nil {
 			return mapError(err)
 		}
+		store.touch(canonicalRow.ConnectionID)
 		if canonicalRow.SupersededByID != "" {
 			return fmt.Errorf("%w: canonical scope %q is already superseded", persistence.ErrConflict, canonicalID)
 		}
@@ -1605,21 +1678,33 @@ func (s *Store) PutAssets(ctx context.Context, values []asset.Asset) error {
 		positions[row.ID] = len(rows)
 		rows = append(rows, row)
 	}
-	return upsertRevised(s.db.WithContext(ctx), "assets", rows, []string{"scope_id", "resource_kind_id", "last_seen_at", "closed_at", "deleted_at", "search_text", "payload"})
+	return s.write(ctx, func(store *Store) error {
+		for _, row := range rows {
+			store.touch(row.ConnectionID)
+		}
+		return upsertRevised(store.db, "assets", rows, []string{"scope_id", "resource_kind_id", "last_seen_at", "closed_at", "deleted_at", "search_text", "payload"})
+	})
 }
 
-func (s *Store) SetAssetDirty(ctx context.Context, id asset.AssetID, dirty bool) (asset.Asset, error) {
-	result := s.db.WithContext(ctx).
-		Table("assets").
-		Where("id = ?", string(id)).
-		Updates(map[string]any{"dirty": dirty, "revision": gorm.Expr("revision + 1")})
-	if result.Error != nil {
-		return asset.Asset{}, result.Error
-	}
-	if result.RowsAffected != 1 {
-		return asset.Asset{}, persistence.ErrNotFound
-	}
-	return s.GetAsset(ctx, id)
+func (s *Store) SetAssetDirty(ctx context.Context, id asset.AssetID, dirty bool) (value asset.Asset, err error) {
+	err = s.write(ctx, func(store *Store) error {
+		result := store.db.
+			Table("assets").
+			Where("id = ?", string(id)).
+			Updates(map[string]any{"dirty": dirty, "revision": gorm.Expr("revision + 1")})
+		if result.Error != nil {
+			return result.Error
+		}
+		if result.RowsAffected != 1 {
+			return persistence.ErrNotFound
+		}
+		if value, err = store.GetAsset(ctx, id); err != nil {
+			return err
+		}
+		store.touch(string(value.Identity.ConnectionID))
+		return nil
+	})
+	return value, err
 }
 
 func (s *Store) GetAsset(ctx context.Context, id asset.AssetID) (asset.Asset, error) {
@@ -2439,7 +2524,7 @@ func upsert(db *gorm.DB, table string, value any, columns []string) error {
 }
 
 // upsertRevised upserts rows by ID in batches and bumps an updated row's
-// revision, which ConnectionInventoryVersion sums.
+// revision.
 func upsertRevised[T any](db *gorm.DB, table string, rows []T, columns []string) error {
 	if len(rows) == 0 {
 		return nil
