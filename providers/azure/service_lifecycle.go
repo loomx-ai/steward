@@ -242,28 +242,43 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 			return nil, err
 		}
 		kind, _ := findType(childType)
+		// Rows are checked in order before any read. Rows past the first invalid
+		// one are not read, and its error follows the earlier rows' checks.
+		type listedChild struct {
+			record               map[string]any
+			wireID, id, endpoint string
+		}
+		var listed []listedChild
+		var invalid error
 		for _, value := range records {
 			record := object(value)
 			if isAPIMAssociation(childType) {
-				record, err = apimAssociationRow(parentID, childType, record)
-				if err != nil {
-					return nil, err
+				if record, invalid = apimAssociationRow(parentID, childType, record); invalid != nil {
+					break
 				}
 			}
 			wireID := responseID(childType, text(record["id"]))
 			id, parsedType, err := parseID(wireID)
 			if err != nil || !strings.EqualFold(parsedType, childType) || !strings.EqualFold(id, u.Path+"/"+last(id)) || seen[id] || !validResponseType(childType, text(record["type"])) {
-				return nil, fmt.Errorf("invalid or duplicate Azure cascade child identity")
+				invalid = fmt.Errorf("invalid or duplicate Azure cascade child identity")
+				break
 			}
 			seen[id] = true
 			if isCosmosType(childType) && !cosmosSameWireID(cosmosParentID(wireID), wireParent) {
-				return nil, fmt.Errorf("Cosmos DB child parent name mismatch")
+				invalid = fmt.Errorf("Cosmos DB child parent name mismatch")
+				break
 			}
 			endpoint, err := c.resourceURL(kind, wireID)
 			if err != nil {
-				return nil, err
+				invalid = err
+				break
 			}
-			live, err := c.readResource(ctx, endpoint)
+			listed = append(listed, listedChild{record, wireID, id, endpoint})
+		}
+		reads, readErrs := readConcurrently(len(listed), func(i int) (response, error) { return c.readResource(ctx, listed[i].endpoint) })
+		for i, row := range listed {
+			record, wireID, id := row.record, row.wireID, row.id
+			live, err := reads[i], readErrs[i]
 			if err != nil {
 				return nil, err
 			}
@@ -319,6 +334,9 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 				live.data["type"] = childType
 			}
 			children = append(children, serviceChild{kind: childType, id: id, data: live.data})
+		}
+		if invalid != nil {
+			return nil, invalid
 		}
 	}
 	if err := apimNotificationRecipients(raw, childTypes, children); err != nil {
@@ -1310,14 +1328,25 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 		ids = append(ids, id)
 	}
 	sort.Strings(ids)
+	// Children are read concurrently and checked in order; a child whose URL
+	// is invalid stops reads of the children after it.
+	var endpoints []string
+	var invalid error
 	for _, id := range ids {
-		impact := impacts[id]
-		kind, _ := findType(impact.Asset.Identity.NativeType)
-		endpoint, err := a.client.plannedResourceURL(impact.Asset)
+		endpoint, err := a.client.plannedResourceURL(impacts[id].Asset)
 		if err != nil {
-			return contracts.ReadbackResult{}, err
+			invalid = err
+			break
 		}
-		current, err := a.client.readResource(ctx, endpoint)
+		endpoints = append(endpoints, endpoint)
+	}
+	reads, readErrs := readConcurrently(len(endpoints), func(i int) (response, error) { return a.client.readResource(ctx, endpoints[i]) })
+	for i, id := range ids {
+		if i == len(endpoints) {
+			return contracts.ReadbackResult{}, invalid
+		}
+		kind, _ := findType(impacts[id].Asset.Identity.NativeType)
+		current, err := reads[i], readErrs[i]
 		if isNotFound(err) {
 			continue
 		}

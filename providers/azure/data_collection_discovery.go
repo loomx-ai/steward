@@ -103,14 +103,27 @@ func (c *client) dataCollectionOrphanTargets(ctx context.Context, targets []prod
 	operation, _ := metadata.catalog.Operation("Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByResource")
 	kind, _ := findType(dataCollectionAssociationType)
 	orphans, generations := map[string]productTarget{}, map[string][]string{}
+	// Each row's GET is read ahead concurrently; rows are then checked in
+	// order, and a row whose URL is invalid stops reads of the rows after it.
+	endpoints := []string{}
+	var invalid error
 	for _, value := range rows {
+		endpoint, err := c.resourceURL(kind, strings.ToLower(text(object(value)["id"])))
+		if err != nil {
+			invalid = err
+			break
+		}
+		endpoints = append(endpoints, endpoint)
+	}
+	byParent := dataCollectionTargetIndex(targets)
+	reads, readErrs := readConcurrently(len(endpoints), func(i int) (response, error) { return c.request(ctx, "GET", endpoints[i]) })
+	for i, value := range rows {
+		if i == len(endpoints) {
+			return nil, invalid
+		}
 		raw := object(value)
 		id := strings.ToLower(text(raw["id"]))
-		endpoint, err := c.resourceURL(kind, id)
-		if err != nil {
-			return nil, err
-		}
-		live, err := c.request(ctx, "GET", endpoint)
+		live, err := reads[i], readErrs[i]
 		if isNotFound(err) {
 			continue
 		}
@@ -120,7 +133,7 @@ func (c *client) dataCollectionOrphanTargets(ctx context.Context, targets []prod
 		if !validResourceResponse(live, id, dataCollectionAssociationType) || len(dataCollectionReferences(live.data)) == 0 {
 			return nil, serviceDenied("invalid_data_collection_association")
 		}
-		canonical, err := c.dataCollectionCanonicalTarget(ctx, live.data, targets)
+		canonical, err := c.dataCollectionCanonicalTarget(ctx, live.data, byParent)
 		if err != nil {
 			return nil, err
 		}
@@ -178,13 +191,23 @@ func (c *client) dataCollectionOrphanTargets(ctx context.Context, targets []prod
 	return targets, nil
 }
 
-func (c *client) dataCollectionCanonicalTarget(ctx context.Context, raw map[string]any, targets []productTarget) (productTarget, error) {
+// dataCollectionTargetIndex maps each parent to its first target.
+func dataCollectionTargetIndex(targets []productTarget) map[string]productTarget {
+	index := map[string]productTarget{}
+	for _, target := range targets {
+		if _, ok := index[target.ParentID]; !ok {
+			index[target.ParentID] = target
+		}
+	}
+	return index
+}
+
+func (c *client) dataCollectionCanonicalTarget(ctx context.Context, raw map[string]any, targets map[string]productTarget) (productTarget, error) {
 	canonical := productTarget{}
 	for _, ref := range dataCollectionReferences(raw) {
-		index := slices.IndexFunc(targets, func(target productTarget) bool { return target.ParentID == ref })
-		if index >= 0 {
+		if target, ok := targets[ref]; ok {
 			if canonical.ParentID == "" {
-				canonical = targets[index]
+				canonical = target
 			}
 			continue
 		}

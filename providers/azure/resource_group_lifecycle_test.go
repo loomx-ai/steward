@@ -199,7 +199,11 @@ func TestResourceGroupNativeLifecycle(t *testing.T) {
 			}
 			initialCalls := calls
 			for step := 0; step < 3; step++ {
+				readsBefore := productReads
 				next, err := r.resourceGroupResumeDeletion(t.Context(), req, saved)
+				if mode == "async" && step == 0 && productReads != readsBefore {
+					t.Fatal("a poll still in progress read the group's members", productReads-readsBefore)
+				}
 				if mode == "invalid_receipt" || mode == "readback_forbidden" {
 					if err == nil || next.Done || next.Data != nil {
 						t.Fatal("failed readback reported success", next, err)

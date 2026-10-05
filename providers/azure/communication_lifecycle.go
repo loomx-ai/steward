@@ -70,6 +70,13 @@ func (s *serviceCascades) communicationGraphSnapshot(ctx context.Context, select
 	}
 	groups := map[string]map[string]any{}
 	items := map[string]contracts.InventoryItem{}
+	ids := []string{}
+	for _, root := range slices.Sorted(maps.Keys(trees)) {
+		if groupID := strings.Join(strings.Split(root, "/")[:5], "/"); listedGroups[groupID] != nil {
+			ids = append(ids, groupID)
+		}
+	}
+	groupsAhead := s.client.insightsGroupsAhead(ctx, ids)
 	for _, root := range slices.Sorted(maps.Keys(trees)) {
 		tree := trees[root]
 		tree.incoming = incoming
@@ -79,7 +86,7 @@ func (s *serviceCascades) communicationGraphSnapshot(ctx context.Context, select
 			if listedGroups[groupID] == nil {
 				return nil, nil, serviceDenied("communication_graph_group_missing")
 			}
-			groups[groupID], err = s.client.insightsGroup(ctx, groupID, listedGroups[groupID])
+			groups[groupID], err = groupsAhead(groupID, listedGroups[groupID])
 			if err != nil {
 				return nil, nil, err
 			}

@@ -213,12 +213,19 @@ func (r *Runtime) monitorInventorySnapshot(ctx context.Context, c *client, reque
 	for id, listed := range groups {
 		indexBindings[id] = insightsWorkspaceResourceSnapshot(listed)
 	}
+	scopes := []string{}
+	for id := range values {
+		if _, scope, _, _ := monitorResourceID(id); scope != c.root() && groups[scope] != nil {
+			scopes = append(scopes, scope)
+		}
+	}
+	groupsAhead := c.insightsGroupsAhead(ctx, scopes)
 	for _, id := range slices.Sorted(maps.Keys(values)) {
 		_, scope, _, _ := monitorResourceID(id)
 		if scope == c.root() || groups[scope] == nil || groupBindings[scope] != nil {
 			continue
 		}
-		group, err := c.insightsGroup(ctx, scope, groups[scope])
+		group, err := groupsAhead(scope, groups[scope])
 		if err != nil {
 			return nil, nil, "", err
 		}

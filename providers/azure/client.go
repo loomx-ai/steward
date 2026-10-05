@@ -39,7 +39,30 @@ type client struct {
 	fingerprint                                                              [32]byte
 	principal                                                                *principalObserver
 	protection                                                               *inventoryProtectionCache
+	// inFlight caps the client's concurrent round trips; nil leaves them
+	// uncapped. See acquireRoundTrip.
+	inFlight chan struct{}
 }
+
+// clientRoundTrips bounds one connection's concurrent HTTP round trips.
+// Nested fan-outs (contributions, detail reads, walks) multiply otherwise.
+const clientRoundTrips = 32
+
+// acquireRoundTrip waits for a round-trip slot. Only a request's own round
+// trip holds one, never a caller waiting on other reads, so nesting cannot
+// deadlock.
+func (c *client) acquireRoundTrip(ctx context.Context) (func(), error) {
+	if c.inFlight == nil {
+		return func() {}, nil
+	}
+	select {
+	case c.inFlight <- struct{}{}:
+		return func() { <-c.inFlight }, nil
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+}
+
 type response struct {
 	data      map[string]any
 	header    http.Header
@@ -154,7 +177,7 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	}
 	return &client{subscription: subscription, tenant: tenant, application: application,
 		fingerprint: sha256.Sum256([]byte(subscription + "\x00" + tenant + "\x00" + application + "\x00" + secret)),
-		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default"), batchHTTP: makeHTTP("https://batch.core.windows.net//.default"), communicationHTTP: makeHTTP("https://communication.azure.com/.default"), keyVaultHTTP: makeHTTP("https://vault.azure.net/.default"), graphHTTP: makeHTTP(graphOrigin + "/.default"), principal: observer, protection: &inventoryProtectionCache{}}, nil
+		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default"), batchHTTP: makeHTTP("https://batch.core.windows.net//.default"), communicationHTTP: makeHTTP("https://communication.azure.com/.default"), keyVaultHTTP: makeHTTP("https://vault.azure.net/.default"), graphHTTP: makeHTTP(graphOrigin + "/.default"), principal: observer, protection: &inventoryProtectionCache{}, inFlight: make(chan struct{}, clientRoundTrips)}, nil
 }
 
 // Cache the token, while binding every refresh to the active request context.
@@ -293,6 +316,7 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	}()
 	var res *http.Response
 	var waited time.Duration
+	var release func()
 	for attempt := 0; ; attempt++ {
 		req, err := http.NewRequestWithContext(ctx, method, endpoint, bytes.NewReader(body))
 		if err != nil {
@@ -306,10 +330,15 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 		for name, value := range headers {
 			req.Header.Set(name, value)
 		}
+		// The slot is held until the body is read, and released before a backoff.
+		if release, err = c.acquireRoundTrip(ctx); err != nil {
+			return response{}, err
+		}
 		res, err = transport.Do(req)
 		wait, retry := readRetryWait(ctx, method, attempt, waited, res, err)
 		if !retry {
 			if err != nil {
+				release()
 				return response{}, transportError(ctx, err)
 			}
 			break
@@ -318,6 +347,7 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 			_, _ = io.Copy(io.Discard, io.LimitReader(res.Body, 1<<20))
 			res.Body.Close()
 		}
+		release()
 		timer := time.NewTimer(wait)
 		select {
 		case <-ctx.Done():
@@ -327,6 +357,7 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 		}
 		waited += wait
 	}
+	defer release()
 	defer res.Body.Close()
 	out = response{data: map[string]any{}, header: res.Header, status: res.StatusCode, requestID: requestID(res.Header)}
 	payload, err := io.ReadAll(io.LimitReader(res.Body, (32<<20)+1))
@@ -774,6 +805,7 @@ func oauthClient(credential contracts.Credential, transport http.RoundTripper) (
 		graphHTTP:         clients["graph"],
 		principal:         observer,
 		protection:        &inventoryProtectionCache{},
+		inFlight:          make(chan struct{}, clientRoundTrips),
 	}, nil
 }
 

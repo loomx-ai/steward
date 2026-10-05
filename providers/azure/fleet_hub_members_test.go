@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/execution"
@@ -84,7 +85,12 @@ func newFleetHubMembersFixture(t *testing.T) *fleetHubFixture {
 func TestFleetHubInventoryCapturesNativeDescendants(t *testing.T) {
 	h := newFleetHubMembersFixture(t)
 	var logs []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	var mu sync.Mutex // Group and child reads log concurrently.
+	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) {
+		mu.Lock()
+		defer mu.Unlock()
+		logs = append(logs, entry)
+	}))
 	batch, err := h.runtime.List(ctx, h.request(fleetType))
 	if err != nil || !batch.Complete || len(batch.Items) != 1 {
 		t.Fatal("native Hub descendant inventory failed", batch, err)

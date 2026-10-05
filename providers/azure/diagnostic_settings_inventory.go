@@ -107,25 +107,7 @@ func (c *client) diagnosticContext(ctx context.Context, scope string) (diagnosti
 // so each sees exactly the result (and first error) its serial read would; a
 // scope not started after another scope failed is read when looked up.
 func (c *client) diagnosticContexts(ctx context.Context, scopes []string) func(string) (diagnosticContextState, error) {
-	unique := []string{}
-	position := map[string]int{}
-	for _, scope := range scopes {
-		if _, ok := position[scope]; !ok {
-			position[scope] = len(unique)
-			unique = append(unique, scope)
-		}
-	}
-	states, errs := readConcurrently(len(unique), func(i int) (diagnosticContextState, error) { return c.diagnosticContext(ctx, unique[i]) })
-	return func(scope string) (diagnosticContextState, error) {
-		i, ok := position[scope]
-		if !ok {
-			return c.diagnosticContext(ctx, scope)
-		}
-		if errs[i] == errReadNotStarted {
-			states[i], errs[i] = c.diagnosticContext(ctx, scope)
-		}
-		return states[i], errs[i]
-	}
+	return readAhead(scopes, func(scope string) (diagnosticContextState, error) { return c.diagnosticContext(ctx, scope) })
 }
 
 func (c *client) diagnosticReferenceBinding(id, configuration, context string, refs map[string]any) string {

@@ -310,6 +310,13 @@ func (r *Runtime) fleetInventorySnapshot(ctx context.Context, c *client, request
 	}
 	verifiedGroups := map[string]map[string]any{}
 	items := []contracts.InventoryItem{}
+	ids := []string{}
+	for _, id := range slices.Sorted(maps.Keys(rows)) {
+		if groupID := strings.Join(strings.Split(id, "/")[:5], "/"); groups[groupID] != nil {
+			ids = append(ids, groupID)
+		}
+	}
+	groupsAhead := c.insightsGroupsAhead(ctx, ids)
 	for _, id := range slices.Sorted(maps.Keys(rows)) {
 		groupID := strings.Join(strings.Split(id, "/")[:5], "/")
 		if groups[groupID] == nil {
@@ -317,7 +324,7 @@ func (r *Runtime) fleetInventorySnapshot(ctx context.Context, c *client, request
 		}
 		group := verifiedGroups[groupID]
 		if group == nil {
-			group, err = c.insightsGroup(ctx, groupID, groups[groupID])
+			group, err = groupsAhead(groupID, groups[groupID])
 			if err != nil {
 				return nil, nil, nil, "", err
 			}

@@ -2,6 +2,7 @@ package azure
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"maps"
 	"slices"
@@ -50,26 +51,31 @@ func inResourceGroup(id, group string) bool {
 // every nested or external descendant has been visited.
 func (c *client) managedGroupResources(ctx context.Context, clusterID, group string) ([]map[string]any, error) {
 	_, controllerType, _ := parseID(clusterID)
-	response, err := c.request(ctx, "GET", apiURL(group, resourcesVersion))
+	groupRead, err := c.request(ctx, "GET", apiURL(group, resourcesVersion))
 	if isNotFound(err) {
 		return nil, nil
 	}
 	if err != nil {
 		return nil, err
 	}
-	if !validResourceResponse(response, group, groupType) {
+	if !validResourceResponse(groupRead, group, groupType) {
 		return nil, fmt.Errorf("AKS node resource group identity mismatch")
 	}
-	if owner := text(response.data["managedBy"]); owner != "" && !strings.EqualFold(owner, clusterID) {
+	if owner := text(groupRead.data["managedBy"]); owner != "" && !strings.EqualFold(owner, clusterID) {
 		return nil, fmt.Errorf("AKS node resource group belongs to another controller")
 	}
 	values, err := c.listAll(ctx, group+"/resources", resourcesVersion)
 	if err != nil {
 		return nil, err
 	}
-	response.data["type"] = groupType
-	result := []map[string]any{response.data}
-	seen := map[string]map[string]any{group: response.data}
+	groupRead.data["type"] = groupType
+	result := []map[string]any{groupRead.data}
+	seen := map[string]map[string]any{group: groupRead.data}
+	// Reads made ahead for listed members, used once by their visit. A read
+	// not started after an earlier failure is made again when visited.
+	ahead := map[string]int{}
+	var aheadReads []response
+	var aheadErrs []error
 	var visit func(map[string]any) error
 	visit = func(raw map[string]any) error {
 		id, kind, err := parseID(text(raw["id"]))
@@ -86,12 +92,19 @@ func (c *client) managedGroupResources(ctx context.Context, clusterID, group str
 			return serviceListedIncarnation(raw, previous)
 		}
 		rule, known := findType(kind)
+		var cascade map[string]any
 		if known {
 			endpoint, err := c.resourceURL(rule, id)
 			if err != nil {
 				return err
 			}
-			live, err := c.request(ctx, "GET", endpoint)
+			var live response
+			if i, ok := ahead[id]; ok && !errors.Is(aheadErrs[i], errReadNotStarted) {
+				delete(ahead, id)
+				live, err = aheadReads[i], aheadErrs[i]
+			} else {
+				live, err = c.request(ctx, "GET", endpoint)
+			}
 			if err != nil {
 				return err
 			}
@@ -101,6 +114,9 @@ func (c *client) managedGroupResources(ctx context.Context, clusterID, group str
 			if err := serviceListedIncarnation(raw, live.data); err != nil {
 				return err
 			}
+			if HasServiceCascade(rule.NativeType) {
+				cascade = batchClone(live.data) // The walk below needs no second read.
+			}
 			raw = live.data
 			raw["type"] = rule.NativeType
 		}
@@ -109,7 +125,7 @@ func (c *client) managedGroupResources(ctx context.Context, clusterID, group str
 		if !known {
 			return nil
 		}
-		children, err := c.children(ctx, rule, raw)
+		children, err := c.childrenOf(ctx, rule, raw, cascade)
 		if err != nil {
 			return err
 		}
@@ -138,17 +154,37 @@ func (c *client) managedGroupResources(ctx context.Context, clusterID, group str
 		}
 		return nil
 	}
+	// Members are checked in order, and their GETs read ahead concurrently
+	// before the ordered walk. A member past the first invalid one is not
+	// read, and that error follows the earlier members' walks.
 	listed := map[string]bool{group: true}
+	var members []map[string]any
+	var endpoints []string
+	var invalid error
 	for _, value := range values {
 		raw := object(value)
 		id, kind, err := parseID(text(raw["id"]))
 		if err != nil || !inResourceGroup(id, group) || listed[id] || !validResponseType(kind, text(raw["type"])) {
-			return nil, fmt.Errorf("invalid or duplicate AKS node resource group member")
+			invalid = fmt.Errorf("invalid or duplicate AKS node resource group member")
+			break
 		}
 		listed[id] = true
+		members = append(members, raw)
+		if rule, known := findType(kind); known && rbacResourceKind(kind) == "" && !strings.EqualFold(kind, diagnosticSettingsType) {
+			if endpoint, err := c.resourceURL(rule, id); err == nil {
+				ahead[id] = len(endpoints)
+				endpoints = append(endpoints, endpoint)
+			}
+		}
+	}
+	aheadReads, aheadErrs = readConcurrently(len(endpoints), func(i int) (response, error) { return c.request(ctx, "GET", endpoints[i]) })
+	for _, raw := range members {
 		if err := visit(raw); err != nil {
 			return nil, err
 		}
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	monitors, err := c.monitorManagedGroupMembers(ctx, group, seen)
 	if err != nil {
@@ -163,10 +199,10 @@ func (c *client) managedGroupResources(ctx context.Context, clusterID, group str
 	if err != nil {
 		return nil, err
 	}
-	if !validResourceResponse(current, group, groupType) || !strings.EqualFold(text(response.data["managedBy"]), text(current.data["managedBy"])) {
+	if !validResourceResponse(current, group, groupType) || !strings.EqualFold(text(groupRead.data["managedBy"]), text(current.data["managedBy"])) {
 		return nil, fmt.Errorf("AKS resource group ownership changed")
 	}
-	if err := serviceListedIncarnation(response.data, current.data); err != nil {
+	if err := serviceListedIncarnation(groupRead.data, current.data); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -659,17 +695,17 @@ func (a *action) managedGroupResourcesReadback(ctx context.Context, request cont
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
-	response, err := a.client.request(ctx, "GET", apiURL(group, resourcesVersion))
+	current, err := a.client.request(ctx, "GET", apiURL(group, resourcesVersion))
 	if !isNotFound(err) {
 		if err != nil {
 			return contracts.ReadbackResult{}, err
 		}
-		if !validResourceResponse(response, group, groupType) {
+		if !validResourceResponse(current, group, groupType) {
 			return contracts.ReadbackResult{}, fmt.Errorf("AKS node resource group readback identity mismatch")
 		}
 		if a.kind.NativeType == applicationInsightsType {
-			owner, err := insightsManagedBy(response.data)
-			if err != nil || owner != a.id || !insightsARMReadValid(response, group, groupType) {
+			owner, err := insightsManagedBy(current.data)
+			if err != nil || owner != a.id || !insightsARMReadValid(current, group, groupType) {
 				return contracts.ReadbackResult{}, serviceDenied("insights_managed_group_readback_changed")
 			}
 		}
@@ -680,16 +716,33 @@ func (a *action) managedGroupResourcesReadback(ctx context.Context, request cont
 		ids = append(ids, id)
 	}
 	sort.Strings(ids)
+	// Every member's GET is read ahead concurrently and visited in order. A
+	// member whose URL is invalid stops reads of the members after it.
+	endpoints := map[string]string{}
+	var reads []string
+	var invalid error
+	for _, id := range ids {
+		kind, known := findType(impacts[id].Asset.Identity.NativeType)
+		if !known || strings.EqualFold(kind.NativeType, groupType) {
+			continue
+		}
+		if endpoints[id], invalid = a.client.resourceURL(kind, id); invalid != nil {
+			break
+		}
+		reads = append(reads, id)
+	}
+	lives, readErrs := readConcurrently(len(reads), func(i int) (response, error) { return a.client.request(ctx, "GET", endpoints[reads[i]]) })
+	read := 0
 	for _, id := range ids {
 		kind, known := findType(impacts[id].Asset.Identity.NativeType)
 		if !known || strings.EqualFold(kind.NativeType, groupType) {
 			continue // Group absence is the authority for unknown contained kinds.
 		}
-		endpoint, err := a.client.resourceURL(kind, id)
-		if err != nil {
-			return contracts.ReadbackResult{}, err
+		if read == len(reads) {
+			return contracts.ReadbackResult{}, invalid
 		}
-		live, err := a.client.request(ctx, "GET", endpoint)
+		live, err := lives[read], readErrs[read]
+		read++
 		if isNotFound(err) {
 			continue
 		}

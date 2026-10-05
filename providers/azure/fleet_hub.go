@@ -197,7 +197,13 @@ func (c *client) fleetHubObservation(ctx context.Context, raw map[string]any, in
 			groups[previous] = res.data
 		}
 	}
-	var owned []string
+	var owned, candidates []string
+	for _, groupID := range slices.Sorted(maps.Keys(groups)) {
+		if owner, err := insightsManagedBy(groups[groupID]); err == nil && owner == id {
+			candidates = append(candidates, groupID)
+		}
+	}
+	groupsAhead := c.insightsGroupsAhead(ctx, candidates)
 	for _, groupID := range slices.Sorted(maps.Keys(groups)) {
 		owner, err := insightsManagedBy(groups[groupID])
 		if err != nil {
@@ -206,7 +212,7 @@ func (c *client) fleetHubObservation(ctx context.Context, raw map[string]any, in
 		if owner != id {
 			continue
 		}
-		group, err := c.insightsGroup(ctx, groupID, groups[groupID])
+		group, err := groupsAhead(groupID, groups[groupID])
 		if err != nil {
 			return nil, err
 		}

@@ -441,11 +441,17 @@ func (r *Runtime) resourceGroupResumeDeletion(ctx context.Context, req contracts
 	if err != nil {
 		return contracts.WaitResult{}, err
 	}
+	// Members only matter once the native cascade reports done: until then
+	// the poll is not done whatever they read. The check runs at that
+	// terminal poll and at every readback after it.
+	if !out.Done {
+		return out, nil
+	}
 	allAbsent, err := r.resourceGroupProductsAbsent(ctx, c, req, products)
 	if err != nil {
 		return contracts.WaitResult{}, err
 	}
-	out.Done = out.Done && allAbsent
+	out.Done = allAbsent
 	return out, nil
 }
 
@@ -476,8 +482,10 @@ func (r *Runtime) resourceGroupProductsAbsent(ctx context.Context, c *client, re
 		// reviewed members. Wait for their own ARM reads to report absence
 		// before requiring the products' final dependency/readback checks.
 		membersAbsent := true
-		for _, id := range slices.Sorted(maps.Keys(products)) {
-			live, readErr := c.deploymentStackMemberRead(ctx, products[id].Asset)
+		ids := slices.Sorted(maps.Keys(products))
+		lives, readErrs := readConcurrently(len(ids), func(i int) (response, error) { return c.deploymentStackMemberRead(ctx, products[ids[i]].Asset) })
+		for i, id := range ids {
+			live, readErr := lives[i], readErrs[i]
 			if readErr != nil && !isNotFound(readErr) {
 				return false, readErr
 			}
@@ -503,11 +511,17 @@ func (r *Runtime) resourceGroupProductsAbsent(ctx context.Context, c *client, re
 				allAbsent = allAbsent && !read.Exists
 			}
 		}
-		for _, impact := range req.LifecycleImpacts {
+		impacts, impactErrs := readConcurrently(len(req.LifecycleImpacts), func(i int) (response, error) {
+			if req.LifecycleImpacts[i].Delete {
+				return response{}, nil
+			}
+			return c.deploymentStackMemberRead(ctx, req.LifecycleImpacts[i].Asset)
+		})
+		for i, impact := range req.LifecycleImpacts {
 			if impact.Delete {
 				continue
 			}
-			live, readErr := c.deploymentStackMemberRead(ctx, impact.Asset)
+			live, readErr := impacts[i], impactErrs[i]
 			if readErr != nil {
 				return false, readErr
 			}

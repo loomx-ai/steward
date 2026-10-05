@@ -661,6 +661,13 @@ func (r *Runtime) communicationInventorySnapshot(ctx context.Context, c *client,
 	verifiedGroups := map[string]map[string]any{}
 	bindings := map[string]any{}
 	items := []contracts.InventoryItem{}
+	ids := []string{}
+	for _, id := range slices.Sorted(maps.Keys(rows)) {
+		if groupID := strings.Join(strings.Split(rows[id].root, "/")[:5], "/"); groups[groupID] != nil {
+			ids = append(ids, groupID)
+		}
+	}
+	groupsAhead := c.insightsGroupsAhead(ctx, ids)
 	for _, id := range slices.Sorted(maps.Keys(rows)) {
 		member := rows[id]
 		groupID := strings.Join(strings.Split(member.root, "/")[:5], "/")
@@ -669,7 +676,7 @@ func (r *Runtime) communicationInventorySnapshot(ctx context.Context, c *client,
 			if groups[groupID] == nil {
 				return nil, nil, nil, serviceDenied("communication_group_missing_from_index")
 			}
-			group, err = c.insightsGroup(ctx, groupID, groups[groupID])
+			group, err = groupsAhead(groupID, groups[groupID])
 			if err != nil {
 				return nil, nil, nil, err
 			}

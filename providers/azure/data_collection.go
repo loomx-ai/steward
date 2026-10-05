@@ -120,6 +120,15 @@ func (c *client) dataCollectionAssociationList(parentID, parentType string) (cat
 // nested rule/endpoint children. Reconcile two full lists and native GETs before
 // accepting a reviewed set; neither DELETE is used as an implicit unlink.
 func (c *client) dataCollectionAssociations(ctx context.Context, parent asset.Identity) ([]serviceChild, error) {
+	// One List call or contribution reads a rule's or endpoint's associations
+	// once for every association attached to it; delete checks carry no memo.
+	children, err := memoized(ctx, "dcra:"+parent.NativeType+"|"+strings.ToLower(parent.NativeID), func() ([]serviceChild, error) {
+		return c.readDataCollectionAssociations(ctx, parent)
+	})
+	return slices.Clone(children), err
+}
+
+func (c *client) readDataCollectionAssociations(ctx context.Context, parent asset.Identity) ([]serviceChild, error) {
 	bound, err := c.dataCollectionAssociationList(parent.NativeID, parent.NativeType)
 	if err != nil {
 		return nil, err
@@ -131,25 +140,36 @@ func (c *client) dataCollectionAssociations(ctx context.Context, parent asset.Id
 		if err != nil {
 			return nil, err
 		}
-		children := []serviceChild{}
+		// Rows are checked in order before any read; rows past the first
+		// invalid one are not read, and its error follows the earlier reads'.
+		var rows []map[string]any
+		var ids, endpoints []string
+		var invalid error
 		seen := map[string]bool{}
 		for _, value := range records {
 			raw := object(value)
 			id, nativeType, err := parseID(text(raw["id"]))
 			if err != nil || !strings.HasPrefix(id, c.root()+"/") || !strings.EqualFold(nativeType, dataCollectionAssociationType) || !validResponseType(dataCollectionAssociationType, text(raw["type"])) || seen[id] {
-				return nil, serviceDenied("invalid_data_collection_association")
+				invalid = serviceDenied("invalid_data_collection_association")
+				break
 			}
 			seen[id] = true
-			if err := dataCollectionAssociationMembership(raw, parent.NativeID); err != nil {
-				return nil, err
+			if invalid = dataCollectionAssociationMembership(raw, parent.NativeID); invalid != nil {
+				break
 			}
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
-				return nil, err
+				invalid = err
+				break
 			}
-			live, err := c.request(ctx, "GET", endpoint)
-			if err != nil {
-				return nil, err
+			rows, ids, endpoints = append(rows, raw), append(ids, id), append(endpoints, endpoint)
+		}
+		reads, errs := readConcurrently(len(endpoints), func(i int) (response, error) { return c.request(ctx, "GET", endpoints[i]) })
+		children := []serviceChild{}
+		for i, id := range ids {
+			raw, live := rows[i], reads[i]
+			if errs[i] != nil {
+				return nil, errs[i]
 			}
 			if !validResourceResponse(live, id, dataCollectionAssociationType) || !dataCollectionSameReferences(raw, live.data) {
 				return nil, serviceDenied("data_collection_association_changed")
@@ -158,6 +178,9 @@ func (c *client) dataCollectionAssociations(ctx context.Context, parent asset.Id
 				return nil, err
 			}
 			children = append(children, serviceChild{kind: dataCollectionAssociationType, id: id, data: live.data, direct: true})
+		}
+		if invalid != nil {
+			return nil, invalid
 		}
 		slices.SortFunc(children, func(a, b serviceChild) int { return strings.Compare(a.id, b.id) })
 		return children, nil

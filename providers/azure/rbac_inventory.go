@@ -54,7 +54,9 @@ func (c *client) rbacPIM(ctx context.Context, detail bool) (map[string]map[strin
 	return result, nil
 }
 
-func (c *client) rbacContext(ctx context.Context, kind string, raw map[string]any, locks []any, pim map[string]map[string]any, cache map[string]diagnosticContextState) (map[string]any, string, error) {
+// contexts looks up a scope's context for the caller's snapshot or check; nil
+// shares each scope read through the Contribute memo, if any, or reads live.
+func (c *client) rbacContext(ctx context.Context, kind string, raw map[string]any, locks []any, pim map[string]map[string]any, contexts func(string) (diagnosticContextState, error)) (map[string]any, string, error) {
 	state := map[string]any{}
 	scopes, err := c.rbacScopes(kind, raw)
 	if err != nil {
@@ -85,22 +87,14 @@ func (c *client) rbacContext(ctx context.Context, kind string, raw map[string]an
 		if err != nil {
 			return nil, "", err
 		}
-		current, ok := cache[wire]
-		if !ok {
-			read := func() (diagnosticContextState, error) { return c.diagnosticContext(ctx, wire) }
-			if cache == nil {
-				// Without a caller cache, a Contribute memo reads each scope once
-				// for its concurrent parents; without a memo this reads live.
-				current, err = memoized(ctx, "rbac-scope:"+wire, read)
-			} else {
-				current, err = read()
-			}
-			if err != nil {
-				return nil, "", contracts.DependencyReadError(err)
-			}
-			if cache != nil {
-				cache[wire] = current
-			}
+		var current diagnosticContextState
+		if contexts != nil {
+			current, err = contexts(wire)
+		} else {
+			current, err = memoized(ctx, "rbac-scope:"+wire, func() (diagnosticContextState, error) { return c.diagnosticContext(ctx, wire) })
+		}
+		if err != nil {
+			return nil, "", contracts.DependencyReadError(err)
 		}
 		state[scope] = current.state
 		if !current.verified {
@@ -148,7 +142,7 @@ func (c *client) rbacReferenceBinding(id, kind, wire, configuration, context str
 	return c.privateConfiguration(map[string]any{"id": id, "kind": kind, "wire": wire, "configuration": configuration, "context": context, "references": refs})
 }
 
-func (r *Runtime) rbacInventoryItem(ctx context.Context, c *client, kind string, raw map[string]any, locks []any, pim map[string]map[string]any, cache map[string]diagnosticContextState) (contracts.InventoryItem, error) {
+func (r *Runtime) rbacInventoryItem(ctx context.Context, c *client, kind string, raw map[string]any, locks []any, pim map[string]map[string]any, contexts func(string) (diagnosticContextState, error)) (contracts.InventoryItem, error) {
 	id, err := c.rbacValidate(kind, raw)
 	if err != nil {
 		return contracts.InventoryItem{}, err
@@ -157,7 +151,7 @@ func (r *Runtime) rbacInventoryItem(ctx context.Context, c *client, kind string,
 	if err != nil {
 		return contracts.InventoryItem{}, err
 	}
-	state, reason, err := c.rbacContext(ctx, kind, raw, locks, pim, cache)
+	state, reason, err := c.rbacContext(ctx, kind, raw, locks, pim, contexts)
 	if err != nil {
 		return contracts.InventoryItem{}, err
 	}
@@ -215,10 +209,24 @@ func (r *Runtime) rbacInventorySnapshot(ctx context.Context, c *client, request 
 			return nil, nil, "", err
 		}
 	}
-	cache := map[string]diagnosticContextState{}
+	// Every row's local scopes are read once, concurrently, and looked up in
+	// row order; a row whose scopes do not parse fails at its own turn.
+	ids := slices.Sorted(maps.Keys(rows))
+	scopes := []string{}
+	for _, id := range ids {
+		candidates, _ := c.rbacScopes(kind, rows[id])
+		for _, candidate := range candidates {
+			scope, err := rbacScope(candidate)
+			wire, wireErr := rbacWireScope(candidate)
+			if err == nil && wireErr == nil && c.rbacLocalScope(scope) {
+				scopes = append(scopes, wire)
+			}
+		}
+	}
+	contexts := c.diagnosticContexts(ctx, scopes)
 	items, bindings := []contracts.InventoryItem{}, map[string]any{}
-	for _, id := range slices.Sorted(maps.Keys(rows)) {
-		item, err := r.rbacInventoryItem(ctx, c, kind, rows[id], locks, pim, cache)
+	for _, id := range ids {
+		item, err := r.rbacInventoryItem(ctx, c, kind, rows[id], locks, pim, contexts)
 		if err != nil {
 			return nil, nil, "", err
 		}

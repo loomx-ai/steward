@@ -299,8 +299,10 @@ func (r *Runtime) listKeyVaultCertificates(ctx context.Context, c *client, reque
 		}
 	}
 	batch = contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: true}
-	for _, id := range slices.Sorted(maps.Keys(vaults)) {
-		vault, err := c.keyVaultRead(ctx, id)
+	ids := slices.Sorted(maps.Keys(vaults))
+	vaultRead := readAhead(ids, func(id string) (keyVaultContext, error) { return c.keyVaultRead(ctx, id) })
+	for _, id := range ids {
+		vault, err := vaultRead(id)
 		if isNotFound(err) && known[id] != nil && keyVaultOwnAbsence(err) {
 			// Deleting a vault removes its objects from the live data plane.
 			for _, name := range slices.Sorted(maps.Keys(known[id])) {

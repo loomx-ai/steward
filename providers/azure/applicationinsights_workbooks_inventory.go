@@ -167,6 +167,13 @@ func (r *Runtime) workbookInventorySnapshot(ctx context.Context, c *client, requ
 	}
 	var items []contracts.InventoryItem
 	verified := map[string]map[string]any{}
+	ids := []string{}
+	for _, id := range slices.Sorted(maps.Keys(values)) {
+		if groupID := strings.Join(strings.Split(id, "/")[:5], "/"); groups[groupID] != nil {
+			ids = append(ids, groupID)
+		}
+	}
+	groupsAhead := c.insightsGroupsAhead(ctx, ids)
 	for _, id := range slices.Sorted(maps.Keys(values)) {
 		groupID := strings.Join(strings.Split(id, "/")[:5], "/")
 		if groups[groupID] == nil {
@@ -174,7 +181,7 @@ func (r *Runtime) workbookInventorySnapshot(ctx context.Context, c *client, requ
 		}
 		group := verified[groupID]
 		if group == nil {
-			if group, err = c.insightsGroup(ctx, groupID, groups[groupID]); err != nil {
+			if group, err = groupsAhead(groupID, groups[groupID]); err != nil {
 				return nil, nil, "", err
 			}
 			verified[groupID] = group

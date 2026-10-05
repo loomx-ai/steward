@@ -326,6 +326,13 @@ func (r *Runtime) dataFactoryItems(ctx context.Context, c *client, connection as
 	}
 	verified := map[string]map[string]any{}
 	items, bindings := map[string]contracts.InventoryItem{}, map[string]any{}
+	ids := []string{}
+	for _, rootID := range slices.Sorted(maps.Keys(trees)) {
+		if groupID := strings.Join(strings.Split(rootID, "/")[:5], "/"); groups[groupID] != nil {
+			ids = append(ids, groupID)
+		}
+	}
+	groupsAhead := c.insightsGroupsAhead(ctx, ids)
 	for _, rootID := range slices.Sorted(maps.Keys(trees)) {
 		tree := trees[rootID]
 		groupID := strings.Join(strings.Split(rootID, "/")[:5], "/")
@@ -333,7 +340,7 @@ func (r *Runtime) dataFactoryItems(ctx context.Context, c *client, connection as
 			if groups[groupID] == nil {
 				return nil, nil, serviceDenied("datafactory_group_missing_from_index")
 			}
-			verified[groupID], err = c.insightsGroup(ctx, groupID, groups[groupID])
+			verified[groupID], err = groupsAhead(groupID, groups[groupID])
 			if err != nil {
 				return nil, nil, err
 			}

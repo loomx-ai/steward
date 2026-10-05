@@ -132,6 +132,21 @@ func insightsARMReadValid(result response, id, kind string) bool {
 
 func (c *client) insightsGroup(ctx context.Context, id string, listed map[string]any) (map[string]any, error) {
 	result, err := c.request(ctx, "GET", apiURL(id, resourcesVersion))
+	return insightsGroupRead(result, err, id, listed)
+}
+
+// insightsGroupsAhead reads groups concurrently for a walk which then checks
+// each, as insightsGroup would, in its own order. Re-reads that prove a group
+// unchanged still call insightsGroup.
+func (c *client) insightsGroupsAhead(ctx context.Context, ids []string) func(string, map[string]any) (map[string]any, error) {
+	read := readAhead(ids, func(id string) (response, error) { return c.request(ctx, "GET", apiURL(id, resourcesVersion)) })
+	return func(id string, listed map[string]any) (map[string]any, error) {
+		result, err := read(id)
+		return insightsGroupRead(result, err, id, listed)
+	}
+}
+
+func insightsGroupRead(result response, err error, id string, listed map[string]any) (map[string]any, error) {
 	if err != nil {
 		return nil, err
 	}
@@ -396,12 +411,19 @@ func (c *client) readInsightsWorkspace(ctx context.Context, parent string, raw m
 			return nil, serviceDenied("insights_workspace_group_missing_from_index")
 		}
 	}
+	candidates := []string{}
+	for _, id := range slices.Sorted(maps.Keys(groups)) {
+		if owner, _ := insightsManagedBy(groups[id]); owner == parent || id == workspaceGroup {
+			candidates = append(candidates, id)
+		}
+	}
+	groupsAhead := c.insightsGroupsAhead(ctx, candidates)
 	for _, id := range slices.Sorted(maps.Keys(groups)) {
 		owner, _ := insightsManagedBy(groups[id])
 		if owner != parent && id != workspaceGroup {
 			continue
 		}
-		group, err := c.insightsGroup(ctx, id, groups[id])
+		group, err := groupsAhead(id, groups[id])
 		if err != nil {
 			return nil, err
 		}

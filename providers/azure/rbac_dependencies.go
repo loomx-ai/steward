@@ -30,6 +30,16 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 	var locks []any
 	var pim map[string]map[string]any
 	cache := map[string]diagnosticContextState{}
+	contexts := func(wire string) (diagnosticContextState, error) {
+		if state, ok := cache[wire]; ok {
+			return state, nil
+		}
+		state, err := c.diagnosticContext(ctx, wire)
+		if err == nil {
+			cache[wire] = state
+		}
+		return state, err
+	}
 	index := c.rbacTargetIndex(targets)
 	for _, kind := range kinds {
 		// Concurrent delete checks coalesce these lists; see liveShared.
@@ -173,7 +183,7 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 							return nil, err
 						}
 					}
-					state, _, err = c.rbacContext(ctx, kind, raw, locks, pim, cache)
+					state, _, err = c.rbacContext(ctx, kind, raw, locks, pim, contexts)
 					if err != nil {
 						return nil, err
 					}

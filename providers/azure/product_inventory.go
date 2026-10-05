@@ -293,6 +293,10 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	details, readErrs := readConcurrently(len(rows), func(i int) (response, error) {
 		return c.readResource(ctx, rows[i].readURL)
 	})
+	var byParent map[string]productTarget
+	if kind.NativeType == dataCollectionAssociationType {
+		byParent = dataCollectionTargetIndex(targets)
+	}
 	for i, row := range rows {
 		raw, wireID, id := row.raw, row.wireID, row.id
 		detail, err := details[i], readErrs[i]
@@ -356,7 +360,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			}
 			// Prefer a live rule, then a live endpoint, then the monitored resource
 			// for orphan discovery. A deleted target cannot hide its surviving link.
-			canonical, err := c.dataCollectionCanonicalTarget(ctx, data, targets)
+			canonical, err := c.dataCollectionCanonicalTarget(ctx, data, byParent)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
@@ -967,6 +971,33 @@ func readConcurrently[T any](count int, read func(int) (T, error)) ([]T, []error
 	}
 	wg.Wait()
 	return results, errs
+}
+
+// readAhead reads each distinct key once, concurrently, and returns a lookup
+// for callers which then check keys in their own order, so each sees exactly
+// the result (and first error) its serial read would. A key not read ahead,
+// or not started after another read failed, is read when looked up. The
+// lookup is for one serial walk.
+func readAhead[T any](keys []string, read func(string) (T, error)) func(string) (T, error) {
+	unique := []string{}
+	position := map[string]int{}
+	for _, key := range keys {
+		if _, ok := position[key]; !ok {
+			position[key] = len(unique)
+			unique = append(unique, key)
+		}
+	}
+	values, errs := readConcurrently(len(unique), func(i int) (T, error) { return read(unique[i]) })
+	return func(key string) (T, error) {
+		i, ok := position[key]
+		if !ok {
+			return read(key)
+		}
+		if errs[i] == errReadNotStarted {
+			values[i], errs[i] = read(key)
+		}
+		return values[i], errs[i]
+	}
 }
 
 func (r *Runtime) productTargets(ctx context.Context, c *client, request contracts.InventoryRequest, definition spec.ResourceKindSpec, ancestors []string) ([]productTarget, error) {

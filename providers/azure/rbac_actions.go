@@ -108,7 +108,6 @@ func (a *rbacAction) current(ctx context.Context) (response, string, error) {
 	if err != nil {
 		return current, "", err
 	}
-	// A nil cache shares each scope read through the Contribute memo, if any.
 	state, reason, err := a.client.rbacContext(ctx, a.kind, current.data, locks, pim, nil)
 	if err != nil {
 		return current, "", err
