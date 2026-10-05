@@ -387,8 +387,11 @@ func listSecretFacts(ctx context.Context, client SecretsNativeAPI, items []contr
 			names = append(names, name)
 		}
 	}
-	result := map[string][2]*string{}
-	for start := 0; start < len(names); start += secretNameFilterValues {
+	// Batches page independently (a prefix filter can match many secrets), so
+	// they run concurrently and merge in batch order.
+	batches := make([][]secretstypes.SecretListEntry, (len(names)+secretNameFilterValues-1)/secretNameFilterValues)
+	err := forEachConcurrently(len(batches), lifecycleReadConcurrency, func(batch int) error {
+		start := batch * secretNameFilterValues
 		input := &awssecrets.ListSecretsInput{
 			IncludePlannedDeletion: awssdk.Bool(true), MaxResults: awssdk.Int32(100),
 			Filters: []secretstypes.Filter{{Key: secretstypes.FilterNameStringTypeName, Values: names[start:min(start+secretNameFilterValues, len(names))]}},
@@ -398,15 +401,22 @@ func listSecretFacts(ctx context.Context, client SecretsNativeAPI, items []contr
 			output, err := client.ListSecrets(ctx, input)
 			if err != nil {
 				execution.LogCloudAPIFailure(ctx, "secretsmanager", "ListSecrets", err)
-				return nil, NormalizeError(err)
+				return NormalizeError(err)
 			}
-			for _, entry := range output.SecretList {
-				result[awssdk.ToString(entry.ARN)] = [2]*string{entry.OwningService, entry.PrimaryRegion}
-			}
+			batches[batch] = append(batches[batch], output.SecretList...)
 			if awssdk.ToString(output.NextToken) == "" || awssdk.ToString(output.NextToken) == awssdk.ToString(input.NextToken) {
-				break
+				return nil
 			}
 			input.NextToken = output.NextToken
+		}
+	})
+	if err != nil {
+		return nil, err
+	}
+	result := map[string][2]*string{}
+	for _, entries := range batches {
+		for _, entry := range entries {
+			result[awssdk.ToString(entry.ARN)] = [2]*string{entry.OwningService, entry.PrimaryRegion}
 		}
 	}
 	return result, nil

@@ -3,10 +3,12 @@ package aws
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -169,11 +171,11 @@ func (fakeSecretsAPI) ListSecrets(context.Context, *awssecrets.ListSecretsInput,
 type listedSecretsAPI struct {
 	fakeSecretsAPI
 	entries   []secretstypes.SecretListEntry
-	listCalls int
+	listCalls atomic.Int32
 }
 
 func (f *listedSecretsAPI) ListSecrets(_ context.Context, input *awssecrets.ListSecretsInput, _ ...func(*awssecrets.Options)) (*awssecrets.ListSecretsOutput, error) {
-	f.listCalls++
+	f.listCalls.Add(1)
 	output := &awssecrets.ListSecretsOutput{}
 	for _, entry := range f.entries {
 		for _, prefix := range input.Filters[0].Values {
@@ -205,9 +207,32 @@ func TestSecretFactsComeFromListSecretsWithDescribeFallback(t *testing.T) {
 	if err := enrichLifecycleFacts(context.Background(), &NativeClients{Secrets: api}, items); err != nil {
 		t.Fatal(err)
 	}
-	if api.listCalls != 1 || items[0].Normalized["primary_region"] != "eu-west-1" || items[0].Normalized["owning_service"] != "" ||
+	if api.listCalls.Load() != 1 || items[0].Normalized["primary_region"] != "eu-west-1" || items[0].Normalized["owning_service"] != "" ||
 		items[0].Normalized["cleanup_protection_reason"] != "secret_replica" || items[1].Normalized["owning_service"] != "rds" {
-		t.Fatalf("calls=%d items=%+v / %+v", api.listCalls, items[0].Normalized, items[1].Normalized)
+		t.Fatalf("calls=%d items=%+v / %+v", api.listCalls.Load(), items[0].Normalized, items[1].Normalized)
+	}
+}
+
+// More than one filter batch of secrets is listed batch by batch, in parallel.
+func TestSecretFactsListEveryBatch(t *testing.T) {
+	api := &listedSecretsAPI{}
+	var items []contracts.InventoryItem
+	for index := range 2*secretNameFilterValues + 3 {
+		name := fmt.Sprintf("s%02d", index)
+		id := "arn:aws:secretsmanager:us-east-1:123456789012:secret:" + name + "-AbCdEf"
+		api.entries = append(api.entries, secretstypes.SecretListEntry{ARN: awssdk.String(id), Name: awssdk.String(name), OwningService: awssdk.String("rds")})
+		items = append(items, contracts.InventoryItem{NativeType: secretType, NativeID: id, Location: "us-east-1", Normalized: map[string]any{}})
+	}
+	if err := enrichLifecycleFacts(context.Background(), &NativeClients{Secrets: api}, items); err != nil {
+		t.Fatal(err)
+	}
+	if api.listCalls.Load() != 3 {
+		t.Fatalf("calls = %d", api.listCalls.Load())
+	}
+	for _, item := range items {
+		if item.Normalized["owning_service"] != "rds" {
+			t.Fatalf("%s facts = %+v", item.NativeID, item.Normalized)
+		}
 	}
 }
 
