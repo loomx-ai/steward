@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -181,6 +182,10 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 		return ScanCreation{}, err
 	}
 	broadScan := len(request.ResourceKindIDs) == 0
+	declaredKinds, err := c.sourceDeclaredKinds(connection.Provider, sources)
+	if err != nil {
+		return ScanCreation{}, err
+	}
 
 	run := asset.ScanRun{
 		ID: asset.ScanRunID(c.entityID("scn")), ConnectionID: connection.ID, Status: asset.ScanPending,
@@ -188,6 +193,11 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 		Targets: make([]asset.ScanTarget, 0, len(regions)+1), ResourceKindIDs: append([]asset.ResourceKindID(nil), request.ResourceKindIDs...),
 	}
 	shards := make([]asset.ScanShard, 0)
+	sourceShard := func(targetKey, regionID string, scopeID asset.ScopeID, source contracts.InventorySource) asset.ScanShard {
+		shard := c.shard(run.ID, targetKey, connection.Provider, regionID, scopeID, source.Name, "", source.AuthoritativeDefault, now)
+		shard.DeclaredKindIDs = declaredKinds[source.Name]
+		return shard
+	}
 	jobs := make([]execution.Job, 0)
 	scopes := append(make([]asset.Scope, 0, len(rootPlan.upserts)+len(regions)+1), rootPlan.upserts...)
 	regionScopes := make(map[string]asset.Scope, len(regions))
@@ -215,7 +225,7 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 				if source.KindSpecific || !sourceSupportsScope(source, asset.ScopeRegion) {
 					continue
 				}
-				shards = append(shards, c.shard(run.ID, regionTargetKey(region.RegionID), connection.Provider, region.RegionID, scope.ID, source.Name, "", source.AuthoritativeDefault, now))
+				shards = append(shards, sourceShard(regionTargetKey(region.RegionID), region.RegionID, scope.ID, source))
 			}
 			for _, kind := range kinds {
 				source := kindSources[kind.ID]
@@ -252,7 +262,7 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 			run.Targets = append(run.Targets, target)
 			for _, source := range sources {
 				if !source.KindSpecific && sourceSupportsScope(source, asset.ScopeRegion) {
-					shards = append(shards, c.shard(run.ID, target.Key, connection.Provider, target.RegionID, scope.ID, source.Name, "", source.AuthoritativeDefault, now))
+					shards = append(shards, sourceShard(target.Key, target.RegionID, scope.ID, source))
 				}
 			}
 			for _, kind := range kinds {
@@ -290,7 +300,7 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 				if source.KindSpecific {
 					continue
 				}
-				shards = append(shards, c.shard(run.ID, globalTargetKey(), connection.Provider, "global", global.ID, source.Name, "", source.AuthoritativeDefault, now))
+				shards = append(shards, sourceShard(globalTargetKey(), "global", global.ID, source))
 			}
 			for _, kind := range kinds {
 				source := kindSources[kind.ID]
@@ -717,6 +727,39 @@ func (c *Creator) resolveKinds(provider asset.Provider, requested []asset.Resour
 	}
 	sort.Slice(kinds, func(i, j int) bool { return kinds[i].ID < kinds[j].ID })
 	return kinds, kindSources, nil
+}
+
+// sourceDeclaredKinds maps each kind-less source to the provider kinds whose
+// specs name it, the kinds its broad shards report.
+func (c *Creator) sourceDeclaredKinds(provider asset.Provider, sources []contracts.InventorySource) (map[string][]asset.ResourceKindID, error) {
+	kindless := make(map[string]struct{}, len(sources))
+	for _, source := range sources {
+		if !source.KindSpecific {
+			kindless[source.Name] = struct{}{}
+		}
+	}
+	result := make(map[string][]asset.ResourceKindID, len(kindless))
+	if len(kindless) == 0 {
+		return result, nil
+	}
+	bundle, err := c.directory.Bundle(provider)
+	if err != nil {
+		return nil, err
+	}
+	for _, item := range bundle.Specs {
+		if item.ResourceKind.Provider != provider {
+			continue
+		}
+		// A spec without a source belongs to no kind-less source.
+		sourceName, err := c.inventorySource(provider, item.ResourceKind, item.Definition.Discovery.Source)
+		if _, ok := kindless[sourceName]; ok && err == nil {
+			result[sourceName] = append(result[sourceName], item.ResourceKind.ID)
+		}
+	}
+	for _, kinds := range result {
+		slices.Sort(kinds)
+	}
+	return result, nil
 }
 
 func (c *Creator) inventorySource(provider asset.Provider, kind asset.ResourceKind, declared string) (string, error) {

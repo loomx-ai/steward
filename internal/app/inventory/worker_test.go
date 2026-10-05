@@ -1077,3 +1077,60 @@ func TestNonAuthoritativeNetworkSourceCannotClosePreviousObservations(t *testing
 		t.Fatalf("nonauthoritative source closed old observation: %+v err=%v", page, err)
 	}
 }
+
+type sourceInventoryAdapter struct {
+	sources []contracts.InventorySource
+	list    func(contracts.InventoryRequest) contracts.InventoryBatch
+}
+
+func (a *sourceInventoryAdapter) InventorySources() []contracts.InventorySource { return a.sources }
+func (a *sourceInventoryAdapter) List(_ context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
+	return a.list(request), nil
+}
+
+// A broad scan gives a kind-less authoritative source (alicloud cen-topology)
+// one shard per region. Finishing it must not close the region's assets of
+// kinds that source never lists.
+func TestKindlessAuthoritativeShardKeepsOtherKindsOfItsRegion(t *testing.T) {
+	ctx := context.Background()
+	repositories := openInventoryWorkerRepositories(t)
+	now := time.Date(2026, 10, 5, 1, 0, 0, 0, time.UTC)
+	seedScanWorker(t, repositories, now)
+	cenKind := asset.ResourceKind{ID: "kind-cen", Provider: asset.ProviderAliCloud, NativeType: "ACS::CEN::CenInstance", DisplayName: "CEN", BundleRevision: "bundle-worker", Capabilities: asset.CapabilitySet{asset.CapabilityIndexed}}
+	if err := repositories.Inventory().PutResourceKind(ctx, cenKind); err != nil {
+		t.Fatal(err)
+	}
+	if err := repositories.Inventory().PutScanShard(ctx, asset.ScanShard{ID: "shard-cen", ScanRunID: "run-worker", Provider: asset.ProviderAliCloud, Source: "cen-topology", ScopeID: "scope-worker", DeclaredKindIDs: []asset.ResourceKindID{"kind-cen"}, Authoritative: true, Status: asset.ShardPending, CreatedAt: now}); err != nil {
+		t.Fatal(err)
+	}
+	// A CEN instance the source no longer lists is still closed.
+	gone := asset.Asset{ID: "ast-cen-gone", Identity: asset.Identity{Provider: asset.ProviderAliCloud, Partition: "public", ConnectionID: "connection-worker", NativeType: cenKind.NativeType, NativeID: "cen-gone"}, ScopeID: "scope-worker", ResourceKindID: cenKind.ID, FirstSeenAt: now.Add(-time.Hour), LastSeenAt: now.Add(-time.Hour)}
+	if err := repositories.Inventory().PutAsset(ctx, gone); err != nil {
+		t.Fatal(err)
+	}
+	adapter := &sourceInventoryAdapter{
+		sources: []contracts.InventorySource{
+			{Name: "resource-center", AuthoritativeDefault: true, KindSpecific: true},
+			{Name: "cen-topology", AuthoritativeDefault: true, NetworkClosure: true},
+		},
+		list: func(request contracts.InventoryRequest) contracts.InventoryBatch {
+			if request.Source == "cen-topology" {
+				return contracts.InventoryBatch{Items: []contracts.InventoryItem{{NativeType: cenKind.NativeType, NativeID: "cen-1", ResourceKind: cenKind, Name: "cen"}}, Complete: true}
+			}
+			return contracts.InventoryBatch{Items: []contracts.InventoryItem{{NativeType: workerKind().NativeType, NativeID: "i-1", ResourceKind: workerKind(), Name: "ecs"}}, Complete: true}
+		},
+	}
+	handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: adapter}, inventory.NewService(repositories.Inventory(), inventory.WithClock(func() time.Time { return now })))
+	if err := handler.Handle(ctx, execution.Job{ID: "job-kindless", Type: execution.JobScan, Payload: map[string]any{"scan_shard_ids": []any{"shard-worker", "shard-cen"}}}); err != nil {
+		t.Fatal(err)
+	}
+	page, err := repositories.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10, IncludeClosed: true})
+	if err != nil || len(page.Items) != 3 {
+		t.Fatalf("assets = %+v, err = %v", page.Items, err)
+	}
+	for _, value := range page.Items {
+		if closed := value.ClosedAt != nil; closed != (value.ID == gone.ID) {
+			t.Fatalf("asset %s (%s) closed = %t, want only the unlisted CEN instance closed", value.ID, value.ResourceKindID, closed)
+		}
+	}
+}

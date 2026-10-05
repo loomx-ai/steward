@@ -45,32 +45,49 @@ func (s *Service) closeConfirmedAbsentAssets(ctx context.Context, repository per
 		return err
 	}
 	seen := map[asset.AssetID]bool{}
+	ids := make([]asset.AssetID, 0, len(known))
 	for _, baseline := range known {
 		if baseline.ID == "" || seen[baseline.ID] || baseline.Identity.Provider != shard.Provider || baseline.Identity.ConnectionID != run.ConnectionID || baseline.ResourceKindID != shard.ResourceKindID || baseline.Identity.NativeType != kind.NativeType {
 			return fmt.Errorf("confirmed native absence belongs to another scan identity")
 		}
 		seen[baseline.ID] = true
-		current, err := repository.GetAsset(ctx, baseline.ID)
-		if err != nil {
-			return err
+		ids = append(ids, baseline.ID)
+	}
+	values, err := repository.ListAssetsByIDs(ctx, ids)
+	if err != nil {
+		return err
+	}
+	currents := make(map[asset.AssetID]asset.Asset, len(values))
+	for _, value := range values {
+		currents[value.ID] = value
+	}
+	coverage := map[asset.ScopeID]bool{}
+	var closed []asset.Asset
+	var removals []asset.AssetChange
+	for _, baseline := range known {
+		current, ok := currents[baseline.ID]
+		if !ok {
+			return fmt.Errorf("confirmed absent asset %s: %w", baseline.ID, persistence.ErrNotFound)
 		}
 		if current.Identity != baseline.Identity || current.ResourceKindID != baseline.ResourceKindID || current.ScopeID != baseline.ScopeID || current.ClosedAt != nil || current.DeletedAt != nil || current.CurrentObservationID != baseline.CurrentObservationID || !current.LastSeenAt.Equal(baseline.LastSeenAt) {
 			continue
 		}
-		covered, err := scopeWithinCoverage(ctx, repository, current.ScopeID, shard.ScopeID, run.ConnectionID)
-		if err != nil {
-			return err
+		covered, cached := coverage[current.ScopeID]
+		if !cached {
+			if covered, err = scopeWithinCoverage(ctx, repository, current.ScopeID, shard.ScopeID, run.ConnectionID); err != nil {
+				return err
+			}
+			coverage[current.ScopeID] = covered
 		}
 		if !covered {
 			continue
 		}
 		current.ClosedAt = &finishedAt
-		if err := repository.PutAsset(ctx, current); err != nil {
-			return err
-		}
-		if err := s.recordChange(ctx, repository, asset.ChangeRemoved, current, shard.ScanRunID, finishedAt, nil); err != nil {
-			return err
-		}
+		closed = append(closed, current)
+		removals = append(removals, newChange(asset.ChangeRemoved, current, shard.ScanRunID, finishedAt, nil))
 	}
-	return nil
+	if err := repository.PutAssets(ctx, closed); err != nil {
+		return err
+	}
+	return repository.RecordAssetChanges(ctx, removals)
 }

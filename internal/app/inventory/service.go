@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -528,9 +529,34 @@ func (s *Service) FinishShard(ctx context.Context, shard *asset.ScanShard, statu
 				if err != nil {
 					return err
 				}
-				active, err = repository.ListActiveAssetsByScopes(ctx, run.ConnectionID, scopeIDs, updatedShard.ResourceKindID)
+				// A kind-less source closes only the kinds it lists, never the
+				// region's other kinds that their own sources report.
+				kindIDs := []asset.ResourceKindID{updatedShard.ResourceKindID}
+				if updatedShard.ResourceKindID == "" {
+					kindIDs = updatedShard.DeclaredKindIDs
+				}
+				// Only the unseen few are read, not every covered asset.
+				var activeIDs []asset.AssetID
+				for _, kindID := range kindIDs {
+					ids, err := repository.ListActiveAssetIDsByScopes(ctx, run.ConnectionID, scopeIDs, kindID)
+					if err != nil {
+						return err
+					}
+					activeIDs = append(activeIDs, ids...)
+				}
+				slices.Sort(activeIDs)
+				unseen := slices.DeleteFunc(activeIDs, func(id asset.AssetID) bool {
+					_, ok := seen[id]
+					return ok
+				})
+				candidates, err := repository.ListAssetsByIDs(ctx, unseen)
 				if err != nil {
 					return err
+				}
+				for _, value := range candidates {
+					if value.ClosedAt == nil {
+						active = append(active, value)
+					}
 				}
 			}
 			var closed []asset.Asset

@@ -98,6 +98,11 @@ func TestGraphRebuildResolvesLaterReferencesAndClosesOldRevision(t *testing.T) {
 	if created.SourceAssetID != "ecs-1" || created.TargetAssetID != "vpc-1" || created.GraphRevision != "graph-2" || created.Confidence != 1 {
 		t.Fatalf("resolved relationship=%+v", created)
 	}
+	// An unchanged edge keeps its ID across rebuilds so its row is not rewritten.
+	again, err := service.RebuildGraph(context.Background(), "scope-root", "connection-1", "graph-2b", compiled, nil)
+	if err != nil || len(again.Relationships) != 1 || again.Relationships[0].ID != created.ID {
+		t.Fatalf("rebuilt relationship=%+v, want ID %q, err=%v", again.Relationships, created.ID, err)
+	}
 
 	repository.assets[0].Normalized = map[string]any{"VpcAttributes": map[string]any{"VpcId": "vpc-2"}}
 	repository.assets = append(repository.assets, asset.Asset{

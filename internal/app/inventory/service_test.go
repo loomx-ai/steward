@@ -395,6 +395,14 @@ func (r *inventoryRepository) ListActiveAssetsByScopes(_ context.Context, connec
 	}
 	return result, nil
 }
+func (r *inventoryRepository) ListActiveAssetIDsByScopes(ctx context.Context, connectionID asset.ConnectionID, scopeIDs []asset.ScopeID, kindID asset.ResourceKindID) ([]asset.AssetID, error) {
+	values, err := r.ListActiveAssetsByScopes(ctx, connectionID, scopeIDs, kindID)
+	ids := make([]asset.AssetID, len(values))
+	for index, value := range values {
+		ids[index] = value.ID
+	}
+	return ids, err
+}
 func (r *inventoryRepository) ListActiveAssetsByConnection(_ context.Context, connectionID asset.ConnectionID, kindID asset.ResourceKindID) ([]asset.Asset, error) {
 	var result []asset.Asset
 	for _, value := range r.assets {

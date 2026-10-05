@@ -161,6 +161,9 @@ func TestCreatorUsesKindSpecificProductSourceForBroadAndSelectedScans(t *testing
 						Discovery: spec.DiscoverySpec{Source: "product-api"},
 					},
 					ResourceKind: kind,
+				}, {
+					Definition:   spec.ResourceKindSpec{Discovery: spec.DiscoverySpec{Source: "resource-center"}},
+					ResourceKind: asset.ResourceKind{ID: "alicloud:ACS::CEN::CenInstance", Provider: asset.ProviderAliCloud, NativeType: "ACS::CEN::CenInstance"},
 				}},
 			},
 		}
@@ -203,7 +206,8 @@ func TestCreatorUsesKindSpecificProductSourceForBroadAndSelectedScans(t *testing
 				}
 			case "resource-center":
 				resourceCenterShards++
-				if shard.ResourceKindID != "" || shard.Authoritative {
+				// A kind-less shard may close only the kinds its source lists.
+				if shard.ResourceKindID != "" || shard.Authoritative || fmt.Sprint(shard.DeclaredKindIDs) != "[alicloud:ACS::CEN::CenInstance]" {
 					t.Fatalf("broad resource center shard=%+v", shard)
 				}
 			default:

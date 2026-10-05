@@ -2,8 +2,11 @@ package relational
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
 	"fmt"
+	"maps"
+	"slices"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -24,6 +27,7 @@ type relationshipRow struct {
 	ObservedAt    time.Time  `gorm:"column:observed_at"`
 	ClosedAt      *time.Time `gorm:"column:closed_at"`
 	Payload       string     `gorm:"column:payload"`
+	ItemDefaults  *string    `gorm:"column:item_defaults;->"`
 }
 
 type lifecycleBindingRow struct {
@@ -35,18 +39,21 @@ type lifecycleBindingRow struct {
 	ObservedAt        time.Time  `gorm:"column:observed_at"`
 	ClosedAt          *time.Time `gorm:"column:closed_at"`
 	Payload           string     `gorm:"column:payload"`
+	ItemDefaults      *string    `gorm:"column:item_defaults;->"`
 }
 
 type assetRelationshipRow struct {
 	ParentAssetID       string  `gorm:"column:parent_asset_id"`
 	RelationshipID      *string `gorm:"column:relationship_id"`
 	RelationshipPayload *string `gorm:"column:relationship_payload"`
+	ItemDefaults        *string `gorm:"column:item_defaults"`
 }
 
 type assetLifecycleBindingRow struct {
 	ParentAssetID  string  `gorm:"column:parent_asset_id"`
 	BindingID      *string `gorm:"column:binding_id"`
 	BindingPayload *string `gorm:"column:binding_payload"`
+	ItemDefaults   *string `gorm:"column:item_defaults"`
 }
 
 type graphRevisionRow struct {
@@ -54,7 +61,159 @@ type graphRevisionRow struct {
 	ScopeID           string    `gorm:"column:scope_id;primaryKey"`
 	GraphRevision     string    `gorm:"column:graph_revision"`
 	ObservedAt        time.Time `gorm:"column:observed_at"`
+	ItemDefaults      string    `gorm:"column:item_defaults"`
 }
+
+// graphItemDefaults holds the revision and observation time a rebuild stamps
+// on its relationships and bindings. Rows store them blank and readers fill
+// them back in, so a row of an unchanged edge stays byte-identical across
+// rebuilds. A field is shared only when no item already has it blank, so a
+// blank stored field always means "the default".
+type graphItemDefaults struct {
+	GraphRevision string     `json:"graph_revision,omitempty"`
+	ObservedAt    *time.Time `json:"observed_at,omitempty"`
+	// observedAt is ObservedAt in its stored form.
+	observedAt string
+}
+
+func newGraphItemDefaults(revision string, relationships []graph.Relationship, bindings []graph.LifecycleBinding) (graphItemDefaults, error) {
+	defaults := graphItemDefaults{GraphRevision: revision}
+	// Share the most common observation time, compared in its stored form so
+	// the filled-in value decodes exactly as the item's own would have.
+	counts := make(map[string]int)
+	common, shareTime := "", true
+	note := func(revision string, observedAt time.Time) error {
+		if revision == "" {
+			defaults.GraphRevision = ""
+		}
+		if observedAt.IsZero() {
+			shareTime = false
+		}
+		if !shareTime {
+			return nil
+		}
+		encoded, err := observedAt.MarshalJSON()
+		if err != nil {
+			return err
+		}
+		counts[string(encoded)]++
+		if counts[string(encoded)] > counts[common] {
+			common = string(encoded)
+		}
+		return nil
+	}
+	for _, value := range relationships {
+		if err := note(value.GraphRevision, value.ObservedAt); err != nil {
+			return graphItemDefaults{}, err
+		}
+	}
+	for _, value := range bindings {
+		if err := note(value.GraphRevision, value.ObservedAt); err != nil {
+			return graphItemDefaults{}, err
+		}
+	}
+	if shareTime && common != "" {
+		var observedAt time.Time
+		if err := observedAt.UnmarshalJSON([]byte(common)); err != nil {
+			return graphItemDefaults{}, err
+		}
+		defaults.ObservedAt, defaults.observedAt = &observedAt, common
+	}
+	return defaults, nil
+}
+
+// strip blanks the fields an item shares with the defaults.
+func (d graphItemDefaults) strip(revision *string, observedAt *time.Time) {
+	if d.GraphRevision != "" && *revision == d.GraphRevision {
+		*revision = ""
+	}
+	if d.observedAt != "" {
+		if encoded, err := observedAt.MarshalJSON(); err == nil && string(encoded) == d.observedAt {
+			*observedAt = time.Time{}
+		}
+	}
+}
+
+// fill restores the fields strip blanked.
+func (d graphItemDefaults) fill(revision *string, observedAt *time.Time) {
+	if *revision == "" {
+		*revision = d.GraphRevision
+	}
+	if observedAt.IsZero() && d.ObservedAt != nil {
+		*observedAt = *d.ObservedAt
+	}
+}
+
+// graphItemDecoder decodes graph rows, filling in their scope's defaults.
+// Rows written before the defaults existed carry every field themselves.
+type graphItemDecoder map[string]graphItemDefaults
+
+func (c graphItemDecoder) defaults(encoded *string) (graphItemDefaults, error) {
+	if encoded == nil || *encoded == "" {
+		return graphItemDefaults{}, nil
+	}
+	if cached, ok := c[*encoded]; ok {
+		return cached, nil
+	}
+	value, err := decode[graphItemDefaults](*encoded)
+	if err != nil {
+		return graphItemDefaults{}, err
+	}
+	c[*encoded] = value
+	return value, nil
+}
+
+func (c graphItemDecoder) relationship(payload string, encodedDefaults *string) (graph.Relationship, error) {
+	value, err := decode[graph.Relationship](payload)
+	if err != nil {
+		return value, err
+	}
+	defaults, err := c.defaults(encodedDefaults)
+	defaults.fill(&value.GraphRevision, &value.ObservedAt)
+	return value, err
+}
+
+func (c graphItemDecoder) binding(payload string, encodedDefaults *string) (graph.LifecycleBinding, error) {
+	value, err := decode[graph.LifecycleBinding](payload)
+	if err != nil {
+		return value, err
+	}
+	defaults, err := c.defaults(encodedDefaults)
+	defaults.fill(&value.GraphRevision, &value.ObservedAt)
+	return value, err
+}
+
+func decodeRelationshipRows(rows []relationshipRow) ([]graph.Relationship, error) {
+	decoder := graphItemDecoder{}
+	values := make([]graph.Relationship, 0, len(rows))
+	for _, row := range rows {
+		value, err := decoder.relationship(row.Payload, row.ItemDefaults)
+		if err != nil {
+			return nil, err
+		}
+		values = append(values, value)
+	}
+	return values, nil
+}
+
+func decodeBindingRows(rows []lifecycleBindingRow) ([]graph.LifecycleBinding, error) {
+	decoder := graphItemDecoder{}
+	values := make([]graph.LifecycleBinding, 0, len(rows))
+	for _, row := range rows {
+		value, err := decoder.binding(row.Payload, row.ItemDefaults)
+		if err != nil {
+			return nil, err
+		}
+		values = append(values, value)
+	}
+	return values, nil
+}
+
+// Graph row reads select their scope's item defaults alongside.
+const (
+	relationshipColumns = "relationships.*, (SELECT item_defaults FROM graph_revisions WHERE graph_revisions.scope_id = relationships.scope_id) AS item_defaults"
+	bindingColumns      = "lifecycle_bindings.*, (SELECT item_defaults FROM graph_revisions WHERE graph_revisions.scope_id = lifecycle_bindings.scope_id) AS item_defaults"
+)
 
 type findingRow struct {
 	ID         string     `gorm:"column:id;primaryKey"`
@@ -101,30 +260,33 @@ func (s *Store) ReplaceGraph(ctx context.Context, scopeID asset.ScopeID, revisio
 		if err != nil {
 			return err
 		}
-		revisionRow := graphRevisionRow{UnresolvedPayload: payload, ScopeID: string(scopeID), GraphRevision: revision, ObservedAt: closedAt}
+		defaults, err := newGraphItemDefaults(revision, relationships, bindings)
+		if err != nil {
+			return err
+		}
+		defaultsPayload, err := encode(defaults)
+		if err != nil {
+			return err
+		}
+		revisionRow := graphRevisionRow{UnresolvedPayload: payload, ScopeID: string(scopeID), GraphRevision: revision, ObservedAt: closedAt, ItemDefaults: defaultsPayload}
 		if err := tx.Table("graph_revisions").Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "scope_id"}},
-			DoUpdates: clause.AssignmentColumns([]string{"graph_revision", "observed_at", "unresolved_payload"}),
+			DoUpdates: clause.AssignmentColumns([]string{"graph_revision", "observed_at", "unresolved_payload", "item_defaults"}),
 		}).Create(&revisionRow).Error; err != nil {
 			return err
 		}
-		// Every graph read filters closed_at IS NULL and relationship IDs are
-		// minted per build, so superseded rows are never read or matched again:
-		// delete them instead of closing them so the tables stay one graph deep.
-		if err := tx.Table("relationships").Where("scope_id = ?", string(scopeID)).Delete(nil).Error; err != nil {
-			return err
-		}
-		if err := tx.Table("lifecycle_bindings").Where("scope_id = ?", string(scopeID)).Delete(nil).Error; err != nil {
-			return err
-		}
+		referenced := make(map[string]struct{})
 		relationshipRows := make([]relationshipRow, 0, len(relationships))
 		relationshipPositions := make(map[string]int, len(relationships))
 		for _, relationship := range relationships {
+			observedAt := relationship.ObservedAt
+			defaults.strip(&relationship.GraphRevision, &relationship.ObservedAt)
 			payload, err := encode(relationship)
 			if err != nil {
 				return err
 			}
-			row := relationshipRow{ID: string(relationship.ID), ScopeID: string(scopeID), SourceAssetID: string(relationship.SourceAssetID), TargetAssetID: string(relationship.TargetAssetID), GraphRevision: revision, ObservedAt: relationship.ObservedAt, Payload: payload}
+			row := relationshipRow{ID: string(relationship.ID), ScopeID: string(scopeID), SourceAssetID: string(relationship.SourceAssetID), TargetAssetID: string(relationship.TargetAssetID), GraphRevision: revision, ObservedAt: observedAt, Payload: payload}
+			referenced[row.SourceAssetID], referenced[row.TargetAssetID] = struct{}{}, struct{}{}
 			// A repeated ID keeps its last value, as one upsert per row did;
 			// PostgreSQL rejects a multi-row upsert that touches a row twice.
 			if position, ok := relationshipPositions[row.ID]; ok {
@@ -134,17 +296,23 @@ func (s *Store) ReplaceGraph(ctx context.Context, scopeID asset.ScopeID, revisio
 			relationshipPositions[row.ID] = len(relationshipRows)
 			relationshipRows = append(relationshipRows, row)
 		}
-		if err := upsertInBatches(tx, "relationships", relationshipRows, []string{"scope_id", "source_asset_id", "target_asset_id", "graph_revision", "observed_at", "closed_at", "payload"}); err != nil {
+		if err := syncGraphRows(tx, "relationships", scopeID, relationshipRows,
+			func(row relationshipRow) (string, string) { return row.ID, row.Payload },
+			[]string{"scope_id", "source_asset_id", "target_asset_id", "graph_revision", "observed_at", "closed_at", "payload"},
+		); err != nil {
 			return err
 		}
 		bindingRows := make([]lifecycleBindingRow, 0, len(bindings))
 		bindingPositions := make(map[string]int, len(bindings))
 		for _, binding := range bindings {
+			observedAt := binding.ObservedAt
+			defaults.strip(&binding.GraphRevision, &binding.ObservedAt)
 			payload, err := encode(binding)
 			if err != nil {
 				return err
 			}
-			row := lifecycleBindingRow{ID: string(binding.ID), ScopeID: string(scopeID), ControllerAssetID: string(binding.ControllerAssetID), ManagedAssetID: string(binding.ManagedAssetID), GraphRevision: revision, ObservedAt: binding.ObservedAt, Payload: payload}
+			row := lifecycleBindingRow{ID: string(binding.ID), ScopeID: string(scopeID), ControllerAssetID: string(binding.ControllerAssetID), ManagedAssetID: string(binding.ManagedAssetID), GraphRevision: revision, ObservedAt: observedAt, Payload: payload}
+			referenced[row.ControllerAssetID], referenced[row.ManagedAssetID] = struct{}{}, struct{}{}
 			if position, ok := bindingPositions[row.ID]; ok {
 				bindingRows[position] = row
 				continue
@@ -152,52 +320,92 @@ func (s *Store) ReplaceGraph(ctx context.Context, scopeID asset.ScopeID, revisio
 			bindingPositions[row.ID] = len(bindingRows)
 			bindingRows = append(bindingRows, row)
 		}
-		if err := upsertInBatches(tx, "lifecycle_bindings", bindingRows, []string{"scope_id", "controller_asset_id", "managed_asset_id", "graph_revision", "observed_at", "closed_at", "payload"}); err != nil {
+		if err := syncGraphRows(tx, "lifecycle_bindings", scopeID, bindingRows,
+			func(row lifecycleBindingRow) (string, string) { return row.ID, row.Payload },
+			[]string{"scope_id", "controller_asset_id", "managed_asset_id", "graph_revision", "observed_at", "closed_at", "payload"},
+		); err != nil {
 			return err
 		}
-		return closeGraphRowsForClosedAssets(tx, scopeID, closedAt)
+		return closeGraphRowsForClosedAssets(tx, scopeID, slices.Collect(maps.Keys(referenced)), closedAt)
 	})
 }
 
-func closeGraphRowsForClosedAssets(tx *gorm.DB, scopeID asset.ScopeID, closedAt time.Time) error {
-	if err := tx.
-		Table("relationships").
-		Where(
-			`scope_id = ? AND closed_at IS NULL AND (
-				EXISTS (
-					SELECT 1 FROM assets
-					WHERE assets.id = relationships.source_asset_id
-					  AND assets.closed_at IS NOT NULL
-				)
-				OR EXISTS (
-					SELECT 1 FROM assets
-					WHERE assets.id = relationships.target_asset_id
-					  AND assets.closed_at IS NOT NULL
-				)
-			)`,
-			string(scopeID),
-		).
-		Update("closed_at", closedAt).Error; err != nil {
+// syncGraphRows makes the scope's rows of table exactly rows, all open. Every
+// graph read filters closed_at IS NULL and a row's ID derives from what it
+// connects, so a row missing from rows is deleted, and only new, reopened or
+// changed rows are written: an unchanged graph rewrites nothing.
+func syncGraphRows[T any](tx *gorm.DB, table string, scopeID asset.ScopeID, rows []T, key func(T) (string, string), columns []string) error {
+	cursor, err := tx.Table(table).Select("id, payload, closed_at").Where("scope_id = ?", string(scopeID)).Rows()
+	if err != nil {
 		return err
 	}
-	return tx.
-		Table("lifecycle_bindings").
-		Where(
-			`scope_id = ? AND closed_at IS NULL AND (
-				EXISTS (
-					SELECT 1 FROM assets
-					WHERE assets.id = lifecycle_bindings.controller_asset_id
-					  AND assets.closed_at IS NOT NULL
-				)
-				OR EXISTS (
-					SELECT 1 FROM assets
-					WHERE assets.id = lifecycle_bindings.managed_asset_id
-					  AND assets.closed_at IS NOT NULL
-				)
-			)`,
-			string(scopeID),
-		).
-		Update("closed_at", closedAt).Error
+	// A digest instead of the payload keeps a large graph's diff small.
+	current := make(map[string][sha256.Size]byte)
+	for cursor.Next() {
+		var id, payload string
+		var closedAt *time.Time
+		if err := cursor.Scan(&id, &payload, &closedAt); err != nil {
+			cursor.Close()
+			return err
+		}
+		var digest [sha256.Size]byte
+		if closedAt == nil {
+			digest = sha256.Sum256([]byte(payload))
+		}
+		current[id] = digest
+	}
+	if err := errors.Join(cursor.Err(), cursor.Close()); err != nil {
+		return err
+	}
+	changed := make([]T, 0)
+	for _, row := range rows {
+		id, payload := key(row)
+		digest, exists := current[id]
+		delete(current, id)
+		if exists && digest == sha256.Sum256([]byte(payload)) {
+			continue
+		}
+		changed = append(changed, row)
+	}
+	// Every stale ID was read from this scope's rows in this transaction.
+	stale := slices.Sorted(maps.Keys(current))
+	for start := 0; start < len(stale); start += upsertBatchSize {
+		if err := tx.Table(table).Where("id IN ?", stale[start:min(start+upsertBatchSize, len(stale))]).Delete(nil).Error; err != nil {
+			return err
+		}
+	}
+	return upsertInBatches(tx, table, changed, columns)
+}
+
+// closeGraphRowsForClosedAssets closes the scope's open rows that touch a
+// closed asset. After a rebuild those rows reference only assetIDs, so only
+// they are probed instead of both endpoints of every row.
+func closeGraphRowsForClosedAssets(tx *gorm.DB, scopeID asset.ScopeID, assetIDs []string, closedAt time.Time) error {
+	slices.Sort(assetIDs)
+	var closed []string
+	for start := 0; start < len(assetIDs); start += upsertBatchSize {
+		var batch []string
+		if err := tx.Table("assets").Where("id IN ? AND closed_at IS NOT NULL", assetIDs[start:min(start+upsertBatchSize, len(assetIDs))]).Pluck("id", &batch).Error; err != nil {
+			return err
+		}
+		closed = append(closed, batch...)
+	}
+	for start := 0; start < len(closed); start += upsertBatchSize {
+		batch := closed[start:min(start+upsertBatchSize, len(closed))]
+		if err := tx.
+			Table("relationships").
+			Where("scope_id = ? AND closed_at IS NULL AND (source_asset_id IN ? OR target_asset_id IN ?)", string(scopeID), batch, batch).
+			Update("closed_at", closedAt).Error; err != nil {
+			return err
+		}
+		if err := tx.
+			Table("lifecycle_bindings").
+			Where("scope_id = ? AND closed_at IS NULL AND (controller_asset_id IN ? OR managed_asset_id IN ?)", string(scopeID), batch, batch).
+			Update("closed_at", closedAt).Error; err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s *Store) CloseAssetTopology(ctx context.Context, assetID asset.AssetID, closedAt time.Time) error {
@@ -237,10 +445,10 @@ func (s *Store) GetGraphRevision(ctx context.Context, scopeID asset.ScopeID) (st
 func (s *Store) ListRelationships(ctx context.Context, assetID asset.AssetID) ([]graph.Relationship, error) {
 	var rows []relationshipRow
 	canonicalScopes := s.db.WithContext(ctx).Table("scopes").Select("id").Where("superseded_by_scope_id IS NULL OR superseded_by_scope_id = ''")
-	if err := s.db.WithContext(ctx).Table("relationships").Where("scope_id IN (?) AND closed_at IS NULL AND (source_asset_id = ? OR target_asset_id = ?)", canonicalScopes, string(assetID), string(assetID)).Order("id ASC").Find(&rows).Error; err != nil {
+	if err := s.db.WithContext(ctx).Table("relationships").Select(relationshipColumns).Where("scope_id IN (?) AND closed_at IS NULL AND (source_asset_id = ? OR target_asset_id = ?)", canonicalScopes, string(assetID), string(assetID)).Order("id ASC").Find(&rows).Error; err != nil {
 		return nil, err
 	}
-	return decodeRows[relationshipRow, graph.Relationship](rows, func(row relationshipRow) string { return row.Payload })
+	return decodeRelationshipRows(rows)
 }
 
 func (s *Store) ListRelationshipsForAsset(
@@ -258,20 +466,21 @@ func (s *Store) ListRelationshipsForAsset(
 		Where("superseded_by_scope_id IS NULL OR superseded_by_scope_id = ''")
 	activeRelationships := s.db.WithContext(ctx).
 		Table("relationships").
-		Select("id, source_asset_id, target_asset_id, payload").
+		Select("id, source_asset_id, target_asset_id, payload, scope_id").
 		Where("closed_at IS NULL AND scope_id IN (?)", canonicalScopes)
 	var rows []assetRelationshipRow
 	err := s.db.WithContext(ctx).
 		Table("(?) AS parent_asset", parentAsset).
 		Select(
 			"parent_asset.id AS parent_asset_id, relationship.id AS relationship_id, "+
-				"relationship.payload AS relationship_payload",
+				"relationship.payload AS relationship_payload, graph_revisions.item_defaults AS item_defaults",
 		).
 		Joins(
 			"LEFT JOIN (?) AS relationship ON relationship.source_asset_id = parent_asset.id "+
 				"OR relationship.target_asset_id = parent_asset.id",
 			activeRelationships,
 		).
+		Joins("LEFT JOIN graph_revisions ON graph_revisions.scope_id = relationship.scope_id").
 		Order("relationship.id ASC").
 		Scan(&rows).Error
 	if err != nil {
@@ -281,11 +490,12 @@ func (s *Store) ListRelationshipsForAsset(
 		return nil, persistence.ErrNotFound
 	}
 	values := make([]graph.Relationship, 0, len(rows))
+	decoder := graphItemDecoder{}
 	for _, row := range rows {
 		if row.RelationshipID == nil || row.RelationshipPayload == nil {
 			continue
 		}
-		value, err := decode[graph.Relationship](*row.RelationshipPayload)
+		value, err := decoder.relationship(*row.RelationshipPayload, row.ItemDefaults)
 		if err != nil {
 			return nil, err
 		}
@@ -297,10 +507,10 @@ func (s *Store) ListRelationshipsForAsset(
 func (s *Store) ListLifecycleBindings(ctx context.Context, assetID asset.AssetID) ([]graph.LifecycleBinding, error) {
 	var rows []lifecycleBindingRow
 	canonicalScopes := s.db.WithContext(ctx).Table("scopes").Select("id").Where("superseded_by_scope_id IS NULL OR superseded_by_scope_id = ''")
-	if err := s.db.WithContext(ctx).Table("lifecycle_bindings").Where("scope_id IN (?) AND closed_at IS NULL AND (managed_asset_id = ? OR controller_asset_id = ?)", canonicalScopes, string(assetID), string(assetID)).Order("id ASC").Find(&rows).Error; err != nil {
+	if err := s.db.WithContext(ctx).Table("lifecycle_bindings").Select(bindingColumns).Where("scope_id IN (?) AND closed_at IS NULL AND (managed_asset_id = ? OR controller_asset_id = ?)", canonicalScopes, string(assetID), string(assetID)).Order("id ASC").Find(&rows).Error; err != nil {
 		return nil, err
 	}
-	return decodeRows[lifecycleBindingRow, graph.LifecycleBinding](rows, func(row lifecycleBindingRow) string { return row.Payload })
+	return decodeBindingRows(rows)
 }
 
 func (s *Store) ListLifecycleBindingsForAsset(
@@ -318,20 +528,21 @@ func (s *Store) ListLifecycleBindingsForAsset(
 		Where("superseded_by_scope_id IS NULL OR superseded_by_scope_id = ''")
 	activeBindings := s.db.WithContext(ctx).
 		Table("lifecycle_bindings").
-		Select("id, controller_asset_id, managed_asset_id, payload").
+		Select("id, controller_asset_id, managed_asset_id, payload, scope_id").
 		Where("closed_at IS NULL AND scope_id IN (?)", canonicalScopes)
 	var rows []assetLifecycleBindingRow
 	err := s.db.WithContext(ctx).
 		Table("(?) AS parent_asset", parentAsset).
 		Select(
 			"parent_asset.id AS parent_asset_id, binding.id AS binding_id, "+
-				"binding.payload AS binding_payload",
+				"binding.payload AS binding_payload, graph_revisions.item_defaults AS item_defaults",
 		).
 		Joins(
 			"LEFT JOIN (?) AS binding ON binding.controller_asset_id = parent_asset.id "+
 				"OR binding.managed_asset_id = parent_asset.id",
 			activeBindings,
 		).
+		Joins("LEFT JOIN graph_revisions ON graph_revisions.scope_id = binding.scope_id").
 		Order("binding.id ASC").
 		Scan(&rows).Error
 	if err != nil {
@@ -341,11 +552,12 @@ func (s *Store) ListLifecycleBindingsForAsset(
 		return nil, persistence.ErrNotFound
 	}
 	values := make([]graph.LifecycleBinding, 0, len(rows))
+	decoder := graphItemDecoder{}
 	for _, row := range rows {
 		if row.BindingID == nil || row.BindingPayload == nil {
 			continue
 		}
-		value, err := decode[graph.LifecycleBinding](*row.BindingPayload)
+		value, err := decoder.binding(*row.BindingPayload, row.ItemDefaults)
 		if err != nil {
 			return nil, err
 		}
@@ -355,12 +567,27 @@ func (s *Store) ListLifecycleBindingsForAsset(
 }
 
 func (s *Store) PutFinding(ctx context.Context, value finding.Finding) error {
-	payload, err := encode(value)
-	if err != nil {
-		return err
+	return s.PutFindings(ctx, []finding.Finding{value})
+}
+
+func (s *Store) PutFindings(ctx context.Context, values []finding.Finding) error {
+	rows := make([]findingRow, 0, len(values))
+	positions := make(map[string]int, len(values))
+	for _, value := range values {
+		payload, err := encode(value)
+		if err != nil {
+			return err
+		}
+		row := findingRow{ID: string(value.ID), AssetID: string(value.AssetID), RuleID: value.RuleID, Status: string(value.Status), Severity: string(value.Severity), LastSeenAt: value.LastSeenAt, ClosedAt: value.ClosedAt, Payload: payload}
+		// PostgreSQL rejects a multi-row upsert that touches a row twice.
+		if position, ok := positions[row.ID]; ok {
+			rows[position] = row
+			continue
+		}
+		positions[row.ID] = len(rows)
+		rows = append(rows, row)
 	}
-	row := findingRow{ID: string(value.ID), AssetID: string(value.AssetID), RuleID: value.RuleID, Status: string(value.Status), Severity: string(value.Severity), LastSeenAt: value.LastSeenAt, ClosedAt: value.ClosedAt, Payload: payload}
-	return upsertRevised(s.db.WithContext(ctx), "findings", []findingRow{row}, []string{"status", "severity", "last_seen_at", "closed_at", "payload"})
+	return upsertRevised(s.db.WithContext(ctx), "findings", rows, []string{"status", "severity", "last_seen_at", "closed_at", "payload"})
 }
 
 func (s *Store) ListFindingsByAsset(ctx context.Context, assetID asset.AssetID) ([]finding.Finding, error) {

@@ -15,18 +15,18 @@ const topologyGraphAssetBatchSize = 400
 
 func (s *Store) ListRelationshipsByScope(ctx context.Context, scopeID asset.ScopeID) ([]graph.Relationship, error) {
 	var rows []relationshipRow
-	if err := s.db.WithContext(ctx).Table("relationships").Where("scope_id = ? AND closed_at IS NULL", string(scopeID)).Order("id ASC").Find(&rows).Error; err != nil {
+	if err := s.db.WithContext(ctx).Table("relationships").Select(relationshipColumns).Where("scope_id = ? AND closed_at IS NULL", string(scopeID)).Order("id ASC").Find(&rows).Error; err != nil {
 		return nil, err
 	}
-	return decodeRows[relationshipRow, graph.Relationship](rows, func(row relationshipRow) string { return row.Payload })
+	return decodeRelationshipRows(rows)
 }
 
 func (s *Store) ListLifecycleBindingsByScope(ctx context.Context, scopeID asset.ScopeID) ([]graph.LifecycleBinding, error) {
 	var rows []lifecycleBindingRow
-	if err := s.db.WithContext(ctx).Table("lifecycle_bindings").Where("scope_id = ? AND closed_at IS NULL", string(scopeID)).Order("id ASC").Find(&rows).Error; err != nil {
+	if err := s.db.WithContext(ctx).Table("lifecycle_bindings").Select(bindingColumns).Where("scope_id = ? AND closed_at IS NULL", string(scopeID)).Order("id ASC").Find(&rows).Error; err != nil {
 		return nil, err
 	}
-	return decodeRows[lifecycleBindingRow, graph.LifecycleBinding](rows, func(row lifecycleBindingRow) string { return row.Payload })
+	return decodeBindingRows(rows)
 }
 
 func (s *Store) ListRelationshipsByAssetIDs(ctx context.Context, assetIDs []asset.AssetID) ([]graph.Relationship, error) {
@@ -35,6 +35,7 @@ func (s *Store) ListRelationshipsByAssetIDs(ctx context.Context, assetIDs []asse
 	}
 	result := make([]graph.Relationship, 0)
 	seen := make(map[string]struct{})
+	decoder := graphItemDecoder{}
 	for start := 0; start < len(assetIDs); start += topologyGraphAssetBatchSize {
 		end := min(start+topologyGraphAssetBatchSize, len(assetIDs))
 		ids := make([]string, end-start)
@@ -44,6 +45,7 @@ func (s *Store) ListRelationshipsByAssetIDs(ctx context.Context, assetIDs []asse
 		var rows []relationshipRow
 		if err := s.db.WithContext(ctx).
 			Table("relationships").
+			Select(relationshipColumns).
 			Where(
 				"closed_at IS NULL AND (source_asset_id IN ? OR target_asset_id IN ?)",
 				ids,
@@ -57,7 +59,7 @@ func (s *Store) ListRelationshipsByAssetIDs(ctx context.Context, assetIDs []asse
 			if _, ok := seen[row.ID]; ok {
 				continue
 			}
-			value, err := decode[graph.Relationship](row.Payload)
+			value, err := decoder.relationship(row.Payload, row.ItemDefaults)
 			if err != nil {
 				return nil, err
 			}
@@ -74,6 +76,7 @@ func (s *Store) ListLifecycleBindingsByAssetIDs(ctx context.Context, assetIDs []
 	}
 	result := make([]graph.LifecycleBinding, 0)
 	seen := make(map[string]struct{})
+	decoder := graphItemDecoder{}
 	for start := 0; start < len(assetIDs); start += topologyGraphAssetBatchSize {
 		end := min(start+topologyGraphAssetBatchSize, len(assetIDs))
 		ids := make([]string, end-start)
@@ -83,6 +86,7 @@ func (s *Store) ListLifecycleBindingsByAssetIDs(ctx context.Context, assetIDs []
 		var rows []lifecycleBindingRow
 		if err := s.db.WithContext(ctx).
 			Table("lifecycle_bindings").
+			Select(bindingColumns).
 			Where(
 				"closed_at IS NULL AND (controller_asset_id IN ? OR managed_asset_id IN ?)",
 				ids,
@@ -96,7 +100,7 @@ func (s *Store) ListLifecycleBindingsByAssetIDs(ctx context.Context, assetIDs []
 			if _, ok := seen[row.ID]; ok {
 				continue
 			}
-			value, err := decode[graph.LifecycleBinding](row.Payload)
+			value, err := decoder.binding(row.Payload, row.ItemDefaults)
 			if err != nil {
 				return nil, err
 			}
@@ -110,19 +114,19 @@ func (s *Store) ListLifecycleBindingsByAssetIDs(ctx context.Context, assetIDs []
 func (s *Store) ListRelationshipsByConnection(ctx context.Context, connectionID asset.ConnectionID) ([]graph.Relationship, error) {
 	var rows []relationshipRow
 	scopes := s.db.WithContext(ctx).Table("scopes").Select("id").Where("connection_id = ? AND (superseded_by_scope_id IS NULL OR superseded_by_scope_id = '')", string(connectionID))
-	if err := s.db.WithContext(ctx).Table("relationships").Where("scope_id IN (?) AND closed_at IS NULL", scopes).Order("id ASC").Find(&rows).Error; err != nil {
+	if err := s.db.WithContext(ctx).Table("relationships").Select(relationshipColumns).Where("scope_id IN (?) AND closed_at IS NULL", scopes).Order("id ASC").Find(&rows).Error; err != nil {
 		return nil, err
 	}
-	return decodeRows[relationshipRow, graph.Relationship](rows, func(row relationshipRow) string { return row.Payload })
+	return decodeRelationshipRows(rows)
 }
 
 func (s *Store) ListLifecycleBindingsByConnection(ctx context.Context, connectionID asset.ConnectionID) ([]graph.LifecycleBinding, error) {
 	var rows []lifecycleBindingRow
 	scopes := s.db.WithContext(ctx).Table("scopes").Select("id").Where("connection_id = ? AND (superseded_by_scope_id IS NULL OR superseded_by_scope_id = '')", string(connectionID))
-	if err := s.db.WithContext(ctx).Table("lifecycle_bindings").Where("scope_id IN (?) AND closed_at IS NULL", scopes).Order("id ASC").Find(&rows).Error; err != nil {
+	if err := s.db.WithContext(ctx).Table("lifecycle_bindings").Select(bindingColumns).Where("scope_id IN (?) AND closed_at IS NULL", scopes).Order("id ASC").Find(&rows).Error; err != nil {
 		return nil, err
 	}
-	return decodeRows[lifecycleBindingRow, graph.LifecycleBinding](rows, func(row lifecycleBindingRow) string { return row.Payload })
+	return decodeBindingRows(rows)
 }
 
 func (s *Store) ListGraphRevisionsByConnection(ctx context.Context, connectionID asset.ConnectionID) (map[asset.ScopeID]string, error) {

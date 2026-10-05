@@ -46,7 +46,7 @@ func (e *FindingEngine) Evaluate(ctx context.Context, value asset.Asset, compile
 		if err != nil {
 			return err
 		}
-		return evaluate(ctx, repository, value, compiled, evaluation, existing)
+		return repository.PutFindings(ctx, evaluate(value, compiled, evaluation, existing))
 	})
 }
 
@@ -84,20 +84,23 @@ func (e *FindingEngine) EvaluateAll(ctx context.Context, items []AssetEvaluation
 				return err
 			}
 			evaluated := make(map[asset.AssetID]struct{}, len(chunk))
+			var pending []finding.Finding
 			for _, item := range chunk {
 				existing := prefetched[item.Asset.ID]
 				// A repeated asset must see what its earlier item wrote.
 				if _, repeated := evaluated[item.Asset.ID]; repeated {
+					if err := repository.PutFindings(ctx, pending); err != nil {
+						return err
+					}
+					pending = nil
 					if existing, err = repository.ListFindingsByAsset(ctx, item.Asset.ID); err != nil {
 						return err
 					}
 				}
 				evaluated[item.Asset.ID] = struct{}{}
-				if err := evaluate(ctx, repository, item.Asset, item.Compiled, item.Evaluation, existing); err != nil {
-					return err
-				}
+				pending = append(pending, evaluate(item.Asset, item.Compiled, item.Evaluation, existing)...)
 			}
-			return nil
+			return repository.PutFindings(ctx, pending)
 		}); err != nil {
 			return err
 		}
@@ -105,7 +108,9 @@ func (e *FindingEngine) EvaluateAll(ctx context.Context, items []AssetEvaluation
 	return nil
 }
 
-func evaluate(ctx context.Context, repository persistence.FindingRepository, value asset.Asset, compiled spec.CompiledSpec, evaluation Evaluation, existing []finding.Finding) error {
+// evaluate returns the findings to write for one asset, in write order.
+func evaluate(value asset.Asset, compiled spec.CompiledSpec, evaluation Evaluation, existing []finding.Finding) []finding.Finding {
+	var writes []finding.Finding
 	byRule := make(map[string]finding.Finding, len(existing))
 	for _, current := range existing {
 		if current.Evidence["engine"] == findingEngine {
@@ -140,12 +145,10 @@ func evaluate(ctx context.Context, repository persistence.FindingRepository, val
 			"engine": findingEngine, "field": strings.Join(rule.FieldPath, "."),
 			"operator": string(rule.Operator), "expected": rule.Expected, "actual": actual, "spec_hash": compiled.Hash,
 		}
-		if err := repository.PutFinding(ctx, result); err != nil {
-			return err
-		}
+		writes = append(writes, result)
 	}
 	if !evaluation.Authoritative || !evaluation.Complete {
-		return nil
+		return writes
 	}
 	for _, current := range existing {
 		if current.Evidence["engine"] != findingEngine || current.Status != finding.StatusOpen {
@@ -158,11 +161,9 @@ func evaluate(ctx context.Context, repository persistence.FindingRepository, val
 		current.Status = finding.StatusClosed
 		current.ClosedAt = &closedAt
 		current.LastSeenAt = evaluation.ObservedAt
-		if err := repository.PutFinding(ctx, current); err != nil {
-			return err
-		}
+		writes = append(writes, current)
 	}
-	return nil
+	return writes
 }
 
 func normalizedValue(document map[string]any, path []string) (any, bool) {

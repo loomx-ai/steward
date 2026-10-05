@@ -190,6 +190,9 @@ type InventoryRepository interface {
 	CountAssetChanges(context.Context, []asset.ScanTaskID) (map[asset.ScanTaskID]asset.ChangeCounts, error)
 	ListActiveAssets(context.Context, asset.ScopeID, asset.ResourceKindID) ([]asset.Asset, error)
 	ListActiveAssetsByScopes(context.Context, asset.ConnectionID, []asset.ScopeID, asset.ResourceKindID) ([]asset.Asset, error)
+	// ListActiveAssetIDsByScopes returns the IDs ListActiveAssetsByScopes
+	// would, in the same order, without reading the assets.
+	ListActiveAssetIDsByScopes(context.Context, asset.ConnectionID, []asset.ScopeID, asset.ResourceKindID) ([]asset.AssetID, error)
 	ListActiveAssetsByConnection(context.Context, asset.ConnectionID, asset.ResourceKindID) ([]asset.Asset, error)
 	// CountActiveAssetsByScope counts a connection's open assets per scope,
 	// limited to kinds when given and to those a non-nil resource query
@@ -228,6 +231,9 @@ type GraphRepository interface {
 type FindingRepository interface {
 	WithinFindingTx(context.Context, func(FindingRepository) error) error
 	PutFinding(context.Context, finding.Finding) error
+	// PutFindings is PutFinding for many findings in one statement batch; a
+	// repeated ID keeps its last value.
+	PutFindings(context.Context, []finding.Finding) error
 	ListFindingsByAsset(context.Context, asset.AssetID) ([]finding.Finding, error)
 	// ListFindingsByAssetIDs is ListFindingsByAsset for many assets at once.
 	ListFindingsByAssetIDs(context.Context, []asset.AssetID) (map[asset.AssetID][]finding.Finding, error)

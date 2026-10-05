@@ -32,6 +32,14 @@ func TestHotStatementsUseIndexes(t *testing.T) {
 			JOIN asset_search_rows ON asset_search_rows.id = asset_search.rowid
 			WHERE asset_search.document GLOB '*10.0.1*')`,
 			"VIRTUAL TABLE INDEX 0:G", false},
+		// A common term walks the list's ordered index and tests search_text.
+		{`SELECT assets.id FROM assets WHERE closed_at IS NULL AND connection_id = 'connection' AND assets.search_text GLOB '*web*'
+			ORDER BY first_seen_at ASC, id ASC LIMIT 51`, "USING INDEX idx_assets_connection_list_cursor ", true},
+		// Retention deletes a scan's rows in small chunks by rowid.
+		{`DELETE FROM asset_changes WHERE rowid IN (SELECT rowid FROM asset_changes WHERE scan_task_id = 'scan' LIMIT 5000)`,
+			"USING COVERING INDEX idx_asset_changes_scan_cursor ", false},
+		{`DELETE FROM job_logs WHERE rowid IN (SELECT rowid FROM job_logs WHERE aggregate_type = 'scan_task' AND aggregate_id = 'scan' LIMIT 5000)`,
+			"USING COVERING INDEX idx_job_logs_aggregate_cursor ", false},
 		{`DELETE FROM asset_observations WHERE scan_task_id = 'scan' AND EXISTS (
 			SELECT 1 FROM assets WHERE assets.id = asset_observations.asset_id AND assets.last_seen_at > asset_observations.observed_at)`,
 			"USING INDEX idx_asset_observations_scan_task ", false},

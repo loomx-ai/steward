@@ -363,10 +363,13 @@ type ScanShard struct {
 	RegionID        string         `json:"region_id"`
 	ScopeID         ScopeID        `json:"scope_id"`
 	ResourceKindID  ResourceKindID `json:"resource_kind_id,omitempty"`
-	Authoritative   bool           `json:"authoritative"`
-	Status          ShardStatus    `json:"status"`
-	Coverage        Coverage       `json:"coverage"`
-	CreatedAt       time.Time      `json:"created_at"`
-	StartedAt       *time.Time     `json:"started_at,omitempty"`
-	FinishedAt      *time.Time     `json:"finished_at,omitempty"`
+	// DeclaredKindIDs are the kinds a kind-less shard's source lists, the only
+	// ones its authoritative success may close.
+	DeclaredKindIDs []ResourceKindID `json:"declared_kind_ids,omitempty"`
+	Authoritative   bool             `json:"authoritative"`
+	Status          ShardStatus      `json:"status"`
+	Coverage        Coverage         `json:"coverage"`
+	CreatedAt       time.Time        `json:"created_at"`
+	StartedAt       *time.Time       `json:"started_at,omitempty"`
+	FinishedAt      *time.Time       `json:"finished_at,omitempty"`
 }

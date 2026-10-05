@@ -196,6 +196,12 @@ func (h *GraphHandler) evaluateFindings(ctx context.Context, run asset.ScanRun, 
 		shardsByKind[shard.ResourceKindID] = append(shardsByKind[shard.ResourceKindID], shard)
 	}
 	ancestorCache := make(map[asset.ScopeID]map[asset.ScopeID]struct{})
+	// Coverage depends only on an asset's scope and kind, which many share.
+	type coverageKey struct {
+		scope asset.ScopeID
+		kind  asset.ResourceKindID
+	}
+	coverage := make(map[coverageKey]bool)
 	var evaluations []AssetEvaluation
 	for _, value := range assets {
 		if _, observed := observedAssetIDs[value.ID]; !observed {
@@ -205,9 +211,13 @@ func (h *GraphHandler) evaluateFindings(ctx context.Context, run asset.ScanRun, 
 		if !exists || len(compiled.Rules) == 0 {
 			continue
 		}
-		authoritativeComplete, err := h.authoritativeCoverage(ctx, value, shardsByKind, ancestorCache)
-		if err != nil {
-			return err
+		key := coverageKey{value.ScopeID, value.ResourceKindID}
+		authoritativeComplete, cached := coverage[key]
+		if !cached {
+			if authoritativeComplete, err = h.authoritativeCoverage(ctx, value, shardsByKind, ancestorCache); err != nil {
+				return err
+			}
+			coverage[key] = authoritativeComplete
 		}
 		evaluations = append(evaluations, AssetEvaluation{Asset: value, Compiled: compiled, Evaluation: Evaluation{
 			ObservedAt: observedAt, Authoritative: authoritativeComplete, Complete: authoritativeComplete,

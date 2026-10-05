@@ -17,6 +17,8 @@ type retryShardTemplate struct {
 	source        string
 	resourceKind  *asset.ResourceKind
 	authoritative bool
+	// declaredKinds are the kinds a kind-less template's source lists.
+	declaredKinds []asset.ResourceKindID
 }
 
 type retryPlanDefinition struct {
@@ -54,12 +56,16 @@ func (s *ControlService) retryPlanDefinition(
 	if err != nil {
 		return retryPlanDefinition{}, err
 	}
+	declaredKinds, err := planner.sourceDeclaredKinds(connection.Provider, sources)
+	if err != nil {
+		return retryPlanDefinition{}, err
+	}
 	definition := retryPlanDefinition{
 		connection:      connection,
-		regionTemplates: retryTemplates(asset.ScopeRegion, len(task.ResourceKindIDs) == 0, sources, kinds, kindSources),
+		regionTemplates: retryTemplates(asset.ScopeRegion, len(task.ResourceKindIDs) == 0, sources, kinds, kindSources, declaredKinds),
 	}
 	if task.ScopeMode == asset.ScanAllActiveRegions || hasGlobalScanTarget(task.Targets) {
-		definition.globalTemplates = retryTemplates(asset.ScopeGlobal, len(task.ResourceKindIDs) == 0, sources, kinds, kindSources)
+		definition.globalTemplates = retryTemplates(asset.ScopeGlobal, len(task.ResourceKindIDs) == 0, sources, kinds, kindSources, declaredKinds)
 	}
 	switch task.ScopeMode {
 	case asset.ScanAllActiveRegions:
@@ -111,13 +117,14 @@ func retryTemplates(
 	sources []contracts.InventorySource,
 	kinds []asset.ResourceKind,
 	kindSources map[asset.ResourceKindID]contracts.InventorySource,
+	declaredKinds map[string][]asset.ResourceKindID,
 ) []retryShardTemplate {
 	result := make([]retryShardTemplate, 0)
 	if broad {
 		for _, source := range sources {
 			if !source.KindSpecific && sourceSupportsScope(source, scopeKind) {
 				result = append(result, retryShardTemplate{
-					source: source.Name, authoritative: source.AuthoritativeDefault,
+					source: source.Name, authoritative: source.AuthoritativeDefault, declaredKinds: declaredKinds[source.Name],
 				})
 			}
 		}
@@ -317,6 +324,7 @@ func (s *ControlService) reconcileRetryPlan(
 			template.source, kindID, template.authoritative, now,
 		)
 		shard.RetryGeneration = generation
+		shard.DeclaredKindIDs = template.declaredKinds
 		existing[signature] = struct{}{}
 		added = append(added, shard)
 		return nil

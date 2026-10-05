@@ -63,22 +63,40 @@ func assetSearchText(value asset.Asset) string {
 	return document.String()
 }
 
+// keywordIndexProbeLimit is how many index hits make a term common. Up to it,
+// the trigram index hands over the few matching ids; past it, walking the
+// list's ordered index and testing search_text finds a page sooner than
+// materializing and sorting every hit.
+const keywordIndexProbeLimit = 2000
+
 // whereKeywordMatches keeps the assets whose search document contains term.
 // SQLite answers it from the trigram FTS5 index over search_text, PostgreSQL
 // from the pg_trgm GIN index on it; both only scan when term is shorter than a
-// trigram.
-func whereKeywordMatches(query *gorm.DB, term string) *gorm.DB {
+// trigram. FTS5 rechecks GLOB against the stored document, which is
+// assets.search_text, so both SQLite forms match the same rows.
+func whereKeywordMatches(query *gorm.DB, term string) (*gorm.DB, error) {
 	term = strings.ToLower(term)
 	if query.Dialector.Name() == "sqlite" {
 		// FTS5 serves GLOB, not LIKE ... ESCAPE, from the index.
+		pattern := "*" + escapeGlob(term) + "*"
+		var hits int64
+		if err := query.Session(&gorm.Session{NewDB: true}).Raw(
+			"SELECT count(*) FROM (SELECT 1 FROM asset_search WHERE document GLOB ? LIMIT ?)",
+			pattern, keywordIndexProbeLimit,
+		).Scan(&hits).Error; err != nil {
+			return nil, err
+		}
+		if hits >= keywordIndexProbeLimit {
+			return query.Where("assets.search_text GLOB ?", pattern), nil
+		}
 		return query.Where(`assets.id IN (
 			SELECT asset_search_rows.asset_id
 			FROM asset_search
 			JOIN asset_search_rows ON asset_search_rows.id = asset_search.rowid
 			WHERE asset_search.document GLOB ?
-		)`, "*"+escapeGlob(term)+"*")
+		)`, pattern), nil
 	}
-	return query.Where("assets.search_text LIKE ? ESCAPE '\\'", "%"+escapeLike(term)+"%")
+	return query.Where("assets.search_text LIKE ? ESCAPE '\\'", "%"+escapeLike(term)+"%"), nil
 }
 
 func escapeGlob(value string) string {

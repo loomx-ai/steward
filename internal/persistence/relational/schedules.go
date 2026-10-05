@@ -399,8 +399,23 @@ func (s *Store) ListExpiredManualScans(ctx context.Context, before time.Time, li
 	return result, nil
 }
 
+// deleteScanChunk bounds the rows one DeleteScan transaction removes, so a
+// large scan never holds the writer for long.
+const deleteScanChunk = 5000
+
+// supersededObservation holds while an observation is no longer the newest
+// projection of its asset; the newest one stays as the asset's source.
+const supersededObservation = `EXISTS (
+	SELECT 1 FROM assets
+	WHERE assets.id = asset_observations.asset_id
+	  AND assets.last_seen_at > asset_observations.observed_at
+)`
+
+// DeleteScan removes a terminal scan's rows in small transactions and its
+// scan row last, so a crash part way leaves the scan for the next retention
+// run to finish.
 func (s *Store) DeleteScan(ctx context.Context, id asset.ScanTaskID) error {
-	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	ensureTerminal := func(tx *gorm.DB) error {
 		var row scanRunRow
 		if err := tx.Table("scan_tasks").Where("id = ?", string(id)).Take(&row).Error; err != nil {
 			return mapError(err)
@@ -408,15 +423,54 @@ func (s *Store) DeleteScan(ctx context.Context, id asset.ScanTaskID) error {
 		if !asset.ScanStatus(row.Status).Terminal() {
 			return persistence.ErrConflict
 		}
-		// An observation stays while it is still the newest projection of its
-		// asset; deleting it would leave the asset without its source.
-		if err := tx.Exec(`DELETE FROM asset_observations
-			WHERE scan_task_id = ?
-			  AND EXISTS (
-			    SELECT 1 FROM assets
-			    WHERE assets.id = asset_observations.asset_id
-			      AND assets.last_seen_at > asset_observations.observed_at
-			  )`, string(id)).Error; err != nil {
+		return nil
+	}
+	if err := ensureTerminal(s.db.WithContext(ctx)); err != nil {
+		return err
+	}
+	// SQLite reaches rows fastest by rowid; PostgreSQL by primary key.
+	key := "id"
+	if s.db.Dialector.Name() == "sqlite" {
+		key = "rowid"
+	}
+	// The observations to delete are collected first, without the writer, so
+	// a chunk never rescans the newest observations it must keep.
+	var observations []any
+	if err := s.db.WithContext(ctx).Table("asset_observations").
+		Where("scan_task_id = ? AND "+supersededObservation, string(id)).
+		Order(key).Pluck(key, &observations).Error; err != nil {
+		return err
+	}
+	for start := 0; start < len(observations); start += deleteScanChunk {
+		batch := observations[start:min(start+deleteScanChunk, len(observations))]
+		if err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+			if err := ensureTerminal(tx); err != nil {
+				return err
+			}
+			return tx.Exec("DELETE FROM asset_observations WHERE "+key+" IN ? AND scan_task_id = ? AND "+supersededObservation, batch, string(id)).Error
+		}); err != nil {
+			return err
+		}
+	}
+	for _, large := range []struct{ table, where string }{
+		{"asset_changes", "scan_task_id = ?"},
+		{"job_logs", "aggregate_type = 'scan_task' AND aggregate_id = ?"},
+	} {
+		for deleted := int64(deleteScanChunk); deleted == deleteScanChunk; {
+			if err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+				if err := ensureTerminal(tx); err != nil {
+					return err
+				}
+				result := tx.Exec("DELETE FROM "+large.table+" WHERE "+key+" IN (SELECT "+key+" FROM "+large.table+" WHERE "+large.where+" LIMIT ?)", string(id), deleteScanChunk)
+				deleted = result.RowsAffected
+				return result.Error
+			}); err != nil {
+				return err
+			}
+		}
+	}
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := ensureTerminal(tx); err != nil {
 			return err
 		}
 		for _, statement := range []struct {

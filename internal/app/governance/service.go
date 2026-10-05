@@ -2,16 +2,18 @@ package governance
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"maps"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/graph"
-	"github.com/loomx-ai/steward/internal/idgen"
 	"github.com/loomx-ai/steward/internal/provider/spec"
 )
 
@@ -141,7 +143,7 @@ func (s *Service) RebuildGraphFromAssets(ctx context.Context, scopeID asset.Scop
 					}
 				}
 				result.Relationships = append(result.Relationships, graph.Relationship{
-					ID: relationshipID(revision, source.ID, target.ID, relationshipType, relationshipSource), SourceAssetID: source.ID, TargetAssetID: target.ID,
+					ID: relationshipID(scopeID, source.ID, target.ID, relationshipType, relationshipSource), SourceAssetID: source.ID, TargetAssetID: target.ID,
 					Type: relationshipType, Source: relationshipSource, Confidence: 1, GraphRevision: revision, ObservedAt: observedAt,
 					Evidence: map[string]any{"target_id_path": mapping.TargetIDPath, "target_native_id": nativeID, "spec_bundle_revision": bundle.Revision},
 				})
@@ -151,6 +153,11 @@ func (s *Service) RebuildGraphFromAssets(ctx context.Context, scopeID asset.Scop
 	// Contributors only read their input, so they share one copy. The one
 	// known write, GCP identityValidate defaulting a member's empty roles to
 	// MEMBER, stores what every reader of that field already assumes.
+	type bindingKey struct {
+		controller, managed asset.AssetID
+		evidenceSource      string
+	}
+	bindingOccurrences := make(map[bindingKey]int)
 	var shared []asset.Asset
 	if len(contributors) > 0 {
 		shared = cloneAssets(assets)
@@ -175,7 +182,7 @@ func (s *Service) RebuildGraphFromAssets(ctx context.Context, scopeID asset.Scop
 				relationship.ObservedAt = observedAt
 			}
 			if relationship.ID == "" {
-				relationship.ID = relationshipID(revision, relationship.SourceAssetID, relationship.TargetAssetID, relationship.Type, relationship.Source)
+				relationship.ID = relationshipID(scopeID, relationship.SourceAssetID, relationship.TargetAssetID, relationship.Type, relationship.Source)
 			}
 			result.Relationships = append(result.Relationships, relationship)
 		}
@@ -188,7 +195,9 @@ func (s *Service) RebuildGraphFromAssets(ctx context.Context, scopeID asset.Scop
 				binding.ObservedAt = observedAt
 			}
 			if binding.ID == "" {
-				binding.ID = lifecycleBindingID(revision, binding.ControllerAssetID, binding.ManagedAssetID, binding.EvidenceSource)
+				key := bindingKey{binding.ControllerAssetID, binding.ManagedAssetID, binding.EvidenceSource}
+				binding.ID = lifecycleBindingID(scopeID, key.controller, key.managed, key.evidenceSource, bindingOccurrences[key])
+				bindingOccurrences[key]++
 			}
 			result.Bindings = append(result.Bindings, binding)
 		}
@@ -389,12 +398,21 @@ func pathStrings(document map[string]any, path string) ([]string, bool) {
 	}
 }
 
-func relationshipID(revision string, sourceID, targetID asset.AssetID, relationshipType graph.RelationshipType, source string) graph.RelationshipID {
-	return graph.RelationshipID(idgen.MustNew("rel"))
+// relationshipID derives a relationship's ID from what it connects, so a
+// rebuild finds the edge it already stored and leaves the row alone.
+func relationshipID(scopeID asset.ScopeID, sourceID, targetID asset.AssetID, relationshipType graph.RelationshipType, source string) graph.RelationshipID {
+	return graph.RelationshipID(graphItemID("rel", string(scopeID), string(sourceID), string(targetID), string(relationshipType), source))
 }
 
-func lifecycleBindingID(revision string, controllerID, managedID asset.AssetID, evidenceSource string) graph.LifecycleBindingID {
-	return graph.LifecycleBindingID(idgen.MustNew("lcb"))
+// lifecycleBindingID derives a binding's ID like relationshipID. Bindings are
+// not merged, so occurrence numbers keep repeated ones apart.
+func lifecycleBindingID(scopeID asset.ScopeID, controllerID, managedID asset.AssetID, evidenceSource string, occurrence int) graph.LifecycleBindingID {
+	return graph.LifecycleBindingID(graphItemID("lcb", string(scopeID), string(controllerID), string(managedID), evidenceSource, strconv.Itoa(occurrence)))
+}
+
+func graphItemID(prefix string, parts ...string) string {
+	digest := sha256.Sum256([]byte(strings.Join(parts, "\x00")))
+	return prefix + "-" + hex.EncodeToString(digest[:12])
 }
 
 // cloneAssets deep-copies the assets handed to contributors so they cannot

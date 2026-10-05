@@ -1203,6 +1203,18 @@ func Run(t *testing.T, factory Factory) {
 		if ids, err := repositories.Inventory().ListAssetIDsObservedByTarget(ctx, "conn-app", "vpc:app", "config", "scope-app", ""); err != nil || len(ids) != 2 || ids[0] != "asset-shard-net-done" || ids[1] != "asset-shard-net-failed" {
 			t.Fatalf("target observed asset IDs = %+v, err = %v", ids, err)
 		}
+		// An overlapping scan that started before the latest success but
+		// observed after it started still covers what it saw.
+		overlap := asset.ScanShard{ID: "shard-net-overlap", ScanRunID: "scan-net", TargetKey: "vpc:app", Provider: asset.ProviderAWS, ScopeID: "scope-app", Source: "config", Status: asset.ShardSucceeded, Authoritative: true, CreatedAt: now.Add(-time.Minute)}
+		if err := repositories.Inventory().PutScanShard(ctx, overlap); err != nil {
+			t.Fatal(err)
+		}
+		if err := repositories.Inventory().AppendObservations(ctx, []asset.Observation{{ID: "obs-shard-net-overlap", AssetID: "asset-shard-net-overlap", ScanRunID: "scan-net", ScanShardID: overlap.ID, ObservedAt: now.Add(5 * time.Minute), Source: "config"}}); err != nil {
+			t.Fatal(err)
+		}
+		if ids, err := repositories.Inventory().ListAssetIDsObservedByTarget(ctx, "conn-app", "vpc:app", "config", "scope-app", ""); err != nil || fmt.Sprint(ids) != "[asset-shard-net-done asset-shard-net-failed asset-shard-net-overlap]" {
+			t.Fatalf("overlapping target observed asset IDs = %+v, err = %v", ids, err)
+		}
 		if ids, err := repositories.Inventory().ListAssetIDsObservedByTarget(ctx, "conn-other", "vpc:app", "config", "scope-app", ""); err != nil || len(ids) != 0 {
 			t.Fatalf("other connection target observed asset IDs = %+v, err = %v", ids, err)
 		}
@@ -1299,6 +1311,25 @@ func Run(t *testing.T, factory Factory) {
 		}
 		if !reflect.DeepEqual(progress, wantProgress) {
 			t.Fatalf("scan shard progress = %+v, want %+v", progress, wantProgress)
+		}
+	})
+
+	t.Run("latest cleanup execution breaks created-at ties by larger ID", func(t *testing.T) {
+		repositories := factory(t)
+		ctx := context.Background()
+		now := time.Date(2026, 10, 5, 0, 0, 0, 0, time.UTC)
+		for _, id := range []execution.ExecutionID{"execution-b", "execution-a", "execution-c"} {
+			createdAt := now
+			if id == "execution-a" {
+				createdAt = now.Add(-time.Second)
+			}
+			if err := repositories.Executions().CreateExecution(ctx, execution.ExecutionAttempt{ID: id, ConnectionID: "conn-tie", CleanupTaskID: "cln-tie", Status: execution.ExecutionPending, RequestedBy: "tester", IdempotencyKey: "key-" + string(id), CreatedAt: createdAt}); err != nil {
+				t.Fatal(err)
+			}
+		}
+		latest, err := repositories.Executions().LatestCleanupTaskExecutions(ctx, "conn-tie", []string{"cln-tie"})
+		if err != nil || latest["cln-tie"].ID != "execution-c" {
+			t.Fatalf("latest execution = %#v, err = %v", latest, err)
 		}
 	})
 

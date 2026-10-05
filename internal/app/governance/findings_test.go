@@ -25,6 +25,15 @@ func (r *findingRepository) PutFinding(_ context.Context, value finding.Finding)
 	return nil
 }
 
+func (r *findingRepository) PutFindings(ctx context.Context, values []finding.Finding) error {
+	for _, value := range values {
+		if err := r.PutFinding(ctx, value); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (r *findingRepository) ListFindingsByAsset(_ context.Context, assetID asset.AssetID) ([]finding.Finding, error) {
 	var result []finding.Finding
 	for _, value := range r.findings {

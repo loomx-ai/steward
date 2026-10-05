@@ -1749,7 +1749,10 @@ func (s *Store) ListAssets(ctx context.Context, options persistence.ListOptions)
 		query = query.Where("assets.provider = ?", provider)
 	}
 	if term := strings.TrimSpace(options.Query); term != "" {
-		query = whereKeywordMatches(query, term)
+		var err error
+		if query, err = whereKeywordMatches(query, term); err != nil {
+			return persistence.Page[asset.Asset]{}, err
+		}
 	}
 	if options.ResourceQuery != nil {
 		where, arguments, err := options.ResourceQuery.SQL(s.db.Dialector.Name())
@@ -2083,8 +2086,48 @@ func (s *Store) ListActiveAssetsByScopes(
 	scopeIDs []asset.ScopeID,
 	kindID asset.ResourceKindID,
 ) ([]asset.Asset, error) {
+	query, err := s.activeAssetsByScopes(ctx, connectionID, scopeIDs, kindID)
+	if err != nil || query == nil {
+		return []asset.Asset{}, err
+	}
+	var rows []assetRow
+	if err := query.Find(&rows).Error; err != nil {
+		return nil, err
+	}
+	return s.decodeAssetRows(ctx, rows)
+}
+
+func (s *Store) ListActiveAssetIDsByScopes(
+	ctx context.Context,
+	connectionID asset.ConnectionID,
+	scopeIDs []asset.ScopeID,
+	kindID asset.ResourceKindID,
+) ([]asset.AssetID, error) {
+	query, err := s.activeAssetsByScopes(ctx, connectionID, scopeIDs, kindID)
+	if err != nil || query == nil {
+		return []asset.AssetID{}, err
+	}
+	var ids []string
+	if err := query.Pluck("id", &ids).Error; err != nil {
+		return nil, err
+	}
+	result := make([]asset.AssetID, len(ids))
+	for index, id := range ids {
+		result[index] = asset.AssetID(id)
+	}
+	return result, nil
+}
+
+// activeAssetsByScopes selects the open assets of scopeIDs, or of scopes
+// consolidated into them, in ID order; nil when there are no scopes.
+func (s *Store) activeAssetsByScopes(
+	ctx context.Context,
+	connectionID asset.ConnectionID,
+	scopeIDs []asset.ScopeID,
+	kindID asset.ResourceKindID,
+) (*gorm.DB, error) {
 	if len(scopeIDs) == 0 {
-		return []asset.Asset{}, nil
+		return nil, nil
 	}
 	aliases, err := s.scopeAliases(ctx)
 	if err != nil {
@@ -2121,11 +2164,7 @@ func (s *Store) ListActiveAssetsByScopes(
 	if kindID != "" {
 		query = query.Where("resource_kind_id = ?", string(kindID))
 	}
-	var rows []assetRow
-	if err := query.Order("id ASC").Find(&rows).Error; err != nil {
-		return nil, err
-	}
-	return s.decodeAssetRows(ctx, rows)
+	return query.Order("id ASC"), nil
 }
 
 func (s *Store) ListActiveAssetsByConnection(ctx context.Context, connectionID asset.ConnectionID, kindID asset.ResourceKindID) ([]asset.Asset, error) {
@@ -2255,7 +2294,9 @@ func (s *Store) ListAssetIDsObservedByRun(ctx context.Context, runID asset.ScanR
 // ListAssetIDsObservedByTarget reads the target's shards from its latest
 // authoritative success on. That success already closed every asset it did
 // not see, so older observations only name assets it closed or that have
-// since been seen elsewhere.
+// since been seen elsewhere. Manual scans can overlap, so an older shard's
+// observations made after that success started count too: they may have
+// reopened what it closed.
 func (s *Store) ListAssetIDsObservedByTarget(ctx context.Context, connectionID asset.ConnectionID, targetKey, source string, scopeID asset.ScopeID, kindID asset.ResourceKindID) ([]asset.AssetID, error) {
 	target := func(alias string) *gorm.DB {
 		return s.db.WithContext(ctx).Table("scan_shards AS "+alias).
@@ -2269,7 +2310,7 @@ func (s *Store) ListAssetIDsObservedByTarget(ctx context.Context, connectionID a
 	var ids []string
 	if err := target("shards").
 		Joins("JOIN asset_observations AS observations ON observations.scan_shard_id = shards.id").
-		Where("shards.created_at >= COALESCE((?), shards.created_at)", latestSuccess).
+		Where("shards.created_at >= COALESCE((?), shards.created_at) OR observations.observed_at >= (?)", latestSuccess, latestSuccess).
 		Distinct("observations.asset_id").
 		Order("observations.asset_id ASC").Pluck("observations.asset_id", &ids).Error; err != nil {
 		return nil, err

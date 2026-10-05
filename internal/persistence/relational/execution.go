@@ -180,17 +180,18 @@ func (s *Store) LatestCleanupTaskExecutions(
 		Find(&rows).Error; err != nil {
 		return nil, err
 	}
-	// Rows are oldest first; the first of equally old attempts wins.
-	latestAt := make(map[string]time.Time, len(cleanupTaskIDs))
+	// Rows are oldest first, so the last row of a task is its latest attempt,
+	// the larger ID among equally old ones, as the cleanup stream picks.
+	latest := make(map[string]string, len(cleanupTaskIDs))
 	for _, row := range rows {
-		if at, exists := latestAt[row.CleanupTaskID]; exists && !row.CreatedAt.After(at) {
-			continue
-		}
-		value, err := decode[execution.ExecutionAttempt](row.Payload)
+		latest[row.CleanupTaskID] = row.Payload
+	}
+	for taskID, payload := range latest {
+		value, err := decode[execution.ExecutionAttempt](payload)
 		if err != nil {
 			return nil, err
 		}
-		result[row.CleanupTaskID], latestAt[row.CleanupTaskID] = value, row.CreatedAt
+		result[taskID] = value
 	}
 	return result, nil
 }
