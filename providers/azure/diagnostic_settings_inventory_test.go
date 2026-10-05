@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -21,6 +22,8 @@ type diagnosticFixture struct {
 	override                  func(*http.Request) (*http.Response, bool)
 	deleteStatus              int
 	hold                      bool
+	// Contribute reads parents concurrently; the fixture state is unguarded.
+	mu sync.Mutex
 }
 
 func newDiagnosticFixture(t *testing.T) *diagnosticFixture {
@@ -48,6 +51,8 @@ func newDiagnosticFixture(t *testing.T) *diagnosticFixture {
 		f.settings[id] = raw
 	}
 	f.runtime = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		f.mu.Lock()
+		defer f.mu.Unlock()
 		path := strings.ToLower(req.URL.Path)
 		f.calls[req.Method+" "+path]++
 		if f.override != nil {

@@ -27,10 +27,15 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 	var pim map[string]map[string]any
 	cache := map[string]diagnosticContextState{}
 	for _, kind := range kinds {
-		rows, _, err := c.rbacIndex(ctx, kind, c.root())
+		// Concurrent delete checks coalesce these lists; see liveShared.
+		rows, err := liveShared(ctx, c, "rbac-index:"+kind, func() (map[string]map[string]any, error) {
+			rows, _, err := c.rbacIndex(ctx, kind, c.root())
+			return rows, err
+		})
 		if err != nil {
 			return nil, err
 		}
+		rows = maps.Clone(rows) // Shared: add known sources to a copy.
 		for _, value := range known {
 			if value.Identity.Provider != asset.ProviderAzure || value.Identity.NativeType != kind || !strings.HasPrefix(value.Identity.NativeID, c.root()+"/") {
 				continue
@@ -94,7 +99,7 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 					if pim == nil {
 						locks, err = c.managementLocks(ctx)
 						if err == nil {
-							pim, err = c.rbacPIM(ctx)
+							pim, err = liveShared(ctx, c, "rbac-pim", func() (map[string]map[string]any, error) { return c.rbacPIM(ctx) })
 						}
 						if err != nil {
 							return nil, err

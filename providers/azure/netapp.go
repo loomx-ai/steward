@@ -315,16 +315,10 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		for _, id := range slices.Sorted(maps.Keys(ids)) {
 			parent := redisParentID(id)
 			if definition.parent != "" && raws[parent] == nil && elsewhere[parent] || listed[id] != "" && req.Scope.Kind == asset.ScopeRegion && !strings.EqualFold(listed[id], req.Scope.NativeID) {
-				// A known resource not listed under such a parent is still read:
-				// only its own read can prove its absence.
+				// Every known resource of such a parent is left to the shard of
+				// the region its listed ancestor is in: that shard, which the
+				// worker gives all known IDs, reads it and proves its absence.
 				elsewhere[id] = true
-				if typ == kind && known[id] && listed[id] == "" {
-					if _, err := c.netappRead(ctx, id, typ); isNotFound(err) {
-						absent = append(absent, id)
-					} else if err != nil {
-						return nil, err
-					}
-				}
 				continue
 			}
 			if definition.parent != "" && raws[parent] == nil {

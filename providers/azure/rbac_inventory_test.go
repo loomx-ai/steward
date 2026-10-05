@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -25,6 +26,8 @@ type rbacFixture struct {
 	hold              bool
 	deleteStatus      int
 	override          func(*http.Request) (*http.Response, bool)
+	// Contribute reads parents concurrently; the fixture state is unguarded.
+	mu sync.Mutex
 }
 
 func newRBACFixture(t *testing.T) *rbacFixture {
@@ -50,6 +53,8 @@ func newRBACFixture(t *testing.T) *rbacFixture {
 	f.scopes[group] = map[string]any{"id": group, "type": groupType, "name": "test", "location": "westus", "properties": map[string]any{"provisioningState": "Succeeded"}}
 	f.scopes[sourceID] = source
 	f.runtime = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		f.mu.Lock()
+		defer f.mu.Unlock()
 		path := strings.ToLower(req.URL.Path)
 		f.calls[req.Method+" "+path]++
 		if f.override != nil {

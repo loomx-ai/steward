@@ -196,7 +196,10 @@ func (c *client) rbacResolvePrincipals(ctx context.Context, parent asset.Asset, 
 				return nil, err
 			}
 			if matches {
-				if err := c.rbacIdentityRead(ctx, *candidate); err != nil {
+				// A Contribute memo reads each identity once for all its assignments.
+				if _, err := memoized(ctx, "rbac-identity-read:"+string(candidate.ID)+"|"+candidate.Identity.NativeID, func() (struct{}, error) {
+					return struct{}{}, c.rbacIdentityRead(ctx, *candidate)
+				}); err != nil {
 					return nil, err
 				}
 				if target != nil || candidate.ID == "" || candidate.ID == parent.ID {

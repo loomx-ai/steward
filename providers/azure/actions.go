@@ -983,6 +983,14 @@ func protectedAzureTags(tags map[string]any) bool {
 	return false
 }
 
+type writeGuardKey struct{}
+
+// withWriteGuard makes every write sent under ctx call check first and stop
+// on its error. The guard's ctx must not carry it, or check would recurse.
+func withWriteGuard(ctx context.Context, check func() error) context.Context {
+	return context.WithValue(ctx, writeGuardKey{}, check)
+}
+
 // liveShared coalesces concurrent identical reads of one client, such as
 // execution workers each listing the subscription's locks. A caller joins only
 // a read that starts after it arrived, so no result predates its call, and

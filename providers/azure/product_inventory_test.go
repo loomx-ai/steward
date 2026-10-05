@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -718,6 +719,56 @@ func TestRegionIndexFiltersResourcesByLocation(t *testing.T) {
 	}
 	if !slices.Equal(filters, []string{"", ""}) {
 		t.Fatalf("filters=%q", filters)
+	}
+}
+
+// The region shards of one scan walk one shared chain of subscription resource
+// pages, each filtering it to its own region.
+func TestRegionShardsShareResourcePages(t *testing.T) {
+	root := "/subscriptions/" + testSubscription
+	var pages atomic.Int32
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		switch strings.ToLower(req.URL.Path) {
+		case root + "/resources":
+			pages.Add(1)
+			if req.URL.Query().Get("$skiptoken") == "" {
+				return jsonResponse(200, map[string]any{"value": []any{nativeResource("Microsoft.Example/things", "east", "East US", map[string]any{})}, "nextLink": apiURL(root+"/resources", resourcesVersion) + "&$skiptoken=2"}, nil), nil
+			}
+			return jsonResponse(200, map[string]any{"value": []any{nativeResource("Microsoft.Example/things", "west", "westus", map[string]any{})}}, nil), nil
+		case root + "/resourcegroups", root + "/providers/microsoft.authorization/locks":
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
+		t.Fatalf("unexpected request %s", req.URL)
+		return nil, nil
+	})
+	var wg sync.WaitGroup
+	for _, region := range []string{"eastus", "westus", "northeurope", "eastus", "westus", "northeurope"} {
+		wg.Go(func() {
+			request := contracts.InventoryRequest{ScanRunID: "scan", ConnectionID: "connection", Source: inventorySource, Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: region}}
+			names := []string{}
+			for {
+				batch, err := r.List(context.Background(), request)
+				if err != nil {
+					t.Error(err)
+					return
+				}
+				for _, item := range batch.Items {
+					names = append(names, item.Name+"@"+item.Location)
+				}
+				if batch.Complete {
+					break
+				}
+				request.Cursor = batch.NextCursor
+			}
+			want := map[string][]string{"eastus": {"east@eastus"}, "westus": {"west@westus"}, "northeurope": {}}[region]
+			if !slices.Equal(names, want) {
+				t.Error(region, names)
+			}
+		})
+	}
+	wg.Wait()
+	if pages.Load() != 2 {
+		t.Fatal("resource pages read per shard", pages.Load())
 	}
 }
 

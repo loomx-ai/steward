@@ -9,6 +9,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -22,6 +23,7 @@ type synapseInventoryFixture struct {
 	collections map[string][]string
 	reads       map[string]int
 	override    func(*http.Request) (*http.Response, bool)
+	mu          sync.Mutex
 }
 
 // Adapt only fixture identities/location to one test subscription. These are
@@ -78,7 +80,9 @@ func newSynapseInventoryFixture(t *testing.T) *synapseInventoryFixture {
 			t.Fatal("unexpected request", req.Method, req.URL)
 		}
 		path := strings.ToLower(req.URL.Path)
+		f.mu.Lock()
 		f.reads[path]++
+		f.mu.Unlock()
 		if f.override != nil {
 			if response, ok := f.override(req); ok {
 				return response, nil

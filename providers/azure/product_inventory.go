@@ -180,12 +180,12 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		// failed check drops it, so a retried shard reads it afresh.
 		key := productScanKey{run: request.ScanRunID, connection: request.ConnectionID, credential: c.fingerprint, name: "apim-issues\x00" + apimRootID(target.ParentID)}
 		values, next, provenance, err = c.apimIssuePageFrom(ctx, target.ParentID, func(ctx context.Context, root string) (map[string]serviceChild, error) {
-			index, err := r.productScan.share(ctx, key, func(any) bool { return true }, func() (any, error) { return c.apimIssues(ctx, root) })
+			index, err := r.productScan.share(ctx, &r.productScan.apimIssues, key, func(any) bool { return true }, func() (any, error) { return c.apimIssues(ctx, root) })
 			issues, _ := index.(map[string]serviceChild)
 			return issues, err
 		})
 		if err != nil {
-			r.productScan.forget(key)
+			r.productScan.forget(&r.productScan.apimIssues, key)
 		}
 	} else if nativeType == apimIssueType {
 		values, next, provenance, err = c.apimIssuePage(ctx, target.ParentID)
@@ -760,8 +760,10 @@ type productScanCache struct {
 	// page would otherwise run over the whole map.
 	swept time.Time
 	// shared holds other observations the scan's shards share, such as
-	// snapshot sources' stability-checked snapshots; see share.
-	shared map[productScanKey]*productShared
+	// snapshot sources' stability-checked snapshots; see share. API
+	// Management issue indexes and subscription resource list pages are held
+	// apart, so that their numbers never evict a snapshot.
+	shared, apimIssues, resourcePages map[productScanKey]*productShared
 }
 
 // productScanSweepInterval bounds how often place and commit sweep expired

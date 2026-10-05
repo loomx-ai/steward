@@ -1,6 +1,7 @@
 package azure
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -10,6 +11,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -269,13 +271,20 @@ func TestKeyVaultCertificateURLBoundaries(t *testing.T) {
 }
 
 // Another region's shard skips a vault its listing places elsewhere without
-// reading it; a known vault is still read so its absence stays provable.
+// reading it, known or not: the vault's own region's shard reads it. A known
+// vault listed nowhere is still read so its absence stays provable.
 func TestKeyVaultCertificateRegionShardSkipsForeignVaultReads(t *testing.T) {
 	f := newKeyVaultFixture(t)
-	reads := 0
+	reads, unlisted := 0, false
 	f.override = func(q *http.Request) (*http.Response, bool) {
 		if q.URL.Host == "management.azure.com" && strings.ToLower(q.URL.Path) == f.vault {
 			reads++
+			if unlisted {
+				return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceNotFound"}}, nil), true
+			}
+		}
+		if unlisted && q.URL.Host == "management.azure.com" && strings.HasSuffix(strings.ToLower(q.URL.Path), "/providers/microsoft.keyvault/vaults") {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
 		}
 		return nil, false
 	}
@@ -285,7 +294,33 @@ func TestKeyVaultCertificateRegionShardSkipsForeignVaultReads(t *testing.T) {
 		t.Fatal("foreign vault read", reads, err)
 	}
 	req.KnownNativeIDs = []string{f.vault + "/certificates/listcert01"}
-	if batch, err := f.runtime.List(t.Context(), req); err != nil || len(batch.Items)+len(batch.AbsentNativeIDs) != 0 || reads != 1 {
-		t.Fatal("known vault not read", reads, err)
+	if batch, err := f.runtime.List(t.Context(), req); err != nil || len(batch.Items)+len(batch.AbsentNativeIDs) != 0 || reads != 0 {
+		t.Fatal("known foreign vault read", reads, err)
+	}
+	unlisted = true
+	if batch, err := f.runtime.List(t.Context(), req); err != nil || len(batch.AbsentNativeIDs) != 1 || reads != 1 {
+		t.Fatal("unlisted known vault not proven absent", reads, batch, err)
+	}
+}
+
+// A vault's certificates are read concurrently.
+func TestKeyVaultCertificateReadsOverlap(t *testing.T) {
+	f := newKeyVaultFixture(t)
+	arrived := make(chan struct{}, 2)
+	f.override = func(q *http.Request) (*http.Response, bool) {
+		if q.URL.Hostname() == "myvault.vault.azure.net" && strings.HasPrefix(q.URL.Path, "/certificates/") {
+			arrived <- struct{}{}
+			for len(arrived) < 2 {
+				if q.Context().Err() != nil {
+					break
+				}
+			}
+		}
+		return nil, false
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+	if batch, err := f.runtime.List(ctx, keyVaultRequest(f)); err != nil || len(batch.Items) != 2 {
+		t.Fatal("certificate reads did not overlap", batch, err)
 	}
 }

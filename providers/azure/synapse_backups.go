@@ -253,8 +253,10 @@ func (c *client) backupSnapshot(ctx context.Context, req contracts.InventoryRequ
 				index[id] = map[string]any{}
 			}
 		}
-		for id, raw := range index {
-			res, err := c.backupRead(ctx, id, kind)
+		ids := slices.Sorted(maps.Keys(index))
+		reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.backupRead(ctx, ids[i], kind) })
+		for i, id := range ids {
+			raw, res, err := index[id], reads[i], errs[i]
 			if isNotFound(err) {
 				if slices.Contains(req.KnownNativeIDs, id) {
 					absent = append(absent, id)
@@ -273,12 +275,17 @@ func (c *client) backupSnapshot(ctx context.Context, req contracts.InventoryRequ
 			}
 		}
 	}
-	for id, hash := range contextHashes {
+	contexts := slices.Sorted(maps.Keys(contextHashes))
+	reads, errs := readConcurrently(len(contexts), func(i int) (response, error) {
+		return c.request(ctx, "GET", apiURL(contexts[i], synapseVersion))
+	})
+	for i, id := range contexts {
+		hash := contextHashes[id]
 		typ := synapseType
 		if len(strings.Split(id, "/")) == 11 {
 			typ = synapseSQLType
 		}
-		own, err := c.request(ctx, "GET", apiURL(id, synapseVersion))
+		own, err := reads[i], errs[i]
 		if err != nil {
 			return nil, nil, nil, "", contracts.DependencyReadError(err)
 		}

@@ -2,6 +2,7 @@ package azure
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
@@ -444,5 +445,38 @@ func TestRBACPrincipalDoesNotConfuseClientSharedOrForeignIdentity(t *testing.T) 
 				t.Fatal("unrelated/shared identity prevented host cleanup or was deleted", mode, err)
 			}
 		})
+	}
+}
+
+// A Contribute memo reads a shared identity once for all its assignments;
+// without a memo (actions), every resolution reads it live.
+func TestRBACPrincipalIdentityReadOncePerContribute(t *testing.T) {
+	f, assignment, target, _ := rbacPrincipalTarget(t, rbacUserIdentityType)
+	c, err := f.runtime.resolve(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	reads, base := 0, f.override
+	f.override = func(req *http.Request) (*http.Response, bool) {
+		if req.Method == "GET" && strings.EqualFold(req.URL.Path, target.Identity.NativeID) {
+			reads++
+		}
+		return base(req)
+	}
+	metadata, err := c.rbacRecordedIdentity(target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assets := []asset.Asset{target, assignment}
+	refs := map[string][]string{rbacPrincipalType: {text(metadata["principal"])}}
+	memo := context.WithValue(withReadMemo(t.Context()), assetIndexContextKey{}, contextAssetIndex{assets, newAssetIndex(assets)})
+	for _, ctx := range []context.Context{memo, memo, t.Context(), t.Context()} {
+		resolved, err := c.rbacResolvePrincipals(ctx, assignment, assets, refs)
+		if err != nil || !slices.Contains(resolved[rbacUserIdentityType], target.Identity.NativeID) {
+			t.Fatal("principal did not resolve to its identity", resolved, err)
+		}
+	}
+	if reads != 3 {
+		t.Fatal("identity reads", reads)
 	}
 }

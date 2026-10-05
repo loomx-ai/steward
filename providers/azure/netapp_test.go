@@ -400,3 +400,28 @@ func TestNetappNativeExampleRequestsBind(t *testing.T) {
 		})
 	}
 }
+
+// A region shard leaves a known resource under another region's listed parent
+// to that region's shard, which proves its absence.
+func TestNetappForeignShardSkipsKnownChildrenOfForeignParents(t *testing.T) {
+	f := newNetappFixture(t)
+	id := strings.ToLower(resourceID(netappAccountType, "first")) + "/capacitypools/item/volumes/item"
+	reads := 0
+	f.override = func(q *http.Request) (*http.Response, bool) {
+		if strings.EqualFold(q.URL.Path, id) {
+			reads++
+		}
+		return nil, false
+	}
+	f.missing[id] = true
+	req := netappRequest(f.runtime, netappVolumeType)
+	req.KnownNativeIDs = []string{id}
+	req.Scope = asset.Scope{Kind: asset.ScopeRegion, NativeID: "westus"}
+	if batch, err := f.runtime.List(t.Context(), req); err != nil || len(batch.AbsentNativeIDs) != 0 || reads != 0 {
+		t.Fatal("foreign shard read a known child", reads, batch.AbsentNativeIDs, err)
+	}
+	req.Scope.NativeID = "eastus"
+	if batch, err := f.runtime.List(t.Context(), req); err != nil || !slices.Equal(batch.AbsentNativeIDs, []string{id}) {
+		t.Fatal("home shard did not prove absence", batch.AbsentNativeIDs, err)
+	}
+}

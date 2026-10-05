@@ -105,7 +105,12 @@ func TestNetappVolumeDurableCascadeAndIndependentAbsence(t *testing.T) {
 		t.Fatal("acknowledgement not isolated", result, err)
 	}
 	req.ExecutionResult = &result
-	if _, err := driver.Wait(t.Context(), req, result); err == nil {
+	// A pending poll defers the incoming check to a terminal result; a failed
+	// read still never completes the wait, and readback rejects it.
+	if out, err := driver.Wait(t.Context(), req, result); err == nil && out.Done {
+		t.Fatal("failed read accepted")
+	}
+	if _, err := driver.Readback(t.Context(), req); err == nil {
 		t.Fatal("failed read accepted")
 	}
 	f.readFault = 0

@@ -1,6 +1,7 @@
 package azure
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"maps"
@@ -548,5 +549,62 @@ func TestMonitorMissingReceiverTargetUsesFrozenIdentity(t *testing.T) {
 				t.Fatal("registered target readback ignored unresolved native receiver", err)
 			}
 		})
+	}
+}
+
+// scriptedWait is a native driver whose Wait returns fixed results and may
+// send one write first, as a multi-phase driver does from Wait.
+type scriptedWait struct {
+	contracts.ActionDriver
+	client *client
+	write  string
+	result contracts.WaitResult
+}
+
+func (s *scriptedWait) Wait(ctx context.Context, _ contracts.ActionRequest, _ contracts.ActionResult) (contracts.WaitResult, error) {
+	if s.write != "" {
+		if _, err := s.client.request(ctx, http.MethodDelete, s.write); err != nil {
+			return contracts.WaitResult{}, err
+		}
+	}
+	return s.result, nil
+}
+
+// Execute already proved no incoming references; a pending read-only poll
+// cannot change that, so it skips the subscription-wide lists. A write from
+// Wait and every terminal result still re-prove it live.
+func TestMonitorTargetWaitChecksIncomingBeforeWritesAndAtTerminal(t *testing.T) {
+	f, s, r, targets, source := monitorDiskTargets(t, 1)
+	c, err := r.resolve(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	inner := &scriptedWait{client: c}
+	driver := &monitorTargetAction{client: c, inner: inner, planned: targets[0]}
+	request := contracts.ActionRequest{Asset: targets[0], Action: "delete"}
+	result := contracts.ActionResult{Data: map[string]any{monitorTargetReceipt: driver.receipt(request)}}
+	lists := func() int {
+		return f.calls["GET /subscriptions/"+testSubscription+"/providers/"+strings.ToLower(monitorActivityAlertType)]
+	}
+	clear(f.calls)
+	for range 10 {
+		if out, err := driver.Wait(t.Context(), request, result); err != nil || out.Done {
+			t.Fatal("pending poll failed", out, err)
+		}
+	}
+	if lists() != 0 {
+		t.Fatal("pending polls repeated the incoming check", lists())
+	}
+	inner.write = c.root() + "/resourceGroups/test/providers/Microsoft.Compute/disks/other?api-version=2024-03-02"
+	if _, err := driver.Wait(t.Context(), request, result); err == nil || !strings.Contains(err.Error(), "monitor_target_has_incoming_references") || len(s.deletes) != 0 || lists() != 2 {
+		t.Fatal("write from Wait skipped the incoming check", err, s.deletes, lists())
+	}
+	inner.write, inner.result = "", contracts.WaitResult{Done: true}
+	if _, err := driver.Wait(t.Context(), request, result); err == nil || lists() != 4 {
+		t.Fatal("terminal Wait ignored a source created during deletion", err, lists())
+	}
+	delete(f.objects, source.Identity.NativeID)
+	if out, err := driver.Wait(t.Context(), request, result); err != nil || !out.Done || lists() != 6 {
+		t.Fatal("terminal Wait without sources failed", out, err, lists())
 	}
 }

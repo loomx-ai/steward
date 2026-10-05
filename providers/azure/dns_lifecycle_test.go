@@ -760,3 +760,33 @@ func TestVirtualNetworkChecksDNSLinksAcrossResourceGroups(t *testing.T) {
 		})
 	}
 }
+
+// Contribute reads parents concurrently but reports the first failing parent
+// in input order, as a serial walk would.
+func TestServiceContributeReportsFirstFailingParentInOrder(t *testing.T) {
+	for _, statuses := range [][2]int{{403, 404}, {404, 403}} {
+		s := newDNSScenario()
+		var raw []map[string]any
+		for _, name := range []string{"a.example", "b.example"} {
+			zone := map[string]any{"id": resourceID(publicDNSZoneType, name), "type": publicDNSZoneType, "name": name, "location": "global", "etag": "zone-generation"}
+			s.add(zone, "2018-05-01")
+			raw = append(raw, zone)
+		}
+		r := s.runtime(t)
+		var assets []asset.Asset
+		for _, zone := range raw {
+			assets = append(assets, dnsAsset(t, r, zone))
+		}
+		for i, zone := range raw {
+			s.status[strings.ToLower(text(zone["id"]))] = statuses[i]
+		}
+		contributor, err := r.ServiceLifecycle(t.Context(), "connection")
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = contributor.Contribute(t.Context(), "scope", assets)
+		if err == nil || isNotFound(err) != (statuses[0] == 404) {
+			t.Fatal("parent error out of order", statuses, err)
+		}
+	}
+}

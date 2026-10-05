@@ -299,7 +299,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	if parseErr != nil || u.Query().Get("api-version") != resourcesVersion {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory cursor changed API version")
 	}
-	values, next, provenance, err := c.listPageResult(ctx, endpoint, path)
+	values, next, requestID, err := r.resourcePage(ctx, c, request, endpoint, path)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
@@ -307,7 +307,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
-	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: next == "", RequestID: provenance.requestID}
+	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: next == "", RequestID: requestID}
 	if next != "" {
 		batch.NextCursor = base64.RawURLEncoding.EncodeToString([]byte(next))
 	}
@@ -365,6 +365,9 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		}
 		if region != "" && resourceRegion(raw) != region && !(request.NetworkTarget != nil && resourceRegion(raw) == "global") {
 			continue
+		}
+		if request.ScanRunID != "" {
+			raw = batchClone(raw) // The page is shared with the scan's other shards.
 		}
 		kind, known := findType(text(raw["type"]))
 		if request.Source == inventorySource && known {
@@ -425,6 +428,31 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		}
 	}
 	return batch, nil
+}
+
+type resourceListPage struct {
+	values          []any
+	next, requestID string
+}
+
+// resourcePage reads one page of the subscription resource list. Every region
+// shard of a scan walks the same list and filters it client-side, so the
+// shards share each page: one reads it while the others wait.
+func (r *Runtime) resourcePage(ctx context.Context, c *client, request contracts.InventoryRequest, endpoint, path string) ([]any, string, string, error) {
+	load := func() (any, error) {
+		values, next, provenance, err := c.listPageResult(ctx, endpoint, path)
+		return resourceListPage{values, next, provenance.requestID}, err
+	}
+	var shared any
+	var err error
+	if request.ScanRunID == "" {
+		shared, err = load()
+	} else {
+		key := productScanKey{run: request.ScanRunID, connection: request.ConnectionID, credential: c.fingerprint, name: "resources\x00" + endpoint}
+		shared, err = r.productScan.share(ctx, &r.productScan.resourcePages, key, func(any) bool { return true }, load)
+	}
+	page, _ := shared.(resourceListPage)
+	return page.values, page.next, page.requestID, err
 }
 
 // readMemo shares native reads that several resources of one inventory page

@@ -126,7 +126,16 @@ func (c *client) monitorIncomingObservation(ctx context.Context, targets []asset
 				return nil, err
 			}
 		}
-		values, _, err := c.monitorResourceIndex(ctx, kind, groups)
+		var values map[string]map[string]any
+		if monitorRuleKind(kind).kind != "" {
+			// Concurrent delete checks coalesce this list; see liveShared.
+			values, err = liveShared(ctx, c, "monitor-rule-index:"+kind, func() (map[string]map[string]any, error) {
+				values, _, err := c.monitorRuleIndex(ctx, kind)
+				return values, err
+			})
+		} else {
+			values, _, err = c.monitorResourceIndex(ctx, kind, groups)
+		}
 		if err != nil {
 			return nil, err
 		}

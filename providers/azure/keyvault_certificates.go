@@ -290,9 +290,13 @@ func (r *Runtime) listKeyVaultCertificates(ctx context.Context, c *client, reque
 		}
 		next = following
 	}
-	// A known vault is still read: its own read proves its certificates' absence.
+	// A known vault the list places nowhere is still read: its own read proves
+	// its certificates' absence. One listed in another region is left to that
+	// region's shard, which the worker gives all known IDs.
 	for vault := range known {
-		vaults[vault] = true
+		if !elsewhere[vault] {
+			vaults[vault] = true
+		}
 	}
 	batch = contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: true}
 	for _, id := range slices.Sorted(maps.Keys(vaults)) {
@@ -317,16 +321,16 @@ func (r *Runtime) listKeyVaultCertificates(ctx context.Context, c *client, reque
 		for name := range known[id] {
 			names[name] = names[name] || false
 		}
-		for _, name := range slices.Sorted(maps.Keys(names)) {
-			res, err := c.keyVaultCertificateRead(ctx, vault, name)
-			if isNotFound(err) && known[id][name] && !names[name] {
+		ordered := slices.Sorted(maps.Keys(names))
+		reads, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.keyVaultCertificateRead(ctx, vault, ordered[i]) })
+		for i, name := range ordered {
+			if err := errs[i]; isNotFound(err) && known[id][name] && !names[name] {
 				batch.AbsentNativeIDs = append(batch.AbsentNativeIDs, id+"/certificates/"+name)
 				continue
-			}
-			if err != nil {
+			} else if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
-			batch.Items = append(batch.Items, r.keyVaultCertificateItem(c, vault, name, res.data))
+			batch.Items = append(batch.Items, r.keyVaultCertificateItem(c, vault, name, reads[i].data))
 		}
 	}
 	return batch, nil

@@ -274,6 +274,11 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	}
 	read := method == http.MethodGet || method == http.MethodHead
 	if !read {
+		if guard, ok := ctx.Value(writeGuardKey{}).(func() error); ok {
+			if err := guard(); err != nil {
+				return response{}, err
+			}
+		}
 		contracts.NoteWrite(ctx)
 	}
 	defer func() {

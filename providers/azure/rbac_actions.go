@@ -5,6 +5,7 @@ import (
 	"maps"
 	"slices"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -66,7 +67,10 @@ func (a *rbacAction) prerequisitesAbsent(ctx context.Context, request contracts.
 		}
 	}
 	if a.kind == rbacRoleType {
-		assignments, _, err := a.client.rbacIndex(ctx, rbacAssignmentType, a.client.root())
+		assignments, err := liveShared(ctx, a.client, "rbac-index:"+rbacAssignmentType, func() (map[string]map[string]any, error) {
+			assignments, _, err := a.client.rbacIndex(ctx, rbacAssignmentType, a.client.root())
+			return assignments, err
+		})
 		if err != nil {
 			return err
 		}
@@ -81,6 +85,11 @@ func (a *rbacAction) prerequisitesAbsent(ctx context.Context, request contracts.
 		}
 	}
 	return nil
+}
+
+type rbacScopeCache struct {
+	sync.Mutex
+	states map[string]diagnosticContextState
 }
 
 func (a *rbacAction) current(ctx context.Context) (response, string, error) {
@@ -104,11 +113,17 @@ func (a *rbacAction) current(ctx context.Context) (response, string, error) {
 		return current, "", err
 	}
 	var scopes map[string]diagnosticContextState
+	unlock := func() {}
 	if ctx.Value(readMemoContextKey{}) != nil {
-		// Contribute visits its parents serially, so one shared cache is safe.
-		scopes, _ = memoized(ctx, "rbac-action-scopes", func() (map[string]diagnosticContextState, error) { return map[string]diagnosticContextState{}, nil })
+		// Contribute reads its parents concurrently; the lock guards the shared cache.
+		cache, _ := memoized(ctx, "rbac-action-scopes", func() (*rbacScopeCache, error) {
+			return &rbacScopeCache{states: map[string]diagnosticContextState{}}, nil
+		})
+		cache.Lock()
+		scopes, unlock = cache.states, cache.Unlock
 	}
 	state, reason, err := a.client.rbacContext(ctx, a.kind, current.data, locks, pim, scopes)
+	unlock()
 	if err != nil {
 		return current, "", err
 	}

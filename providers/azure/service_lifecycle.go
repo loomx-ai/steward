@@ -2,6 +2,7 @@ package azure
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"iter"
 	"net/url"
@@ -465,6 +466,76 @@ func serviceDenied(reason string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProtected, Code: reason, Message: contracts.SafeProviderValidationMessage}}
 }
 
+// parentRead holds one Contribute parent's independent live reads.
+type parentRead struct {
+	contribution governance.Contribution // RBAC and diagnostic parents
+	children     []serviceChild          // verified cascade parents
+}
+
+// readParent performs the live reads Contribute needs from one parent alone.
+func (s *serviceCascades) readParent(ctx context.Context, parent asset.Asset, assets []asset.Asset) (parentRead, error) {
+	if rbacResourceKind(parent.Identity.NativeType) != "" {
+		contribution, err := s.client.contributeRBACReferences(ctx, parent, assets)
+		return parentRead{contribution: contribution}, err
+	}
+	if parent.Identity.NativeType == diagnosticSettingsType {
+		contribution, err := s.client.contributeDiagnosticReferences(ctx, parent, assets)
+		return parentRead{contribution: contribution}, err
+	}
+	endpoint, err := s.client.plannedResourceURL(parent)
+	if err != nil {
+		return parentRead{}, err
+	}
+	live, err := s.client.readResource(ctx, endpoint)
+	if err != nil {
+		return parentRead{}, err
+	}
+	if !validResourceResponse(live, parent.Identity.NativeID, parent.Identity.NativeType) {
+		return parentRead{}, fmt.Errorf("Azure service parent identity mismatch")
+	}
+	if err := s.client.servicePrivateIncarnation(parent, live.data); err != nil {
+		return parentRead{}, err
+	}
+	if err := serviceIncarnation(parent, live.data); err != nil {
+		return parentRead{}, err
+	}
+	if parent.Identity.NativeType == eventHubClusterType {
+		if err := s.client.verifyEventHubClusterSettings(ctx, parent); err != nil {
+			return parentRead{}, err
+		}
+	}
+	children, err := s.client.plannedServiceChildren(ctx, parent, live.data, assets...)
+	return parentRead{children: children}, err
+}
+
+// prefetchParents reads RBAC, diagnostic and plain cascade parents with
+// bounded concurrency. The serial walk consumes each read at its own position,
+// so the result and the first reported error match a serial walk; a read that
+// was not prefetched or not started runs inline there.
+func (s *serviceCascades) prefetchParents(ctx context.Context, parents, assets []asset.Asset, eligible func(asset.Asset) bool) func(int) (parentRead, error) {
+	var positions []int
+	for i, parent := range parents {
+		kind := parent.Identity.NativeType
+		cascade := HasServiceCascade(kind) && !isWAFType(kind) && fleetKind(kind).kind == "" && !strings.EqualFold(kind, monitorWorkspaceType)
+		if parent.Identity.Provider == asset.ProviderAzure && eligible(parent) && (rbacResourceKind(kind) != "" || kind == diagnosticSettingsType || cascade) {
+			positions = append(positions, i)
+		}
+	}
+	reads, errs := readConcurrently(len(positions), func(n int) (parentRead, error) {
+		return s.readParent(ctx, parents[positions[n]], assets)
+	})
+	at := map[int]int{}
+	for n, i := range positions {
+		at[i] = n
+	}
+	return func(i int) (parentRead, error) {
+		if n, ok := at[i]; ok && !errors.Is(errs[n], errReadNotStarted) {
+			return reads[n], errs[n]
+		}
+		return s.readParent(ctx, parents[i], assets)
+	}
+}
+
 func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	ctx = withReadMemo(withReadRetries(ctx))
 	result := governance.Contribution{}
@@ -556,7 +627,10 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	})
 	dnsOwners := map[string]asset.AssetID{}
 	byIdentity := index.byIdentity
-	for _, parent := range parents {
+	prefetched := s.prefetchParents(ctx, parents, assets, func(parent asset.Asset) bool {
+		return batchOwners[parent.ID].ID == "" && !aksMembers[managedGroupKey(parent.Identity, parent.Identity.NativeID)]
+	})
+	for i, parent := range parents {
 		if parent.Identity.Provider == asset.ProviderAzure && (parent.Identity.NativeType == recoveryServicesItem || parent.Identity.NativeType == recoveryServicesContainer) {
 			contribution, err := s.client.contributeRecoverySources(ctx, s.connectionID, parent, assets)
 			if err != nil {
@@ -725,7 +799,8 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 		}
 		if parent.Identity.Provider == asset.ProviderAzure && rbacResourceKind(parent.Identity.NativeType) != "" {
-			contribution, err := s.client.contributeRBACReferences(ctx, parent, assets)
+			read, err := prefetched(i)
+			contribution := read.contribution
 			if err != nil {
 				return result, err
 			}
@@ -734,7 +809,8 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			continue
 		}
 		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == diagnosticSettingsType {
-			contribution, err := s.client.contributeDiagnosticReferences(ctx, parent, assets)
+			read, err := prefetched(i)
+			contribution := read.contribution
 			if err != nil {
 				return result, err
 			}
@@ -799,21 +875,8 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 			continue
 		}
-		endpoint, err := s.client.plannedResourceURL(parent)
+		read, err := prefetched(i)
 		if err != nil {
-			return result, err
-		}
-		live, err := s.client.readResource(ctx, endpoint)
-		if err != nil {
-			return result, err
-		}
-		if !validResourceResponse(live, parent.Identity.NativeID, parent.Identity.NativeType) {
-			return result, fmt.Errorf("Azure service parent identity mismatch")
-		}
-		if err := s.client.servicePrivateIncarnation(parent, live.data); err != nil {
-			return result, err
-		}
-		if err := serviceIncarnation(parent, live.data); err != nil {
 			return result, err
 		}
 		if parent.Identity.NativeType == domainType {
@@ -829,16 +892,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipDependsOn, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 			}
 		}
-		if parent.Identity.NativeType == eventHubClusterType {
-			if err := s.client.verifyEventHubClusterSettings(ctx, parent); err != nil {
-				return result, err
-			}
-		}
-		children, err := s.client.plannedServiceChildren(ctx, parent, live.data, assets...)
-		if err != nil {
-			return result, err
-		}
-		for _, child := range children {
+		for _, child := range read.children {
 			if recoveryType(child.kind) && parent.Identity.NativeType+"/disasterRecoveryConfigs" == child.kind && strings.EqualFold(text(object(child.data["properties"])["role"]), "Secondary") {
 				if err := s.contributeRecoveryPrerequisite(ctx, parent, child, assets, &result); err != nil {
 					return result, err

@@ -4,6 +4,7 @@ import (
 	"context"
 	"maps"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -353,13 +354,25 @@ func (a *monitorTargetAction) Wait(ctx context.Context, request contracts.Action
 	}
 	request.ExecutionResult = &result
 	filtered, targets, err := a.request(ctx, request)
-	if err == nil {
-		err = a.dependencies(ctx, request, targets)
-	}
 	if err != nil {
 		return contracts.WaitResult{}, err
 	}
-	waited, err := a.inner.Wait(ctx, filtered, innerResult)
+	// Execute proved no incoming references before its delete, and a pending
+	// poll cannot change that outcome. Prove it again before any later write a
+	// native phase sends from Wait, and at every terminal result, so a source
+	// created during deletion still fails the action.
+	var once sync.Once
+	var depErr error
+	check := func() error {
+		once.Do(func() { depErr = a.dependencies(ctx, request, targets) })
+		return depErr
+	}
+	waited, err := a.inner.Wait(withWriteGuard(ctx, check), filtered, innerResult)
+	if err != nil || waited.Done {
+		if depErr := check(); depErr != nil {
+			return contracts.WaitResult{}, depErr
+		}
+	}
 	if err == nil && waited.Data != nil {
 		waited.Data = maps.Clone(waited.Data)
 		waited.Data[monitorTargetReceipt] = a.receipt(request)
