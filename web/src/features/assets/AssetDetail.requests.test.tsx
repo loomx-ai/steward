@@ -119,7 +119,7 @@ function renderAt(entry: string) {
     </MemoryRouter>
   );
   const { rerender } = render(tree());
-  return () => rerender(tree());
+  return { rerender: () => rerender(tree()), client };
 }
 
 it("loads only direct relations and the parent on the overview tab", async () => {
@@ -137,8 +137,7 @@ it("loads only direct relations and the parent on the overview tab", async () =>
 });
 
 it("keeps the topology view stable and stops 3-hop refetches after leaving the relationships tab", async () => {
-  canvasViews.clear();
-  const rerender = renderAt("/assets/vpc-1?view=relationships");
+  const { rerender, client } = renderAt("/assets/vpc-1?view=relationships");
   const memberRequests = () =>
     paths.filter(
       (path) => path.startsWith("/api/assets?") && path.includes("asset_id=m-"),
@@ -146,6 +145,11 @@ it("keeps the topology view stable and stops 3-hop refetches after leaving the r
 
   expect(await screen.findByTestId("topology")).toBeInTheDocument();
   expect(memberRequests()).toBeGreaterThan(0);
+  // Related assets may land after the first canvas render; count views only
+  // once the initial loads settle.
+  await waitFor(() => expect(client.isFetching()).toBe(0));
+  canvasViews.clear();
+  rerender();
   let directLoads = 1;
   const refocus = async () => {
     const expected = ++directLoads;
