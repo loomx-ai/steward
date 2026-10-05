@@ -43,25 +43,32 @@ func (r *Runtime) enrichDataWorksResourceGroups(
 	if err != nil {
 		return nil, err
 	}
-	for _, index := range indices {
+	credential, err := r.resolveCredential(ctx, request.ConnectionID)
+	if err != nil {
+		return nil, err
+	}
+	err = ForEachConcurrently(len(indices), func(position int) error {
+		index := indices[position]
 		resourceGroupID := strings.TrimSpace(items[index].NativeID)
 		projectIDs, projectRequestID, err := r.dataWorksAssociatedProjectIDs(
 			ctx,
+			&credential,
 			request.ConnectionID,
 			region,
 			resourceGroupID,
 		)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		networks, err := r.dataWorksNetworks(
 			ctx,
+			&credential,
 			request.ConnectionID,
 			region,
 			resourceGroupID,
 		)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		if items[index].Normalized == nil {
 			items[index].Normalized = make(map[string]any)
@@ -77,6 +84,10 @@ func (r *Runtime) enrichDataWorksResourceGroups(
 		if vSwitchID, unique := uniqueDataWorksNetworkValue(networks, "vswitch_id"); unique {
 			items[index].Normalized["vswitch_id"] = vSwitchID
 		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 	return items, nil
 }
@@ -97,11 +108,12 @@ func dataWorksInventoryRegion(request contracts.InventoryRequest) (string, error
 
 func (r *Runtime) dataWorksAssociatedProjectIDs(
 	ctx context.Context,
+	credential *contracts.Credential,
 	connectionID asset.ConnectionID,
 	region string,
 	resourceGroupID string,
 ) ([]any, string, error) {
-	result, err := r.Invoke(ctx, contracts.Invocation{
+	result, err := r.invoke(ctx, credential, contracts.Invocation{
 		ConnectionID: connectionID,
 		Operation:    "AlibabaCloud.DataWorks.ListResourceGroupAssociateProjects",
 		Scope:        map[string]string{"region": region},
@@ -150,13 +162,14 @@ func (r *Runtime) dataWorksAssociatedProjectIDs(
 
 func (r *Runtime) dataWorksNetworks(
 	ctx context.Context,
+	credential *contracts.Credential,
 	connectionID asset.ConnectionID,
 	region string,
 	resourceGroupID string,
 ) ([]any, error) {
 	networks := make([]any, 0)
 	for pageNumber := 1; pageNumber <= 1000; pageNumber++ {
-		result, err := r.Invoke(ctx, contracts.Invocation{
+		result, err := r.invoke(ctx, credential, contracts.Invocation{
 			ConnectionID: connectionID,
 			Operation:    "AlibabaCloud.DataWorks.ListNetworks",
 			Scope:        map[string]string{"region": region},
