@@ -346,16 +346,20 @@ func rbacListQuery(endpoint, initial string) error {
 	return nil
 }
 
-// rbacIndex is rbacList with every row confirmed by its own GET.
+// rbacIndex is rbacList with every row confirmed by its own GET. The GETs run
+// concurrently; the first failure in ID order fails the whole index.
 func (c *client) rbacIndex(ctx context.Context, kind, scope string) (map[string]map[string]any, string, error) {
 	rows, provenance, err := c.rbacList(ctx, kind, scope)
 	if err != nil {
 		return nil, "", err
 	}
-	for id, raw := range rows {
-		if rows[id], err = c.rbacDetail(ctx, kind, raw); err != nil {
-			return nil, "", err
+	ids := slices.Sorted(maps.Keys(rows))
+	details, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return c.rbacDetail(ctx, kind, rows[ids[i]]) })
+	for i, id := range ids {
+		if errs[i] != nil {
+			return nil, "", errs[i]
 		}
+		rows[id] = details[i]
 	}
 	return rows, provenance, nil
 }

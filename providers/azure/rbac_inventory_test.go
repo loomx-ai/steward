@@ -2,13 +2,16 @@ package azure
 
 import (
 	"encoding/json"
+	"fmt"
 	"maps"
 	"net/http"
 	"reflect"
 	"slices"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -26,6 +29,8 @@ type rbacFixture struct {
 	hold              bool
 	deleteStatus      int
 	override          func(*http.Request) (*http.Response, bool)
+	// before runs outside mu, so a test can observe concurrent requests.
+	before func(*http.Request)
 	// Contribute reads parents concurrently; the fixture state is unguarded.
 	mu sync.Mutex
 }
@@ -53,6 +58,9 @@ func newRBACFixture(t *testing.T) *rbacFixture {
 	f.scopes[group] = map[string]any{"id": group, "type": groupType, "name": "test", "location": "westus", "properties": map[string]any{"provisioningState": "Succeeded"}}
 	f.scopes[sourceID] = source
 	f.runtime = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if f.before != nil {
+			f.before(req)
+		}
 		f.mu.Lock()
 		defer f.mu.Unlock()
 		path := strings.ToLower(req.URL.Path)
@@ -364,5 +372,76 @@ func TestRBACInventoryLaterPagesReuseScanSnapshot(t *testing.T) {
 	before := calls()
 	if _, err := f.runtime.List(t.Context(), request); err != nil || calls() == before {
 		t.Fatal("another scan reused the snapshot", err)
+	}
+}
+
+// The inventory index GETs every listed row concurrently, once each, and a
+// failure fails the index with the first error in ID order, as a serial walk
+// would: a slow disagreeing row wins over a later row that failed sooner.
+func TestRBACIndexReadsDetailsConcurrentlyAndFailsInOrder(t *testing.T) {
+	for _, fail := range []bool{false, true} {
+		f := newRBACFixture(t)
+		group := "/subscriptions/" + testSubscription + "/resourcegroups/test"
+		for i := range 30 {
+			raw := rbacTestBody(t, rbacAssignmentType, group, fmt.Sprintf("cccccccc-0000-0000-0000-%012d", i))
+			f.resources[strings.ToLower(text(raw["id"]))] = raw
+		}
+		ids := []string{}
+		for _, id := range slices.Sorted(maps.Keys(f.resources)) {
+			if f.resources[id]["type"] == rbacAssignmentType {
+				ids = append(ids, id)
+			}
+		}
+		var inFlight, peak atomic.Int32
+		f.before = func(req *http.Request) {
+			path := strings.ToLower(req.URL.Path)
+			if !slices.Contains(ids, path) {
+				return
+			}
+			now := inFlight.Add(1)
+			defer inFlight.Add(-1)
+			for old := peak.Load(); now > old && !peak.CompareAndSwap(old, now); old = peak.Load() {
+			}
+			switch {
+			case fail && path == ids[5]:
+				time.Sleep(30 * time.Millisecond)
+			case fail && path == ids[9]:
+			default:
+				time.Sleep(5 * time.Millisecond)
+			}
+		}
+		if fail {
+			f.override = func(req *http.Request) (*http.Response, bool) {
+				switch strings.ToLower(req.URL.Path) {
+				case ids[5]:
+					raw := maps.Clone(f.resources[ids[5]])
+					raw["properties"] = maps.Clone(object(raw["properties"]))
+					object(raw["properties"])["condition"] = "detail-only"
+					return jsonResponse(200, raw, nil), true
+				case ids[9]:
+					return jsonResponse(403, map[string]any{"error": map[string]any{"code": "AuthorizationFailed"}}, nil), true
+				}
+				return nil, false
+			}
+		}
+		c, err := f.runtime.resolve(t.Context(), "connection")
+		if err != nil {
+			t.Fatal(err)
+		}
+		rows, _, err := c.rbacIndex(t.Context(), rbacAssignmentType, c.root())
+		if fail {
+			if err == nil || !strings.Contains(err.Error(), "rbac_list_detail_disagreement") || rows != nil {
+				t.Fatal("index did not fail with the first error in order", err)
+			}
+			continue
+		}
+		if err != nil || len(rows) != len(ids) || peak.Load() < 2 || peak.Load() > detailReadConcurrency {
+			t.Fatal(err, len(rows), len(ids), peak.Load())
+		}
+		for _, id := range ids {
+			if got := f.calls["GET "+id]; got != 1 {
+				t.Fatal("detail GETs", id, got)
+			}
+		}
 	}
 }

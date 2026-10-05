@@ -11,9 +11,10 @@ import (
 
 // Subscription indexes include unindexed scope extensions. Persisted sources
 // are also read directly, so a list omission cannot erase a reviewed reference.
-// Listed rows come without their GETs (see rbacList): a row whose validated
-// list fields reference no target cannot block one. A row that does, or whose
-// persisted references did, is read and must agree before it is used.
+// Listed rows come without their GETs (see rbacList): an assignment whose
+// validated list fields reference no target cannot block one. One that does,
+// one whose persisted references did, and every custom role definition is
+// read and must agree before it is used.
 func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []asset.Asset) (map[string][]monitorIncomingSource, error) {
 	incoming := map[string][]monitorIncomingSource{}
 	if len(targets) == 0 {
@@ -109,7 +110,10 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 				return nil, err
 			}
 			if !read[id] {
-				relevant := recorded[id]
+				// A custom role's assignableScopes are mutable: a lagging list
+				// must not hide a scope just added, so every custom role is
+				// read and must agree. Built-in roles are Microsoft-managed.
+				relevant := recorded[id] || kind == rbacRoleType && text(object(raw["properties"])["type"]) != "BuiltInRole"
 				for _, target := range targets {
 					matches, err := linked(target, refs)
 					if err != nil {

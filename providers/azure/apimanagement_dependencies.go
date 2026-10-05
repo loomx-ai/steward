@@ -4,6 +4,7 @@ import (
 	"context"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -72,17 +73,35 @@ func apimPrerequisite(target, referrer asset.Asset) bool {
 		!strings.HasPrefix(referrer.Identity.NativeID, target.Identity.NativeID+"/")
 }
 
-// Walk only native branches that can refer to this kind. Scan the whole service
-// so an ARM reference from another workspace cannot disappear from the review.
+// apimIncomingIndex indexes the service's live references to target's kind.
 func (c *client) apimIncomingIndex(ctx context.Context, target asset.Identity) (map[string][]serviceChild, error) {
-	kinds := apimIncomingKinds(target.NativeType)
+	return c.apimIncomingIndexFor(ctx, apimRootID(target.NativeID), apimIncomingKinds(target.NativeType))
+}
+
+// apimIncomingIndexFor indexes the references the root's resources of kinds
+// make. Concurrent delete checks of one service and kind set share one walk
+// that starts after they arrive (liveShared), so the index stays live. The
+// returned index is shared and must not be modified.
+func (c *client) apimIncomingIndexFor(ctx context.Context, rootID string, kinds []string) (map[string][]serviceChild, error) {
 	if len(kinds) == 0 {
 		return nil, nil
 	}
+	kinds = slices.Compact(slices.Sorted(slices.Values(kinds)))
+	return liveShared(ctx, c, "apim-incoming:"+rootID+"|"+strings.Join(kinds, ","), func() (map[string][]serviceChild, error) {
+		return c.apimIncomingWalk(ctx, rootID, kinds)
+	})
+}
+
+// Walk only native branches that can refer to these kinds. Scan the whole
+// service so an ARM reference from another workspace cannot disappear from the
+// review. The service's direct children (each API with its operations and
+// policies) are walked concurrently; deeper levels stay serial.
+func (c *client) apimIncomingWalk(ctx context.Context, rootID string, kinds []string) (map[string][]serviceChild, error) {
 	resolved := map[string][]string{}
 	indexes := map[string][]serviceChild{}
-	var collect func(asset.Identity, map[string]any) ([]serviceChild, error)
-	collect = func(parent asset.Identity, raw map[string]any) ([]serviceChild, error) {
+	var mu sync.Mutex // Guards resolved and the indexes cache across subtrees.
+	var collect func(asset.Identity, map[string]any, bool) ([]serviceChild, error)
+	collect = func(parent asset.Identity, raw map[string]any, concurrent bool) ([]serviceChild, error) {
 		if err := apimReady(parent.NativeType, raw); err != nil {
 			return nil, err
 		}
@@ -109,26 +128,45 @@ func (c *client) apimIncomingIndex(ctx context.Context, target asset.Identity) (
 			}
 			children = append(children, values...)
 		}
-		var result []serviceChild
+		var result, nested []serviceChild
 		for _, child := range children {
 			if err := apimReady(child.kind, child.data); err != nil {
 				return nil, err
 			}
 			if slices.Contains(kinds, child.kind) {
+				mu.Lock()
 				refs, err := c.apimResolvedReferences(ctx, child.kind, child.id, child.data, indexes, nil)
+				if err == nil {
+					resolved[child.id] = refs
+				}
+				mu.Unlock()
 				if err != nil {
 					return nil, err
 				}
-				resolved[child.id] = refs
 				result = append(result, child)
 			}
 			if slices.ContainsFunc(kinds, func(kind string) bool { return strings.HasPrefix(kind, child.kind+"/") }) {
-				values, err := collect(asset.Identity{NativeID: child.id, NativeType: child.kind}, child.data)
-				if err != nil {
-					return nil, err
-				}
-				result = append(result, values...)
+				nested = append(nested, child)
 			}
+		}
+		read := func(i int) ([]serviceChild, error) {
+			return collect(asset.Identity{NativeID: nested[i].id, NativeType: nested[i].kind}, nested[i].data, false)
+		}
+		subtrees, errs := make([][]serviceChild, len(nested)), make([]error, len(nested))
+		if concurrent {
+			subtrees, errs = readConcurrently(len(nested), read)
+		} else {
+			for i := range nested {
+				if subtrees[i], errs[i] = read(i); errs[i] != nil {
+					break
+				}
+			}
+		}
+		for i := range nested {
+			if errs[i] != nil {
+				return nil, errs[i] // First failure in child order, as a serial walk.
+			}
+			result = append(result, subtrees[i]...)
 		}
 		after, err := c.apimResource(ctx, parent.NativeID)
 		if err != nil {
@@ -140,7 +178,6 @@ func (c *client) apimIncomingIndex(ctx context.Context, target asset.Identity) (
 		slices.SortFunc(result, func(a, b serviceChild) int { return strings.Compare(a.id, b.id) })
 		return result, nil
 	}
-	rootID := apimRootID(target.NativeID)
 	root, err := c.apimResource(ctx, rootID)
 	if err != nil {
 		return nil, err
@@ -148,7 +185,7 @@ func (c *client) apimIncomingIndex(ctx context.Context, target asset.Identity) (
 	parent := asset.Identity{NativeID: rootID, NativeType: apimServiceType}
 	linkConfiguration := ""
 	collectAll := func() ([]serviceChild, error) {
-		children, err := collect(parent, root)
+		children, err := collect(parent, root, true)
 		if err != nil || !slices.Contains(kinds, apimGatewayConnectionType) {
 			return children, err
 		}
@@ -165,7 +202,7 @@ func (c *client) apimIncomingIndex(ctx context.Context, target asset.Identity) (
 			if err := apimListedIncarnation(apimGatewayType, gateway, live); err != nil {
 				return nil, err
 			}
-			connections, err := collect(asset.Identity{NativeID: gatewayID, NativeType: apimGatewayType}, live)
+			connections, err := collect(asset.Identity{NativeID: gatewayID, NativeType: apimGatewayType}, live, false)
 			if err != nil {
 				return nil, err
 			}
@@ -205,23 +242,36 @@ func (c *client) apimIncomingIndex(ctx context.Context, target asset.Identity) (
 	return index, nil
 }
 
+// Each service is walked once for the union of its targets' kinds; a target
+// consumes only the referrers of its own kinds, as its own walk would find.
 func (s *serviceCascades) contributeAPIMReferences(ctx context.Context, assets []asset.Asset, result *governance.Contribution) error {
+	rootKinds := map[string][]string{}
+	for _, target := range assets {
+		if target.Identity.Provider == asset.ProviderAzure {
+			root := apimRootID(target.Identity.NativeID)
+			rootKinds[root] = append(rootKinds[root], apimIncomingKinds(target.Identity.NativeType)...)
+		}
+	}
 	indexes := map[string]map[string][]serviceChild{}
 	for _, target := range assets {
-		if target.Identity.Provider != asset.ProviderAzure || len(apimIncomingKinds(target.Identity.NativeType)) == 0 {
+		kinds := apimIncomingKinds(target.Identity.NativeType)
+		if target.Identity.Provider != asset.ProviderAzure || len(kinds) == 0 {
 			continue
 		}
-		key := apimRootID(target.Identity.NativeID) + "|" + strings.ToLower(last(target.Identity.NativeType))
-		index, exists := indexes[key]
+		root := apimRootID(target.Identity.NativeID)
+		index, exists := indexes[root]
 		if !exists {
 			var err error
-			index, err = s.client.apimIncomingIndex(ctx, target.Identity)
+			index, err = s.client.apimIncomingIndexFor(ctx, root, rootKinds[root])
 			if err != nil {
 				return err
 			}
-			indexes[key] = index
+			indexes[root] = index
 		}
 		for _, child := range index[strings.ToLower(target.Identity.NativeID)] {
+			if !slices.Contains(kinds, child.kind) {
+				continue
+			}
 			evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
 			controllers := map[string]any{}
 			var referrer *asset.Asset

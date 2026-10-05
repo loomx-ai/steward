@@ -129,6 +129,8 @@ type dnsScenario struct {
 	status       map[string]int
 	deleteStatus int
 	handle       func(*http.Request) (*http.Response, bool)
+	// before runs outside mu, so a test can observe concurrent requests.
+	before func(*http.Request)
 	// Inventory detail reads run concurrently; the scenario state is unguarded.
 	mu sync.Mutex
 }
@@ -158,6 +160,9 @@ func (s *dnsScenario) add(raw map[string]any, version string) {
 func (s *dnsScenario) runtime(t *testing.T) *Runtime {
 	t.Helper()
 	return protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if s.before != nil {
+			s.before(req)
+		}
 		s.mu.Lock()
 		defer s.mu.Unlock()
 		id := strings.ToLower(req.URL.Path)

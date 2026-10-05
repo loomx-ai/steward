@@ -327,11 +327,12 @@ func testRBACManagedGroupAssignmentRequiresIndependentDeletion(t *testing.T, pri
 }
 
 // A delete check reads only the listed RBAC rows that can reference its target:
-// unrelated rows are decided by their validated list fields and never GET. A
-// linked row, or one whose reviewed references named the target, is still read
-// and must agree with its list row.
+// unrelated assignments are decided by their validated list fields and never
+// GET. A linked row, one whose reviewed references named the target, and every
+// custom role (its assignableScopes are mutable) is still read and must agree
+// with its list row; a role list lagging a scope just added fails closed.
 func TestRBACIncomingReadsOnlyRowsThatReferenceTheTarget(t *testing.T) {
-	for _, mode := range []string{"linked", "disagreement", "recorded"} {
+	for _, mode := range []string{"linked", "disagreement", "recorded", "role-lag"} {
 		t.Run(mode, func(t *testing.T) {
 			f, assignment, target, _ := rbacStorageTarget(t)
 			group := "/subscriptions/" + testSubscription + "/resourcegroups/test"
@@ -360,13 +361,26 @@ func TestRBACIncomingReadsOnlyRowsThatReferenceTheTarget(t *testing.T) {
 					return base(req)
 				}
 			}
+			if mode == "role-lag" {
+				// The role now names the target; the list still shows the old scopes.
+				base := f.override
+				f.override = func(req *http.Request) (*http.Response, bool) {
+					if req.Method == "GET" && strings.EqualFold(req.URL.Path, rbacTestRoleID()) {
+						raw := maps.Clone(f.resources[rbacTestRoleID()])
+						raw["properties"] = maps.Clone(object(raw["properties"]))
+						object(raw["properties"])["assignableScopes"] = []any{group, target.Identity.NativeID}
+						return jsonResponse(200, raw, nil), true
+					}
+					return base(req)
+				}
+			}
 			c, err := f.runtime.resolve(t.Context(), "connection")
 			if err != nil {
 				t.Fatal(err)
 			}
 			clear(f.calls)
 			incoming, err := c.rbacIncomingObservation(t.Context(), []asset.Asset{target}, known)
-			if mode == "disagreement" {
+			if mode == "disagreement" || mode == "role-lag" {
 				if err == nil || !strings.Contains(err.Error(), "rbac_list_detail_disagreement") || len(incoming) != 0 {
 					t.Fatal("disagreeing linked row did not block", incoming, err)
 				}
@@ -384,12 +398,12 @@ func TestRBACIncomingReadsOnlyRowsThatReferenceTheTarget(t *testing.T) {
 					t.Fatal("unrelated assignment was read", id, got)
 				}
 			}
-			roleReads := 0
-			if mode == "recorded" {
-				roleReads = 1
+			if got := f.calls["GET "+rbacTestRoleID()]; got != 1 {
+				t.Fatal("custom role definition GETs", got)
 			}
-			if got := f.calls["GET "+rbacTestRoleID()]; got != roleReads {
-				t.Fatal("role definition GETs", got, roleReads)
+			builtin := "/subscriptions/" + testSubscription + "/providers/microsoft.authorization/roledefinitions/" + rbacTestBuiltinName
+			if got := f.calls["GET "+builtin]; got != 0 {
+				t.Fatal("built-in role definition was read", got)
 			}
 		})
 	}
