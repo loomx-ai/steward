@@ -42,9 +42,7 @@ type client struct {
 	firewallParent string
 	identityParent string
 	fingerprint    [32]byte
-	// source identifies the credential the client was resolved from.
-	source [32]byte
-	cache  *clientCache
+	cache          *clientCache
 }
 
 func newClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {
@@ -284,6 +282,11 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 	}
 	if scan, ok := ctx.Value(sharedReadScan{}).(asset.ScanRunID); ok && method == http.MethodGet && c.cache != nil {
 		return c.cache.reads.get(ctx, string(scan)+"\x00"+c.project+"\x00"+u.String(), func(ctx context.Context) (contracts.InvocationResult, error) {
+			return requestJSON(ctx, c.http, method, u, body, sanitize)
+		})
+	}
+	if ctx.Value(inflightReads{}) != nil && method == http.MethodGet && c.cache != nil {
+		return c.cache.inflight.get(ctx, c.project+"\x00"+u.String(), func(ctx context.Context) (contracts.InvocationResult, error) {
 			return requestJSON(ctx, c.http, method, u, body, sanitize)
 		})
 	}

@@ -64,38 +64,36 @@ func NewInstanceDisks() *InstanceDisks { return &InstanceDisks{} }
 
 func (*InstanceDisks) Contribute(_ context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
+	indexed := indexManagedAssets(assets)
+	type batchKey struct {
+		connection     asset.ConnectionID
+		partition, uid string
+	}
+	batchJobs := map[batchKey]bool{}
+	for _, job := range assets {
+		if job.Identity.Provider == asset.ProviderGCP && job.Identity.NativeType == batchJobType && job.ClosedAt == nil {
+			batchJobs[batchKey{job.Identity.ConnectionID, job.Identity.Partition, text(job.Normalized["uid"])}] = true
+		}
+	}
 	for _, vm := range assets {
 		if vm.Identity.Provider != asset.ProviderGCP || vm.Identity.NativeType != instanceType {
 			continue
 		}
 		project := text(vm.Normalized["project_id"])
 		c := &client{project: project, number: text(vm.Normalized["project_number"])}
-		batchManaged := false
-		if uid := batchUID(vm.Normalized); uid != "" {
-			for _, job := range assets {
-				if job.Identity.Provider == vm.Identity.Provider && job.Identity.ConnectionID == vm.Identity.ConnectionID && job.Identity.Partition == vm.Identity.Partition && job.Identity.NativeType == batchJobType && job.ClosedAt == nil && text(job.Normalized["uid"]) == uid {
-					batchManaged = true
-					break
-				}
-			}
-		}
+		uid := batchUID(vm.Normalized)
+		batchManaged := uid != "" && batchJobs[batchKey{vm.Identity.ConnectionID, vm.Identity.Partition, uid}]
 		disks, err := instanceDisks(c, vm.Normalized)
 		if err != nil {
 			return result, err
 		}
 		for _, attachment := range disks {
 			evidence := map[string]any{"resource_type": attachment.kind, "instance_id": attachment.id, "device_name": attachment.device, "auto_delete": attachment.autoDelete, "lifecycle_kind": "gcp_disk_delete_with_instance"}
-			var managed *asset.Asset
-			for i := range assets {
-				candidate := &assets[i]
-				if candidate.Identity.Provider == vm.Identity.Provider && candidate.Identity.ConnectionID == vm.Identity.ConnectionID && candidate.Identity.Partition == vm.Identity.Partition && candidate.Identity.NativeType == attachment.kind && candidate.Identity.NativeID == attachment.id {
-					if managed != nil {
-						return result, fmt.Errorf("ambiguous GCP attached disk identity")
-					}
-					managed = candidate
-				}
+			managed, found, err := findManagedAsset(indexed, vm, attachment.kind, attachment.id)
+			if err != nil {
+				return result, fmt.Errorf("ambiguous GCP attached disk identity")
 			}
-			if managed == nil {
+			if !found {
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: vm.Identity.Provider, ConnectionID: vm.Identity.ConnectionID, NativeType: attachment.kind, NativeID: attachment.id, ControllerID: vm.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 				continue
 			}

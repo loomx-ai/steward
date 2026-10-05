@@ -10,6 +10,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -27,6 +28,7 @@ const (
 )
 
 type infraScenario struct {
+	mu                              sync.Mutex
 	resources, physical, operations map[string]map[string]any
 	calls, writes                   []string
 	emptyPage                       bool
@@ -52,7 +54,7 @@ func newInfraScenario(t *testing.T) *infraScenario {
 // URLs, response fields and destructive semantics below are literal native
 // contracts. This scenario does not derive expectations from Steward's catalog.
 func (s *infraScenario) transport(t *testing.T) roundTripFunc {
-	return func(req *http.Request) (*http.Response, error) {
+	return serialTransport(&s.mu, func(req *http.Request) (*http.Response, error) {
 		s.calls = append(s.calls, req.Method+" "+req.URL.String())
 		if s.handle != nil {
 			if response, ok := s.handle(req); ok {
@@ -184,7 +186,7 @@ func (s *infraScenario) transport(t *testing.T) roundTripFunc {
 		s.policies[op] = q.Get("deletePolicy")
 		s.resources[name]["state"] = "DELETING"
 		return respond(200, s.operations[op])
-	}
+	})
 }
 
 func (s *infraScenario) finish(operation string, keepPhysical bool) {

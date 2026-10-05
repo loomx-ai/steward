@@ -10,6 +10,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -28,6 +29,7 @@ const (
 )
 
 type fusionScenario struct {
+	mu               sync.Mutex
 	resources        map[string]map[string]any
 	operations       map[string]map[string]any
 	calls, mutations []string
@@ -52,7 +54,7 @@ func newFusionScenario(t *testing.T) *fusionScenario {
 // behavior are literal contracts, independent of the production catalog/binder.
 func (s *fusionScenario) transport(t *testing.T) roundTripFunc {
 	t.Helper()
-	return func(req *http.Request) (*http.Response, error) {
+	return serialTransport(&s.mu, func(req *http.Request) (*http.Response, error) {
 		s.calls = append(s.calls, req.Method+" "+req.URL.String())
 		if s.handle != nil {
 			if response, ok := s.handle(req); ok {
@@ -149,7 +151,7 @@ func (s *fusionScenario) transport(t *testing.T) roundTripFunc {
 		s.operations[op] = map[string]any{"name": op, "done": false, "metadata": map[string]any{"@type": "type.googleapis.com/google.cloud.datafusion.v1.OperationMetadata", "apiVersion": "v1", "verb": "delete", "target": name, "requestedCancellation": false}}
 		s.resources[name]["state"] = "DELETING"
 		return respond(200, s.operations[op])
-	}
+	})
 }
 
 func (s *fusionScenario) finish(operation string) {

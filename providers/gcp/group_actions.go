@@ -476,7 +476,8 @@ func (a *action) managedGroupReadback(ctx context.Context, request contracts.Act
 func (a *action) unmanagedGroupPreflight(ctx context.Context, request contracts.ActionRequest) (string, error) {
 	metadata, _ := providerData()
 	operation, _ := metadata.catalog.Operation("compute.instanceGroupManagers.aggregatedList")
-	groups, err := a.client.nativeList(ctx, operation, map[string]any{"project": a.client.project}, "items.*.instanceGroupManagers")
+	// Concurrent group deletes of a project join one in-flight list.
+	groups, err := a.client.nativeList(withInflightReads(ctx), operation, map[string]any{"project": a.client.project}, "items.*.instanceGroupManagers")
 	if err != nil {
 		return "", err
 	}

@@ -319,3 +319,13 @@ func TestConcurrentRequestsShareOneTokenExchange(t *testing.T) {
 		t.Fatalf("token exchanges = %d, want one", tokens.Load())
 	}
 }
+
+// serialTransport runs a scenario handler one request at a time: lifecycle
+// contributors read parents concurrently, and scenarios keep plain state.
+func serialTransport(mu *sync.Mutex, handler roundTripFunc) roundTripFunc {
+	return func(request *http.Request) (*http.Response, error) {
+		mu.Lock()
+		defer mu.Unlock()
+		return handler(request)
+	}
+}

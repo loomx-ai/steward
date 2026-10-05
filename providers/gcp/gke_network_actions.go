@@ -45,7 +45,7 @@ func (a *action) currentGKENetwork(ctx context.Context, request contracts.Action
 	if err != nil {
 		return gkeNetworkSnapshot{}, err
 	}
-	current, err := a.client.gkeNetwork(ctx, request.Asset, live, nodes)
+	current, err := a.client.gkeNetwork(ctx, "", request.Asset, live, nodes)
 	if err != nil {
 		return current, err
 	}

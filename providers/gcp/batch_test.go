@@ -7,6 +7,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -28,6 +29,7 @@ const (
 // The wire surface is literal and independent of the generated catalog and
 // resource rules. The fixture models delayed native cleanup, not a real cloud.
 type batchScenario struct {
+	mu        sync.Mutex
 	resources map[string]map[string]any
 	operation map[string]any
 	mutations []string
@@ -58,7 +60,7 @@ func newBatchScenario(t *testing.T) *batchScenario {
 
 func (s *batchScenario) transport(t *testing.T) roundTripFunc {
 	t.Helper()
-	return func(req *http.Request) (*http.Response, error) {
+	return serialTransport(&s.mu, func(req *http.Request) (*http.Response, error) {
 		if s.handle != nil {
 			if response, handled := s.handle(req); handled {
 				return response, nil
@@ -163,7 +165,7 @@ func (s *batchScenario) transport(t *testing.T) roundTripFunc {
 			return respond(200, data)
 		}
 		return respond(404, map[string]any{})
-	}
+	})
 }
 
 func batchAsset(assets []asset.Asset, name string) asset.Asset {

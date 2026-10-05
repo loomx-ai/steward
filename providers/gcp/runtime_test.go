@@ -176,6 +176,19 @@ func TestResolveReusesClientOnlyForTheSameUnexpiredCredential(t *testing.T) {
 	if _, err := r.resolve(t.Context(), "connection"); err == nil {
 		t.Fatal("rotated invalid credential reused the old client")
 	}
+	// A renewed credential for the same identity keeps the client and is
+	// recorded, so later pages take the fast path again.
+	current = credential
+	current.Version = "renewed"
+	if again, err := r.resolve(t.Context(), "connection"); err != nil || again != first {
+		t.Fatalf("renewed credential rebuilt its client: %v", err)
+	}
+	r.mu.Lock()
+	recorded := r.sources["connection"]
+	r.mu.Unlock()
+	if recorded != credentialSource(current) {
+		t.Fatal("renewed credential was not recorded for the fast path")
+	}
 	current = credential
 	past := time.Now().Add(-time.Minute)
 	current.ExpiresAt = &past

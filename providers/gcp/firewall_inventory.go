@@ -78,7 +78,9 @@ func (r *Runtime) listFirewall(ctx context.Context, c *client, request contracts
 			return batch, err
 		}
 	}
-	rows, err := c.firewallPolicies(ctx, parentKind, containers)
+	// Every kind and region shard of a scan lists the same policy set, so the
+	// first list is shared within the scan.
+	rows, err := c.firewallPolicies(withSharedReads(ctx, request.ScanRunID), parentKind, containers)
 	if err != nil {
 		return batch, err
 	}
@@ -140,20 +142,25 @@ func (r *Runtime) listFirewall(ctx context.Context, c *client, request contracts
 			return batch, groupDenied("firewall_inventory_tree_changed")
 		}
 	}
-	rows, err = c.firewallPolicies(ctx, parentKind, containers)
-	if err != nil {
-		return batch, err
-	}
-	again, err := c.firewallListedPolicies(parentKind, rows)
-	if err != nil {
-		return batch, err
-	}
-	if len(listed) != len(again) {
-		return batch, groupDenied("firewall_inventory_policy_set_changed")
-	}
-	for id, row := range listed {
-		if again[id] == nil || firewallConfiguration(row, false) != firewallConfiguration(again[id], false) {
-			return batch, groupDenied("firewall_inventory_policy_changed")
+	// The live re-list proves the policies did not change while this shard
+	// read their details, so it must follow this shard's own detail reads. A
+	// shard that read none derives its (empty) result from the listing alone.
+	if len(proofs) > 0 {
+		rows, err = c.firewallPolicies(ctx, parentKind, containers)
+		if err != nil {
+			return batch, err
+		}
+		again, err := c.firewallListedPolicies(parentKind, rows)
+		if err != nil {
+			return batch, err
+		}
+		if len(listed) != len(again) {
+			return batch, groupDenied("firewall_inventory_policy_set_changed")
+		}
+		for id, row := range listed {
+			if again[id] == nil || firewallConfiguration(row, false) != firewallConfiguration(again[id], false) {
+				return batch, groupDenied("firewall_inventory_policy_changed")
+			}
 		}
 	}
 	slices.SortFunc(batch.Items, func(a, b contracts.InventoryItem) int { return strings.Compare(a.NativeID, b.NativeID) })

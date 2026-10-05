@@ -3,6 +3,7 @@ package catalog
 import (
 	"fmt"
 	"sort"
+	"sync"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 )
@@ -86,7 +87,35 @@ type Catalog struct {
 	ResourceTypes   []ResourceType `json:"resource_types"`
 }
 
+// operationIndexes maps a catalog's operation slice (backing array and length)
+// to a key index, so every value copy of a loaded catalog shares one index.
+// Small catalogs scan instead of being indexed.
+var operationIndexes sync.Map
+
+const indexedOperations = 64
+
+type operationIndexKey struct {
+	first *Operation
+	count int
+}
+
 func (c Catalog) Operation(name string) (Operation, bool) {
+	if len(c.Operations) >= indexedOperations {
+		key := operationIndexKey{&c.Operations[0], len(c.Operations)}
+		cached, ok := operationIndexes.Load(key)
+		if !ok {
+			index := make(map[string]int, len(c.Operations))
+			for i := len(c.Operations) - 1; i >= 0; i-- {
+				index[c.Operations[i].Key()] = i
+			}
+			cached, _ = operationIndexes.LoadOrStore(key, index)
+		}
+		// A hit is re-checked, and a miss scans, so an index never answers
+		// differently from the scan below.
+		if i, ok := cached.(map[string]int)[name]; ok && c.Operations[i].Key() == name {
+			return c.Operations[i], true
+		}
+	}
 	for _, operation := range c.Operations {
 		if operation.Key() == name {
 			return operation, true

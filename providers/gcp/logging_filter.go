@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"unicode/utf8"
 )
 
@@ -19,6 +20,8 @@ type loggingValue struct {
 	quoted  bool
 	call    string
 	args    []*loggingValue
+	// re is a quoted pattern compiled while parsing.
+	re *regexp.Regexp
 }
 type loggingExpr struct {
 	op           string
@@ -177,6 +180,7 @@ func (v *loggingValue) validCall() bool {
 			return false
 		}
 		re, err := regexp.Compile(v.args[1].literal)
+		v.args[1].re = re
 		return err == nil && re.NumSubexp() == 1
 	case "log_id", "source", "time_zone":
 		return n == 1
@@ -257,7 +261,39 @@ func (p *loggingParser) term(depth int, restriction *loggingExpr) *loggingExpr {
 		return &loggingExpr{op: "global", value: value}
 	}
 }
+
+type parsedLoggingFilter struct {
+	expr *loggingExpr
+	ok   bool
+}
+
+// loggingFilters caches parsed filters by text: a graph rebuild evaluates
+// every sink and policy filter once per uptime check. Parsed filters are never
+// mutated after parsing. The cache stops growing at loggingFilterCacheSize.
+var loggingFilters = struct {
+	sync.Mutex
+	parsed map[string]parsedLoggingFilter
+}{parsed: map[string]parsedLoggingFilter{}}
+
+const loggingFilterCacheSize = 4096
+
 func parseLoggingFilter(filter string) (*loggingExpr, bool) {
+	loggingFilters.Lock()
+	cached, found := loggingFilters.parsed[filter]
+	loggingFilters.Unlock()
+	if found {
+		return cached.expr, cached.ok
+	}
+	expr, ok := parseLoggingFilterText(filter)
+	loggingFilters.Lock()
+	if len(loggingFilters.parsed) < loggingFilterCacheSize {
+		loggingFilters.parsed[filter] = parsedLoggingFilter{expr, ok}
+	}
+	loggingFilters.Unlock()
+	return expr, ok
+}
+
+func parseLoggingFilterText(filter string) (*loggingExpr, bool) {
 	tokens, ok := loggingTokens(filter)
 	if !ok {
 		return nil, false
@@ -277,7 +313,8 @@ func (e *loggingExpr) validRegex() bool {
 		if e.other == nil || !e.other.quoted || len(e.other.path) != 1 {
 			return false
 		}
-		_, err := regexp.Compile(e.other.literal)
+		re, err := regexp.Compile(e.other.literal)
+		e.other.re = re
 		return err == nil
 	}
 	return true
@@ -360,7 +397,10 @@ func (v *loggingValue) field(check string) loggingScalar {
 		if !value.known || value.kind != "string" {
 			return loggingScalar{}
 		}
-		re := regexp.MustCompile(v.args[1].literal)
+		re := v.args[1].re
+		if re == nil {
+			re = regexp.MustCompile(v.args[1].literal)
+		}
 		indices := re.FindStringSubmatchIndex(value.text)
 		// The API docs do not specify failed/optional capture conversion semantics.
 		if len(indices) < 4 || indices[2] < 0 {
@@ -402,7 +442,11 @@ func loggingCompare(left loggingScalar, op string, right *loggingValue, check st
 		if left.kind != "string" {
 			return monitoringUnresolvedReference
 		}
-		match := regexp.MustCompile(expected).MatchString(left.text)
+		re := right.re
+		if right.call != "" || re == nil {
+			re = regexp.MustCompile(expected)
+		}
+		match := re.MatchString(left.text)
 		if op == "!~" {
 			match = !match
 		}

@@ -234,6 +234,7 @@ func resetParentCache(r *Runtime) {
 	defer r.mu.Unlock()
 	for _, c := range r.clients {
 		c.cache.parents = ttlCache[[]contracts.InventoryItem]{}
+		c.cache.targets = ttlCache[productTargetSet]{}
 	}
 }
 

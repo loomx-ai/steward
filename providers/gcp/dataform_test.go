@@ -9,6 +9,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -28,6 +29,7 @@ var dataformWireKinds = map[string]string{
 }
 
 type dataformScenario struct {
+	mu        sync.Mutex
 	resources map[string]map[string]any
 	members   map[string][]string
 	mutations []string
@@ -68,7 +70,7 @@ func newDataformScenario(t *testing.T) *dataformScenario {
 
 func (s *dataformScenario) transport(t *testing.T) roundTripFunc {
 	t.Helper()
-	return func(req *http.Request) (*http.Response, error) {
+	return serialTransport(&s.mu, func(req *http.Request) (*http.Response, error) {
 		if req.URL.Host != "dataform.googleapis.com" || !strings.HasPrefix(req.URL.Path, "/v1/") {
 			t.Fatalf("unexpected native API: %s %s", req.Method, req.URL)
 		}
@@ -141,7 +143,7 @@ func (s *dataformScenario) transport(t *testing.T) roundTripFunc {
 			t.Fatalf("invented child delete parameters %s", req.URL)
 		}
 		return respond(200, map[string]any{})
-	}
+	})
 }
 
 func (s *dataformScenario) inventory(t *testing.T, r *Runtime, region string) []asset.Asset {

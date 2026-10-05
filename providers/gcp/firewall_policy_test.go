@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -20,6 +21,7 @@ const firewallTestGlobal = "projects/sample-project/global/firewallPolicies/glob
 const firewallTestRegional = "projects/sample-project/regions/us-central1/firewallPolicies/regional-policy"
 
 type firewallScenario struct {
+	mu                                         sync.Mutex
 	root                                       string
 	policies, containers, networks, operations map[string]map[string]any
 	calls, writes                              []string
@@ -65,7 +67,7 @@ func newFirewallScenario() *firewallScenario {
 // Literal routes below come from Google's REST API. They do not use generated
 // bindings or the adapter's identity parsers, including query-only associations.
 func (s *firewallScenario) transport(t *testing.T) roundTripFunc {
-	return func(r *http.Request) (*http.Response, error) {
+	return serialTransport(&s.mu, func(r *http.Request) (*http.Response, error) {
 		s.calls = append(s.calls, r.Method+" "+r.URL.String())
 		if s.hook != nil {
 			if response, handled := s.hook(r); handled {
@@ -210,7 +212,7 @@ func (s *firewallScenario) transport(t *testing.T) roundTripFunc {
 		row := map[string]any{"name": opName, "status": "RUNNING", "targetLink": policy["selfLink"], "targetId": policy["id"], "clientOperationId": q.Get("requestId"), "operationType": operationType, "selfLink": "https://www.googleapis.com/compute/v1/" + opPath}
 		s.operations[opPath] = row
 		return respond(200, row)
-	}
+	})
 }
 
 func (s *firewallScenario) runtime(t *testing.T) *Runtime {
@@ -369,5 +371,32 @@ func TestFirewallPoliciesNativePlanAndRestart(t *testing.T) {
 				t.Fatal("hierarchical policy did not use organization operation endpoint")
 			}
 		})
+	}
+}
+
+// Region and kind shards of a scan share the first network policy listing;
+// only shards that read policy details re-list live to prove the set held.
+func TestNetworkFirewallShardsShareFirstListing(t *testing.T) {
+	s := newFirewallScenario()
+	r := s.runtime(t)
+	for _, kind := range []string{networkFirewallPolicyType, networkFirewallAssociationType} {
+		for _, region := range []string{"global", "us-central1", "us-east1", "europe-west1"} {
+			req := productRequest(r, kind, region)
+			req.ScanRunID = "scan"
+			if batch, err := r.List(context.Background(), req); err != nil || !batch.Complete {
+				t.Fatalf("%s %s: %+v %v", kind, region, batch, err)
+			}
+		}
+	}
+	lists := 0
+	for _, call := range s.calls {
+		if strings.Contains(call, "/aggregated/firewallPolicies") {
+			lists++
+		}
+	}
+	// One shared listing plus one live re-list per kind for the two shards
+	// (global, us-central1) that hold a policy; previously 2 per shard (16).
+	if lists != 5 {
+		t.Fatalf("aggregated policy lists = %d", lists)
 	}
 }

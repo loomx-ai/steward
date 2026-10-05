@@ -140,7 +140,8 @@ func (a *action) dataformPreflight(ctx context.Context, request contracts.Action
 }
 
 func dataformPhase(request contracts.ActionRequest, phase string) contracts.ActionResult {
-	return contracts.ActionResult{Data: map[string]any{"phase": phase, "resource": request.Asset.Identity.NativeID, "configuration": request.Asset.Normalized[dataformProof]}, RetryAfter: 2 * time.Second}
+	// since dates the phase, so its polls back off as operationPollDelay does.
+	return contracts.ActionResult{Data: map[string]any{"phase": phase, "resource": request.Asset.Identity.NativeID, "configuration": request.Asset.Normalized[dataformProof], "since": time.Now().UTC().Format(time.RFC3339Nano)}, RetryAfter: 2 * time.Second}
 }
 
 func (a *action) prepareDataformInvocation(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
@@ -206,8 +207,9 @@ func (a *action) waitDataformInvocation(ctx context.Context, request contracts.A
 	if check.Absent {
 		return contracts.WaitResult{Done: true}, nil
 	}
+	delay := operationPollDelay(map[string]any{"startTime": result.Data["since"]}, time.Now())
 	if phase == "dataform_delete" {
-		return contracts.WaitResult{State: phase, RetryAfter: 2 * time.Second}, nil
+		return contracts.WaitResult{State: phase, RetryAfter: delay}, nil
 	}
 	live, err := a.client.request(ctx, "GET", a.endpoint, nil)
 	if isNotFound(err) {
@@ -220,7 +222,7 @@ func (a *action) waitDataformInvocation(ctx context.Context, request contracts.A
 		return contracts.WaitResult{}, err
 	}
 	if state := text(live["state"]); state == "RUNNING" || state == "CANCELING" {
-		return contracts.WaitResult{State: "dataform_cancel", RetryAfter: 2 * time.Second}, nil
+		return contracts.WaitResult{State: "dataform_cancel", RetryAfter: delay}, nil
 	}
 	next, err := a.prepareDataformInvocation(ctx, request)
 	return contracts.WaitResult{Data: next.Data, State: text(next.Data["phase"]), RetryAfter: 2 * time.Second}, err

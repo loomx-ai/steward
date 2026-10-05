@@ -7,7 +7,24 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"sync"
 )
+
+// patterns caches compiled API parameter patterns; they come only from the
+// checked-in catalog, so the set is bounded. An invalid pattern caches nil.
+var patterns sync.Map
+
+func compiledPattern(pattern string) *regexp.Regexp {
+	if rule, ok := patterns.Load(pattern); ok {
+		return rule.(*regexp.Regexp)
+	}
+	rule, err := regexp.Compile(pattern)
+	if err != nil {
+		rule = nil
+	}
+	patterns.Store(pattern, rule)
+	return rule
+}
 
 // RESTRequest is bound only from checked-in API metadata. Credential selection
 // and project/subscription ownership remain the provider runtime's responsibility.
@@ -184,8 +201,8 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 				}
 				pattern = "^" + strings.TrimPrefix(pattern, prefix)
 			}
-			rule, err := regexp.Compile(pattern)
-			if err != nil || !isString || !rule.MatchString(text) {
+			rule := compiledPattern(pattern)
+			if rule == nil || !isString || !rule.MatchString(text) {
 				return RESTRequest{}, fmt.Errorf("parameter %q does not match its API pattern", name)
 			}
 		}

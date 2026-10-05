@@ -10,6 +10,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -27,6 +28,7 @@ const (
 )
 
 type tpuScenario struct {
+	mu               sync.Mutex
 	resources        map[string]map[string]any
 	operations       map[string]map[string]any
 	calls, mutations []string
@@ -51,7 +53,7 @@ func newTPUScenario(t *testing.T) *tpuScenario {
 // use the catalog or binder whose behavior this scenario verifies.
 func (s *tpuScenario) transport(t *testing.T) roundTripFunc {
 	t.Helper()
-	return func(req *http.Request) (*http.Response, error) {
+	return serialTransport(&s.mu, func(req *http.Request) (*http.Response, error) {
 		s.calls = append(s.calls, req.Method+" "+req.URL.String())
 		if s.handle != nil {
 			if response, ok := s.handle(req); ok {
@@ -157,7 +159,7 @@ func (s *tpuScenario) transport(t *testing.T) roundTripFunc {
 		op := strings.Join(strings.Split(name, "/")[:4], "/") + fmt.Sprintf("/operations/action-%d", len(s.mutations))
 		s.operations[op] = map[string]any{"name": op, "metadata": map[string]any{"@type": "type.googleapis.com/google.cloud.tpu.v2.OperationMetadata", "apiVersion": "v2", "target": name, "verb": verb}}
 		return respond(200, s.operations[op])
-	}
+	})
 }
 func (s *tpuScenario) finish(operation string) {
 	name := strings.TrimPrefix(operation, "https://tpu.googleapis.com/v2/")

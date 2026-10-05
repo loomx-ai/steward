@@ -307,11 +307,22 @@ func (h *monitoringDependencies) Contribute(ctx context.Context, _ asset.ScopeID
 		ids = append(ids, id)
 	}
 	slices.Sort(ids)
-	for _, check := range checks {
+	// Read the checks with bounded concurrency; the loop below still reports
+	// the first failing check in order, as a serial walk would.
+	lives := make([]map[string]any, len(checks))
+	readErrs := make([]error, len(checks))
+	_ = forEachConcurrently(len(checks), groupReadConcurrency, func(index int) error {
+		if !gcpPartition(checks[index].Identity.Partition) {
+			return nil
+		}
+		lives[index], readErrs[index] = h.client.monitoringRead(ctx, uptimeType, checks[index].Identity.NativeID)
+		return readErrs[index]
+	})
+	for index, check := range checks {
 		if !gcpPartition(check.Identity.Partition) {
 			return result, groupDenied("monitoring_check_partition_invalid")
 		}
-		live, err := h.client.monitoringRead(ctx, uptimeType, check.Identity.NativeID)
+		live, err := lives[index], readErrs[index]
 		if err != nil {
 			return result, contracts.DependencyReadError(err)
 		}

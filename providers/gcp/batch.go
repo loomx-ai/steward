@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -260,19 +261,28 @@ func (c *client) batchVMHasJob(ctx context.Context, vm map[string]any) (bool, er
 	}
 	metadata, _ := providerData()
 	operation, _ := metadata.catalog.Operation("batch.projects.locations.jobs.list")
-	locations, supported, err := c.productLocations(ctx, "", operation)
+	// Concurrent VM checks of a project join one in-flight location list.
+	locations, supported, err := c.productLocations(withInflightReads(ctx), "", operation)
 	if err != nil {
 		return false, err
 	}
 	if !supported {
 		return false, groupDenied("batch_job_locations_unavailable")
 	}
-	for _, location := range locations {
-		if location == "global" {
-			continue
+	locations = slices.DeleteFunc(slices.Clone(locations), func(location string) bool { return location == "global" })
+	jobs := make([]map[string]any, len(locations))
+	errs := make([]error, len(locations))
+	_ = forEachConcurrently(len(locations), groupReadConcurrency, func(index int) error {
+		jobs[index], errs[index] = c.nativeGet(ctx, batchJobType, "//batch.googleapis.com/projects/"+c.project+"/locations/"+locations[index]+"/jobs/"+name)
+		if isNotFound(errs[index]) {
+			return nil
 		}
+		return errs[index]
+	})
+	// Decide in location order, as a serial walk would.
+	for index, location := range locations {
 		id := "//batch.googleapis.com/projects/" + c.project + "/locations/" + location + "/jobs/" + name
-		job, err := c.nativeGet(ctx, batchJobType, id)
+		job, err := jobs[index], errs[index]
 		if isNotFound(err) {
 			continue
 		}

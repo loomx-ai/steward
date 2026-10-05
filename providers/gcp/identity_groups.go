@@ -307,19 +307,25 @@ func (r *Runtime) listIdentityGroups(ctx context.Context, c *client, request con
 
 const (
 	identityGroupConcurrency = 4
-	identityDirectoryTTL     = 15 * time.Minute
 )
 
 // identityDirectoryViews reads every group's verified view in group-name
-// order. The group and membership shards of one scan share one read: views are
-// kept per scan and directory, are never mutated by callers, and a failed read
-// is never kept.
+// order. The group and membership shards of one scan share one read through
+// the scan's shared reads: concurrent shards wait for one directory read, a
+// failed read is never kept, and each shard decodes its own copy.
 func (r *Runtime) identityDirectoryViews(ctx context.Context, c *client, scan asset.ScanRunID) ([]identityGroupView, error) {
-	load := func() ([]identityGroupView, error) { return c.identityDirectory(ctx) }
 	if scan == "" || c.cache == nil {
-		return load()
+		return c.identityDirectory(ctx)
 	}
-	return c.cache.identity.get(string(scan)+"\x00"+c.identityParent, identityDirectoryTTL, false, load)
+	entry, err := c.cache.reads.load(ctx, "identity\x00"+string(scan)+"\x00"+c.identityParent, func(ctx context.Context) (map[string]any, string, error) {
+		views, err := c.identityDirectory(ctx)
+		return map[string]any{"": views}, "", err
+	})
+	if err != nil {
+		return nil, err
+	}
+	var views []identityGroupView
+	return views, decodeShared(entry.parts[""], &views)
 }
 
 func (c *client) identityDirectory(ctx context.Context) ([]identityGroupView, error) {

@@ -26,6 +26,8 @@ type Runtime struct {
 	// caches outlive a client replaced by a concurrent first resolve, so the
 	// shards of one scan share them; a new credential starts empty ones.
 	caches map[asset.ConnectionID]*clientCache
+	// sources identifies the credential each client was last resolved from.
+	sources map[asset.ConnectionID][32]byte
 }
 
 func NewRuntime(credentials contracts.CredentialSource) (*Runtime, error) {
@@ -138,34 +140,47 @@ func (r *Runtime) resolve(ctx context.Context, id asset.ConnectionID) (*client, 
 	source := credentialSource(credential)
 	r.mu.Lock()
 	existing := r.clients[id]
+	known := r.sources[id] == source
 	r.mu.Unlock()
-	if existing != nil && existing.source == source && (credential.ExpiresAt == nil || credential.ExpiresAt.After(time.Now())) {
+	if existing != nil && known && (credential.ExpiresAt == nil || credential.ExpiresAt.After(time.Now())) {
 		return existing, nil
 	}
 	candidate, err := newClient(credential, r.transport)
 	if err != nil {
 		return nil, err
 	}
-	candidate.source = source
 	r.mu.Lock()
 	existing = r.clients[id]
 	cache := r.caches[id]
 	if cache == nil || cache.fingerprint != candidate.fingerprint {
-		cache = &clientCache{fingerprint: candidate.fingerprint}
+		cache = &clientCache{fingerprint: candidate.fingerprint, inflight: sharedReads{inflightOnly: true}}
 		r.caches[id] = cache
 	}
 	candidate.cache = cache
-	r.mu.Unlock()
 	if existing != nil && existing.fingerprint == candidate.fingerprint {
+		// A renewed credential for the same identity keeps the client; record
+		// it so later pages take the fast path again.
+		r.setSource(id, source)
+		r.mu.Unlock()
 		return existing, nil
 	}
+	r.mu.Unlock()
 	if _, err = candidate.projectIdentity(ctx); err != nil {
 		return nil, err
 	}
 	r.mu.Lock()
 	r.clients[id] = candidate
+	r.setSource(id, source)
 	r.mu.Unlock()
 	return candidate, nil
+}
+
+// setSource records a client's credential; the caller holds r.mu.
+func (r *Runtime) setSource(id asset.ConnectionID, source [32]byte) {
+	if r.sources == nil {
+		r.sources = map[asset.ConnectionID][32]byte{}
+	}
+	r.sources[id] = source
 }
 func (r *Runtime) DiscoverRegions(ctx context.Context, id asset.ConnectionID) ([]contracts.DiscoveredRegion, error) {
 	c, err := r.resolve(ctx, id)

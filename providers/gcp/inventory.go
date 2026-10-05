@@ -643,12 +643,10 @@ func canonicalName(value string) string {
 	return value
 }
 
-func references(c *client, data map[string]any) map[string][]string {
-	result := map[string][]string{}
-	// Restrict references to live dependencies. Creation history (sourceImage,
-	// sourceSnapshot) and reverse children lists are not deletion dependencies.
+// referenceFields maps a native field to the type it references; it is built
+// once and only read.
+var referenceFields = func() map[string]string {
 	fields := map[string]string{"network": "compute.googleapis.com/Network", "networkURL": "compute.googleapis.com/Network", "privateNetwork": "compute.googleapis.com/Network", "subnetwork": "compute.googleapis.com/Subnetwork", "subnetworkURL": "compute.googleapis.com/Subnetwork", "topic": "pubsub.googleapis.com/Topic", "deadLetterTopic": "pubsub.googleapis.com/Topic", "healthChecks": "compute.googleapis.com/HealthCheck", "urlMap": "compute.googleapis.com/UrlMap", "sslCertificates": "compute.googleapis.com/SslCertificate", "backendService": "compute.googleapis.com/BackendService", "defaultService": "compute.googleapis.com/BackendService", "service": "compute.googleapis.com/BackendService", "nextHopInstance": "compute.googleapis.com/Instance", "target": "", "source": "compute.googleapis.com/Disk"}
-	var visit func(any, string)
 	fields["instanceTemplate"] = "compute.googleapis.com/InstanceTemplate"
 	fields["instanceGroup"] = instanceGroupType
 	fields["healthCheck"] = "compute.googleapis.com/HealthCheck"
@@ -687,6 +685,15 @@ func references(c *client, data map[string]any) map[string][]string {
 	} {
 		fields[key] = target
 	}
+	return fields
+}()
+
+func references(c *client, data map[string]any) map[string][]string {
+	result := map[string][]string{}
+	// Restrict references to live dependencies. Creation history (sourceImage,
+	// sourceSnapshot) and reverse children lists are not deletion dependencies.
+	fields := referenceFields
+	var visit func(any, string)
 	visit = func(value any, key string) {
 		switch typed := value.(type) {
 		case map[string]any:

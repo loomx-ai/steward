@@ -20,7 +20,8 @@ func (c *client) gkeOwnsGroup(ctx context.Context, id string) (bool, error) {
 		return false, err
 	}
 	op, _ := metadata.catalog.Operation("container.projects.locations.clusters.list")
-	clusters, err := c.nativeList(ctx, op, map[string]any{"parent": "projects/" + c.project + "/locations/-"}, "clusters")
+	// Concurrent MIG checks of a project join one in-flight cluster list.
+	clusters, err := c.nativeList(withInflightReads(ctx), op, map[string]any{"parent": "projects/" + c.project + "/locations/-"}, "clusters")
 	if err != nil {
 		return false, err
 	}

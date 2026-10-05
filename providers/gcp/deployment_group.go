@@ -265,8 +265,7 @@ func (c *client) infraGroupSavedMembers(root asset.Asset) ([]infraMember, error)
 	return members, nil
 }
 
-func (s *serviceCascades) contributeInfraGroup(ctx context.Context, root asset.Asset, assets []asset.Asset) (governance.Contribution, error) {
-	indexed := indexManagedAssets(assets)
+func (s *serviceCascades) contributeInfraGroup(ctx context.Context, root asset.Asset, indexed managedAssets) (governance.Contribution, error) {
 	result := governance.Contribution{}
 	planned, err := s.client.infraGroupSavedMembers(root)
 	if err != nil {

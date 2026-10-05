@@ -668,7 +668,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 // several polls in any window without being read every 2s. The age comes from
 // the operation itself, so the backoff needs no persisted state.
 func operationPollDelay(data map[string]any, now time.Time) time.Duration {
-	for _, raw := range []any{data["startTime"], data["insertTime"], object(data["metadata"])["createTime"]} {
+	metadata := object(data["metadata"])
+	// Dataproc operation metadata dates only its current state.
+	for _, raw := range []any{data["startTime"], data["insertTime"], metadata["createTime"], object(metadata["status"])["stateStartTime"]} {
 		if started, err := time.Parse(time.RFC3339Nano, text(raw)); err == nil {
 			return min(30*time.Second, max(2*time.Second, now.Sub(started)/8))
 		}

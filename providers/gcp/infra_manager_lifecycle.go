@@ -223,10 +223,9 @@ func (c *client) infraSavedMembers(root asset.Asset) ([]infraMember, error) {
 	return members, nil
 }
 
-func (s *serviceCascades) contributeInfra(ctx context.Context, root asset.Asset, assets []asset.Asset) (governance.Contribution, error) {
-	indexed := indexManagedAssets(assets)
+func (s *serviceCascades) contributeInfra(ctx context.Context, root asset.Asset, indexed managedAssets) (governance.Contribution, error) {
 	if root.Identity.NativeType == infraGroup {
-		return s.contributeInfraGroup(ctx, root, assets)
+		return s.contributeInfraGroup(ctx, root, indexed)
 	}
 	result := governance.Contribution{}
 	planned, err := s.client.infraSavedMembers(root)

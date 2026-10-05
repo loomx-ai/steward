@@ -2,6 +2,7 @@ package catalog_test
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -206,5 +207,34 @@ func TestOpenAPIImporterIsDeterministicAndCarriesProvenance(t *testing.T) {
 	deleteOperation, ok := first.Operation("DeleteInstance")
 	if !ok || !deleteOperation.Destructive {
 		t.Fatalf("delete operation not classified destructive: %+v, %v", deleteOperation, ok)
+	}
+}
+
+func TestCatalogOperationIndexMatchesScan(t *testing.T) {
+	c := catalog.Catalog{}
+	for i := range 100 {
+		c.Operations = append(c.Operations, catalog.Operation{ID: fmt.Sprintf("svc.op%d", i), Name: fmt.Sprintf("op%d", i)})
+	}
+	c.Operations = append(c.Operations, catalog.Operation{ID: "a.dup", Name: "dup"}, catalog.Operation{ID: "b.dup", Name: "dup"})
+	copied := c
+	if op, ok := copied.Operation("svc.op42"); !ok || op.Name != "op42" {
+		t.Fatalf("Operation(id) = %+v, %v", op, ok)
+	}
+	if op, ok := c.Operation("op7"); !ok || op.ID != "svc.op7" {
+		t.Fatalf("Operation(name) = %+v, %v", op, ok)
+	}
+	if _, ok := c.Operation("dup"); ok {
+		t.Fatal("ambiguous name resolved")
+	}
+	if _, ok := c.Operation("missing"); ok {
+		t.Fatal("missing operation resolved")
+	}
+	// An in-place change after indexing must not return a stale entry.
+	c.Operations[42].ID = "svc.renamed"
+	if _, ok := c.Operation("svc.op42"); ok {
+		t.Fatal("stale index entry returned")
+	}
+	if op, ok := c.Operation("svc.renamed"); !ok || op.Name != "op42" {
+		t.Fatalf("Operation(renamed) = %+v, %v", op, ok)
 	}
 }

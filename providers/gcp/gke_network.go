@@ -61,6 +61,8 @@ func (s gkeNetworkSnapshot) payload() (map[string]any, error) {
 	return result, err
 }
 
+var workloadHashPattern = regexp.MustCompile(`^[a-f0-9]{64}$`)
+
 func plannedGKENetwork(value asset.Asset) (gkeNetworkSnapshot, error) {
 	var result gkeNetworkSnapshot
 	encoded, err := json.Marshal(value.Normalized[gkeNetworkKey])
@@ -78,7 +80,7 @@ func plannedGKENetwork(value asset.Asset) (gkeNetworkSnapshot, error) {
 	for _, workload := range result.Workloads {
 		collection := workload.collection()
 		valid := collection == serviceCollection || collection == ingressCollection || (collection.resource == "gateways" && collection.kind == "Gateway" && (collection.api == "gateway.networking.k8s.io/v1" || collection.api == "gateway.networking.k8s.io/v1beta1"))
-		if !valid || !kubernetesName(workload.Namespace, 63) || strings.Contains(workload.Namespace, ".") || !kubernetesName(workload.Name, 253) || workload.UID == "" || !regexp.MustCompile(`^[a-f0-9]{64}$`).MatchString(workload.Hash) || seen[workload.key()] {
+		if !valid || !kubernetesName(workload.Namespace, 63) || strings.Contains(workload.Namespace, ".") || !kubernetesName(workload.Name, 253) || workload.UID == "" || !workloadHashPattern.MatchString(workload.Hash) || seen[workload.key()] {
 			return result, groupDenied("gke_workload_plan_invalid")
 		}
 		seen[workload.key()] = true
@@ -277,7 +279,11 @@ func description(data map[string]any) map[string]any {
 
 // Frontend identity is the live Kubernetes published address AND listener,
 // joined to native Compute links. A resource-name prefix alone is never a root.
-func (c *client) gkeNetwork(ctx context.Context, root asset.Asset, live map[string]any, nodes []gkeMember) (gkeNetworkSnapshot, error) {
+// gkeNetwork reads the cluster's network resources. Within a scan (scan set),
+// the project-wide lists are shared by every cluster of the scan; a delete-time
+// read passes no scan and lists live.
+func (c *client) gkeNetwork(ctx context.Context, scan asset.ScanRunID, root asset.Asset, live map[string]any, nodes []gkeMember) (gkeNetworkSnapshot, error) {
+	lists := withSharedReads(ctx, scan)
 	result := gkeNetworkSnapshot{ClusterUID: text(live["id"]), Resources: []gkeNetworkResource{}}
 	networks := references(c, live)["compute.googleapis.com/Network"]
 	if len(networks) != 1 {
@@ -294,11 +300,11 @@ func (c *client) gkeNetwork(ctx context.Context, root asset.Asset, live map[stri
 	}
 	region := regionOf(last(strings.Split(root.Identity.NativeID, "/clusters/")[0]))
 	params := map[string]any{"region": region}
-	regional, err := c.computeList(ctx, "compute.forwardingRules.list", "items", params)
+	regional, err := c.computeList(lists, "compute.forwardingRules.list", "items", params)
 	if err != nil {
 		return result, err
 	}
-	global, err := c.computeList(ctx, "compute.globalForwardingRules.list", "items", nil)
+	global, err := c.computeList(lists, "compute.globalForwardingRules.list", "items", nil)
 	if err != nil {
 		return result, err
 	}
@@ -450,7 +456,7 @@ func (c *client) gkeNetwork(ctx context.Context, root asset.Asset, live map[stri
 		}
 		resources[id] = resource
 	}
-	if err := c.gkeNetworkAncillary(ctx, root, live, nodes, result.SystemUID, result.Workloads, resources); err != nil {
+	if err := c.gkeNetworkAncillary(ctx, lists, root, live, nodes, result.SystemUID, result.Workloads, resources); err != nil {
 		return result, err
 	}
 	for _, resource := range resources {
@@ -491,14 +497,14 @@ func (c *client) unmanagedGroupMembers(ctx context.Context, id string) ([]string
 // members. Similar names in another network or targeting foreign nodes do not
 // become deletion impacts. Address reservations are retained unless native
 // ingress ownership proves they were dynamically allocated by that controller.
-func (c *client) gkeNetworkAncillary(ctx context.Context, root asset.Asset, live map[string]any, nodes []gkeMember, systemUID string, workloads []gkeWorkload, resources map[string]gkeNetworkResource) error {
+func (c *client) gkeNetworkAncillary(ctx, lists context.Context, root asset.Asset, live map[string]any, nodes []gkeMember, systemUID string, workloads []gkeWorkload, resources map[string]gkeNetworkResource) error {
 	networks := references(c, live)["compute.googleapis.com/Network"]
 	if len(networks) != 1 {
 		return groupDenied("gke_network_ownership_unverified")
 	}
 	network := networks[0]
 	tags, nativeNodes := map[string]bool{}, map[string]bool{}
-	nodeTagPattern := regexp.MustCompile(`^gke-` + regexp.QuoteMeta(text(live["name"])) + `-[a-z0-9]{8}-node$`)
+	nodeTagPattern := regexp.MustCompile(`^gke-` + regexp.QuoteMeta(text(live["name"])) + `-([a-z0-9]{8})-node$`)
 	addTags := func(data map[string]any) {
 		for _, raw := range array(object(data["tags"])["items"]) {
 			if tag := text(raw); nodeTagPattern.MatchString(tag) {
@@ -543,7 +549,7 @@ func (c *client) gkeNetworkAncillary(ctx context.Context, root asset.Asset, live
 		return nil
 	}
 	clusterFirewall := regexp.MustCompile(`^gke-` + regexp.QuoteMeta(text(live["name"])) + `-([a-z0-9]{8})-(master|vms|all|inkubelet|exkubelet)$`)
-	firewalls, err := c.computeList(ctx, "compute.firewalls.list", "items", nil)
+	firewalls, err := c.computeList(lists, "compute.firewalls.list", "items", nil)
 	if err != nil {
 		return err
 	}
@@ -601,7 +607,7 @@ func (c *client) gkeNetworkAncillary(ctx context.Context, root asset.Asset, live
 			phase = "cluster"
 		}
 		for tag := range tags {
-			if match := regexp.MustCompile(`^gke-` + regexp.QuoteMeta(text(live["name"])) + `-([a-z0-9]{8})-node$`).FindStringSubmatch(tag); len(match) > 0 && name == "gke-"+match[1]+"-ipv6-all" {
+			if match := nodeTagPattern.FindStringSubmatch(tag); len(match) > 0 && name == "gke-"+match[1]+"-ipv6-all" {
 				owned = true
 				phase = "cluster"
 			}
@@ -615,7 +621,7 @@ func (c *client) gkeNetworkAncillary(ctx context.Context, root asset.Asset, live
 			}
 		}
 	}
-	routes, err := c.computeList(ctx, "compute.routes.list", "items", nil)
+	routes, err := c.computeList(lists, "compute.routes.list", "items", nil)
 	if err != nil {
 		return err
 	}
@@ -634,7 +640,7 @@ func (c *client) gkeNetworkAncillary(ctx context.Context, root asset.Asset, live
 			op, kind = "compute.addresses.list", "compute.googleapis.com/Address"
 			params["region"] = region
 		}
-		addresses, err := c.computeList(ctx, op, "items", params)
+		addresses, err := c.computeList(lists, op, "items", params)
 		if err != nil {
 			return err
 		}
@@ -820,7 +826,7 @@ func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.In
 		if err != nil {
 			return nil, err
 		}
-		snapshot, err := c.gkeNetwork(ctx, root, live, nodes)
+		snapshot, err := c.gkeNetwork(ctx, request.ScanRunID, root, live, nodes)
 		if err != nil {
 			return nil, err
 		}

@@ -100,20 +100,23 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 		serviceAncestry = &chain
 	}
-	targets, err := r.productTargets(ctx, c, request, definition, ancestors)
+	cached, err := r.scanProductTargets(ctx, c, request, definition, ancestors)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
+	targets := cached.targets
 	if serviceAncestry != nil {
 		targets = securityServiceTargets(targets, *serviceAncestry)
 	}
+	// Ancestry-derived targets are a function of the base targets and the
+	// ancestry, so the base digest stands in for every target.
 	bound, _ := json.Marshal(struct {
 		Connection                                        asset.ConnectionID
 		Project, ScopeKind, ScopeID, NativeType, Revision string
 		Network                                           *asset.ScanTarget
 		Ancestry                                          *organizationAncestry `json:"ancestry,omitempty"`
-		Targets                                           []productTarget
-	}{request.ConnectionID, c.project, string(request.Scope.Kind), request.Scope.NativeID, nativeType, r.bundle.Revision, request.NetworkTarget, serviceAncestry, targets})
+		Targets                                           string
+	}{request.ConnectionID, c.project, string(request.Scope.Kind), request.Scope.NativeID, nativeType, r.bundle.Revision, request.NetworkTarget, serviceAncestry, cached.digest})
 	fingerprint := fmt.Sprintf("%x", sha256.Sum256(bound))
 	cursor := productCursor{Fingerprint: fingerprint}
 	if request.Cursor != "" {
@@ -133,23 +136,28 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return batch, nil
 	}
 	target := targets[cursor.Target]
-	if err := c.verifyInfraParent(ctx, target); err != nil {
-		return contracts.InventoryBatch{}, err
-	}
-	if err := c.verifyFusionParent(ctx, target); err != nil {
-		return contracts.InventoryBatch{}, err
-	}
-	if err := c.verifyDiscoveryParent(ctx, target); err != nil {
-		return contracts.InventoryBatch{}, err
-	}
-	if err := c.verifyDataprocParent(ctx, target); err != nil {
-		return contracts.InventoryBatch{}, err
-	}
-	if err := c.verifyBatchParent(ctx, target); err != nil {
-		return contracts.InventoryBatch{}, err
-	}
-	if err := c.verifyDataformParent(ctx, target); err != nil {
-		return contracts.InventoryBatch{}, err
+	// A later page of one parent is bracketed by the previous page's and this
+	// page's after-list parent proof, so only a parent's first page reads it
+	// before listing.
+	if cursor.Token == "" {
+		if err := c.verifyInfraParent(ctx, target); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+		if err := c.verifyFusionParent(ctx, target); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+		if err := c.verifyDiscoveryParent(ctx, target); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+		if err := c.verifyDataprocParent(ctx, target); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+		if err := c.verifyBatchParent(ctx, target); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+		if err := c.verifyDataformParent(ctx, target); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
 	}
 	parameters := cloneParameters(target.Parameters)
 	if pagination := target.API.Pagination; pagination != nil {
@@ -999,6 +1007,36 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		}
 	}
 	return targets, nil
+}
+
+type productTargetSet struct {
+	targets []productTarget
+	digest  string
+}
+
+// scanProductTargets resolves a shard's targets once per scan: every later
+// page of the shard reuses them instead of rebinding every parent. Reads
+// outside a scan resolve live. Callers must not mutate the result.
+func (r *Runtime) scanProductTargets(ctx context.Context, c *client, request contracts.InventoryRequest, definition spec.ResourceKindSpec, ancestors []string) (productTargetSet, error) {
+	resolve := func() (productTargetSet, error) {
+		targets, err := r.productTargets(ctx, c, request, definition, ancestors)
+		if err != nil {
+			return productTargetSet{}, err
+		}
+		encoded, err := json.Marshal(targets)
+		return productTargetSet{targets: targets, digest: fmt.Sprintf("%x", sha256.Sum256(encoded))}, err
+	}
+	if c.cache == nil || request.ScanRunID == "" {
+		return resolve()
+	}
+	key, _ := json.Marshal(struct {
+		Scan                                  asset.ScanRunID
+		Connection                            asset.ConnectionID
+		Project, Source, NativeType, Revision string
+		Scope                                 asset.Scope
+		Network                               *asset.ScanTarget
+	}{request.ScanRunID, request.ConnectionID, c.project, request.Source, definition.Metadata.NativeType, r.bundle.Revision, request.Scope, request.NetworkTarget})
+	return c.cache.targets.get(string(key), productParentTTL, false, resolve)
 }
 
 // productParentTTL bounds how long a parent listing is reused by the later

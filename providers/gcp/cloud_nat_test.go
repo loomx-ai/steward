@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"path"
 	"slices"
 	"strings"
 	"testing"
@@ -378,6 +379,38 @@ func TestCloudNatCursorBindsParentIncarnations(t *testing.T) {
 	resetParentCache(r) // A resumed cursor meets a fresh parent listing once the cached set expires.
 	if _, err := r.List(t.Context(), request); err == nil {
 		t.Fatal("changed parent accepted old NAT cursor")
+	}
+}
+
+// Later pages of a scan shard reuse its resolved targets instead of
+// rebinding every parent; outside a scan they resolve live (test above).
+func TestProductTargetsResolveOncePerScanShard(t *testing.T) {
+	changed := false
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if strings.HasSuffix(req.URL.Path, "/routers") {
+			a, b := cloudNatParent(req.URL.Path+"/router-a"), cloudNatParent(req.URL.Path+"/router-b")
+			if changed {
+				b["id"] = "3000"
+			}
+			return dataformResponse(req, 200, map[string]any{"items": []any{a, b}}), nil
+		}
+		parent := cloudNatParent(req.URL.Path)
+		parent["nats"] = []any{cloudNatFixture("nat-" + path.Base(req.URL.Path))}
+		return dataformResponse(req, 200, parent), nil
+	})
+	request := productRequest(r, cloudNatType, "us-central1")
+	request.ScanRunID = "scan"
+	batch, err := r.List(t.Context(), request)
+	if err != nil || batch.Complete || batch.NextCursor == "" {
+		t.Fatal(batch, err)
+	}
+	changed = true
+	r.mu.Lock()
+	r.clients["connection"].cache.parents = ttlCache[[]contracts.InventoryItem]{}
+	r.mu.Unlock()
+	request.Cursor = batch.NextCursor
+	if batch, err = r.List(t.Context(), request); err != nil || !batch.Complete {
+		t.Fatal("a later page of the scan shard re-resolved its targets", batch, err)
 	}
 }
 

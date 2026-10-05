@@ -16,9 +16,11 @@ import (
 type clientCache struct {
 	fingerprint [32]byte
 	parents     ttlCache[[]contracts.InventoryItem]
+	targets     ttlCache[productTargetSet]
 	locations   ttlCache[[]string]
-	identity    ttlCache[[]identityGroupView]
 	reads       sharedReads
+	// inflight shares an action-time GET only while it is in flight.
+	inflight sharedReads
 }
 
 // ttlCache keeps successful reads for a bounded time; failures are never kept.
@@ -75,6 +77,9 @@ type sharedReads struct {
 	mu      sync.Mutex
 	entries map[string]*sharedRead
 	bytes   int
+	// inflightOnly drops a read once it finishes, so callers arriving while it
+	// is in flight share it and every later caller reads live.
+	inflightOnly bool
 }
 
 type sharedRead struct {
@@ -95,6 +100,15 @@ func withSharedReads(ctx context.Context, scan asset.ScanRunID) context.Context 
 		return ctx
 	}
 	return context.WithValue(ctx, sharedReadScan{}, scan)
+}
+
+type inflightReads struct{}
+
+// withInflightReads marks GETs made with ctx as joinable while an identical
+// GET of the same client is in flight. Results are never reused once finished,
+// so action-time preflight reads stay live.
+func withInflightReads(ctx context.Context) context.Context {
+	return context.WithValue(ctx, inflightReads{}, true)
 }
 
 func (s *sharedReads) get(ctx context.Context, key string, fetch func(context.Context) (contracts.InvocationResult, error)) (contracts.InvocationResult, error) {
@@ -168,7 +182,7 @@ func (s *sharedReads) load(ctx context.Context, key string, fetch func(context.C
 		entry.requestID, entry.err, entry.expires = requestID, err, time.Now().Add(sharedReadTTL)
 		s.mu.Lock()
 		if s.entries[key] == entry {
-			if err != nil || s.bytes+entry.size > sharedReadBudget {
+			if err != nil || s.inflightOnly || s.bytes+entry.size > sharedReadBudget {
 				// Waiting shards still receive this page; later ones read their own.
 				delete(s.entries, key)
 			} else {

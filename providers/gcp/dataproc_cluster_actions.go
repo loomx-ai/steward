@@ -384,6 +384,7 @@ func (a *action) waitDataprocCluster(ctx context.Context, request contracts.Acti
 	if _, err := a.dataprocPlan(request); err != nil {
 		return contracts.WaitResult{}, err
 	}
+	delay := 2 * time.Second
 	if operation := result.ProviderOperationID; operation != "" {
 		parsed, err := url.Parse(operation)
 		if err != nil {
@@ -408,11 +409,12 @@ func (a *action) waitDataprocCluster(ctx context.Context, request contracts.Acti
 			if err := operationError(response.Data, response.RequestID); err != nil {
 				return contracts.WaitResult{}, err
 			}
+			delay = operationPollDelay(response.Data, time.Now())
 			if response.Data["done"] != true {
-				return contracts.WaitResult{RetryAfter: 2 * time.Second, State: "dataproc_cluster_delete"}, nil
+				return contracts.WaitResult{RetryAfter: delay, State: "dataproc_cluster_delete"}, nil
 			}
 		}
 	}
 	read, err := a.dataprocReadback(ctx, request)
-	return contracts.WaitResult{Done: err == nil && !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
+	return contracts.WaitResult{Done: err == nil && !read.Exists, RetryAfter: delay, State: read.State}, err
 }

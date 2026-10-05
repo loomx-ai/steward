@@ -820,7 +820,7 @@ func TestGKEFirewallOwnershipWithZeroNodesUsesNativeInstanceTemplate(t *testing.
 			manager := groupCopy(f.live("mig"))
 			manager["instanceTemplate"] = f.cloud[f.value("template").Identity.NativeID]["selfLink"]
 			resources := map[string]gkeNetworkResource{}
-			err := f.tls.client.gkeNetworkAncillary(context.Background(), f.cluster, f.gke[f.cluster.Identity.NativeID], []gkeMember{{id: f.value("mig").Identity.NativeID, kind: managerType, data: manager}}, "kubernetes-system-uid", nil, resources)
+			err := f.tls.client.gkeNetworkAncillary(context.Background(), context.Background(), f.cluster, f.gke[f.cluster.Identity.NativeID], []gkeMember{{id: f.value("mig").Identity.NativeID, kind: managerType, data: manager}}, "kubernetes-system-uid", nil, resources)
 			if !valid {
 				if err == nil {
 					t.Fatal("foreign template tags proved cluster ownership")

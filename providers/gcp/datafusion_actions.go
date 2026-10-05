@@ -277,7 +277,7 @@ func (a *action) waitFusion(ctx context.Context, request contracts.ActionRequest
 	if !valid || !slices.Contains([]string{"datafusion_delete", "datafusion_settle"}, phase) || result.Data["resource"] != a.identity.NativeID || result.Data["configuration"] != request.Asset.Normalized[fusionProof] || result.Data["parent_configuration"] != text(request.Asset.Normalized[fusionParentProof]) || result.Data["review"] != serviceReview(request) || result.Data["initial_operation"] != result.ProviderOperationID || (result.ProviderOperationID != "" && operation != result.ProviderOperationID) || (phase == "datafusion_settle" && operation != "") {
 		return contracts.WaitResult{}, groupDenied("datafusion_phase_changed")
 	}
-	pending := false
+	pending, delay := false, 2*time.Second
 	if operation != "" {
 		endpoint, err := url.Parse(operation)
 		if err != nil || endpoint.User != nil || endpoint.RawQuery != "" || endpoint.Fragment != "" {
@@ -300,15 +300,17 @@ func (a *action) waitFusion(ctx context.Context, request contracts.ActionRequest
 				}
 				return contracts.WaitResult{}, err
 			}
-			pending = response.Data["done"] != true
+			pending, delay = response.Data["done"] != true, operationPollDelay(response.Data, time.Now())
 		}
 	}
+	// The readback also runs while the operation is pending, so a recreated
+	// root or changed child fails the wait instead of waiting it out.
 	read, err := a.fusionReadback(ctx, request)
 	if err != nil {
 		return contracts.WaitResult{}, err
 	}
 	if pending {
-		return contracts.WaitResult{State: phase, RetryAfter: 2 * time.Second}, nil
+		return contracts.WaitResult{State: phase, RetryAfter: delay}, nil
 	}
 	if !read.Exists {
 		return contracts.WaitResult{Done: true}, nil
@@ -324,5 +326,5 @@ func (a *action) waitFusion(ctx context.Context, request contracts.ActionRequest
 		next.Data["initial_operation"] = result.ProviderOperationID
 		return contracts.WaitResult{Data: next.Data, State: text(next.Data["phase"]), RetryAfter: 2 * time.Second}, nil
 	}
-	return contracts.WaitResult{State: phase, RetryAfter: 2 * time.Second}, nil
+	return contracts.WaitResult{State: phase, RetryAfter: delay}, nil
 }
