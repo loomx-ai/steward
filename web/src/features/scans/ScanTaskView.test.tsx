@@ -454,3 +454,18 @@ it("keeps logs close by collapsing to three rows with actionable regions first",
   view.unmount();
   await act(async () => Promise.resolve());
 });
+
+it("ticks an active scan duration locally between snapshots", async () => {
+  vi.mocked(getScan).mockResolvedValue({ ...crowdedTask });
+  vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "Date"] });
+  try {
+    renderView();
+    expect(await screen.findByText("1m 12s")).toBeInTheDocument();
+    act(() => {
+      vi.advanceTimersByTime(2_000);
+    });
+    expect(screen.getByText("1m 14s")).toBeInTheDocument();
+  } finally {
+    vi.useRealTimers();
+  }
+});

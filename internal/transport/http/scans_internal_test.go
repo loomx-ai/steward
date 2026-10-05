@@ -112,3 +112,23 @@ func TestScanProjectionChangedDetectsEveryVisibleProjectionChange(t *testing.T) 
 		})
 	}
 }
+
+func TestScanProjectionChangedIgnoresClockOnlyDurationGrowth(t *testing.T) {
+	first, later := int64(1000), int64(2000)
+	base := inventory.ScanTaskProjection{ScanTask: asset.ScanTask{Status: asset.ScanRunning}, DurationMS: &first}
+	grown := base
+	grown.DurationMS = &later
+	if scanProjectionChanged(base, grown) {
+		t.Fatal("a duration that only grew with the clock must not resend a snapshot")
+	}
+	started := base
+	started.DurationMS = nil
+	if !scanProjectionChanged(started, base) {
+		t.Fatal("a duration appearing must resend a snapshot")
+	}
+	paused := grown
+	paused.Status = asset.ScanPaused
+	if !scanProjectionChanged(base, paused) {
+		t.Fatal("a status change must resend a snapshot")
+	}
+}

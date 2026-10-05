@@ -8,6 +8,7 @@ import {
   appendLiveLogs,
   batchLogs,
   formatScanLogMessage,
+  maxBufferedLogs,
   maxRetainedLogs,
   mergeLogs,
   ScanTaskEvents,
@@ -91,6 +92,19 @@ it("keeps only the newest logs while following the live tail", () => {
   expect(trimmed.logs[0]?.id).toBe("log-00001");
   expect(trimmed.logs.at(-1)?.id).toBe("log-99999");
   expect(trimmed.trimmed).toBe(true);
+});
+
+it("caps logs buffered while the user reads older lines", () => {
+  const logs = Array.from({ length: maxBufferedLogs }, (_, index) =>
+    testLog(`log-${String(index).padStart(5, "0")}`, "2026-01-01T00:00:00Z"),
+  );
+  const next = testLog("log-99999", "2026-01-01T00:00:01Z");
+
+  const capped = appendLiveLogs({ logs, trimmed: false }, [next], false);
+  expect(capped.logs).toHaveLength(maxBufferedLogs);
+  expect(capped.logs[0]?.id).toBe("log-00001");
+  expect(capped.logs.at(-1)?.id).toBe("log-99999");
+  expect(capped.trimmed).toBe(true);
 });
 
 it("delivers synchronously received logs as one batch", async () => {

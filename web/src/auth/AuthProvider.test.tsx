@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, expect, it, vi } from "vitest";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
-import { AuthProvider, useAuth } from "./AuthProvider";
+import { AuthProvider, preloadSession, useAuth } from "./AuthProvider";
 import { listConnections } from "@/api/client";
 
 afterEach(() => {
@@ -180,4 +180,43 @@ it("drops cached data and returns to login when an API session expires", async (
     .click(screen.getByRole("button", { name: "Load resources" }));
   expect(await screen.findByText("Anonymous")).toBeVisible();
   expect(cache.getQueryData(["resources"])).toBeUndefined();
+});
+
+it("adopts the preloaded session request with the saved token", async () => {
+  sessionStorage.setItem("steward.access-token", "saved-token");
+  const fetchMock = vi.fn().mockResolvedValue(
+    response({
+      mode: "token",
+      authenticated: true,
+      principal: { subject: "alice", roles: ["admin"] },
+    }),
+  );
+  vi.stubGlobal("fetch", fetchMock);
+  preloadSession();
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  renderSession();
+  expect(await screen.findByText("Authenticated")).toBeVisible();
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(fetchMock.mock.calls[0][1].headers.get("Authorization")).toBe(
+    "Bearer saved-token",
+  );
+});
+
+it("replays a preloaded 401 before the provider mounted", async () => {
+  sessionStorage.setItem("steward.access-token", "expired-token");
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ error: "unauthorized" }), {
+        status: 401,
+      }),
+    ),
+  );
+  preloadSession();
+  await waitFor(() => expect(vi.mocked(fetch)).toHaveBeenCalledTimes(1));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  renderSession();
+  await waitFor(() =>
+    expect(sessionStorage.getItem("steward.access-token")).toBeNull(),
+  );
 });

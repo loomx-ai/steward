@@ -75,16 +75,21 @@ test("frontend uses only terminal domain resources and opaque pagination", () =>
   assert.match(routes, /Navigate to="\/panorama"/);
 });
 
-test("the default panorama workspace begins preloading at application startup", () => {
+test("the default panorama workspace preloads once the session is authenticated", () => {
   const routes = read("../src/routes.tsx");
 
   assert.match(
     routes,
-    /const panoramaViewModule = import\("\.\/features\/panorama\/PanoramaView"\)/,
+    /const loadPanoramaView = \(\) => import\("\.\/features\/panorama\/PanoramaView"\)/,
   );
   assert.match(
     routes,
-    /const PanoramaView = lazy\(\(\) =>\s*panoramaViewModule\.then/,
+    /const PanoramaView = lazy\(\(\) =>\s*loadPanoramaView\(\)\.then/,
+  );
+  assert.match(
+    routes,
+    /if \(authenticated\) void loadPanoramaView\(\)/,
+    "the login page must not download the panorama canvas",
   );
 });
 

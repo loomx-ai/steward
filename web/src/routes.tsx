@@ -1,8 +1,8 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./app/AppShell";
 import { LoginView } from "./auth/LoginView";
-import { RequireAuth } from "./auth/AuthProvider";
+import { RequireAuth, useAuth } from "./auth/AuthProvider";
 import { AssetsView } from "./features/assets/AssetsView";
 
 const AssetDetail = lazy(() =>
@@ -50,15 +50,20 @@ const SettingsRoute = lazy(() =>
     default: module.SettingsRoute,
   })),
 );
-const panoramaViewModule = import("./features/panorama/PanoramaView");
-void panoramaViewModule.catch(() => undefined);
+const loadPanoramaView = () => import("./features/panorama/PanoramaView");
 const PanoramaView = lazy(() =>
-  panoramaViewModule.then((module) => ({
+  loadPanoramaView().then((module) => ({
     default: module.PanoramaView,
   })),
 );
 
 export function AppRoutes() {
+  const { authenticated } = useAuth();
+  // Panorama is the landing page, so fetch its canvas chunk as soon as the
+  // session is authenticated, but not for the login page.
+  useEffect(() => {
+    if (authenticated) void loadPanoramaView().catch(() => undefined);
+  }, [authenticated]);
   return (
     <Suspense fallback={<div className="route-loading" aria-busy="true" />}>
       <Routes>

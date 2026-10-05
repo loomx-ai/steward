@@ -224,6 +224,7 @@ const zhCN: Messages = {
   "panorama.cleanupList": "资源清单",
   "panorama.cleanupListCount": "资源清单 · {count}",
   "panorama.cleanupListEmpty": "资源清单为空。",
+  "panorama.showMoreCleanupTargets": "再显示 {count} 项",
   "panorama.cleanupListRegion": "地域",
   "panorama.cleanupListVpc": "VPC",
   "panorama.cleanupListResource": "资源",

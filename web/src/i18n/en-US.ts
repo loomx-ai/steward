@@ -230,6 +230,7 @@ const enUS = {
   "panorama.cleanupList": "Resource list",
   "panorama.cleanupListCount": "Resource list · {count}",
   "panorama.cleanupListEmpty": "The resource list is empty.",
+  "panorama.showMoreCleanupTargets": "Show {count} more",
   "panorama.cleanupListRegion": "Region",
   "panorama.cleanupListVpc": "VPC",
   "panorama.cleanupListResource": "Resource",

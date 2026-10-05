@@ -22,6 +22,7 @@ import type {
   ResourceGraphTopologyView,
   TopologyProjectionWarning,
   TopologyResource,
+  TopologyResourceEdge,
   TopologyVSwitch,
   VPCTopologyView,
 } from "@/api/types";
@@ -665,8 +666,9 @@ export function TopologyCanvas({
       if (incoming.length === 0) return;
       const current = candidateTargetsRef.current;
       const incomingKeys = new Set(incoming.map((target) => target.key));
+      const currentKeys = new Set(current.map((candidate) => candidate.key));
       const allSelected = incoming.every((target) =>
-        current.some((candidate) => candidate.key === target.key),
+        currentKeys.has(target.key),
       );
       const next = allSelected
         ? current.filter((target) => !incomingKeys.has(target.key))
@@ -685,9 +687,8 @@ export function TopologyCanvas({
   const contextMenuTargetGroup = useCallback(
     (clicked: readonly CleanupTarget[]) => {
       const current = candidateTargetsRef.current;
-      return clicked.every((candidate) =>
-        current.some((target) => target.key === candidate.key),
-      )
+      const currentKeys = new Set(current.map((target) => target.key));
+      return clicked.every((candidate) => currentKeys.has(candidate.key))
         ? current
         : [...clicked];
     },
@@ -1411,12 +1412,34 @@ export function TopologyCanvas({
     () => topologyEdgeHandles(layout.nodes, visibleLayoutEdges),
     [layout.nodes, visibleLayoutEdges],
   );
+  // Like nodes, edge objects are reused while their highlight, handles and
+  // labels are unchanged, so a selection only rebuilds the edges it touches.
+  const composedEdges = useRef(
+    new WeakMap<
+      TopologyResourceEdge,
+      { key: readonly unknown[]; edge: Edge }
+    >(),
+  );
   const edges = useMemo<Edge[]>(
     () =>
       visibleLayoutEdges.map((edge) => {
         const highlighted = focus.highlightedEdgeKeys.has(edge.key);
-        const lifecycle = edge.kind === "lifecycle";
         const handles = edgeHandles.get(edge.key);
+        const key = [
+          highlighted,
+          handles?.sourceHandle,
+          handles?.targetHandle,
+          label,
+          formatNumber,
+        ];
+        const cached = composedEdges.current.get(edge);
+        if (
+          cached &&
+          cached.key.every((value, index) => value === key[index])
+        ) {
+          return cached.edge;
+        }
+        const lifecycle = edge.kind === "lifecycle";
         const aggregateCount =
           typeof edge.metadata?.aggregate_count === "number"
             ? edge.metadata.aggregate_count
@@ -1429,7 +1452,7 @@ export function TopologyCanvas({
           ? "var(--warning)"
           : "var(--muted-foreground)";
         const opacity = highlighted ? 1 : 0.5;
-        return {
+        const composed: Edge = {
           id: edge.key,
           source: edge.source_key,
           target: edge.target_key,
@@ -1462,6 +1485,8 @@ export function TopologyCanvas({
             opacity,
           },
         };
+        composedEdges.current.set(edge, { key, edge: composed });
+        return composed;
       }),
     [
       edgeHandles,

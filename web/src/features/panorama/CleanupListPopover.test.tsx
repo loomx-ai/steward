@@ -574,3 +574,25 @@ it("hides the resource list while it is empty", () => {
     screen.queryByRole("button", { name: "Create cleanup task" }),
   ).not.toBeInTheDocument();
 });
+
+it("renders long lists in pages", async () => {
+  const user = userEvent.setup();
+  renderCleanupList(
+    Array.from({ length: 250 }, (_, index) => resourceTarget(`asset-${index}`)),
+  );
+
+  await user.click(
+    await screen.findByRole("button", { name: "Resource list · 250" }),
+  );
+  const list = screen.getByRole("dialog", { name: "Resource list" });
+  expect(
+    within(list).getAllByRole("button", { name: /^Remove / }),
+  ).toHaveLength(200);
+  await user.click(within(list).getByRole("button", { name: "Show 50 more" }));
+  expect(
+    within(list).getAllByRole("button", { name: /^Remove / }),
+  ).toHaveLength(250);
+  expect(
+    within(list).queryByRole("button", { name: /^Show \d+ more$/ }),
+  ).not.toBeInTheDocument();
+});

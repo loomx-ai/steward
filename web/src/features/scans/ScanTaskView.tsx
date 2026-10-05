@@ -59,6 +59,10 @@ export function ScanTaskView() {
     },
   });
   const value = task.data;
+  const durationMS = useLiveDuration(
+    value?.duration_ms,
+    activeScanStatuses.has(value?.status ?? ""),
+  );
   const orderedTargets = useMemo(
     () => orderScanTargets(value?.target_progress ?? []),
     [value?.target_progress],
@@ -148,7 +152,7 @@ export function ScanTaskView() {
                   {formatNumber(value.retry_count)}
                 </Fact>
                 <Fact label={t("scans.duration")}>
-                  {formatDuration(value.duration_ms)}
+                  {formatDuration(durationMS)}
                 </Fact>
                 <Fact label={t("scans.changes")}>
                   <ChangeCountsLink counts={value.changes} scanID={value.id} />
@@ -236,6 +240,33 @@ export function collapsedTargetLimit(width: number) {
   if (width >= 1280) return 9;
   if (width >= 640) return 6;
   return 3;
+}
+
+// Statuses whose jobs may still be running, so the duration keeps growing.
+const activeScanStatuses = new Set([
+  "running",
+  "pausing",
+  "canceling",
+  "reconciling",
+]);
+
+// The scan stream does not resend a snapshot just because the clock moved, so
+// an active scan's duration ticks locally from the last received value.
+function useLiveDuration(durationMS: number | undefined, active: boolean) {
+  const [tick, setTick] = useState<{ base?: number; elapsed: number }>({
+    elapsed: 0,
+  });
+  useEffect(() => {
+    if (!active || durationMS === undefined) return;
+    const receivedAt = Date.now();
+    const timer = window.setInterval(
+      () => setTick({ base: durationMS, elapsed: Date.now() - receivedAt }),
+      1000,
+    );
+    return () => window.clearInterval(timer);
+  }, [active, durationMS]);
+  if (!active || durationMS === undefined) return durationMS;
+  return durationMS + (tick.base === durationMS ? tick.elapsed : 0);
 }
 
 function useCollapsedTargetLimit() {

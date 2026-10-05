@@ -30,6 +30,9 @@ import { writeCleanupSelectionHandoff } from "../cleanup/selection";
 import { expandCleanupSelectors, type CleanupTarget } from "./cleanupSelection";
 import { useCleanupSelection } from "./CleanupSelectionContext";
 
+// Rows rendered per "show more" step; selections can reach thousands of rows.
+const CLEANUP_LIST_PAGE_SIZE = 200;
+
 export function CleanupListPopover({
   onLocate,
   position = "absolute",
@@ -44,6 +47,7 @@ export function CleanupListPopover({
     useCleanupSelection();
   const [clearConfirmationOpen, setClearConfirmationOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(CLEANUP_LIST_PAGE_SIZE);
   const count = targets.length;
 
   if (count === 0) return null;
@@ -96,7 +100,7 @@ export function CleanupListPopover({
                 </p>
               ) : (
                 <ul className="divide-y">
-                  {targets.map((target) => (
+                  {targets.slice(0, visibleCount).map((target) => (
                     <CleanupTargetRow
                       key={`${target.connectionId}:${target.key}`}
                       target={target}
@@ -110,6 +114,30 @@ export function CleanupListPopover({
                       }
                     />
                   ))}
+                  {count > visibleCount && (
+                    <li className="px-4 py-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        className="w-full text-muted-foreground"
+                        onClick={() =>
+                          setVisibleCount(
+                            (current) => current + CLEANUP_LIST_PAGE_SIZE,
+                          )
+                        }
+                      >
+                        {t("panorama.showMoreCleanupTargets", {
+                          count: formatNumber(
+                            Math.min(
+                              count - visibleCount,
+                              CLEANUP_LIST_PAGE_SIZE,
+                            ),
+                          ),
+                        })}
+                      </Button>
+                    </li>
+                  )}
                 </ul>
               )}
             </div>

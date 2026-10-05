@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./app/ThemeProvider";
-import { AuthProvider } from "./auth/AuthProvider";
+import { AuthProvider, preloadSession } from "./auth/AuthProvider";
 import { Toaster } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { LocaleProvider, preloadActiveLocale } from "./i18n/LocaleProvider";
@@ -20,7 +20,8 @@ const queryClient = new QueryClient({
 queryClient.setQueryDefaults(["catalog"], { staleTime: Infinity });
 
 // Render only once the active locale's dictionary is in, so the first paint is
-// already translated.
+// already translated. The session request runs meanwhile.
+preloadSession();
 void preloadActiveLocale().then(() =>
   createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>

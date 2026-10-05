@@ -463,7 +463,13 @@ func scanLogTargetKey(request *http.Request, projection inventory.ScanTaskProjec
 	return "", fmt.Errorf("scan task %q has no target %q", projection.ID, targetKey)
 }
 
+// scanProjectionChanged ignores a running duration that only grew with the
+// clock: the console ticks it locally, and status changes and the terminal
+// "end" event still carry the current value.
 func scanProjectionChanged(previous, current inventory.ScanTaskProjection) bool {
+	if (previous.DurationMS == nil) == (current.DurationMS == nil) {
+		previous.DurationMS, current.DurationMS = nil, nil
+	}
 	return !reflect.DeepEqual(previous, current)
 }
 

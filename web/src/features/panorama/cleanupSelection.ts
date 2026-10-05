@@ -80,17 +80,6 @@ function assetIDs(target: CleanupTarget): string[] {
   );
 }
 
-function selectorSetsMatch(
-  left: readonly string[],
-  right: readonly string[],
-): boolean {
-  return (
-    left.length === right.length &&
-    left.every((key) => right.includes(key)) &&
-    right.every((key) => left.includes(key))
-  );
-}
-
 function sameConnection(
   left: Pick<CleanupTarget, "connectionId">,
   right: Pick<CleanupTarget, "connectionId">,
@@ -163,116 +152,161 @@ function normalizeIncomingBatch(target: CleanupTarget): CleanupTarget | null {
   return withBatchAssets(target, [...new Set(assetIDs(target))]);
 }
 
-function existingCovers(
-  current: readonly CleanupTarget[],
-  incoming: CleanupTarget,
-): boolean {
-  const incomingKeys = selectorKeys(incoming);
-  return current.some((target) => {
-    if (!sameConnection(target, incoming)) return false;
-    if (target.key === incoming.key) return true;
-    if (isRangeTarget(target) && covers(target, incoming)) return true;
-    if (incoming.kind === "resource_batch") {
-      return (
-        target.kind === "resource_batch" &&
-        selectorSetsMatch(selectorKeys(target), incomingKeys)
-      );
-    }
-    return incomingKeys.some((key) => selectorKeys(target).includes(key));
-  });
+type Counts = Map<string, number>;
+type Slots = Map<string, Set<number>>;
+
+function count(map: Counts, key: string, delta: number) {
+  const next = (map.get(key) ?? 0) + delta;
+  if (next > 0) map.set(key, next);
+  else map.delete(key);
 }
 
-function withoutBatchDuplicateAssets(
-  target: CleanupTarget,
-  current: readonly CleanupTarget[],
-): CleanupTarget | null {
-  if (target.kind !== "resource_batch") return target;
-  const representedByBatch = new Set(
-    current
-      .filter(
-        (existing) =>
-          existing.kind === "resource_batch" &&
-          sameConnection(existing, target),
-      )
-      .flatMap(assetIDs),
-  );
-  return withBatchAssets(
-    target,
-    assetIDs(target).filter((id) => !representedByBatch.has(id)),
-  );
-}
-
-function incomingCovers(
-  incoming: CleanupTarget,
-  existing: CleanupTarget,
-): boolean {
-  if (!sameConnection(incoming, existing)) return false;
-  if (isRangeTarget(incoming) && covers(incoming, existing)) return true;
-  if (incoming.kind !== "resource_batch" || existing.kind !== "resource") {
-    return false;
+function slot(map: Slots, key: string, index: number, delta: number) {
+  let indexes = map.get(key);
+  if (delta > 0) {
+    if (!indexes) map.set(key, (indexes = new Set()));
+    indexes.add(index);
+    return;
   }
-  return assetIDs(existing).some((id) => assetIDs(incoming).includes(id));
+  indexes?.delete(index);
+  if (indexes?.size === 0) map.delete(key);
+}
+
+// Duplicate-insensitive, order-insensitive set equality plus the original
+// length check, so equal signatures mean the selector sets match.
+function selectorSetSignature(keys: readonly string[]): string {
+  return `${keys.length}\u0000${[...new Set(keys)].sort().join("\u0000")}`;
 }
 
 export function addCleanupTargets(
   current: readonly CleanupTarget[],
   incoming: readonly CleanupTarget[],
 ): CleanupMergeResult {
-  let targets = current.map(cloneTarget);
+  // Live targets keep their list position; removed ones become undefined.
+  // Every index key is scoped by connection, mirroring sameConnection().
+  const targets: (CleanupTarget | undefined)[] = current.map(cloneTarget);
+  const keys: Counts = new Map();
+  const rangeKeys: Counts = new Map();
+  const selectors: Counts = new Map();
+  const batchSignatures: Counts = new Map();
+  const batchAssets: Counts = new Map();
+  const batchesByKey: Slots = new Map();
+  const descendantsOf: Slots = new Map();
+  const resourcesByAsset: Slots = new Map();
   let mergedCount = 0;
   let coveredCount = 0;
   let addedCount = 0;
 
+  const scoped = (target: CleanupTarget, key: string) =>
+    `${target.connectionId}\u0000${key}`;
+  const index = (at: number, delta: number) => {
+    const target = targets[at];
+    if (!target) return;
+    count(keys, scoped(target, target.key), delta);
+    if (isRangeTarget(target)) {
+      count(rangeKeys, scoped(target, target.key), delta);
+    }
+    const own = selectorKeys(target);
+    for (const key of own) count(selectors, scoped(target, key), delta);
+    for (const key of target.ancestryKeys.slice(0, -1)) {
+      slot(descendantsOf, scoped(target, key), at, delta);
+    }
+    if (target.kind === "resource_batch") {
+      count(batchSignatures, scoped(target, selectorSetSignature(own)), delta);
+      for (const id of assetIDs(target)) {
+        count(batchAssets, scoped(target, id), delta);
+      }
+      slot(batchesByKey, scoped(target, target.key), at, delta);
+    }
+    if (target.kind === "resource") {
+      for (const id of assetIDs(target)) {
+        slot(resourcesByAsset, scoped(target, id), at, delta);
+      }
+    }
+  };
+  // Removes every target the incoming one covers and returns how many.
+  const removeCovered = (cover: CleanupTarget) => {
+    const covered = new Set<number>();
+    if (isRangeTarget(cover)) {
+      for (const at of descendantsOf.get(scoped(cover, cover.key)) ?? []) {
+        covered.add(at);
+      }
+    }
+    if (cover.kind === "resource_batch") {
+      for (const id of assetIDs(cover)) {
+        for (const at of resourcesByAsset.get(scoped(cover, id)) ?? []) {
+          covered.add(at);
+        }
+      }
+    }
+    for (const at of covered) {
+      index(at, -1);
+      targets[at] = undefined;
+    }
+    return covered.size;
+  };
+  const existingCovers = (target: CleanupTarget) => {
+    if (keys.has(scoped(target, target.key))) return true;
+    if (
+      target.ancestryKeys
+        .slice(0, -1)
+        .some((key) => rangeKeys.has(scoped(target, key)))
+    ) {
+      return true;
+    }
+    const own = selectorKeys(target);
+    if (target.kind === "resource_batch") {
+      return batchSignatures.has(scoped(target, selectorSetSignature(own)));
+    }
+    return own.some((key) => selectors.has(scoped(target, key)));
+  };
+  targets.forEach((_, at) => index(at, 1));
+
   for (const source of incoming) {
     const normalized = normalizeIncomingBatch(source);
-    const matchingBatchIndex = normalized
-      ? targets.findIndex(
-          (target) =>
-            target.kind === "resource_batch" &&
-            normalized.kind === "resource_batch" &&
-            target.key === normalized.key &&
-            sameConnection(target, normalized),
-        )
-      : -1;
-    if (normalized && matchingBatchIndex >= 0) {
+    const matchingBatches =
+      normalized?.kind === "resource_batch"
+        ? batchesByKey.get(scoped(normalized, normalized.key))
+        : undefined;
+    if (normalized && matchingBatches) {
+      const matchingBatchIndex = Math.min(...matchingBatches);
       const existing = targets[matchingBatchIndex];
       if (existing) {
         const merged = mergeBatchTargets(existing, normalized);
         if (merged) {
+          index(matchingBatchIndex, -1);
           targets[matchingBatchIndex] = merged;
-          const removed = targets.filter(
-            (target, index) =>
-              index !== matchingBatchIndex && incomingCovers(merged, target),
-          );
-          mergedCount += removed.length;
-          targets = targets.filter(
-            (target, index) =>
-              index === matchingBatchIndex || !incomingCovers(merged, target),
-          );
+          index(matchingBatchIndex, 1);
+          mergedCount += removeCovered(merged);
         }
       }
       continue;
     }
-    if (!normalized || existingCovers(targets, normalized)) {
+    if (!normalized || existingCovers(normalized)) {
       coveredCount += 1;
       continue;
     }
-    const candidate = withoutBatchDuplicateAssets(normalized, targets);
+    const candidate =
+      normalized.kind === "resource_batch"
+        ? withBatchAssets(
+            normalized,
+            assetIDs(normalized).filter(
+              (id) => !batchAssets.has(scoped(normalized, id)),
+            ),
+          )
+        : normalized;
     if (!candidate) {
       coveredCount += 1;
       continue;
     }
-    const removed = targets.filter((target) =>
-      incomingCovers(candidate, target),
-    );
-    mergedCount += removed.length;
-    targets = targets.filter((target) => !incomingCovers(candidate, target));
+    mergedCount += removeCovered(candidate);
     targets.push(cloneTarget(candidate));
+    index(targets.length - 1, 1);
     addedCount += 1;
   }
 
   return {
-    targets: targets.map(cloneTarget),
+    targets: targets.flatMap((target) => (target ? [cloneTarget(target)] : [])),
     mergedCount,
     coveredCount,
     addedCount,

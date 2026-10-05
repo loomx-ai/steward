@@ -37,6 +37,29 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+let preloadedSession: {
+  session: Promise<Session>;
+  unauthorized: boolean;
+} | null = null;
+
+// Starts the first session request with the token AuthProvider will use, so it
+// runs alongside the locale preload; the provider's first mount adopts it and
+// replays a 401 seen before its own observer was installed.
+export function preloadSession() {
+  setAccessTokenProvider(() =>
+    developmentProxy
+      ? undefined
+      : sessionStorage.getItem(tokenKey) || undefined,
+  );
+  // The 401 observer only runs once the response arrives, after this line.
+  const preload = { session: getSession(), unauthorized: false };
+  setUnauthorizedObserver(() => {
+    preload.unauthorized = true;
+  });
+  preload.session.catch(() => undefined);
+  preloadedSession = preload;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const token = useRef(sessionStorage.getItem(tokenKey) ?? "");
   const [session, setSession] = useState<Session | null>(null);
@@ -52,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       developmentProxy ? undefined : token.current || undefined,
     );
     setPrincipalObserver(setPrincipal);
-    setUnauthorizedObserver(() => {
+    const unauthorized = () => {
       token.current = "";
       sessionStorage.removeItem(tokenKey);
       queryClient.clear();
@@ -61,8 +84,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         (current) =>
           current && { ...current, authenticated: false, principal: null },
       );
-    });
-    getSession()
+    };
+    setUnauthorizedObserver(unauthorized);
+    const preload = preloadedSession;
+    preloadedSession = null;
+    if (preload?.unauthorized) unauthorized();
+    (preload?.session ?? getSession())
       .then((next) => {
         if (!active) return;
         setSession(next);

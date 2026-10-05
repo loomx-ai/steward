@@ -276,8 +276,10 @@ const ScanLogRow = memo(function ScanLogRow({ log }: { log: JobLog }) {
 });
 
 // Live terminals keep only the newest lines while following the tail so a
-// long-running task does not grow the DOM without bound.
+// long-running task does not grow the DOM without bound. While the user reads
+// older lines the list may grow further, up to a hard cap.
 export const maxRetainedLogs = 2000;
+export const maxBufferedLogs = 10_000;
 
 export type LogTerminalState = { logs: JobLog[]; trimmed: boolean };
 
@@ -290,8 +292,9 @@ export function appendLiveLogs(
 ): LogTerminalState {
   const logs = mergeLogs(state.logs, batch);
   if (logs === state.logs) return state;
-  if (!following || logs.length <= maxRetainedLogs) return { ...state, logs };
-  return { logs: logs.slice(-maxRetainedLogs), trimmed: true };
+  const limit = following ? maxRetainedLogs : maxBufferedLogs;
+  if (logs.length <= limit) return { ...state, logs };
+  return { logs: logs.slice(-limit), trimmed: true };
 }
 
 function compareLogs(left: JobLog, right: JobLog) {
