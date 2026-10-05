@@ -358,9 +358,10 @@ func (a *monitorTargetAction) Wait(ctx context.Context, request contracts.Action
 		return contracts.WaitResult{}, err
 	}
 	// Execute proved no incoming references before its delete, and a pending
-	// poll cannot change that outcome. Prove it again before any later write a
-	// native phase sends from Wait, and at every terminal result, so a source
-	// created during deletion still fails the action.
+	// or failed poll cannot change that outcome. Prove it again before any
+	// later write a native phase sends from Wait (the guard's error is returned
+	// through err), and at every terminal result, so a source created during
+	// deletion still fails the action.
 	var once sync.Once
 	var depErr error
 	check := func() error {
@@ -368,16 +369,20 @@ func (a *monitorTargetAction) Wait(ctx context.Context, request contracts.Action
 		return depErr
 	}
 	waited, err := a.inner.Wait(withWriteGuard(ctx, check), filtered, innerResult)
-	if err != nil || waited.Done {
+	if err != nil {
+		waited.Done = false
+		return waited, err
+	}
+	if waited.Done {
 		if depErr := check(); depErr != nil {
 			return contracts.WaitResult{}, depErr
 		}
 	}
-	if err == nil && waited.Data != nil {
+	if waited.Data != nil {
 		waited.Data = maps.Clone(waited.Data)
 		waited.Data[monitorTargetReceipt] = a.receipt(request)
 	}
-	return waited, err
+	return waited, nil
 }
 
 func (a *monitorTargetAction) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {

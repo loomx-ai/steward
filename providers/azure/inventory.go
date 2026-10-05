@@ -469,27 +469,50 @@ func withReadMemo(ctx context.Context) context.Context {
 	return context.WithValue(ctx, readMemoContextKey{}, &readMemo{values: map[string]any{}})
 }
 
+type memoCall struct {
+	done  chan struct{}
+	value any
+	err   error
+}
+
 // memoized returns the call's earlier successful read for key, or reads now.
-// Without a memo in the context every call reads.
+// Concurrent callers of one key share the read in flight; its failure goes to
+// them and is not kept. Without a memo in the context every call reads.
 func memoized[T any](ctx context.Context, key string, read func() (T, error)) (T, error) {
 	memo, _ := ctx.Value(readMemoContextKey{}).(*readMemo)
 	if memo == nil {
 		return read()
 	}
 	memo.mu.Lock()
-	value, ok := memo.values[key]
+	call, ok := memo.values[key].(*memoCall)
+	if !ok {
+		call = &memoCall{done: make(chan struct{})}
+		memo.values[key] = call
+	}
 	memo.mu.Unlock()
 	if ok {
-		return value.(T), nil
+		select {
+		case <-call.done:
+		case <-ctx.Done():
+			var zero T
+			return zero, ctx.Err()
+		}
+		value, _ := call.value.(T)
+		return value, call.err
 	}
+	// A read that panics must not leave waiters a zero value without an error.
+	call.err = serviceDenied("memoized_read_aborted")
+	defer func() {
+		if call.err != nil {
+			memo.mu.Lock()
+			delete(memo.values, key)
+			memo.mu.Unlock()
+		}
+		close(call.done)
+	}()
 	result, err := read()
-	if err != nil {
-		return result, err
-	}
-	memo.mu.Lock()
-	memo.values[key] = result
-	memo.mu.Unlock()
-	return result, nil
+	call.value, call.err = result, err
+	return result, err
 }
 
 // inventoryNIC reads a VM's NIC. An inventory page lists each resource group's

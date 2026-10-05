@@ -2,6 +2,7 @@ package azure
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"testing"
@@ -325,5 +326,45 @@ func TestRBACNativeDeleteResponseValidation(t *testing.T) {
 				t.Fatal("invalid native deletion accepted", mode, result)
 			}
 		})
+	}
+}
+
+// A role delete check blocks on a listed assignment of the role without its
+// GET, and reads neither assignments of other roles nor unmatched PIM rows.
+func TestRBACRoleDeleteCheckReadsNoUnrelatedRows(t *testing.T) {
+	for _, assigned := range []bool{false, true} {
+		f := newRBACFixture(t)
+		group := "/subscriptions/" + testSubscription + "/resourcegroups/test"
+		for key, raw := range f.resources {
+			if raw["type"] == rbacAssignmentType {
+				delete(f.resources, key)
+			}
+		}
+		value := f.asset(t, rbacRoleType, rbacTestRoleID())
+		driver := f.action(t, value)
+		rows := []string{}
+		for i := range 20 {
+			raw := rbacTestBody(t, rbacAssignmentType, group, fmt.Sprintf("dddddddd-0000-0000-0000-%012d", i))
+			object(raw["properties"])["roleDefinitionId"] = "/subscriptions/" + testSubscription + "/providers/Microsoft.Authorization/roleDefinitions/" + rbacTestBuiltinName
+			if assigned && i == 0 {
+				object(raw["properties"])["roleDefinitionId"] = rbacTestRoleID()
+			}
+			id := strings.ToLower(text(raw["id"]))
+			f.resources[id], rows = raw, append(rows, id)
+		}
+		pim := rbacTestBody(t, rbacEligibilityType, group, "eeeeeeee-0000-0000-0000-000000000000")
+		object(pim["properties"])["roleDefinitionId"] = "/subscriptions/" + testSubscription + "/providers/Microsoft.Authorization/roleDefinitions/" + rbacTestBuiltinName
+		f.resources[strings.ToLower(text(pim["id"]))] = pim
+		rows = append(rows, strings.ToLower(text(pim["id"])))
+		clear(f.calls)
+		check, err := driver.Preflight(t.Context(), contracts.ActionRequest{Asset: value, Action: "delete"})
+		if assigned && (err == nil || !strings.Contains(err.Error(), "rbac_role_has_assignments")) || !assigned && (err != nil || !check.Allowed) {
+			t.Fatal("role delete check outcome", assigned, check, err)
+		}
+		for _, id := range rows {
+			if got := f.calls["GET "+id]; got != 0 {
+				t.Fatal("unrelated RBAC row was read", id, got)
+			}
+		}
 	}
 }

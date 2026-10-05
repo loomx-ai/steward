@@ -346,7 +346,42 @@ func rbacListQuery(endpoint, initial string) error {
 	return nil
 }
 
+// rbacIndex is rbacList with every row confirmed by its own GET.
 func (c *client) rbacIndex(ctx context.Context, kind, scope string) (map[string]map[string]any, string, error) {
+	rows, provenance, err := c.rbacList(ctx, kind, scope)
+	if err != nil {
+		return nil, "", err
+	}
+	for id, raw := range rows {
+		if rows[id], err = c.rbacDetail(ctx, kind, raw); err != nil {
+			return nil, "", err
+		}
+	}
+	return rows, provenance, nil
+}
+
+// rbacDetail reads a listed row's own GET, which must agree with the row.
+func (c *client) rbacDetail(ctx context.Context, kind string, raw map[string]any) (map[string]any, error) {
+	wire, err := c.rbacWireID(text(raw["id"]))
+	if err != nil {
+		return nil, err
+	}
+	current, err := c.rbacRead(ctx, kind, wire)
+	if err != nil {
+		return nil, contracts.DependencyReadError(err)
+	}
+	if c.privateConfiguration(c.rbacSnapshot(kind, raw)) != c.privateConfiguration(c.rbacSnapshot(kind, current.data)) {
+		return nil, serviceDenied("rbac_list_detail_disagreement")
+	}
+	return current.data, nil
+}
+
+// rbacList returns the native list rows without their GETs. LIST and GET share
+// one schema (RoleAssignment, RoleDefinition and both PIM schedules in the
+// retained Swagger), and rbacValidate checks each row as strictly as a GET, so
+// a row carries every field that decides what it references. Callers GET the
+// rows that matter to their decision through rbacDetail.
+func (c *client) rbacList(ctx context.Context, kind, scope string) (map[string]map[string]any, string, error) {
 	request, err := c.rbacRequest(kind, scope, "", "GET")
 	if err != nil {
 		return nil, "", err
@@ -393,18 +428,10 @@ func (c *client) rbacIndex(ctx context.Context, kind, scope string) (map[string]
 				}
 				return nil, "", serviceDenied("rbac_index_contains_foreign_subscription")
 			}
-			wire, err := c.rbacWireID(text(raw["id"]))
-			if err != nil {
+			if _, err := c.rbacWireID(text(raw["id"])); err != nil {
 				return nil, "", err
 			}
-			current, err := c.rbacRead(ctx, kind, wire)
-			if err != nil {
-				return nil, "", contracts.DependencyReadError(err)
-			}
-			if c.privateConfiguration(c.rbacSnapshot(kind, raw)) != c.privateConfiguration(c.rbacSnapshot(kind, current.data)) {
-				return nil, "", serviceDenied("rbac_list_detail_disagreement")
-			}
-			rows[id] = current.data
+			rows[id] = raw
 		}
 		next = following
 	}

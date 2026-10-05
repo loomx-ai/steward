@@ -559,6 +559,7 @@ type scriptedWait struct {
 	client *client
 	write  string
 	result contracts.WaitResult
+	err    error
 }
 
 func (s *scriptedWait) Wait(ctx context.Context, _ contracts.ActionRequest, _ contracts.ActionResult) (contracts.WaitResult, error) {
@@ -567,7 +568,7 @@ func (s *scriptedWait) Wait(ctx context.Context, _ contracts.ActionRequest, _ co
 			return contracts.WaitResult{}, err
 		}
 	}
-	return s.result, nil
+	return s.result, s.err
 }
 
 // Execute already proved no incoming references; a pending read-only poll
@@ -595,7 +596,13 @@ func TestMonitorTargetWaitChecksIncomingBeforeWritesAndAtTerminal(t *testing.T) 
 	if lists() != 0 {
 		t.Fatal("pending polls repeated the incoming check", lists())
 	}
-	inner.write = c.root() + "/resourceGroups/test/providers/Microsoft.Compute/disks/other?api-version=2024-03-02"
+	// A transient poll failure sent no write: no incoming check, never Done.
+	inner.err, inner.result = errors.New("transient 503"), contracts.WaitResult{Done: true}
+	if out, err := driver.Wait(t.Context(), request, result); err == nil || out.Done || lists() != 0 {
+		t.Fatal("failed poll ran the incoming check or reported Done", out, err, lists())
+	}
+	inner.err, inner.result = nil, contracts.WaitResult{}
+	inner.write = armOrigin + c.root() + "/resourceGroups/test/providers/Microsoft.Compute/disks/other?api-version=2024-03-02"
 	if _, err := driver.Wait(t.Context(), request, result); err == nil || !strings.Contains(err.Error(), "monitor_target_has_incoming_references") || len(s.deletes) != 0 || lists() != 2 {
 		t.Fatal("write from Wait skipped the incoming check", err, s.deletes, lists())
 	}

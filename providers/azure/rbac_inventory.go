@@ -33,10 +33,17 @@ func (c *client) rbacScopes(kind string, raw map[string]any) ([]string, error) {
 	return []string{text(object(raw["properties"])["scope"])}, nil
 }
 
-func (c *client) rbacPIM(ctx context.Context) (map[string]map[string]any, error) {
+// Delete checks pass detail=false: a schedule only matters when it matches a
+// role, principal and scope, which its validated list row carries, and a match
+// only protects. Inventory keeps every schedule's own GET.
+func (c *client) rbacPIM(ctx context.Context, detail bool) (map[string]map[string]any, error) {
+	index := c.rbacList
+	if detail {
+		index = c.rbacIndex
+	}
 	result := map[string]map[string]any{}
 	for _, kind := range []string{rbacEligibilityType, rbacScheduleType} {
-		values, _, err := c.rbacIndex(ctx, kind, c.root())
+		values, _, err := index(ctx, kind, c.root())
 		if err != nil {
 			return nil, err
 		}
@@ -80,7 +87,14 @@ func (c *client) rbacContext(ctx context.Context, kind string, raw map[string]an
 		}
 		current, ok := cache[wire]
 		if !ok {
-			current, err = c.diagnosticContext(ctx, wire)
+			read := func() (diagnosticContextState, error) { return c.diagnosticContext(ctx, wire) }
+			if cache == nil {
+				// Without a caller cache, a Contribute memo reads each scope once
+				// for its concurrent parents; without a memo this reads live.
+				current, err = memoized(ctx, "rbac-scope:"+wire, read)
+			} else {
+				current, err = read()
+			}
 			if err != nil {
 				return nil, "", contracts.DependencyReadError(err)
 			}
@@ -196,7 +210,7 @@ func (r *Runtime) rbacInventorySnapshot(ctx context.Context, c *client, request 
 	}
 	pim := map[string]map[string]any{}
 	if len(rows) != 0 {
-		pim, err = c.rbacPIM(ctx)
+		pim, err = c.rbacPIM(ctx, true)
 		if err != nil {
 			return nil, nil, "", err
 		}

@@ -5,7 +5,6 @@ import (
 	"maps"
 	"slices"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -67,8 +66,10 @@ func (a *rbacAction) prerequisitesAbsent(ctx context.Context, request contracts.
 		}
 	}
 	if a.kind == rbacRoleType {
+		// A listed assignment of this role blocks as listed; its GET could only
+		// block too. Rows of other roles cannot block, so none is read.
 		assignments, err := liveShared(ctx, a.client, "rbac-index:"+rbacAssignmentType, func() (map[string]map[string]any, error) {
-			assignments, _, err := a.client.rbacIndex(ctx, rbacAssignmentType, a.client.root())
+			assignments, _, err := a.client.rbacList(ctx, rbacAssignmentType, a.client.root())
 			return assignments, err
 		})
 		if err != nil {
@@ -87,11 +88,6 @@ func (a *rbacAction) prerequisitesAbsent(ctx context.Context, request contracts.
 	return nil
 }
 
-type rbacScopeCache struct {
-	sync.Mutex
-	states map[string]diagnosticContextState
-}
-
 func (a *rbacAction) current(ctx context.Context) (response, string, error) {
 	current, err := a.client.rbacRead(ctx, a.kind, a.wire)
 	if err != nil {
@@ -107,23 +103,13 @@ func (a *rbacAction) current(ctx context.Context) (response, string, error) {
 		return current, "", contracts.DependencyReadError(err)
 	}
 	pim, err := memoized(ctx, "rbac-action-pim", func() (map[string]map[string]any, error) {
-		return liveShared(ctx, a.client, "rbac-pim", func() (map[string]map[string]any, error) { return a.client.rbacPIM(ctx) })
+		return liveShared(ctx, a.client, "rbac-pim", func() (map[string]map[string]any, error) { return a.client.rbacPIM(ctx, false) })
 	})
 	if err != nil {
 		return current, "", err
 	}
-	var scopes map[string]diagnosticContextState
-	unlock := func() {}
-	if ctx.Value(readMemoContextKey{}) != nil {
-		// Contribute reads its parents concurrently; the lock guards the shared cache.
-		cache, _ := memoized(ctx, "rbac-action-scopes", func() (*rbacScopeCache, error) {
-			return &rbacScopeCache{states: map[string]diagnosticContextState{}}, nil
-		})
-		cache.Lock()
-		scopes, unlock = cache.states, cache.Unlock
-	}
-	state, reason, err := a.client.rbacContext(ctx, a.kind, current.data, locks, pim, scopes)
-	unlock()
+	// A nil cache shares each scope read through the Contribute memo, if any.
+	state, reason, err := a.client.rbacContext(ctx, a.kind, current.data, locks, pim, nil)
 	if err != nil {
 		return current, "", err
 	}

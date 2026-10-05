@@ -11,6 +11,9 @@ import (
 
 // Subscription indexes include unindexed scope extensions. Persisted sources
 // are also read directly, so a list omission cannot erase a reviewed reference.
+// Listed rows come without their GETs (see rbacList): a row whose validated
+// list fields reference no target cannot block one. A row that does, or whose
+// persisted references did, is read and must agree before it is used.
 func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []asset.Asset) (map[string][]monitorIncomingSource, error) {
 	incoming := map[string][]monitorIncomingSource{}
 	if len(targets) == 0 {
@@ -29,19 +32,31 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 	for _, kind := range kinds {
 		// Concurrent delete checks coalesce these lists; see liveShared.
 		rows, err := liveShared(ctx, c, "rbac-index:"+kind, func() (map[string]map[string]any, error) {
-			rows, _, err := c.rbacIndex(ctx, kind, c.root())
+			rows, _, err := c.rbacList(ctx, kind, c.root())
 			return rows, err
 		})
 		if err != nil {
 			return nil, err
 		}
 		rows = maps.Clone(rows) // Shared: add known sources to a copy.
+		read, recorded := map[string]bool{}, map[string]bool{}
 		for _, value := range known {
 			if value.Identity.Provider != asset.ProviderAzure || value.Identity.NativeType != kind || !strings.HasPrefix(value.Identity.NativeID, c.root()+"/") {
 				continue
 			}
-			if _, err := c.rbacRecordedReferences(value); err != nil {
+			refs, err := c.rbacRecordedReferences(value)
+			if err != nil {
 				return nil, err
+			}
+			for _, target := range targets {
+				recorded[value.Identity.NativeID] = recorded[value.Identity.NativeID] || slices.Contains(stringValues(refs[target.Identity.NativeType]), target.Identity.NativeID)
+				for _, reference := range stringValues(refs[rbacPrincipalType]) {
+					matches, err := c.rbacPrincipalMatches(target, reference)
+					if err != nil {
+						return nil, err
+					}
+					recorded[value.Identity.NativeID] = recorded[value.Identity.NativeID] || matches
+				}
 			}
 			if rows[value.Identity.NativeID] != nil {
 				continue
@@ -53,7 +68,7 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 			if err != nil {
 				return nil, err
 			}
-			rows[value.Identity.NativeID] = current.data
+			rows[value.Identity.NativeID], read[value.Identity.NativeID] = current.data, true
 		}
 		if kind == rbacAssignmentType {
 			principals := false
@@ -76,30 +91,56 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 				}
 			}
 		}
+		linked := func(target asset.Asset, refs map[string][]string) (bool, error) {
+			linked := slices.Contains(refs[target.Identity.NativeType], target.Identity.NativeID)
+			for _, reference := range refs[rbacPrincipalType] {
+				matches, err := c.rbacPrincipalMatches(target, reference)
+				if err != nil {
+					return false, err
+				}
+				linked = linked || matches
+			}
+			return linked, nil
+		}
 		for _, id := range slices.Sorted(maps.Keys(rows)) {
 			raw := rows[id]
 			refs, err := c.rbacReferences(kind, id, raw)
 			if err != nil {
 				return nil, err
 			}
-			var state map[string]any
-			for _, target := range targets {
-				linked := slices.Contains(refs[target.Identity.NativeType], target.Identity.NativeID)
-				for _, reference := range refs[rbacPrincipalType] {
-					matches, err := c.rbacPrincipalMatches(target, reference)
+			if !read[id] {
+				relevant := recorded[id]
+				for _, target := range targets {
+					matches, err := linked(target, refs)
 					if err != nil {
 						return nil, err
 					}
-					linked = linked || matches
+					relevant = relevant || matches
 				}
-				if !linked {
+				if !relevant {
+					continue
+				}
+				if raw, err = c.rbacDetail(ctx, kind, raw); err != nil {
+					return nil, err
+				}
+				if refs, err = c.rbacReferences(kind, id, raw); err != nil {
+					return nil, err
+				}
+			}
+			var state map[string]any
+			for _, target := range targets {
+				matches, err := linked(target, refs)
+				if err != nil {
+					return nil, err
+				}
+				if !matches {
 					continue
 				}
 				if state == nil {
 					if pim == nil {
 						locks, err = c.managementLocks(ctx)
 						if err == nil {
-							pim, err = liveShared(ctx, c, "rbac-pim", func() (map[string]map[string]any, error) { return c.rbacPIM(ctx) })
+							pim, err = liveShared(ctx, c, "rbac-pim", func() (map[string]map[string]any, error) { return c.rbacPIM(ctx, false) })
 						}
 						if err != nil {
 							return nil, err

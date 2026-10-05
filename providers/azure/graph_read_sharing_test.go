@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -176,5 +177,83 @@ func TestIncomingSourceIndexMatchesScan(t *testing.T) {
 		if fmt.Sprint(gotErr) != fmt.Sprint(wantErr) || !reflect.DeepEqual(got, want) {
 			t.Fatal("indexed incoming sources differ from the scan", got, gotErr, want, wantErr)
 		}
+	}
+}
+
+// Concurrent callers of one key share the read in flight; a failure reaches
+// them but is not kept; reads of other keys never wait on it.
+func TestMemoizedSharesInFlightReadsPerKey(t *testing.T) {
+	ctx := withReadMemo(t.Context())
+	var reads atomic.Int32
+	release, both := make(chan struct{}), sync.WaitGroup{}
+	both.Add(2)
+	read := func(key string) func() (string, error) {
+		return func() (string, error) {
+			reads.Add(1)
+			if key != "a" {
+				both.Done() // "b" runs while "a" is still reading.
+				return key, nil
+			}
+			both.Done()
+			<-release
+			return key, nil
+		}
+	}
+	var wg sync.WaitGroup
+	results := make([]string, 8)
+	for i := range results {
+		wg.Go(func() { results[i], _ = memoized(ctx, "a", read("a")) })
+	}
+	go func() { _, _ = memoized(ctx, "b", read("b")) }()
+	done := make(chan struct{})
+	go func() { both.Wait(); close(done) }()
+	select {
+	case <-done:
+	case <-time.After(5 * time.Second):
+		t.Fatal("a read of one key blocked another key")
+	}
+	close(release)
+	wg.Wait()
+	if reads.Load() != 2 || slices.ContainsFunc(results, func(v string) bool { return v != "a" }) {
+		t.Fatal("concurrent callers did not share one read", reads.Load(), results)
+	}
+	fail := errors.New("transient")
+	if _, err := memoized(ctx, "c", func() (string, error) { return "", fail }); err != fail {
+		t.Fatal(err)
+	}
+	if v, err := memoized(ctx, "c", func() (string, error) { return "ok", nil }); err != nil || v != "ok" {
+		t.Fatal("a failed read was kept", v, err)
+	}
+}
+
+// Contribute's concurrent RBAC parents read a shared scope once, outside any
+// lock held across the read: two parents cost what one does.
+func TestRBACConcurrentParentsReadSharedScopeOnce(t *testing.T) {
+	f := newRBACFixture(t)
+	group := "/subscriptions/" + testSubscription + "/resourcegroups/test"
+	second := rbacTestBody(t, rbacAssignmentType, group, "ffffffff-0000-0000-0000-000000000000")
+	f.resources[strings.ToLower(text(second["id"]))] = second
+	var parents []asset.Asset
+	for id, raw := range f.resources {
+		if raw["type"] == rbacAssignmentType && strings.HasPrefix(id, group+"/providers/microsoft.authorization/") {
+			parents = append(parents, f.asset(t, rbacAssignmentType, id))
+		}
+	}
+	c, _ := f.runtime.resolve(t.Context(), "connection")
+	clear(f.calls)
+	if _, err := c.contributeRBACReferences(withReadMemo(t.Context()), parents[0], parents); err != nil {
+		t.Fatal(err)
+	}
+	one := f.calls["GET "+group]
+	ctx := withReadMemo(t.Context())
+	clear(f.calls)
+	var wg sync.WaitGroup
+	errs := make([]error, len(parents))
+	for i, parent := range parents {
+		wg.Go(func() { _, errs[i] = c.contributeRBACReferences(ctx, parent, parents) })
+	}
+	wg.Wait()
+	if len(parents) != 2 || one == 0 || errors.Join(errs...) != nil || f.calls["GET "+group] != one {
+		t.Fatal("shared RBAC scope was not read once", len(parents), errs, one, f.calls["GET "+group])
 	}
 }

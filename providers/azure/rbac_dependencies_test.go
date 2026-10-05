@@ -2,6 +2,8 @@ package azure
 
 import (
 	"encoding/json"
+	"fmt"
+	"maps"
 	"net/http"
 	"slices"
 	"strings"
@@ -321,5 +323,74 @@ func testRBACManagedGroupAssignmentRequiresIndependentDeletion(t *testing.T, pri
 	s.clusterGone, s.groupGone, s.childrenGone = true, true, true
 	if wait, err := driver.Wait(t.Context(), request, result); err != nil || !wait.Done {
 		t.Fatal("managed controller readback lost its independent RBAC prerequisite", wait, err)
+	}
+}
+
+// A delete check reads only the listed RBAC rows that can reference its target:
+// unrelated rows are decided by their validated list fields and never GET. A
+// linked row, or one whose reviewed references named the target, is still read
+// and must agree with its list row.
+func TestRBACIncomingReadsOnlyRowsThatReferenceTheTarget(t *testing.T) {
+	for _, mode := range []string{"linked", "disagreement", "recorded"} {
+		t.Run(mode, func(t *testing.T) {
+			f, assignment, target, _ := rbacStorageTarget(t)
+			group := "/subscriptions/" + testSubscription + "/resourcegroups/test"
+			unrelated := []string{}
+			for i := range 50 {
+				raw := rbacTestBody(t, rbacAssignmentType, group, fmt.Sprintf("cccccccc-0000-0000-0000-%012d", i))
+				id := strings.ToLower(text(raw["id"]))
+				f.resources[id], unrelated = raw, append(unrelated, id)
+			}
+			known := []asset.Asset{}
+			if mode == "recorded" {
+				// Reviewed while the role named the target; the list now omits it.
+				object(f.resources[rbacTestRoleID()]["properties"])["assignableScopes"] = []any{group, target.Identity.NativeID}
+				known = append(known, f.asset(t, rbacRoleType, rbacTestRoleID()))
+				object(f.resources[rbacTestRoleID()]["properties"])["assignableScopes"] = []any{group}
+			}
+			if mode == "disagreement" {
+				base := f.override
+				f.override = func(req *http.Request) (*http.Response, bool) {
+					if req.Method == "GET" && strings.EqualFold(req.URL.Path, assignment.Identity.NativeID) {
+						raw := maps.Clone(f.resources[assignment.Identity.NativeID])
+						raw["properties"] = maps.Clone(object(raw["properties"]))
+						object(raw["properties"])["condition"] = "detail-only"
+						return jsonResponse(200, raw, nil), true
+					}
+					return base(req)
+				}
+			}
+			c, err := f.runtime.resolve(t.Context(), "connection")
+			if err != nil {
+				t.Fatal(err)
+			}
+			clear(f.calls)
+			incoming, err := c.rbacIncomingObservation(t.Context(), []asset.Asset{target}, known)
+			if mode == "disagreement" {
+				if err == nil || !strings.Contains(err.Error(), "rbac_list_detail_disagreement") || len(incoming) != 0 {
+					t.Fatal("disagreeing linked row did not block", incoming, err)
+				}
+				return
+			}
+			sources := incoming[target.Identity.NativeID]
+			if err != nil || len(sources) != 1 || sources[0].resource.id != assignment.Identity.NativeID {
+				t.Fatal("linked assignment was not observed", sources, err)
+			}
+			if got := f.calls["GET "+assignment.Identity.NativeID]; got != 1 {
+				t.Fatal("linked assignment GETs", got)
+			}
+			for _, id := range unrelated {
+				if got := f.calls["GET "+id]; got != 0 {
+					t.Fatal("unrelated assignment was read", id, got)
+				}
+			}
+			roleReads := 0
+			if mode == "recorded" {
+				roleReads = 1
+			}
+			if got := f.calls["GET "+rbacTestRoleID()]; got != roleReads {
+				t.Fatal("role definition GETs", got, roleReads)
+			}
+		})
 	}
 }
