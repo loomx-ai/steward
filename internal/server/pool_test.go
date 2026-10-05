@@ -46,31 +46,41 @@ func TestCloudServerKeepsWorkspacesApart(t *testing.T) {
 	query.Set("search_path", schema)
 	parsed.RawQuery = query.Encode()
 
-	listener, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatal(err)
-	}
-	addr := listener.Addr().String()
-	_ = listener.Close()
+	// Two servers of one pool start together on a fresh database; requests
+	// alternate between them.
 	ctx, cancel := context.WithCancel(context.Background())
-	done := make(chan error, 1)
-	go func() {
-		done <- Run(ctx, Config{
-			Addr: addr, DBDriver: "postgres", DSN: parsed.String(), MigrationsDir: filepath.Join("..", "..", "migrations"),
-			AuthMode: "cloud", AuthTokens: []httptransport.TokenBinding{{Token: "pool-token", Principal: httptransport.Principal{Subject: "gateway", Roles: []httptransport.Role{httptransport.RoleAdmin}}}},
-			CredentialMasterKey: "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=", CredentialSource: failingCredentials{},
-		})
-	}()
+	var addrs []string
+	done := make(chan error, 2)
+	for range 2 {
+		listener, err := net.Listen("tcp", "127.0.0.1:0")
+		if err != nil {
+			t.Fatal(err)
+		}
+		addr := listener.Addr().String()
+		_ = listener.Close()
+		addrs = append(addrs, addr)
+		go func() {
+			done <- Run(ctx, Config{
+				Addr: addr, DBDriver: "postgres", DSN: parsed.String(), MigrationsDir: filepath.Join("..", "..", "migrations"),
+				AuthMode: "cloud", AuthTokens: []httptransport.TokenBinding{{Token: "pool-token", Principal: httptransport.Principal{Subject: "gateway", Roles: []httptransport.Role{httptransport.RoleAdmin}}}},
+				CredentialMasterKey: "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=", CredentialSource: failingCredentials{},
+			})
+		}()
+	}
 	t.Cleanup(func() {
 		cancel()
-		if err := <-done; err != nil {
-			t.Errorf("server stopped: %v", err)
+		for range addrs {
+			if err := <-done; err != nil {
+				t.Errorf("server stopped: %v", err)
+			}
 		}
 	})
 
+	calls := 0
 	call := func(method, path, tenant, body string) (int, string) {
 		t.Helper()
-		request, _ := http.NewRequest(method, "http://"+addr+path, strings.NewReader(body))
+		calls++
+		request, _ := http.NewRequest(method, "http://"+addrs[calls%len(addrs)]+path, strings.NewReader(body))
 		request.Header.Set("Authorization", "Bearer pool-token")
 		request.Header.Set("X-Steward-Subject", "usr_test")
 		request.Header.Set("X-Steward-Role", "admin")
@@ -88,7 +98,9 @@ func TestCloudServerKeepsWorkspacesApart(t *testing.T) {
 	}
 	deadline := time.Now().Add(30 * time.Second)
 	for {
-		if status, _ := call(http.MethodGet, "/api/connections", "ws_a", ""); status == http.StatusOK {
+		first, _ := call(http.MethodGet, "/api/connections", "ws_a", "")
+		second, _ := call(http.MethodGet, "/api/connections", "ws_a", "")
+		if first == http.StatusOK && second == http.StatusOK {
 			break
 		}
 		if time.Now().After(deadline) {
