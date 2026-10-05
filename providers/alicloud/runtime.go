@@ -55,6 +55,7 @@ type Runtime struct {
 	resourceKindByNativeType map[string]asset.ResourceKind
 	resourceKindRevision     string
 	bundle                   spec.Bundle
+	specIndexByNativeType    map[string]int // first bundle.Specs index per native type
 	parentCache              fanoutParentCache
 	resourceCenterSearches   resourceCenterSearchCache
 	cenTopologies            cenTopologyCache
@@ -104,6 +105,10 @@ func newRuntime(credentials contracts.CredentialSource, factory clientFactory, o
 	for _, kind := range resourceKinds {
 		resourceKindByNativeType[kind.NativeType] = kind
 	}
+	specIndexByNativeType := make(map[string]int, len(bundle.Specs))
+	for index := len(bundle.Specs) - 1; index >= 0; index-- {
+		specIndexByNativeType[bundle.Specs[index].ResourceKind.NativeType] = index
+	}
 	runtime := &Runtime{
 		credentials:              credentials,
 		factory:                  factory,
@@ -114,6 +119,7 @@ func newRuntime(credentials contracts.CredentialSource, factory clientFactory, o
 		resourceKindByNativeType: resourceKindByNativeType,
 		resourceKindRevision:     resourceKindRevision,
 		bundle:                   bundle,
+		specIndexByNativeType:    specIndexByNativeType,
 	}
 	for _, option := range options {
 		if option != nil {
@@ -381,13 +387,13 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	return r.invoke(ctx, nil, invocation)
 }
 
-// invoke calls an operation with credential, or with the connection's
-// credential resolved for this call when credential is nil. Callers making
-// many reads for one batch resolve the credential once and pass it.
 // pinnedCredentialRefreshWindow is how close to expiry a caller's pinned
 // credential may get before invoke resolves it again.
 const pinnedCredentialRefreshWindow = time.Minute
 
+// invoke calls an operation with credential, or with the connection's
+// credential resolved for this call when credential is nil. Callers making
+// many reads for one batch resolve the credential once and pass it.
 func (r *Runtime) invoke(ctx context.Context, credential *contracts.Credential, invocation contracts.Invocation) (contracts.InvocationResult, error) {
 	operation, ok := r.catalog.Operation(strings.TrimSpace(invocation.Operation))
 	if !ok {

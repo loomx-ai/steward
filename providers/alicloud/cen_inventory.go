@@ -28,6 +28,9 @@ type cenTopologyCollector struct {
 	region     string
 	credential *contracts.Credential
 	items      []contracts.InventoryItem
+	// mu guards requestIDs, which concurrent reads append to. The batch
+	// reports requestIDs[0], always the serial DescribeCens read.
+	mu         sync.Mutex
 	requestIDs []string
 	// DescribeCenRouteMaps identifies the route table but omits its transit
 	// router. Retain the ownership discovered from ListTransitRouterRouteTables
@@ -377,16 +380,22 @@ func (c *cenTopologyCollector) collectTransitRouter(
 	if !strings.EqualFold(cenScalar(transitRouter, "Type"), "Enterprise") {
 		return nil
 	}
-	for _, attachmentOperation := range cenAttachmentOperations {
-		records, err := c.tokenRecords(
-			attachmentOperation.operation,
+	// The attachment lists are independent reads; fetch them together and add
+	// their items in list order, as a serial walk would.
+	attachments := make([][]map[string]any, len(cenAttachmentOperations))
+	if err := ForEachConcurrently(len(cenAttachmentOperations), func(index int) error {
+		var err error
+		attachments[index], err = c.tokenRecords(
+			cenAttachmentOperations[index].operation,
 			map[string]any{"TransitRouterId": transitRouterID},
-			attachmentOperation.itemsPath,
+			cenAttachmentOperations[index].itemsPath,
 		)
-		if err != nil {
-			return err
-		}
-		for _, record := range records {
+		return err
+	}); err != nil {
+		return err
+	}
+	for index, attachmentOperation := range cenAttachmentOperations {
+		for _, record := range attachments[index] {
 			recordRegion := cenAttachmentRegion(record, c.region)
 			if attachmentOperation.nativeType == CENTransitRouterPeerAttachmentNativeType {
 				if recordRegion != "" && recordRegion != c.region {
@@ -488,60 +497,73 @@ func (c *cenTopologyCollector) collectRouteTables(cenID, transitRouterID string)
 	if err != nil {
 		return err
 	}
-	for _, routeTable := range routeTables {
-		routeTableID := cenScalar(routeTable, "TransitRouterRouteTableId")
-		if routeTableID == "" {
+	routeTableIDs := make([]string, len(routeTables))
+	for index, routeTable := range routeTables {
+		if routeTableIDs[index] = cenScalar(routeTable, "TransitRouterRouteTableId"); routeTableIDs[index] == "" {
 			return fmt.Errorf(
 				"Alibaba Cloud CEN ListTransitRouterRouteTables returned an item without TransitRouterRouteTableId",
 			)
 		}
-		associations, err := c.tokenRecords(
-			"AlibabaCloud.CEN.ListTransitRouterRouteTableAssociations",
-			map[string]any{"TransitRouterRouteTableId": routeTableID},
-			"TransitRouterAssociations",
-		)
-		if err != nil {
-			return err
-		}
-		propagations, err := c.tokenRecords(
-			"AlibabaCloud.CEN.ListTransitRouterRouteTablePropagations",
-			map[string]any{"TransitRouterRouteTableId": routeTableID},
-			"TransitRouterPropagations",
-		)
-		if err != nil {
-			return err
-		}
-		routeEntries, err := c.tokenRecords(
-			"AlibabaCloud.CEN.ListTransitRouterRouteEntries",
-			map[string]any{
-				"TransitRouterRouteTableId":     routeTableID,
-				"TransitRouterRouteEntryStatus": "All",
-			},
-			"TransitRouterRouteEntries",
-		)
-		if err != nil {
-			return err
-		}
-		prefixLists, err := c.pageRecords(
-			"AlibabaCloud.CEN.ListTransitRouterPrefixListAssociation",
-			map[string]any{
-				"TransitRouterId":      transitRouterID,
-				"TransitRouterTableId": routeTableID,
-				"RegionId":             c.region,
-			},
-			"PrefixLists",
-		)
-		if err != nil {
-			return err
-		}
-		aggregations, err := c.tokenRecords(
-			"AlibabaCloud.CEN.DescribeTransitRouteTableAggregation",
-			map[string]any{"TransitRouteTableId": routeTableID},
-			"Data",
-		)
-		if err != nil {
-			return err
-		}
+	}
+	// Each route table needs five independent lists. Fetch all of them
+	// together into index-addressed slots, then add the tables in order.
+	reads := [...]func(routeTableID string) ([]map[string]any, error){
+		func(routeTableID string) ([]map[string]any, error) {
+			return c.tokenRecords(
+				"AlibabaCloud.CEN.ListTransitRouterRouteTableAssociations",
+				map[string]any{"TransitRouterRouteTableId": routeTableID},
+				"TransitRouterAssociations",
+			)
+		},
+		func(routeTableID string) ([]map[string]any, error) {
+			return c.tokenRecords(
+				"AlibabaCloud.CEN.ListTransitRouterRouteTablePropagations",
+				map[string]any{"TransitRouterRouteTableId": routeTableID},
+				"TransitRouterPropagations",
+			)
+		},
+		func(routeTableID string) ([]map[string]any, error) {
+			return c.tokenRecords(
+				"AlibabaCloud.CEN.ListTransitRouterRouteEntries",
+				map[string]any{
+					"TransitRouterRouteTableId":     routeTableID,
+					"TransitRouterRouteEntryStatus": "All",
+				},
+				"TransitRouterRouteEntries",
+			)
+		},
+		func(routeTableID string) ([]map[string]any, error) {
+			return c.pageRecords(
+				"AlibabaCloud.CEN.ListTransitRouterPrefixListAssociation",
+				map[string]any{
+					"TransitRouterId":      transitRouterID,
+					"TransitRouterTableId": routeTableID,
+					"RegionId":             c.region,
+				},
+				"PrefixLists",
+			)
+		},
+		func(routeTableID string) ([]map[string]any, error) {
+			return c.tokenRecords(
+				"AlibabaCloud.CEN.DescribeTransitRouteTableAggregation",
+				map[string]any{"TransitRouteTableId": routeTableID},
+				"Data",
+			)
+		},
+	}
+	lists := make([][]map[string]any, len(routeTables)*len(reads))
+	if err := ForEachConcurrently(len(lists), func(index int) error {
+		var err error
+		lists[index], err = reads[index%len(reads)](routeTableIDs[index/len(reads)])
+		return err
+	}); err != nil {
+		return err
+	}
+	for index, routeTable := range routeTables {
+		routeTableID := routeTableIDs[index]
+		tableLists := lists[index*len(reads):]
+		associations, propagations, routeEntries, prefixLists, aggregations :=
+			tableLists[0], tableLists[1], tableLists[2], tableLists[3], tableLists[4]
 
 		raw := cloneCENMap(routeTable)
 		raw[NormalizedCENRouteTableAssociationsField] = associations
@@ -839,10 +861,13 @@ func (c *cenTopologyCollector) addItem(
 			"TrafficQosPolicyStatus",
 		),
 	)
+	// The shared collection is never handed out: cloneInventoryItems
+	// deep-copies each shard's page, so reference the registry kind here
+	// instead of copying it twice.
 	c.items = append(c.items, contracts.InventoryItem{
 		NativeType:   nativeType,
 		NativeID:     nativeID,
-		ResourceKind: c.runtime.resourceKind(nativeType),
+		ResourceKind: c.runtime.resourceKindByNativeType[nativeType],
 		Scope: contracts.InventoryScope{
 			Kind:     c.request.Scope.Kind,
 			NativeID: c.request.Scope.NativeID,
@@ -971,7 +996,9 @@ func (c *cenTopologyCollector) invoke(
 		)
 	}
 	if requestID := strings.TrimSpace(result.RequestID); requestID != "" {
+		c.mu.Lock()
 		c.requestIDs = append(c.requestIDs, requestID)
+		c.mu.Unlock()
 	}
 	return result, nil
 }

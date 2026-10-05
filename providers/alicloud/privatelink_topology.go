@@ -6,7 +6,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/catalog"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -111,17 +110,15 @@ func (r *Runtime) loadPrivateLinkEndpointZones(
 		if nextToken != "" {
 			parameters["NextToken"] = nextToken
 		}
-		execution.LogCloudAPIRequest(ctx, apiService, operationName, contracts.CloudLogPayload(ctx, parameters))
-		result, err := r.factory.Invoke(ctx, credential, region, operation, contracts.Invocation{
+		// invoke logs the call and renews the pinned credential near expiry.
+		result, err := r.invoke(ctx, &credential, contracts.Invocation{
 			ConnectionID: request.ConnectionID,
 			Operation:    operation.Key(),
 			Scope:        map[string]string{"region": region},
 			Parameters:   parameters,
 		})
 		if err != nil {
-			LogCloudAPIError(ctx, apiService, operationName, err)
-			normalized := NormalizeError(err)
-			if isNotFound(normalized) {
+			if isNotFound(err) {
 				return []any{}, nil, nil
 			}
 			return nil, nil, fmt.Errorf(
@@ -129,14 +126,9 @@ func (r *Runtime) loadPrivateLinkEndpointZones(
 				apiService,
 				operationName,
 				endpointID,
-				normalized,
+				err,
 			)
 		}
-		responsePayload := contracts.CloudLogPayload(ctx, result.Data)
-		if result.RequestID != "" {
-			responsePayload["RequestId"] = result.RequestID
-		}
-		execution.LogCloudAPIResponse(ctx, apiService, operationName, responsePayload)
 
 		rawZoneValue := valueAtPath(result.Data, "Zones")
 		rawZones, ok := productAPIListValue(rawZoneValue)
@@ -337,17 +329,15 @@ func (r *Runtime) loadEndpointServiceResources(
 		if nextToken != "" {
 			parameters["NextToken"] = nextToken
 		}
-		execution.LogCloudAPIRequest(ctx, apiService, operationName, contracts.CloudLogPayload(ctx, parameters))
-		result, err := r.factory.Invoke(ctx, credential, region, operation, contracts.Invocation{
+		// invoke logs the call and renews the pinned credential near expiry.
+		result, err := r.invoke(ctx, &credential, contracts.Invocation{
 			ConnectionID: request.ConnectionID,
 			Operation:    operation.Key(),
 			Scope:        map[string]string{"region": region},
 			Parameters:   parameters,
 		})
 		if err != nil {
-			LogCloudAPIError(ctx, apiService, operationName, err)
-			normalized := NormalizeError(err)
-			if isNotFound(normalized) {
+			if isNotFound(err) {
 				return resources, nil
 			}
 			return endpointServiceResources{}, fmt.Errorf(
@@ -355,14 +345,9 @@ func (r *Runtime) loadEndpointServiceResources(
 				apiService,
 				operationName,
 				serviceID,
-				normalized,
+				err,
 			)
 		}
-		responsePayload := contracts.CloudLogPayload(ctx, result.Data)
-		if result.RequestID != "" {
-			responsePayload["RequestId"] = result.RequestID
-		}
-		execution.LogCloudAPIResponse(ctx, apiService, operationName, responsePayload)
 
 		rawResourceValue := valueAtPath(result.Data, "Resources")
 		rawResources, ok := productAPIListValue(rawResourceValue)

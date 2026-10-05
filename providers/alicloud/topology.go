@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
-	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 	"github.com/loomx-ai/steward/internal/provider/spec"
 )
@@ -196,7 +195,6 @@ func (r *Runtime) loadTopologyDetails(
 	if !ok {
 		return nil, fmt.Errorf("Alibaba Cloud operation %q is not in the generated catalog", definition.api.Operation)
 	}
-	operation := detailOperationName(definition)
 	batches := make([]map[string]map[string]any, (len(ids)+batchLimit-1)/batchLimit)
 	err := ForEachConcurrently(len(batches), func(batch int) error {
 		start := batch * batchLimit
@@ -212,23 +210,16 @@ func (r *Runtime) loadTopologyDetails(
 		if err != nil {
 			return err
 		}
-		execution.LogCloudAPIRequest(ctx, definition.service, operation, contracts.CloudLogPayload(ctx, parameters))
-		result, err := r.factory.Invoke(ctx, credential, region, catalogOperation, contracts.Invocation{
+		// invoke logs the call and renews the pinned credential near expiry.
+		result, err := r.invoke(ctx, &credential, contracts.Invocation{
 			ConnectionID: request.ConnectionID,
 			Operation:    catalogOperation.Key(),
 			Scope:        map[string]string{"region": region},
 			Parameters:   parameters,
 		})
 		if err != nil {
-			LogCloudAPIError(ctx, definition.service, operation, err)
-			normalized := NormalizeError(err)
-			return fmt.Errorf("%s failed: %w", detailOperationLabel(definition), normalized)
+			return fmt.Errorf("%s failed: %w", detailOperationLabel(definition), err)
 		}
-		responsePayload := contracts.CloudLogPayload(ctx, result.Data)
-		if result.RequestID != "" {
-			responsePayload["RequestId"] = result.RequestID
-		}
-		execution.LogCloudAPIResponse(ctx, definition.service, operation, responsePayload)
 		batches[batch], err = validateTopologyDetailCoverage(
 			definition,
 			batchIDs,

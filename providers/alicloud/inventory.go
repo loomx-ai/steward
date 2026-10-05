@@ -558,12 +558,12 @@ func (i *Inventory) resourceConfigurations(
 	if !ok {
 		return nil, fmt.Errorf("Alibaba Cloud Resource Center client does not support BatchGetResourceConfigurations")
 	}
-	result := make(map[string]ResourceRecord, len(resources))
-	for start := 0; start < len(resources); start += ResourceConfigurationBatchLimit {
-		end := start + ResourceConfigurationBatchLimit
-		if end > len(resources) {
-			end = len(resources)
-		}
+	// Batches are independent reads; merge them in batch order, as a serial
+	// loop would.
+	pages := make([][]ResourceRecord, (len(resources)+ResourceConfigurationBatchLimit-1)/ResourceConfigurationBatchLimit)
+	err := ForEachConcurrently(len(pages), func(batch int) error {
+		start := batch * ResourceConfigurationBatchLimit
+		end := min(start+ResourceConfigurationBatchLimit, len(resources))
 		request := ResourceConfigurationRequest{
 			Resources: make([]ResourceConfigurationReference, 0, end-start),
 		}
@@ -576,14 +576,22 @@ func (i *Inventory) resourceConfigurations(
 		page, err := client.BatchGetResourceConfigurations(ctx, request)
 		if err != nil {
 			LogCloudAPIError(ctx, "resource-center", "BatchGetResourceConfigurations", err)
-			return nil, NormalizeError(err)
+			return NormalizeError(err)
 		}
 		responsePayload := page.RawResponse
 		if responsePayload == nil {
 			responsePayload = map[string]any{"RequestId": page.RequestID, "Resources": page.Resources}
 		}
 		execution.LogCloudAPIResponse(ctx, "resource-center", "BatchGetResourceConfigurations", contracts.CloudLogPayload(ctx, responsePayload))
-		for _, resource := range page.Resources {
+		pages[batch] = page.Resources
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	result := make(map[string]ResourceRecord, len(resources))
+	for _, page := range pages {
+		for _, resource := range page {
 			result[resourceConfigurationKey(resource.RegionID, resource.ResourceType, resource.ResourceID)] = resource
 		}
 	}

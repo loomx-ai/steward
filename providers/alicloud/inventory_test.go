@@ -9,8 +9,11 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
+	"sync"
 	"testing"
+	"testing/synctest"
 	"time"
 
 	"github.com/alibabacloud-go/tea/tea"
@@ -27,6 +30,10 @@ type resourceCenterClient struct {
 	configurationErr      error
 	requests              []alicloud.SearchRequest
 	configurationRequests []alicloud.ResourceConfigurationRequest
+	// mu guards configurationRequests: configuration batches run concurrently.
+	mu sync.Mutex
+	// configurationGate, when set, runs before each configuration response.
+	configurationGate func()
 }
 
 func (c *resourceCenterClient) SearchResources(_ context.Context, request alicloud.SearchRequest) (alicloud.ResourcePage, error) {
@@ -38,7 +45,12 @@ func (c *resourceCenterClient) BatchGetResourceConfigurations(
 	_ context.Context,
 	request alicloud.ResourceConfigurationRequest,
 ) (alicloud.ResourceConfigurationPage, error) {
+	c.mu.Lock()
 	c.configurationRequests = append(c.configurationRequests, request)
+	c.mu.Unlock()
+	if c.configurationGate != nil {
+		c.configurationGate()
+	}
 	if c.configurationErr != nil {
 		return alicloud.ResourceConfigurationPage{}, c.configurationErr
 	}
@@ -730,32 +742,49 @@ func TestInventoryPaginationKeepsStableInstanceTypeOrder(t *testing.T) {
 func TestInventoryBatchesResourceConfigurationsByOneHundred(t *testing.T) {
 	t.Parallel()
 
-	resources := make([]alicloud.ResourceRecord, 205)
-	for index := range resources {
-		resources[index] = alicloud.ResourceRecord{
-			RegionID: "cn-hangzhou", ResourceType: "ACS::ECS::Instance",
-			ResourceID: fmt.Sprintf("i-%03d", index),
+	synctest.Test(t, func(t *testing.T) {
+		resources := make([]alicloud.ResourceRecord, 205)
+		want := make([]string, len(resources))
+		for index := range resources {
+			resources[index] = alicloud.ResourceRecord{
+				RegionID: "cn-hangzhou", ResourceType: "ACS::ECS::Instance",
+				ResourceID: fmt.Sprintf("i-%03d", index),
+			}
+			want[index] = resources[index].ResourceID
 		}
-	}
-	client := &resourceCenterClient{page: alicloud.ResourcePage{Resources: resources}}
-	batch, err := newTestInventory(client).List(context.Background(), contracts.InventoryRequest{
-		Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: "cn-hangzhou"},
-		ResourceKind: &asset.ResourceKind{
-			NativeType: "ACS::ECS::Instance",
-		},
+		// Every batch waits until all three are in flight, so a serial loop
+		// deadlocks the bubble instead of passing.
+		var arrived sync.WaitGroup
+		arrived.Add(3)
+		client := &resourceCenterClient{
+			page:              alicloud.ResourcePage{Resources: resources},
+			configurationGate: func() { arrived.Done(); arrived.Wait() },
+		}
+		batch, err := newTestInventory(client).List(context.Background(), contracts.InventoryRequest{
+			Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: "cn-hangzhou"},
+			ResourceKind: &asset.ResourceKind{
+				NativeType: "ACS::ECS::Instance",
+			},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := make([]string, len(batch.Items))
+		for index, item := range batch.Items {
+			got[index] = item.NativeID
+		}
+		if !slices.Equal(got, want) {
+			t.Fatalf("items = %v", got)
+		}
+		sizes := make([]int, 0, len(client.configurationRequests))
+		for _, request := range client.configurationRequests {
+			sizes = append(sizes, len(request.Resources))
+		}
+		slices.Sort(sizes)
+		if !slices.Equal(sizes, []int{5, 100, 100}) {
+			t.Fatalf("configuration request sizes = %v, want two of 100 and one of 5", sizes)
+		}
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(batch.Items) != 205 || len(client.configurationRequests) != 3 {
-		t.Fatalf("items=%d configuration requests=%d", len(batch.Items), len(client.configurationRequests))
-	}
-	want := []int{100, 100, 5}
-	for index, request := range client.configurationRequests {
-		if len(request.Resources) != want[index] {
-			t.Fatalf("configuration request %d size=%d, want %d", index, len(request.Resources), want[index])
-		}
-	}
 }
 
 func TestInventoryDropsResourcesOmittedByConfigurationLookupAndWarns(t *testing.T) {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -81,5 +82,38 @@ func TestPrivateLinkEndpointTopologyEnrichmentDiscoversManagedENIs(t *testing.T)
 	}
 	if !reflect.DeepEqual(enriched[0].NetworkReferences, []string{"eni-2vcf7po5ka8sz3r6n3ep"}) {
 		t.Fatalf("PrivateLink network references = %#v", enriched[0].NetworkReferences)
+	}
+}
+
+// Enrichment pins one credential per stage; a pinned credential inside the
+// refresh window is resolved again on each read, as runtime.invoke does.
+func TestTopologyEnrichmentRenewsANearlyExpiredPinnedCredential(t *testing.T) {
+	t.Parallel()
+
+	expiresAt := time.Now().Add(pinnedCredentialRefreshWindow / 2)
+	source := &credentialSource{wantConnection: "connection-a", value: contracts.Credential{
+		Values: map[string]string{"access_key_id": "id", "access_key_secret": "secret"}, ExpiresAt: &expiresAt,
+	}}
+	factory := &topologyRuntimeFactory{invoke: func(contracts.Invocation) (contracts.InvocationResult, error) {
+		return contracts.InvocationResult{Data: map[string]any{}}, nil
+	}}
+	runtime, err := newRuntime(source, factory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = runtime.EnrichInventoryBatch(context.Background(), contracts.InventoryRequest{
+		ConnectionID: "connection-a",
+		Scope:        asset.Scope{Kind: asset.ScopeRegion, NativeID: "cn-hangzhou"},
+	}, []contracts.InventoryItem{
+		{NativeType: endpointNativeType, NativeID: "ep-a"},
+		{NativeType: endpointServiceNativeType, NativeID: "epsrv-a"},
+		{NativeType: ecsInstanceNativeType, NativeID: "i-a"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Three stages, one read each: a pinned resolve plus a renewal per read.
+	if len(factory.calls) != 3 || source.calls != 6 {
+		t.Fatalf("reads = %d, credential resolves = %d; want 3 and 6", len(factory.calls), source.calls)
 	}
 }

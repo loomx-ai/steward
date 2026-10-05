@@ -196,13 +196,12 @@ func projectCanonicalVPCID(normalized map[string]any, configuration any) {
 	}
 }
 
-func (r *Runtime) compiledSpec(nativeType string) (spec.CompiledSpec, bool) {
-	for _, compiled := range r.bundle.Specs {
-		if compiled.ResourceKind.NativeType == nativeType {
-			return compiled, true
-		}
+func (r *Runtime) compiledSpec(nativeType string) (*spec.CompiledSpec, bool) {
+	index, ok := r.specIndexByNativeType[nativeType]
+	if !ok {
+		return nil, false
 	}
-	return spec.CompiledSpec{}, false
+	return &r.bundle.Specs[index], true
 }
 
 func normalizedConfiguration(value any) any {
@@ -262,7 +261,7 @@ func configurationValueAtPath(value any, path string) any {
 }
 
 func relationshipConfigurationKeys(
-	compiled spec.CompiledSpec,
+	compiled *spec.CompiledSpec,
 	relationship spec.RelationshipSpec,
 ) map[string]struct{} {
 	result := make(map[string]struct{})
