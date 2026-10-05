@@ -62,28 +62,35 @@ func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Con
 	if len(channels) == 0 {
 		return result, nil
 	}
-	validate := func(value asset.Asset) (bool, error) {
-		if !gcpPartition(value.Identity.Partition) {
-			return false, groupDenied("monitoring_channel_partition_invalid")
-		}
-		data, err := h.client.notificationChannelRead(ctx, value.Identity.NativeID)
-		if err != nil {
-			return false, contracts.DependencyReadError(err)
-		}
-		if notificationChannelConfiguration(value.Identity.NativeID, data) != text(value.Normalized[notificationChannelReview]) {
-			return false, groupDenied("notification_channel_configuration_changed")
-		}
-		return data["type"] == "email", nil
+	// validate returns the email channels, in asset order.
+	validate := func() ([]asset.Asset, error) {
+		emails := []asset.Asset{}
+		err := readThenCheck(len(channels), func(index int) (map[string]any, error) {
+			if !gcpPartition(channels[index].Identity.Partition) {
+				return nil, nil
+			}
+			return h.client.notificationChannelRead(ctx, channels[index].Identity.NativeID)
+		}, func(index int, data map[string]any, err error) error {
+			value := channels[index]
+			if !gcpPartition(value.Identity.Partition) {
+				return groupDenied("monitoring_channel_partition_invalid")
+			}
+			if err != nil {
+				return contracts.DependencyReadError(err)
+			}
+			if notificationChannelConfiguration(value.Identity.NativeID, data) != text(value.Normalized[notificationChannelReview]) {
+				return groupDenied("notification_channel_configuration_changed")
+			}
+			if data["type"] == "email" {
+				emails = append(emails, value)
+			}
+			return nil
+		})
+		return emails, err
 	}
-	emails := []asset.Asset{}
-	for _, channel := range channels {
-		email, err := validate(channel)
-		if err != nil {
-			return result, err
-		}
-		if email {
-			emails = append(emails, channel)
-		}
+	emails, err := validate()
+	if err != nil {
+		return result, err
 	}
 	if len(emails) != 0 {
 		budgets, err := h.client.visibleBillingBudgets(ctx)
@@ -163,10 +170,8 @@ func (h *monitoringDependencies) notificationChannelDependencies(ctx context.Con
 			}})
 		}
 	}
-	for _, channel := range channels {
-		if _, err := validate(channel); err != nil {
-			return governance.Contribution{}, err
-		}
+	if _, err := validate(); err != nil {
+		return governance.Contribution{}, err
 	}
 	return result, nil
 }

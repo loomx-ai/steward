@@ -6,6 +6,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -161,6 +162,7 @@ type monitoringGroupConsumerScenario struct {
 	assets           []asset.Asset
 	mode, collection string
 	lists, gets      map[string]int
+	mu               sync.Mutex // Group reads run concurrently.
 }
 
 func newMonitoringGroupConsumerScenario(t *testing.T) *monitoringGroupConsumerScenario {
@@ -176,6 +178,8 @@ func newMonitoringGroupConsumerScenario(t *testing.T) *monitoringGroupConsumerSc
 	object(object(array(policy["conditions"])[0])["conditionThreshold"])["filter"] = `metric.type="x" AND group.id="9876"`
 	s := &monitoringGroupConsumerScenario{values: map[string][]map[string]any{"groups": {group, child}, "uptimeCheckConfigs": {check}, "alertPolicies": {policy}, "dashboards": {monitoringDashboardFixture()}}, lists: map[string]int{}, gets: map[string]int{}}
 	s.r = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		s.mu.Lock()
+		defer s.mu.Unlock()
 		if req.Method != "GET" || req.URL.Host != "monitoring.googleapis.com" {
 			t.Fatal("unexpected mutation or host", req.Method, req.URL)
 		}

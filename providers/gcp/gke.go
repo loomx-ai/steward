@@ -56,6 +56,7 @@ func (c *client) computeReads(ctx context.Context, kind string, ids []string) (m
 		names      []string
 	}
 	collections := map[string]*collection{}
+	var order []string
 	wanted := map[string]bool{}
 	for _, id := range ids {
 		read, parameters, err := c.resourceOperation(rule, id, "GET")
@@ -76,35 +77,55 @@ func (c *client) computeReads(ctx context.Context, kind string, ids []string) (m
 		key := list.ID + fmt.Sprint(scope)
 		if collections[key] == nil {
 			collections[key] = &collection{operation: list, parameters: scope}
+			order = append(order, key)
 		}
 		collections[key].names = append(collections[key].names, regexp.QuoteMeta(last(id)))
 	}
+	type chunk struct {
+		each  *collection
+		names []string
+	}
+	var chunks []chunk
+	for _, key := range order {
+		for names := range slices.Chunk(collections[key].names, computeReadChunk) {
+			chunks = append(chunks, chunk{collections[key], names})
+		}
+	}
+	// Lists and GETs run concurrently and merge in a fixed order; a failed list
+	// leaves its names to their own GETs below.
+	listed := make([][]map[string]any, len(chunks))
+	_ = forEachConcurrently(len(chunks), groupReadConcurrency, func(index int) error {
+		parameters := cloneParameters(chunks[index].each.parameters)
+		parameters["filter"] = "name eq '(" + strings.Join(chunks[index].names, "|") + ")'"
+		listed[index], _ = c.nativeList(ctx, chunks[index].each.operation, parameters, "items")
+		return nil
+	})
 	result := map[string]map[string]any{}
-	for _, each := range collections {
-		for names := range slices.Chunk(each.names, computeReadChunk) {
-			parameters := cloneParameters(each.parameters)
-			parameters["filter"] = "name eq '(" + strings.Join(names, "|") + ")'"
-			records, err := c.nativeList(ctx, each.operation, parameters, "items")
-			if err != nil {
-				continue // Read each of these with its own GET below.
-			}
-			for _, record := range records {
-				id := c.canonicalName(text(record["selfLink"]))
-				if wanted[id] && result[id] == nil {
-					result[id] = record
-				}
+	for _, records := range listed {
+		for _, record := range records {
+			id := c.canonicalName(text(record["selfLink"]))
+			if wanted[id] && result[id] == nil {
+				result[id] = record
 			}
 		}
 	}
+	var missing []string
+	queued := map[string]bool{}
 	for _, id := range ids {
-		if result[id] != nil {
-			continue
+		if result[id] == nil && !queued[id] {
+			queued[id] = true
+			missing = append(missing, id)
 		}
-		data, err := c.nativeGet(ctx, kind, id)
-		if err != nil {
-			return nil, err
-		}
-		result[id] = data
+	}
+	reads := make([]map[string]any, len(missing))
+	if err := forEachConcurrently(len(missing), groupReadConcurrency, func(index int) (err error) {
+		reads[index], err = c.nativeGet(ctx, kind, missing[index])
+		return err
+	}); err != nil {
+		return nil, err
+	}
+	for index, id := range missing {
+		result[id] = reads[index]
 	}
 	return result, nil
 }

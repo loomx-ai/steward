@@ -67,23 +67,28 @@ func (h *monitoringDependencies) monitoringDashboardPolicyDependencies(ctx conte
 	if len(targets) == 0 {
 		return result, nil
 	}
-	validate := func(value asset.Asset) error {
-		if !gcpPartition(value.Identity.Partition) {
-			return groupDenied("monitoring_policy_partition_invalid")
-		}
-		live, err := h.client.monitoringRead(ctx, alertPolicyType, value.Identity.NativeID)
-		if err != nil {
-			return contracts.DependencyReadError(err)
-		}
-		if monitoringConfiguration(alertPolicyType, value.Identity.NativeID, live) != text(value.Normalized[alertPolicyReview]) {
-			return groupDenied("monitoring_configuration_changed")
-		}
-		return nil
+	validate := func() error {
+		return readThenCheck(len(targets), func(index int) (map[string]any, error) {
+			if !gcpPartition(targets[index].Identity.Partition) {
+				return nil, nil
+			}
+			return h.client.monitoringRead(ctx, alertPolicyType, targets[index].Identity.NativeID)
+		}, func(index int, live map[string]any, err error) error {
+			value := targets[index]
+			if !gcpPartition(value.Identity.Partition) {
+				return groupDenied("monitoring_policy_partition_invalid")
+			}
+			if err != nil {
+				return contracts.DependencyReadError(err)
+			}
+			if monitoringConfiguration(alertPolicyType, value.Identity.NativeID, live) != text(value.Normalized[alertPolicyReview]) {
+				return groupDenied("monitoring_configuration_changed")
+			}
+			return nil
+		})
 	}
-	for _, value := range targets {
-		if err := validate(value); err != nil {
-			return result, err
-		}
+	if err := validate(); err != nil {
+		return result, err
 	}
 	dashboards, err := h.client.monitoringGroupConsumerSnapshot(ctx, monitoringDashboardType)
 	if err != nil {
@@ -115,10 +120,8 @@ func (h *monitoringDependencies) monitoringDashboardPolicyDependencies(ctx conte
 			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, ControllerID: target.ID, NativeType: monitoringDashboardType, NativeID: id, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{"reason": reason, "source": monitoringDependencySource}})
 		}
 	}
-	for _, value := range targets {
-		if err := validate(value); err != nil {
-			return result, err
-		}
+	if err := validate(); err != nil {
+		return result, err
 	}
 	return result, nil
 }

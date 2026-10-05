@@ -566,6 +566,26 @@ func forEachConcurrently(count, limit int, read func(int) error) error {
 	return nil
 }
 
+// readThenCheck reads count items with groupReadConcurrency in flight, then
+// checks them in index order, so the first failing item is reported as a
+// serial read-and-check walk would report it. A read that must not run for an
+// item (for example an invalid partition) returns nil data and nil error and
+// leaves the refusal to check.
+func readThenCheck(count int, read func(int) (map[string]any, error), check func(int, map[string]any, error) error) error {
+	data := make([]map[string]any, count)
+	errs := make([]error, count)
+	_ = forEachConcurrently(count, groupReadConcurrency, func(index int) error {
+		data[index], errs[index] = read(index)
+		return errs[index]
+	})
+	for index := range count {
+		if err := check(index, data[index], errs[index]); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // managedAssets indexes assets by native type and ID, so each binding looks up
 // its managed resource instead of scanning every asset.
 type managedAssets map[string][]asset.Asset

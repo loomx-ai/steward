@@ -114,23 +114,28 @@ func (h *monitoringDependencies) monitoringGroupDependencies(ctx context.Context
 	if len(groups) == 0 {
 		return result, nil
 	}
-	validate := func(group asset.Asset) error {
-		if !gcpPartition(group.Identity.Partition) {
-			return groupDenied("monitoring_group_partition_invalid")
-		}
-		data, err := h.client.monitoringGroupRead(ctx, group.Identity.NativeID)
-		if err != nil {
-			return contracts.DependencyReadError(err)
-		}
-		if h.client.monitoringGroupConfiguration(group.Identity.NativeID, data) != text(group.Normalized[monitoringGroupReview]) {
-			return groupDenied("monitoring_group_configuration_changed")
-		}
-		return nil
+	validate := func() error {
+		return readThenCheck(len(groups), func(index int) (map[string]any, error) {
+			if !gcpPartition(groups[index].Identity.Partition) {
+				return nil, nil
+			}
+			return h.client.monitoringGroupRead(ctx, groups[index].Identity.NativeID)
+		}, func(index int, data map[string]any, err error) error {
+			group := groups[index]
+			if !gcpPartition(group.Identity.Partition) {
+				return groupDenied("monitoring_group_partition_invalid")
+			}
+			if err != nil {
+				return contracts.DependencyReadError(err)
+			}
+			if h.client.monitoringGroupConfiguration(group.Identity.NativeID, data) != text(group.Normalized[monitoringGroupReview]) {
+				return groupDenied("monitoring_group_configuration_changed")
+			}
+			return nil
+		})
 	}
-	for _, group := range groups {
-		if err := validate(group); err != nil {
-			return result, err
-		}
+	if err := validate(); err != nil {
+		return result, err
 	}
 	for _, kind := range []string{monitoringGroupType, uptimeType, alertPolicyType, monitoringDashboardType} {
 		var consumers map[string]map[string]any
@@ -187,10 +192,8 @@ func (h *monitoringDependencies) monitoringGroupDependencies(ctx context.Context
 			}
 		}
 	}
-	for _, group := range groups {
-		if err := validate(group); err != nil {
-			return result, err
-		}
+	if err := validate(); err != nil {
+		return result, err
 	}
 	return result, nil
 }

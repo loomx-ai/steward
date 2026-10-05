@@ -809,3 +809,129 @@ func TestStoragePoolContributionReadsPoolsConcurrently(t *testing.T) {
 	// Each pool is read twice around its two member listings.
 	probe.check(t, 2*(groupReadConcurrency+2), groupReadConcurrency)
 }
+
+// TestMonitoringDependencyValidationReadsConcurrentlyInOrder covers the
+// alert policy, notification channel and group validation passes of the
+// Monitoring dependency contribution. Every review is stale, so each run stops
+// at the first pass.
+func TestMonitoringDependencyValidationReadsConcurrentlyInOrder(t *testing.T) {
+	for _, entry := range []struct {
+		kind, review, fixtureName, denied string
+		fixture                           func() map[string]any
+		contribute                        func(*monitoringDependencies, context.Context, []asset.Asset) error
+	}{
+		{alertPolicyType, alertPolicyReview, alertPolicyName, "monitoring_configuration_changed", alertPolicyFixture, func(h *monitoringDependencies, ctx context.Context, values []asset.Asset) error {
+			_, err := h.monitoringDashboardPolicyDependencies(ctx, values)
+			return err
+		}},
+		{notificationChannelType, notificationChannelReview, notificationChannelName, "notification_channel_configuration_changed", notificationChannelFixture, func(h *monitoringDependencies, ctx context.Context, values []asset.Asset) error {
+			_, err := h.notificationChannelDependencies(ctx, values)
+			return err
+		}},
+		{monitoringGroupType, monitoringGroupReview, testMonitoringGroupName, "monitoring_group_configuration_changed", monitoringGroupFixture, func(h *monitoringDependencies, ctx context.Context, values []asset.Asset) error {
+			_, err := h.monitoringGroupDependencies(ctx, values)
+			return err
+		}},
+	} {
+		t.Run(entry.kind, func(t *testing.T) {
+			prefix := entry.fixtureName[:strings.LastIndex(entry.fixtureName, "/")+1]
+			fixture, _ := json.Marshal(entry.fixture())
+			live := func(req *http.Request) (*http.Response, error) {
+				name := prefix + last(req.URL.Path)
+				return apiResponse(req, 200, strings.ReplaceAll(string(fixture), entry.fixtureName, name)), nil
+			}
+			var values []asset.Asset
+			for i := range groupReadConcurrency + 4 {
+				values = append(values, asset.Asset{ID: asset.AssetID(fmt.Sprintf("a-%02d", i)), Identity: asset.Identity{ConnectionID: "connection", Provider: asset.ProviderGCP, Partition: "gcp", NativeType: entry.kind, NativeID: fmt.Sprintf("//monitoring.googleapis.com/%s100%02d", prefix, i)}, Normalized: map[string]any{entry.review: "stale"}})
+			}
+			run := func(transport roundTripFunc) error {
+				c, err := protocolRuntime(t, transport).resolve(t.Context(), "connection")
+				if err != nil {
+					t.Fatal(err)
+				}
+				return entry.contribute(&monitoringDependencies{client: c, connection: "connection"}, t.Context(), values)
+			}
+			probe := newReadProbe(groupReadConcurrency, func(r *http.Request) bool { return r.Method == "GET" && strings.Contains(r.URL.Path, prefix+"100") })
+			probe.start()
+			if err := run(probe.wrap(live)); deniedCode(err) != entry.denied {
+				t.Fatal(err)
+			}
+			probe.check(t, len(values), groupReadConcurrency)
+			// The first asset is stale but answers last; the second fails first.
+			// A serial walk reports the stale first asset, so ordered evaluation must too.
+			failed := make(chan struct{})
+			err := run(func(req *http.Request) (*http.Response, error) {
+				switch {
+				case strings.HasSuffix(req.URL.Path, "/10001"):
+					defer close(failed)
+					return apiResponse(req, 400, `{"error":{"code":400}}`), nil
+				case strings.HasSuffix(req.URL.Path, "/10000"):
+					after(failed)
+				}
+				return live(req)
+			})
+			if deniedCode(err) != entry.denied {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
+func TestComputeReadsListAndGetConcurrentlyInOrder(t *testing.T) {
+	// One VM per zone: each zone is its own list, and every list fails so each
+	// VM falls back to its own GET.
+	var ids []string
+	for i := range groupReadConcurrency + 4 {
+		ids = append(ids, fmt.Sprintf("//compute.googleapis.com/projects/sample-project/zones/z-%02d/instances/vm-%02d", i, i))
+	}
+	isList := func(r *http.Request) bool { return strings.HasSuffix(r.URL.Path, "/instances") }
+	isGet := func(r *http.Request) bool { return strings.Contains(r.URL.Path, "/instances/vm-") }
+	lists := newReadProbe(groupReadConcurrency, isList)
+	gets := newReadProbe(groupReadConcurrency, isGet)
+	r := protocolRuntime(t, lists.wrap(gets.wrap(func(req *http.Request) (*http.Response, error) {
+		if isList(req) {
+			return apiResponse(req, 400, `{"error":{"code":400}}`), nil
+		}
+		return apiResponse(req, 200, fmt.Sprintf(`{"name":%q}`, last(req.URL.Path))), nil
+	})))
+	c, err := r.resolve(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	lists.start()
+	gets.start()
+	reads, err := c.computeReads(t.Context(), instanceType, append(ids, ids[0]))
+	if err != nil || len(reads) != len(ids) {
+		t.Fatal(reads, err)
+	}
+	for _, id := range ids {
+		if reads[id]["name"] != last(id) {
+			t.Fatalf("%s read %v", id, reads[id])
+		}
+	}
+	lists.check(t, len(ids), groupReadConcurrency)
+	gets.check(t, len(ids), groupReadConcurrency)
+
+	// The first GET is denied but answers last; the second fails first. A
+	// serial walk reports the first VM's error, so ordered evaluation must too.
+	failed := make(chan struct{})
+	r = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		switch {
+		case isList(req):
+			return apiResponse(req, 400, `{"error":{"code":400}}`), nil
+		case strings.HasSuffix(req.URL.Path, "/vm-01"):
+			defer close(failed)
+			return apiResponse(req, 400, `{"error":{"code":400}}`), nil
+		case strings.HasSuffix(req.URL.Path, "/vm-00"):
+			after(failed)
+			return apiResponse(req, 403, `{"error":{"code":403}}`), nil
+		}
+		return apiResponse(req, 200, `{}`), nil
+	})
+	if c, err = r.resolve(t.Context(), "connection"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.computeReads(t.Context(), instanceType, ids); deniedCode(err) != "403" {
+		t.Fatal(err)
+	}
+}
