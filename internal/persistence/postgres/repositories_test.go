@@ -1,11 +1,14 @@
 package postgres_test
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -107,5 +110,51 @@ func TestWithSearchPath(t *testing.T) {
 				t.Fatalf("withSearchPath() = %q, want %q", got, test.want)
 			}
 		})
+	}
+}
+
+// Two stores with separate pools stand in for two server processes.
+func TestPostgresWithLockSerializesAcrossPools(t *testing.T) {
+	dsn := os.Getenv("STEWARD_TEST_POSTGRES_DSN")
+	if dsn == "" {
+		t.Skip("STEWARD_TEST_POSTGRES_DSN is not configured")
+	}
+	open := func() persistence.Repositories {
+		db, err := gorm.Open(gormpostgres.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+		if err != nil {
+			t.Fatal(err)
+		}
+		sqlDB, _ := db.DB()
+		t.Cleanup(func() { _ = sqlDB.Close() })
+		return postgres.New(db)
+	}
+	first, second := open(), open()
+	ctx := t.Context()
+	var inside, overlaps atomic.Int32
+	var wg sync.WaitGroup
+	for index := range 8 {
+		store := first
+		if index%2 == 1 {
+			store = second
+		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			err := store.WithLock(ctx, "test-lock", func(context.Context) error {
+				if inside.Add(1) > 1 {
+					overlaps.Add(1)
+				}
+				time.Sleep(20 * time.Millisecond)
+				inside.Add(-1)
+				return nil
+			})
+			if err != nil {
+				t.Error(err)
+			}
+		}()
+	}
+	wg.Wait()
+	if overlaps.Load() != 0 {
+		t.Fatalf("lock holders overlapped %d times", overlaps.Load())
 	}
 }

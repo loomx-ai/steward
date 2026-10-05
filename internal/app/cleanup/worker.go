@@ -533,7 +533,6 @@ type ExecutionHandler struct {
 	resolver             ActionResolver
 	retryDelay           time.Duration
 	deletionCheckTimeout time.Duration
-	executionStateMu     sync.Mutex
 	afterIntentPersisted func(execution.ActionAttempt) error
 	afterProviderCall    func(execution.ActionAttempt, contracts.ActionResult) error
 	// taskMemo keeps each cleanup task's decoded steps and impact items by
@@ -668,8 +667,12 @@ func (h *ExecutionHandler) ReconcileJobSettlement(ctx context.Context, job execu
 		return nil
 	}
 
-	h.executionStateMu.Lock()
-	defer h.executionStateMu.Unlock()
+	return h.lockExecution(ctx, executionID, func(ctx context.Context) error {
+		return h.reconcileJobSettlementLocked(ctx, job, executionID, cleanupTaskID)
+	})
+}
+
+func (h *ExecutionHandler) reconcileJobSettlementLocked(ctx context.Context, job execution.Job, executionID execution.ExecutionID, cleanupTaskID plan.CleanupTaskID) error {
 	return h.planner.repositories.WithTx(ctx, func(repositories persistence.Repositories) error {
 		attempt, err := repositories.Executions().GetExecution(ctx, executionID)
 		if err != nil {
@@ -1894,10 +1897,21 @@ func readbackState(readback map[string]any) string {
 	return strings.TrimSpace(state)
 }
 
-func (h *ExecutionHandler) startExecution(ctx context.Context, executionID execution.ExecutionID) (execution.ExecutionAttempt, error) {
-	h.executionStateMu.Lock()
-	defer h.executionStateMu.Unlock()
+func (h *ExecutionHandler) startExecution(ctx context.Context, executionID execution.ExecutionID) (attempt execution.ExecutionAttempt, err error) {
+	err = h.lockExecution(ctx, executionID, func(ctx context.Context) error {
+		attempt, err = h.startExecutionLocked(ctx, executionID)
+		return err
+	})
+	return attempt, err
+}
 
+// lockExecution serializes execution-level state transitions (start, pause
+// settlement, finalization) across every job and every server process.
+func (h *ExecutionHandler) lockExecution(ctx context.Context, id execution.ExecutionID, fn func(context.Context) error) error {
+	return h.planner.repositories.WithLock(ctx, "cleanup-execution:"+string(id), fn)
+}
+
+func (h *ExecutionHandler) startExecutionLocked(ctx context.Context, executionID execution.ExecutionID) (execution.ExecutionAttempt, error) {
 	attempt, err := h.planner.repositories.Executions().GetExecution(ctx, executionID)
 	if err != nil || attempt.Status != execution.ExecutionPending {
 		return attempt, err
@@ -2507,9 +2521,12 @@ func (h *ExecutionHandler) finalizeExecution(ctx context.Context, attempt execut
 		return nil
 	}
 
-	h.executionStateMu.Lock()
-	defer h.executionStateMu.Unlock()
+	return h.lockExecution(ctx, attempt.ID, func(ctx context.Context) error {
+		return h.finalizeExecutionLocked(ctx, attempt, aggregate)
+	})
+}
 
+func (h *ExecutionHandler) finalizeExecutionLocked(ctx context.Context, attempt execution.ExecutionAttempt, aggregate persistence.CleanupTaskAggregate) error {
 	current, err := h.planner.repositories.Executions().GetExecution(ctx, attempt.ID)
 	if err != nil {
 		return err

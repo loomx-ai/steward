@@ -1,6 +1,7 @@
 package persistence
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"io/fs"
@@ -33,10 +34,36 @@ func Migrate(db *sql.DB, dialect, directory string) error {
 	if err := goose.SetDialect(dialect); err != nil {
 		return fmt.Errorf("set migration dialect: %w", err)
 	}
+	if dialect == "postgres" {
+		// Servers sharing one database start together; the session lock makes
+		// the others wait for the first one's migrations.
+		unlock, err := lockPostgresMigrations(db)
+		if err != nil {
+			return err
+		}
+		defer unlock()
+	}
 	if err := goose.Up(db, "."); err != nil {
 		return fmt.Errorf("run migrations: %w", err)
 	}
 	return nil
+}
+
+func lockPostgresMigrations(db *sql.DB) (func(), error) {
+	ctx := context.Background()
+	conn, err := db.Conn(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("lock migrations: %w", err)
+	}
+	const key = "hashtextextended('steward-migrate:' || current_schema(), 0)"
+	if _, err := conn.ExecContext(ctx, "SELECT pg_advisory_lock("+key+")"); err != nil {
+		_ = conn.Close()
+		return nil, fmt.Errorf("lock migrations: %w", err)
+	}
+	return func() {
+		_, _ = conn.ExecContext(ctx, "SELECT pg_advisory_unlock("+key+")")
+		_ = conn.Close()
+	}, nil
 }
 
 // dialectFS hides the migrations written for other dialects.

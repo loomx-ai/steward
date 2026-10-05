@@ -351,6 +351,18 @@ func (s *Service) RunNow(ctx context.Context, connectionID asset.ConnectionID, i
 // Tick does one round of scheduler work. Run calls it on an interval; tests
 // call it directly with a controlled clock.
 func (s *Service) Tick(ctx context.Context) {
+	// Every server sharing the database runs the scheduler; one tick at a
+	// time keeps settlement, failure counters and notifications single.
+	err := s.repositories.WithLock(ctx, "scan-scheduler", func(ctx context.Context) error {
+		s.tick(ctx)
+		return nil
+	})
+	if err != nil && ctx.Err() == nil {
+		slog.Error("scan scheduler lock could not be taken", "error", err)
+	}
+}
+
+func (s *Service) tick(ctx context.Context) {
 	now := s.clock()
 	if err := s.triggerDue(ctx, now); err != nil {
 		slog.Error("scheduled scans could not be triggered", "error", err)

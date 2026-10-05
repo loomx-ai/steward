@@ -24,6 +24,7 @@ import (
 	"github.com/loomx-ai/steward/internal/credential"
 	"github.com/loomx-ai/steward/internal/credential/oauth"
 	"github.com/loomx-ai/steward/internal/datadir"
+	"github.com/loomx-ai/steward/internal/idgen"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/persistence/postgres"
 	"github.com/loomx-ai/steward/internal/persistence/sqlite"
@@ -200,23 +201,26 @@ func Run(ctx context.Context, config Config) error {
 	scanHandler := inventory.NewScanHandler(repositories, registry, inventoryService)
 	graphHandler := governance.NewGraphHandler(repositories, registry, newLifecycleContributorResolver(registry))
 	regionRefreshHandler := regionapp.NewRefreshHandler(repositories, registry, regionService)
+	// Lease owners must be unique per process: several servers may share one
+	// database, and a lease renewal only compares the owner string.
+	instance := idgen.MustNew("prc")
 	controlWorkers := []*cleanup.Worker{
 		cleanup.NewWorker(repositories.Jobs(), map[execution.JobType]cleanup.Handler{
 			execution.JobExecute: executionHandler,
 		}, cleanup.WorkerOptions{
-			WorkerID: "server-execution", AllowedTypes: []execution.JobType{execution.JobExecute}, Concurrency: cleanup.ExecutionWorkerConcurrency, PollInterval: config.PollInterval,
+			WorkerID: instance + "/" + "server-execution", AllowedTypes: []execution.JobType{execution.JobExecute}, Concurrency: cleanup.ExecutionWorkerConcurrency, PollInterval: config.PollInterval,
 			OnError: func(err error) { slog.Error("durable execution job failed", "error", err) },
 		}),
 		cleanup.NewWorker(repositories.Jobs(), map[execution.JobType]cleanup.Handler{
 			execution.JobGraph: graphHandler,
 		}, cleanup.WorkerOptions{
-			WorkerID: "server-graph", AllowedTypes: []execution.JobType{execution.JobGraph}, PollInterval: config.PollInterval,
+			WorkerID: instance + "/" + "server-graph", AllowedTypes: []execution.JobType{execution.JobGraph}, PollInterval: config.PollInterval,
 			OnError: func(err error) { slog.Error("durable graph job failed", "error", err) },
 		}),
 		cleanup.NewWorker(repositories.Jobs(), map[execution.JobType]cleanup.Handler{
 			execution.JobRegionRefresh: regionRefreshHandler,
 		}, cleanup.WorkerOptions{
-			WorkerID: "server-region", AllowedTypes: []execution.JobType{execution.JobRegionRefresh}, PollInterval: config.PollInterval,
+			WorkerID: instance + "/" + "server-region", AllowedTypes: []execution.JobType{execution.JobRegionRefresh}, PollInterval: config.PollInterval,
 			OnError: func(err error) { slog.Error("durable region refresh job failed", "error", err) },
 		}),
 	}
@@ -229,7 +233,7 @@ func Run(ctx context.Context, config Config) error {
 	}
 	for index := range config.ScanConcurrency {
 		scanWorker := cleanup.NewWorker(repositories.Jobs(), map[execution.JobType]cleanup.Handler{execution.JobScan: scanHandler}, cleanup.WorkerOptions{
-			WorkerID: fmt.Sprintf("server-scan-%d", index+1), AllowedTypes: []execution.JobType{execution.JobScan}, PollInterval: config.PollInterval,
+			WorkerID: fmt.Sprintf("%s/server-scan-%d", instance, index+1), AllowedTypes: []execution.JobType{execution.JobScan}, PollInterval: config.PollInterval,
 			OnError: func(err error) { slog.Error("durable scan target failed", "error", err) },
 		})
 		go func() {

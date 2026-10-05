@@ -30,6 +30,7 @@ type Store struct {
 	// touched collects the connections whose inventory the transaction
 	// changed; nil outside a transaction.
 	touched *touchedConnections
+	locks   *lockStripes
 }
 
 // touchedConnections is bumped in inventory_versions as the outermost
@@ -60,7 +61,7 @@ func (s *Store) touch(connectionIDs ...string) {
 // transaction, so a writer can touch connections without a savepoint.
 func (s *Store) write(ctx context.Context, fn func(*Store) error) error {
 	if s.touched != nil {
-		return fn(&Store{db: s.db.WithContext(ctx), aliases: s.aliases, touched: s.touched})
+		return fn(&Store{db: s.db.WithContext(ctx), aliases: s.aliases, touched: s.touched, locks: s.locks})
 	}
 	return s.transaction(ctx, fn)
 }
@@ -100,7 +101,7 @@ func (m *aliasMemo) reset() {
 }
 
 func New(db *gorm.DB) *Store {
-	return &Store{db: db}
+	return &Store{db: db, locks: &lockStripes{}}
 }
 
 // inTx returns the store a transaction callback works with. Only
@@ -116,7 +117,7 @@ func (s *Store) inTx(tx *gorm.DB) *Store {
 	if touched == nil {
 		touched = &touchedConnections{}
 	}
-	return &Store{db: tx, aliases: memo, touched: touched}
+	return &Store{db: tx, aliases: memo, touched: touched, locks: s.locks}
 }
 
 func (s *Store) transaction(ctx context.Context, fn func(*Store) error) error {

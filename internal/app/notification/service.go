@@ -129,7 +129,6 @@ type Service struct {
 	publicURL    string
 	clock        func() time.Time
 	retryDelays  []time.Duration
-	mu           sync.Mutex
 	pending      sync.WaitGroup
 }
 
@@ -361,8 +360,14 @@ func (s *Service) Delete(ctx context.Context, id, actor string) error {
 }
 
 func (s *Service) mutate(ctx context.Context, actor, action, id string, change func([]Channel) ([]Channel, error)) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	// The channels share one settings value; the lock keeps read-modify-write
+	// from losing another server's change.
+	return s.repositories.WithLock(ctx, "notification-channels", func(ctx context.Context) error {
+		return s.mutateLocked(ctx, actor, action, id, change)
+	})
+}
+
+func (s *Service) mutateLocked(ctx context.Context, actor, action, id string, change func([]Channel) ([]Channel, error)) error {
 	return s.repositories.WithTx(ctx, func(repositories persistence.Repositories) error {
 		channels, err := loadChannels(ctx, repositories)
 		if err != nil {

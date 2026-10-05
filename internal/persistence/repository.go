@@ -369,4 +369,7 @@ type Repositories interface {
 	Jobs() JobRepository
 	Schedules() ScheduleRepository
 	WithTx(context.Context, func(Repositories) error) error
+	// WithLock serializes fn with every other holder of key, across all
+	// servers sharing the database. It must not be called inside WithTx.
+	WithLock(ctx context.Context, key string, fn func(context.Context) error) error
 }
