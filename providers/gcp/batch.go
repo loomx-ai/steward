@@ -198,19 +198,14 @@ func (c *client) batchTasks(ctx context.Context, parent asset.Identity, data map
 				return nil, err
 			}
 			seen[id] = true
-			live, err := c.nativeGet(ctx, batchTaskType, id)
-			if err != nil {
-				return nil, err
-			}
-			if c.canonicalName("//batch.googleapis.com/"+text(live["name"])) != id {
-				return nil, groupDenied("batch_task_identity_changed")
-			}
-			live[batchParentProof] = target.ParentConfiguration
-			live["_batch_job_uid"] = target.ParentUID
-			result = append(result, serviceChild{kind: batchTaskType, id: id, data: live})
+			// A Task has only name and status, and tasks.list returns the same
+			// Task resource as tasks.get, so the list row is the complete read.
+			record[batchParentProof] = target.ParentConfiguration
+			record["_batch_job_uid"] = target.ParentUID
+			result = append(result, serviceChild{kind: batchTaskType, id: id, data: record})
 		}
 		// Tasks can materialize while a queued job starts. Reconcile the complete
-		// set after detail reads, including empty pages with continuation tokens.
+		// set with a second list, including empty pages with continuation tokens.
 		again, err := c.nativeList(ctx, op, map[string]any{"parent": group, "pageSize": 100}, "tasks")
 		if err != nil {
 			return nil, err

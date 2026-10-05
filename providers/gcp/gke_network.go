@@ -280,10 +280,10 @@ func description(data map[string]any) map[string]any {
 // Frontend identity is the live Kubernetes published address AND listener,
 // joined to native Compute links. A resource-name prefix alone is never a root.
 // gkeNetwork reads the cluster's network resources. Within a scan (scan set),
-// the project-wide lists are shared by every cluster of the scan; a delete-time
-// read passes no scan and lists live.
+// the project-wide lists are shared by the scan's clusters while at most
+// sharedListMaxAge old; a delete-time read passes no scan and lists live.
 func (c *client) gkeNetwork(ctx context.Context, scan asset.ScanRunID, root asset.Asset, live map[string]any, nodes []gkeMember) (gkeNetworkSnapshot, error) {
-	lists := withSharedReads(ctx, scan)
+	lists := withRecentSharedReads(ctx, scan)
 	result := gkeNetworkSnapshot{ClusterUID: text(live["id"]), Resources: []gkeNetworkResource{}}
 	networks := references(c, live)["compute.googleapis.com/Network"]
 	if len(networks) != 1 {

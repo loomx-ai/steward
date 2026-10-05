@@ -178,22 +178,40 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, dat
 			}
 			kind, _ := findType(childType)
 			generation := map[string]string{}
+			// Validate identities in order up to the first invalid record, read
+			// those children concurrently, then check them in order: the first
+			// error is the one a serial walk would report.
+			var ids, endpoints []string
+			var invalid error
 			for _, record := range records {
 				id, err := c.productIdentity(kind, operation, parameters, api.IdentityPath, productRecord{Data: record})
 				if err != nil {
-					return nil, err
+					invalid = err
+					break
 				}
 				// Native nesting also binds the parent, so a foreign or sibling child can
 				// never be authorized by a list response at this endpoint.
 				if !strings.HasPrefix(id, parent.NativeID+"/") || seen[id] {
-					return nil, fmt.Errorf("invalid or duplicate service child identity")
+					invalid = fmt.Errorf("invalid or duplicate service child identity")
+					break
 				}
 				seen[id] = true
 				endpoint, err := c.resourceURL(kind, id)
 				if err != nil {
-					return nil, err
+					invalid = err
+					break
 				}
-				live, err := c.request(ctx, "GET", endpoint, nil)
+				ids, endpoints = append(ids, id), append(endpoints, endpoint)
+			}
+			lives := make([]map[string]any, len(ids))
+			readErrs := make([]error, len(ids))
+			_ = forEachConcurrently(len(ids), groupReadConcurrency, func(index int) error {
+				lives[index], readErrs[index] = c.request(ctx, "GET", endpoints[index], nil)
+				return readErrs[index]
+			})
+			for index, id := range ids {
+				record := records[index]
+				live, err := lives[index], readErrs[index]
 				if err != nil {
 					return nil, err
 				}
@@ -210,6 +228,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, dat
 					generation[id] = dataformConfiguration(childType, live)
 				}
 				result = append(result, serviceChild{kind: childType, id: id, data: live, direct: slices.Contains(rule.directChildren, childType)})
+			}
+			if invalid != nil {
+				return nil, invalid
 			}
 			if isDataform(childType) {
 				// Scheduled work may create members during detail reads. Reconcile a

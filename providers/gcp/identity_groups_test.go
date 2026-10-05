@@ -822,3 +822,58 @@ func TestIdentityGroupShardsOfOneScanShareOneDirectoryRead(t *testing.T) {
 		t.Fatalf("requests = %v items = %d", paths, items)
 	}
 }
+
+// Assets saved before memberships carried only the member-list digest (each
+// row held the whole list) must block until rescanned, never pass silently.
+func TestIdentityLegacyMemberListAssetsBlockUntilRescanned(t *testing.T) {
+	s := newIdentityScenario()
+	r, values, _, request := identityReviewed(t, s)
+	group := batchAsset(values, identityTestGroup)
+	list := group.Normalized[identityMembers]
+	if len(text(list)) < 64 || group.Normalized[identityMembersDigest] != firewallDigest(text(list)) {
+		t.Fatalf("group must keep the full list and its digest: %+v", group.Normalized)
+	}
+	legacy := func(value asset.Asset) asset.Asset {
+		value.Normalized = cloneParameters(value.Normalized)
+		delete(value.Normalized, identityMembersDigest)
+		value.Normalized[identityMembers] = list
+		value.Normalized[identitySnapshot] = firewallDigest(map[string]any{"name": value.Normalized["name"], "scope": value.Normalized[identityScope], "configuration": value.Normalized[identityProof], "parent": value.Normalized[identityParentProof], "members": list})
+		return value
+	}
+	member := batchAsset(values, identityTestGroup+"/memberships/m-user")
+	if _, present := member.Normalized[identityMembers]; present || len(text(member.Normalized[identityMembersDigest])) != 64 {
+		t.Fatalf("membership must carry only the digest: %+v", member.Normalized)
+	}
+	old := legacy(member)
+	driver, err := r.ResolveAction(context.Background(), "connection", old)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := driver.Execute(context.Background(), contracts.ActionRequest{Asset: old, Action: "delete", IdempotencyKey: "legacy"}); err == nil {
+		t.Fatal("legacy membership unlink accepted")
+	}
+	// A legacy membership impact also blocks the group delete.
+	request.LifecycleImpacts[0].Asset = legacy(request.LifecycleImpacts[0].Asset)
+	if driver, err = r.ResolveAction(context.Background(), "connection", request.Asset); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := driver.Execute(context.Background(), request); err == nil {
+		t.Fatal("group delete accepted a legacy membership impact")
+	}
+	contributor, err := r.ServiceLifecycle(context.Background(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	stale := slices.Clone(values)
+	for i := range stale {
+		if stale[i].Identity.NativeType == identityGroupType || stale[i].Identity.NativeType == identityMemberType {
+			stale[i] = legacy(stale[i])
+		}
+	}
+	if _, err := contributor.Contribute(context.Background(), "scope", stale); err == nil {
+		t.Fatal("legacy identity assets contributed permissively")
+	}
+	if len(s.writes) != 0 {
+		t.Fatal("legacy assets reached a native write")
+	}
+}

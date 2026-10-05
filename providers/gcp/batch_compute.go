@@ -278,9 +278,13 @@ func (c *client) batchChildren(ctx context.Context, parent asset.Identity, data 
 			return nil, err
 		}
 		for _, disk := range disks {
-			live, err := c.nativeGet(ctx, disk.kind, disk.id)
-			if err != nil {
-				return nil, err
+			// An owned disk was read live, identity-checked and compared with its
+			// list row above; read only disks outside the job's compute set.
+			live := ownedDisks[disk.id].data
+			if live == nil {
+				if live, err = c.nativeGet(ctx, disk.kind, disk.id); err != nil {
+					return nil, err
+				}
 			}
 			if c.canonicalName(text(live["selfLink"])) != disk.id || text(live["id"]) == "" {
 				return nil, groupDenied("batch_disk_identity_invalid")

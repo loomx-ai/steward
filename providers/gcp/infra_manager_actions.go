@@ -571,7 +571,7 @@ func (a *action) waitInfra(ctx context.Context, request contracts.ActionRequest,
 		next.Data["initial_operation"] = result.ProviderOperationID
 		return contracts.WaitResult{Data: next.Data, State: text(next.Data["phase"]), RetryAfter: 2 * time.Second}, nil
 	}
-	pending := false
+	pending, delay := false, 2*time.Second
 	if operation != "" {
 		u, err := url.Parse(operation)
 		if err != nil || u.User != nil || u.RawQuery != "" || u.Fragment != "" || u.RawPath != "" {
@@ -593,12 +593,16 @@ func (a *action) waitInfra(ctx context.Context, request contracts.ActionRequest,
 			if actual != expected {
 				return contracts.WaitResult{}, groupDenied("infra_operation_changed")
 			}
-			pending = response.Data["done"] != true
+			// A pending operation backs off with its age; a done one is read
+			// back at the short interval.
+			if pending = response.Data["done"] != true; pending {
+				delay = operationPollDelay(response.Data, time.Now())
+			}
 		}
 	}
 	read, err := a.infraReadback(ctx, request)
 	if err == nil && read.Exists && read.State == "FAILED" {
 		return contracts.WaitResult{}, groupDenied("infra_delete_failed")
 	}
-	return contracts.WaitResult{Done: err == nil && !pending && !read.Exists, State: read.State, RetryAfter: 2 * time.Second}, err
+	return contracts.WaitResult{Done: err == nil && !pending && !read.Exists, State: read.State, RetryAfter: delay}, err
 }

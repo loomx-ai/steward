@@ -113,7 +113,7 @@ func (a *action) waitDiscovery(ctx context.Context, request contracts.ActionRequ
 				return contracts.WaitResult{}, err
 			}
 			if response.Data["done"] != true {
-				return contracts.WaitResult{State: "deleting", RetryAfter: 2 * time.Second}, nil
+				return contracts.WaitResult{State: "deleting", RetryAfter: operationPollDelay(response.Data, time.Now())}, nil
 			}
 		}
 	}

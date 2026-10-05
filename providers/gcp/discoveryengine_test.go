@@ -10,6 +10,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -35,6 +36,8 @@ type discoveryScenario struct {
 	calls      []string
 	emptyPage  bool
 	handle     func(*http.Request) (*http.Response, bool)
+	// mu serializes the fake service: cascade parents are read concurrently.
+	mu sync.Mutex
 }
 
 func newDiscoveryScenario(t *testing.T) *discoveryScenario {
@@ -55,6 +58,8 @@ func newDiscoveryScenario(t *testing.T) *discoveryScenario {
 func (s *discoveryScenario) transport(t *testing.T) roundTripFunc {
 	t.Helper()
 	return func(req *http.Request) (*http.Response, error) {
+		s.mu.Lock()
+		defer s.mu.Unlock()
 		s.calls = append(s.calls, req.Method+" "+req.URL.String())
 		if s.handle != nil {
 			if response, ok := s.handle(req); ok {

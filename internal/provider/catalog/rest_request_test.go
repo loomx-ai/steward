@@ -2,9 +2,13 @@ package catalog
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
+	"runtime"
 	"strings"
 	"testing"
+	"time"
+	"weak"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 )
@@ -154,5 +158,42 @@ func TestRESTSQLVMNativeNamePattern(t *testing.T) {
 		if _, err := BindREST(operation, map[string]any{"name": name}); err == nil {
 			t.Errorf("invalid SQL VM name accepted: %q", name)
 		}
+	}
+}
+
+// Collected catalogs drop their operation index instead of being retained.
+func TestOperationIndexDoesNotRetainCollectedCatalogs(t *testing.T) {
+	var keys []operationIndexKey
+	var live Catalog
+	for range 20 {
+		c := Catalog{}
+		for i := range indexedOperations {
+			c.Operations = append(c.Operations, Operation{ID: fmt.Sprintf("svc.op%d", i)})
+		}
+		if _, ok := c.Operation("svc.op1"); !ok {
+			t.Fatal("indexed operation missing")
+		}
+		keys = append(keys, operationIndexKey{weak.Make(&c.Operations[0]), len(c.Operations)})
+		live = c
+	}
+	retained := func() (n int) {
+		for _, key := range keys {
+			if _, ok := operationIndexes.Load(key); ok {
+				n++
+			}
+		}
+		return n
+	}
+	if retained() == 0 {
+		t.Fatal("indexes were never stored")
+	}
+	runtime.KeepAlive(live.Operations)
+	live = Catalog{}
+	for deadline := time.Now().Add(5 * time.Second); retained() > 0 && time.Now().Before(deadline); {
+		runtime.GC()
+		time.Sleep(10 * time.Millisecond)
+	}
+	if n := retained(); n > 0 {
+		t.Fatalf("%d operation indexes retained after their catalogs were collected", n)
 	}
 }

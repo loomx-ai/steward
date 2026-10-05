@@ -342,7 +342,6 @@ func (a *action) waitBatch(ctx context.Context, request contracts.ActionRequest,
 	if _, err := a.batchPlan(request); err != nil {
 		return contracts.WaitResult{}, err
 	}
-	delay := 2 * time.Second
 	if operation := result.ProviderOperationID; operation != "" {
 		parsed, err := url.Parse(operation)
 		if err != nil {
@@ -368,12 +367,11 @@ func (a *action) waitBatch(ctx context.Context, request contracts.ActionRequest,
 			if err := operationError(response.Data, response.RequestID); err != nil {
 				return contracts.WaitResult{}, err
 			}
-			delay = operationPollDelay(response.Data, time.Now())
 			if response.Data["done"] != true {
-				return contracts.WaitResult{RetryAfter: delay, State: "batch_delete"}, nil
+				return contracts.WaitResult{RetryAfter: operationPollDelay(response.Data, time.Now()), State: "batch_delete"}, nil
 			}
 		}
 	}
 	read, err := a.Readback(ctx, request)
-	return contracts.WaitResult{Done: err == nil && !read.Exists, RetryAfter: delay, State: read.State}, err
+	return contracts.WaitResult{Done: err == nil && !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
 }

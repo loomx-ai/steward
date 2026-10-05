@@ -78,9 +78,9 @@ func (r *Runtime) listFirewall(ctx context.Context, c *client, request contracts
 			return batch, err
 		}
 	}
-	// Every kind and region shard of a scan lists the same policy set, so the
-	// first list is shared within the scan.
-	rows, err := c.firewallPolicies(withSharedReads(ctx, request.ScanRunID), parentKind, containers)
+	// Every kind and region shard of a scan lists the same policy set, so a
+	// list is shared within the scan while it is at most sharedListMaxAge old.
+	rows, err := c.firewallPolicies(withRecentSharedReads(ctx, request.ScanRunID), parentKind, containers)
 	if err != nil {
 		return batch, err
 	}

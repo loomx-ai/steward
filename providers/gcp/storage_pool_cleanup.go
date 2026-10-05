@@ -116,9 +116,13 @@ func (c *client) storagePoolSame(root asset.Asset, live map[string]any) error {
 func (h *computeGroups) contributeStoragePools(ctx context.Context, assets []asset.Asset, bindings []graph.LifecycleBinding) (governance.Contribution, error) {
 	indexed := indexManagedAssets(assets)
 	result := governance.Contribution{}
+	var chain *storagePoolChain
 	for _, root := range assets {
 		if root.Identity.Provider != asset.ProviderGCP || root.Identity.NativeType != storagePoolType {
 			continue
+		}
+		if chain == nil {
+			chain = newStoragePoolChain(assets, bindings)
 		}
 		block := func(id, kind, reason string) {
 			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: root.Identity.Provider, ConnectionID: root.Identity.ConnectionID, ControllerID: root.ID, NativeType: kind, NativeID: id, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{"source": poolLifecycleSource, "reason": reason}})
@@ -187,7 +191,7 @@ func (h *computeGroups) contributeStoragePools(ctx context.Context, assets []ass
 				"native_pool": root.Identity.NativeID,
 				graph.RelationshipEvidenceRequiredDeletion:           true,
 				graph.RelationshipEvidenceAutomaticSelection:         false,
-				graph.RelationshipEvidenceDeletionCascadeControllers: storagePoolDiskControllers(disk, assets, bindings),
+				graph.RelationshipEvidenceDeletionCascadeControllers: chain.controllers(disk),
 				graph.RelationshipEvidenceAuthority:                  string(graph.AuthorityAuthoritative),
 				graph.RelationshipEvidenceDeletionOrder:              graph.DeletionOrderTargetBeforeSource,
 			}})
@@ -376,17 +380,35 @@ func (a *action) storagePoolWait(ctx context.Context, request contracts.ActionRe
 
 // Reuse the native lifecycle chain without inventing pool ownership. The solver
 // still requires the chosen controller to be selected and the disk not retained.
-func storagePoolDiskControllers(disk asset.Asset, assets []asset.Asset, bindings []graph.LifecycleBinding) map[string]any {
+//
+// The chain indexes bindings by managed asset and assets by ID once per
+// contribution, so each pooled disk's walk does not rescan both lists per hop.
+type storagePoolChain struct {
+	assets   map[asset.AssetID]asset.Asset
+	bindings map[asset.AssetID][]graph.LifecycleBinding
+}
+
+func newStoragePoolChain(assets []asset.Asset, bindings []graph.LifecycleBinding) *storagePoolChain {
+	chain := &storagePoolChain{assets: make(map[asset.AssetID]asset.Asset, len(assets)), bindings: map[asset.AssetID][]graph.LifecycleBinding{}}
+	for _, value := range assets {
+		if _, ok := chain.assets[value.ID]; !ok {
+			chain.assets[value.ID] = value // The first asset wins, as in a linear scan.
+		}
+	}
+	for _, binding := range bindings {
+		chain.bindings[binding.ManagedAssetID] = append(chain.bindings[binding.ManagedAssetID], binding)
+	}
+	return chain
+}
+
+func (chain *storagePoolChain) controllers(disk asset.Asset) map[string]any {
 	controllers := map[string]any{}
 	seen := map[asset.AssetID]bool{}
 	member := disk.ID
 	for !seen[member] {
 		seen[member] = true
 		var owner asset.AssetID
-		for _, binding := range bindings {
-			if binding.ManagedAssetID != member {
-				continue
-			}
+		for _, binding := range chain.bindings[member] {
 			if owner != "" || binding.Authority != graph.AuthorityAuthoritative || binding.Ownership != graph.OwnershipExclusive || binding.CleanupPolicy != graph.CleanupDelegate || binding.Confidence < graph.ExecutableConfidence || binding.Confidence > 1 || binding.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] != true {
 				return controllers
 			}
@@ -395,13 +417,7 @@ func storagePoolDiskControllers(disk asset.Asset, assets []asset.Asset, bindings
 		if owner == "" || seen[owner] {
 			break
 		}
-		var parent asset.Asset
-		for _, value := range assets {
-			if value.ID == owner {
-				parent = value
-				break
-			}
-		}
+		parent := chain.assets[owner]
 		if parent.Identity.Provider != disk.Identity.Provider || parent.Identity.ConnectionID != disk.Identity.ConnectionID || parent.Identity.Partition != disk.Identity.Partition || parent.ClosedAt != nil {
 			break
 		}

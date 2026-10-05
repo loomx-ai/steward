@@ -5,6 +5,8 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"maps"
+	"slices"
 	"sort"
 	"strings"
 
@@ -550,15 +552,25 @@ func (c *client) dataprocMembers(ctx context.Context, root asset.Asset, cluster 
 				return nil, groupDenied("dataproc_managed_members_changed")
 			}
 		} else {
-			for name, uid := range names {
-				if zone == "" {
-					return nil, groupDenied("dataproc_cluster_zone_missing")
-				}
-				id, err := c.computeID("projects/"+c.project+"/zones/"+zone+"/instances/"+name, instanceType)
-				if err != nil {
+			if len(names) > 0 && zone == "" {
+				return nil, groupDenied("dataproc_cluster_zone_missing")
+			}
+			ordered := slices.Sorted(maps.Keys(names))
+			ids := make([]string, len(ordered))
+			for i, name := range ordered {
+				if ids[i], err = c.computeID("projects/"+c.project+"/zones/"+zone+"/instances/"+name, instanceType); err != nil {
 					return nil, err
 				}
-				vm, err := c.nativeGet(ctx, instanceType, id)
+			}
+			// Read the named VMs concurrently; a missing VM is skipped below, so
+			// every read runs and the results are checked in name order.
+			vms, readErrs := make([]map[string]any, len(ids)), make([]error, len(ids))
+			_ = forEachConcurrently(len(ids), groupReadConcurrency, func(i int) error {
+				vms[i], readErrs[i] = c.nativeGet(ctx, instanceType, ids[i])
+				return nil
+			})
+			for i, id := range ids {
+				uid, vm, err := names[ordered[i]], vms[i], readErrs[i]
 				if isNotFound(err) {
 					continue
 				}
@@ -580,11 +592,20 @@ func (c *client) dataprocMembers(ctx context.Context, root asset.Asset, cluster 
 	// Native lists may still expose resources left behind during failed creation
 	// or provider teardown. Correlation never authorizes an independent Compute write.
 	sort.SliceStable(candidates, func(i, j int) bool { return candidates[i].kind == instanceType && candidates[j].kind != instanceType })
-	for _, candidate := range candidates {
+	// Prefetch the unclaimed candidates concurrently. A VM added below can claim
+	// a later disk, which is then skipped exactly as a serial walk skips it.
+	orphans, orphanErrs := make([]map[string]any, len(candidates)), make([]error, len(candidates))
+	_ = forEachConcurrently(len(candidates), groupReadConcurrency, func(i int) error {
+		if !seen[candidates[i].id] {
+			orphans[i], orphanErrs[i] = c.nativeGet(ctx, candidates[i].kind, candidates[i].id)
+		}
+		return nil
+	})
+	for i, candidate := range candidates {
 		if seen[candidate.id] {
 			continue
 		}
-		live, err := c.nativeGet(ctx, candidate.kind, candidate.id)
+		live, err := orphans[i], orphanErrs[i]
 		if err != nil {
 			return nil, err
 		}
@@ -680,15 +701,29 @@ func (h *computeGroups) contributeDataproc(ctx context.Context, assets []asset.A
 	indexed := indexManagedAssets(assets)
 	result := governance.Contribution{}
 	owned := map[string]bool{}
+	var roots []asset.Asset
 	for _, root := range assets {
-		if root.Identity.Provider != asset.ProviderGCP || root.Identity.NativeType != dataprocClusterType {
-			continue
+		if root.Identity.Provider == asset.ProviderGCP && root.Identity.NativeType == dataprocClusterType {
+			roots = append(roots, root)
 		}
-		live, err := h.client.nativeGet(ctx, dataprocClusterType, root.Identity.NativeID)
-		if err != nil {
-			return result, owned, err
+	}
+	// Read clusters with bounded concurrency; the loop below merges them in
+	// asset order and reports the first failing cluster as a serial walk would.
+	type clusterRead struct {
+		live    map[string]any
+		members []dataprocMember
+		err     error
+	}
+	reads := make([]clusterRead, len(roots))
+	_ = forEachConcurrently(len(roots), groupReadConcurrency, func(index int) error {
+		read := &reads[index]
+		if read.live, read.err = h.client.nativeGet(ctx, dataprocClusterType, roots[index].Identity.NativeID); read.err == nil {
+			read.members, read.err = h.client.dataprocMembers(ctx, roots[index], read.live)
 		}
-		members, err := h.client.dataprocMembers(ctx, root, live)
+		return read.err
+	})
+	for index, root := range roots {
+		live, members, err := reads[index].live, reads[index].members, reads[index].err
 		if err != nil {
 			return result, owned, err
 		}
@@ -796,23 +831,36 @@ func (c *client) dataprocComputeHasCluster(ctx context.Context, kind string, dat
 	if len(regions) == 0 {
 		return false, groupDenied("dataproc_regions_incomplete")
 	}
-	for _, location := range regions {
-		region := text(location["name"])
-		if region == "" {
-			return false, groupDenied("dataproc_region_invalid")
+	// List regions concurrently, then decide in region order: the first error
+	// or match wins exactly as in a serial walk.
+	found, errs := make([]bool, len(regions)), make([]error, len(regions))
+	_ = forEachConcurrently(len(regions), groupReadConcurrency, func(index int) error {
+		found[index], errs[index] = c.dataprocRegionHasCluster(ctx, text(regions[index]["name"]), uuid)
+		return errs[index]
+	})
+	for index := range regions {
+		if errs[index] != nil || found[index] {
+			return found[index], errs[index]
 		}
-		clusters, err := c.batchList(ctx, "dataproc.projects.regions.clusters.list", map[string]any{"projectId": c.project, "region": region, "pageSize": 100}, "clusters")
-		if err != nil {
+	}
+	return false, nil
+}
+
+func (c *client) dataprocRegionHasCluster(ctx context.Context, region, uuid string) (bool, error) {
+	if region == "" {
+		return false, groupDenied("dataproc_region_invalid")
+	}
+	clusters, err := c.batchList(ctx, "dataproc.projects.regions.clusters.list", map[string]any{"projectId": c.project, "region": region, "pageSize": 100}, "clusters")
+	if err != nil {
+		return false, err
+	}
+	for _, cluster := range clusters {
+		id := "//dataproc.googleapis.com/projects/" + c.project + "/regions/" + region + "/clusters/" + text(cluster["clusterName"])
+		if err := c.dataprocIdentity(dataprocClusterType, id, cluster); err != nil {
 			return false, err
 		}
-		for _, cluster := range clusters {
-			id := "//dataproc.googleapis.com/projects/" + c.project + "/regions/" + region + "/clusters/" + text(cluster["clusterName"])
-			if err := c.dataprocIdentity(dataprocClusterType, id, cluster); err != nil {
-				return false, err
-			}
-			if text(cluster["clusterUuid"]) == uuid {
-				return true, nil
-			}
+		if text(cluster["clusterUuid"]) == uuid {
+			return true, nil
 		}
 	}
 	return false, nil

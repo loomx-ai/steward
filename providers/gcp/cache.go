@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"slices"
 	"sync"
 	"time"
 
@@ -68,10 +69,10 @@ func (c *ttlCache[V]) get(key string, ttl time.Duration, refresh bool, load func
 // share those pages: concurrent shards wait for one fetch, a failed fetch fails
 // every waiting shard and is never kept, and pages are never shared across
 // scans. Bodies are kept encoded so every shard decodes its own copy.
-const (
-	sharedReadTTL    = 15 * time.Minute
-	sharedReadBudget = 128 << 20
-)
+const sharedReadTTL = 15 * time.Minute
+
+// sharedReadBudget is a variable only so tests can shrink it.
+var sharedReadBudget = 128 << 20
 
 type sharedReads struct {
 	mu      sync.Mutex
@@ -90,9 +91,25 @@ type sharedRead struct {
 	requestID string
 	err       error
 	expires   time.Time
+	fetched   time.Time
 }
 
 type sharedReadScan struct{}
+type sharedReadMaxAge struct{}
+
+// sharedListMaxAge bounds how old a shared project-wide list may be when a
+// deletion-relevant inventory (firewall policies, GKE frontends) reuses it.
+const sharedListMaxAge = 2 * time.Minute
+
+// withRecentSharedReads is withSharedReads for lists whose staleness widens
+// false-failure windows: a page finished more than sharedListMaxAge ago is
+// read again, so only shards running close together share it.
+func withRecentSharedReads(ctx context.Context, scan asset.ScanRunID) context.Context {
+	if scan == "" {
+		return ctx
+	}
+	return context.WithValue(withSharedReads(ctx, scan), sharedReadMaxAge{}, sharedListMaxAge)
+}
 
 // withSharedReads marks GETs made with ctx as shareable by the shards of scan.
 func withSharedReads(ctx context.Context, scan asset.ScanRunID) context.Context {
@@ -148,10 +165,14 @@ func (s *sharedReads) getParts(ctx context.Context, key string, fetch func(conte
 // exists. fetch returns the page parts and its request ID.
 func (s *sharedReads) load(ctx context.Context, key string, fetch func(context.Context) (map[string]any, string, error)) (*sharedRead, error) {
 	now := time.Now()
+	maxAge, _ := ctx.Value(sharedReadMaxAge{}).(time.Duration)
 	s.mu.Lock()
 	entry := s.entries[key]
-	owner := entry == nil || (entry.finished() && !now.Before(entry.expires))
+	owner := entry == nil || (entry.finished() && (!now.Before(entry.expires) || maxAge > 0 && now.Sub(entry.fetched) >= maxAge))
 	if owner {
+		if entry != nil {
+			s.drop(key, entry)
+		}
 		for cached, value := range s.entries {
 			if value.finished() && !now.Before(value.expires) {
 				s.drop(cached, value)
@@ -179,13 +200,15 @@ func (s *sharedReads) load(ctx context.Context, key string, fetch func(context.C
 				entry.size += len(body)
 			}
 		}
-		entry.requestID, entry.err, entry.expires = requestID, err, time.Now().Add(sharedReadTTL)
+		entry.fetched = time.Now()
+		entry.requestID, entry.err, entry.expires = requestID, err, entry.fetched.Add(sharedReadTTL)
 		s.mu.Lock()
 		if s.entries[key] == entry {
-			if err != nil || s.inflightOnly || s.bytes+entry.size > sharedReadBudget {
+			if err != nil || s.inflightOnly || entry.size > sharedReadBudget {
 				// Waiting shards still receive this page; later ones read their own.
 				delete(s.entries, key)
 			} else {
+				s.evict(sharedReadBudget - entry.size)
 				s.bytes += entry.size
 			}
 		}
@@ -204,6 +227,32 @@ func decodeShared(body []byte, target any) error {
 	decoder := json.NewDecoder(bytes.NewReader(body))
 	decoder.UseNumber()
 	return decoder.Decode(target)
+}
+
+// evict drops the oldest finished entries until at most limit bytes remain.
+// In-flight entries hold no bytes yet and are never evicted. The caller holds
+// s.mu.
+func (s *sharedReads) evict(limit int) {
+	if s.bytes <= limit {
+		return
+	}
+	type cached struct {
+		key   string
+		entry *sharedRead
+	}
+	var finished []cached
+	for key, entry := range s.entries {
+		if entry.finished() {
+			finished = append(finished, cached{key, entry})
+		}
+	}
+	slices.SortFunc(finished, func(a, b cached) int { return a.entry.expires.Compare(b.entry.expires) })
+	for _, oldest := range finished {
+		if s.bytes <= limit {
+			return
+		}
+		s.drop(oldest.key, oldest.entry)
+	}
 }
 
 // drop removes an entry; the caller holds s.mu.

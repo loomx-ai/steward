@@ -300,7 +300,11 @@ func (a *action) waitFusion(ctx context.Context, request contracts.ActionRequest
 				}
 				return contracts.WaitResult{}, err
 			}
-			pending, delay = response.Data["done"] != true, operationPollDelay(response.Data, time.Now())
+			// Only a pending operation backs off; a done one is read back at
+			// the short interval until the resources are gone.
+			if pending = response.Data["done"] != true; pending {
+				delay = operationPollDelay(response.Data, time.Now())
+			}
 		}
 	}
 	// The readback also runs while the operation is pending, so a recreated

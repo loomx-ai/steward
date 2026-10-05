@@ -363,7 +363,7 @@ func (a *action) waitInfraGroup(ctx context.Context, request contracts.ActionReq
 			return contracts.WaitResult{}, err
 		}
 	}
-	pending := false
+	pending, delay := false, 2*time.Second
 	if operation != "" {
 		name, err := a.infraGroupOperationURL(operation)
 		if err != nil {
@@ -384,12 +384,16 @@ func (a *action) waitInfraGroup(ctx context.Context, request contracts.ActionReq
 				}
 				return contracts.WaitResult{}, err
 			}
-			pending = response.Data["done"] != true
+			// A pending operation backs off with its age; a done one is read
+			// back at the short interval.
+			if pending = response.Data["done"] != true; pending {
+				delay = operationPollDelay(response.Data, time.Now())
+			}
 		}
 	}
 	if stage == "group_delete" {
 		read, err := a.infraGroupReadback(ctx, request)
-		return contracts.WaitResult{Done: err == nil && !read.Exists && !pending, State: read.State, RetryAfter: 2 * time.Second}, err
+		return contracts.WaitResult{Done: err == nil && !read.Exists && !pending, State: read.State, RetryAfter: delay}, err
 	}
 	var next contracts.ActionResult
 	var err error
@@ -404,7 +408,7 @@ func (a *action) waitInfraGroup(ctx context.Context, request contracts.ActionReq
 			return contracts.WaitResult{}, groupDenied("infra_group_deprovision_failed")
 		}
 		if pending || read.Exists || root != nil && root["provisioningState"] != "DEPROVISIONED" {
-			return contracts.WaitResult{State: "group_deprovision", RetryAfter: 2 * time.Second}, nil
+			return contracts.WaitResult{State: "group_deprovision", RetryAfter: delay}, nil
 		}
 		next, err = a.deleteInfraGroup(ctx, request)
 	}

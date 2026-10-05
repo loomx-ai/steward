@@ -229,7 +229,7 @@ func (a *action) waitTPU(ctx context.Context, request contracts.ActionRequest, r
 	if !valid || result.Data["resource"] != a.identity.NativeID || result.Data["configuration"] != request.Asset.Normalized[tpuProof] || result.Data["review"] != serviceReview(request) || text(result.Data["initial_operation"]) != result.ProviderOperationID || strings.HasSuffix(phase, "_settle") && operation != "" {
 		return contracts.WaitResult{}, groupDenied("tpu_phase_changed")
 	}
-	pending := false
+	pending, delay := false, 2*time.Second
 	if operation != "" {
 		endpoint, err := url.Parse(operation)
 		if err != nil || endpoint.User != nil || endpoint.RawQuery != "" || endpoint.Fragment != "" {
@@ -255,7 +255,9 @@ func (a *action) waitTPU(ctx context.Context, request contracts.ActionRequest, r
 			if actual != operation {
 				return contracts.WaitResult{}, groupDenied("tpu_operation_changed")
 			}
-			pending = response.Data["done"] != true
+			if pending = response.Data["done"] != true; pending {
+				delay = operationPollDelay(response.Data, time.Now())
+			}
 		}
 	}
 	read, err := a.tpuReadback(ctx, request)
@@ -263,7 +265,7 @@ func (a *action) waitTPU(ctx context.Context, request contracts.ActionRequest, r
 		return contracts.WaitResult{}, err
 	}
 	if pending {
-		return contracts.WaitResult{State: phase, RetryAfter: 2 * time.Second}, nil
+		return contracts.WaitResult{State: phase, RetryAfter: delay}, nil
 	}
 	if !read.Exists {
 		return contracts.WaitResult{Done: true}, nil

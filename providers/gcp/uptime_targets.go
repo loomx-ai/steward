@@ -120,6 +120,29 @@ func NewUptimeTargets() *UptimeTargets { return &UptimeTargets{} }
 
 func (*UptimeTargets) Contribute(_ context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
+	// Canonical names depend on the source's project, so index the open assets
+	// once per project by identity with the canonical (or VM alias) native ID.
+	indexes := map[[2]string]map[asset.Identity][]int{}
+	targets := func(c *client) map[asset.Identity][]int {
+		key := [2]string{c.project, c.number}
+		if index, ok := indexes[key]; ok {
+			return index
+		}
+		index := map[asset.Identity][]int{}
+		for i, candidate := range assets {
+			if candidate.ClosedAt != nil {
+				continue
+			}
+			id := candidate.Identity.NativeID
+			if candidate.Identity.NativeType == instanceType {
+				id = uptimeInstanceAlias(id, candidate.Normalized)
+			}
+			identity := asset.Identity{Provider: candidate.Identity.Provider, Partition: candidate.Identity.Partition, ConnectionID: candidate.Identity.ConnectionID, NativeType: candidate.Identity.NativeType, NativeID: c.canonicalName(id)}
+			index[identity] = append(index[identity], i)
+		}
+		indexes[key] = index
+		return index
+	}
 	for _, source := range assets {
 		if source.ClosedAt != nil || source.Identity.Provider != asset.ProviderGCP || source.Identity.NativeType != uptimeType && source.Identity.NativeType != monitoringGroupType {
 			continue
@@ -145,22 +168,12 @@ func (*UptimeTargets) Contribute(_ context.Context, _ asset.ScopeID, assets []as
 		for _, kind := range kinds {
 			for _, id := range refs[kind] {
 				var target *asset.Asset
-				for i := range assets {
-					candidate := &assets[i]
-					if candidate.ClosedAt != nil || candidate.Identity.Provider != source.Identity.Provider || candidate.Identity.Partition != source.Identity.Partition || candidate.Identity.ConnectionID != source.Identity.ConnectionID || candidate.Identity.NativeType != kind {
-						continue
-					}
-					match := c.canonicalName(candidate.Identity.NativeID) == id
-					if kind == instanceType {
-						match = c.canonicalName(uptimeInstanceAlias(candidate.Identity.NativeID, candidate.Normalized)) == id
-					}
-					if !match {
-						continue
-					}
-					if target != nil {
-						return result, groupDenied("uptime_target_identity_ambiguous")
-					}
-					target = candidate
+				matches := targets(c)[asset.Identity{Provider: source.Identity.Provider, Partition: source.Identity.Partition, ConnectionID: source.Identity.ConnectionID, NativeType: kind, NativeID: id}]
+				if len(matches) > 1 {
+					return result, groupDenied("uptime_target_identity_ambiguous")
+				}
+				if len(matches) == 1 {
+					target = &assets[matches[0]]
 				}
 				evidence := map[string]any{"target_native_id": id, "source": evidenceSource}
 				if source.Identity.NativeType == monitoringGroupType && kind != monitoringGroupType {

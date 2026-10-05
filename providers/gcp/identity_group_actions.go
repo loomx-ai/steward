@@ -27,14 +27,25 @@ func (c *client) identitySaved(value asset.Asset) ([]identityMemberProof, error)
 	if data[identityScope] != c.identityParent || data[identityProof] != identityConfiguration(data) || len(text(data[identityParentProof])) != 64 || data[identitySnapshot] != identityManifest(data) {
 		return nil, groupDenied("identity_group_review_changed")
 	}
-	if value.Identity.NativeType == identityGroupType && data[identityParentProof] != data[identityProof] {
+	if value.Identity.NativeType == identityMemberType {
+		// A membership carries only its group's member-list digest; the group
+		// delete compares it with the group's list. Rows saved before the digest
+		// (with the full list or without a digest) fail here until rescanned.
+		if _, legacy := data[identityMembers]; legacy || len(text(data[identityMembersDigest])) != 64 {
+			return nil, groupDenied("identity_membership_review_invalid")
+		}
+		return nil, nil
+	}
+	if data[identityParentProof] != data[identityProof] {
 		return nil, groupDenied("identity_group_parent_review_changed")
+	}
+	if data[identityMembersDigest] != firewallDigest(text(data[identityMembers])) {
+		return nil, groupDenied("identity_membership_review_invalid")
 	}
 	var proofs []identityMemberProof
 	if json.Unmarshal([]byte(text(data[identityMembers])), &proofs) != nil || proofs == nil {
 		return nil, groupDenied("identity_membership_review_invalid")
 	}
-	found := value.Identity.NativeType == identityGroupType
 	for i, proof := range proofs {
 		if _, err := identityName(identityMemberType, "//"+identityHost+"/"+proof.ID); err != nil {
 			return nil, err
@@ -42,10 +53,6 @@ func (c *client) identitySaved(value asset.Asset) ([]identityMemberProof, error)
 		if identityGroupName(proof.ID) != identityGroupName(name) || len(proof.Proof) != 64 || i > 0 && proofs[i-1].ID >= proof.ID {
 			return nil, groupDenied("identity_membership_review_invalid")
 		}
-		found = found || proof.ID == name && proof.Proof == data[identityProof]
-	}
-	if !found {
-		return nil, groupDenied("identity_membership_review_missing")
 	}
 	return proofs, nil
 }
@@ -84,7 +91,7 @@ func (a *action) identityAction(request contracts.ActionRequest) ([]identityMemb
 		if _, err := a.client.identitySaved(child); err != nil {
 			return nil, err
 		}
-		if child.Normalized[identityParentProof] != request.Asset.Normalized[identityProof] || child.Normalized[identityMembers] != request.Asset.Normalized[identityMembers] || child.Normalized[identityProof] != proof.Proof {
+		if child.Normalized[identityParentProof] != request.Asset.Normalized[identityProof] || child.Normalized[identityMembersDigest] != request.Asset.Normalized[identityMembersDigest] || child.Normalized[identityProof] != proof.Proof {
 			return nil, groupDenied("identity_group_impact_review_changed")
 		}
 		seen[child.ID] = true

@@ -189,7 +189,7 @@ func TestBatchCursorBindsJobConfigurationAndScan(t *testing.T) {
 }
 
 func TestBatchPreflightRejectsLiveChangesAndForgedPlan(t *testing.T) {
-	for _, mode := range []string{"job-recreated", "job-proof-missing", "job-script-changed", "job-state-unknown", "job-protected", "vm-recreated", "vm-label-changed", "vm-node-missing", "vm-service-account", "vm-network", "vm-machine", "vm-protected", "disk-recreated", "disk-shared", "disk-label-removed", "disk-retained", "external-auto-delete", "new-task", "missing-task-impact", "missing-disk-impact", "retain-vm", "retain-disk", "foreign-controller", "foreign-connection", "foreign-partition", "foreign-kind", "duplicate-impact", "list-403", "list-206", "compute-partial", "compute-token-loop", "compute-error", "task-detail-403", "task-disappeared", "template-403"} {
+	for _, mode := range []string{"job-recreated", "job-proof-missing", "job-script-changed", "job-state-unknown", "job-protected", "vm-recreated", "vm-label-changed", "vm-node-missing", "vm-service-account", "vm-network", "vm-machine", "vm-protected", "disk-recreated", "disk-shared", "disk-label-removed", "disk-retained", "external-auto-delete", "new-task", "missing-task-impact", "missing-disk-impact", "retain-vm", "retain-disk", "foreign-controller", "foreign-connection", "foreign-partition", "foreign-kind", "duplicate-impact", "list-403", "list-206", "compute-partial", "compute-token-loop", "compute-error", "task-list-403", "task-disappeared", "template-403"} {
 		t.Run(mode, func(t *testing.T) {
 			s, r, _, _, request := batchReviewed(t)
 			impactIndex := func(name string) int {
@@ -271,17 +271,22 @@ func TestBatchPreflightRejectsLiveChangesAndForgedPlan(t *testing.T) {
 					}
 				}
 			}
+			taskLists := 0
 			s.handle = func(req *http.Request) (*http.Response, bool) {
 				path := req.URL.Path
 				if strings.Contains(path, "/instanceTemplates/") && mode == "template-403" {
 					return dataformResponse(req, 403, map[string]any{}), true
 				}
-				if strings.HasSuffix(path, "/tasks/0") && (mode == "task-detail-403" || mode == "task-disappeared") {
-					code := 403
-					if mode == "task-disappeared" {
-						code = 404
+				// Task list rows are the complete Task; a task that vanishes
+				// between the two lists fails reconciliation.
+				if strings.HasSuffix(path, batchRoot+"/taskGroups/workers/tasks") {
+					taskLists++
+					if mode == "task-list-403" {
+						return dataformResponse(req, 403, map[string]any{}), true
 					}
-					return dataformResponse(req, code, map[string]any{}), true
+					if mode == "task-disappeared" && taskLists%2 == 0 {
+						return dataformResponse(req, 200, map[string]any{"tasks": []any{}}), true
+					}
 				}
 				if !strings.Contains(path, "/aggregated/instances") {
 					return nil, false

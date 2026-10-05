@@ -23,6 +23,10 @@ const identityScope = "_identity_group_scope"
 const identityProof = "_identity_group_configuration"
 const identityParentProof = "_identity_group_parent_configuration"
 const identityMembers = "_identity_group_members"
+
+// identityMembersDigest binds a membership row to its group's member list
+// without copying the list into every row (which is O(M²) in group size).
+const identityMembersDigest = "_identity_group_members_digest"
 const identitySecurity = "_identity_group_security_settings"
 const identitySnapshot = "_identity_group_snapshot"
 
@@ -82,7 +86,7 @@ func identityConfiguration(data map[string]any) string {
 	return firewallDigest(value)
 }
 func identityManifest(data map[string]any) string {
-	return firewallDigest(map[string]any{"name": data["name"], "scope": data[identityScope], "configuration": data[identityProof], "parent": data[identityParentProof], "members": data[identityMembers]})
+	return firewallDigest(map[string]any{"name": data["name"], "scope": data[identityScope], "configuration": data[identityProof], "parent": data[identityParentProof], "members": data[identityMembersDigest]})
 }
 func (c *client) identityValidate(kind, name string, data map[string]any) error {
 	if !identityParentValid(c.identityParent) || data["name"] != name {
@@ -252,10 +256,11 @@ func (c *client) identityGroupView(ctx context.Context, name string) (identityGr
 			return previous, groupDenied("identity_group_changed_during_membership_read")
 		}
 		encoded, _ := json.Marshal(proofs)
-		group[identityScope], group[identityProof], group[identityParentProof], group[identityMembers] = c.identityParent, identityConfiguration(group), identityConfiguration(group), string(encoded)
+		digest := firewallDigest(string(encoded))
+		group[identityScope], group[identityProof], group[identityParentProof], group[identityMembers], group[identityMembersDigest] = c.identityParent, identityConfiguration(group), identityConfiguration(group), string(encoded), digest
 		group[identitySnapshot] = identityManifest(group)
 		for _, member := range current.Members {
-			member[identityScope], member[identityProof], member[identityParentProof], member[identityMembers] = c.identityParent, identityConfiguration(member), group[identityProof], string(encoded)
+			member[identityScope], member[identityProof], member[identityParentProof], member[identityMembersDigest] = c.identityParent, identityConfiguration(member), group[identityProof], digest
 			member[identitySnapshot] = identityManifest(member)
 		}
 		if pass > 0 && previous.Group[identitySnapshot] != current.Group[identitySnapshot] {
