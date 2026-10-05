@@ -384,6 +384,10 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 // invoke calls an operation with credential, or with the connection's
 // credential resolved for this call when credential is nil. Callers making
 // many reads for one batch resolve the credential once and pass it.
+// pinnedCredentialRefreshWindow is how close to expiry a caller's pinned
+// credential may get before invoke resolves it again.
+const pinnedCredentialRefreshWindow = time.Minute
+
 func (r *Runtime) invoke(ctx context.Context, credential *contracts.Credential, invocation contracts.Invocation) (contracts.InvocationResult, error) {
 	operation, ok := r.catalog.Operation(strings.TrimSpace(invocation.Operation))
 	if !ok {
@@ -393,7 +397,11 @@ func (r *Runtime) invoke(ctx context.Context, credential *contracts.Credential, 
 	if err != nil {
 		return contracts.InvocationResult{}, err
 	}
-	if credential == nil {
+	// A credential pinned across a long collection (CEN topology, an
+	// encryption-key batch) may be OAuth STS with only minutes of validity
+	// left; one about to expire is resolved again, which renews it.
+	if credential == nil || (credential.ExpiresAt != nil &&
+		time.Until(*credential.ExpiresAt) < pinnedCredentialRefreshWindow) {
 		resolved, err := r.resolveCredential(ctx, invocation.ConnectionID)
 		if err != nil {
 			return contracts.InvocationResult{}, err

@@ -112,11 +112,7 @@ func (r *Runtime) listCENTopology(
 			run: request.ScanRunID, connection: request.ConnectionID, credential: credentialFingerprint(credential),
 			region: region, scope: request.Scope,
 		}
-		collector, err = r.cenTopologies.get(ctx, key, func() (*cenTopologyCollector, error) {
-			// The collection serves other shards too, so one shard's
-			// cancellation must not fail it for them.
-			return collect(context.WithoutCancel(ctx))
-		})
+		collector, err = r.cenTopologies.get(ctx, key, collect)
 	}
 	if err != nil {
 		return contracts.InventoryBatch{}, err
@@ -192,51 +188,81 @@ type cenTopology struct {
 	collector *cenTopologyCollector
 	err       error
 	expires   time.Time
+	// canceled reports that the collection failed because the shard running
+	// it was canceled, not because of the cloud.
+	canceled bool
 }
 
 // cenTopologyCache lets the cen-topology kinds of one scan and region share
 // one collection, as resourceCenterSearchCache does for searches. Concurrent
 // shards wait for one collection; a failed collection fails every waiting
 // shard and is not kept, so no shard reads a failure as an empty topology.
+// The collection runs under the first shard's context, so a canceled scan stops
+// calling the cloud; a shard still running when that happens collects again.
 type cenTopologyCache struct {
 	mu      sync.Mutex
 	entries map[cenTopologyKey]*cenTopology
 }
 
-func (c *cenTopologyCache) get(ctx context.Context, key cenTopologyKey, collect func() (*cenTopologyCollector, error)) (*cenTopologyCollector, error) {
-	now := time.Now()
-	c.mu.Lock()
-	entry := c.entries[key]
-	owner := entry == nil || (entry.finished() && !now.Before(entry.expires))
-	if owner {
-		for cached, value := range c.entries {
-			if value.finished() && !now.Before(value.expires) {
-				delete(c.entries, cached)
-			}
-		}
-		if c.entries == nil {
-			c.entries = map[cenTopologyKey]*cenTopology{}
-		}
-		entry = &cenTopology{done: make(chan struct{})}
-		c.entries[key] = entry
-	}
-	c.mu.Unlock()
-	if owner {
-		collector, err := collect()
+func (c *cenTopologyCache) get(
+	ctx context.Context,
+	key cenTopologyKey,
+	collect func(context.Context) (*cenTopologyCollector, error),
+) (*cenTopologyCollector, error) {
+	for {
+		now := time.Now()
 		c.mu.Lock()
-		entry.collector, entry.err, entry.expires = collector, err, time.Now().Add(cenTopologyTTL)
-		if err != nil && c.entries[key] == entry {
+		entry := c.entries[key]
+		owner := entry == nil || (entry.finished() && !now.Before(entry.expires))
+		if owner {
+			for cached, value := range c.entries {
+				if value.finished() && !now.Before(value.expires) {
+					delete(c.entries, cached)
+				}
+			}
+			if c.entries == nil {
+				c.entries = map[cenTopologyKey]*cenTopology{}
+			}
+			entry = &cenTopology{done: make(chan struct{})}
+			c.entries[key] = entry
+		}
+		c.mu.Unlock()
+		if owner {
+			c.collect(ctx, key, entry, collect)
+		}
+		select {
+		case <-entry.done:
+			if entry.canceled && ctx.Err() == nil {
+				continue
+			}
+			return entry.collector, entry.err
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		}
+	}
+}
+
+// collect fills entry and always releases its waiters, even if collect panics.
+func (c *cenTopologyCache) collect(
+	ctx context.Context,
+	key cenTopologyKey,
+	entry *cenTopology,
+	collect func(context.Context) (*cenTopologyCollector, error),
+) {
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			entry.collector, entry.err = nil, fmt.Errorf("Alibaba Cloud CEN topology collection panicked: %v", recovered)
+		}
+		c.mu.Lock()
+		entry.expires = time.Now().Add(cenTopologyTTL)
+		entry.canceled = entry.err != nil && ctx.Err() != nil
+		if entry.err != nil && c.entries[key] == entry {
 			delete(c.entries, key)
 		}
 		c.mu.Unlock()
 		close(entry.done)
-	}
-	select {
-	case <-entry.done:
-		return entry.collector, entry.err
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	}
+	}()
+	entry.collector, entry.err = collect(ctx)
 }
 
 func (t *cenTopology) finished() bool {

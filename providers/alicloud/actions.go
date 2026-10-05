@@ -2123,15 +2123,18 @@ func (h *ResourceAction) listPrivateLinkEndpointConnections(
 	serviceID string,
 ) ([]map[string]any, string, error) {
 	return h.listPrivateLinkRecords(
-		ctx, privateLinkListConnectionsOperation, "Connections", serviceID, 1000,
+		ctx, privateLinkListConnectionsOperation, "Connections", "ServiceId", serviceID, 1000,
 	)
 }
 
+// listPrivateLinkEndpointServices lists the region's endpoint services,
+// narrowed server-side by ResourceId when resourceID is non-empty.
 func (h *ResourceAction) listPrivateLinkEndpointServices(
 	ctx context.Context,
+	resourceID string,
 ) ([]map[string]any, string, error) {
 	return h.listPrivateLinkRecords(
-		ctx, privateLinkListServicesOperation, "Services", "", 100,
+		ctx, privateLinkListServicesOperation, "Services", "ResourceId", resourceID, 100,
 	)
 }
 
@@ -2140,7 +2143,7 @@ func (h *ResourceAction) listPrivateLinkEndpointServiceResources(
 	serviceID string,
 ) ([]map[string]any, string, error) {
 	return h.listPrivateLinkRecords(
-		ctx, privateLinkListResourcesOperation, "Resources", serviceID, 50,
+		ctx, privateLinkListResourcesOperation, "Resources", "ServiceId", serviceID, 50,
 	)
 }
 
@@ -2148,7 +2151,8 @@ func (h *ResourceAction) listPrivateLinkRecords(
 	ctx context.Context,
 	operation string,
 	itemsPath string,
-	serviceID string,
+	filterName string,
+	filterValue string,
 	maxResults int,
 ) ([]map[string]any, string, error) {
 	records := make([]map[string]any, 0)
@@ -2158,8 +2162,8 @@ func (h *ResourceAction) listPrivateLinkRecords(
 		parameters := map[string]any{
 			"RegionId": h.region, "MaxResults": maxResults,
 		}
-		if serviceID != "" {
-			parameters["ServiceId"] = serviceID
+		if filterValue != "" {
+			parameters[filterName] = filterValue
 		}
 		if nextToken != "" {
 			parameters["NextToken"] = nextToken
@@ -2352,24 +2356,39 @@ func (h *ResourceAction) findPrivateLinkServiceResourceBindings(
 	resourceID string,
 	defaultResourceType string,
 ) ([]privateLinkServiceResourceBinding, string, error) {
-	services, requestID, err := h.listPrivateLinkEndpointServices(ctx)
+	// ListVpcEndpointServices documents a ResourceId filter, and its
+	// ServiceResourceType enum covers only slb/alb/nlb/gwlb. vpcNat is not
+	// documented there, so a NAT gateway still scans every service rather
+	// than trust an unverified filter that could hide a dependent service.
+	// The per-service resource read below re-checks ResourceId either way.
+	serviceFilter := resourceID
+	if defaultResourceType == "vpcNat" {
+		serviceFilter = ""
+	}
+	services, requestID, err := h.listPrivateLinkEndpointServices(ctx, serviceFilter)
 	if err != nil {
 		return nil, requestID, err
 	}
-	sort.Slice(services, func(i, j int) bool {
-		return stringValue(services[i]["ServiceId"]) < stringValue(services[j]["ServiceId"])
-	})
-	bindings := make([]privateLinkServiceResourceBinding, 0)
-	for _, service := range services {
-		serviceID := strings.TrimSpace(stringValue(service["ServiceId"]))
-		if serviceID == "" {
+	serviceIDs := make([]string, len(services))
+	for index, service := range services {
+		serviceIDs[index] = strings.TrimSpace(stringValue(service["ServiceId"]))
+		if serviceIDs[index] == "" {
 			return nil, requestID, fmt.Errorf("Alibaba Cloud PrivateLink endpoint service has no ServiceId")
 		}
-		resources, _, listErr := h.listPrivateLinkEndpointServiceResources(ctx, serviceID)
-		if listErr != nil {
-			return nil, requestID, listErr
-		}
-		for _, resource := range resources {
+	}
+	sort.Strings(serviceIDs)
+	serviceResources := make([][]map[string]any, len(serviceIDs))
+	err = ForEachConcurrently(len(serviceIDs), func(index int) error {
+		resources, _, listErr := h.listPrivateLinkEndpointServiceResources(ctx, serviceIDs[index])
+		serviceResources[index] = resources
+		return listErr
+	})
+	if err != nil {
+		return nil, requestID, err
+	}
+	bindings := make([]privateLinkServiceResourceBinding, 0)
+	for index, serviceID := range serviceIDs {
+		for _, resource := range serviceResources[index] {
 			if strings.TrimSpace(stringValue(resource["ResourceId"])) != resourceID {
 				continue
 			}

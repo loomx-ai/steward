@@ -309,6 +309,9 @@ type resourceCenterSearch struct {
 	// until the type's shard reads its last page; guarded by the cache mutex.
 	records map[string][]ResourceRecord
 	expires time.Time
+	// canceled reports that the search failed because the shard running it
+	// was canceled, not because of the cloud.
+	canceled bool
 }
 
 func (s *resourceCenterSearch) finished() bool {
@@ -324,6 +327,8 @@ func (s *resourceCenterSearch) finished() bool {
 // a multi-type search instead of each searching its own, mostly empty, type.
 // Concurrent shards wait for one search; a failed search fails every waiting
 // shard and is not kept, so no shard reads a failure as an empty listing.
+// The search runs under the first shard's context, so a canceled scan stops
+// calling the cloud; a shard still running when that happens searches again.
 // Memory is bounded by the unread types of the searches in flight: a type's
 // records are released once its shard reads its last page.
 type resourceCenterSearchCache struct {
@@ -334,41 +339,64 @@ type resourceCenterSearchCache struct {
 func (c *resourceCenterSearchCache) get(
 	ctx context.Context,
 	key resourceCenterSearchKey,
-	search func() (map[string][]ResourceRecord, error),
+	search func(context.Context) (map[string][]ResourceRecord, error),
 ) (*resourceCenterSearch, error) {
-	now := time.Now()
-	c.mu.Lock()
-	entry := c.entries[key]
-	owner := entry == nil || (entry.finished() && !now.Before(entry.expires))
-	if owner {
-		for cached, value := range c.entries {
-			if value.finished() && !now.Before(value.expires) {
-				delete(c.entries, cached)
+	for {
+		now := time.Now()
+		c.mu.Lock()
+		entry := c.entries[key]
+		owner := entry == nil || (entry.finished() && !now.Before(entry.expires))
+		if owner {
+			for cached, value := range c.entries {
+				if value.finished() && !now.Before(value.expires) {
+					delete(c.entries, cached)
+				}
 			}
+			if c.entries == nil {
+				c.entries = map[resourceCenterSearchKey]*resourceCenterSearch{}
+			}
+			entry = &resourceCenterSearch{done: make(chan struct{})}
+			c.entries[key] = entry
 		}
-		if c.entries == nil {
-			c.entries = map[resourceCenterSearchKey]*resourceCenterSearch{}
+		c.mu.Unlock()
+		if owner {
+			c.search(ctx, key, entry, search)
 		}
-		entry = &resourceCenterSearch{done: make(chan struct{})}
-		c.entries[key] = entry
+		select {
+		case <-entry.done:
+			if entry.canceled && ctx.Err() == nil {
+				continue
+			}
+			return entry, entry.err
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		}
 	}
-	c.mu.Unlock()
-	if owner {
-		records, err := search()
+}
+
+// search fills entry and always releases its waiters, even if search panics.
+func (c *resourceCenterSearchCache) search(
+	ctx context.Context,
+	key resourceCenterSearchKey,
+	entry *resourceCenterSearch,
+	search func(context.Context) (map[string][]ResourceRecord, error),
+) {
+	var records map[string][]ResourceRecord
+	var err error
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			records, err = nil, fmt.Errorf("Alibaba Cloud Resource Center search panicked: %v", recovered)
+		}
 		c.mu.Lock()
 		entry.records, entry.err, entry.expires = records, err, time.Now().Add(resourceCenterSearchTTL)
+		entry.canceled = err != nil && ctx.Err() != nil
 		if err != nil && c.entries[key] == entry {
 			delete(c.entries, key)
 		}
 		c.mu.Unlock()
 		close(entry.done)
-	}
-	select {
-	case <-entry.done:
-		return entry, entry.err
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	}
+	}()
+	records, err = search(ctx)
 }
 
 // page returns up to limit records of nativeType after cursor and the cursor
@@ -456,10 +484,8 @@ func (r *Runtime) sharedResourceCenterPage(
 	var records []ResourceRecord
 	var next *resourceCenterCursor
 	for {
-		search, err := r.resourceCenterSearches.get(ctx, key, func() (map[string][]ResourceRecord, error) {
-			// The search serves other shards too, so one shard's cancellation
-			// must not fail it for them.
-			return searchResourceTypes(context.WithoutCancel(ctx), client, regionFilter, types)
+		search, err := r.resourceCenterSearches.get(ctx, key, func(ctx context.Context) (map[string][]ResourceRecord, error) {
+			return searchResourceTypes(ctx, client, regionFilter, types)
 		})
 		if err != nil {
 			return nil, "", true, err
