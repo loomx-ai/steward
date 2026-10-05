@@ -3,7 +3,6 @@ package hooks
 import (
 	"context"
 	"sort"
-	"strings"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -29,6 +28,7 @@ func (*NLBEIPs) Contribute(
 	ordered := append([]asset.Asset(nil), assets...)
 	sort.Slice(ordered, func(i, j int) bool { return ordered[i].ID < ordered[j].ID })
 
+	byNativeID := indexAssetsByNativeID(ordered)
 	result := governance.Contribution{}
 	for _, loadBalancer := range ordered {
 		if loadBalancer.Identity.Provider != asset.ProviderAliCloud ||
@@ -38,7 +38,7 @@ func (*NLBEIPs) Contribute(
 		for _, allocationID := range normalizedStrings(
 			loadBalancer.Normalized[alicloud.NormalizedNLBEIPIDsField],
 		) {
-			eip, found := resolveNLBEIP(loadBalancer, allocationID, ordered)
+			eip, found := resolveScopedAsset(loadBalancer, "ACS::EIP::EipAddress", allocationID, byNativeID)
 			if !found {
 				continue
 			}
@@ -71,27 +71,4 @@ func (*NLBEIPs) Contribute(
 		}
 	}
 	return result, nil
-}
-
-func resolveNLBEIP(
-	loadBalancer asset.Asset,
-	allocationID string,
-	assets []asset.Asset,
-) (asset.Asset, bool) {
-	var result asset.Asset
-	for _, candidate := range assets {
-		if candidate.Identity.Provider != loadBalancer.Identity.Provider ||
-			candidate.Identity.ConnectionID != loadBalancer.Identity.ConnectionID ||
-			candidate.Identity.Partition != loadBalancer.Identity.Partition ||
-			candidate.Identity.NativeType != "ACS::EIP::EipAddress" ||
-			strings.TrimSpace(candidate.Identity.NativeID) != strings.TrimSpace(allocationID) ||
-			!sameLifecycleScope(loadBalancer, candidate) {
-			continue
-		}
-		if result.ID != "" {
-			return asset.Asset{}, false
-		}
-		result = candidate
-	}
-	return result, result.ID != ""
 }
