@@ -383,9 +383,10 @@ export function restoreConnectionRegion(
 export function listScopes(
   connectionID: string,
   cursor = "",
+  limit = 100,
 ): Promise<Page<Scope>> {
   return request<Page<Scope>>(
-    scopedPath(listPath("/api/scopes", cursor), connectionID),
+    scopedPath(listPath("/api/scopes", cursor, limit), connectionID),
   );
 }
 
@@ -777,21 +778,17 @@ export function setAssetDirty(
   );
 }
 
-export function getAssetGraph(
+export function getAssetRelations(
   connectionID: string,
   id: string,
-): Promise<{ relationships: Relationship[] }> {
+  depth?: number,
+): Promise<{ relationships: Relationship[]; bindings: LifecycleBinding[] }> {
+  const query = depth ? `&depth=${depth}` : "";
   return request(
-    scopedPath(`/api/assets/${encodeURIComponent(id)}/graph`, connectionID),
-  );
-}
-
-export function getAssetLifecycle(
-  connectionID: string,
-  id: string,
-): Promise<{ bindings: LifecycleBinding[] }> {
-  return request(
-    scopedPath(`/api/assets/${encodeURIComponent(id)}/lifecycle`, connectionID),
+    scopedPath(
+      `/api/assets/${encodeURIComponent(id)}/graph?include=lifecycle${query}`,
+      connectionID,
+    ),
   );
 }
 

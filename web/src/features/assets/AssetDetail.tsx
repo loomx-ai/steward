@@ -5,8 +5,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   findAsset,
   findAssets,
-  getAssetGraph,
-  getAssetLifecycle,
+  getAssetRelations,
   listConnectionRegions,
   listProviderCatalog,
 } from "@/api/client";
@@ -80,15 +79,17 @@ export function AssetDetail() {
     queryFn: () => findAsset(connection.id, id),
     enabled: !!id,
   });
-  const graph = useQuery({
-    queryKey: ["asset-graph", connection.id, id],
-    queryFn: () => getAssetGraph(connection.id, id),
+  // Overview needs only the edges touching this asset (tab badge, parent,
+  // resource marker); the 3-hop neighborhood loads with the relationships tab.
+  const direct = useQuery({
+    queryKey: ["asset-relations", connection.id, id, "direct"],
+    queryFn: () => getAssetRelations(connection.id, id, 1),
     enabled: !!id,
   });
-  const lifecycle = useQuery({
-    queryKey: ["asset-lifecycle", connection.id, id],
-    queryFn: () => getAssetLifecycle(connection.id, id),
-    enabled: !!id,
+  const neighborhood = useQuery({
+    queryKey: ["asset-relations", connection.id, id],
+    queryFn: () => getAssetRelations(connection.id, id),
+    enabled: !!id && selectedView === "relationships",
   });
   const catalog = useQuery({
     queryKey: ["catalog"],
@@ -102,18 +103,18 @@ export function AssetDetail() {
     () => [
       ...new Set(
         [
-          ...(graph.data?.relationships.flatMap((edge) => [
+          ...(neighborhood.data?.relationships.flatMap((edge) => [
             edge.source_asset_id,
             edge.target_asset_id,
           ]) ?? []),
-          ...(lifecycle.data?.bindings.flatMap((binding) => [
+          ...(neighborhood.data?.bindings.flatMap((binding) => [
             binding.controller_asset_id,
             binding.managed_asset_id,
           ]) ?? []),
         ].filter((value) => value !== id),
       ),
     ],
-    [graph.data, lifecycle.data, id],
+    [neighborhood.data, id],
   );
   const related = useQuery({
     queryKey: ["related-assets", connection.id, relatedIDs],
@@ -147,10 +148,10 @@ export function AssetDetail() {
     () =>
       buildResourceRelations(
         id,
-        graph.data?.relationships ?? [],
-        lifecycle.data?.bindings ?? [],
+        direct.data?.relationships ?? [],
+        direct.data?.bindings ?? [],
       ),
-    [graph.data, id, lifecycle.data],
+    [direct.data, id],
   );
   const parentRelations = relations.filter(
     (relation) =>
@@ -158,10 +159,15 @@ export function AssetDetail() {
       relation.direction === "outgoing" &&
       relation.type === "member_of",
   );
-  const parentAsset =
-    parentRelations.length === 1
-      ? related.data?.find((item) => item.id === parentRelations[0].peerID)
-      : undefined;
+  const parentID =
+    parentRelations.length === 1 ? parentRelations[0].peerID : "";
+  const parent = useQuery({
+    queryKey: ["asset-parent", connection.id, parentID],
+    queryFn: async () =>
+      (await findAssets(connection.id, [parentID]))[0] ?? null,
+    enabled: !!parentID,
+  });
+  const parentAsset = parent.data ?? undefined;
   const consoleURL = value
     ? cloudConsoleURL({
         provider: value.identity.provider,
@@ -175,11 +181,9 @@ export function AssetDetail() {
         },
       })
     : undefined;
-  const supportingError = graph.error ?? lifecycle.error ?? related.error;
+  const supportingError = direct.error ?? neighborhood.error ?? related.error;
   const relationshipsPending =
-    graph.isPending ||
-    lifecycle.isPending ||
-    (relatedIDs.length > 0 && related.isPending);
+    neighborhood.isPending || (relatedIDs.length > 0 && related.isPending);
 
   const changeView = (view: string) => {
     if (view === "relationships") {
@@ -284,7 +288,7 @@ export function AssetDetail() {
                     <Fact label={t("common.resourceKind")} value={kindName} />
                     <AssetResourceIDFact
                       asset={value}
-                      lifecycleBindings={lifecycle.data?.bindings ?? []}
+                      lifecycleBindings={direct.data?.bindings ?? []}
                     />
                     <Fact
                       label={t("common.provider")}
@@ -343,8 +347,8 @@ export function AssetDetail() {
                       key={value.id}
                       focus={value}
                       assets={related.data ?? []}
-                      relationships={graph.data?.relationships ?? []}
-                      lifecycleBindings={lifecycle.data?.bindings ?? []}
+                      relationships={neighborhood.data?.relationships ?? []}
+                      lifecycleBindings={neighborhood.data?.bindings ?? []}
                       resourceKinds={
                         catalog.data?.flatMap((bundle) => bundle.kinds) ?? []
                       }

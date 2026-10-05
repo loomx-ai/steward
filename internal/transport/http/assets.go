@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -172,16 +173,37 @@ func validateAssetCanvas(options persistence.ListOptions) error {
 	}
 }
 
+// assetGraph serves the relationship neighborhood. Optional query parameters:
+// depth=1..3 limits the traversal (1 = only edges touching the asset), and
+// include=lifecycle adds the lifecycle bindings from the same traversal so
+// clients need not call /lifecycle and walk the neighborhood twice.
 func (a *API) assetGraph(response http.ResponseWriter, request *http.Request) {
 	id := asset.AssetID(chi.URLParam(request, "id"))
-	relationships, _, err := loadAssetRelationshipNeighborhood(
+	depth := assetRelationshipNeighborhoodDepth
+	if value := request.URL.Query().Get("depth"); value != "" {
+		parsed, err := strconv.Atoi(value)
+		if err != nil || parsed < 1 || parsed > assetRelationshipNeighborhoodDepth {
+			writeAPIError(response, http.StatusBadRequest, APIError{Code: "asset.graph_depth_invalid", Message: "depth must be between 1 and 3"})
+			return
+		}
+		depth = parsed
+	}
+	relationships, bindings, err := loadAssetRelationshipNeighborhood(
 		request.Context(),
 		a.dependencies.Repositories.Graph(),
 		selectedConnectionID(request),
 		id,
+		depth,
 	)
 	if err != nil {
 		repositoryError(response, err)
+		return
+	}
+	if request.URL.Query().Get("include") == "lifecycle" {
+		writeJSON(response, http.StatusOK, struct {
+			Relationships []graph.Relationship     `json:"relationships"`
+			Bindings      []graph.LifecycleBinding `json:"bindings"`
+		}{Relationships: relationships, Bindings: bindings})
 		return
 	}
 	writeJSON(response, http.StatusOK, struct {
@@ -196,6 +218,7 @@ func (a *API) assetLifecycle(response http.ResponseWriter, request *http.Request
 		a.dependencies.Repositories.Graph(),
 		selectedConnectionID(request),
 		id,
+		assetRelationshipNeighborhoodDepth,
 	)
 	if err != nil {
 		repositoryError(response, err)
@@ -211,6 +234,7 @@ func loadAssetRelationshipNeighborhood(
 	repository assetRelationshipGraphRepository,
 	connectionID asset.ConnectionID,
 	focusID asset.AssetID,
+	maxDepth int,
 ) ([]graph.Relationship, []graph.LifecycleBinding, error) {
 	directRelationships, err := repository.ListRelationshipsForAsset(ctx, connectionID, focusID)
 	if err != nil {
@@ -226,7 +250,7 @@ func loadAssetRelationshipNeighborhood(
 	seenAssets := map[asset.AssetID]struct{}{focusID: {}}
 	frontier := []asset.AssetID{focusID}
 
-	for depth := 0; depth < assetRelationshipNeighborhoodDepth && len(frontier) > 0; depth++ {
+	for depth := 0; depth < maxDepth && len(frontier) > 0; depth++ {
 		relationships := directRelationships
 		bindings := directBindings
 		if depth > 0 {
@@ -258,7 +282,7 @@ func loadAssetRelationshipNeighborhood(
 				_, known := seenAssets[peerID]
 				seenAssets[peerID] = struct{}{}
 				if !known &&
-					depth+1 < assetRelationshipNeighborhoodDepth &&
+					depth+1 < maxDepth &&
 					!relationshipParentPeer(relationship, currentID, peerID) {
 					next = append(next, peerID)
 				}
@@ -276,7 +300,7 @@ func loadAssetRelationshipNeighborhood(
 				}
 				if _, known := seenAssets[peerID]; !known {
 					seenAssets[peerID] = struct{}{}
-					if depth+1 < assetRelationshipNeighborhoodDepth {
+					if depth+1 < maxDepth {
 						next = append(next, peerID)
 					}
 				}

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
 
-export function ScanTaskEvents({
+export const ScanTaskEvents = memo(function ScanTaskEvents({
   connectionID,
   scanID,
   targetKey,
@@ -249,7 +249,7 @@ export function ScanTaskEvents({
       </div>
     </section>
   );
-}
+});
 
 const ScanLogRow = memo(function ScanLogRow({ log }: { log: JobLog }) {
   const payload = formatCloudPayload(log);

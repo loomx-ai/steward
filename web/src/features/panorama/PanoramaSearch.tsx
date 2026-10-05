@@ -416,7 +416,8 @@ export async function loadAllScopes(connectionID: string): Promise<Scope[]> {
   const result: Scope[] = [];
   let cursor = "";
   do {
-    const page = await listScopes(connectionID, cursor);
+    // 500 is the server page-size cap.
+    const page = await listScopes(connectionID, cursor, 500);
     result.push(...page.items);
     cursor = page.next_cursor ?? "";
   } while (cursor);

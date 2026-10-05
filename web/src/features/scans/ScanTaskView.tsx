@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pause, Play, RotateCcw, XCircle } from "lucide-react";
 import { useParams } from "react-router-dom";
@@ -59,10 +65,7 @@ export function ScanTaskView() {
     },
   });
   const value = task.data;
-  const durationMS = useLiveDuration(
-    value?.duration_ms,
-    activeScanStatuses.has(value?.status ?? ""),
-  );
+  const durationActive = activeScanStatuses.has(value?.status ?? "");
   const orderedTargets = useMemo(
     () => orderScanTargets(value?.target_progress ?? []),
     [value?.target_progress],
@@ -70,6 +73,7 @@ export function ScanTaskView() {
   const selectedTarget = value?.target_progress.find(
     (target) => target.key === selectedTargetKey,
   );
+  const clearTarget = useCallback(() => setSelectedTargetKey(undefined), []);
   const hasCollapsedTargets = orderedTargets.length > targetLimit;
   const visibleTargets =
     targetsExpanded || !hasCollapsedTargets
@@ -152,7 +156,11 @@ export function ScanTaskView() {
                   {formatNumber(value.retry_count)}
                 </Fact>
                 <Fact label={t("scans.duration")}>
-                  {formatDuration(durationMS)}
+                  <LiveDuration
+                    key={`${value.id}:${durationActive}`}
+                    durationMS={value.duration_ms}
+                    active={durationActive}
+                  />
                 </Fact>
                 <Fact label={t("scans.changes")}>
                   <ChangeCountsLink counts={value.changes} scanID={value.id} />
@@ -214,11 +222,7 @@ export function ScanTaskView() {
                     ? scanTargetTitle(selectedTarget, t("common.global"))
                     : undefined
                 }
-                onClearTarget={
-                  selectedTarget
-                    ? () => setSelectedTargetKey(undefined)
-                    : undefined
-                }
+                onClearTarget={selectedTarget ? clearTarget : undefined}
               />
             </>
           )}
@@ -251,22 +255,33 @@ const activeScanStatuses = new Set([
 ]);
 
 // The scan stream does not resend a snapshot just because the clock moved, so
-// an active scan's duration ticks locally from the last received value.
-function useLiveDuration(durationMS: number | undefined, active: boolean) {
-  const [tick, setTick] = useState<{ base?: number; elapsed: number }>({
-    elapsed: 0,
-  });
+// an active scan's duration ticks locally from the last received value. The
+// server stops counting while every job is queued or backing off, so a later
+// snapshot may be behind what was shown: hold the shown value until the server
+// catches up instead of jumping backwards. Kept in a leaf so the per-second
+// tick does not re-render the page and its log panel.
+function LiveDuration({
+  durationMS,
+  active,
+}: {
+  durationMS?: number;
+  active: boolean;
+}) {
+  const [shown, setShown] = useState(durationMS ?? 0);
   useEffect(() => {
     if (!active || durationMS === undefined) return;
     const receivedAt = Date.now();
     const timer = window.setInterval(
-      () => setTick({ base: durationMS, elapsed: Date.now() - receivedAt }),
+      () =>
+        setShown((current) =>
+          Math.max(current, durationMS + Date.now() - receivedAt),
+        ),
       1000,
     );
     return () => window.clearInterval(timer);
   }, [active, durationMS]);
-  if (!active || durationMS === undefined) return durationMS;
-  return durationMS + (tick.base === durationMS ? tick.elapsed : 0);
+  if (!active || durationMS === undefined) return formatDuration(durationMS);
+  return formatDuration(Math.max(shown, durationMS));
 }
 
 function useCollapsedTargetLimit() {

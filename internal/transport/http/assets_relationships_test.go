@@ -66,6 +66,7 @@ func TestLoadAssetRelationshipNeighborhoodIncludesPrivateLinkENINetworkContext(t
 		repository,
 		"connection-a",
 		"service",
+		assetRelationshipNeighborhoodDepth,
 	)
 	if err != nil {
 		t.Fatalf("load relationship neighborhood: %v", err)
@@ -94,6 +95,36 @@ func TestLoadAssetRelationshipNeighborhoodIncludesPrivateLinkENINetworkContext(t
 			slices.Contains(query, asset.AssetID("eni-vswitch")) {
 			t.Fatalf("member_of parent should be terminal, queries = %v", repository.queries)
 		}
+	}
+}
+
+func TestLoadAssetRelationshipNeighborhoodDepthOneReadsOnlyDirectEdges(t *testing.T) {
+	repository := &relationshipNeighborhoodRepository{
+		relationships: []graph.Relationship{
+			{ID: "instance-vpc", SourceAssetID: "instance", TargetAssetID: "vpc", Type: graph.RelationshipMemberOf},
+			{ID: "eni-instance", SourceAssetID: "eni", TargetAssetID: "instance", Type: graph.RelationshipUses},
+			{ID: "eni-vswitch", SourceAssetID: "eni", TargetAssetID: "vswitch", Type: graph.RelationshipMemberOf},
+		},
+		bindings: []graph.LifecycleBinding{
+			{ID: "instance-manages-eni", ControllerAssetID: "instance", ManagedAssetID: "eni"},
+			{ID: "eni-manages-ip", ControllerAssetID: "eni", ManagedAssetID: "ip"},
+		},
+	}
+
+	relationships, bindings, err := loadAssetRelationshipNeighborhood(
+		context.Background(), repository, "connection-a", "instance", 1,
+	)
+	if err != nil {
+		t.Fatalf("load relationship neighborhood: %v", err)
+	}
+	if len(repository.queries) != 0 {
+		t.Fatalf("depth 1 should not expand the frontier, queries = %v", repository.queries)
+	}
+	if len(relationships) != 2 || relationships[0].ID != "eni-instance" || relationships[1].ID != "instance-vpc" {
+		t.Fatalf("relationships = %+v", relationships)
+	}
+	if len(bindings) != 1 || bindings[0].ID != "instance-manages-eni" {
+		t.Fatalf("bindings = %+v", bindings)
 	}
 }
 

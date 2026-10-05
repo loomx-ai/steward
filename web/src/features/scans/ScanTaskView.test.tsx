@@ -469,3 +469,47 @@ it("ticks an active scan duration locally between snapshots", async () => {
     vi.useRealTimers();
   }
 });
+
+it("holds the shown duration when a snapshot lags behind the local tick", async () => {
+  vi.mocked(getScan).mockResolvedValue({ ...crowdedTask });
+  let send: Parameters<typeof streamScanEvents>[4] | undefined;
+  vi.mocked(streamScanEvents).mockImplementation(
+    async (_connection, _scan, _target, _after, onEvent, signal) => {
+      send = onEvent;
+      return new Promise<string>((_resolve, reject) => {
+        signal.addEventListener("abort", () =>
+          reject(new DOMException("aborted", "AbortError")),
+        );
+      });
+    },
+  );
+  vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "Date"] });
+  try {
+    renderView();
+    expect(await screen.findByText("1m 12s")).toBeInTheDocument();
+    act(() => {
+      vi.advanceTimersByTime(5_000);
+    });
+    expect(screen.getByText("1m 17s")).toBeInTheDocument();
+    // All jobs queued: the server only counted 2s of the 5s.
+    await act(async () => {
+      send!({
+        type: "snapshot",
+        data: { ...crowdedTask, duration_ms: 74_000 },
+      });
+      // Query cache notifications flush on a real timeout.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(screen.getByText("1m 17s")).toBeInTheDocument();
+    act(() => {
+      vi.advanceTimersByTime(2_000);
+    });
+    expect(screen.getByText("1m 17s")).toBeInTheDocument();
+    act(() => {
+      vi.advanceTimersByTime(2_000);
+    });
+    expect(screen.getByText("1m 18s")).toBeInTheDocument();
+  } finally {
+    vi.useRealTimers();
+  }
+});
