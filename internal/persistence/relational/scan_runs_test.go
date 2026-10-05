@@ -164,7 +164,7 @@ func TestScanTaskReadModelMigrationUpgradesExistingDatabase(t *testing.T) {
 			first_seen_at TIMESTAMP,
 			closed_at TIMESTAMP
 		)`,
-		`CREATE TABLE asset_observations (id VARCHAR(128) PRIMARY KEY, scan_task_id VARCHAR(128) NOT NULL, payload TEXT NOT NULL)`,
+		`CREATE TABLE asset_observations (id VARCHAR(128) PRIMARY KEY, scan_task_id VARCHAR(128) NOT NULL, scan_shard_id VARCHAR(128), asset_id VARCHAR(128), observed_at TIMESTAMP, payload TEXT NOT NULL)`,
 		`CREATE TABLE findings (id VARCHAR(128) PRIMARY KEY, asset_id VARCHAR(128), last_seen_at TIMESTAMP)`,
 		`CREATE TABLE job_logs (
 			id VARCHAR(128) PRIMARY KEY,

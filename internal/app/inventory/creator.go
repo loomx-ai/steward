@@ -63,6 +63,12 @@ type ScanDirectory interface {
 	Bundle(asset.Provider) (spec.Bundle, error)
 }
 
+// sharedBundleDirectory hands out the registry's registration-time bundles
+// without copying them; callers must treat them as read-only.
+type sharedBundleDirectory interface {
+	Bundles() []spec.Bundle
+}
+
 type networkTargetDirectory interface {
 	ResolveNetworkTargetDiscoverer(asset.Provider) (contracts.NetworkTargetDiscoverer, error)
 }
@@ -669,8 +675,22 @@ func decimal(value string) bool {
 	return true
 }
 
+// readBundle returns provider's bundle for reading only. Bundle deep-copies
+// every spec (tens of milliseconds for the largest providers); planning a scan
+// or a retry only reads it, so the shared copy serves when there is one.
+func (c *Creator) readBundle(provider asset.Provider) (spec.Bundle, error) {
+	if shared, ok := c.directory.(sharedBundleDirectory); ok {
+		for _, bundle := range shared.Bundles() {
+			if bundle.Provider == provider {
+				return bundle, nil
+			}
+		}
+	}
+	return c.directory.Bundle(provider)
+}
+
 func (c *Creator) resolveKinds(provider asset.Provider, requested []asset.ResourceKindID, sources []contracts.InventorySource) ([]asset.ResourceKind, map[asset.ResourceKindID]contracts.InventorySource, error) {
-	bundle, err := c.directory.Bundle(provider)
+	bundle, err := c.readBundle(provider)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -742,7 +762,7 @@ func (c *Creator) sourceDeclaredKinds(provider asset.Provider, sources []contrac
 	if len(kindless) == 0 {
 		return result, nil
 	}
-	bundle, err := c.directory.Bundle(provider)
+	bundle, err := c.readBundle(provider)
 	if err != nil {
 		return nil, err
 	}

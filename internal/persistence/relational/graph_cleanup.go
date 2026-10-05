@@ -858,8 +858,23 @@ func (s *Store) UpdateTask(ctx context.Context, value plan.CleanupTask) error {
 	return nil
 }
 
+func (s *Store) GetTaskRevision(ctx context.Context, id plan.CleanupTaskID) (int64, error) {
+	var task struct {
+		Revision int64 `gorm:"column:revision"`
+	}
+	if err := s.db.WithContext(ctx).Table("cleanup_tasks").Select("revision").Where("id = ?", string(id)).Take(&task).Error; err != nil {
+		return 0, mapError(err)
+	}
+	return task.Revision, nil
+}
+
 func (s *Store) UpdateImpactItems(ctx context.Context, cleanupTaskID plan.CleanupTaskID, values []plan.ImpactItem) error {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// Impact rows are part of the task GetTaskRevision versions. The task
+		// row goes first, the order ReplaceTask locks them in.
+		if err := tx.Table("cleanup_tasks").Where("id = ?", string(cleanupTaskID)).Update("revision", gorm.Expr("revision + 1")).Error; err != nil {
+			return err
+		}
 		for _, value := range values {
 			if value.CleanupTaskID != cleanupTaskID || value.ID == "" {
 				return persistence.ErrConflict

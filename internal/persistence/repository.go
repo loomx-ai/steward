@@ -41,6 +41,9 @@ type ListOptions struct {
 	// ScanSource narrows scans to "manual" or "scheduled" ones.
 	ScanSource string
 	ScheduleID string
+	// ExcludeStatuses leaves executions in these statuses out of
+	// ListExecutions.
+	ExcludeStatuses []string
 }
 
 type AssetChangeListOptions struct {
@@ -247,6 +250,9 @@ type CleanupTaskRepository interface {
 	GetTask(context.Context, plan.CleanupTaskID) (CleanupTaskAggregate, error)
 	// GetTaskHeader reads the task row alone, without steps or impact items.
 	GetTaskHeader(context.Context, plan.CleanupTaskID) (plan.CleanupTask, error)
+	// GetTaskRevision reads the task's revision, which every write to the
+	// task, its steps or its impact items bumps.
+	GetTaskRevision(context.Context, plan.CleanupTaskID) (int64, error)
 	ListTasks(context.Context, ListOptions) (Page[plan.CleanupTask], error)
 	ReplaceTask(context.Context, plan.CleanupTask, []plan.CleanupTaskStep, []plan.ImpactItem) error
 	UpdateTask(context.Context, plan.CleanupTask) error

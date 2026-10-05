@@ -50,29 +50,42 @@ type ScanTaskProjection struct {
 func ProjectScanTask(task asset.ScanTask, shards []asset.ScanShard) ScanTaskProjection {
 	byTarget := make(map[string]scanTargetSummary, len(task.Targets))
 	for _, shard := range shards {
-		summary := byTarget[shard.TargetKey]
-		summary.TargetKey = shard.TargetKey
-		summary.Total++
-		summary.ResourceCount += shard.Coverage.ItemCount
-		switch shard.Status {
-		case asset.ShardSucceeded, asset.ShardSkipped, asset.ShardFailed, asset.ShardBlocked, asset.ShardCanceled:
-			summary.Completed++
-		}
-		switch shard.Status {
-		case asset.ShardRunning:
-			summary.Running++
-		case asset.ShardPaused:
-			summary.Paused++
-		case asset.ShardSucceeded, asset.ShardSkipped:
-			summary.Succeeded++
-		case asset.ShardFailed, asset.ShardBlocked:
-			summary.Failed++
-		case asset.ShardCanceled:
-			summary.Canceled++
-		}
-		byTarget[shard.TargetKey] = summary
+		byTarget[shard.TargetKey] = byTarget[shard.TargetKey].add(shard.TargetKey, shard.Status, 1, shard.Coverage.ItemCount)
 	}
 	return projectScanTaskFromSummaries(task, byTarget)
+}
+
+// ProjectScanTaskProgress is ProjectScanTask from the scan's shard progress
+// rows, which carry every count the projection reads, without its shards.
+func ProjectScanTaskProgress(task asset.ScanTask, rows []persistence.ScanShardProgress) ScanTaskProjection {
+	byTarget := make(map[string]scanTargetSummary, len(task.Targets))
+	for _, row := range rows {
+		byTarget[row.TargetKey] = byTarget[row.TargetKey].add(row.TargetKey, row.Status, row.Shards, row.ItemCount)
+	}
+	return projectScanTaskFromSummaries(task, byTarget)
+}
+
+func (summary scanTargetSummary) add(targetKey string, status asset.ShardStatus, shards, items int) scanTargetSummary {
+	summary.TargetKey = targetKey
+	summary.Total += shards
+	summary.ResourceCount += items
+	switch status {
+	case asset.ShardSucceeded, asset.ShardSkipped, asset.ShardFailed, asset.ShardBlocked, asset.ShardCanceled:
+		summary.Completed += shards
+	}
+	switch status {
+	case asset.ShardRunning:
+		summary.Running += shards
+	case asset.ShardPaused:
+		summary.Paused += shards
+	case asset.ShardSucceeded, asset.ShardSkipped:
+		summary.Succeeded += shards
+	case asset.ShardFailed, asset.ShardBlocked:
+		summary.Failed += shards
+	case asset.ShardCanceled:
+		summary.Canceled += shards
+	}
+	return summary
 }
 
 func ProjectScanTaskListItem(item persistence.ScanRunListItem, now time.Time) ScanTaskProjection {

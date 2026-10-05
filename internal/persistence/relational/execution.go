@@ -149,6 +149,9 @@ func (s *Store) ListExecutions(ctx context.Context, options persistence.ListOpti
 	if options.CleanupTaskID != "" {
 		query = query.Where("cleanup_task_id = ?", options.CleanupTaskID)
 	}
+	if len(options.ExcludeStatuses) > 0 {
+		query = query.Where("status NOT IN ?", options.ExcludeStatuses)
+	}
 	if options.Cursor != "" {
 		createdAt, id, err := decodeCursor(options.Cursor)
 		if err != nil {

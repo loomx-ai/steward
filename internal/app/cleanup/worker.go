@@ -536,6 +536,56 @@ type ExecutionHandler struct {
 	executionStateMu     sync.Mutex
 	afterIntentPersisted func(execution.ActionAttempt) error
 	afterProviderCall    func(execution.ActionAttempt, contracts.ActionResult) error
+	// taskMemo keeps each cleanup task's decoded steps and impact items by
+	// task revision: every step job claim reads them, and waiting jobs are
+	// re-claimed every few seconds while the task rarely changes.
+	taskMemoMu sync.Mutex
+	taskMemo   map[plan.CleanupTaskID]memoizedCleanupTask
+}
+
+type memoizedCleanupTask struct {
+	revision  int64
+	aggregate persistence.CleanupTaskAggregate
+}
+
+// taskMemoLimit bounds taskMemo; past it the memo starts over.
+const taskMemoLimit = 64
+
+// cleanupTask reads the task as GetTask does, decoding its rows only when its
+// revision moved since the last read. Callers treat the aggregate as a value:
+// they replace slices and clone Evidence before changing them, so each gets
+// its own slices and DependsOn has no spare capacity to append into.
+func (h *ExecutionHandler) cleanupTask(ctx context.Context, id plan.CleanupTaskID) (persistence.CleanupTaskAggregate, error) {
+	repository := h.planner.repositories.CleanupTasks()
+	// The revision is read before the rows: a write in between only makes
+	// the next read miss.
+	revision, err := repository.GetTaskRevision(ctx, id)
+	if err != nil {
+		return persistence.CleanupTaskAggregate{}, err
+	}
+	h.taskMemoMu.Lock()
+	memo, ok := h.taskMemo[id]
+	h.taskMemoMu.Unlock()
+	if !ok || memo.revision != revision {
+		aggregate, err := repository.GetTask(ctx, id)
+		if err != nil {
+			return persistence.CleanupTaskAggregate{}, err
+		}
+		memo = memoizedCleanupTask{revision: revision, aggregate: aggregate}
+		h.taskMemoMu.Lock()
+		if h.taskMemo == nil || len(h.taskMemo) >= taskMemoLimit {
+			h.taskMemo = make(map[plan.CleanupTaskID]memoizedCleanupTask)
+		}
+		h.taskMemo[id] = memo
+		h.taskMemoMu.Unlock()
+	}
+	aggregate := memo.aggregate
+	aggregate.Steps = slices.Clone(aggregate.Steps)
+	for index := range aggregate.Steps {
+		aggregate.Steps[index].DependsOn = slices.Clip(aggregate.Steps[index].DependsOn)
+	}
+	aggregate.ImpactItems = slices.Clone(aggregate.ImpactItems)
+	return aggregate, nil
 }
 
 func NewExecutionHandler(planner *Service, resolver ActionResolver, options ...ExecutionHandlerOption) *ExecutionHandler {
@@ -631,29 +681,35 @@ func (h *ExecutionHandler) ReconcileJobSettlement(ctx context.Context, job execu
 		}
 		attemptControlled := attempt.Status == execution.ExecutionPausing || attempt.Status == execution.ExecutionPaused
 		taskControlled := task.Status == plan.StatusPausing || task.Status == plan.StatusPaused
-		jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "cleanup_task", string(cleanupTaskID))
-		if err != nil {
-			return err
-		}
 		if !attemptControlled && !taskControlled {
 			if task.Status != plan.StatusExecuting || !pausableExecutionStatus(attempt.Status) {
 				return nil
 			}
-			for _, current := range jobs {
-				if current.ID != job.ID || current.Status != execution.JobPaused {
-					continue
-				}
-				now := h.planner.clock()
-				current.Status = execution.JobPending
-				current.RunAt = now
-				current.LeaseOwner = ""
-				current.LeaseUntil = nil
-				current.LastError = ""
-				current.FinishedAt = nil
-				current.UpdatedAt = now
-				return repositories.Jobs().UpdateJob(ctx, current)
+			// Only this job can resume here, so read it alone instead of every
+			// job of the task.
+			current, err := repositories.Jobs().GetJob(ctx, job.ID)
+			if errors.Is(err, persistence.ErrNotFound) {
+				return nil
 			}
-			return nil
+			if err != nil {
+				return err
+			}
+			if current.AggregateType != "cleanup_task" || current.AggregateID != string(cleanupTaskID) || current.Status != execution.JobPaused {
+				return nil
+			}
+			now := h.planner.clock()
+			current.Status = execution.JobPending
+			current.RunAt = now
+			current.LeaseOwner = ""
+			current.LeaseUntil = nil
+			current.LastError = ""
+			current.FinishedAt = nil
+			current.UpdatedAt = now
+			return repositories.Jobs().UpdateJob(ctx, current)
+		}
+		jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "cleanup_task", string(cleanupTaskID))
+		if err != nil {
+			return err
 		}
 		for _, current := range jobs {
 			if current.ID != job.ID || current.Status != execution.JobPending {
@@ -716,10 +772,12 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 	if attempt.Status == execution.ExecutionFailed && attempt.StartedAt == nil {
 		return fmt.Errorf("cleanup execution failed before resource actions started: %s", attempt.FailureReason)
 	}
-	aggregate, err := h.planner.repositories.CleanupTasks().GetTask(ctx, plan.CleanupTaskID(attempt.CleanupTaskID))
+	aggregate, err := h.cleanupTask(ctx, plan.CleanupTaskID(attempt.CleanupTaskID))
 	if err != nil {
 		return err
 	}
+	// Relationships stay live: the execution itself closes deleted assets'
+	// edges, and inferred dependencies follow them.
 	relationships, err := h.planner.repositories.Graph().ListRelationshipsByAssetIDs(
 		ctx,
 		aggregate.Task.ResolvedAssetIDs,
@@ -2460,7 +2518,7 @@ func (h *ExecutionHandler) finalizeExecution(ctx context.Context, attempt execut
 		return nil
 	}
 	attempt = current
-	if currentAggregate, err := h.planner.repositories.CleanupTasks().GetTask(ctx, aggregate.Task.ID); err != nil {
+	if currentAggregate, err := h.cleanupTask(ctx, aggregate.Task.ID); err != nil {
 		return err
 	} else {
 		aggregate = currentAggregate

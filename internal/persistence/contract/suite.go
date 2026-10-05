@@ -687,6 +687,31 @@ func Run(t *testing.T, factory Factory) {
 		if err != nil || len(connectionRuns) != 3 || connectionRuns[0].ID != "scan-3" {
 			t.Fatalf("connection scan runs = %#v, err = %v", connectionRuns, err)
 		}
+		if inventory, ok := repositories.Inventory().(interface {
+			HasScanRunInStatus(context.Context, asset.ConnectionID, ...asset.ScanStatus) (bool, error)
+			ListUnreconciledScanRuns(context.Context, asset.ConnectionID) ([]asset.ScanRun, error)
+		}); ok {
+			if has, err := inventory.HasScanRunInStatus(ctx, "conn-a", asset.ScanSucceeded); err != nil || !has {
+				t.Fatalf("succeeded scan found = %v, err = %v", has, err)
+			}
+			if has, err := inventory.HasScanRunInStatus(ctx, "conn-a", asset.ScanReconciling, asset.ScanPaused); err != nil || has {
+				t.Fatalf("reconciling scan found = %v, err = %v", has, err)
+			}
+			pending := connectionRuns[1]
+			pending.Status, pending.CompletionStatus = asset.ScanFailed, asset.ScanSucceeded
+			if err := repositories.Inventory().PutScanRun(ctx, pending); err != nil {
+				t.Fatal(err)
+			}
+			if unreconciled, err := inventory.ListUnreconciledScanRuns(ctx, "conn-a"); err != nil || len(unreconciled) != 1 || unreconciled[0].ID != pending.ID {
+				t.Fatalf("unreconciled scan runs = %#v, err = %v", unreconciled, err)
+			}
+			if err := repositories.Inventory().PutScanRun(ctx, connectionRuns[1]); err != nil {
+				t.Fatal(err)
+			}
+			if unreconciled, err := inventory.ListUnreconciledScanRuns(ctx, "conn-a"); err != nil || len(unreconciled) != 0 {
+				t.Fatalf("reconciled scan runs = %#v, err = %v", unreconciled, err)
+			}
+		}
 		storedShard, err := repositories.Inventory().GetScanShard(ctx, "shard-1")
 		if err != nil || !storedShard.Authoritative {
 			t.Fatalf("scan shard = %#v, err = %v", storedShard, err)
@@ -1429,6 +1454,12 @@ func Run(t *testing.T, factory Factory) {
 		if err != nil || len(planExecutions.Items) != 1 || planExecutions.Items[0].ID != executionAttempt.ID {
 			t.Fatalf("cleanup task execution page = %#v, err = %v", planExecutions, err)
 		}
+		if excluded, err := repositories.Executions().ListExecutions(ctx, persistence.ListOptions{Limit: 10, ExcludeStatuses: []string{string(execution.ExecutionPending)}}); err != nil || len(excluded.Items) != 0 {
+			t.Fatalf("executions without pending = %#v, err = %v", excluded, err)
+		}
+		if kept, err := repositories.Executions().ListExecutions(ctx, persistence.ListOptions{Limit: 10, ExcludeStatuses: []string{string(execution.ExecutionSucceeded)}}); err != nil || len(kept.Items) != 1 {
+			t.Fatalf("executions without succeeded = %#v, err = %v", kept, err)
+		}
 		foreignExecutions, err := repositories.Executions().ListExecutions(ctx, persistence.ListOptions{Limit: 10, ConnectionID: "conn-b"})
 		if err != nil || len(foreignExecutions.Items) != 0 {
 			t.Fatalf("foreign executions = %#v, err = %v", foreignExecutions, err)
@@ -1516,6 +1547,10 @@ func Run(t *testing.T, factory Factory) {
 				return repositories.Executions().CreateExecution(ctx, execution.ExecutionAttempt{ID: "execution-2", ConnectionID: "conn-a", CleanupTaskID: "cln-1", Status: execution.ExecutionPending, RequestedBy: "tester", IdempotencyKey: "execution-key-2", CreatedAt: now.Add(time.Second)})
 			}},
 		} {
+			revisionBefore, err := repositories.CleanupTasks().GetTaskRevision(ctx, cleanupTask.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
 			if err := mutation.mutate(); err != nil {
 				t.Fatalf("%s: %v", mutation.name, err)
 			}
@@ -1524,6 +1559,14 @@ func Run(t *testing.T, factory Factory) {
 				t.Fatalf("cleanup task version did not change after %s: %q", mutation.name, current)
 			}
 			previousVersion = current
+			// The revision versions the task, its steps and impact items.
+			revision, err := repositories.CleanupTasks().GetTaskRevision(ctx, cleanupTask.ID)
+			if taskChange := strings.HasPrefix(mutation.name, "task") || strings.HasPrefix(mutation.name, "impact"); err != nil || (revision != revisionBefore) != taskChange {
+				t.Fatalf("cleanup task revision after %s = %d (was %d), err = %v", mutation.name, revision, revisionBefore, err)
+			}
+		}
+		if _, err := repositories.CleanupTasks().GetTaskRevision(ctx, "cln-missing"); !errors.Is(err, persistence.ErrNotFound) {
+			t.Fatalf("missing cleanup task revision error = %v", err)
 		}
 
 		if err := repositories.Inventory().CreateScanRun(ctx, asset.ScanRun{

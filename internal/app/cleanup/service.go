@@ -757,7 +757,15 @@ func ensureInventoryReconciled(
 			continue
 		}
 		seen[connectionID] = struct{}{}
-		runs, err := repository.ListScanRunsByConnection(ctx, connectionID)
+		var runs []asset.ScanRun
+		var err error
+		if unreconciled, ok := repository.(interface {
+			ListUnreconciledScanRuns(context.Context, asset.ConnectionID) ([]asset.ScanRun, error)
+		}); ok {
+			runs, err = unreconciled.ListUnreconciledScanRuns(ctx, connectionID)
+		} else {
+			runs, err = repository.ListScanRunsByConnection(ctx, connectionID)
+		}
 		if err != nil {
 			return err
 		}

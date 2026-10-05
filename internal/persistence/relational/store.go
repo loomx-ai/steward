@@ -1266,6 +1266,29 @@ func (s *Store) ListScanRunsByConnection(ctx context.Context, connectionID asset
 	return decodeRows[scanRunRow, asset.ScanRun](rows, func(row scanRunRow) string { return row.Payload })
 }
 
+// HasScanRunInStatus reports whether the connection has a scan in one of
+// statuses, without reading any scan's payload.
+func (s *Store) HasScanRunInStatus(ctx context.Context, connectionID asset.ConnectionID, statuses ...asset.ScanStatus) (bool, error) {
+	var ids []string
+	if err := s.db.WithContext(ctx).Table("scan_tasks").Where("connection_id = ? AND status IN ?", string(connectionID), statuses).Limit(1).Pluck("id", &ids).Error; err != nil {
+		return false, err
+	}
+	return len(ids) > 0, nil
+}
+
+// ListUnreconciledScanRuns lists the connection's scans, newest first, that
+// are reconciling or still carry a completion status. The payload omits an
+// empty completion status, so the match is a superset callers recheck.
+func (s *Store) ListUnreconciledScanRuns(ctx context.Context, connectionID asset.ConnectionID) ([]asset.ScanRun, error) {
+	var rows []scanRunRow
+	if err := s.db.WithContext(ctx).Table("scan_tasks").
+		Where("connection_id = ? AND (status = ? OR payload LIKE ?)", string(connectionID), string(asset.ScanReconciling), `%"completion_status"%`).
+		Order("created_at DESC, id ASC").Find(&rows).Error; err != nil {
+		return nil, err
+	}
+	return decodeRows[scanRunRow, asset.ScanRun](rows, func(row scanRunRow) string { return row.Payload })
+}
+
 func (s *Store) PutScanShard(ctx context.Context, shard asset.ScanShard) error {
 	shard = defaultScanShardTarget(shard)
 	aliases, err := s.scopeAliases(ctx)
@@ -2296,23 +2319,27 @@ func (s *Store) ListAssetIDsObservedByRun(ctx context.Context, runID asset.ScanR
 // not see, so older observations only name assets it closed or that have
 // since been seen elsewhere. Manual scans can overlap, so an older shard's
 // observations made after that success started count too: they may have
-// reopened what it closed.
+// reopened what it closed. The two cases are separate branches so the older
+// shards read only their observations after the anchor, through
+// idx_asset_observations_shard_time, not every retained observation.
 func (s *Store) ListAssetIDsObservedByTarget(ctx context.Context, connectionID asset.ConnectionID, targetKey, source string, scopeID asset.ScopeID, kindID asset.ResourceKindID) ([]asset.AssetID, error) {
-	target := func(alias string) *gorm.DB {
-		return s.db.WithContext(ctx).Table("scan_shards AS "+alias).
-			Joins("JOIN scan_tasks AS "+alias+"_tasks ON "+alias+"_tasks.id = "+alias+".scan_task_id").
-			Where(alias+".scope_id = ? AND "+alias+".target_key = ? AND "+alias+".source = ? AND "+alias+".resource_kind_id = ? AND "+alias+"_tasks.connection_id = ?",
-				string(scopeID), targetKey, source, string(kindID), string(connectionID))
-	}
-	latestSuccess := target("anchor").Select("anchor.created_at").
-		Where("anchor.status = ? AND anchor.authoritative = ?", string(asset.ShardSucceeded), true).
-		Order("anchor.created_at DESC").Limit(1)
 	var ids []string
-	if err := target("shards").
-		Joins("JOIN asset_observations AS observations ON observations.scan_shard_id = shards.id").
-		Where("shards.created_at >= COALESCE((?), shards.created_at) OR observations.observed_at >= (?)", latestSuccess, latestSuccess).
-		Distinct("observations.asset_id").
-		Order("observations.asset_id ASC").Pluck("observations.asset_id", &ids).Error; err != nil {
+	if err := s.db.WithContext(ctx).Raw(`
+WITH target AS (
+	SELECT shards.id, shards.created_at, shards.status, shards.authoritative
+	FROM scan_shards AS shards JOIN scan_tasks AS tasks ON tasks.id = shards.scan_task_id
+	WHERE shards.scope_id = ? AND shards.target_key = ? AND shards.source = ? AND shards.resource_kind_id = ? AND tasks.connection_id = ?
+), anchor AS (
+	SELECT MAX(created_at) AS created_at FROM target WHERE status = ? AND authoritative = ?
+)
+SELECT observations.asset_id FROM target JOIN asset_observations AS observations ON observations.scan_shard_id = target.id
+WHERE target.created_at >= COALESCE((SELECT created_at FROM anchor), target.created_at)
+UNION
+SELECT observations.asset_id FROM target JOIN asset_observations AS observations ON observations.scan_shard_id = target.id
+WHERE target.created_at < (SELECT created_at FROM anchor) AND observations.observed_at >= (SELECT created_at FROM anchor)
+ORDER BY 1`,
+		string(scopeID), targetKey, source, string(kindID), string(connectionID), string(asset.ShardSucceeded), true,
+	).Scan(&ids).Error; err != nil {
 		return nil, err
 	}
 	result := make([]asset.AssetID, len(ids))

@@ -90,4 +90,9 @@ func TestKeywordSearchWalksOrderedIndexForCommonTerms(t *testing.T) {
 	if fmt.Sprint(rare) != "[ast-00007]" || strings.Contains(sql, "assets.search_text GLOB") {
 		t.Fatalf("rare term = %v via\n%s", rare, sql)
 	}
+	// Shorter than a trigram, the index cannot help: skip the probe.
+	short, sql := search("e-")
+	if fmt.Sprint(short) != "[ast-00007]" || strings.Contains(sql, "count(*)") || !strings.Contains(sql, "assets.search_text GLOB") {
+		t.Fatalf("short term = %v via\n%s", short, sql)
+	}
 }

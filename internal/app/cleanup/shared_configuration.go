@@ -66,7 +66,8 @@ func guardSharedConfiguration(ctx context.Context, repositories persistence.Repo
 	}
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
-	options := persistence.ListOptions{ConnectionID: aggregate.Task.ConnectionID, Limit: 500}
+	options := persistence.ListOptions{ConnectionID: aggregate.Task.ConnectionID, Limit: 500, ExcludeStatuses: []string{string(execution.ExecutionSucceeded)}}
+	tasks := map[string]persistence.CleanupTaskAggregate{}
 	for {
 		page, err := repositories.Executions().ListExecutions(ctx, options)
 		if err != nil {
@@ -76,20 +77,30 @@ func guardSharedConfiguration(ctx context.Context, repositories persistence.Repo
 			if attempt.ID == continuing && attempt.CleanupTaskID == string(aggregate.Task.ID) || attempt.Status == execution.ExecutionSucceeded {
 				continue
 			}
-			other, err := repositories.CleanupTasks().GetTask(ctx, plan.CleanupTaskID(attempt.CleanupTaskID))
-			if err != nil {
-				return err
+			other, read := tasks[attempt.CleanupTaskID]
+			if !read {
+				other, err = repositories.CleanupTasks().GetTask(ctx, plan.CleanupTaskID(attempt.CleanupTaskID))
+				if err != nil {
+					return err
+				}
+				tasks[attempt.CleanupTaskID] = other
 			}
 			otherScopes, err := taskRouterScopes(other)
 			if err != nil {
 				return fmt.Errorf("%w: cannot identify previous shared provider updates: %w", persistence.ErrConflict, err)
 			}
+			var state *sharedExecutionState
 			for _, step := range other.Steps {
 				scope := otherScopes[step.AssetID]
 				if !scopes[scope] {
 					continue
 				}
-				settled, err := settleSharedConfiguration(ctx, repositories, other, attempt, step, registry)
+				if state == nil {
+					if state, err = lockSharedExecution(ctx, repositories, attempt.ID); err != nil {
+						return fmt.Errorf("%w: cannot verify previous shared provider update: %w", persistence.ErrConflict, err)
+					}
+				}
+				settled, err := settleSharedConfiguration(ctx, repositories, other, state, step, registry)
 				if err != nil {
 					return fmt.Errorf("%w: cannot verify previous shared provider update: %w", persistence.ErrConflict, err)
 				}
@@ -105,21 +116,37 @@ func guardSharedConfiguration(ctx context.Context, repositories persistence.Repo
 	}
 }
 
+// sharedExecutionState is what every step of one locked execution settles
+// against, read once instead of once per step.
+type sharedExecutionState struct {
+	attempt  execution.ExecutionAttempt
+	actions  []execution.ActionAttempt
+	jobs     []execution.Job
+	jobsRead bool
+}
+
 // The connection lock serializes new work; the execution lock prevents a fresh
-// intent racing this terminal-state inspection. A still-runnable worker job
-// prevents recovery, even when its lease has expired.
-func settleSharedConfiguration(ctx context.Context, repositories persistence.Repositories, task persistence.CleanupTaskAggregate, attempt execution.ExecutionAttempt, step plan.CleanupTaskStep, registry ProviderActionRegistry) (bool, error) {
-	if err := repositories.Executions().LockExecution(ctx, attempt.ID); err != nil {
-		return false, err
+// intent racing this terminal-state inspection.
+func lockSharedExecution(ctx context.Context, repositories persistence.Repositories, id execution.ExecutionID) (*sharedExecutionState, error) {
+	if err := repositories.Executions().LockExecution(ctx, id); err != nil {
+		return nil, err
 	}
-	attempt, err := repositories.Executions().GetExecution(ctx, attempt.ID)
+	attempt, err := repositories.Executions().GetExecution(ctx, id)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	actions, err := repositories.Executions().ListActions(ctx, attempt.ID)
+	actions, err := repositories.Executions().ListActions(ctx, id)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
+	return &sharedExecutionState{attempt: attempt, actions: actions}, nil
+}
+
+// A still-runnable worker job prevents recovery, even when its lease has
+// expired. Settling only ever rewrites the step's own action, which no other
+// step reads.
+func settleSharedConfiguration(ctx context.Context, repositories persistence.Repositories, task persistence.CleanupTaskAggregate, state *sharedExecutionState, step plan.CleanupTaskStep, registry ProviderActionRegistry) (bool, error) {
+	attempt, actions := state.attempt, state.actions
 	var selected *execution.ActionAttempt
 	for i := range actions {
 		if actions[i].CleanupTaskStepID == string(step.ID) {
@@ -135,11 +162,14 @@ func settleSharedConfiguration(ctx context.Context, repositories persistence.Rep
 	if attempt.Status != execution.ExecutionFailed && attempt.Status != execution.ExecutionCanceled {
 		return false, nil
 	}
-	jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "cleanup_task", string(task.Task.ID))
-	if err != nil {
-		return false, err
+	if !state.jobsRead {
+		jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "cleanup_task", string(task.Task.ID))
+		if err != nil {
+			return false, err
+		}
+		state.jobs, state.jobsRead = jobs, true
 	}
-	for _, job := range jobs {
+	for _, job := range state.jobs {
 		if payloadString(job.Payload, "execution_id") != string(attempt.ID) {
 			continue
 		}

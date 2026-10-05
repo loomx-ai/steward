@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"gorm.io/gorm"
@@ -79,6 +80,11 @@ func whereKeywordMatches(query *gorm.DB, term string) (*gorm.DB, error) {
 	if query.Dialector.Name() == "sqlite" {
 		// FTS5 serves GLOB, not LIKE ... ESCAPE, from the index.
 		pattern := "*" + escapeGlob(term) + "*"
+		// Without three literal characters in a row FTS5 has no trigram to
+		// look up and the probe would scan every document itself.
+		if !hasTrigram(term) {
+			return query.Where("assets.search_text GLOB ?", pattern), nil
+		}
 		var hits int64
 		if err := query.Session(&gorm.Session{NewDB: true}).Raw(
 			"SELECT count(*) FROM (SELECT 1 FROM asset_search WHERE document GLOB ? LIMIT ?)",
@@ -97,6 +103,17 @@ func whereKeywordMatches(query *gorm.DB, term string) (*gorm.DB, error) {
 		)`, pattern), nil
 	}
 	return query.Where("assets.search_text LIKE ? ESCAPE '\\'", "%"+escapeLike(term)+"%"), nil
+}
+
+// hasTrigram reports whether term holds three characters in a row that GLOB
+// takes literally; escapeGlob turns *, ? and [ into classes FTS5 cannot index.
+func hasTrigram(term string) bool {
+	for _, run := range strings.FieldsFunc(term, func(character rune) bool { return strings.ContainsRune("*?[", character) }) {
+		if utf8.RuneCountInString(run) >= 3 {
+			return true
+		}
+	}
+	return false
 }
 
 func escapeGlob(value string) string {

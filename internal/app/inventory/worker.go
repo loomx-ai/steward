@@ -613,12 +613,26 @@ func (h *ScanHandler) settleControlledTask(ctx context.Context, task *asset.Scan
 }
 
 func (h *ScanHandler) finishRunIfTerminal(ctx context.Context, run *asset.ScanRun) error {
+	terminal := func(status asset.ShardStatus) bool {
+		return status == asset.ShardSucceeded || status == asset.ShardSkipped || status == asset.ShardFailed || status == asset.ShardBlocked || status == asset.ShardCanceled
+	}
+	// Every target job but the last finds a shard still open; the counts
+	// tell without decoding every shard.
+	progress, err := h.repositories.Inventory().ScanShardProgress(ctx, run.ID)
+	if err != nil {
+		return err
+	}
+	for _, row := range progress {
+		if !terminal(row.Status) {
+			return nil
+		}
+	}
 	runShards, err := h.repositories.Inventory().ListScanShardsByRun(ctx, run.ID)
 	if err != nil {
 		return err
 	}
 	for _, candidate := range runShards {
-		if candidate.Status != asset.ShardSucceeded && candidate.Status != asset.ShardSkipped && candidate.Status != asset.ShardFailed && candidate.Status != asset.ShardBlocked && candidate.Status != asset.ShardCanceled {
+		if !terminal(candidate.Status) {
 			return nil
 		}
 	}

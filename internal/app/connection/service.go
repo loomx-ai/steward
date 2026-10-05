@@ -591,13 +591,21 @@ func connectionBusy(ctx context.Context, repositories persistence.Repositories, 
 			return active, err
 		}
 	}
-	runs, err := repositories.Inventory().ListScanRunsByConnection(ctx, id)
-	if err != nil {
-		return false, err
-	}
-	for _, run := range runs {
-		if run.Status == asset.ScanPending || run.Status == asset.ScanRunning {
-			return true, nil
+	if inventory, ok := repositories.Inventory().(interface {
+		HasScanRunInStatus(context.Context, asset.ConnectionID, ...asset.ScanStatus) (bool, error)
+	}); ok {
+		if active, err := inventory.HasScanRunInStatus(ctx, id, asset.ScanPending, asset.ScanRunning); err != nil || active {
+			return active, err
+		}
+	} else {
+		runs, err := repositories.Inventory().ListScanRunsByConnection(ctx, id)
+		if err != nil {
+			return false, err
+		}
+		for _, run := range runs {
+			if run.Status == asset.ScanPending || run.Status == asset.ScanRunning {
+				return true, nil
+			}
 		}
 	}
 	executions, err := repositories.Executions().ListExecutions(ctx, persistence.ListOptions{Limit: 500, ConnectionID: id})

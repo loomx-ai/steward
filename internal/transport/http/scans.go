@@ -264,6 +264,21 @@ func (a *API) scanProgressMarker(ctx context.Context, id asset.ScanTaskID) (scan
 	return scanProgressMarker{task: task, shards: shards}, nil
 }
 
+// onlyItemCountsMoved reports whether next differs from previous in shard
+// item counts alone: the same task and the same shards per target and status.
+func onlyItemCountsMoved(previous, next scanProgressMarker) bool {
+	if !reflect.DeepEqual(previous.task, next.task) || len(previous.shards) != len(next.shards) {
+		return false
+	}
+	for index, row := range next.shards {
+		row.ItemCount = previous.shards[index].ItemCount
+		if row != previous.shards[index] {
+			return false
+		}
+	}
+	return true
+}
+
 func containsScanAction(actions []string, expected string) bool {
 	for _, action := range actions {
 		if action == expected {
@@ -419,6 +434,13 @@ func (a *API) scanEvents(response http.ResponseWriter, request *http.Request) {
 		if reflect.DeepEqual(marker, lastMarker) {
 			// Only timing, change counts or the schedule name can differ.
 			projection, err = a.refreshScanProjection(request.Context(), lastProjection)
+		} else if onlyItemCountsMoved(lastMarker, marker) {
+			// Every page of items bumps a count; the progress rows carry the
+			// counts, so the shards need not be decoded again. Retry is
+			// offered from the task's status and shard statuses alone.
+			next := inventory.ProjectScanTaskProgress(marker.task, marker.shards)
+			next.AllowedActions = lastProjection.AllowedActions
+			projection, err = a.refreshScanProjection(request.Context(), next)
 		} else {
 			projection, err = a.scanProjection(request, id)
 		}
