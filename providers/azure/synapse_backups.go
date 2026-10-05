@@ -169,6 +169,11 @@ func (c *client) backupSnapshot(ctx context.Context, req contracts.InventoryRequ
 	}
 	contextHashes := map[string]any{}
 	for id, listed := range workspaces {
+		// A listed workspace the list places in another region yields nothing
+		// here: its known backups are not reconciled by this shard either.
+		if req.Scope.Kind == asset.ScopeRegion && text(listed["location"]) != "" && !strings.EqualFold(resourceRegion(listed), req.Scope.NativeID) {
+			continue
+		}
 		own, err := c.synapseWorkspaceRead(ctx, id)
 		if err != nil {
 			return nil, nil, nil, "", contracts.DependencyReadError(err)
@@ -315,70 +320,56 @@ func (r *Runtime) listSynapseBackups(ctx context.Context, c *client, req contrac
 			return batch, serviceDenied("invalid_synapse_backup_cursor")
 		}
 	}
-	first, parents, absent, rid, err := c.backupSnapshot(ctx, req, kind)
-	if err != nil {
-		return batch, err
-	}
-	second, again, missing, _, err := c.backupSnapshot(ctx, req, kind)
-	if err != nil {
-		return batch, err
-	}
-	if c.privateConfiguration(map[string]any{"resources": first}) != c.privateConfiguration(map[string]any{"resources": second}) || c.privateConfiguration(parents) != c.privateConfiguration(again) || !slices.Equal(absent, missing) {
-		return batch, serviceDenied("synapse_backup_snapshot_changed")
-	}
-	items := []contracts.InventoryItem{}
-	for _, id := range slices.Sorted(maps.Keys(first)) {
-		raw := first[id]
-		props := object(raw["properties"])
-		workspace := strings.Join(strings.Split(id, "/")[:9], "/")
-		region := resourceRegion(raw)
-		normalized := map[string]any{"name": raw["name"], "state": "Retained", "subscription_id": c.subscription, "resource_group": strings.Split(id, "/")[4], "_synapse_workspace": workspace, "_synapse_backup_parent": redisParentID(id), "_synapse_backup_configuration": c.privateConfiguration(synapseSnapshot(raw)), "cleanup_protected": true, "cleanup_protection_reason": "synapse_backup_retained"}
-		safeProps := map[string]any{}
-		for _, key := range []string{"databaseName", "creationDate", "deletionDate", "earliestRestoreDate", "restorePointType", "restorePointCreationDate", "restorePointLabel", "edition", "serviceLevelObjective", "maxSizeBytes"} {
-			if v, ok := props[key]; ok {
-				normalized[key] = v
-				safeProps[key] = v
-			}
+	return r.scopedSnapshotPage(ctx, c, req, cursor, "synapse_backup_cursor_changed", nil, func() (inventorySnapshot, error) {
+		first, parents, absent, rid, err := c.backupSnapshot(ctx, req, kind)
+		if err != nil {
+			return inventorySnapshot{}, err
 		}
-		normalized[referenceKey(synapseType)] = []string{workspace}
-		network := []string{workspace}
+		second, again, missing, _, err := c.backupSnapshot(ctx, req, kind)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		if c.privateConfiguration(map[string]any{"resources": first}) != c.privateConfiguration(map[string]any{"resources": second}) || c.privateConfiguration(parents) != c.privateConfiguration(again) || !slices.Equal(absent, missing) {
+			return inventorySnapshot{}, serviceDenied("synapse_backup_snapshot_changed")
+		}
+		items := []contracts.InventoryItem{}
+		for _, id := range slices.Sorted(maps.Keys(first)) {
+			raw := first[id]
+			props := object(raw["properties"])
+			workspace := strings.Join(strings.Split(id, "/")[:9], "/")
+			region := resourceRegion(raw)
+			normalized := map[string]any{"name": raw["name"], "state": "Retained", "subscription_id": c.subscription, "resource_group": strings.Split(id, "/")[4], "_synapse_workspace": workspace, "_synapse_backup_parent": redisParentID(id), "_synapse_backup_configuration": c.privateConfiguration(synapseSnapshot(raw)), "cleanup_protected": true, "cleanup_protection_reason": "synapse_backup_retained"}
+			safeProps := map[string]any{}
+			for _, key := range []string{"databaseName", "creationDate", "deletionDate", "earliestRestoreDate", "restorePointType", "restorePointCreationDate", "restorePointLabel", "edition", "serviceLevelObjective", "maxSizeBytes"} {
+				if v, ok := props[key]; ok {
+					normalized[key] = v
+					safeProps[key] = v
+				}
+			}
+			normalized[referenceKey(synapseType)] = []string{workspace}
+			network := []string{workspace}
+			if kind == synapseRestorePointType {
+				normalized[referenceKey(synapseSQLType)] = []string{redisParentID(id)}
+				network = append(network, redisParentID(id))
+			}
+			actionable := false
+			safe := map[string]any{"id": id, "type": kind, "name": raw["name"], "location": region, "properties": safeProps}
+			items = append(items, contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}, Name: text(raw["name"]), State: "Retained", Location: region, Tags: map[string]string{}, Raw: safe, Normalized: normalized, NativeAliases: []string{id}, NetworkReferences: network, Actionable: &actionable})
+		}
 		if kind == synapseRestorePointType {
-			normalized[referenceKey(synapseSQLType)] = []string{redisParentID(id)}
-			network = append(network, redisParentID(id))
-		}
-		actionable := false
-		safe := map[string]any{"id": id, "type": kind, "name": raw["name"], "location": region, "properties": safeProps}
-		items = append(items, contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}, Name: text(raw["name"]), State: "Retained", Location: region, Tags: map[string]string{}, Raw: safe, Normalized: normalized, NativeAliases: []string{id}, NetworkReferences: network, Actionable: &actionable})
-	}
-	if kind == synapseRestorePointType {
-		for i := range items {
-			if err := r.restorePointInventory(ctx, c, req, &items[i]); err != nil {
-				return batch, err
-			}
-			review := object(items[i].Normalized[synapseRestoreReview])
-			if review["workspace"] != parents[strings.Join(strings.Split(items[i].NativeID, "/")[:9], "/")] || review["pool"] != parents[redisParentID(items[i].NativeID)] {
-				return batch, serviceDenied("synapse_restore_point_inventory_parent_changed")
+			for i := range items {
+				if err := r.restorePointInventory(ctx, c, req, &items[i]); err != nil {
+					return inventorySnapshot{}, err
+				}
+				review := object(items[i].Normalized[synapseRestoreReview])
+				if review["workspace"] != parents[strings.Join(strings.Split(items[i].NativeID, "/")[:9], "/")] || review["pool"] != parents[redisParentID(items[i].NativeID)] {
+					return inventorySnapshot{}, serviceDenied("synapse_restore_point_inventory_parent_changed")
+				}
 			}
 		}
-	}
-	boundary := req
-	boundary.Cursor, boundary.Limit = "", 0
-	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "items": items, "parents": parents, "absent": absent})
-	if req.Cursor != "" && (cursor.Fingerprint != fingerprint || cursor.Target >= len(items)) {
-		return batch, serviceDenied("synapse_backup_cursor_changed")
-	}
-	limit := req.Limit
-	if limit <= 0 {
-		limit = 1000
-	}
-	end := cursor.Target + min(limit, len(items)-cursor.Target)
-	batch = contracts.InventoryBatch{Items: items[cursor.Target:end], Complete: end == len(items), RequestID: rid}
-	if batch.Complete {
-		batch.AbsentNativeIDs = absent
-	} else {
-		cursor.Target, cursor.Fingerprint = end, fingerprint
-		wire, _ := json.Marshal(cursor)
-		batch.NextCursor = base64.RawURLEncoding.EncodeToString(wire)
-	}
-	return batch, nil
+		boundary := req
+		boundary.Cursor, boundary.Limit = "", 0
+		fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "items": items, "parents": parents, "absent": absent})
+		return inventorySnapshot{items: items, absent: absent, provenance: rid, fingerprint: fingerprint}, nil
+	})
 }

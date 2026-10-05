@@ -62,7 +62,10 @@ func (a *diagnosticAction) current(ctx context.Context) (response, diagnosticCon
 	if a.client.privateConfiguration(diagnosticSnapshot(current.data)) != a.configuration {
 		return current, diagnosticContextState{}, serviceDenied("diagnostic_configuration_changed")
 	}
-	state, err := a.client.diagnosticContext(ctx, a.scope)
+	// Only a Contribute memo shares a scope's read; actions always read live.
+	state, err := memoized(ctx, "diagnostic-action-scope:"+a.scope, func() (diagnosticContextState, error) {
+		return a.client.diagnosticContext(ctx, a.scope)
+	})
 	if err != nil {
 		return current, state, contracts.DependencyReadError(err)
 	}

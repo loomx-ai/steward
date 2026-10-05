@@ -175,9 +175,18 @@ func (c *client) rbacPrincipalMatches(target asset.Asset, reference string) (boo
 func (c *client) rbacResolvePrincipals(ctx context.Context, parent asset.Asset, assets []asset.Asset, refs map[string][]string) (map[string][]string, error) {
 	resolved := maps.Clone(refs)
 	delete(resolved, rbacPrincipalType)
+	principals, err := c.rbacPrincipalIndex(ctx, assets)
+	if err != nil {
+		return nil, err
+	}
 	for _, reference := range refs[rbacPrincipalType] {
 		var target *asset.Asset
-		for i := range assets {
+		key := rbacPrincipalKey{parent.Identity.Provider, parent.Identity.ConnectionID, parent.Identity.Partition, ""}
+		// Unproven identities or a malformed reference make the scan fail;
+		// leave those to it so the outcome and its error stay the same.
+		indexed := principals != nil && !principals.unproven[key] && validRBACPrincipalSelector(rbacPrincipalType, reference)
+		key.principal = reference
+		for i := range assetPositions(indexed, principals.positions(key), len(assets)) {
 			candidate := &assets[i]
 			if candidate.Identity.Provider != parent.Identity.Provider || candidate.Identity.ConnectionID != parent.Identity.ConnectionID || candidate.Identity.Partition != parent.Identity.Partition || !rbacIdentityTarget(*candidate) {
 				continue
@@ -203,4 +212,49 @@ func (c *client) rbacResolvePrincipals(ctx context.Context, parent asset.Asset, 
 		}
 	}
 	return resolved, nil
+}
+
+type rbacPrincipalKey struct {
+	provider   asset.Provider
+	connection asset.ConnectionID
+	partition  string
+	principal  string
+}
+
+// rbacPrincipals indexes a Contribute's identity targets by recorded principal.
+// unproven marks scopes (principal "") holding a target whose proof fails.
+type rbacPrincipals struct {
+	byPrincipal map[rbacPrincipalKey][]int
+	unproven    map[rbacPrincipalKey]bool
+}
+
+func (p *rbacPrincipals) positions(key rbacPrincipalKey) []int {
+	if p == nil {
+		return nil
+	}
+	return p.byPrincipal[key]
+}
+
+// rbacPrincipalIndex is built once per Contribute; other callers get nil and scan.
+func (c *client) rbacPrincipalIndex(ctx context.Context, assets []asset.Asset) (*rbacPrincipals, error) {
+	if contributeIndex(ctx, assets) == nil {
+		return nil, nil
+	}
+	return memoized(ctx, "rbac-principal-index", func() (*rbacPrincipals, error) {
+		index := &rbacPrincipals{byPrincipal: map[rbacPrincipalKey][]int{}, unproven: map[rbacPrincipalKey]bool{}}
+		for i, value := range assets {
+			if !rbacIdentityTarget(value) {
+				continue
+			}
+			key := rbacPrincipalKey{value.Identity.Provider, value.Identity.ConnectionID, value.Identity.Partition, ""}
+			metadata, err := c.rbacRecordedIdentity(value)
+			if err != nil {
+				index.unproven[key] = true
+				continue
+			}
+			key.principal = text(metadata["principal"])
+			index.byPrincipal[key] = append(index.byPrincipal[key], i)
+		}
+		return index, nil
+	})
 }

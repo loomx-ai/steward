@@ -293,7 +293,8 @@ func (c *client) apimInventory(ctx context.Context, id, kind string, raw, normal
 	}
 	ancestors := map[string]any{}
 	for _, parentID := range apimAncestorIDs(id) {
-		parent, err := c.apimResource(ctx, parentID)
+		// An inventory page reads each ancestor once for all its children.
+		parent, err := memoized(ctx, "apim-ancestor:"+parentID, func() (map[string]any, error) { return c.apimResource(ctx, parentID) })
 		if err != nil {
 			return err
 		}

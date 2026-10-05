@@ -165,18 +165,17 @@ func (c *client) contributeDiagnosticReferences(ctx context.Context, parent asse
 	if err != nil {
 		return contribution, err
 	}
-	var current response
-	for range 2 {
-		current, _, err = driver.current(ctx)
-		if err != nil {
-			return contribution, err
-		}
+	// One live read suffices: current() already rejects any drift from the
+	// recorded proofs, and every delete re-reads in Preflight and Execute.
+	current, _, err := driver.current(ctx)
+	if err != nil {
+		return contribution, err
 	}
 	refs, err := diagnosticReferences(parent.Identity.NativeID, current.data)
 	if err != nil {
 		return contribution, err
 	}
-	contribution, err = c.contributeNativeReferences(parent, assets, refs, "azure:diagnostic-reference")
+	contribution, err = c.contributeNativeReferences(ctx, parent, assets, refs, "azure:diagnostic-reference")
 	if err != nil {
 		return contribution, err
 	}

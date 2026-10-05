@@ -410,7 +410,7 @@ func TestNativeReferenceIndexMatchesScan(t *testing.T) {
 	target.Identity.NativeID = strings.Replace(target.Identity.NativeID, "/disks/target", "/DISKS/Target", 1)
 	refs := map[string][]string{strings.ToLower(diskType): {strings.ToLower(target.Identity.NativeID), c.root() + "/resourcegroups/test/providers/microsoft.compute/disks/absent"}}
 	for _, assets := range [][]asset.Asset{{parent, target}, {parent, target, func() asset.Asset { copy := target; copy.ID = "copy"; return copy }()}} {
-		want, wantErr := c.contributeNativeReferences(parent, assets, refs, "test")
+		want, wantErr := c.contributeNativeReferences(t.Context(), parent, assets, refs, "test")
 		got, gotErr := c.contributeIndexedReferences(parent, assets, newAssetIndex(assets), refs, "test")
 		if fmt.Sprint(gotErr) != fmt.Sprint(wantErr) || !reflect.DeepEqual(got, want) {
 			t.Fatal("indexed references differ from the scan", got, gotErr, want, wantErr)

@@ -373,40 +373,34 @@ func (r *Runtime) listInsights(ctx context.Context, c *client, request contracts
 	} else if cursor.Window != (insightsAnnotationWindow{}) || len(request.KnownNativeIDs) != 0 {
 		return batch, serviceDenied("unexpected_insights_annotation_window")
 	}
-	items, absent, provenance, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
-	if err != nil {
+	batch, err = r.scopedSnapshotPage(ctx, c, request, cursor.productCursor, "insights_inventory_cursor_changed", cursor.Window, func() (inventorySnapshot, error) {
+		items, absent, provenance, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		// As with Batch's native inventory, materialize the current collection
+		// before slicing. Two independently read snapshots catch membership and
+		// private-configuration drift; an old cursor must not skip new resources.
+		current, afterAbsent, _, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		bindings := insightsInventoryBindings(items)
+		if !slices.Equal(absent, afterAbsent) || c.privateConfiguration(bindings) != c.privateConfiguration(insightsInventoryBindings(current)) {
+			return inventorySnapshot{}, serviceDenied("insights_inventory_changed_during_scan")
+		}
+		boundary := request
+		boundary.Cursor, boundary.Limit = "", 0
+		fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": bindings, "absent": absent, "window": cursor.Window})
+		return inventorySnapshot{items: items, absent: absent, provenance: provenance, fingerprint: fingerprint}, nil
+	})
+	if err != nil || batch.NextCursor == "" {
 		return batch, err
 	}
-	// As with Batch's native inventory, materialize the current collection
-	// before slicing. Two independently read snapshots catch membership and
-	// private-configuration drift; an old cursor must not skip new resources.
-	current, afterAbsent, _, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
-	if err != nil {
-		return batch, err
-	}
-	bindings := insightsInventoryBindings(items)
-	if !slices.Equal(absent, afterAbsent) || c.privateConfiguration(bindings) != c.privateConfiguration(insightsInventoryBindings(current)) {
-		return batch, serviceDenied("insights_inventory_changed_during_scan")
-	}
-	boundary := request
-	boundary.Cursor, boundary.Limit = "", 0
-	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": bindings, "absent": absent, "window": cursor.Window})
-	if request.Cursor != "" && (cursor.Fingerprint != fingerprint || cursor.Target >= len(items)) {
-		return batch, serviceDenied("insights_inventory_cursor_changed")
-	}
-	cursor.Fingerprint = fingerprint
-	limit := request.Limit
-	if limit <= 0 {
-		limit = 1000
-	}
-	end := cursor.Target + min(limit, len(items)-cursor.Target)
-	batch = contracts.InventoryBatch{Items: items[cursor.Target:end], Complete: end == len(items), RequestID: provenance}
-	if batch.Complete {
-		batch.AbsentNativeIDs = absent
-	} else {
-		cursor.Target = end
-		raw, _ := json.Marshal(cursor)
-		batch.NextCursor = base64.RawURLEncoding.EncodeToString(raw)
-	}
+	// The annotation window travels with the page cursor.
+	raw, _ := base64.RawURLEncoding.DecodeString(batch.NextCursor)
+	_ = json.Unmarshal(raw, &cursor.productCursor)
+	raw, _ = json.Marshal(cursor)
+	batch.NextCursor = base64.RawURLEncoding.EncodeToString(raw)
 	return batch, nil
 }

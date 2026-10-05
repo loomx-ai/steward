@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"maps"
 	"net/http"
+	"reflect"
 	"slices"
 	"strings"
 	"testing"
@@ -337,11 +338,26 @@ func TestRBACInventoryLaterPagesReuseScanSnapshot(t *testing.T) {
 	if string(want) != string(got) {
 		t.Fatal("cached pages changed inventory")
 	}
-	inventorySnapshots.Lock()
-	defer inventorySnapshots.Unlock()
-	for key := range inventorySnapshots.entries {
-		if key.run == "scn-snapshot-reuse" {
-			t.Fatal("last page kept the scan snapshot cached")
+	// Every scope's shard of the same scan filters the one observation; another
+	// scan observes afresh.
+	for _, scope := range []asset.Scope{{Kind: asset.ScopeGlobal, NativeID: "global"}, {Kind: asset.ScopeRegion, NativeID: "eastus"}} {
+		request := productRequest(f.runtime, rbacAssignmentType)
+		request.Scope, request.ScanRunID = scope, "scn-snapshot-reuse"
+		before := calls()
+		shared, err := f.runtime.List(t.Context(), request)
+		if err != nil || calls() != before {
+			t.Fatal("another shard re-observed the scan snapshot", scope, err, calls()-before)
 		}
+		request.ScanRunID = ""
+		alone, err := f.runtime.List(t.Context(), request)
+		if err != nil || calls() == before || !reflect.DeepEqual(shared.Items, alone.Items) || !slices.Equal(shared.AbsentNativeIDs, alone.AbsentNativeIDs) {
+			t.Fatal("shared observation changed a scope's inventory", scope, err, len(shared.Items), len(alone.Items))
+		}
+	}
+	request := productRequest(f.runtime, rbacAssignmentType)
+	request.ScanRunID = "scn-other"
+	before := calls()
+	if _, err := f.runtime.List(t.Context(), request); err != nil || calls() == before {
+		t.Fatal("another scan reused the snapshot", err)
 	}
 }

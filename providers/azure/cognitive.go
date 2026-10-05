@@ -139,7 +139,8 @@ func (c *client) cognitiveInventory(ctx context.Context, id, kind string, raw, n
 	normalized["_cognitive_native_location"] = cognitiveNativeLocation(raw)
 	ancestors := map[string]any{}
 	for _, ancestor := range cognitiveAncestorIDs(id) {
-		live, err := c.cognitiveResource(ctx, ancestor)
+		// An inventory page reads each ancestor once for all its children.
+		live, err := memoized(ctx, "cognitive-ancestor:"+ancestor, func() (map[string]any, error) { return c.cognitiveResource(ctx, ancestor) })
 		if err != nil {
 			return err
 		}

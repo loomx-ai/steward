@@ -57,6 +57,9 @@ func (c *client) synapseDataWorkspaces(ctx context.Context, request contracts.In
 		endpoints[workspace.endpoint] = id
 		return nil
 	}
+	// A listed workspace the list places in another region yields nothing here.
+	// It is read only when a known ID's endpoint or workspace needs it.
+	elsewhere := map[string]map[string]any{}
 	collection := c.root() + "/providers/Microsoft.Synapse/workspaces"
 	next := apiURL(collection, synapseVersion)
 	pages, seen := map[string]bool{}, map[string]bool{}
@@ -76,6 +79,10 @@ func (c *client) synapseDataWorkspaces(ctx context.Context, request contracts.In
 				return nil, nil, serviceDenied("duplicate_synapse_workspace")
 			}
 			seen[id] = true
+			if request.Scope.Kind == asset.ScopeRegion && text(raw["location"]) != "" && !strings.EqualFold(resourceRegion(raw), request.Scope.NativeID) {
+				elsewhere[id] = raw
+				continue
+			}
 			if err = add(id, raw); err != nil {
 				return nil, nil, err
 			}
@@ -114,13 +121,21 @@ func (c *client) synapseDataWorkspaces(ctx context.Context, request contracts.In
 				params[d.parameter] = name
 			}
 		}
+		if workspaceID == "" && endpoints[text(params["endpoint"])] == "" {
+			for _, id := range slices.Sorted(maps.Keys(elsewhere)) {
+				if err := add(id, elsewhere[id]); err != nil {
+					return nil, nil, err
+				}
+			}
+			elsewhere = nil
+		}
 		if workspaceID == "" {
 			workspaceID = endpoints[text(params["endpoint"])]
 		}
 		if workspaceID == "" {
 			return nil, nil, serviceDenied("synapse_data_known_workspace_unresolved")
 		}
-		if err := add(workspaceID, nil); err != nil {
+		if err := add(workspaceID, elsewhere[workspaceID]); err != nil {
 			return nil, nil, err
 		}
 		if workspaces[workspaceID].endpoint != params["endpoint"] {

@@ -23,8 +23,10 @@ func (c *client) contributeWorkbookReferences(ctx context.Context, parent asset.
 	return c.contributeIndexedReferences(parent, assets, index, workbookReferences(parent.Identity.NativeType, parent.Identity.NativeID, record.raw), "azure:workbook-reference")
 }
 
-func (c *client) contributeNativeReferences(parent asset.Asset, assets []asset.Asset, references map[string][]string, source string) (governance.Contribution, error) {
-	return c.contributeIndexedReferences(parent, assets, nil, references, source)
+// contributeNativeReferences uses the Contribute's shared index when assets is
+// the slice it was built for, and scans otherwise.
+func (c *client) contributeNativeReferences(ctx context.Context, parent asset.Asset, assets []asset.Asset, references map[string][]string, source string) (governance.Contribution, error) {
+	return c.contributeIndexedReferences(parent, assets, contributeIndex(ctx, assets), references, source)
 }
 
 // A nil index scans assets; callers that resolve many parents share one index.

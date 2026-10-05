@@ -31,6 +31,9 @@ type productCursor struct {
 	// Walk names this process's record of the identities the target's earlier
 	// pages returned; see productScanCache.commit.
 	Walk string `json:"walk,omitempty"`
+	// Known is a snapshot source's digest of the shard's known metadata; see
+	// inventorySnapshotPage.
+	Known string `json:"known,omitempty"`
 	// Resources is no longer written. Snapshot sources sharing this cursor
 	// shape still reject a cursor that carries it.
 	Resources []string `json:"resources,omitempty"`
@@ -103,8 +106,12 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure product scope")
 	}
 	// Without a scan, a shard's first page lists parents afresh and its later
-	// pages reuse that set. The shards of one scan share it.
-	targetKey := productTargetKey{run: request.ScanRunID, connection: request.ConnectionID, credential: c.fingerprint, nativeType: strings.ToLower(nativeType), scopeKind: request.Scope.Kind, scopeID: request.Scope.NativeID}
+	// pages reuse that set. The shards of one scan share it; only a list bound
+	// to the scope's location keeps one set per scope.
+	targetKey := productTargetKey{run: request.ScanRunID, connection: request.ConnectionID, credential: c.fingerprint, nativeType: strings.ToLower(nativeType)}
+	if slices.Contains(slices.Collect(maps.Values(definition.Discovery.List.Parameters)), any("scope.location")) {
+		targetKey.scopeKind, targetKey.scopeID = request.Scope.Kind, request.Scope.NativeID
+	}
 	targets, targetsDigest, err := r.targetCache.get(targetKey, request.Cursor == "" && request.ScanRunID == "", func() ([]productTarget, error) {
 		return r.productTargets(ctx, c, request, definition, ancestors)
 	})
@@ -167,6 +174,19 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		values, next, provenance, err = c.synapsePage(ctx, endpoint, u.Path, nativeType)
 	} else if isAPIMAPI(nativeType) {
 		values, next, provenance, err = c.apimAPIPage(ctx, target.ParentID)
+	} else if nativeType == apimIssueType && request.ScanRunID != "" {
+		// Every API target of one service checks its issues against the same
+		// service-level index; the scan's shards read it once per service. A
+		// failed check drops it, so a retried shard reads it afresh.
+		key := productScanKey{run: request.ScanRunID, connection: request.ConnectionID, credential: c.fingerprint, name: "apim-issues\x00" + apimRootID(target.ParentID)}
+		values, next, provenance, err = c.apimIssuePageFrom(ctx, target.ParentID, func(ctx context.Context, root string) (map[string]serviceChild, error) {
+			index, err := r.productScan.share(ctx, key, func(any) bool { return true }, func() (any, error) { return c.apimIssues(ctx, root) })
+			issues, _ := index.(map[string]serviceChild)
+			return issues, err
+		})
+		if err != nil {
+			r.productScan.forget(key)
+		}
 	} else if nativeType == apimIssueType {
 		values, next, provenance, err = c.apimIssuePage(ctx, target.ParentID)
 	} else if nativeType == streamAnalyticsTransformationType {
@@ -186,16 +206,19 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	} else {
 		values, next, provenance, err = c.listPageResult(ctx, endpoint, u.Path)
 	}
-	if err != nil {
-		return contracts.InventoryBatch{}, err
-	}
 	// Reading a collection which disappeared with its parent cannot prove that
 	// all children are absent. In particular, a 403/404 is never an empty shard.
-	if err := c.verifyProductParent(ctx, target); err != nil {
-		// The scan's shared parent listing may be what went stale; a retried
+	if err == nil {
+		err = c.verifyProductParent(ctx, target)
+	}
+	if err != nil {
+		// The scan's shared parent listing may be what went stale (a deleted
+		// parent's collection read fails before its parent check); a retried
 		// shard lists parents afresh.
-		r.targetCache.forget(targetKey)
-		r.productScan.forgetParents(request.ScanRunID, request.ConnectionID)
+		if target.ParentID != "" {
+			r.targetCache.forget(targetKey)
+			r.productScan.forgetParents(request.ScanRunID, request.ConnectionID)
+		}
 		return contracts.InventoryBatch{}, err
 	}
 	owners, locks, err := c.inventoryProtection(ctx)
@@ -733,6 +756,35 @@ type productScanCache struct {
 	parents    map[productScanKey]*productParentListing
 	placements map[productScanKey]*productPlacement
 	walks      map[string]*productWalk
+	// swept rate-limits the expiry sweeps of placements and walks, which every
+	// page would otherwise run over the whole map.
+	swept time.Time
+	// shared holds other observations the scan's shards share, such as
+	// snapshot sources' stability-checked snapshots; see share.
+	shared map[productScanKey]*productShared
+}
+
+// productScanSweepInterval bounds how often place and commit sweep expired
+// entries; an expired entry is never served in between.
+const productScanSweepInterval = time.Minute
+
+// sweep drops expired placements and walks at most once per
+// productScanSweepInterval. The caller holds s.mu.
+func (s *productScanCache) sweep(now time.Time) {
+	if now.Sub(s.swept) < productScanSweepInterval {
+		return
+	}
+	s.swept = now
+	for cached, entry := range s.placements {
+		if !now.Before(entry.expires) {
+			delete(s.placements, cached)
+		}
+	}
+	for cached, entry := range s.walks {
+		if !now.Before(entry.expires) {
+			delete(s.walks, cached)
+		}
+	}
 }
 
 type productParentListing struct {
@@ -833,11 +885,7 @@ func (s *productScanCache) place(key productScanKey, locations map[string]string
 	if s.placements == nil {
 		s.placements = map[productScanKey]*productPlacement{}
 	}
-	for cached, entry := range s.placements {
-		if !now.Before(entry.expires) {
-			delete(s.placements, cached)
-		}
-	}
+	s.sweep(now)
 	s.placements[key] = &productPlacement{locations: locations, expires: now.Add(productTargetTTL)}
 }
 
@@ -862,11 +910,7 @@ func (s *productScanCache) commit(walk string, first, last bool, page map[string
 	if s.walks == nil {
 		s.walks = map[string]*productWalk{}
 	}
-	for cached, entry := range s.walks {
-		if !now.Before(entry.expires) {
-			delete(s.walks, cached)
-		}
-	}
+	s.sweep(now)
 	if last || walk == "" {
 		delete(s.walks, walk)
 		return current.ids, last && !current.partial, nil
@@ -939,44 +983,8 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				return nil, fmt.Errorf("Azure product parent cycle")
 			}
 		}
-		list := func() ([]contracts.InventoryItem, error) {
-			var parents []contracts.InventoryItem
-			for _, parentType := range parentTypes {
-				kind := r.resourceKind(parentType)
-				parentRequest := request
-				parentRequest.ResourceKind = &kind
-				parentRequest.Cursor = ""
-				// Child resources can have their own region, and resource groups are
-				// globally scoped. Enumerate the native parent set across the subscription.
-				parentRequest.Scope = asset.Scope{Kind: asset.ScopeSubscription, NativeID: c.subscription}
-				for {
-					batch, err := r.listProduct(ctx, c, parentRequest, ancestors)
-					if err != nil {
-						return nil, err
-					}
-					parents = append(parents, batch.Items...)
-					if batch.Complete {
-						break
-					}
-					parentRequest.Cursor = batch.NextCursor
-				}
-			}
-			sort.Slice(parents, func(i, j int) bool { return parents[i].NativeID < parents[j].NativeID })
-			for i := 1; i < len(parents); i++ {
-				if parents[i-1].NativeID == parents[i].NativeID {
-					return nil, fmt.Errorf("Azure parent list returned duplicate identities")
-				}
-			}
-			return parents, nil
-		}
-		// The scan's shards share one parent listing, read only from here on.
 		var err error
-		if request.ScanRunID == "" {
-			parents, err = list()
-		} else {
-			parents, err = r.productScan.parentItems(ctx, productScanKey{run: request.ScanRunID, connection: request.ConnectionID, credential: c.fingerprint, name: strings.ToLower(strings.Join(parentTypes, ","))}, list)
-		}
-		if err != nil {
+		if parents, err = r.productParents(ctx, c, request, parentTypes, ancestors); err != nil {
 			return nil, err
 		}
 	}
@@ -1099,6 +1107,45 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		return c.dataCollectionOrphanTargets(ctx, targets)
 	}
 	return targets, nil
+}
+
+// productParents lists every parent of parentTypes across the subscription,
+// sorted by identity. The scan's shards share one listing, read only from here on.
+func (r *Runtime) productParents(ctx context.Context, c *client, request contracts.InventoryRequest, parentTypes, ancestors []string) ([]contracts.InventoryItem, error) {
+	list := func() ([]contracts.InventoryItem, error) {
+		var parents []contracts.InventoryItem
+		for _, parentType := range parentTypes {
+			kind := r.resourceKind(parentType)
+			parentRequest := request
+			parentRequest.ResourceKind = &kind
+			parentRequest.Cursor = ""
+			// Child resources can have their own region, and resource groups are
+			// globally scoped. Enumerate the native parent set across the subscription.
+			parentRequest.Scope = asset.Scope{Kind: asset.ScopeSubscription, NativeID: c.subscription}
+			for {
+				batch, err := r.listProduct(ctx, c, parentRequest, ancestors)
+				if err != nil {
+					return nil, err
+				}
+				parents = append(parents, batch.Items...)
+				if batch.Complete {
+					break
+				}
+				parentRequest.Cursor = batch.NextCursor
+			}
+		}
+		sort.Slice(parents, func(i, j int) bool { return parents[i].NativeID < parents[j].NativeID })
+		for i := 1; i < len(parents); i++ {
+			if parents[i-1].NativeID == parents[i].NativeID {
+				return nil, fmt.Errorf("Azure parent list returned duplicate identities")
+			}
+		}
+		return parents, nil
+	}
+	if request.ScanRunID == "" {
+		return list()
+	}
+	return r.productScan.parentItems(ctx, productScanKey{run: request.ScanRunID, connection: request.ConnectionID, credential: c.fingerprint, name: strings.ToLower(strings.Join(parentTypes, ","))}, list)
 }
 
 // inventoryProtectionTTL bounds how long inventory pages of every kind and

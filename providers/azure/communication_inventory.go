@@ -714,7 +714,7 @@ func (r *Runtime) listCommunication(ctx context.Context, c *client, request cont
 			return batch, serviceDenied("invalid_communication_inventory_cursor")
 		}
 	}
-	return r.inventorySnapshotPage(c, request, cursor, "communication_inventory_cursor_changed", func() (inventorySnapshot, error) {
+	return r.inventorySnapshotPage(ctx, c, request, cursor, "communication_inventory_cursor_changed", func(request contracts.InventoryRequest) (inventorySnapshot, error) {
 		items, absent, before, err := r.communicationInventorySnapshot(ctx, c, request)
 		if err != nil {
 			return inventorySnapshot{}, err

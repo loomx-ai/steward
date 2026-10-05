@@ -267,6 +267,9 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 	}
 	raws := map[string]map[string]any{}
 	regions := map[string]string{}
+	// elsewhere holds listed resources whose listed location is another
+	// region's, and their descendants; none is read for this region shard.
+	elsewhere := map[string]bool{}
 	absent := []string{}
 	requestID := ""
 	var collect func(string) ([]string, error)
@@ -280,7 +283,7 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 				return nil, err
 			}
 		}
-		ids := map[string]bool{}
+		ids, listed := map[string]bool{}, map[string]string{}
 		for _, parent := range parents {
 			if definition.family == "Subvolumes" {
 				flag := object(raws[parent]["properties"])["enableSubvolumes"]
@@ -302,6 +305,7 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 					return nil, serviceDenied("invalid_netapp_index")
 				}
 				ids[id] = true
+				listed[id] = strings.ReplaceAll(strings.ToLower(text(raw["location"])), " ", "")
 			}
 		}
 		for id := range hints[typ] {
@@ -310,6 +314,19 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		out := []string{}
 		for _, id := range slices.Sorted(maps.Keys(ids)) {
 			parent := redisParentID(id)
+			if definition.parent != "" && raws[parent] == nil && elsewhere[parent] || listed[id] != "" && req.Scope.Kind == asset.ScopeRegion && !strings.EqualFold(listed[id], req.Scope.NativeID) {
+				// A known resource not listed under such a parent is still read:
+				// only its own read can prove its absence.
+				elsewhere[id] = true
+				if typ == kind && known[id] && listed[id] == "" {
+					if _, err := c.netappRead(ctx, id, typ); isNotFound(err) {
+						absent = append(absent, id)
+					} else if err != nil {
+						return nil, err
+					}
+				}
+				continue
+			}
 			if definition.parent != "" && raws[parent] == nil {
 				return nil, serviceDenied("netapp_lookup_parent_unavailable")
 			}
@@ -379,7 +396,7 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		}
 		network := []string{}
 		for typ, values := range refs {
-			normalized["refs_"+strings.NewReplacer(".", "_", "/", "_").Replace(strings.ToLower(typ))] = values
+			normalized[referenceKey(typ)] = values
 			network = append(network, values...)
 		}
 		slices.Sort(network)
@@ -445,41 +462,29 @@ func (r *Runtime) listNetapp(ctx context.Context, c *client, req contracts.Inven
 			return batch, serviceDenied("invalid_netapp_cursor")
 		}
 	}
-	first, absent, parents, provenance, err := r.netappSnapshot(ctx, c, req)
-	if err != nil {
-		return batch, err
+	if req.Limit <= 0 || req.Limit > 500 {
+		req.Limit = 500
 	}
-	second, gone, current, lastRequest, err := r.netappSnapshot(ctx, c, req)
-	if err != nil {
-		return batch, err
-	}
-	if c.privateConfiguration(map[string]any{"items": first}) != c.privateConfiguration(map[string]any{"items": second}) || c.privateConfiguration(parents) != c.privateConfiguration(current) || !slices.Equal(absent, gone) {
-		return batch, serviceDenied("netapp_snapshot_changed")
-	}
-	if lastRequest != "" {
-		provenance = lastRequest
-	}
-	boundary := req
-	boundary.Cursor, boundary.Limit = "", 0
-	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "items": first, "parents": parents, "absent": absent})
-	if cursor.Fingerprint != "" && cursor.Fingerprint != fingerprint || cursor.Target > len(first) {
-		return batch, serviceDenied("netapp_cursor_changed")
-	}
-	limit := req.Limit
-	if limit <= 0 || limit > 500 {
-		limit = 500
-	}
-	end := min(cursor.Target+limit, len(first))
-	batch.Items = first[cursor.Target:end]
-	batch.Complete = end == len(first)
-	batch.RequestID = provenance
-	if batch.Complete {
-		batch.AbsentNativeIDs = absent
-	} else {
-		wire, _ := json.Marshal(productCursor{Target: end, Fingerprint: fingerprint})
-		batch.NextCursor = base64.RawURLEncoding.EncodeToString(wire)
-	}
-	return batch, nil
+	return r.scopedSnapshotPage(ctx, c, req, cursor, "netapp_cursor_changed", nil, func() (inventorySnapshot, error) {
+		first, absent, parents, provenance, err := r.netappSnapshot(ctx, c, req)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		second, gone, current, lastRequest, err := r.netappSnapshot(ctx, c, req)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		if c.privateConfiguration(map[string]any{"items": first}) != c.privateConfiguration(map[string]any{"items": second}) || c.privateConfiguration(parents) != c.privateConfiguration(current) || !slices.Equal(absent, gone) {
+			return inventorySnapshot{}, serviceDenied("netapp_snapshot_changed")
+		}
+		if lastRequest != "" {
+			provenance = lastRequest
+		}
+		boundary := req
+		boundary.Cursor, boundary.Limit = "", 0
+		fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "items": first, "parents": parents, "absent": absent})
+		return inventorySnapshot{items: first, absent: absent, provenance: provenance, fingerprint: fingerprint}, nil
+	})
 }
 
 // Retain only safe resource metadata in generic API diagnostics too.

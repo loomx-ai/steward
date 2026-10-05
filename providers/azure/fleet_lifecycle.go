@@ -296,7 +296,7 @@ func (c *client) contributeFleetReferences(ctx context.Context, value asset.Asse
 			}
 		}
 	}
-	result, err = c.contributeNativeReferences(value, assets, refs, "azure:fleet-reference")
+	result, err = c.contributeNativeReferences(ctx, value, assets, refs, "azure:fleet-reference")
 	if err != nil {
 		return result, err
 	}

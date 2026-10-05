@@ -178,7 +178,10 @@ func (c *client) contributeMonitorReferences(ctx context.Context, parent asset.A
 	}
 	group := map[string]any{}
 	if scope != c.root() {
-		group, err = c.workbookGroup(ctx, id)
+		// One Contribute shares each resource group's read across its rules.
+		group, err = memoized(ctx, "monitor-group:"+strings.Join(strings.Split(id, "/")[:5], "/"), func() (map[string]any, error) {
+			return c.workbookGroup(ctx, id)
+		})
 		if err != nil {
 			return contribution, err
 		}

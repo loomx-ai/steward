@@ -207,7 +207,7 @@ func (r *Runtime) listHybridCompute(ctx context.Context, c *client, request cont
 			return batch, serviceDenied("invalid_hybrid_compute_cursor")
 		}
 	}
-	return r.inventorySnapshotPage(c, request, cursor, "hybrid_compute_cursor_changed", func() (inventorySnapshot, error) {
+	return r.inventorySnapshotPage(ctx, c, request, cursor, "hybrid_compute_cursor_changed", func(request contracts.InventoryRequest) (inventorySnapshot, error) {
 		items, before, provenance, err := r.hybridComputeSnapshot(ctx, c, request)
 		if err != nil {
 			return inventorySnapshot{}, err

@@ -126,7 +126,8 @@ func (c *client) searchInventory(ctx context.Context, id, kind string, raw, norm
 	normalized["_search_configuration"] = searchConfiguration(kind, raw)
 	normalized["_search_private_configuration"] = c.privateConfiguration(searchSnapshot(kind, raw))
 	if kind != searchType {
-		parent, err := c.linkedResource(ctx, redisParentID(id))
+		// An inventory page reads each parent once for all its children.
+		parent, err := memoized(ctx, "search-parent:"+redisParentID(id), func() (map[string]any, error) { return c.linkedResource(ctx, redisParentID(id)) })
 		if err != nil {
 			return err
 		}

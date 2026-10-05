@@ -353,7 +353,7 @@ func (r *Runtime) listDataMigration(ctx context.Context, c *client, request cont
 			return batch, serviceDenied("invalid_datamigration_inventory_cursor")
 		}
 	}
-	return r.inventorySnapshotPage(c, request, cursor, "datamigration_inventory_cursor_changed", func() (inventorySnapshot, error) {
+	return r.inventorySnapshotPage(ctx, c, request, cursor, "datamigration_inventory_cursor_changed", func(request contracts.InventoryRequest) (inventorySnapshot, error) {
 		items, absent, before, err := r.dataMigrationInventorySnapshot(ctx, c, request)
 		if err != nil {
 			return inventorySnapshot{}, err

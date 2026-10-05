@@ -557,3 +557,37 @@ func TestMonitorInventoryReadOnlyChangesAndLockOrder(t *testing.T) {
 		t.Fatal("read-only spend or reordered locks invalidated native cursor", second, err)
 	}
 }
+
+// One observation reads only the resource groups holding a resource, each once.
+func TestMonitorInventoryReadsOnlyOccupiedGroupsOnce(t *testing.T) {
+	f := newMonitorInventoryFixture(t, monitorActionGroupType)
+	empty := "/subscriptions/" + testSubscription + "/resourcegroups/empty-group"
+	f.groups[empty] = map[string]any{"id": empty, "name": "empty-group", "type": groupType, "location": "westus", "tags": map[string]any{}, "properties": map[string]any{"provisioningState": "Succeeded"}}
+	for _, id := range slices.Sorted(maps.Keys(f.objects)) {
+		other := maps.Clone(f.objects[id])
+		otherID := strings.TrimSuffix(id, last(id)) + "second-resource"
+		other["id"], other["name"] = otherID, "second-resource"
+		f.objects[otherID] = other
+		break
+	}
+	perGroup := map[string]int{}
+	for id := range f.objects {
+		_, scope, _, _ := monitorResourceID(id)
+		perGroup[scope]++
+	}
+	request := f.request()
+	request.Limit = 1000
+	if _, err := f.runtime.List(t.Context(), request); err != nil {
+		t.Fatal(err)
+	}
+	if f.calls["GET "+empty] != 0 {
+		t.Fatal("read a resource group without resources", f.calls["GET "+empty])
+	}
+	for group, resources := range perGroup {
+		// Two observations, each reading the group once to verify it against the
+		// index and once for every resource's group binding.
+		if got := f.calls["GET "+group]; got != 4 || resources < 2 {
+			t.Fatal("resource group reads", group, resources, got)
+		}
+	}
+}

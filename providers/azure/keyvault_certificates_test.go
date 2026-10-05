@@ -267,3 +267,25 @@ func TestKeyVaultCertificateURLBoundaries(t *testing.T) {
 		}
 	}
 }
+
+// Another region's shard skips a vault its listing places elsewhere without
+// reading it; a known vault is still read so its absence stays provable.
+func TestKeyVaultCertificateRegionShardSkipsForeignVaultReads(t *testing.T) {
+	f := newKeyVaultFixture(t)
+	reads := 0
+	f.override = func(q *http.Request) (*http.Response, bool) {
+		if q.URL.Host == "management.azure.com" && strings.ToLower(q.URL.Path) == f.vault {
+			reads++
+		}
+		return nil, false
+	}
+	req := keyVaultRequest(f)
+	req.Scope.NativeID = "westus"
+	if batch, err := f.runtime.List(t.Context(), req); err != nil || len(batch.Items) != 0 || reads != 0 {
+		t.Fatal("foreign vault read", reads, err)
+	}
+	req.KnownNativeIDs = []string{f.vault + "/certificates/listcert01"}
+	if batch, err := f.runtime.List(t.Context(), req); err != nil || len(batch.Items)+len(batch.AbsentNativeIDs) != 0 || reads != 1 {
+		t.Fatal("known vault not read", reads, err)
+	}
+}

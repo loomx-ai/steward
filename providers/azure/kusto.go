@@ -219,7 +219,8 @@ func (c *client) kustoInventory(ctx context.Context, id, kind string, raw, norma
 	normalized["_kusto_private_configuration"] = c.privateConfiguration(kustoSnapshot(kind, raw))
 	ancestors := map[string]any{}
 	for _, ancestor := range kustoAncestorIDs(id) {
-		parent, err := c.kustoResource(ctx, ancestor)
+		// An inventory page reads each ancestor once for all its children.
+		parent, err := memoized(ctx, "kusto-ancestor:"+ancestor, func() (map[string]any, error) { return c.kustoResource(ctx, ancestor) })
 		if err != nil {
 			return err
 		}

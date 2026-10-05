@@ -285,7 +285,7 @@ func (r *Runtime) listDefender(ctx context.Context, c *client, request contracts
 			return batch, serviceDenied("invalid_defender_cursor")
 		}
 	}
-	return r.inventorySnapshotPage(c, request, cursor, "defender_cursor_changed", func() (inventorySnapshot, error) {
+	return r.inventorySnapshotPage(ctx, c, request, cursor, "defender_cursor_changed", func(request contracts.InventoryRequest) (inventorySnapshot, error) {
 		items, before, provenance, err := r.defenderSnapshot(ctx, c, request)
 		if err != nil {
 			return inventorySnapshot{}, err

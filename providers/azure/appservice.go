@@ -143,7 +143,11 @@ func (c *client) appServiceInventory(ctx context.Context, id, kind string, raw, 
 	if kind == appSiteType || kind == appCertificateType {
 		return nil
 	}
-	parent, err := c.appServiceParent(ctx, id)
+	// An inventory page reads each ancestor once for all its children.
+	parentOf := func(child string) (map[string]any, error) {
+		return memoized(ctx, "app-service-parent-of:"+redisParentID(strings.ToLower(child)), func() (map[string]any, error) { return c.appServiceParent(ctx, child) })
+	}
+	parent, err := parentOf(id)
 	if err != nil {
 		return err
 	}
@@ -152,7 +156,7 @@ func (c *client) appServiceInventory(ctx context.Context, id, kind string, raw, 
 	normalized["_app_service_parent_configuration"] = appServiceParentConfiguration(parentKind.NativeType, parent)
 	normalized["_app_service_parent_private_configuration"] = c.privateConfiguration(appServiceParentSnapshot(parentKind.NativeType, parent))
 	if parentKind.NativeType == appSlotType {
-		root, err := c.appServiceParent(ctx, text(parent["id"]))
+		root, err := parentOf(text(parent["id"]))
 		if err != nil {
 			return err
 		}

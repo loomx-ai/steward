@@ -82,5 +82,5 @@ func (c *client) contributeRecoverySources(ctx context.Context, connection asset
 	if err != nil {
 		return result, err
 	}
-	return c.contributeNativeReferences(value, assets, refs, "azure:recovery-source-reference")
+	return c.contributeNativeReferences(ctx, value, assets, refs, "azure:recovery-source-reference")
 }

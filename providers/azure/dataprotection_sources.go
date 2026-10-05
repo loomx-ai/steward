@@ -59,5 +59,5 @@ func (c *client) contributeDataProtectionSources(ctx context.Context, connection
 	if err != nil {
 		return result, err
 	}
-	return c.contributeNativeReferences(value, assets, refs, "azure:backup-source-reference")
+	return c.contributeNativeReferences(ctx, value, assets, refs, "azure:backup-source-reference")
 }

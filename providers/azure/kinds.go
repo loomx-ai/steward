@@ -170,8 +170,10 @@ func compileBundle() (spec.Bundle, error) {
 	return metadata.bundle, err
 }
 
+var referenceKeyReplacer = strings.NewReplacer(".", "_", "/", "_")
+
 func referenceKey(nativeType string) string {
-	return "refs_" + strings.NewReplacer(".", "_", "/", "_").Replace(strings.ToLower(nativeType))
+	return "refs_" + referenceKeyReplacer.Replace(strings.ToLower(nativeType))
 }
 
 func validResponseIDType(nativeType, alias string) bool {

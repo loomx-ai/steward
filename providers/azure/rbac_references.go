@@ -126,12 +126,11 @@ func (c *client) contributeRBACReferences(ctx context.Context, parent asset.Asse
 	if err != nil {
 		return contribution, err
 	}
-	var current response
-	for range 2 {
-		current, _, err = driver.current(ctx)
-		if err != nil {
-			return contribution, err
-		}
+	// One live read suffices: current() already rejects any drift from the
+	// recorded proofs, and every delete re-reads in Preflight and Execute.
+	current, _, err := driver.current(ctx)
+	if err != nil {
+		return contribution, err
 	}
 	refs, err := c.rbacReferences(parent.Identity.NativeType, parent.Identity.NativeID, current.data)
 	if err != nil {
@@ -141,7 +140,7 @@ func (c *client) contributeRBACReferences(ctx context.Context, parent asset.Asse
 	if err != nil {
 		return contribution, err
 	}
-	contribution, err = c.contributeNativeReferences(parent, assets, refs, "azure:rbac-reference")
+	contribution, err = c.contributeNativeReferences(ctx, parent, assets, refs, "azure:rbac-reference")
 	if err != nil {
 		return contribution, err
 	}

@@ -287,15 +287,25 @@ func (c *client) contributeMonitorIncoming(ctx context.Context, targets, assets 
 	if err != nil {
 		return contribution, err
 	}
-	return c.contributeIncomingSources(targets, assets, incoming)
+	return c.contributeIndexedIncomingSources(targets, assets, contributeIndex(ctx, assets), incoming)
 }
 
-func (c *client) contributeIncomingSources(targets, assets []asset.Asset, incoming map[string][]monitorIncomingSource) (contribution governance.Contribution, err error) {
+func (c *client) contributeIncomingSources(targets, assets []asset.Asset, incoming map[string][]monitorIncomingSource) (governance.Contribution, error) {
+	return c.contributeIndexedIncomingSources(targets, assets, nil, incoming)
+}
+
+// A nil index scans assets. The index only narrows candidates; the exact-case
+// identity check below still decides each match.
+func (c *client) contributeIndexedIncomingSources(targets, assets []asset.Asset, index *assetIndex, incoming map[string][]monitorIncomingSource) (contribution governance.Contribution, err error) {
 	for _, target := range targets {
 		for _, entry := range incoming[target.Identity.NativeID] {
 			source := entry.resource
 			var indexed *asset.Asset
-			for i := range assets {
+			var positions []int
+			if index != nil {
+				positions = index.byIdentity[serviceAssetKeyOf(target.Identity, source.kind, source.id)]
+			}
+			for i := range assetPositions(index != nil, positions, len(assets)) {
 				candidate := &assets[i]
 				if candidate.Identity.Provider != target.Identity.Provider || candidate.Identity.ConnectionID != target.Identity.ConnectionID || candidate.Identity.Partition != target.Identity.Partition || candidate.Identity.NativeID != source.id || candidate.Identity.NativeType != source.kind {
 					continue

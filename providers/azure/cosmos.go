@@ -249,10 +249,19 @@ func (c *client) cosmosInventory(ctx context.Context, kind string, raw, normaliz
 	normalized["_cosmos_throughput_binding"] = c.privateConfiguration(throughput)
 	ancestors := map[string]any{}
 	for _, ancestor := range cosmosAncestorIDs(wire) {
-		parent, err := c.cosmosResource(ctx, ancestor)
+		// An inventory page reads each ancestor once for all its children.
+		read, err := memoized(ctx, "cosmos-ancestor:"+ancestor, func() ([2]map[string]any, error) {
+			parent, err := c.cosmosResource(ctx, ancestor)
+			if err != nil {
+				return [2]map[string]any{}, err
+			}
+			settings, err := c.cosmosThroughput(ctx, text(parent["type"]), ancestor, parent)
+			return [2]map[string]any{parent, settings}, err
+		})
 		if err != nil {
 			return err
 		}
+		parent, settings := read[0], read[1]
 		parentKind := text(parent["type"])
 		applicable, err := cosmosChildApplies(kind, parent)
 		if err != nil {
@@ -260,10 +269,6 @@ func (c *client) cosmosInventory(ctx context.Context, kind string, raw, normaliz
 		}
 		if !applicable {
 			return serviceDenied("cosmos_child_api_mismatch")
-		}
-		settings, err := c.cosmosThroughput(ctx, parentKind, ancestor, parent)
-		if err != nil {
-			return err
 		}
 		indexes, err := cosmosPECIndexes(parentKind, parent)
 		if err != nil {

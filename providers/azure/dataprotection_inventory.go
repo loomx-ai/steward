@@ -274,6 +274,11 @@ func (r *Runtime) dataProtectionSnapshot(ctx context.Context, c *client, req con
 			}
 		}
 		for _, id := range slices.Sorted(maps.Keys(vaults)) {
+			// A listed vault the list places in another region yields nothing
+			// here; a known child's unlisted vault is still read.
+			if listed := vaults[id]; req.Scope.Kind == asset.ScopeRegion && text(listed["location"]) != "" && !strings.EqualFold(resourceRegion(listed), req.Scope.NativeID) {
+				continue
+			}
 			own, err := c.dataProtectionRead(ctx, id, dataProtectionVault)
 			if err != nil {
 				return nil, nil, contracts.DependencyReadError(err)
@@ -422,37 +427,26 @@ func (r *Runtime) listDataProtection(ctx context.Context, c *client, req contrac
 			return batch, serviceDenied("invalid_data_protection_cursor")
 		}
 	}
-	first, absent, err := r.dataProtectionSnapshot(ctx, c, req, kind)
-	if err != nil {
-		return batch, err
+	if req.Limit <= 0 || req.Limit > 500 {
+		req.Limit = 500
 	}
-	second, gone, err := r.dataProtectionSnapshot(ctx, c, req, kind)
-	if err != nil {
-		return batch, err
-	}
-	observation := map[string]any{"items": first, "absent": absent}
-	if c.privateConfiguration(observation) != c.privateConfiguration(map[string]any{"items": second, "absent": gone}) {
-		return batch, serviceDenied("data_protection_snapshot_changed")
-	}
-	boundary := req
-	boundary.Cursor = ""
-	boundary.Limit = 0
-	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "observation": observation})
-	if cursor.Fingerprint != "" && cursor.Fingerprint != fingerprint || cursor.Target > len(first) {
-		return batch, serviceDenied("data_protection_cursor_changed")
-	}
-	limit := req.Limit
-	if limit <= 0 || limit > 500 {
-		limit = 500
-	}
-	end := min(cursor.Target+limit, len(first))
-	batch.Items = first[cursor.Target:end]
-	batch.Complete = end == len(first)
-	if batch.Complete {
-		batch.AbsentNativeIDs = absent
-	} else {
-		wire, _ := json.Marshal(productCursor{Target: end, Fingerprint: fingerprint})
-		batch.NextCursor = base64.RawURLEncoding.EncodeToString(wire)
-	}
-	return batch, nil
+	return r.scopedSnapshotPage(ctx, c, req, cursor, "data_protection_cursor_changed", nil, func() (inventorySnapshot, error) {
+		first, absent, err := r.dataProtectionSnapshot(ctx, c, req, kind)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		second, gone, err := r.dataProtectionSnapshot(ctx, c, req, kind)
+		if err != nil {
+			return inventorySnapshot{}, err
+		}
+		observation := map[string]any{"items": first, "absent": absent}
+		if c.privateConfiguration(observation) != c.privateConfiguration(map[string]any{"items": second, "absent": gone}) {
+			return inventorySnapshot{}, serviceDenied("data_protection_snapshot_changed")
+		}
+		boundary := req
+		boundary.Cursor = ""
+		boundary.Limit = 0
+		fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "observation": observation})
+		return inventorySnapshot{items: first, absent: absent, fingerprint: fingerprint}, nil
+	})
 }

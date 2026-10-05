@@ -411,7 +411,7 @@ func (r *Runtime) listAzureLocal(ctx context.Context, c *client, request contrac
 			return batch, serviceDenied("invalid_azure_local_cursor")
 		}
 	}
-	return r.inventorySnapshotPage(c, request, cursor, "azure_local_cursor_changed", func() (inventorySnapshot, error) {
+	return r.inventorySnapshotPage(ctx, c, request, cursor, "azure_local_cursor_changed", func(request contracts.InventoryRequest) (inventorySnapshot, error) {
 		items, before, provenance, err := r.azureLocalSnapshot(ctx, c, request)
 		if err != nil {
 			return inventorySnapshot{}, err

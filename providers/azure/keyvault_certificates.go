@@ -265,7 +265,7 @@ func (r *Runtime) listKeyVaultCertificates(ctx context.Context, c *client, reque
 		return batch, err
 	}
 	collection := c.root() + "/providers/Microsoft.KeyVault/vaults"
-	vaults := map[string]bool{}
+	vaults, elsewhere := map[string]bool{}, map[string]bool{}
 	pages := map[string]bool{}
 	for next := apiURL(collection, operation.Call.Version); next != ""; {
 		if pages[next] {
@@ -278,13 +278,19 @@ func (r *Runtime) listKeyVaultCertificates(ctx context.Context, c *client, reque
 		}
 		for _, value := range values {
 			id, typ, err := parseID(text(object(value)["id"]))
-			if err != nil || typ != strings.ToLower(keyVaultType) || vaults[id] {
+			if err != nil || typ != strings.ToLower(keyVaultType) || vaults[id] || elsewhere[id] {
 				return batch, serviceDenied("keyvault_list_invalid")
+			}
+			// A vault the list places in another region yields nothing here.
+			if location := text(object(value)["location"]); request.Scope.Kind == asset.ScopeRegion && location != "" && !strings.EqualFold(resourceRegion(object(value)), request.Scope.NativeID) {
+				elsewhere[id] = true
+				continue
 			}
 			vaults[id] = true
 		}
 		next = following
 	}
+	// A known vault is still read: its own read proves its certificates' absence.
 	for vault := range known {
 		vaults[vault] = true
 	}

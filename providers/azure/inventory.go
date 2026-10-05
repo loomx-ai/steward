@@ -286,12 +286,8 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	path := c.root() + "/resources"
 	endpoint := apiURL(path, resourcesVersion)
 	region := strings.ToLower(request.Scope.NativeID)
-	// ARM filters the subscription's resources by location. Every row it
-	// drops is one the region check below drops; network shards also keep
-	// global rows, so they list everything.
-	if request.Scope.Kind == asset.ScopeRegion && request.NetworkTarget == nil {
-		endpoint += "&$filter=" + url.QueryEscape("location eq '"+strings.ReplaceAll(region, "'", "''")+"'")
-	}
+	// Region shards filter client-side: ARM can return display locations
+	// ("East US"), which an exact server-side $filter would silently drop.
 	if request.Cursor != "" {
 		decoded, err := base64.RawURLEncoding.DecodeString(request.Cursor)
 		if err != nil || len(decoded) > 16<<10 {
@@ -1357,7 +1353,13 @@ func safeResource(value any) any {
 
 // A malformed lock entry cannot establish an unlocked resource. Subscription
 // and nested ARM locks share the same native extension suffix.
+// managementLocks is a live read; concurrent identical reads share one
+// queued call (see liveShared), so callers must not modify the result.
 func (c *client) managementLocks(ctx context.Context) ([]any, error) {
+	return liveShared(ctx, c, "management-locks", func() ([]any, error) { return c.readManagementLocks(ctx) })
+}
+
+func (c *client) readManagementLocks(ctx context.Context) ([]any, error) {
 	locks, err := c.listAll(ctx, c.root()+"/providers/Microsoft.Authorization/locks", locksVersion)
 	if err != nil {
 		return nil, err

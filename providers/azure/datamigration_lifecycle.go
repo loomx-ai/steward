@@ -118,7 +118,7 @@ func (s *serviceCascades) contributeDataMigration(ctx context.Context, assets []
 		for kind, ids := range refs {
 			refs[kind] = slices.DeleteFunc(slices.Clone(ids), func(target string) bool { return target == members[id].parent || target == id })
 		}
-		references, err := s.client.contributeNativeReferences(value, assets, refs, "azure:datamigration-reference")
+		references, err := s.client.contributeNativeReferences(ctx, value, assets, refs, "azure:datamigration-reference")
 		if err != nil {
 			return err
 		}

@@ -293,7 +293,7 @@ func TestElasticSanReferencesRemainOrdinaryAndSubscriptionBound(t *testing.T) {
 	if err != nil || !slices.Contains(refs[vmType], foreign) {
 		t.Fatal("native foreign controller reference lost", refs, err)
 	}
-	contribution, err := f.client.contributeNativeReferences(value, nil, refs, "azure:elastic-san-reference")
+	contribution, err := f.client.contributeNativeReferences(t.Context(), value, nil, refs, "azure:elastic-san-reference")
 	if err != nil || len(contribution.Relationships) != 0 || len(contribution.Unresolved) != 2 {
 		t.Fatal("external reference resolution broadened scope", contribution, err)
 	}

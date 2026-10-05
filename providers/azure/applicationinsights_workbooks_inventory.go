@@ -107,11 +107,19 @@ func (c *client) workbookIndex(ctx context.Context, kind string, known []string,
 	}
 	if kind == insightsWorkbookTemplateType {
 		for _, id := range slices.Sorted(maps.Keys(groups)) {
+			params := map[string]any{"subscriptionId": c.subscription, "resourceGroupName": strings.Split(id, "/")[4]}
+			// Most groups hold no template. An empty listing yields no item, so
+			// only a group with templates is read before and after its listing.
+			if rows, _, err := c.workbookList(ctx, "WorkbookTemplates_ListByResourceGroup", kind, params); err != nil {
+				return nil, nil, "", err
+			} else if len(rows) == 0 {
+				continue
+			}
 			before, err := c.insightsGroup(ctx, id, groups[id])
 			if err != nil {
 				return nil, nil, "", err
 			}
-			if err := read("WorkbookTemplates_ListByResourceGroup", map[string]any{"subscriptionId": c.subscription, "resourceGroupName": strings.Split(id, "/")[4]}, id, ""); err != nil {
+			if err := read("WorkbookTemplates_ListByResourceGroup", params, id, ""); err != nil {
 				return nil, nil, "", err
 			}
 			if _, err := c.insightsGroup(ctx, id, before); err != nil {
@@ -158,23 +166,24 @@ func (r *Runtime) workbookInventorySnapshot(ctx context.Context, c *client, requ
 		owners[id] = text(raw["managedBy"])
 	}
 	var items []contracts.InventoryItem
+	verified := map[string]map[string]any{}
 	for _, id := range slices.Sorted(maps.Keys(values)) {
 		groupID := strings.Join(strings.Split(id, "/")[:5], "/")
 		if groups[groupID] == nil {
 			return nil, nil, "", serviceDenied("workbook_resource_group_missing_from_index")
 		}
-		group, err := c.insightsGroup(ctx, groupID, groups[groupID])
-		if err != nil {
-			return nil, nil, "", err
+		group := verified[groupID]
+		if group == nil {
+			if group, err = c.insightsGroup(ctx, groupID, groups[groupID]); err != nil {
+				return nil, nil, "", err
+			}
+			verified[groupID] = group
 		}
 		raw := maps.Clone(values[id])
 		raw["type"] = kind // The template API also publishes its singular type alias.
 		item, err := r.inventoryItem(ctx, c, raw, owners, locks)
 		if err != nil {
 			return nil, nil, "", err
-		}
-		if !productScopeMatches(request, item) {
-			continue
 		}
 		if _, err := c.insightsGroup(ctx, groupID, group); err != nil {
 			return nil, nil, "", err
@@ -190,7 +199,9 @@ func (r *Runtime) workbookInventorySnapshot(ctx context.Context, c *client, requ
 		if protectedAzureTags(object(group["tags"])) {
 			item.Normalized["cleanup_protected"], item.Normalized["cleanup_protection_reason"] = true, "azure_protected_tag"
 		}
-		items = append(items, item)
+		if productScopeMatches(request, item) {
+			items = append(items, item)
+		}
 	}
 	return items, absent, requestID, nil
 }
@@ -227,7 +238,7 @@ func (r *Runtime) listInsightsWorkbooks(ctx context.Context, c *client, request 
 			return batch, serviceDenied("invalid_workbook_cursor")
 		}
 	}
-	return r.inventorySnapshotPage(c, request, cursor, "workbook_cursor_changed", func() (inventorySnapshot, error) {
+	return r.inventorySnapshotPage(ctx, c, request, cursor, "workbook_cursor_changed", func(request contracts.InventoryRequest) (inventorySnapshot, error) {
 		first, absent, provenance, err := r.workbookInventorySnapshot(ctx, c, request)
 		if err != nil {
 			return inventorySnapshot{}, err

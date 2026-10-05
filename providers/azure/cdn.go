@@ -236,7 +236,8 @@ func (c *client) cdnInventory(ctx context.Context, id, kind string, raw, normali
 		_, err := cdnProfileFamily(raw)
 		return err
 	}
-	profile, err := c.cdnProfile(ctx, id)
+	// An inventory page reads each ancestor once for all its children.
+	profile, err := memoized(ctx, "cdn-profile:"+cdnProfileID(id), func() (map[string]any, error) { return c.cdnProfile(ctx, id) })
 	if err != nil {
 		return contracts.DependencyReadError(err)
 	}
@@ -245,7 +246,7 @@ func (c *client) cdnInventory(ctx context.Context, id, kind string, raw, normali
 	}
 	normalized["_cdn_profile_configuration"] = cdnConfiguration(cdnProfileType, profile)
 	if kind == afdRuleType {
-		parent, err := c.cdnRuleParent(ctx, id)
+		parent, err := memoized(ctx, "cdn-rule-set:"+redisParentID(strings.ToLower(id)), func() (map[string]any, error) { return c.cdnRuleParent(ctx, id) })
 		if err != nil {
 			return contracts.DependencyReadError(err)
 		}

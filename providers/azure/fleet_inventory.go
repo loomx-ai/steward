@@ -405,7 +405,7 @@ func (r *Runtime) listFleet(ctx context.Context, c *client, request contracts.In
 			return batch, serviceDenied("invalid_fleet_inventory_cursor")
 		}
 	}
-	return r.inventorySnapshotPage(c, request, cursor, "fleet_inventory_cursor_changed", func() (inventorySnapshot, error) {
+	return r.inventorySnapshotPage(ctx, c, request, cursor, "fleet_inventory_cursor_changed", func(request contracts.InventoryRequest) (inventorySnapshot, error) {
 		items, absent, before, provenance, err := r.fleetInventorySnapshot(ctx, c, request)
 		if err != nil {
 			return inventorySnapshot{}, err

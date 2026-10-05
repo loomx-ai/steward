@@ -220,6 +220,12 @@ func (c *client) apimIssues(ctx context.Context, root string) (map[string]servic
 }
 
 func (c *client) apimIssuePage(ctx context.Context, api string) ([]any, string, response, error) {
+	return c.apimIssuePageFrom(ctx, api, c.apimIssues)
+}
+
+// apimIssuePageFrom checks one API's issues against the service-level index
+// issues returns for the API's root.
+func (c *client) apimIssuePageFrom(ctx context.Context, api string, issues func(context.Context, string) (map[string]serviceChild, error)) ([]any, string, response, error) {
 	_, kind, err := parseID(api)
 	if err != nil || !strings.EqualFold(kind, apimAPIType) {
 		return nil, "", response{}, serviceDenied("invalid_apim_issue_parent")
@@ -229,7 +235,7 @@ func (c *client) apimIssuePage(ctx context.Context, api string) ([]any, string, 
 	if err != nil {
 		return nil, "", response{}, err
 	}
-	index, err := c.apimIssues(ctx, apimRootID(api))
+	index, err := issues(ctx, apimRootID(api))
 	if err != nil {
 		return nil, "", response{}, err
 	}

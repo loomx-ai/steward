@@ -121,7 +121,7 @@ func (r *Runtime) monitorInventoryItem(ctx context.Context, c *client, raw map[s
 		if !indexed {
 			return contracts.InventoryItem{}, serviceDenied("monitor_resource_group_missing_from_index")
 		}
-		group, err = c.workbookGroup(ctx, id)
+		group, err = memoized(ctx, "monitor-group:"+scopeID, func() (map[string]any, error) { return c.workbookGroup(ctx, id) })
 		if err != nil {
 			return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 		}
@@ -195,23 +195,35 @@ func (r *Runtime) monitorInventoryItem(ctx context.Context, c *client, raw map[s
 }
 
 func (r *Runtime) monitorInventorySnapshot(ctx context.Context, c *client, request contracts.InventoryRequest) ([]contracts.InventoryItem, map[string]any, string, error) {
+	// One observation reads each resource group once (see monitorInventoryItem).
+	ctx = withReadMemo(ctx)
 	groups, err := c.insightsGroups(ctx)
 	if err != nil {
 		return nil, nil, "", err
-	}
-	owners, groupBindings := map[string]string{}, map[string]any{}
-	for _, id := range slices.Sorted(maps.Keys(groups)) {
-		group, err := c.insightsGroup(ctx, id, groups[id])
-		if err != nil {
-			return nil, nil, "", err
-		}
-		groups[id], owners[id] = group, text(group["managedBy"])
-		groupBindings[id] = insightsWorkspaceResourceSnapshot(group)
 	}
 	kind := monitorResourceKind(request.ResourceKind.NativeType)
 	values, requestID, err := c.monitorResourceIndex(ctx, kind, groups)
 	if err != nil {
 		return nil, nil, "", err
+	}
+	// Read only the groups which hold a resource; an unread group stays out of
+	// owners, so its resources still fail as missing from the index. Every
+	// listed group still binds the observation.
+	owners, groupBindings, indexBindings := map[string]string{}, map[string]any{}, map[string]any{}
+	for id, listed := range groups {
+		indexBindings[id] = insightsWorkspaceResourceSnapshot(listed)
+	}
+	for _, id := range slices.Sorted(maps.Keys(values)) {
+		_, scope, _, _ := monitorResourceID(id)
+		if scope == c.root() || groups[scope] == nil || groupBindings[scope] != nil {
+			continue
+		}
+		group, err := c.insightsGroup(ctx, scope, groups[scope])
+		if err != nil {
+			return nil, nil, "", err
+		}
+		owners[scope] = text(group["managedBy"])
+		groupBindings[scope] = insightsWorkspaceResourceSnapshot(group)
 	}
 	locks, err := c.managementLocks(ctx)
 	if err != nil {
@@ -240,7 +252,7 @@ func (r *Runtime) monitorInventorySnapshot(ctx context.Context, c *client, reque
 			items = append(items, item)
 		}
 	}
-	return items, map[string]any{"resources": bindings, "groups": groupBindings, "locks": lockBindings}, requestID, nil
+	return items, map[string]any{"resources": bindings, "groups": groupBindings, "group_index": indexBindings, "locks": lockBindings}, requestID, nil
 }
 
 func (r *Runtime) listMonitorResources(ctx context.Context, c *client, request contracts.InventoryRequest) (batch contracts.InventoryBatch, err error) {
@@ -274,7 +286,7 @@ func (r *Runtime) listMonitorResources(ctx context.Context, c *client, request c
 			return batch, serviceDenied("invalid_monitor_inventory_cursor")
 		}
 	}
-	return r.inventorySnapshotPage(c, request, cursor, "monitor_inventory_cursor_changed", func() (inventorySnapshot, error) {
+	return r.inventorySnapshotPage(ctx, c, request, cursor, "monitor_inventory_cursor_changed", func(request contracts.InventoryRequest) (inventorySnapshot, error) {
 		first, before, provenance, err := r.monitorInventorySnapshot(ctx, c, request)
 		if err != nil {
 			return inventorySnapshot{}, err

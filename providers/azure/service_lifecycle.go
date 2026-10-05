@@ -3,6 +3,7 @@ package azure
 import (
 	"context"
 	"fmt"
+	"iter"
 	"net/url"
 	"reflect"
 	"slices"
@@ -468,6 +469,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	ctx = withReadMemo(withReadRetries(ctx))
 	result := governance.Contribution{}
 	index := newAssetIndex(assets)
+	ctx = context.WithValue(ctx, assetIndexContextKey{}, contextAssetIndex{assets, index})
 	if _, err := s.client.fleetHubOwners(assets); err != nil {
 		return result, contracts.DependencyReadError(err)
 	}
@@ -492,7 +494,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err != nil {
 		return result, contracts.DependencyReadError(err)
 	}
-	incoming, err = s.client.contributeIncomingSources(roleTargets, assets, rbac)
+	incoming, err = s.client.contributeIndexedIncomingSources(roleTargets, assets, index, rbac)
 	if err != nil {
 		return result, contracts.DependencyReadError(err)
 	}
@@ -974,6 +976,39 @@ func newAssetIndex(assets []asset.Asset) *assetIndex {
 		}
 	}
 	return index
+}
+
+type assetIndexContextKey struct{}
+
+type contextAssetIndex struct {
+	assets []asset.Asset
+	index  *assetIndex
+}
+
+// contributeIndex returns the index Contribute built for exactly this assets
+// slice. Any other slice gets nil, and its callers scan it.
+func contributeIndex(ctx context.Context, assets []asset.Asset) *assetIndex {
+	value, _ := ctx.Value(assetIndexContextKey{}).(contextAssetIndex)
+	if len(assets) == 0 || len(value.assets) != len(assets) || &value.assets[0] != &assets[0] {
+		return nil
+	}
+	return value.index
+}
+
+// assetPositions yields the indexed positions, or every position when the
+// lookup is not indexed. Both are in input order, so first-match and
+// ambiguity checks see candidates in the same order either way.
+func assetPositions(indexed bool, positions []int, n int) iter.Seq[int] {
+	if indexed {
+		return slices.Values(positions)
+	}
+	return func(yield func(int) bool) {
+		for i := range n {
+			if !yield(i) {
+				return
+			}
+		}
+	}
 }
 
 func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]contracts.ActionImpact, error) {

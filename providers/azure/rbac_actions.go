@@ -91,15 +91,24 @@ func (a *rbacAction) current(ctx context.Context) (response, string, error) {
 	if a.client.privateConfiguration(a.client.rbacSnapshot(a.kind, current.data)) != a.configuration {
 		return current, "", serviceDenied("rbac_configuration_changed")
 	}
-	locks, err := a.client.managementLocks(ctx)
+	// A Contribute memo shares these subscription-wide reads across its RBAC
+	// parents; actions carry no memo, so every Preflight reads them live.
+	locks, err := memoized(ctx, "rbac-action-locks", func() ([]any, error) { return a.client.managementLocks(ctx) })
 	if err != nil {
 		return current, "", contracts.DependencyReadError(err)
 	}
-	pim, err := a.client.rbacPIM(ctx)
+	pim, err := memoized(ctx, "rbac-action-pim", func() (map[string]map[string]any, error) {
+		return liveShared(ctx, a.client, "rbac-pim", func() (map[string]map[string]any, error) { return a.client.rbacPIM(ctx) })
+	})
 	if err != nil {
 		return current, "", err
 	}
-	state, reason, err := a.client.rbacContext(ctx, a.kind, current.data, locks, pim, nil)
+	var scopes map[string]diagnosticContextState
+	if ctx.Value(readMemoContextKey{}) != nil {
+		// Contribute visits its parents serially, so one shared cache is safe.
+		scopes, _ = memoized(ctx, "rbac-action-scopes", func() (map[string]diagnosticContextState, error) { return map[string]diagnosticContextState{}, nil })
+	}
+	state, reason, err := a.client.rbacContext(ctx, a.kind, current.data, locks, pim, scopes)
 	if err != nil {
 		return current, "", err
 	}

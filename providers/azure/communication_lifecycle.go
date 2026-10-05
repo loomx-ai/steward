@@ -169,7 +169,7 @@ func (s *serviceCascades) contributeCommunication(ctx context.Context, assets []
 		for kind, ids := range refs {
 			refs[kind] = slices.DeleteFunc(ids, func(candidate string) bool { return candidate == member.parent })
 		}
-		references, err := s.client.contributeNativeReferences(value, assets, refs, "azure:communication-reference")
+		references, err := s.client.contributeNativeReferences(ctx, value, assets, refs, "azure:communication-reference")
 		if err != nil {
 			return err
 		}

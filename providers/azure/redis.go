@@ -129,7 +129,8 @@ func (c *client) redisInventory(ctx context.Context, id, kind string, raw, norma
 	normalized["_redis_configuration"] = redisConfiguration(kind, raw)
 	normalized["_redis_private_configuration"] = c.privateConfiguration(redisSnapshot(kind, raw))
 	if kind != redisType && kind != redisEnterpriseType {
-		parent, err := c.redisResource(ctx, redisParentID(id))
+		// An inventory page reads each ancestor once for all its children.
+		parent, err := memoized(ctx, "redis-ancestor:"+redisParentID(id), func() (map[string]any, error) { return c.redisResource(ctx, redisParentID(id)) })
 		if err != nil {
 			return err
 		}
@@ -137,7 +138,7 @@ func (c *client) redisInventory(ctx context.Context, id, kind string, raw, norma
 		normalized["_redis_parent_configuration"] = redisConfiguration(parentKind, parent)
 		normalized["_redis_parent_private_configuration"] = c.privateConfiguration(redisSnapshot(parentKind, parent))
 		if kind == redisDatabaseAssignmentType {
-			root, err := c.redisResource(ctx, redisRootID(id))
+			root, err := memoized(ctx, "redis-ancestor:"+redisRootID(id), func() (map[string]any, error) { return c.redisResource(ctx, redisRootID(id)) })
 			if err != nil {
 				return err
 			}

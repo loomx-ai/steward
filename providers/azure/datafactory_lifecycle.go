@@ -115,7 +115,7 @@ func (s *serviceCascades) contributeDataFactory(ctx context.Context, assets []as
 		for kind, ids := range member.refs {
 			refs[kind] = slices.DeleteFunc(slices.Clone(ids), func(target string) bool { return target == dataFactoryController(member) || target == id })
 		}
-		references, err := s.client.contributeNativeReferences(value, assets, refs, "azure:datafactory-reference")
+		references, err := s.client.contributeNativeReferences(ctx, value, assets, refs, "azure:datafactory-reference")
 		if err != nil {
 			return err
 		}

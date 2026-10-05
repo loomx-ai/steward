@@ -361,3 +361,33 @@ func TestAPIMServiceIssueProjectionDetectsMissingAPI(t *testing.T) {
 		t.Fatal("service deletion could hide issue whose API was omitted")
 	}
 }
+
+// The scan's API issue targets check against one service-level issue index.
+func TestAPIMIssueInventorySharesServiceIndexAcrossScanShards(t *testing.T) {
+	s, r, assets := apimScenario(t)
+	issue := cdnAsset(t, assets, apimIssueType)
+	index := apimRootID(issue.Identity.NativeID) + "/issues"
+	lists := 0
+	base := s.handle
+	s.handle = func(req *http.Request) (*http.Response, bool) {
+		if req.Method == "GET" && strings.ToLower(req.URL.Path) == index {
+			lists++
+		}
+		return base(req)
+	}
+	request := productRequest(r, apimIssueType)
+	request.ScanRunID = "scan"
+	for range 2 {
+		items, err := listAllProduct(t, r, request)
+		if err != nil || len(items) != 1 || items[0].NativeID != issue.Identity.NativeID {
+			t.Fatal(len(items), err)
+		}
+	}
+	if lists != 2 {
+		t.Fatal("scan shards relisted the service issue index", lists)
+	}
+	request.ScanRunID = ""
+	if _, err := listAllProduct(t, r, request); err != nil || lists != 4 {
+		t.Fatal("an unscanned listing reused the index", lists, err)
+	}
+}

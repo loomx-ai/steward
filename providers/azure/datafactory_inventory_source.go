@@ -408,7 +408,7 @@ func (r *Runtime) listDataFactory(ctx context.Context, c *client, request contra
 			return batch, serviceDenied("invalid_datafactory_inventory_cursor")
 		}
 	}
-	return r.inventorySnapshotPage(c, request, cursor, "datafactory_inventory_cursor_changed", func() (inventorySnapshot, error) {
+	return r.inventorySnapshotPage(ctx, c, request, cursor, "datafactory_inventory_cursor_changed", func(request contracts.InventoryRequest) (inventorySnapshot, error) {
 		items, absent, before, err := r.dataFactoryInventorySnapshot(ctx, c, request)
 		if err != nil {
 			return inventorySnapshot{}, err

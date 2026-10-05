@@ -249,7 +249,7 @@ func (r *Runtime) listDiagnosticSettings(ctx context.Context, c *client, request
 			return batch, serviceDenied("invalid_diagnostic_inventory_cursor")
 		}
 	}
-	return r.inventorySnapshotPage(c, request, cursor, "diagnostic_inventory_cursor_changed", func() (inventorySnapshot, error) {
+	return r.inventorySnapshotPage(ctx, c, request, cursor, "diagnostic_inventory_cursor_changed", func(request contracts.InventoryRequest) (inventorySnapshot, error) {
 		first, before, provenance, err := r.diagnosticInventorySnapshot(ctx, c, request)
 		if err != nil {
 			return inventorySnapshot{}, err

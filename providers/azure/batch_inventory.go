@@ -40,7 +40,8 @@ func (c *client) batchInventory(ctx context.Context, id, kind string, raw, norma
 		}
 		account = batchAccountContext{id: id, endpoint: endpoint, location: resourceRegion(raw), raw: raw}
 	} else {
-		account, err = c.batchAccount(ctx, batchAccountID(id))
+		// An inventory page reads each ancestor once for all its children.
+		account, err = memoized(ctx, "batch-account:"+batchAccountID(id), func() (batchAccountContext, error) { return c.batchAccount(ctx, batchAccountID(id)) })
 		if err != nil {
 			return err
 		}
@@ -54,7 +55,7 @@ func (c *client) batchInventory(ctx context.Context, id, kind string, raw, norma
 	for _, parent := range batchARMAncestors(id, kind) {
 		current := account.raw
 		if parent != account.id {
-			current, err = c.linkedResource(ctx, parent)
+			current, err = memoized(ctx, "batch-ancestor:"+parent, func() (map[string]any, error) { return c.linkedResource(ctx, parent) })
 			if err != nil {
 				return err
 			}

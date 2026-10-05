@@ -391,3 +391,53 @@ func TestCosmosInventoryKeepsDataPayloadPrivate(t *testing.T) {
 		}
 	}
 }
+
+// Sibling children on one inventory page read their shared ancestors once;
+// without the page's memo every child reads them.
+func TestCosmosInventoryReadsAncestorsOncePerPage(t *testing.T) {
+	s, r, assets := cosmosScenario(t)
+	container := cdnAsset(t, assets, cosmosStoredProcedureType)
+	wire := text(container.Normalized["_cosmos_wire_id"])
+	ancestors := cosmosAncestorIDs(wire)
+	reads := 0
+	base := s.handle
+	s.handle = func(req *http.Request) (*http.Response, bool) {
+		for _, ancestor := range ancestors {
+			if req.Method == "GET" && strings.EqualFold(req.URL.Path, ancestor) {
+				reads++
+			}
+		}
+		if strings.HasPrefix(strings.ToLower(req.URL.Path), strings.ToLower(wire)+"2/") {
+			return jsonResponse(404, map[string]any{"error": map[string]any{"code": "NotFound"}}, nil), true
+		}
+		if base == nil {
+			return nil, false
+		}
+		return base(req)
+	}
+	c, err := r.resolve(context.Background(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw := s.records[strings.ToLower(container.Identity.NativeID)]
+	if raw == nil {
+		raw = s.records[wire]
+	}
+	sibling := batchClone(raw)
+	sibling["id"], sibling["name"] = text(raw["id"])+"2", text(raw["name"])+"2"
+	object(object(sibling["properties"])["resource"])["id"] = text(raw["name"]) + "2"
+	inventory := func(ctx context.Context) {
+		for _, value := range []map[string]any{raw, sibling} {
+			if err := c.cosmosInventory(ctx, cosmosStoredProcedureType, value, map[string]any{}); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	inventory(withReadMemo(context.Background()))
+	memo := reads
+	reads = 0
+	inventory(context.Background())
+	if len(ancestors) == 0 || memo == 0 || reads != 2*memo {
+		t.Fatal("siblings repeated ancestor reads on one page", memo, reads)
+	}
+}

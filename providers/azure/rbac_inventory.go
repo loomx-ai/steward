@@ -247,7 +247,7 @@ func (r *Runtime) listRBAC(ctx context.Context, c *client, request contracts.Inv
 			return batch, serviceDenied("invalid_rbac_inventory_cursor")
 		}
 	}
-	return r.inventorySnapshotPage(c, request, cursor, "rbac_inventory_cursor_changed", func() (inventorySnapshot, error) {
+	return r.inventorySnapshotPage(ctx, c, request, cursor, "rbac_inventory_cursor_changed", func(request contracts.InventoryRequest) (inventorySnapshot, error) {
 		items, before, provenance, err := r.rbacInventorySnapshot(ctx, c, request)
 		if err != nil {
 			return inventorySnapshot{}, err

@@ -700,7 +700,7 @@ func TestRegionIndexFiltersResourcesByLocation(t *testing.T) {
 		switch strings.ToLower(req.URL.Path) {
 		case root + "/resources":
 			filters = append(filters, req.URL.Query().Get("$filter"))
-			values = []any{nativeResource("Microsoft.Example/things", "east", "eastus", map[string]any{}), nativeResource("Microsoft.Example/things", "west", "westus", map[string]any{})}
+			values = []any{nativeResource("Microsoft.Example/things", "east", "East US", map[string]any{}), nativeResource("Microsoft.Example/things", "west", "westus", map[string]any{})}
 		case root + "/resourcegroups", root + "/providers/microsoft.authorization/locks":
 		default:
 			t.Fatalf("unexpected request %s", req.URL)
@@ -716,7 +716,71 @@ func TestRegionIndexFiltersResourcesByLocation(t *testing.T) {
 	if _, err := r.List(context.Background(), request); err != nil {
 		t.Fatal(err)
 	}
-	if !slices.Equal(filters, []string{"location eq 'eastus'", ""}) {
+	if !slices.Equal(filters, []string{"", ""}) {
 		t.Fatalf("filters=%q", filters)
+	}
+}
+
+// A deleted parent's collection read fails before its parent check. The shard
+// must not keep retrying against the scan's cached parent listing.
+func TestProductChildReadFailureDropsScanParents(t *testing.T) {
+	root := "/subscriptions/" + testSubscription
+	parent := nativeResource(vnetType, "parent", "eastus", map[string]any{})
+	parentID := strings.ToLower(text(parent["id"]))
+	gone, listed := false, 0
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		path := strings.ToLower(req.URL.Path)
+		switch {
+		case path == root+"/providers/microsoft.network/virtualnetworks":
+			listed++
+			if gone {
+				return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+			}
+			return jsonResponse(200, map[string]any{"value": []any{parent}}, nil), nil
+		case gone && strings.HasPrefix(path, parentID):
+			return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceNotFound"}}, nil), nil
+		case path == parentID:
+			return jsonResponse(200, parent, nil), nil
+		case path == parentID+"/subnets":
+			return jsonResponse(200, map[string]any{"value": []any{map[string]any{"id": parentID + "/subnets/a", "name": "a"}}}, nil), nil
+		case path == parentID+"/subnets/a":
+			return jsonResponse(200, map[string]any{"id": parentID + "/subnets/a", "name": "a", "properties": map[string]any{"provisioningState": "Succeeded"}}, nil), nil
+		case path == root+"/resourcegroups", path == root+"/providers/microsoft.authorization/locks":
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
+		t.Fatalf("unexpected request %s", req.URL)
+		return nil, nil
+	})
+	request := productRequest(r, subnetType)
+	request.ScanRunID = "scan"
+	if items, err := listAllProduct(t, r, request); err != nil || len(items) != 1 {
+		t.Fatal(len(items), err)
+	}
+	gone = true
+	if _, err := listAllProduct(t, r, request); !isNotFound(err) {
+		t.Fatalf("deleted parent read as an empty shard: %v", err)
+	}
+	if items, err := listAllProduct(t, r, request); err != nil || len(items) != 0 || listed != 2 {
+		t.Fatalf("retry kept the stale parent: items=%d listed=%d error=%v", len(items), listed, err)
+	}
+}
+
+// Expiry sweeps run at most once per interval, never serving an expired entry.
+func TestProductScanSweepIsRateLimited(t *testing.T) {
+	var s productScanCache
+	expired := productScanKey{name: "expired"}
+	s.placements = map[productScanKey]*productPlacement{expired: {expires: time.Now().Add(-time.Second)}}
+	s.swept = time.Now()
+	s.place(productScanKey{name: "fresh"}, map[string]string{})
+	if _, ok := s.placements[expired]; !ok {
+		t.Fatal("swept within the interval")
+	}
+	if _, ok := s.placement(expired); ok {
+		t.Fatal("served an expired placement")
+	}
+	s.swept = time.Now().Add(-productScanSweepInterval)
+	s.place(productScanKey{name: "fresh"}, map[string]string{})
+	if _, ok := s.placements[expired]; ok || len(s.placements) != 1 {
+		t.Fatal("sweep did not run after the interval", len(s.placements))
 	}
 }

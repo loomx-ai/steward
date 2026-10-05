@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -981,3 +982,78 @@ func protectedAzureTags(tags map[string]any) bool {
 	}
 	return false
 }
+
+// liveShared coalesces concurrent identical reads of one client, such as
+// execution workers each listing the subscription's locks. A caller joins only
+// a read that starts after it arrived, so no result predates its call, and
+// nothing is kept once a read returns: delete checks stay live. Only successes
+// are shared; a joiner whose shared read failed reads on its own.
+func liveShared[T any](ctx context.Context, c *client, key string, read func() (T, error)) (T, error) {
+	k := sharedReadKey{c, key}
+	sharedReads.Lock()
+	call, lead, wait := sharedReads.queued[k], false, (chan struct{})(nil)
+	if call == nil {
+		call, lead = &sharedRead{done: make(chan struct{})}, true
+		if running := sharedReads.running[k]; running != nil {
+			sharedReads.queued[k], wait = call, running.done
+		} else {
+			sharedReads.running[k] = call
+		}
+	}
+	sharedReads.Unlock()
+	if !lead {
+		select {
+		case <-call.done:
+		case <-ctx.Done():
+			var zero T
+			return zero, ctx.Err()
+		}
+		if call.err != nil {
+			return read()
+		}
+		return call.value.(T), nil
+	}
+	defer func() {
+		sharedReads.Lock()
+		if sharedReads.queued[k] == call {
+			delete(sharedReads.queued, k)
+		}
+		if sharedReads.running[k] == call {
+			delete(sharedReads.running, k)
+		}
+		sharedReads.Unlock()
+		close(call.done)
+	}()
+	if wait != nil {
+		select {
+		case <-wait:
+		case <-ctx.Done():
+			call.err = ctx.Err()
+			var zero T
+			return zero, call.err
+		}
+		sharedReads.Lock()
+		delete(sharedReads.queued, k)
+		sharedReads.running[k] = call
+		sharedReads.Unlock()
+	}
+	value, err := read()
+	call.value, call.err = value, err
+	return value, err
+}
+
+type sharedRead struct {
+	done  chan struct{}
+	value any
+	err   error
+}
+
+type sharedReadKey struct {
+	client *client
+	key    string
+}
+
+var sharedReads = struct {
+	sync.Mutex
+	running, queued map[sharedReadKey]*sharedRead
+}{running: map[sharedReadKey]*sharedRead{}, queued: map[sharedReadKey]*sharedRead{}}

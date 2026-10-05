@@ -76,9 +76,25 @@ func (r *Runtime) listSynapse(ctx context.Context, c *client, request contracts.
 	if err != nil {
 		return batch, err
 	}
+	// The scan's shared workspace listing places a known resource of a listed
+	// workspace in that workspace's region; another region's shard leaves it to
+	// that region's shard instead of reading it.
+	placed := map[string]string{}
+	if request.ScanRunID != "" && request.Scope.Kind == asset.ScopeRegion && slices.ContainsFunc(request.KnownNativeIDs, func(id string) bool { return !seen[id] }) {
+		workspaces, err := r.productParents(ctx, c, native, []string{synapseType}, nil)
+		if err != nil {
+			return batch, err
+		}
+		for _, workspace := range workspaces {
+			placed[workspace.NativeID] = workspace.Location
+		}
+	}
 	absent := []string{}
 	for _, id := range request.KnownNativeIDs {
 		if seen[id] {
+			continue
+		}
+		if region := placed[strings.Join(strings.Split(id, "/")[:9], "/")]; region != "" && !strings.EqualFold(region, request.Scope.NativeID) {
 			continue
 		}
 		res, readErr := c.request(ctx, "GET", apiURL(id, synapseVersion))
