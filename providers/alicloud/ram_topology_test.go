@@ -182,3 +182,31 @@ func TestForEachConcurrentlyBoundsReadsAndReportsTheFirstFailureInOrder(t *testi
 		t.Fatalf("err=%v started=%d", err, started.Load())
 	}
 }
+
+func TestRAMTopologyResolvesCredentialOnce(t *testing.T) {
+	t.Parallel()
+
+	source := &credentialSource{wantConnection: "connection-a", value: contracts.Credential{
+		Type:   asset.CredentialAliCloudAccessKey,
+		Values: map[string]string{"access_key_id": "id", "access_key_secret": "secret"},
+	}}
+	factory := &topologyRuntimeFactory{invoke: func(invocation contracts.Invocation) (contracts.InvocationResult, error) {
+		return contracts.InvocationResult{Data: map[string]any{"IsTruncated": false}}, nil
+	}}
+	runtime, err := newRuntime(source, factory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	items := []contracts.InventoryItem{
+		{NativeType: ramGroupNativeType, NativeID: "g-a"},
+		{NativeType: ramGroupNativeType, NativeID: "g-b"},
+		{NativeType: ramPolicyNativeType, NativeID: "p-a"},
+		{NativeType: ramPolicyNativeType, NativeID: "p-b"},
+	}
+	if _, err := runtime.enrichRAMTopology(context.Background(), ramTopologyRequest(runtime, t, ramGroupNativeType), items); err != nil {
+		t.Fatal(err)
+	}
+	if len(factory.calls) != len(items) || source.calls != 1 {
+		t.Fatalf("calls = %d, credential resolves = %d; want %d and 1", len(factory.calls), source.calls, len(items))
+	}
+}

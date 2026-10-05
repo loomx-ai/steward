@@ -51,18 +51,22 @@ func (r *Runtime) enrichRAMTopology(
 	if err != nil {
 		return nil, err
 	}
+	credential, err := r.resolveCredential(ctx, request.ConnectionID)
+	if err != nil {
+		return nil, err
+	}
 	err = ForEachConcurrently(len(indices), func(position int) error {
 		item := &items[indices[position]]
 		name := strings.TrimSpace(item.NativeID)
 		switch item.NativeType {
 		case ramGroupNativeType:
-			users, err := r.ramGroupUsers(ctx, request, region, name)
+			users, err := r.ramGroupUsers(ctx, &credential, request, region, name)
 			if err != nil {
 				return err
 			}
 			item.Normalized[NormalizedRAMGroupUsersField] = users
 		case ramPolicyNativeType:
-			return r.enrichRAMPolicyAttachments(ctx, request, region, name, item.Normalized)
+			return r.enrichRAMPolicyAttachments(ctx, &credential, request, region, name, item.Normalized)
 		}
 		return nil
 	})
@@ -72,7 +76,7 @@ func (r *Runtime) enrichRAMTopology(
 	return items, nil
 }
 
-func (r *Runtime) ramGroupUsers(ctx context.Context, request contracts.InventoryRequest, region, group string) ([]any, error) {
+func (r *Runtime) ramGroupUsers(ctx context.Context, credential *contracts.Credential, request contracts.InventoryRequest, region, group string) ([]any, error) {
 	users := make([]any, 0)
 	marker := ""
 	for page := 0; page < 1000; page++ {
@@ -80,7 +84,7 @@ func (r *Runtime) ramGroupUsers(ctx context.Context, request contracts.Inventory
 		if marker != "" {
 			parameters["Marker"] = marker
 		}
-		result, err := r.Invoke(ctx, contracts.Invocation{
+		result, err := r.invoke(ctx, credential, contracts.Invocation{
 			ConnectionID: request.ConnectionID,
 			Operation:    "AlibabaCloud.RAM.ListUsersForGroup",
 			Scope:        map[string]string{"region": region},
@@ -107,6 +111,7 @@ func (r *Runtime) ramGroupUsers(ctx context.Context, request contracts.Inventory
 
 func (r *Runtime) enrichRAMPolicyAttachments(
 	ctx context.Context,
+	credential *contracts.Credential,
 	request contracts.InventoryRequest,
 	region, policy string,
 	normalized map[string]any,
@@ -122,7 +127,7 @@ func (r *Runtime) enrichRAMPolicyAttachments(
 		empty()
 		return nil
 	}
-	result, err := r.Invoke(ctx, contracts.Invocation{
+	result, err := r.invoke(ctx, credential, contracts.Invocation{
 		ConnectionID: request.ConnectionID,
 		Operation:    "AlibabaCloud.RAM.ListEntitiesForPolicy",
 		Scope:        map[string]string{"region": region},
