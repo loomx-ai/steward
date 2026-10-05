@@ -3,7 +3,9 @@ package hooks_test
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -159,5 +161,29 @@ func awsAsset(id asset.AssetID, nativeType, nativeID string) asset.Asset {
 	return asset.Asset{
 		ID: id, ScopeID: "scope-region", Location: "us-east-1",
 		Identity: asset.Identity{Provider: asset.ProviderAWS, Partition: "aws", ConnectionID: "connection-aws", NativeType: nativeType, NativeID: nativeID},
+	}
+}
+
+// endlessStacks pages every stack forever except "broken", which fails.
+type endlessStacks struct{ cloudFormationClient }
+
+func (endlessStacks) ListStackResources(ctx context.Context, request provideraws.ListStackResourcesRequest) (provideraws.StackResourcePage, error) {
+	if strings.HasSuffix(request.StackID, "/broken/id") {
+		return provideraws.StackResourcePage{}, errors.New("stack read denied")
+	}
+	if err := ctx.Err(); err != nil {
+		return provideraws.StackResourcePage{}, err
+	}
+	return provideraws.StackResourcePage{NextToken: request.NextToken + "x"}, nil
+}
+
+func TestCloudFormationStackFailureCancelsSiblingReads(t *testing.T) {
+	var stacks []asset.Asset
+	for _, name := range []string{"slow-a", "slow-b", "broken", "slow-c", "slow-d", "slow-e"} {
+		stacks = append(stacks, awsAsset(asset.AssetID(name), provideraws.CloudFormationStackNativeType, "arn:aws:cloudformation:us-east-1:123456789012:stack/"+name+"/id"))
+	}
+	_, err := hooks.NewCloudFormation(&endlessStacks{}, "us-east-1").Contribute(context.Background(), "scope-root", stacks)
+	if err == nil || !strings.Contains(err.Error(), "stack read denied") {
+		t.Fatalf("err = %v", err)
 	}
 }

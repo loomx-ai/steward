@@ -202,8 +202,62 @@ func TestBucketContentsAreReadInTheBucketRegion(t *testing.T) {
 		t.Fatalf("bucket outside us-east-1 not inspected: %+v err=%v", items[0].Normalized, err)
 	}
 	// Without a region to retry in, the contents stay unknown: never "empty".
-	items = []contracts.InventoryItem{{NativeType: "AWS::S3::Bucket", NativeID: "lost", Normalized: map[string]any{}}}
-	if err := enrichLifecycleFacts(ctx, &NativeClients{S3: redirectingS3{}}, items); err == nil || items[0].Normalized["bucket_empty"] != nil {
-		t.Fatalf("unresolved redirect was not reported: %+v err=%v", items[0].Normalized, err)
+	// The unreadable bucket is protected while the rest of the page proceeds.
+	items = []contracts.InventoryItem{
+		{NativeType: "AWS::S3::Bucket", NativeID: "lost", Normalized: map[string]any{}},
+		{NativeType: "AWS::S3::Bucket", NativeID: "eu-logs", Normalized: map[string]any{}},
+	}
+	if err := enrichLifecycleFacts(ctx, &NativeClients{S3: redirectingS3{}}, items[:1]); err != nil {
+		t.Fatal(err)
+	}
+	if err := enrichLifecycleFacts(ctx, &NativeClients{S3: redirectingS3{bucketRegion: "eu-west-1", output: full}}, items[1:]); err != nil {
+		t.Fatal(err)
+	}
+	lost := items[0].Normalized
+	if lost["bucket_empty"] != nil || lost["cleanup_protected"] != true || lost["cleanup_protection_reason"] != "s3_bucket_contents_unknown" || lost["bucket_contents_error"] != "PermanentRedirect" {
+		t.Fatalf("unreadable bucket was not protected as unknown: %+v", lost)
+	}
+	if items[1].Normalized["bucket_empty"] != false {
+		t.Fatalf("readable bucket was not inspected: %+v", items[1].Normalized)
+	}
+	// The delete-time guard stays live and fails closed on the same error.
+	if outcome, err := s3BucketGuard(redirectingS3{})(ctx, "lost"); err == nil || outcome.pending || outcome.evidence["bucket_empty"] != nil {
+		t.Fatalf("delete guard read an unreadable bucket as deletable: %+v err=%v", outcome, err)
+	}
+}
+
+// deniedS3 denies the content read of the named buckets, as an SCP would.
+type deniedS3 map[string]bool
+
+func (f deniedS3) ListObjectVersions(_ context.Context, input *awss3.ListObjectVersionsInput, _ ...func(*awss3.Options)) (*awss3.ListObjectVersionsOutput, error) {
+	if f[awssdk.ToString(input.Bucket)] {
+		return nil, &smithy.GenericAPIError{Code: "AccessDenied", Message: "explicit deny in a service control policy"}
+	}
+	return &awss3.ListObjectVersionsOutput{}, nil
+}
+
+func TestDeniedBucketIsProtectedWithoutFailingThePage(t *testing.T) {
+	ctx := context.Background()
+	s3 := deniedS3{"denied": true}
+	items := []contracts.InventoryItem{}
+	for _, name := range []string{"a", "denied", "b", "c", "d", "e", "f", "g", "h", "i"} {
+		items = append(items, contracts.InventoryItem{NativeType: "AWS::S3::Bucket", NativeID: name, Normalized: map[string]any{}})
+	}
+	if err := enrichLifecycleFacts(ctx, &NativeClients{S3: s3}, items); err != nil {
+		t.Fatal(err)
+	}
+	for _, item := range items {
+		if item.NativeID == "denied" {
+			if item.Normalized["cleanup_protection_reason"] != "s3_bucket_contents_unknown" || item.Normalized["bucket_contents_error"] != "AccessDenied" || item.Normalized["bucket_empty"] != nil {
+				t.Fatalf("denied bucket: %+v", item.Normalized)
+			}
+		} else if item.Normalized["bucket_empty"] != true || item.Normalized["cleanup_protected"] != nil {
+			t.Fatalf("bucket %s: %+v", item.NativeID, item.Normalized)
+		}
+	}
+	cloud := &scriptedCloudControl{resources: map[string]CloudControlResource{"AWS::S3::Bucket|denied": {Identifier: "denied", Properties: `{"BucketName":"denied"}`}}}
+	driver := &guardedAction{CloudControlAction: &CloudControlAction{client: cloud}, guard: s3BucketGuard(s3)}
+	if preflight, err := driver.Preflight(ctx, guardRequest("AWS::S3::Bucket", "denied")); err == nil && preflight.Allowed {
+		t.Fatalf("delete guard allowed a bucket whose contents are unknown: %+v", preflight)
 	}
 }

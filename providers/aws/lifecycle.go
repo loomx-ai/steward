@@ -3,6 +3,7 @@ package aws
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"sort"
@@ -27,6 +28,8 @@ const (
 	nodegroupAutoScalingGroupField = "auto_scaling_group_names"
 	requesterManagedField          = "requester_managed"
 	describeBatchSize              = 200
+	// lifecycleReadConcurrency bounds the per-item S3 and EKS reads of one batch.
+	lifecycleReadConcurrency = 8
 )
 
 type LifecycleEC2API interface {
@@ -151,37 +154,43 @@ func enrichLifecycleFacts(ctx context.Context, clients *NativeClients, items []c
 			return err
 		}
 	}
-	for _, index := range byType["AWS::S3::Bucket"] {
-		if err := enrichBucketContents(ctx, clients.S3, &items[index]); err != nil {
-			return err
+	buckets := byType["AWS::S3::Bucket"]
+	if err := forEachConcurrently(len(buckets), lifecycleReadConcurrency, func(i int) error {
+		return enrichBucketContents(ctx, clients.S3, &items[buckets[i]])
+	}); err != nil {
+		return err
+	}
+	nodegroups := byType["AWS::EKS::Nodegroup"]
+	return forEachConcurrently(len(nodegroups), lifecycleReadConcurrency, func(i int) error {
+		return enrichNodegroup(ctx, clients.EKS, &items[nodegroups[i]])
+	})
+}
+
+func enrichNodegroup(ctx context.Context, client EKSNativeAPI, item *contracts.InventoryItem) error {
+	cluster := stringValue(item.Normalized["ClusterName"])
+	name := stringValue(item.Normalized["NodegroupName"])
+	if cluster == "" || name == "" {
+		return fmt.Errorf("AWS EKS node group %s lacks cluster or name", item.NativeID)
+	}
+	execution.LogCloudAPIRequest(ctx, "eks", "DescribeNodegroup", contracts.CloudLogPayload(ctx, map[string]any{"clusterName": cluster, "nodegroupName": name}))
+	output, err := client.DescribeNodegroup(ctx, &awseks.DescribeNodegroupInput{ClusterName: awssdk.String(cluster), NodegroupName: awssdk.String(name)})
+	if err != nil {
+		execution.LogCloudAPIFailure(ctx, "eks", "DescribeNodegroup", err)
+		if nativeNotFound(err, "ResourceNotFoundException") {
+			return nil
+		}
+		return NormalizeError(err)
+	}
+	var groups []string
+	if output.Nodegroup != nil && output.Nodegroup.Resources != nil {
+		for _, group := range output.Nodegroup.Resources.AutoScalingGroups {
+			if name := awssdk.ToString(group.Name); name != "" {
+				groups = append(groups, name)
+			}
 		}
 	}
-	for _, index := range byType["AWS::EKS::Nodegroup"] {
-		cluster := stringValue(items[index].Normalized["ClusterName"])
-		name := stringValue(items[index].Normalized["NodegroupName"])
-		if cluster == "" || name == "" {
-			return fmt.Errorf("AWS EKS node group %s lacks cluster or name", items[index].NativeID)
-		}
-		execution.LogCloudAPIRequest(ctx, "eks", "DescribeNodegroup", contracts.CloudLogPayload(ctx, map[string]any{"clusterName": cluster, "nodegroupName": name}))
-		output, err := clients.EKS.DescribeNodegroup(ctx, &awseks.DescribeNodegroupInput{ClusterName: awssdk.String(cluster), NodegroupName: awssdk.String(name)})
-		if err != nil {
-			execution.LogCloudAPIFailure(ctx, "eks", "DescribeNodegroup", err)
-			if nativeNotFound(err, "ResourceNotFoundException") {
-				continue
-			}
-			return NormalizeError(err)
-		}
-		var groups []string
-		if output.Nodegroup != nil && output.Nodegroup.Resources != nil {
-			for _, group := range output.Nodegroup.Resources.AutoScalingGroups {
-				if name := awssdk.ToString(group.Name); name != "" {
-					groups = append(groups, name)
-				}
-			}
-		}
-		sort.Strings(groups)
-		items[index].Normalized[nodegroupAutoScalingGroupField] = groups
-	}
+	sort.Strings(groups)
+	item.Normalized[nodegroupAutoScalingGroupField] = groups
 	return nil
 }
 
@@ -640,10 +649,25 @@ func stringSliceValue(value any) []string {
 // A bucket that still holds object versions or delete markers cannot be deleted
 // by Cloud Control. Recording it at scan time shows the blocker in the plan;
 // the delete guard checks the live bucket again before deletion.
+//
+// A bucket whose contents cannot be read (for example an SCP denying its
+// region) is protected as unknown rather than failing the whole page; the
+// delete guard still fails closed on the same error.
 func enrichBucketContents(ctx context.Context, client S3NativeAPI, item *contracts.InventoryItem) error {
 	outcome, err := s3BucketGuard(client)(ctx, item.NativeID)
 	if err != nil {
-		return err
+		if ctx.Err() != nil {
+			return err
+		}
+		evidence := err.Error()
+		var providerError *contracts.ProviderCallError
+		if errors.As(err, &providerError) && providerError.Provider.Code != "" {
+			evidence = providerError.Provider.Code
+		}
+		item.Normalized["bucket_contents_error"] = evidence
+		item.Normalized["cleanup_protected"] = true
+		item.Normalized["cleanup_protection_reason"] = "s3_bucket_contents_unknown"
+		return nil
 	}
 	if outcome.pending {
 		return nil

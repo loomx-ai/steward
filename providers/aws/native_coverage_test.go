@@ -352,11 +352,19 @@ func TestWAFAssociationProtocolListsEveryResourceTypeAndRespectsFirewallManager(
 				_, _ = io.WriteString(w, `{"WebACLs":[],"NextMarker":"web"}`)
 				return
 			}
-			_, _ = io.WriteString(w, `{"WebACLs":[{"Name":"web","Id":"acl-1","ARN":"arn:aws:wafv2:us-east-1:123456789012:regional/webacl/web/acl-1"}],"NextMarker":"web"}`)
+			_, _ = io.WriteString(w, `{"WebACLs":[{"Name":"web","Id":"acl-1","ARN":"arn:aws:wafv2:us-east-1:123456789012:regional/webacl/web/acl-1"},{"Name":"idle","Id":"acl-2","ARN":"arn:aws:wafv2:us-east-1:123456789012:regional/webacl/idle/acl-2"}],"NextMarker":"web"}`)
 		case "GetWebACL":
+			// A web ACL protecting nothing needs no read.
+			if body["Id"] != "acl-1" {
+				t.Errorf("unassociated web ACL read: %v", body)
+			}
 			payload, _ := json.Marshal(map[string]any{"WebACL": acl, "LockToken": "token"})
 			_, _ = w.Write(payload)
 		case "ListResourcesForWebACL":
+			if strings.HasSuffix(body["WebACLArn"].(string), "/acl-2") {
+				_, _ = io.WriteString(w, `{"ResourceArns":[]}`)
+				return
+			}
 			resourceType, _ := body["ResourceType"].(string)
 			resourceTypes = append(resourceTypes, resourceType)
 			var arns []string

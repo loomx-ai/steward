@@ -273,15 +273,22 @@ var cognitoDomainKind = nativeKind{
 			token = next
 		}
 		sort.Strings(pools)
+		described := make([]*awscognito.DescribeUserPoolOutput, len(pools))
+		if err := forEachConcurrently(len(pools), nativeDetailConcurrency, func(index int) error {
+			output, err := c.Cognito.DescribeUserPool(ctx, &awscognito.DescribeUserPoolInput{UserPoolId: awssdk.String(pools[index])})
+			if nativeNotFound(err, "ResourceNotFoundException") {
+				return nil
+			}
+			described[index] = output
+			return err
+		}); err != nil {
+			return nativePage{}, err
+		}
 		var items []map[string]any
 		requestID := ""
-		for _, pool := range pools {
-			output, err := c.Cognito.DescribeUserPool(ctx, &awscognito.DescribeUserPoolInput{UserPoolId: awssdk.String(pool)})
-			if nativeNotFound(err, "ResourceNotFoundException") {
+		for index, output := range described {
+			if output == nil {
 				continue
-			}
-			if err != nil {
-				return nativePage{}, err
 			}
 			requestID = requestIDOf(output.ResultMetadata)
 			if output.UserPool == nil {
@@ -289,7 +296,7 @@ var cognitoDomainKind = nativeKind{
 			}
 			for kind, domain := range map[string]*string{"prefix": output.UserPool.Domain, "custom": output.UserPool.CustomDomain} {
 				if name := awssdk.ToString(domain); name != "" {
-					items = append(items, map[string]any{"Domain": name, "UserPoolId": pool, "DomainKind": kind})
+					items = append(items, map[string]any{"Domain": name, "UserPoolId": pools[index], "DomainKind": kind})
 				}
 			}
 		}

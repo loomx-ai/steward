@@ -2,6 +2,7 @@ package hooks
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -51,25 +52,40 @@ func (h *CloudFormation) Contribute(ctx context.Context, _ asset.ScopeID, assets
 			stacks = append(stacks, value)
 		}
 	}
-	// Stacks are read concurrently; their contributions keep stack order.
+	// Stacks are read concurrently; their contributions keep stack order. The
+	// first failure cancels the stacks still paging and starts no more.
 	parts := make([]governance.Contribution, len(stacks))
 	errs := make([]error, len(stacks))
+	readCtx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	var wg sync.WaitGroup
 	slots := make(chan struct{}, cloudFormationStackConcurrency)
 	for index, stack := range stacks {
 		slots <- struct{}{}
+		if readCtx.Err() != nil {
+			<-slots
+			break
+		}
 		wg.Add(1)
 		go func() {
 			defer func() { <-slots; wg.Done() }()
-			parts[index], errs[index] = h.stackContribution(ctx, stack, byIdentity, byPhysicalID, byStackLogicalID)
+			if parts[index], errs[index] = h.stackContribution(readCtx, stack, byIdentity, byPhysicalID, byStackLogicalID); errs[index] != nil {
+				cancel()
+			}
 		}()
 	}
 	wg.Wait()
-	result := governance.Contribution{}
-	for index, part := range parts {
-		if errs[index] != nil {
-			return governance.Contribution{}, errs[index]
+	if err := ctx.Err(); err != nil {
+		return governance.Contribution{}, err
+	}
+	for _, err := range errs {
+		// A cancelled sibling reports the cancellation, not the cause.
+		if err != nil && !errors.Is(err, context.Canceled) {
+			return governance.Contribution{}, err
 		}
+	}
+	result := governance.Contribution{}
+	for _, part := range parts {
 		result.Relationships = append(result.Relationships, part.Relationships...)
 		result.Bindings = append(result.Bindings, part.Bindings...)
 		result.Unresolved = append(result.Unresolved, part.Unresolved...)

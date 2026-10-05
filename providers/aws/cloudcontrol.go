@@ -385,20 +385,34 @@ const cloudControlDetailConcurrency = 8
 // item's error is returned.
 func cloudControlDetails(ctx context.Context, client CloudControlClient, scope asset.Scope, items []contracts.InventoryItem) ([]*contracts.InventoryItem, error) {
 	details := make([]*contracts.InventoryItem, len(items))
-	errs := make([]error, len(items))
+	err := forEachConcurrently(len(items), cloudControlDetailConcurrency, func(index int) (err error) {
+		details[index], err = cloudControlDetail(ctx, client, scope, items[index])
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return details, nil
+}
+
+// forEachConcurrently calls read for indexes 0..count-1, at most limit at a
+// time. After a failure no further reads start, and the lowest failing index's
+// error is returned, as a serial loop would.
+func forEachConcurrently(count, limit int, read func(int) error) error {
+	errs := make([]error, count)
 	var failed atomic.Bool
 	var wg sync.WaitGroup
-	slots := make(chan struct{}, cloudControlDetailConcurrency)
-	for index, item := range items {
+	slots := make(chan struct{}, limit)
+	for index := range count {
 		slots <- struct{}{}
 		if failed.Load() {
+			<-slots
 			break
 		}
 		wg.Add(1)
 		go func() {
 			defer func() { <-slots; wg.Done() }()
-			details[index], errs[index] = cloudControlDetail(ctx, client, scope, item)
-			if errs[index] != nil {
+			if errs[index] = read(index); errs[index] != nil {
 				failed.Store(true)
 			}
 		}()
@@ -406,10 +420,10 @@ func cloudControlDetails(ctx context.Context, client CloudControlClient, scope a
 	wg.Wait()
 	for _, err := range errs {
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
-	return details, nil
+	return nil
 }
 
 func cloudControlDetail(ctx context.Context, client CloudControlClient, scope asset.Scope, item contracts.InventoryItem) (*contracts.InventoryItem, error) {

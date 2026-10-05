@@ -16,6 +16,10 @@ import (
 	awsworkspaces "github.com/aws/aws-sdk-go-v2/service/workspaces"
 )
 
+// nativeDetailConcurrency bounds the per-parent reads one product-API listing
+// runs at a time.
+const nativeDetailConcurrency = 4
+
 // Client VPN, EMR, WorkSpaces directories and WAF web ACL associations have
 // no Cloud Control list, read and delete handlers in the official
 // CloudFormation schemas, so they use their product APIs.
@@ -152,31 +156,41 @@ func clientVPNChildren(ctx context.Context, c *NativeClients, list func(string, 
 	if err != nil {
 		return nativePage{}, err
 	}
-	var items []map[string]any
-	requestID := ""
-	for _, endpoint := range endpoints {
-		token := ""
+	children := make([][]map[string]any, len(endpoints))
+	requestIDs := make([]string, len(endpoints))
+	if err := forEachConcurrently(len(endpoints), nativeDetailConcurrency, func(index int) error {
+		endpoint, token := endpoints[index], ""
 		for pages := 0; ; pages++ {
 			if pages >= nativeMaxParentPages {
-				return nativePage{}, fmt.Errorf("AWS Client VPN child listing of %s exceeded %d pages", endpoint, nativeMaxParentPages)
+				return fmt.Errorf("AWS Client VPN child listing of %s exceeded %d pages", endpoint, nativeMaxParentPages)
 			}
 			documents, next, id, err := list(endpoint, token)
 			if nativeNotFound(err, "InvalidClientVpnEndpointId.NotFound") {
-				break // Deleted after the endpoint listing.
+				return nil // Deleted after the endpoint listing.
 			}
 			if err != nil {
-				return nativePage{}, err
+				return err
 			}
-			requestID = id
-			items = append(items, documents...)
+			requestIDs[index] = id
+			children[index] = append(children[index], documents...)
 			if next == "" {
-				break
+				return nil
 			}
 			if next == token {
-				return nativePage{}, fmt.Errorf("AWS Client VPN child listing repeated its page token")
+				return fmt.Errorf("AWS Client VPN child listing repeated its page token")
 			}
 			token = next
 		}
+	}); err != nil {
+		return nativePage{}, err
+	}
+	var items []map[string]any
+	requestID := ""
+	for index, documents := range children {
+		if requestIDs[index] != "" {
+			requestID = requestIDs[index]
+		}
+		items = append(items, documents...)
 	}
 	return nativePage{Items: items, RequestID: requestID}, nil
 }
@@ -505,16 +519,23 @@ var emrClusterKind = nativeKind{
 		}
 		// Summaries omit the network, roles and protection; read each cluster
 		// so relationships and protection are known at scan time.
-		items := make([]map[string]any, 0, len(output.Clusters))
-		for _, summary := range output.Clusters {
-			document, _, err := describeEMRCluster(ctx, c, awssdk.ToString(summary.Id))
+		documents := make([]map[string]any, len(output.Clusters))
+		absent := make([]bool, len(output.Clusters))
+		if err := forEachConcurrently(len(output.Clusters), nativeDetailConcurrency, func(index int) (err error) {
+			documents[index], _, err = describeEMRCluster(ctx, c, awssdk.ToString(output.Clusters[index].Id))
 			if errors.Is(err, errNativeAbsent) {
-				continue
+				absent[index] = true
+				return nil
 			}
-			if err != nil {
-				return nativePage{}, err
+			return err
+		}); err != nil {
+			return nativePage{}, err
+		}
+		items := make([]map[string]any, 0, len(output.Clusters))
+		for index, document := range documents {
+			if !absent[index] {
+				items = append(items, document)
 			}
-			items = append(items, document)
 		}
 		return nativePage{Items: items, NextToken: awssdk.ToString(output.Marker), RequestID: requestIDOf(output.ResultMetadata)}, nil
 	},
@@ -589,6 +610,49 @@ func webACLAssociationDocument(resourceARN string, acl *waftypes.WebACL) map[str
 	}
 }
 
+// webACLAssociations lists the resources a regional web ACL protects. The
+// summary ARN suffices to list them; the web ACL itself is read only when it
+// protects something, for the Firewall Manager flag the documents carry.
+func webACLAssociations(ctx context.Context, c *NativeClients, summary waftypes.WebACLSummary) ([]map[string]any, error) {
+	type association struct {
+		arn          string
+		resourceType waftypes.ResourceType
+	}
+	var found []association
+	for _, resourceType := range wafRegionalResourceTypes {
+		resources, err := c.WAF.ListResourcesForWebACL(ctx, &awswafv2.ListResourcesForWebACLInput{WebACLArn: summary.ARN, ResourceType: resourceType})
+		if nativeNotFound(err, "WAFNonexistentItemException") {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		for _, arn := range resources.ResourceArns {
+			found = append(found, association{arn, resourceType})
+		}
+	}
+	if len(found) == 0 {
+		return nil, nil
+	}
+	detail, err := c.WAF.GetWebACL(ctx, &awswafv2.GetWebACLInput{Name: summary.Name, Id: summary.Id, Scope: waftypes.ScopeRegional})
+	if nativeNotFound(err, "WAFNonexistentItemException") {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	if detail.WebACL == nil {
+		return nil, nil
+	}
+	documents := make([]map[string]any, 0, len(found))
+	for _, entry := range found {
+		document := webACLAssociationDocument(entry.arn, detail.WebACL)
+		document["ResourceType"] = string(entry.resourceType)
+		documents = append(documents, document)
+	}
+	return documents, nil
+}
+
 var webACLAssociationKind = nativeKind{
 	nativeType: webACLAssociationType, service: "wafv2", identity: "ResourceArn", nameField: "ResourceArn",
 	listOperation: "com.amazonaws.wafv2#ListResourcesForWebACL", readOperation: "com.amazonaws.wafv2#GetWebACLForResource", deleteOperation: "com.amazonaws.wafv2#DisassociateWebACL",
@@ -609,34 +673,21 @@ var webACLAssociationKind = nativeKind{
 				return nativePage{}, err
 			}
 			requestID = requestIDOf(output.ResultMetadata)
-			for _, summary := range output.WebACLs {
-				detail, err := c.WAF.GetWebACL(ctx, &awswafv2.GetWebACLInput{Name: summary.Name, Id: summary.Id, Scope: waftypes.ScopeRegional})
-				if nativeNotFound(err, "WAFNonexistentItemException") {
-					continue
-				}
-				if err != nil {
-					return nativePage{}, err
-				}
-				if detail.WebACL == nil {
-					continue
-				}
-				for _, resourceType := range wafRegionalResourceTypes {
-					resources, err := c.WAF.ListResourcesForWebACL(ctx, &awswafv2.ListResourcesForWebACLInput{WebACLArn: detail.WebACL.ARN, ResourceType: resourceType})
-					if nativeNotFound(err, "WAFNonexistentItemException") {
-						break
+			acls := make([][]map[string]any, len(output.WebACLs))
+			if err := forEachConcurrently(len(output.WebACLs), nativeDetailConcurrency, func(index int) (err error) {
+				acls[index], err = webACLAssociations(ctx, c, output.WebACLs[index])
+				return err
+			}); err != nil {
+				return nativePage{}, err
+			}
+			for _, documents := range acls {
+				for _, document := range documents {
+					arn := document["ResourceArn"].(string)
+					if seen[arn] {
+						continue // A resource has at most one web ACL.
 					}
-					if err != nil {
-						return nativePage{}, err
-					}
-					for _, arn := range resources.ResourceArns {
-						if seen[arn] {
-							continue // A resource has at most one web ACL.
-						}
-						seen[arn] = true
-						document := webACLAssociationDocument(arn, detail.WebACL)
-						document["ResourceType"] = string(resourceType)
-						items = append(items, document)
-					}
+					seen[arn] = true
+					items = append(items, document)
 				}
 			}
 			next := awssdk.ToString(output.NextMarker)
