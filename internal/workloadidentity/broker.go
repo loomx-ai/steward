@@ -12,6 +12,7 @@ import (
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/requestmeta"
+	"github.com/loomx-ai/steward/internal/core/workspace"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -170,6 +171,9 @@ func (b *Broker) Bind(ctx context.Context, record asset.ConnectionCredential, c 
 	}
 	b.mu.Unlock()
 	c.Values = values
+	// Token exchanges run on the provider's context; keep them in the
+	// workspace the credential was opened in.
+	tenant, bound := workspace.From(ctx)
 	check := func(callCtx context.Context) error {
 		connection, err := b.repositories.Connections().GetConnection(callCtx, record.ConnectionID)
 		if err != nil || connection.Provider != record.Provider || connection.Status == asset.ConnectionDeleted || (!validation && connection.Status != asset.ConnectionActive) {
@@ -184,6 +188,9 @@ func (b *Broker) Bind(ctx context.Context, record asset.ConnectionCredential, c 
 	c.Dynamic = &contracts.DynamicCredential{Key: key, Resolve: func(callCtx context.Context, scope string) (contracts.TemporaryCredential, error) {
 		if err := callCtx.Err(); err != nil {
 			return contracts.TemporaryCredential{}, err
+		}
+		if bound {
+			callCtx = workspace.With(callCtx, tenant)
 		}
 		s.mu.Lock()
 		defer s.mu.Unlock()
@@ -222,6 +229,10 @@ type Trust struct {
 	WriteSubject string `json:"write_subject"`
 }
 
-func (b *Broker) Trust(id asset.ConnectionID, provider asset.Provider, c contracts.Credential) Trust {
-	return Trust{Issuer: b.Issuer.URL, JWKSURI: b.Issuer.URL + "/.well-known/jwks", Audience: Audience(provider, c.Values), ReadSubject: b.Issuer.Subject(string(id), "read"), WriteSubject: b.Issuer.Subject(string(id), "write")}
+func (b *Broker) Trust(ctx context.Context, id asset.ConnectionID, provider asset.Provider, c contracts.Credential) (Trust, error) {
+	issuerURL, workspaceID, err := b.Issuer.identity(ctx)
+	if err != nil {
+		return Trust{}, err
+	}
+	return Trust{Issuer: issuerURL, JWKSURI: issuerURL + "/.well-known/jwks", Audience: Audience(provider, c.Values), ReadSubject: Subject(workspaceID, string(id), "read"), WriteSubject: Subject(workspaceID, string(id), "write")}, nil
 }

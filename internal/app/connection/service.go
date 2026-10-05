@@ -136,7 +136,7 @@ func (s *Service) Create(ctx context.Context, request CreateRequest) (View, erro
 		ID: asset.ConnectionID(idgen.MustNew("con")), Name: request.Name, Provider: request.Provider,
 		Site: request.Site, Status: asset.ConnectionUnverified, CreatedAt: now, UpdatedAt: now,
 	}
-	sealed, err := s.vault.Seal(value.ID, value.Provider, request.Credential, now)
+	sealed, err := s.vault.Seal(ctx, value.ID, value.Provider, request.Credential, now)
 	if err != nil {
 		return View{}, err
 	}
@@ -225,7 +225,7 @@ func (s *Service) ReplaceCredential(ctx context.Context, id asset.ConnectionID, 
 		return View{}, ErrConnectionBusy
 	}
 	now := s.now()
-	sealed, err := s.vault.Seal(id, value.Provider, replacement, now)
+	sealed, err := s.vault.Seal(ctx, id, value.Provider, replacement, now)
 	if err != nil {
 		return View{}, err
 	}

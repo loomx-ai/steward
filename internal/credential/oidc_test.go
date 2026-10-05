@@ -24,11 +24,11 @@ func TestOIDCVaultPersistsOnlyConfigurationAndBindsOnRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	c := contracts.Credential{Type: asset.CredentialOIDC, Values: map[string]string{"role_arn": "arn:aws:iam::123456789012:role/steward"}}
-	if _, err = vault.Seal("con_test", asset.ProviderAWS, c, time.Now()); err == nil {
+	if _, err = vault.Seal(context.Background(), "con_test", asset.ProviderAWS, c, time.Now()); err == nil {
 		t.Fatal("OIDC saved on unconfigured server")
 	}
 	vault.WorkloadIdentity = workloadidentity.NewBroker(&workloadidentity.Issuer{URL: "https://issuer.example", WorkspaceID: "one"}, repos)
-	record, err := vault.Seal("con_test", asset.ProviderAWS, c, time.Now())
+	record, err := vault.Seal(context.Background(), "con_test", asset.ProviderAWS, c, time.Now())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func TestOIDCVaultPersistsOnlyConfigurationAndBindsOnRead(t *testing.T) {
 		t.Fatalf("wrong trust: %+v %v", trust, err)
 	}
 	c.Values["subject_token"] = "client-supplied-token"
-	if _, err = vault.Seal("con_test", asset.ProviderAWS, c, time.Now()); err == nil {
+	if _, err = vault.Seal(context.Background(), "con_test", asset.ProviderAWS, c, time.Now()); err == nil {
 		t.Fatal("accepted client-supplied assertion")
 	}
 }

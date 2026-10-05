@@ -1719,7 +1719,7 @@ func terminalRouterWithOAuthFlows(t *testing.T, validator connectionapp.Validato
 	if err != nil {
 		t.Fatal(err)
 	}
-	sealed, err := vault.Seal("connection-a", asset.ProviderAliCloud, contracts.Credential{
+	sealed, err := vault.Seal(context.Background(), "connection-a", asset.ProviderAliCloud, contracts.Credential{
 		Type:   asset.CredentialAliCloudAccessKey,
 		Values: map[string]string{"access_key_id": "id", "access_key_secret": "secret"},
 	}, now)

@@ -275,7 +275,7 @@ func TestReplaceCredentialRequiresExplicitValidation(t *testing.T) {
 	if err := repositories.Connections().PutConnection(ctx, connection); err != nil {
 		t.Fatal(err)
 	}
-	old, err := vault.Seal(connection.ID, connection.Provider, contracts.Credential{
+	old, err := vault.Seal(context.Background(), connection.ID, connection.Provider, contracts.Credential{
 		Type: asset.CredentialAliCloudAccessKey,
 		Values: map[string]string{
 			"access_key_id": "old-id", "access_key_secret": "old-secret",
@@ -786,7 +786,7 @@ func TestExplicitValidationRejectsChangedEstablishedIdentity(t *testing.T) {
 	if err := repositories.Connections().PutConnection(ctx, connection); err != nil {
 		t.Fatal(err)
 	}
-	sealed, err := vault.Seal(connection.ID, connection.Provider, contracts.Credential{
+	sealed, err := vault.Seal(context.Background(), connection.ID, connection.Provider, contracts.Credential{
 		Type: asset.CredentialAliCloudAccessKey,
 		Values: map[string]string{
 			"access_key_id": "ak-id", "access_key_secret": "super-secret",
@@ -840,7 +840,7 @@ func TestExplicitValidationAllowsPrincipalRotationWithinEstablishedTenant(t *tes
 	if err := repositories.Connections().PutConnection(ctx, connection); err != nil {
 		t.Fatal(err)
 	}
-	sealed, err := vault.Seal(connection.ID, connection.Provider, contracts.Credential{
+	sealed, err := vault.Seal(context.Background(), connection.ID, connection.Provider, contracts.Credential{
 		Type: asset.CredentialAliCloudAccessKey,
 		Values: map[string]string{
 			"access_key_id": "ak-id", "access_key_secret": "super-secret",
@@ -999,7 +999,7 @@ func TestCredentialReplacementCannotResurrectDeletedConnection(t *testing.T) {
 	if err := repositories.Connections().PutConnection(ctx, connection); err != nil {
 		t.Fatal(err)
 	}
-	sealed, err := vault.Seal(connection.ID, connection.Provider, contracts.Credential{
+	sealed, err := vault.Seal(context.Background(), connection.ID, connection.Provider, contracts.Credential{
 		Type: asset.CredentialAliCloudAccessKey,
 		Values: map[string]string{
 			"access_key_id": "old", "access_key_secret": "old-secret",

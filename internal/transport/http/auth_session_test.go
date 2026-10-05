@@ -102,28 +102,32 @@ func TestSessionReportsServerAuthenticationMode(t *testing.T) {
 	}
 }
 
-func TestCloudIdentityRequiresWorkspaceServiceToken(t *testing.T) {
-	auth := NewCloudAuthenticator([]TokenBinding{{Token: "workspace-secret", Principal: Principal{Subject: "gateway", Roles: []Role{RoleAdmin}}}})
+func TestCloudIdentityRequiresPoolServiceTokenAndWorkspace(t *testing.T) {
+	auth := NewCloudAuthenticator([]TokenBinding{{Token: "pool-secret", Principal: Principal{Subject: "gateway", Roles: []Role{RoleAdmin}}}})
 	for _, test := range []struct {
-		token, subject, role string
-		allowed              bool
+		token, subject, role, workspace string
+		allowed                         bool
 	}{
-		{"", "forged-admin", "admin", false},
-		{"other-workspace-secret", "alice", "admin", false},
-		{"workspace-secret", "", "admin", false},
-		{"workspace-secret", "alice", "owner", false},
-		{"workspace-secret", "alice", "viewer", true},
-		{"workspace-secret", "alice", "admin", true},
+		{"", "forged-admin", "admin", "ws_a", false},
+		{"other-secret", "alice", "admin", "ws_a", false},
+		{"pool-secret", "", "admin", "ws_a", false},
+		{"pool-secret", "alice", "owner", "ws_a", false},
+		{"pool-secret", "alice", "admin", "", false},
+		{"pool-secret", "alice", "admin", "default", false},
+		{"pool-secret", "alice", "admin", "ws/../b", false},
+		{"pool-secret", "alice", "viewer", "ws_a", true},
+		{"pool-secret", "alice", "admin", "ws_a", true},
 	} {
 		r := httptest.NewRequest(http.MethodGet, "http://127.0.0.1:8585/api/assets", nil)
 		r.Header.Set("Authorization", "Bearer "+test.token)
 		r.Header.Set("X-Steward-Subject", test.subject)
 		r.Header.Set("X-Steward-Role", test.role)
+		r.Header.Set("X-Steward-Workspace", test.workspace)
 		principal, err := auth.Authenticate(r)
 		if (err == nil) != test.allowed {
 			t.Fatalf("allowed=%v err=%v", test.allowed, err)
 		}
-		if test.allowed && (principal.Subject != "alice" || len(principal.Roles) != 1 || principal.Roles[0] != Role(test.role)) {
+		if test.allowed && (principal.Subject != "alice" || len(principal.Roles) != 1 || principal.Roles[0] != Role(test.role) || principal.Workspace != "ws_a") {
 			t.Fatalf("wrong gateway principal %+v", principal)
 		}
 	}

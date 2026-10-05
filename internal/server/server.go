@@ -72,9 +72,19 @@ func Run(ctx context.Context, config Config) error {
 	if err != nil {
 		return err
 	}
+	// A cloud server is one of a pool that serves every workspace from one
+	// PostgreSQL database; every request and job names its workspace.
+	pool := authMode == "cloud"
+	if pool && !strings.EqualFold(strings.TrimSpace(config.DBDriver), "postgres") {
+		return fmt.Errorf("cloud authentication serves many workspaces and requires PostgreSQL")
+	}
 	repositories, err := openRepositories(config)
 	if err != nil {
 		return err
+	}
+	if pool {
+		repositories.(interface{ RequireWorkspace() }).RequireWorkspace()
+		config.OIDC.PerWorkspace = true
 	}
 	issuer, err := workloadidentity.Load(config.OIDC)
 	if err != nil {
@@ -106,6 +116,9 @@ func Run(ctx context.Context, config Config) error {
 		return err
 	}
 	vault.WorkloadIdentity = oidc
+	if pool {
+		vault.RequireWorkspace()
+	}
 	credentialSource := config.CredentialSource
 	if credentialSource == nil {
 		credentialSource = vault

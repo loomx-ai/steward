@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/loomx-ai/steward/internal/core/workspace"
 )
 
 type Role string
@@ -28,6 +30,9 @@ var (
 type Principal struct {
 	Subject string `json:"subject"`
 	Roles   []Role `json:"roles"`
+	// Workspace is the tenant the request acts in; empty means the default
+	// workspace of a self-hosted server.
+	Workspace workspace.ID `json:"-"`
 }
 
 // LocalAuthenticator is only valid for a loopback listener. It also rejects
@@ -70,8 +75,9 @@ func (a *LocalAuthenticator) Authenticate(request *http.Request) (Principal, err
 }
 
 // CloudAuthenticator accepts identity only from a gateway that presents the
-// workspace-specific service token. Client-supplied identity headers alone
-// never grant access.
+// pool's service token. The gateway names the user, their role and the
+// workspace it checked their membership of; client-supplied identity headers
+// alone never grant access.
 type CloudAuthenticator struct {
 	service *StaticBearerAuthenticator
 }
@@ -86,10 +92,13 @@ func (a *CloudAuthenticator) Authenticate(request *http.Request) (Principal, err
 	}
 	subject := strings.TrimSpace(request.Header.Get("X-Steward-Subject"))
 	role := Role(request.Header.Get("X-Steward-Role"))
-	if subject == "" || len(subject) > 256 || (role != RoleAdmin && role != RoleOperator && role != RoleViewer) {
+	// The default workspace belongs to self-hosted servers, never to a
+	// gateway-routed tenant.
+	tenant := workspace.ID(request.Header.Get("X-Steward-Workspace"))
+	if subject == "" || len(subject) > 256 || (role != RoleAdmin && role != RoleOperator && role != RoleViewer) || !tenant.Valid() || tenant == workspace.Default {
 		return Principal{}, ErrUnauthenticated
 	}
-	return Principal{Subject: subject, Roles: []Role{role}}, nil
+	return Principal{Subject: subject, Roles: []Role{role}, Workspace: tenant}, nil
 }
 
 type Authenticator interface {
@@ -160,7 +169,12 @@ func authenticate(authenticator Authenticator) func(http.Handler) http.Handler {
 			}
 			response.Header().Set("X-Steward-Subject", principal.Subject)
 			response.Header().Set("X-Steward-Roles", strings.Join(roles, ","))
-			next.ServeHTTP(response, request.WithContext(context.WithValue(request.Context(), principalContextKey{}, principal)))
+			tenant := principal.Workspace
+			if tenant == "" {
+				tenant = workspace.Default
+			}
+			ctx := workspace.With(context.WithValue(request.Context(), principalContextKey{}, principal), tenant)
+			next.ServeHTTP(response, request.WithContext(ctx))
 		})
 	}
 }

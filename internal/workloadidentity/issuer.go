@@ -20,15 +20,26 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/loomx-ai/steward/internal/core/workspace"
 )
 
 const TokenLifetime = 5 * time.Minute
 
 var identifier = regexp.MustCompile(`^[A-Za-z0-9_-]{1,128}$`)
 
-type Config struct{ IssuerURL, WorkspaceID, SigningKeyFile string }
+// Config names one issuer for a self-hosted server's workspace. With
+// PerWorkspace, IssuerURL is the base of one issuer per workspace of a shared
+// pool, IssuerURL/oidc/workspaces/<workspace>, all signed with the same key.
+// A separate issuer per workspace keeps a cloud trust that names one issuer
+// from accepting another workspace's tokens.
+type Config struct {
+	IssuerURL, WorkspaceID, SigningKeyFile string
+	PerWorkspace                           bool
+}
 type Issuer struct {
 	URL, WorkspaceID string
+	perWorkspace     bool
 	key              *rsa.PrivateKey
 	kid              string
 	keys             []map[string]string
@@ -39,11 +50,14 @@ type Issuer struct {
 // Load requires operator-managed key material. A PEM bundle contains one
 // signing key and may retain previous public keys during key rotation.
 func Load(c Config) (*Issuer, error) {
-	if c == (Config{}) {
+	if c.IssuerURL == "" && c.WorkspaceID == "" && c.SigningKeyFile == "" {
 		return nil, nil
 	}
+	if c.PerWorkspace && c.WorkspaceID != "" {
+		return nil, fmt.Errorf("OIDC issuers per workspace take no workspace ID")
+	}
 	u, err := url.Parse(c.IssuerURL)
-	if err != nil || u.Scheme != "https" || u.Hostname() == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || u.RawPath != "" || strings.ContainsAny(c.IssuerURL, "?#\r\n") || strings.HasSuffix(c.IssuerURL, "/") || (u.Path != "" && path.Clean(u.Path) != u.Path) || !identifier.MatchString(c.WorkspaceID) {
+	if err != nil || u.Scheme != "https" || u.Hostname() == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || u.RawPath != "" || strings.ContainsAny(c.IssuerURL, "?#\r\n") || strings.HasSuffix(c.IssuerURL, "/") || (u.Path != "" && path.Clean(u.Path) != u.Path) || (!c.PerWorkspace && !identifier.MatchString(c.WorkspaceID)) {
 		return nil, fmt.Errorf("OIDC requires a stable HTTPS issuer URL without a trailing slash and a workspace ID")
 	}
 	info, err := os.Stat(c.SigningKeyFile)
@@ -54,7 +68,7 @@ func Load(c Config) (*Issuer, error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot read OIDC signing key")
 	}
-	i := &Issuer{URL: c.IssuerURL, WorkspaceID: c.WorkspaceID, path: u.Path, now: time.Now}
+	i := &Issuer{URL: c.IssuerURL, WorkspaceID: c.WorkspaceID, perWorkspace: c.PerWorkspace, path: u.Path, now: time.Now}
 	seen := map[string]bool{}
 	for len(strings.TrimSpace(string(data))) > 0 {
 		block, rest := pem.Decode(data)
@@ -108,8 +122,23 @@ func keyID(key *rsa.PublicKey) string {
 }
 func encode(b []byte) string { return base64.RawURLEncoding.EncodeToString(b) }
 
-func (i *Issuer) Subject(connectionID, phase string) string {
-	return "workspace:" + i.WorkspaceID + ":connection:" + connectionID + ":run_phase:" + phase
+const workspaceIssuerPath = "/oidc/workspaces/"
+
+// identity returns the issuer URL and workspace ID tokens of ctx's workspace
+// carry.
+func (i *Issuer) identity(ctx context.Context) (issuerURL, workspaceID string, err error) {
+	if !i.perWorkspace {
+		return i.URL, i.WorkspaceID, nil
+	}
+	id, ok := workspace.From(ctx)
+	if !ok || !id.Valid() || id == workspace.Default {
+		return "", "", fmt.Errorf("workload identity needs a workspace")
+	}
+	return i.URL + workspaceIssuerPath + string(id), string(id), nil
+}
+
+func Subject(workspaceID, connectionID, phase string) string {
+	return "workspace:" + workspaceID + ":connection:" + connectionID + ":run_phase:" + phase
 }
 
 func (i *Issuer) sign(ctx context.Context, connectionID, provider, audience, phase, runID string) (string, error) {
@@ -119,13 +148,17 @@ func (i *Issuer) sign(ctx context.Context, connectionID, provider, audience, pha
 	if !identifier.MatchString(connectionID) || (phase != "read" && phase != "write") || audience == "" {
 		return "", fmt.Errorf("invalid workload identity")
 	}
+	issuerURL, workspaceID, err := i.identity(ctx)
+	if err != nil {
+		return "", err
+	}
 	now := i.now()
 	jti := make([]byte, 16)
 	if _, err := rand.Read(jti); err != nil {
 		return "", err
 	}
 	header, _ := json.Marshal(map[string]string{"alg": "RS256", "typ": "JWT", "kid": i.kid})
-	claims, _ := json.Marshal(map[string]any{"iss": i.URL, "sub": i.Subject(connectionID, phase), "aud": audience, "iat": now.Unix(), "nbf": now.Add(-5 * time.Second).Unix(), "exp": now.Add(TokenLifetime).Unix(), "jti": encode(jti), "steward_workspace_id": i.WorkspaceID, "steward_connection_id": connectionID, "steward_provider": provider, "steward_run_phase": phase, "steward_run_id": runID})
+	claims, _ := json.Marshal(map[string]any{"iss": issuerURL, "sub": Subject(workspaceID, connectionID, phase), "aud": audience, "iat": now.Unix(), "nbf": now.Add(-5 * time.Second).Unix(), "exp": now.Add(TokenLifetime).Unix(), "jti": encode(jti), "steward_workspace_id": workspaceID, "steward_connection_id": connectionID, "steward_provider": provider, "steward_run_phase": phase, "steward_run_id": runID})
 	unsigned := encode(header) + "." + encode(claims)
 	hash := sha256.Sum256([]byte(unsigned))
 	sig, err := rsa.SignPKCS1v15(rand.Reader, i.key, crypto.SHA256, hash[:])
@@ -135,12 +168,37 @@ func (i *Issuer) sign(ctx context.Context, connectionID, provider, audience, pha
 	return unsigned + "." + encode(sig), nil
 }
 
+// Handles reports whether path is one of the issuer's discovery documents.
 func (i *Issuer) Handles(path string) bool {
-	return path == i.path+"/.well-known/openid-configuration" || path == i.path+"/.well-known/jwks"
+	_, ok := i.documentIssuer(path)
+	return ok
+}
+
+// documentIssuer returns the issuer URL a discovery document path belongs to.
+func (i *Issuer) documentIssuer(requestPath string) (string, bool) {
+	var document string
+	switch {
+	case strings.HasSuffix(requestPath, "/.well-known/openid-configuration"):
+		document = "/.well-known/openid-configuration"
+	case strings.HasSuffix(requestPath, "/.well-known/jwks"):
+		document = "/.well-known/jwks"
+	default:
+		return "", false
+	}
+	base := strings.TrimSuffix(requestPath, document)
+	if !i.perWorkspace {
+		return i.URL, base == i.path
+	}
+	id, found := strings.CutPrefix(base, i.path+workspaceIssuerPath)
+	if !found || !workspace.ID(id).Valid() || id == string(workspace.Default) {
+		return "", false
+	}
+	return i.URL + workspaceIssuerPath + id, true
 }
 
 func (i *Issuer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if !i.Handles(r.URL.Path) {
+	issuerURL, ok := i.documentIssuer(r.URL.Path)
+	if !ok {
 		http.NotFound(w, r)
 		return
 	}
@@ -159,5 +217,5 @@ func (i *Issuer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewEncoder(w).Encode(map[string]any{"keys": i.keys})
 		return
 	}
-	_ = json.NewEncoder(w).Encode(map[string]any{"issuer": i.URL, "jwks_uri": i.URL + "/.well-known/jwks", "id_token_signing_alg_values_supported": []string{"RS256"}, "response_types_supported": []string{"id_token"}, "subject_types_supported": []string{"public"}, "claims_supported": []string{"iss", "sub", "aud", "iat", "nbf", "exp", "jti"}})
+	_ = json.NewEncoder(w).Encode(map[string]any{"issuer": issuerURL, "jwks_uri": issuerURL + "/.well-known/jwks", "id_token_signing_alg_values_supported": []string{"RS256"}, "response_types_supported": []string{"id_token"}, "subject_types_supported": []string{"public"}, "claims_supported": []string{"iss", "sub", "aud", "iat", "nbf", "exp", "jti"}})
 }

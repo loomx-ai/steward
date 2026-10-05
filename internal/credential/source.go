@@ -119,7 +119,7 @@ func (s *ValidatedSource) CompareAndSwap(
 	replacement.ConnectionID = asset.ConnectionID("")
 	replacement.Site = ""
 	replacement.Version = ""
-	next, err := s.vault.Seal(expected.ConnectionID, connection.Provider, replacement, now)
+	next, err := s.vault.Seal(ctx, expected.ConnectionID, connection.Provider, replacement, now)
 	if err != nil {
 		return contracts.Credential{}, err
 	}

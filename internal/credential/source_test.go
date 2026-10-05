@@ -83,7 +83,7 @@ func TestValidatedSourceProjectsConnectionSiteWithoutPersistingItInCredentialVal
 			if err != nil {
 				t.Fatal(err)
 			}
-			sealed, err := vault.Seal(connection.ID, connection.Provider, contracts.Credential{
+			sealed, err := vault.Seal(context.Background(), connection.ID, connection.Provider, contracts.Credential{
 				Type: asset.CredentialAliCloudAccessKey,
 				Values: map[string]string{
 					"access_key_id": "id", "access_key_secret": "secret",
@@ -140,7 +140,7 @@ func TestValidatedSourceSnapshotsAndAtomicallyUpdatesCredential(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		sealed, err := vault.Seal(connection.ID, connection.Provider, contracts.Credential{
+		sealed, err := vault.Seal(context.Background(), connection.ID, connection.Provider, contracts.Credential{
 			Type: asset.CredentialAliCloudAccessKey,
 			Values: map[string]string{
 				"access_key_id": "original", "access_key_secret": "original-secret",
@@ -196,7 +196,7 @@ func TestValidatedSourceSnapshotsAndAtomicallyUpdatesCredential(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		userReplacement, err := vault.Seal(connection.ID, connection.Provider, contracts.Credential{
+		userReplacement, err := vault.Seal(context.Background(), connection.ID, connection.Provider, contracts.Credential{
 			Type: expected.Type,
 			Values: map[string]string{
 				"access_key_id": "user", "access_key_secret": "user-secret",
@@ -255,7 +255,7 @@ func TestValidatedSourceSnapshotsAndAtomicallyUpdatesCredential(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		concurrent, err := vault.Seal(connection.ID, connection.Provider, contracts.Credential{
+		concurrent, err := vault.Seal(context.Background(), connection.ID, connection.Provider, contracts.Credential{
 			Type: expected.Type,
 			Values: map[string]string{
 				"access_key_id": "concurrent", "access_key_secret": "concurrent-secret",

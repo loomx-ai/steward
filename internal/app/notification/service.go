@@ -21,6 +21,7 @@ import (
 
 	"github.com/loomx-ai/steward/internal/app/scheduling"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/core/workspace"
 	"github.com/loomx-ai/steward/internal/idgen"
 	"github.com/loomx-ai/steward/internal/persistence"
 )
@@ -106,8 +107,8 @@ type Input struct {
 }
 
 type Sealer interface {
-	SealSecret(purpose, plaintext string) (string, error)
-	OpenSecret(purpose, sealed string) (string, error)
+	SealSecret(ctx context.Context, purpose, plaintext string) (string, error)
+	OpenSecret(ctx context.Context, purpose, sealed string) (string, error)
 }
 
 type Options struct {
@@ -290,7 +291,7 @@ func (s *Service) Create(ctx context.Context, input Input, actor string) (View, 
 		ID: idgen.MustNew("ntf"), Name: input.Name, Type: input.Type, Enabled: input.Enabled == nil || *input.Enabled,
 		Events: input.Events, Language: input.Language, CreatedBy: actor, CreatedAt: now, UpdatedAt: now,
 	}
-	if err := s.applySecrets(&channel, input); err != nil {
+	if err := s.applySecrets(ctx, &channel, input); err != nil {
 		return View{}, err
 	}
 	err = s.mutate(ctx, actor, "notification.channel.create", channel.ID, func(channels []Channel) ([]Channel, error) {
@@ -299,9 +300,9 @@ func (s *Service) Create(ctx context.Context, input Input, actor string) (View, 
 	return channel.View(), err
 }
 
-func (s *Service) applySecrets(channel *Channel, input Input) error {
+func (s *Service) applySecrets(ctx context.Context, channel *Channel, input Input) error {
 	if input.URL != "" {
-		sealed, err := s.sealer.SealSecret("notification-url:"+channel.ID, input.URL)
+		sealed, err := s.sealer.SealSecret(ctx, "notification-url:"+channel.ID, input.URL)
 		if err != nil {
 			return err
 		}
@@ -312,7 +313,7 @@ func (s *Service) applySecrets(channel *Channel, input Input) error {
 	case input.ClearSigningSecret:
 		channel.SealedSigning = ""
 	case strings.TrimSpace(input.SigningSecret) != "":
-		sealed, err := s.sealer.SealSecret("notification-signing:"+channel.ID, strings.TrimSpace(input.SigningSecret))
+		sealed, err := s.sealer.SealSecret(ctx, "notification-signing:"+channel.ID, strings.TrimSpace(input.SigningSecret))
 		if err != nil {
 			return err
 		}
@@ -338,7 +339,7 @@ func (s *Service) Update(ctx context.Context, id string, input Input, actor stri
 		if input.Enabled != nil {
 			channel.Enabled = *input.Enabled
 		}
-		if err := s.applySecrets(&channel, input); err != nil {
+		if err := s.applySecrets(ctx, &channel, input); err != nil {
 			return nil, err
 		}
 		channel.UpdatedAt = s.clock()
@@ -362,7 +363,8 @@ func (s *Service) Delete(ctx context.Context, id, actor string) error {
 func (s *Service) mutate(ctx context.Context, actor, action, id string, change func([]Channel) ([]Channel, error)) error {
 	// The channels share one settings value; the lock keeps read-modify-write
 	// from losing another server's change.
-	return s.repositories.WithLock(ctx, "notification-channels", func(ctx context.Context) error {
+	tenant, _ := workspace.From(ctx)
+	return s.repositories.WithLock(ctx, "notification-channels:"+string(tenant), func(ctx context.Context) error {
 		return s.mutateLocked(ctx, actor, action, id, change)
 	})
 }
@@ -424,7 +426,8 @@ func (s *Service) Notify(ctx context.Context, event scheduling.Event) {
 		s.pending.Add(1)
 		go func() {
 			defer s.pending.Done()
-			deliverCtx, cancel := context.WithTimeout(context.Background(), time.Minute)
+			// Detached from the scheduler tick, but still in its workspace.
+			deliverCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), time.Minute)
 			defer cancel()
 			message := eventMessage(channel, event, s.publicURL)
 			var delivery Delivery
@@ -464,14 +467,14 @@ func (s *Service) recordDelivery(ctx context.Context, id string, delivery Delive
 
 func (s *Service) send(ctx context.Context, channel Channel, message Message) Delivery {
 	delivery := Delivery{At: s.clock()}
-	target, err := s.sealer.OpenSecret("notification-url:"+channel.ID, channel.SealedURL)
+	target, err := s.sealer.OpenSecret(ctx, "notification-url:"+channel.ID, channel.SealedURL)
 	if err != nil {
 		delivery.Error = "the stored webhook address cannot be read; enter it again"
 		return delivery
 	}
 	signing := ""
 	if channel.SealedSigning != "" {
-		if signing, err = s.sealer.OpenSecret("notification-signing:"+channel.ID, channel.SealedSigning); err != nil {
+		if signing, err = s.sealer.OpenSecret(ctx, "notification-signing:"+channel.ID, channel.SealedSigning); err != nil {
 			delivery.Error = "the stored signing secret cannot be read; enter it again"
 			return delivery
 		}

@@ -23,6 +23,7 @@ import (
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/requestmeta"
+	"github.com/loomx-ai/steward/internal/core/workspace"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
@@ -95,18 +96,18 @@ func TestIssuerMetadataClaimsAndRotation(t *testing.T) {
 	if err = os.WriteFile(path, bundle, 0600); err != nil {
 		t.Fatal(err)
 	}
-	rotated, err := Load(Config{i.URL, i.WorkspaceID, path})
+	rotated, err := Load(Config{IssuerURL: i.URL, WorkspaceID: i.WorkspaceID, SigningKeyFile: path})
 	if err != nil || len(rotated.keys) != 2 || rotated.kid == i.kid {
 		t.Fatalf("rotation failed: %v", err)
 	}
 	if err = os.Chmod(path, 0644); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = Load(Config{i.URL, i.WorkspaceID, path}); err == nil {
+	if _, err = Load(Config{IssuerURL: i.URL, WorkspaceID: i.WorkspaceID, SigningKeyFile: path}); err == nil {
 		t.Fatal("accepted public-readable signing key")
 	}
 	for _, issuerURL := range []string{"http://identity.example", "https://identity.example/", "https://user@identity.example", "https://identity.example?a=b"} {
-		if _, err = Load(Config{issuerURL, "test", path}); err == nil {
+		if _, err = Load(Config{IssuerURL: issuerURL, WorkspaceID: "test", SigningKeyFile: path}); err == nil {
 			t.Fatalf("accepted issuer %q", issuerURL)
 		}
 	}
@@ -192,7 +193,7 @@ func TestCloudExchangesRefreshIsolationAndRevocation(t *testing.T) {
 						assertion = req.Form.Get("client_assertion")
 					}
 					c := claims(t, i, assertion)
-					if c["sub"] != i.Subject("con_test", phase) || c["aud"] != Audience(provider, values) || c["steward_provider"] != string(provider) {
+					if c["sub"] != Subject("test", "con_test", phase) || c["aud"] != Audience(provider, values) || c["steward_provider"] != string(provider) {
 						t.Fatalf("identity escaped scope: %#v", c)
 					}
 					switch provider {
@@ -301,5 +302,39 @@ func TestConfigAndExchangeBoundaries(t *testing.T) {
 	}
 	if _, err = b.exchange(context.Background(), asset.ProviderAzure, map[string]string{}, "secret-assertion", "https://evil.example"); err == nil {
 		t.Fatal("accepted arbitrary audience endpoint")
+	}
+}
+
+func TestIssuerPerWorkspace(t *testing.T) {
+	base := testIssuer(t)
+	i := *base
+	i.URL, i.WorkspaceID, i.path, i.perWorkspace = "https://identity.example", "", "", true
+	ctx := workspace.With(context.Background(), "ws_a")
+	token, err := i.sign(ctx, "con_test", "aws", "sts.amazonaws.com", "read", "run")
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := claims(t, &i, token)
+	if c["iss"] != "https://identity.example/oidc/workspaces/ws_a" || c["sub"] != Subject("ws_a", "con_test", "read") || c["steward_workspace_id"] != "ws_a" {
+		t.Fatalf("claims = %v", c)
+	}
+	if _, err := i.sign(context.Background(), "con_test", "aws", "sts.amazonaws.com", "read", "run"); err == nil {
+		t.Fatal("signed without a workspace")
+	}
+	for path, want := range map[string]string{
+		"/oidc/workspaces/ws_a/.well-known/jwks":                 "https://identity.example/oidc/workspaces/ws_a",
+		"/oidc/workspaces/ws_b/.well-known/openid-configuration": "https://identity.example/oidc/workspaces/ws_b",
+		"/oidc/workspaces/default/.well-known/jwks":              "",
+		"/oidc/workspaces/a/b/.well-known/jwks":                  "",
+		"/.well-known/jwks":                                      "",
+	} {
+		if got, _ := i.documentIssuer(path); got != want {
+			t.Errorf("issuer of %s = %q, want %q", path, got, want)
+		}
+	}
+	response := httptest.NewRecorder()
+	i.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/oidc/workspaces/ws_b/.well-known/openid-configuration", nil))
+	if !strings.Contains(response.Body.String(), `"issuer":"https://identity.example/oidc/workspaces/ws_b"`) {
+		t.Fatalf("discovery = %s", response.Body)
 	}
 }
