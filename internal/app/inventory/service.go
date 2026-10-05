@@ -512,11 +512,16 @@ func (s *Service) FinishShard(ctx context.Context, shard *asset.ScanShard, statu
 				if err != nil {
 					return err
 				}
-				covered, err := repository.ListAssetsByIDs(ctx, coveredIDs)
+				// Only the unseen few are read; seen assets are never closed.
+				unseen := slices.DeleteFunc(coveredIDs, func(id asset.AssetID) bool {
+					_, ok := seen[id]
+					return ok
+				})
+				covered, err := repository.ListAssetsByIDs(ctx, unseen)
 				if err != nil {
 					return err
 				}
-				if len(covered) != len(coveredIDs) {
+				if len(covered) != len(unseen) {
 					return fmt.Errorf("observed asset of shard %s: %w", updatedShard.ID, persistence.ErrNotFound)
 				}
 				for _, value := range covered {

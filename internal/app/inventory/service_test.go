@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -24,6 +25,8 @@ type inventoryRepository struct {
 	runs         map[asset.ScanRunID]asset.ScanRun
 	changes      map[string]asset.AssetChange
 	events       []string
+	targetIDs    []asset.AssetID
+	loadedIDs    []asset.AssetID
 }
 
 func newInventoryRepository() *inventoryRepository {
@@ -301,6 +304,7 @@ func (r *inventoryRepository) ListObservationsByIDs(_ context.Context, ids []ass
 	return result, nil
 }
 func (r *inventoryRepository) ListAssetsByIDs(_ context.Context, ids []asset.AssetID) ([]asset.Asset, error) {
+	r.loadedIDs = append(r.loadedIDs, ids...)
 	wanted := make(map[asset.AssetID]struct{}, len(ids))
 	for _, id := range ids {
 		wanted[id] = struct{}{}
@@ -462,7 +466,7 @@ func (r *inventoryRepository) ListAssetIDsObservedByRun(_ context.Context, runID
 }
 
 func (r *inventoryRepository) ListAssetIDsObservedByTarget(_ context.Context, _ asset.ConnectionID, _ string, _ string, _ asset.ScopeID, _ asset.ResourceKindID) ([]asset.AssetID, error) {
-	return nil, nil
+	return slices.Clone(r.targetIDs), nil
 }
 
 func TestCreateScanBuildsRunAndShardsFromCoverageTuples(t *testing.T) {
@@ -984,6 +988,31 @@ func TestAuthoritativeRootShardClosesMissingKindAcrossChildScopesOnlyForItsConne
 	}
 	if repository.assets[seen.ID].ClosedAt != nil || repository.assets[missing.ID].ClosedAt == nil || repository.assets[other.ID].ClosedAt != nil {
 		t.Fatalf("seen=%+v missing=%+v other=%+v", repository.assets[seen.ID], repository.assets[missing.ID], repository.assets[other.ID])
+	}
+}
+
+func TestSelectedNetworkShardLoadsOnlyUnseenTargetAssets(t *testing.T) {
+	t.Parallel()
+
+	repository := newInventoryRepository()
+	seen := activeAsset("asset-seen")
+	missing := activeAsset("asset-missing")
+	repository.assets[seen.ID] = seen
+	repository.assets[missing.ID] = missing
+	repository.observations[seen.ID] = []asset.Observation{{AssetID: seen.ID, ScanShardID: "shard-target"}}
+	repository.targetIDs = []asset.AssetID{seen.ID, missing.ID}
+	repository.runs["run-target"] = asset.ScanRun{ID: "run-target", ConnectionID: "connection-1", ScopeMode: asset.ScanSelectedNetworks}
+	service := inventory.NewService(repository)
+	shard := asset.ScanShard{ID: "shard-target", ScanRunID: "run-target", TargetKey: "vpc-a", ScopeID: "scope-1", ResourceKindID: "kind-1", Authoritative: true}
+
+	if err := service.FinishShard(context.Background(), &shard, asset.ShardSucceeded, ""); err != nil {
+		t.Fatal(err)
+	}
+	if !slices.Equal(repository.loadedIDs, []asset.AssetID{missing.ID}) {
+		t.Fatalf("loaded %v, want only the unseen asset", repository.loadedIDs)
+	}
+	if repository.assets[seen.ID].ClosedAt != nil || repository.assets[missing.ID].ClosedAt == nil {
+		t.Fatalf("seen=%+v missing=%+v", repository.assets[seen.ID], repository.assets[missing.ID])
 	}
 }
 
