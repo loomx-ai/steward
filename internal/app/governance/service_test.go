@@ -3,6 +3,7 @@ package governance_test
 import (
 	"context"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -236,36 +237,41 @@ func TestGraphRebuildMergesDuplicateRelationshipEvidenceWithProductPriority(t *t
 	}
 }
 
-type mutatingContributor struct{ seen *[]any }
+type mutatingContributor struct{ mutate func([]asset.Asset) }
 
 func (c mutatingContributor) Contribute(_ context.Context, _ asset.ScopeID, values []asset.Asset) (governance.Contribution, error) {
-	nested := values[0].Normalized["nested"].(map[string]any)
-	*c.seen = append(*c.seen, nested["value"])
-	nested["value"] = "mutated"
-	values[0].Tags["owner"] = "mutated"
+	c.mutate(values)
 	return governance.Contribution{}, nil
 }
 
-// Contributors share one copy of the assets; only the caller's assets are
-// isolated from their writes.
-func TestGraphRebuildIsolatesCallerFromContributorMutations(t *testing.T) {
+// Contributors read the caller's assets without a copy, so under go test a
+// rebuild fails any contributor that writes them, however deep.
+func TestGraphRebuildRejectsContributorMutations(t *testing.T) {
 	t.Parallel()
 
-	assets := []asset.Asset{{
-		ID: "ecs-1", Identity: asset.Identity{Provider: asset.ProviderAliCloud, Partition: "aliyun", ConnectionID: "connection-1", NativeType: "ACS::ECS::Instance", NativeID: "i-1"},
-		Tags: map[string]string{"owner": "team"}, Normalized: map[string]any{"nested": map[string]any{"value": "original"}},
-	}}
-	repository := &graphRepository{}
-	var seen []any
-	contributor := mutatingContributor{seen: &seen}
-	service := governance.NewService(repository, repository)
-	if _, err := service.RebuildGraphFromAssets(context.Background(), "scope-root", "connection-1", "graph-1", spec.Bundle{}, []governance.Contributor{contributor, contributor}, assets); err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(seen, []any{"original", "mutated"}) {
-		t.Fatalf("contributors saw %v", seen)
-	}
-	if assets[0].Normalized["nested"].(map[string]any)["value"] != "original" || assets[0].Tags["owner"] != "team" {
-		t.Fatalf("contributor mutated the caller's assets: %+v", assets[0])
+	for name, mutate := range map[string]func([]asset.Asset){
+		"nested document": func(values []asset.Asset) {
+			values[0].Normalized["nested"].(map[string]any)["list"].([]any)[0] = "mutated"
+		},
+		"tags":    func(values []asset.Asset) { values[0].Tags["owner"] = "mutated" },
+		"order":   func(values []asset.Asset) { values[0], values[1] = values[1], values[0] },
+		"nothing": func([]asset.Asset) {},
+	} {
+		assets := []asset.Asset{{
+			ID: "ecs-1", Identity: asset.Identity{Provider: asset.ProviderAliCloud, Partition: "aliyun", ConnectionID: "connection-1", NativeType: "ACS::ECS::Instance", NativeID: "i-1"},
+			Tags: map[string]string{"owner": "team"}, Normalized: map[string]any{"nested": map[string]any{"list": []any{"original"}}},
+		}, {
+			ID: "ecs-2", Identity: asset.Identity{Provider: asset.ProviderAliCloud, Partition: "aliyun", ConnectionID: "connection-1", NativeType: "ACS::ECS::Instance", NativeID: "i-2"},
+		}}
+		repository := &graphRepository{}
+		service := governance.NewService(repository, repository)
+		_, err := service.RebuildGraphFromAssets(context.Background(), "scope-root", "connection-1", "graph-1", spec.Bundle{}, []governance.Contributor{mutatingContributor{mutate}}, assets)
+		if name == "nothing" {
+			if err != nil {
+				t.Fatal(err)
+			}
+		} else if err == nil || !strings.Contains(err.Error(), "modified the assets") {
+			t.Fatalf("%s: err = %v", name, err)
+		}
 	}
 }

@@ -1842,6 +1842,17 @@ func (s *Store) ListAssets(ctx context.Context, options persistence.ListOptions)
 	}
 	var rows []assetRow
 	if options.SearchOrder {
+		// The ranking key comes from the kind's JSON class, native_type
+		// patterns and the payload name, so no index serves it and a common or
+		// short term would rank every hit. Rank only the first
+		// keywordIndexProbeLimit hits in list order instead: a term with fewer
+		// hits ranks exactly; a commoner one may miss a better-ranked asset
+		// first seen after them, which the next keystroke narrows down to.
+		candidates := query.Session(&gorm.Session{}).
+			Select("assets.id").
+			Order("assets.first_seen_at ASC, assets.id ASC").
+			Limit(keywordIndexProbeLimit)
+		query = query.Where("assets.id IN (?)", candidates)
 		query = orderPanoramaAssetSearch(query, options.Query)
 	} else {
 		query = query.Order("assets.first_seen_at ASC, assets.id ASC")

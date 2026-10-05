@@ -161,6 +161,7 @@ func TestScanTaskReadModelMigrationUpgradesExistingDatabase(t *testing.T) {
 			id VARCHAR(128) PRIMARY KEY,
 			connection_id VARCHAR(128),
 			scope_id VARCHAR(128),
+			resource_kind_id VARCHAR(256),
 			first_seen_at TIMESTAMP,
 			closed_at TIMESTAMP
 		)`,

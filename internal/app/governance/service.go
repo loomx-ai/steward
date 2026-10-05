@@ -1,21 +1,27 @@
 package governance
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
-	"maps"
-	"slices"
 	"sort"
 	"strconv"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/graph"
 	"github.com/loomx-ai/steward/internal/provider/spec"
 )
+
+// verifyContributorsReadOnly makes graph rebuilds fail a contributor that
+// writes its input, in every test binary that rebuilds a graph, including the
+// provider tests with real fixtures.
+var verifyContributorsReadOnly = testing.Testing()
 
 type AssetReader interface {
 	ListActiveAssetsByConnection(context.Context, asset.ConnectionID, asset.ResourceKindID) ([]asset.Asset, error)
@@ -150,25 +156,30 @@ func (s *Service) RebuildGraphFromAssets(ctx context.Context, scopeID asset.Scop
 			}
 		}
 	}
-	// Contributors only read their input, so they share one copy. The one
-	// known write, GCP identityValidate defaulting a member's empty roles to
-	// MEMBER, stores what every reader of that field already assumes.
 	type bindingKey struct {
 		controller, managed asset.AssetID
 		evidenceSource      string
 	}
 	bindingOccurrences := make(map[bindingKey]int)
-	var shared []asset.Asset
-	if len(contributors) > 0 {
-		shared = cloneAssets(assets)
-	}
 	for _, contributor := range contributors {
 		if contributor == nil {
 			continue
 		}
-		contribution, err := contributor.Contribute(ctx, scopeID, shared)
+		// Contributors read the caller's assets, which finding evaluation
+		// reads next, without a copy; under go test every graph rebuild checks
+		// that they left them unchanged.
+		var before []byte
+		if verifyContributorsReadOnly {
+			before, _ = json.Marshal(assets)
+		}
+		contribution, err := contributor.Contribute(ctx, scopeID, assets)
 		if err != nil {
 			return GraphResult{}, err
+		}
+		if verifyContributorsReadOnly {
+			if after, _ := json.Marshal(assets); !bytes.Equal(before, after) {
+				return GraphResult{}, fmt.Errorf("contributor %T modified the assets it was given", contributor)
+			}
 		}
 		if err := validateContribution(contribution, connectionID, byID); err != nil {
 			return GraphResult{}, err
@@ -413,54 +424,4 @@ func lifecycleBindingID(scopeID asset.ScopeID, controllerID, managedID asset.Ass
 func graphItemID(prefix string, parts ...string) string {
 	digest := sha256.Sum256([]byte(strings.Join(parts, "\x00")))
 	return prefix + "-" + hex.EncodeToString(digest[:12])
-}
-
-// cloneAssets deep-copies the assets handed to contributors so they cannot
-// change what finding evaluation sees. Asset documents are decoded JSON, so
-// maps and slices are the only containers to copy.
-func cloneAssets(values []asset.Asset) []asset.Asset {
-	result := make([]asset.Asset, len(values))
-	for index, value := range values {
-		value.Tags = maps.Clone(value.Tags)
-		value.Capabilities = slices.Clone(value.Capabilities)
-		value.Normalized, _ = cloneDocument(value.Normalized).(map[string]any)
-		if value.ClosedAt != nil {
-			closedAt := *value.ClosedAt
-			value.ClosedAt = &closedAt
-		}
-		if value.DeletedAt != nil {
-			deletedAt := *value.DeletedAt
-			value.DeletedAt = &deletedAt
-		}
-		result[index] = value
-	}
-	return result
-}
-
-func cloneDocument(value any) any {
-	switch typed := value.(type) {
-	case map[string]any:
-		if typed == nil {
-			return typed
-		}
-		result := make(map[string]any, len(typed))
-		for key, item := range typed {
-			result[key] = cloneDocument(item)
-		}
-		return result
-	case []any:
-		if typed == nil {
-			return typed
-		}
-		result := make([]any, len(typed))
-		for index, item := range typed {
-			result[index] = cloneDocument(item)
-		}
-		return result
-	case []string:
-		return slices.Clone(typed)
-	case map[string]string:
-		return maps.Clone(typed)
-	}
-	return value
 }

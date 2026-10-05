@@ -95,4 +95,11 @@ func TestKeywordSearchWalksOrderedIndexForCommonTerms(t *testing.T) {
 	if fmt.Sprint(short) != "[ast-00007]" || strings.Contains(sql, "count(*)") || !strings.Contains(sql, "assets.search_text GLOB") {
 		t.Fatalf("short term = %v via\n%s", short, sql)
 	}
+	// Ranking reads only the first keywordIndexProbeLimit hits in list order:
+	// all 2001 native IDs start with "n-", and n-0, first seen last, is left
+	// out although it would rank first.
+	page, err := store.ListAssets(ctx, persistence.ListOptions{ConnectionID: "conn", Query: "n-", SearchOrder: true, Limit: 3})
+	if err != nil || len(page.Items) != 3 || page.Items[0].ID != "ast-00001" || page.Items[1].ID != "ast-00010" {
+		t.Fatalf("ranked common term = %+v, err = %v", page.Items, err)
+	}
 }
