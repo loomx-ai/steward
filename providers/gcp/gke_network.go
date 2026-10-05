@@ -802,38 +802,41 @@ func gkeGeneratedCertificate(workload gkeWorkload, certificate map[string]any, s
 }
 
 func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.InventoryRequest, items []contracts.InventoryItem) ([]contracts.InventoryItem, error) {
-	var c *client
-	for i, item := range items {
+	if !slices.ContainsFunc(items, func(item contracts.InventoryItem) bool { return item.NativeType == clusterType }) {
+		return items, nil
+	}
+	c, err := r.resolve(ctx, request.ConnectionID)
+	if err != nil {
+		return nil, err
+	}
+	// Clusters are read concurrently; each writes only its own item, and the
+	// first failing cluster in order decides, as a serial walk would report it.
+	err = forEachConcurrently(len(items), groupReadConcurrency, func(i int) error {
+		item := items[i]
 		if item.NativeType != clusterType {
-			continue
-		}
-		var err error
-		if c == nil {
-			c, err = r.resolve(ctx, request.ConnectionID)
-			if err != nil {
-				return nil, err
-			}
+			return nil
 		}
 		live, err := c.nativeGet(ctx, clusterType, item.NativeID)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		if text(live["id"]) == "" || text(live["id"]) != text(item.Normalized["id"]) {
-			return nil, groupDenied("gke_cluster_identity_changed")
+			return groupDenied("gke_cluster_identity_changed")
 		}
 		root := asset.Asset{Identity: asset.Identity{NativeType: clusterType, NativeID: item.NativeID}}
 		nodes, err := c.gkeMembers(ctx, root, live)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		snapshot, err := c.gkeNetwork(ctx, request.ScanRunID, root, live, nodes)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		items[i].Normalized[gkeNetworkKey], err = snapshot.payload()
-		if err != nil {
-			return nil, err
-		}
+		return err
+	})
+	if err != nil {
+		return nil, err
 	}
 	return items, nil
 }

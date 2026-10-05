@@ -114,75 +114,107 @@ func (c *client) storagePoolSame(root asset.Asset, live map[string]any) error {
 	return nil
 }
 
+// storagePoolRead is one pool's live verification: a pool-level block reason,
+// or its members with each member's managed disk (ok false blocks the member).
+type storagePoolRead struct {
+	reason  string
+	members []poolMember
+	disks   []asset.Asset
+	ok      []bool
+}
+
+func (h *computeGroups) readStoragePool(ctx context.Context, indexed managedAssets, root asset.Asset) (storagePoolRead, error) {
+	refresh := storagePoolRead{reason: "storage_pool_refresh_required"}
+	planned, err := h.client.storagePoolSaved(root)
+	if err != nil {
+		return refresh, nil
+	}
+	if reason := h.client.storagePoolProtection(root.Normalized, planned); reason != "" {
+		return storagePoolRead{reason: reason}, nil
+	}
+	live, err := h.client.nativeGet(ctx, storagePoolType, root.Identity.NativeID)
+	if isNotFound(err) {
+		return refresh, nil
+	}
+	if err != nil {
+		return storagePoolRead{}, err
+	}
+	if err = h.client.storagePoolSame(root, live); err != nil {
+		return refresh, nil
+	}
+	changed := storagePoolRead{reason: "storage_pool_members_refresh_required"}
+	rows, err := h.client.storagePoolDisks(ctx, root.Identity.NativeID)
+	if err != nil {
+		return storagePoolRead{}, err
+	}
+	members, err := h.client.storagePoolMembers(root.Identity.NativeID, rows)
+	if err != nil {
+		return storagePoolRead{}, err
+	}
+	if !slices.Equal(members, planned) {
+		return changed, nil
+	}
+	again, err := h.client.storagePoolDisks(ctx, root.Identity.NativeID)
+	if err != nil {
+		return storagePoolRead{}, err
+	}
+	repeated, err := h.client.storagePoolMembers(root.Identity.NativeID, again)
+	if err != nil {
+		return storagePoolRead{}, err
+	}
+	live, err = h.client.nativeGet(ctx, storagePoolType, root.Identity.NativeID)
+	if err != nil {
+		return storagePoolRead{}, err
+	}
+	if !slices.Equal(members, repeated) || h.client.storagePoolSame(root, live) != nil {
+		return changed, nil
+	}
+	read := storagePoolRead{members: members, disks: make([]asset.Asset, len(members)), ok: make([]bool, len(members))}
+	for k, member := range members {
+		disk, found, err := findManagedAsset(indexed, root, "compute.googleapis.com/Disk", member.ID)
+		if err != nil {
+			return storagePoolRead{}, err
+		}
+		read.disks[k] = disk
+		read.ok[k] = found && text(disk.Normalized["creationTimestamp"]) == member.Created && slices.Contains(references(h.client, disk.Normalized)[storagePoolType], root.Identity.NativeID)
+	}
+	return read, nil
+}
+
 func (h *computeGroups) contributeStoragePools(ctx context.Context, assets []asset.Asset, bindings []graph.LifecycleBinding) (governance.Contribution, error) {
-	indexed := indexManagedAssets(assets)
 	result := governance.Contribution{}
-	var chain *storagePoolChain
+	var roots []asset.Asset
 	for _, root := range assets {
-		if root.Identity.Provider != asset.ProviderGCP || root.Identity.NativeType != storagePoolType {
-			continue
+		if root.Identity.Provider == asset.ProviderGCP && root.Identity.NativeType == storagePoolType {
+			roots = append(roots, root)
 		}
-		if chain == nil {
-			chain = newStoragePoolChain(assets, bindings)
-		}
+	}
+	if len(roots) == 0 {
+		return result, nil
+	}
+	indexed := indexManagedAssets(assets)
+	chain := newStoragePoolChain(assets, bindings)
+	// Pools are read concurrently; the first failing pool in order decides, and
+	// blocks and relationships are merged in asset order.
+	reads := make([]storagePoolRead, len(roots))
+	if err := forEachConcurrently(len(roots), groupReadConcurrency, func(index int) (err error) {
+		reads[index], err = h.readStoragePool(ctx, indexed, roots[index])
+		return err
+	}); err != nil {
+		return result, err
+	}
+	for index, root := range roots {
 		block := func(id, kind, reason string) {
 			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: root.Identity.Provider, ConnectionID: root.Identity.ConnectionID, ControllerID: root.ID, NativeType: kind, NativeID: id, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{"source": poolLifecycleSource, "reason": reason}})
 		}
-		planned, err := h.client.storagePoolSaved(root)
-		if err != nil {
-			block(root.Identity.NativeID, storagePoolType, "storage_pool_refresh_required")
+		read := reads[index]
+		if read.reason != "" {
+			block(root.Identity.NativeID, storagePoolType, read.reason)
 			continue
 		}
-		if reason := h.client.storagePoolProtection(root.Normalized, planned); reason != "" {
-			block(root.Identity.NativeID, storagePoolType, reason)
-			continue
-		}
-		live, err := h.client.nativeGet(ctx, storagePoolType, root.Identity.NativeID)
-		if isNotFound(err) {
-			block(root.Identity.NativeID, storagePoolType, "storage_pool_refresh_required")
-			continue
-		}
-		if err != nil {
-			return result, err
-		}
-		if err = h.client.storagePoolSame(root, live); err != nil {
-			block(root.Identity.NativeID, storagePoolType, "storage_pool_refresh_required")
-			continue
-		}
-		rows, err := h.client.storagePoolDisks(ctx, root.Identity.NativeID)
-		if err != nil {
-			return result, err
-		}
-		members, err := h.client.storagePoolMembers(root.Identity.NativeID, rows)
-		if err != nil {
-			return result, err
-		}
-		if !slices.Equal(members, planned) {
-			block(root.Identity.NativeID, storagePoolType, "storage_pool_members_refresh_required")
-			continue
-		}
-		again, err := h.client.storagePoolDisks(ctx, root.Identity.NativeID)
-		if err != nil {
-			return result, err
-		}
-		repeated, err := h.client.storagePoolMembers(root.Identity.NativeID, again)
-		if err != nil {
-			return result, err
-		}
-		live, err = h.client.nativeGet(ctx, storagePoolType, root.Identity.NativeID)
-		if err != nil {
-			return result, err
-		}
-		if !slices.Equal(members, repeated) || h.client.storagePoolSame(root, live) != nil {
-			block(root.Identity.NativeID, storagePoolType, "storage_pool_members_refresh_required")
-			continue
-		}
-		for _, member := range members {
-			disk, found, err := findManagedAsset(indexed, root, "compute.googleapis.com/Disk", member.ID)
-			if err != nil {
-				return result, err
-			}
-			if !found || text(disk.Normalized["creationTimestamp"]) != member.Created || !slices.Contains(references(h.client, disk.Normalized)[storagePoolType], root.Identity.NativeID) {
+		for k, member := range read.members {
+			disk := read.disks[k]
+			if !read.ok[k] {
 				block(member.ID, "compute.googleapis.com/Disk", "storage_pool_disk_refresh_required")
 				continue
 			}

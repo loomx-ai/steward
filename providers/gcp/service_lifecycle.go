@@ -555,16 +555,16 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 			return contracts.ReadbackResult{}, groupDenied("service_child_scope_changed")
 		}
 		kind, _ := findType(impact.Asset.Identity.NativeType)
-		endpoint, err := a.client.resourceURL(kind, impact.Asset.Identity.NativeID)
-		if err != nil {
+		if _, err := a.client.resourceURL(kind, impact.Asset.Identity.NativeID); err != nil {
 			return contracts.ReadbackResult{}, err
 		}
-		if _, err = a.client.request(ctx, "GET", endpoint, nil); !isNotFound(err) {
-			if err != nil {
-				return contracts.ReadbackResult{}, err
-			}
-			return contracts.ReadbackResult{Exists: true, State: "service_children_deleting"}, nil
-		}
+	}
+	survives, err := a.impactsSurvive(ctx, request.LifecycleImpacts)
+	if err != nil {
+		return contracts.ReadbackResult{}, err
+	}
+	if survives {
+		return contracts.ReadbackResult{Exists: true, State: "service_children_deleting"}, nil
 	}
 	return contracts.ReadbackResult{Exists: false}, nil
 }

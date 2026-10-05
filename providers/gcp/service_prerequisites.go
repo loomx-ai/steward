@@ -13,6 +13,7 @@ import (
 func (a *action) servicePrerequisitesAbsent(ctx context.Context, request contracts.ActionRequest) error {
 	seen := map[string]bool{}
 	assetIDs := map[asset.AssetID]bool{request.Asset.ID: true}
+	endpoints := make([]string, 0, len(request.PrerequisiteDeletions))
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		identity := prerequisite.Asset.Identity
 		id := identity.NativeID
@@ -42,12 +43,17 @@ func (a *action) servicePrerequisitesAbsent(ctx context.Context, request contrac
 		if err != nil {
 			return err
 		}
-		if _, err := a.client.request(ctx, "GET", endpoint, nil); !isNotFound(err) {
+		endpoints = append(endpoints, endpoint)
+	}
+	// Every prerequisite is validated before any read; reads then run
+	// concurrently and the first failing prerequisite in order decides.
+	return forEachConcurrently(len(endpoints), groupReadConcurrency, func(index int) error {
+		if _, err := a.client.request(ctx, "GET", endpoints[index], nil); !isNotFound(err) {
 			if err != nil {
 				return err
 			}
 			return groupDenied("service_prerequisite_still_exists")
 		}
-	}
-	return nil
+		return nil
+	})
 }

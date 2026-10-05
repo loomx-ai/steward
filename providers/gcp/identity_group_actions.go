@@ -263,7 +263,13 @@ func identityPermissionDenied(err error) bool {
 // first surviving membership; it never leaves identityReadback.
 var errIdentityMembershipSurvives = errors.New("identity membership survives")
 
-func (a *action) identityReadback(ctx context.Context, request contracts.ActionRequest) (result contracts.ReadbackResult, err error) {
+func (a *action) identityReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	return a.identityObserve(ctx, request, true)
+}
+
+// identityObserve proves the group (or membership) absent; scanMembers also
+// proves a deleted group's memberships absent, which readback alone needs.
+func (a *action) identityObserve(ctx context.Context, request contracts.ActionRequest, scanMembers bool) (result contracts.ReadbackResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	proofs, err := a.identityAction(request)
 	if err != nil {
@@ -305,10 +311,11 @@ func (a *action) identityReadback(ctx context.Context, request contracts.ActionR
 			return contracts.ReadbackResult{Exists: true, State: "deleting"}, nil
 		}
 		if a.kind.NativeType == identityGroupType {
-			if pass > 0 {
+			if pass > 0 || !scanMembers {
 				// Membership names embed the group's unique ID, which cannot be
 				// recreated: once the group is absent no membership can return, so
-				// the second pass only re-proves the group's absence.
+				// the second pass only re-proves the group's absence. Wait skips
+				// the scan entirely; Readback, which always follows, performs it.
 				continue
 			}
 			// Reads run concurrently; a surviving membership stops new reads like
@@ -347,6 +354,8 @@ func (a *action) identityReadback(ctx context.Context, request contracts.ActionR
 }
 func (a *action) waitIdentityGroup(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
 	request.ExecutionResult = &result
-	read, err := a.identityReadback(ctx, request)
+	// The worker always runs Readback after Wait reports done, so Wait only
+	// proves the group itself absent and leaves the membership scan to Readback.
+	read, err := a.identityObserve(ctx, request, false)
 	return contracts.WaitResult{Done: err == nil && !read.Exists, State: read.State, RetryAfter: 2 * time.Second, Data: result.Data}, err
 }

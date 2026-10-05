@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -162,8 +163,13 @@ func TestServiceCascadeSurvivesParentAbsenceAndRestart(t *testing.T) {
 	request := serviceTreeRequest()
 	assets := serviceTreeAssets()
 	read := serviceTreeRead(t, assets)
-	deleted, serviceReads, endpointReads, deletes := false, 0, 0, 0
+	// attempt drives liveness: the service survives the first wait and the
+	// endpoint the second, however concurrently the children are read.
+	deleted, serviceReads, endpointReads, deletes, attempt := false, 0, 0, 0, 0
+	var mu sync.Mutex
 	transport := func(r *http.Request) (*http.Response, error) {
+		mu.Lock()
+		defer mu.Unlock()
 		if r.Method == "DELETE" {
 			if r.URL.Path != "/v1/"+text(assets[0].Normalized["name"]) {
 				t.Fatal("delegated child separately deleted")
@@ -178,13 +184,13 @@ func TestServiceCascadeSurvivesParentAbsenceAndRestart(t *testing.T) {
 			}
 			if strings.HasSuffix(r.URL.Path, "/services/api") {
 				serviceReads++
-				if serviceReads > 1 {
+				if attempt >= 1 {
 					return apiResponse(r, 404, `{}`), nil
 				}
 			}
 			if strings.HasSuffix(r.URL.Path, "/endpoints/backend") {
 				endpointReads++
-				if endpointReads > 1 {
+				if attempt >= 2 {
 					return apiResponse(r, 404, `{}`), nil
 				}
 			}
@@ -198,7 +204,7 @@ func TestServiceCascadeSurvivesParentAbsenceAndRestart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for attempt := 0; attempt < 3; attempt++ {
+	for ; attempt < 3; attempt++ {
 		encoded, _ := json.Marshal(result)
 		if err := json.Unmarshal(encoded, &result); err != nil {
 			t.Fatal(err)
@@ -208,7 +214,9 @@ func TestServiceCascadeSurvivesParentAbsenceAndRestart(t *testing.T) {
 			t.Fatalf("attempt=%d wait=%+v error=%v", attempt, wait, err)
 		}
 	}
-	if deletes != 1 || serviceReads != 3 || endpointReads != 2 {
+	// The endpoint is read while the service survives only when the concurrent
+	// read started before the service answered.
+	if deletes != 1 || serviceReads != 3 || endpointReads < 2 || endpointReads > 3 {
 		t.Fatalf("missing independent absence checks: deletes=%d service=%d endpoint=%d", deletes, serviceReads, endpointReads)
 	}
 	if _, err := newDriver().Execute(context.Background(), request); err != nil || deletes != 1 {

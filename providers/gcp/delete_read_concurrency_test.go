@@ -119,9 +119,22 @@ func TestIdentityGroupReadbackReadsMembershipsConcurrently(t *testing.T) {
 		t.Fatal(err)
 	}
 	probe.start()
-	wait, err := driver.Wait(context.Background(), request, roundTripDataformJSON(t, result))
+	receipt := roundTripDataformJSON(t, result)
+	wait, err := driver.Wait(context.Background(), request, receipt)
 	if err != nil || !wait.Done {
 		t.Fatalf("wait %+v %v", wait, err)
+	}
+	// Wait proves only the group absent; the worker always reads back next.
+	probe.mu.Lock()
+	waitCalls := probe.calls
+	probe.mu.Unlock()
+	if waitCalls != 0 {
+		t.Fatalf("wait read %d memberships", waitCalls)
+	}
+	request.ExecutionResult = &receipt
+	read, err := driver.Readback(context.Background(), request)
+	if err != nil || read.Exists {
+		t.Fatalf("readback %+v %v", read, err)
 	}
 	// Memberships are read once: the second pass only re-reads the group, whose
 	// unique ID no membership can outlive or be re-added under.
@@ -161,9 +174,11 @@ func TestIdentityGroupReadbackKeepsMembershipOrder(t *testing.T) {
 		t.Fatal(err)
 	}
 	active.Store(true)
-	wait, err := driver.Wait(context.Background(), request, roundTripDataformJSON(t, result))
-	if err != nil || wait.Done || wait.State != "memberships_deleting" {
-		t.Fatalf("wait %+v %v", wait, err)
+	receipt := roundTripDataformJSON(t, result)
+	request.ExecutionResult = &receipt
+	read, err := driver.Readback(context.Background(), request)
+	if err != nil || !read.Exists || read.State != "memberships_deleting" {
+		t.Fatalf("readback %+v %v", read, err)
 	}
 }
 
@@ -631,4 +646,166 @@ func TestStoragePoolReadbackSkipsDisksWhilePoolExists(t *testing.T) {
 	if err != nil || !read.Exists || disks != 0 {
 		t.Fatal(read, err, disks)
 	}
+}
+
+// serviceManyChildren reviews a Service Directory namespace with twelve
+// services as lifecycle impacts and a Discovery collection with twelve engines
+// as prerequisites.
+func serviceManyChildren(t *testing.T, transport roundTripFunc) (*action, contracts.ActionRequest, *action, contracts.ActionRequest) {
+	t.Helper()
+	identity := func(kind, name string) asset.Identity {
+		return asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "gcp-connection", Partition: "google-cloud", NativeType: kind, NativeID: "//" + strings.Split(kind, "/")[0] + "/" + name}
+	}
+	namespace := "projects/sample-project/locations/us-central1/namespaces/apps"
+	cascade := contracts.ActionRequest{Action: "delete", Asset: asset.Asset{ID: "namespace", Identity: identity("servicedirectory.googleapis.com/Namespace", namespace)}}
+	collection := "projects/sample-project/locations/global/collections/docs"
+	prerequisites := contracts.ActionRequest{Action: "delete", Asset: asset.Asset{ID: "collection", Identity: identity(discoveryHost+"/Collection", collection)}}
+	for i := range 12 {
+		service := asset.Asset{ID: asset.AssetID(fmt.Sprintf("service-%02d", i)), Identity: identity("servicedirectory.googleapis.com/Service", fmt.Sprintf("%s/services/s-%02d", namespace, i))}
+		cascade.LifecycleImpacts = append(cascade.LifecycleImpacts, contracts.ActionImpact{ControllerID: "namespace", Asset: service, Delete: true})
+		engine := asset.Asset{ID: asset.AssetID(fmt.Sprintf("engine-%02d", i)), Identity: identity(discoveryHost+"/Engine", fmt.Sprintf("%s/engines/e-%02d", collection, i))}
+		prerequisites.PrerequisiteDeletions = append(prerequisites.PrerequisiteDeletions, contracts.ActionImpact{ControllerID: "collection", Asset: engine, Delete: true})
+	}
+	return protocolAction(t, cascade.Asset.Identity.NativeType, namespace, transport), cascade, protocolAction(t, prerequisites.Asset.Identity.NativeType, collection, transport), prerequisites
+}
+
+func serviceChildGet(r *http.Request) bool {
+	return r.Method == "GET" && (strings.Contains(r.URL.Path, "/services/s-") || strings.Contains(r.URL.Path, "/engines/e-"))
+}
+
+func TestServiceChildReadsAreConcurrent(t *testing.T) {
+	for _, phase := range []string{"cascade", "prerequisites"} {
+		t.Run(phase, func(t *testing.T) {
+			probe := newReadProbe(groupReadConcurrency, serviceChildGet)
+			cascadeAction, cascade, prerequisiteAction, prerequisites := serviceManyChildren(t, probe.wrap(func(req *http.Request) (*http.Response, error) {
+				return apiResponse(req, 404, `{"error":{"code":404}}`), nil
+			}))
+			probe.start()
+			if phase == "cascade" {
+				read, err := cascadeAction.serviceCascadeReadback(t.Context(), cascade)
+				if err != nil || read.Exists {
+					t.Fatal(read, err)
+				}
+				probe.check(t, len(cascade.LifecycleImpacts), groupReadConcurrency)
+				return
+			}
+			if err := prerequisiteAction.servicePrerequisitesAbsent(t.Context(), prerequisites); err != nil {
+				t.Fatal(err)
+			}
+			probe.check(t, len(prerequisites.PrerequisiteDeletions), groupReadConcurrency)
+		})
+	}
+}
+
+func TestServiceChildReadsKeepOrder(t *testing.T) {
+	// The first child survives but answers last; the second fails first. A
+	// serial walk reports the survivor, so ordered evaluation must too.
+	failed := make(chan struct{})
+	var once sync.Once
+	cascadeAction, cascade, prerequisiteAction, prerequisites := serviceManyChildren(t, func(req *http.Request) (*http.Response, error) {
+		switch {
+		case strings.HasSuffix(req.URL.Path, "/s-01") || strings.HasSuffix(req.URL.Path, "/e-01"):
+			defer once.Do(func() { close(failed) })
+			return apiResponse(req, 400, `{"error":{"code":400}}`), nil
+		case strings.HasSuffix(req.URL.Path, "/s-00") || strings.HasSuffix(req.URL.Path, "/e-00"):
+			after(failed)
+			return apiResponse(req, 200, `{}`), nil
+		}
+		return apiResponse(req, 404, `{"error":{"code":404}}`), nil
+	})
+	read, err := cascadeAction.serviceCascadeReadback(t.Context(), cascade)
+	if err != nil || !read.Exists || read.State != "service_children_deleting" {
+		t.Fatal(read, err)
+	}
+	failed, once = make(chan struct{}), sync.Once{}
+	if err := prerequisiteAction.servicePrerequisitesAbsent(t.Context(), prerequisites); deniedCode(err) != "service_prerequisite_still_exists" {
+		t.Fatal(err)
+	}
+	// Every prerequisite is validated before any is read.
+	reads := 0
+	_, _, prerequisiteAction, prerequisites = serviceManyChildren(t, func(req *http.Request) (*http.Response, error) {
+		reads++
+		return apiResponse(req, 404, `{"error":{"code":404}}`), nil
+	})
+	prerequisites.PrerequisiteDeletions[11].Delete = false
+	if err := prerequisiteAction.servicePrerequisitesAbsent(t.Context(), prerequisites); deniedCode(err) != "invalid_service_prerequisite" || reads != 0 {
+		t.Fatal(err, reads)
+	}
+}
+
+func TestGKEEnrichReadsClustersConcurrently(t *testing.T) {
+	const prefix = "projects/sample-project/locations/us-central1/clusters/c-"
+	clusterGet := func(r *http.Request) bool {
+		return r.Method == "GET" && strings.Contains(r.URL.Path, "/clusters/c-")
+	}
+	items := func() []contracts.InventoryItem {
+		var result []contracts.InventoryItem
+		for i := range groupReadConcurrency + 2 {
+			result = append(result, contracts.InventoryItem{NativeType: clusterType, NativeID: fmt.Sprintf("//container.googleapis.com/%s%02d", prefix, i), Normalized: map[string]any{"id": "planned"}})
+		}
+		return result
+	}
+	t.Run("concurrent", func(t *testing.T) {
+		// Every cluster changed identity, so each stops after its cluster GET.
+		probe := newReadProbe(groupReadConcurrency, clusterGet)
+		r := protocolRuntime(t, probe.wrap(func(req *http.Request) (*http.Response, error) {
+			return apiResponse(req, 200, `{"id":"other"}`), nil
+		}))
+		probe.start()
+		if _, err := r.EnrichInventoryBatch(t.Context(), contracts.InventoryRequest{ConnectionID: "connection"}, items()); deniedCode(err) != "gke_cluster_identity_changed" {
+			t.Fatal(err)
+		}
+		probe.check(t, groupReadConcurrency, groupReadConcurrency)
+	})
+	t.Run("order", func(t *testing.T) {
+		// The first cluster changed identity but answers last; the second fails first.
+		failed := make(chan struct{})
+		r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+			switch {
+			case strings.HasSuffix(req.URL.Path, "/c-01"):
+				defer close(failed)
+				return apiResponse(req, 400, `{"error":{"code":400}}`), nil
+			case strings.HasSuffix(req.URL.Path, "/c-00"):
+				after(failed)
+			}
+			return apiResponse(req, 200, `{"id":"other"}`), nil
+		})
+		if _, err := r.EnrichInventoryBatch(t.Context(), contracts.InventoryRequest{ConnectionID: "connection"}, items()); deniedCode(err) != "gke_cluster_identity_changed" {
+			t.Fatal(err)
+		}
+	})
+}
+
+func TestStoragePoolContributionReadsPoolsConcurrently(t *testing.T) {
+	poolGet := func(r *http.Request) bool {
+		return r.Method == "GET" && strings.HasSuffix(r.URL.Path, "/storagePools/pool")
+	}
+	probe := newReadProbe(groupReadConcurrency, poolGet)
+	s := newPoolCleanupScenario()
+	_, values := poolCleanupReviewed(t, s)
+	r := protocolRuntime(t, probe.wrap(s.transport(t)))
+	// Ten reviews of the one native pool, merged in asset order.
+	var assets []asset.Asset
+	for i := range groupReadConcurrency + 2 {
+		pool := values[0]
+		pool.ID = asset.AssetID(fmt.Sprintf("pool-%02d", i))
+		assets = append(assets, pool)
+	}
+	assets = append(assets, values[1:]...)
+	contributor, err := r.ComputeLifecycle(t.Context(), "connection")
+	if err != nil {
+		t.Fatal(err)
+	}
+	probe.start()
+	c, err := contributor.(*computeGroups).contributeStoragePools(t.Context(), assets, nil)
+	if err != nil || len(c.Unresolved) != 0 || len(c.Relationships) != groupReadConcurrency+2 {
+		t.Fatal(c, err)
+	}
+	for i, relationship := range c.Relationships {
+		if relationship.SourceAssetID != assets[i].ID {
+			t.Fatalf("relationship %d from %s", i, relationship.SourceAssetID)
+		}
+	}
+	// Each pool is read twice around its two member listings.
+	probe.check(t, 2*(groupReadConcurrency+2), groupReadConcurrency)
 }
