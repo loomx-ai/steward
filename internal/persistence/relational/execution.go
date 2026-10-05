@@ -3,6 +3,7 @@ package relational
 import (
 	"context"
 	"errors"
+	"math/rand/v2"
 	"slices"
 	"strings"
 	"time"
@@ -11,12 +12,14 @@ import (
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/core/plan"
 	"github.com/loomx-ai/steward/internal/core/requestmeta"
+	"github.com/loomx-ai/steward/internal/core/workspace"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 type executionAttemptRow struct {
+	WorkspaceID    string    `gorm:"column:workspace_id"`
 	ID             string    `gorm:"column:id;primaryKey"`
 	ConnectionID   string    `gorm:"column:connection_id"`
 	CleanupTaskID  string    `gorm:"column:cleanup_task_id"`
@@ -27,6 +30,7 @@ type executionAttemptRow struct {
 }
 
 type actionAttemptRow struct {
+	WorkspaceID       string    `gorm:"column:workspace_id"`
 	ID                string    `gorm:"column:id;primaryKey"`
 	ExecutionID       string    `gorm:"column:execution_id"`
 	CleanupTaskStepID string    `gorm:"column:cleanup_task_step_id"`
@@ -51,6 +55,7 @@ type executionActionRow struct {
 }
 
 type outboxEventRow struct {
+	WorkspaceID string     `gorm:"column:workspace_id"`
 	ID          string     `gorm:"column:id;primaryKey"`
 	Topic       string     `gorm:"column:topic"`
 	AggregateID string     `gorm:"column:aggregate_id"`
@@ -60,6 +65,7 @@ type outboxEventRow struct {
 }
 
 type auditEventRow struct {
+	WorkspaceID  string    `gorm:"column:workspace_id"`
 	ID           string    `gorm:"column:id;primaryKey"`
 	ConnectionID string    `gorm:"column:connection_id"`
 	Actor        string    `gorm:"column:actor"`
@@ -71,6 +77,7 @@ type auditEventRow struct {
 }
 
 type jobRow struct {
+	WorkspaceID     string     `gorm:"column:workspace_id"`
 	ID              string     `gorm:"column:id;primaryKey"`
 	ConnectionID    string     `gorm:"column:connection_id"`
 	IdempotencyKey  *string    `gorm:"column:idempotency_key"`
@@ -90,6 +97,7 @@ type jobRow struct {
 }
 
 type jobLogRow struct {
+	WorkspaceID     string    `gorm:"column:workspace_id"`
 	ID              string    `gorm:"column:id;primaryKey"`
 	JobID           string    `gorm:"column:job_id"`
 	AggregateType   string    `gorm:"column:aggregate_type"`
@@ -630,6 +638,25 @@ func (s *Store) ClaimNext(ctx context.Context, owner string, now time.Time, leas
 		}
 		return query
 	}
+	chosen, all, err := s.workspaces.resolve(ctx)
+	if err != nil {
+		return execution.Job{}, err
+	}
+	if all {
+		// Claim from a random workspace with claimable work, so one with a
+		// deep backlog cannot starve the others.
+		// ponytail: random pick over up to 32 workspaces; weight by running
+		// jobs if one workspace still crowds out the rest.
+		var candidates []string
+		if err := claimable(s.db.WithContext(ctx)).Distinct("workspace_id").Limit(32).Pluck("workspace_id", &candidates).Error; err != nil {
+			return execution.Job{}, err
+		}
+		if len(candidates) == 0 {
+			return execution.Job{}, persistence.ErrNotFound
+		}
+		chosen = workspace.ID(candidates[rand.IntN(len(candidates))])
+	}
+	ctx = workspace.With(ctx, chosen)
 	// An idle poll must not take SQLite's single write connection: probe on
 	// the read path first and open the claim transaction only when a job is
 	// claimable. The transaction re-checks, so a lost race is still ErrNotFound.
@@ -641,7 +668,7 @@ func (s *Store) ClaimNext(ctx context.Context, owner string, now time.Time, leas
 		return execution.Job{}, persistence.ErrNotFound
 	}
 	var claimed execution.Job
-	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var row jobRow
 		if err := claimable(tx).Order("run_at ASC, id ASC").Take(&row).Error; err != nil {
 			return mapError(err)
@@ -675,6 +702,7 @@ func (s *Store) ClaimNext(ctx context.Context, owner string, now time.Time, leas
 			return err
 		}
 		claimed = job
+		claimed.WorkspaceID = chosen
 		return nil
 	})
 	return claimed, err

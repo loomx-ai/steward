@@ -11,6 +11,7 @@ import (
 )
 
 type assetChangeRow struct {
+	WorkspaceID    string    `gorm:"column:workspace_id"`
 	ID             string    `gorm:"column:id;primaryKey"`
 	ConnectionID   string    `gorm:"column:connection_id"`
 	ScanTaskID     string    `gorm:"column:scan_task_id"`

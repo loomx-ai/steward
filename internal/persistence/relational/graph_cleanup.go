@@ -19,6 +19,7 @@ import (
 )
 
 type relationshipRow struct {
+	WorkspaceID   string     `gorm:"column:workspace_id"`
 	ID            string     `gorm:"column:id;primaryKey"`
 	ScopeID       string     `gorm:"column:scope_id"`
 	SourceAssetID string     `gorm:"column:source_asset_id"`
@@ -31,6 +32,7 @@ type relationshipRow struct {
 }
 
 type lifecycleBindingRow struct {
+	WorkspaceID       string     `gorm:"column:workspace_id"`
 	ID                string     `gorm:"column:id;primaryKey"`
 	ScopeID           string     `gorm:"column:scope_id"`
 	ControllerAssetID string     `gorm:"column:controller_asset_id"`
@@ -57,6 +59,7 @@ type assetLifecycleBindingRow struct {
 }
 
 type graphRevisionRow struct {
+	WorkspaceID       string    `gorm:"column:workspace_id"`
 	UnresolvedPayload string    `gorm:"column:unresolved_payload"`
 	ScopeID           string    `gorm:"column:scope_id;primaryKey"`
 	GraphRevision     string    `gorm:"column:graph_revision"`
@@ -216,14 +219,15 @@ const (
 )
 
 type findingRow struct {
-	ID         string     `gorm:"column:id;primaryKey"`
-	AssetID    string     `gorm:"column:asset_id"`
-	RuleID     string     `gorm:"column:rule_id"`
-	Status     string     `gorm:"column:status"`
-	Severity   string     `gorm:"column:severity"`
-	LastSeenAt time.Time  `gorm:"column:last_seen_at"`
-	ClosedAt   *time.Time `gorm:"column:closed_at"`
-	Payload    string     `gorm:"column:payload"`
+	WorkspaceID string     `gorm:"column:workspace_id"`
+	ID          string     `gorm:"column:id;primaryKey"`
+	AssetID     string     `gorm:"column:asset_id"`
+	RuleID      string     `gorm:"column:rule_id"`
+	Status      string     `gorm:"column:status"`
+	Severity    string     `gorm:"column:severity"`
+	LastSeenAt  time.Time  `gorm:"column:last_seen_at"`
+	ClosedAt    *time.Time `gorm:"column:closed_at"`
+	Payload     string     `gorm:"column:payload"`
 }
 
 type assetFindingRow struct {
@@ -233,6 +237,7 @@ type assetFindingRow struct {
 }
 
 type cleanupTaskRecord struct {
+	WorkspaceID  string    `gorm:"column:workspace_id"`
 	ID           string    `gorm:"column:id;primaryKey"`
 	ConnectionID string    `gorm:"column:connection_id"`
 	Status       string    `gorm:"column:status"`
@@ -242,6 +247,7 @@ type cleanupTaskRecord struct {
 }
 
 type cleanupTaskRow struct {
+	WorkspaceID   string `gorm:"column:workspace_id"`
 	ID            string `gorm:"column:id;primaryKey"`
 	CleanupTaskID string `gorm:"column:cleanup_task_id"`
 	RowKind       string `gorm:"column:row_kind"`

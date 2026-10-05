@@ -6,12 +6,14 @@ import (
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/schedule"
+	"github.com/loomx-ai/steward/internal/core/workspace"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 type scheduleRow struct {
+	WorkspaceID  string     `gorm:"column:workspace_id"`
 	ID           string     `gorm:"column:id;primaryKey"`
 	ConnectionID string     `gorm:"column:connection_id"`
 	Enabled      bool       `gorm:"column:enabled"`
@@ -23,6 +25,7 @@ type scheduleRow struct {
 }
 
 type scheduleRunRow struct {
+	WorkspaceID  string    `gorm:"column:workspace_id"`
 	ID           string    `gorm:"column:id;primaryKey"`
 	ScheduleID   string    `gorm:"column:schedule_id"`
 	ConnectionID string    `gorm:"column:connection_id"`
@@ -34,9 +37,10 @@ type scheduleRunRow struct {
 }
 
 type settingRow struct {
-	Key       string    `gorm:"column:setting_key;primaryKey"`
-	UpdatedAt time.Time `gorm:"column:updated_at"`
-	Payload   string    `gorm:"column:payload"`
+	WorkspaceID string    `gorm:"column:workspace_id"`
+	Key         string    `gorm:"column:setting_key;primaryKey"`
+	UpdatedAt   time.Time `gorm:"column:updated_at"`
+	Payload     string    `gorm:"column:payload"`
 }
 
 var blockingScanStatuses = []string{
@@ -62,6 +66,7 @@ func newScheduleRow(value schedule.ScanSchedule) (scheduleRow, error) {
 func decodeSchedule(row scheduleRow) (schedule.ScanSchedule, error) {
 	value, err := decode[schedule.ScanSchedule](row.Payload)
 	value.Revision = row.Revision
+	value.WorkspaceID = workspace.ID(row.WorkspaceID)
 	return value, err
 }
 
@@ -217,7 +222,19 @@ func (s *Store) ListUnsettledRuns(ctx context.Context, limit int) ([]schedule.Ru
 		Order("created_at ASC, id ASC").Limit(normalizeLimit(limit)).Find(&rows).Error; err != nil {
 		return nil, err
 	}
-	return decodeRows[scheduleRunRow, schedule.Run](rows, func(row scheduleRunRow) string { return row.Payload })
+	runs, err := decodeRows[scheduleRunRow, schedule.Run](rows, func(row scheduleRunRow) string { return row.Payload })
+	for index := range runs {
+		runs[index].WorkspaceID = workspace.ID(rows[index].WorkspaceID)
+	}
+	return runs, err
+}
+
+// ListWorkspaces returns every workspace that has scans, for per-workspace
+// maintenance such as retention.
+func (s *Store) ListWorkspaces(ctx context.Context) ([]workspace.ID, error) {
+	var ids []workspace.ID
+	err := s.db.WithContext(ctx).Table("scan_tasks").Distinct("workspace_id").Order("workspace_id").Pluck("workspace_id", &ids).Error
+	return ids, err
 }
 
 func (s *Store) LatestRuns(ctx context.Context, scheduleIDs []schedule.ID) (map[schedule.ID]schedule.Run, error) {
@@ -503,7 +520,7 @@ func (s *Store) GetSetting(ctx context.Context, key string) (string, error) {
 func (s *Store) PutSetting(ctx context.Context, key, payload string, updatedAt time.Time) error {
 	row := settingRow{Key: key, UpdatedAt: updatedAt, Payload: payload}
 	return s.db.WithContext(ctx).Table("workspace_settings").Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "setting_key"}},
+		Columns:   []clause.Column{{Name: "workspace_id"}, {Name: "setting_key"}},
 		DoUpdates: clause.AssignmentColumns([]string{"updated_at", "payload"}),
 	}).Create(&row).Error
 }

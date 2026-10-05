@@ -31,6 +31,8 @@ type Store struct {
 	// changed; nil outside a transaction.
 	touched *touchedConnections
 	locks   *lockStripes
+	// workspaces confines every statement to the context's workspace.
+	workspaces *workspaceScope
 }
 
 // touchedConnections is bumped in inventory_versions as the outermost
@@ -61,7 +63,7 @@ func (s *Store) touch(connectionIDs ...string) {
 // transaction, so a writer can touch connections without a savepoint.
 func (s *Store) write(ctx context.Context, fn func(*Store) error) error {
 	if s.touched != nil {
-		return fn(&Store{db: s.db.WithContext(ctx), aliases: s.aliases, touched: s.touched, locks: s.locks})
+		return fn(&Store{db: s.db.WithContext(ctx), aliases: s.aliases, touched: s.touched, locks: s.locks, workspaces: s.workspaces})
 	}
 	return s.transaction(ctx, fn)
 }
@@ -85,6 +87,7 @@ func (t *touchedConnections) bump(tx *gorm.DB) error {
 }
 
 type inventoryVersionRow struct {
+	WorkspaceID  string `gorm:"column:workspace_id"`
 	ConnectionID string `gorm:"column:connection_id;primaryKey"`
 	Version      int64  `gorm:"column:version"`
 }
@@ -101,7 +104,7 @@ func (m *aliasMemo) reset() {
 }
 
 func New(db *gorm.DB) *Store {
-	return &Store{db: db, locks: &lockStripes{}}
+	return &Store{db: db, locks: &lockStripes{}, workspaces: workspacePlugin(db)}
 }
 
 // inTx returns the store a transaction callback works with. Only
@@ -117,7 +120,7 @@ func (s *Store) inTx(tx *gorm.DB) *Store {
 	if touched == nil {
 		touched = &touchedConnections{}
 	}
-	return &Store{db: tx, aliases: memo, touched: touched, locks: s.locks}
+	return &Store{db: tx, aliases: memo, touched: touched, locks: s.locks, workspaces: s.workspaces}
 }
 
 func (s *Store) transaction(ctx context.Context, fn func(*Store) error) error {
@@ -133,6 +136,11 @@ func (s *Store) transaction(ctx context.Context, fn func(*Store) error) error {
 		return nil
 	})
 }
+
+// RequireWorkspace makes every repository call without a workspace in its
+// context fail instead of using workspace.Default. Servers in a shared pool
+// set it; a self-hosted server has only the default workspace.
+func (s *Store) RequireWorkspace() { s.workspaces.strict.Store(true) }
 
 func (s *Store) Connections() persistence.ConnectionRepository   { return s }
 func (s *Store) Credentials() persistence.CredentialRepository   { return s }
@@ -155,6 +163,7 @@ func (s *Store) WithinInventoryTx(ctx context.Context, fn func(persistence.Inven
 }
 
 type connectionRow struct {
+	WorkspaceID   string     `gorm:"column:workspace_id"`
 	ID            string     `gorm:"column:id;primaryKey"`
 	Provider      string     `gorm:"column:provider"`
 	PartitionName string     `gorm:"column:partition_name"`
@@ -165,6 +174,7 @@ type connectionRow struct {
 }
 
 type credentialRow struct {
+	WorkspaceID  string     `gorm:"column:workspace_id"`
 	ConnectionID string     `gorm:"column:connection_id;primaryKey"`
 	Provider     string     `gorm:"column:provider"`
 	Type         string     `gorm:"column:credential_type"`
@@ -185,6 +195,7 @@ type connectionAggregateRow struct {
 }
 
 type regionRow struct {
+	WorkspaceID  string     `gorm:"column:workspace_id"`
 	ID           string     `gorm:"column:id;primaryKey"`
 	Revision     uint64     `gorm:"column:revision"`
 	ConnectionID string     `gorm:"column:connection_id"`
@@ -206,6 +217,7 @@ type activeConnectionRegionRow struct {
 }
 
 type scopeRow struct {
+	WorkspaceID    string    `gorm:"column:workspace_id"`
 	ID             string    `gorm:"column:id;primaryKey"`
 	ConnectionID   string    `gorm:"column:connection_id"`
 	ParentID       string    `gorm:"column:parent_id"`
@@ -226,6 +238,7 @@ type resourceKindRow struct {
 }
 
 type scanRunRow struct {
+	WorkspaceID          string     `gorm:"column:workspace_id"`
 	ID                   string     `gorm:"column:id;primaryKey"`
 	ConnectionID         string     `gorm:"column:connection_id"`
 	Status               string     `gorm:"column:status"`
@@ -244,6 +257,7 @@ type scanRunRow struct {
 }
 
 type scanShardRow struct {
+	WorkspaceID     string    `gorm:"column:workspace_id"`
 	ID              string    `gorm:"column:id;primaryKey"`
 	ScanTaskID      string    `gorm:"column:scan_task_id"`
 	TargetKey       string    `gorm:"column:target_key"`
@@ -259,6 +273,7 @@ type scanShardRow struct {
 }
 
 type assetRow struct {
+	WorkspaceID    string     `gorm:"column:workspace_id"`
 	ID             string     `gorm:"column:id;primaryKey"`
 	Provider       string     `gorm:"column:provider"`
 	PartitionName  string     `gorm:"column:partition_name"`
@@ -280,6 +295,7 @@ type assetRow struct {
 }
 
 type observationRow struct {
+	WorkspaceID    string    `gorm:"column:workspace_id"`
 	ID             string    `gorm:"column:id;primaryKey"`
 	AssetID        string    `gorm:"column:asset_id"`
 	ScanTaskID     string    `gorm:"column:scan_task_id"`
@@ -645,7 +661,7 @@ func (s *Store) PutRegion(ctx context.Context, region asset.ConnectionRegion) er
 		Lifecycle: string(region.Lifecycle), Origin: string(region.Origin), FirstSeenAt: region.FirstSeenAt,
 		LastSeenAt: region.LastSeenAt, CreatedAt: region.CreatedAt, UpdatedAt: region.UpdatedAt, Payload: payload,
 	}
-	return mapCreateError(upsert(s.db.WithContext(ctx), "connection_regions", row, []string{
+	return mapCreateError(upsert(s.db.WithContext(ctx), "connection_regions", &row, []string{
 		"revision", "lifecycle", "origin", "first_seen_at", "last_seen_at", "updated_at", "payload",
 	}))
 }
@@ -843,7 +859,7 @@ func (s *Store) PutScope(ctx context.Context, scope asset.Scope) error {
 		return err
 	}
 	row := scopeRow{ID: string(scope.ID), ConnectionID: string(scope.ConnectionID), ParentID: string(scope.ParentID), Kind: string(scope.Kind), NativeID: scope.NativeID, CreatedAt: scope.CreatedAt, UpdatedAt: scope.UpdatedAt, Payload: payload}
-	return mapCreateError(upsert(s.db.WithContext(ctx), "scopes", row, []string{"connection_id", "parent_id", "kind", "native_id", "updated_at", "payload"}))
+	return mapCreateError(upsert(s.db.WithContext(ctx), "scopes", &row, []string{"connection_id", "parent_id", "kind", "native_id", "updated_at", "payload"}))
 }
 
 func (s *Store) GetScope(ctx context.Context, id asset.ScopeID) (asset.Scope, error) {
@@ -1191,7 +1207,7 @@ func (s *Store) PutResourceKind(ctx context.Context, kind asset.ResourceKind) er
 		return err
 	}
 	row := resourceKindRow{ID: string(kind.ID), Provider: string(kind.Provider), NativeType: kind.NativeType, BundleRevision: kind.BundleRevision, Payload: payload}
-	return upsert(s.db.WithContext(ctx), "resource_kinds", row, []string{"provider", "native_type", "bundle_revision", "payload"})
+	return upsert(s.db.WithContext(ctx), "resource_kinds", &row, []string{"provider", "native_type", "bundle_revision", "payload"})
 }
 
 func (s *Store) GetResourceKind(ctx context.Context, id asset.ResourceKindID) (asset.ResourceKind, error) {
@@ -1229,7 +1245,7 @@ func (s *Store) PutScanRun(ctx context.Context, run asset.ScanRun) error {
 	}
 	db := s.db.WithContext(ctx)
 	return db.Transaction(func(tx *gorm.DB) error {
-		if err := upsert(tx, "scan_tasks", row, []string{"status", "scope_mode", "retry_generation", "control_version", "payload"}); err != nil {
+		if err := upsert(tx, "scan_tasks", &row, []string{"status", "scope_mode", "retry_generation", "control_version", "payload"}); err != nil {
 			return err
 		}
 		return touchScanTask(tx, run.ID, row.UpdatedAt)
@@ -1398,7 +1414,7 @@ func (s *Store) PutScanShard(ctx context.Context, shard asset.ScanShard) error {
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			return err
 		}
-		if err := upsert(tx, "scan_shards", row, []string{
+		if err := upsert(tx, "scan_shards", &row, []string{
 			"target_key", "retry_generation", "scope_id", "resource_kind_id",
 			"status", "authoritative", "item_count", "payload",
 		}); err != nil {
@@ -2022,7 +2038,8 @@ func (s *Store) assetScopeAuthorityIDs(ctx context.Context, options persistence.
 		) AS (
 			SELECT id, id, parent_id, kind, native_id, payload, 0
 			FROM scopes
-			WHERE (superseded_by_scope_id IS NULL OR superseded_by_scope_id = '')
+			WHERE workspace_id = ?
+				AND (superseded_by_scope_id IS NULL OR superseded_by_scope_id = '')
 				AND (? = '' OR connection_id = ?)
 			UNION ALL
 			SELECT
@@ -2039,7 +2056,9 @@ func (s *Store) assetScopeAuthorityIDs(ctx context.Context, options persistence.
 				AND (parent.superseded_by_scope_id IS NULL OR parent.superseded_by_scope_id = '')
 			WHERE scope_ancestry.kind NOT IN (?, ?) AND scope_ancestry.depth < 64
 		)`
+	workspaceID, workspaceErr := s.workspaceArgument(ctx)
 	arguments := []any{
+		workspaceID,
 		connectionID,
 		connectionID,
 		string(asset.ScopeRegion),
@@ -2068,7 +2087,11 @@ func (s *Store) assetScopeAuthorityIDs(ctx context.Context, options persistence.
 		)`
 		arguments = append(arguments, regionID, "%"+escapeLike(`"location":`+string(encodedRegionID))+"%")
 	}
-	return s.db.WithContext(ctx).Raw(query, arguments...)
+	raw := s.db.WithContext(ctx).Raw(query, arguments...)
+	if workspaceErr != nil {
+		_ = raw.AddError(workspaceErr)
+	}
+	return raw
 }
 
 func orderPanoramaAssetSearch(query *gorm.DB, rawTerm string) *gorm.DB {

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/workspace"
 )
 
 type JobID string
@@ -31,7 +32,10 @@ const (
 )
 
 type Job struct {
-	ID              JobID              `json:"id"`
+	ID JobID `json:"id"`
+	// WorkspaceID is set by a claim across workspaces; the job's work runs
+	// in this workspace. The payload never carries it.
+	WorkspaceID     workspace.ID       `json:"-"`
 	ConnectionID    asset.ConnectionID `json:"connection_id,omitempty"`
 	IdempotencyKey  string             `json:"idempotency_key,omitempty"`
 	AggregateType   string             `json:"aggregate_type,omitempty"`

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/workspace"
 )
 
 type ID string
@@ -77,7 +78,9 @@ const (
 )
 
 type ScanSchedule struct {
-	ID           ID                 `json:"id"`
+	ID ID `json:"id"`
+	// WorkspaceID is set when the schedule was read across workspaces.
+	WorkspaceID  workspace.ID       `json:"-"`
 	ConnectionID asset.ConnectionID `json:"connection_id"`
 	// Name may be empty for the default schedule; clients show a localized
 	// default name.
@@ -127,7 +130,9 @@ const (
 // Run is one planned time of a schedule and what happened at it, including
 // times that did not start a scan.
 type Run struct {
-	ID           RunID              `json:"id"`
+	ID RunID `json:"id"`
+	// WorkspaceID is set when the run was read across workspaces.
+	WorkspaceID  workspace.ID       `json:"-"`
 	ScheduleID   ID                 `json:"schedule_id"`
 	ConnectionID asset.ConnectionID `json:"connection_id"`
 	PlannedAt    time.Time          `json:"planned_at"`

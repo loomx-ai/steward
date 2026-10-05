@@ -19,6 +19,7 @@ import (
 	"github.com/loomx-ai/steward/internal/core/graph"
 	"github.com/loomx-ai/steward/internal/core/plan"
 	"github.com/loomx-ai/steward/internal/core/requestmeta"
+	"github.com/loomx-ai/steward/internal/core/workspace"
 	"github.com/loomx-ai/steward/internal/idgen"
 	"github.com/loomx-ai/steward/internal/persistence"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -272,13 +273,15 @@ func (w *Worker) ProcessOne(ctx context.Context) (bool, error) {
 
 func (w *Worker) processOne(ctx context.Context, workerID string) (bool, error) {
 	now := w.options.Now()
-	job, err := w.jobs.ClaimNext(ctx, workerID, now, w.options.LeaseDuration, w.options.AllowedTypes...)
+	job, err := w.jobs.ClaimNext(workspace.AcrossAll(ctx), workerID, now, w.options.LeaseDuration, w.options.AllowedTypes...)
 	if errors.Is(err, persistence.ErrNotFound) {
 		return false, nil
 	}
 	if err != nil {
 		return false, err
 	}
+	// Everything the job does from here on belongs to its workspace.
+	ctx = workspace.With(ctx, job.WorkspaceID)
 	logs := newJobLogEmitter(w.jobs, job, w.options.Now)
 	logs.Log(ctx, execution.JobLogEntry{
 		Kind: execution.JobLogText, Level: "info",

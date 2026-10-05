@@ -12,6 +12,7 @@ import (
 	"github.com/loomx-ai/steward/internal/core/plan"
 	"github.com/loomx-ai/steward/internal/core/resourcequery"
 	"github.com/loomx-ai/steward/internal/core/schedule"
+	"github.com/loomx-ai/steward/internal/core/workspace"
 )
 
 var (
@@ -328,6 +329,7 @@ type ScheduleRepository interface {
 	GetRun(context.Context, schedule.RunID) (schedule.Run, error)
 	ListRuns(context.Context, schedule.ID, ListOptions) (Page[schedule.Run], error)
 	ListUnsettledRuns(context.Context, int) ([]schedule.Run, error)
+	ListWorkspaces(context.Context) ([]workspace.ID, error)
 	LatestRuns(context.Context, []schedule.ID) (map[schedule.ID]schedule.Run, error)
 	DeleteRunsBefore(context.Context, time.Time) error
 

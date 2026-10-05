@@ -175,6 +175,14 @@ func TestScanTaskReadModelMigrationUpgradesExistingDatabase(t *testing.T) {
 		)`,
 		`CREATE TABLE graph_revisions (scope_id VARCHAR(128) PRIMARY KEY, graph_revision VARCHAR(128) NOT NULL, observed_at TIMESTAMP NOT NULL)`,
 		`INSERT INTO graph_revisions (scope_id, graph_revision, observed_at) VALUES ('scope-existing', 'graph-existing', '2026-08-04 08:00:00+00:00')`,
+		`CREATE TABLE cloud_connections (id VARCHAR(128) PRIMARY KEY, provider VARCHAR(64), created_at TIMESTAMP, deleted_at TIMESTAMP)`,
+		`CREATE TABLE connection_credentials (connection_id VARCHAR(128) PRIMARY KEY)`,
+		`CREATE TABLE connection_regions (id VARCHAR(128) PRIMARY KEY)`,
+		`CREATE TABLE relationships (id VARCHAR(128) PRIMARY KEY)`,
+		`CREATE TABLE lifecycle_bindings (id VARCHAR(128) PRIMARY KEY)`,
+		`CREATE TABLE jobs (id VARCHAR(128) PRIMARY KEY)`,
+		`CREATE TABLE outbox_events (id VARCHAR(128) PRIMARY KEY)`,
+		`CREATE TABLE audit_events (id VARCHAR(128) PRIMARY KEY, created_at TIMESTAMP)`,
 		`CREATE TABLE cleanup_tasks (id VARCHAR(128) PRIMARY KEY)`,
 		`CREATE TABLE cleanup_task_rows (id VARCHAR(128) PRIMARY KEY)`,
 		`CREATE TABLE execution_attempts (id VARCHAR(128) PRIMARY KEY)`,
@@ -368,6 +376,7 @@ func openScanReadModelTestDB(t *testing.T, configuredLogger logger.Interface) *g
 	}
 	for _, statement := range []string{
 		`CREATE TABLE scan_tasks (
+			workspace_id TEXT NOT NULL DEFAULT 'default',
 			id TEXT PRIMARY KEY,
 			connection_id TEXT NOT NULL,
 			status TEXT NOT NULL,
@@ -385,6 +394,7 @@ func openScanReadModelTestDB(t *testing.T, configuredLogger logger.Interface) *g
 			payload TEXT NOT NULL
 		)`,
 		`CREATE TABLE scan_shards (
+			workspace_id TEXT NOT NULL DEFAULT 'default',
 			id TEXT PRIMARY KEY,
 			scan_task_id TEXT NOT NULL,
 			target_key TEXT NOT NULL,
@@ -399,6 +409,7 @@ func openScanReadModelTestDB(t *testing.T, configuredLogger logger.Interface) *g
 			payload TEXT NOT NULL
 		)`,
 		`CREATE TABLE scopes (
+			workspace_id TEXT NOT NULL DEFAULT 'default',
 			id TEXT PRIMARY KEY,
 			superseded_by_scope_id TEXT
 		)`,

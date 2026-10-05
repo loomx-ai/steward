@@ -16,6 +16,7 @@ import (
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/core/schedule"
+	"github.com/loomx-ai/steward/internal/core/workspace"
 	"github.com/loomx-ai/steward/internal/idgen"
 	"github.com/loomx-ai/steward/internal/persistence"
 )
@@ -372,8 +373,14 @@ func (s *Service) tick(ctx context.Context) {
 	}
 	if now.Sub(s.lastRetention) >= retentionInterval {
 		s.lastRetention = now
-		if err := s.applyRetention(ctx, now); err != nil {
+		workspaces, err := s.repositories.Schedules().ListWorkspaces(workspace.AcrossAll(ctx))
+		if err != nil {
 			slog.Error("scheduled scan history could not be trimmed", "error", err)
+		}
+		for _, id := range workspaces {
+			if err := s.applyRetention(workspace.With(ctx, id), now); err != nil {
+				slog.Error("scheduled scan history could not be trimmed", "workspace_id", id, "error", err)
+			}
 		}
 	}
 }
@@ -392,12 +399,12 @@ func (s *Service) Run(ctx context.Context) error {
 }
 
 func (s *Service) triggerDue(ctx context.Context, now time.Time) error {
-	due, err := s.repositories.Schedules().ListDueSchedules(ctx, now, 100)
+	due, err := s.repositories.Schedules().ListDueSchedules(workspace.AcrossAll(ctx), now, 100)
 	if err != nil {
 		return err
 	}
 	for _, value := range due {
-		if err := s.triggerOne(ctx, value, now); err != nil {
+		if err := s.triggerOne(workspace.With(ctx, value.WorkspaceID), value, now); err != nil {
 			slog.Error("scheduled scan could not be triggered", "schedule_id", value.ID, "error", err)
 		}
 	}
@@ -513,12 +520,12 @@ func (s *Service) start(ctx context.Context, value schedule.ScanSchedule, planne
 }
 
 func (s *Service) settleRuns(ctx context.Context, now time.Time) error {
-	runs, err := s.repositories.Schedules().ListUnsettledRuns(ctx, 200)
+	runs, err := s.repositories.Schedules().ListUnsettledRuns(workspace.AcrossAll(ctx), 200)
 	if err != nil {
 		return err
 	}
 	for _, run := range runs {
-		if err := s.settleOne(ctx, run, now); err != nil {
+		if err := s.settleOne(workspace.With(ctx, run.WorkspaceID), run, now); err != nil {
 			slog.Error("scheduled scan run could not be settled", "run_id", run.ID, "error", err)
 		}
 	}

@@ -158,3 +158,27 @@ func TestPostgresWithLockSerializesAcrossPools(t *testing.T) {
 		t.Fatalf("lock holders overlapped %d times", overlaps.Load())
 	}
 }
+
+// Only PostgreSQL serves several workspaces; SQLite keeps one.
+func TestPostgresWorkspaceIsolation(t *testing.T) {
+	dsn := os.Getenv("STEWARD_TEST_POSTGRES_DSN")
+	if dsn == "" {
+		t.Skip("STEWARD_TEST_POSTGRES_DSN is not configured")
+	}
+	db, err := gorm.Open(gormpostgres.Open(dsn), &gorm.Config{TranslateError: true, Logger: logger.Default.LogMode(logger.Silent)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	schema := fmt.Sprintf("steward_workspaces_%d_%d", os.Getpid(), time.Now().UnixNano())
+	if err := db.Exec("CREATE SCHEMA " + schema).Error; err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = db.Exec("DROP SCHEMA IF EXISTS " + schema + " CASCADE").Error })
+	contract.RunWorkspaceIsolation(t, func(t *testing.T) persistence.Repositories {
+		repositories, err := postgres.Open(withSearchPath(dsn, schema), filepath.Join("..", "..", "..", "migrations"), 4)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return repositories
+	})
+}
