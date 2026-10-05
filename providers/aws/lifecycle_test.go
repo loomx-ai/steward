@@ -224,3 +224,54 @@ func TestNativeInventorySlicesOversizedProviderPages(t *testing.T) {
 		t.Fatal("a shrunken provider page must restart the shard")
 	}
 }
+
+// filteringInstancesEC2 behaves like EC2: named IDs fail the whole call when
+// one is unknown, an instance-id filter skips unknown IDs.
+type filteringInstancesEC2 struct {
+	LifecycleEC2API
+	live  map[string]bool
+	calls int
+}
+
+func (f *filteringInstancesEC2) DescribeInstances(_ context.Context, input *awsec2.DescribeInstancesInput, _ ...func(*awsec2.Options)) (*awsec2.DescribeInstancesOutput, error) {
+	f.calls++
+	if len(input.InstanceIds) > 0 {
+		return nil, &APIError{Code: "InvalidInstanceID.NotFound", StatusCode: 400}
+	}
+	var instances []ec2types.Instance
+	for _, filter := range input.Filters {
+		if awssdk.ToString(filter.Name) != "instance-id" {
+			continue
+		}
+		for _, id := range filter.Values {
+			if f.live[id] {
+				instances = append(instances, ec2types.Instance{InstanceId: awssdk.String(id), State: &ec2types.InstanceState{Name: ec2types.InstanceStateNameStopped}})
+			}
+		}
+	}
+	return &awsec2.DescribeInstancesOutput{Reservations: []ec2types.Reservation{{Instances: instances}}}, nil
+}
+
+func TestEnrichInstancesSkipsPurgedInstanceInOneCall(t *testing.T) {
+	client := &filteringInstancesEC2{live: map[string]bool{"i-1": true, "i-3": true}}
+	items := []contracts.InventoryItem{
+		{NativeID: "i-1", State: "running", Normalized: map[string]any{}},
+		{NativeID: "i-2", State: "running", Normalized: map[string]any{}},
+		{NativeID: "i-3", State: "running", Normalized: map[string]any{}},
+	}
+	if err := enrichInstances(context.Background(), client, items, []int{0, 1, 2}); err != nil {
+		t.Fatal(err)
+	}
+	if client.calls != 1 {
+		t.Fatalf("DescribeInstances calls = %d, want 1", client.calls)
+	}
+	for _, index := range []int{0, 2} {
+		if items[index].State != "stopped" || items[index].Normalized[ebsAttachmentsField] == nil {
+			t.Fatalf("live instance %s not enriched: %+v", items[index].NativeID, items[index])
+		}
+	}
+	// A purged instance keeps its inventory facts, as the per-ID NotFound path left it.
+	if items[1].State != "running" || len(items[1].Normalized) != 0 {
+		t.Fatalf("purged instance changed: %+v", items[1])
+	}
+}

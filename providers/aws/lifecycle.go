@@ -12,6 +12,7 @@ import (
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	awsautoscaling "github.com/aws/aws-sdk-go-v2/service/autoscaling"
 	awsec2 "github.com/aws/aws-sdk-go-v2/service/ec2"
+	ec2types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	awseks "github.com/aws/aws-sdk-go-v2/service/eks"
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -222,11 +223,15 @@ func enrichInstances(ctx context.Context, client LifecycleEC2API, items []contra
 	return nil
 }
 
+// describeInstanceDocuments filters by instance-id rather than naming IDs, so
+// an unknown (terminated-and-purged) ID is left out of the result instead of
+// failing the whole batch. Callers pass at most describeBatchSize IDs, the
+// per-filter value limit.
 func describeInstanceDocuments(ctx context.Context, client LifecycleEC2API, ids []string) (map[string]map[string]any, error) {
 	result := map[string]map[string]any{}
 	token := ""
 	for {
-		input := &awsec2.DescribeInstancesInput{InstanceIds: ids}
+		input := &awsec2.DescribeInstancesInput{Filters: []ec2types.Filter{{Name: awssdk.String("instance-id"), Values: ids}}}
 		if token != "" {
 			input.NextToken = awssdk.String(token)
 		}
@@ -234,23 +239,6 @@ func describeInstanceDocuments(ctx context.Context, client LifecycleEC2API, ids 
 		output, err := client.DescribeInstances(ctx, input)
 		if err != nil {
 			execution.LogCloudAPIFailure(ctx, "ec2", "DescribeInstances", err)
-			if nativeNotFound(err, "InvalidInstanceID.NotFound") {
-				if len(ids) == 1 {
-					return result, nil
-				}
-				// One terminated-and-purged instance fails the whole batch;
-				// resolve the rest individually instead of dropping their facts.
-				for _, id := range ids {
-					single, err := describeInstanceDocuments(ctx, client, []string{id})
-					if err != nil {
-						return nil, err
-					}
-					for key, value := range single {
-						result[key] = value
-					}
-				}
-				return result, nil
-			}
 			return nil, NormalizeError(err)
 		}
 		for _, reservation := range output.Reservations {
