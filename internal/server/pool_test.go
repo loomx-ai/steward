@@ -36,11 +36,20 @@ func TestCloudServerKeepsWorkspacesApart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// pg_trgm in public outlives this test's schema; see the persistence tests.
+	if err := admin.Exec("CREATE EXTENSION IF NOT EXISTS pg_trgm SCHEMA public").Error; err != nil {
+		t.Fatal(err)
+	}
 	schema := fmt.Sprintf("steward_pool_%d_%d", os.Getpid(), time.Now().UnixNano())
 	if err := admin.Exec("CREATE SCHEMA " + schema).Error; err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { admin.Exec("DROP SCHEMA IF EXISTS " + schema + " CASCADE") })
+	t.Cleanup(func() {
+		admin.Exec("DROP SCHEMA IF EXISTS " + schema + " CASCADE")
+		if sqlDB, err := admin.DB(); err == nil {
+			_ = sqlDB.Close()
+		}
+	})
 	parsed, _ := url.Parse(dsn)
 	query := parsed.Query()
 	query.Set("search_path", schema)
@@ -61,7 +70,8 @@ func TestCloudServerKeepsWorkspacesApart(t *testing.T) {
 		addrs = append(addrs, addr)
 		go func() {
 			done <- Run(ctx, Config{
-				Addr: addr, DBDriver: "postgres", DSN: parsed.String(), MigrationsDir: filepath.Join("..", "..", "migrations"),
+				// Run leaves its pool to process exit; keep it small for test runs.
+				Addr: addr, DBDriver: "postgres", DSN: parsed.String(), DBMaxConns: 4, MigrationsDir: filepath.Join("..", "..", "migrations"),
 				AuthMode: "cloud", AuthTokens: []httptransport.TokenBinding{{Token: "pool-token", Principal: httptransport.Principal{Subject: "gateway", Roles: []httptransport.Role{httptransport.RoleAdmin}}}},
 				CredentialMasterKey: "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=", CredentialSource: failingCredentials{},
 			})
@@ -112,10 +122,15 @@ func TestCloudServerKeepsWorkspacesApart(t *testing.T) {
 	if status, body := call(http.MethodGet, "/api/connections", "", ""); status != http.StatusUnauthorized {
 		t.Fatalf("request without a workspace = %d %s", status, body)
 	}
-	stored, err := persistencepostgres.Open(parsed.String(), filepath.Join("..", "..", "migrations"), 2)
+	// The servers have migrated the schema by now.
+	storedDB, err := gorm.Open(postgres.Open(parsed.String()), &gorm.Config{TranslateError: true, Logger: logger.Default.LogMode(logger.Silent)})
 	if err != nil {
 		t.Fatal(err)
 	}
+	if sqlDB, err := storedDB.DB(); err == nil {
+		t.Cleanup(func() { _ = sqlDB.Close() })
+	}
+	stored := persistencepostgres.New(storedDB)
 	now := time.Now().UTC()
 	first := workspace.With(context.Background(), "ws_a")
 	if err := stored.Connections().PutConnection(first, asset.CloudConnection{

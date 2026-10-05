@@ -55,7 +55,9 @@ func lockPostgresMigrations(db *sql.DB) (func(), error) {
 	if err != nil {
 		return nil, fmt.Errorf("lock migrations: %w", err)
 	}
-	const key = "hashtextextended('steward-migrate:' || current_schema(), 0)"
+	// One lock per database, not per schema: extensions such as pg_trgm are
+	// database-wide, and two schemas creating one at once collide.
+	const key = "hashtextextended('steward-migrate', 0)"
 	if _, err := conn.ExecContext(ctx, "SELECT pg_advisory_lock("+key+")"); err != nil {
 		_ = conn.Close()
 		return nil, fmt.Errorf("lock migrations: %w", err)

@@ -41,6 +41,7 @@ func TestPostgresRepositoryContract(t *testing.T) {
 			t.Errorf("close PostgreSQL test database: %v", err)
 		}
 	})
+	sharePgTrgm(t, admin)
 	migrationsDirectory := filepath.Join("..", "..", "..", "migrations")
 	contract.Run(t, func(t *testing.T) persistence.Repositories {
 		t.Helper()
@@ -169,6 +170,7 @@ func TestPostgresWorkspaceIsolation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	sharePgTrgm(t, db)
 	schema := fmt.Sprintf("steward_workspaces_%d_%d", os.Getpid(), time.Now().UnixNano())
 	if err := db.Exec("CREATE SCHEMA " + schema).Error; err != nil {
 		t.Fatal(err)
@@ -181,4 +183,14 @@ func TestPostgresWorkspaceIsolation(t *testing.T) {
 		}
 		return repositories
 	})
+}
+
+// sharePgTrgm installs pg_trgm in public before any test schema migrates.
+// Created inside a test schema, the extension would be dropped with that
+// schema, taking the trigram indexes of concurrently running tests with it.
+func sharePgTrgm(t *testing.T, db *gorm.DB) {
+	t.Helper()
+	if err := db.Exec("CREATE EXTENSION IF NOT EXISTS pg_trgm SCHEMA public").Error; err != nil {
+		t.Fatal(err)
+	}
 }
