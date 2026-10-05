@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
@@ -174,26 +173,26 @@ func validateAssetCanvas(options persistence.ListOptions) error {
 }
 
 // assetGraph serves the relationship neighborhood. Optional query parameters:
-// depth=1..3 limits the traversal (1 = only edges touching the asset), and
-// include=lifecycle adds the lifecycle bindings from the same traversal so
-// clients need not call /lifecycle and walk the neighborhood twice.
+// edges=direct returns only the edges touching the asset, without walking the
+// neighborhood, and include=lifecycle adds the lifecycle bindings from the same
+// traversal so clients need not call /lifecycle and walk it twice.
 func (a *API) assetGraph(response http.ResponseWriter, request *http.Request) {
 	id := asset.AssetID(chi.URLParam(request, "id"))
-	depth := assetRelationshipNeighborhoodDepth
-	if value := request.URL.Query().Get("depth"); value != "" {
-		parsed, err := strconv.Atoi(value)
-		if err != nil || parsed < 1 || parsed > assetRelationshipNeighborhoodDepth {
-			writeAPIError(response, http.StatusBadRequest, APIError{Code: "asset.graph_depth_invalid", Message: "depth must be between 1 and 3"})
-			return
-		}
-		depth = parsed
+	hops := assetRelationshipNeighborhoodDepth
+	switch request.URL.Query().Get("edges") {
+	case "":
+	case "direct":
+		hops = 1
+	default:
+		writeAPIError(response, http.StatusBadRequest, APIError{Code: "asset.graph_edges_invalid", Message: "edges must be direct when set"})
+		return
 	}
 	relationships, bindings, err := loadAssetRelationshipNeighborhood(
 		request.Context(),
 		a.dependencies.Repositories.Graph(),
 		selectedConnectionID(request),
 		id,
-		depth,
+		hops,
 	)
 	if err != nil {
 		repositoryError(response, err)

@@ -781,9 +781,9 @@ export function setAssetDirty(
 export function getAssetRelations(
   connectionID: string,
   id: string,
-  depth?: number,
+  directOnly = false,
 ): Promise<{ relationships: Relationship[]; bindings: LifecycleBinding[] }> {
-  const query = depth ? `&depth=${depth}` : "";
+  const query = directOnly ? "&edges=direct" : "";
   return request(
     scopedPath(
       `/api/assets/${encodeURIComponent(id)}/graph?include=lifecycle${query}`,

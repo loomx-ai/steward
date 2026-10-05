@@ -17,7 +17,7 @@ func TestAssetGraphIncludesLifecycleAndValidatesDepth(t *testing.T) {
 		return response
 	}
 
-	response := get("&depth=1&include=lifecycle")
+	response := get("&edges=direct&include=lifecycle")
 	if response.Code != http.StatusOK {
 		t.Fatalf("status=%d body=%s", response.Code, response.Body.String())
 	}
@@ -35,9 +35,9 @@ func TestAssetGraphIncludesLifecycleAndValidatesDepth(t *testing.T) {
 		t.Fatalf("legacy graph response gained bindings: %v", legacy)
 	}
 
-	for _, depth := range []string{"0", "4", "x"} {
-		if response := get("&depth=" + depth); response.Code != http.StatusBadRequest {
-			t.Fatalf("depth=%s status=%d", depth, response.Code)
+	for _, edges := range []string{"all", "1", "Direct"} {
+		if response := get("&edges=" + edges); response.Code != http.StatusBadRequest {
+			t.Fatalf("edges=%s status=%d", edges, response.Code)
 		}
 	}
 }

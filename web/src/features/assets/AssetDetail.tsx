@@ -83,7 +83,7 @@ export function AssetDetail() {
   // resource marker); the 3-hop neighborhood loads with the relationships tab.
   const direct = useQuery({
     queryKey: ["asset-relations", connection.id, id, "direct"],
-    queryFn: () => getAssetRelations(connection.id, id, 1),
+    queryFn: () => getAssetRelations(connection.id, id, true),
     enabled: !!id,
   });
   const neighborhood = useQuery({

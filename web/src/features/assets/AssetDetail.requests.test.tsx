@@ -114,6 +114,6 @@ it("loads only direct relations and the parent on the overview tab", async () =>
   const assetRequests = paths.filter((path) => path.startsWith("/api/assets"));
   expect(assetRequests).toHaveLength(3);
   expect(assetRequests.filter((path) => path.includes("/graph"))).toEqual([
-    "/api/assets/vpc-1/graph?include=lifecycle&depth=1&connection_id=connection-a",
+    "/api/assets/vpc-1/graph?include=lifecycle&edges=direct&connection_id=connection-a",
   ]);
 });
