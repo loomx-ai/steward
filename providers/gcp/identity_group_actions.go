@@ -244,6 +244,11 @@ func identityPermissionDenied(err error) bool {
 	var status googleResponseStatus
 	return errors.As(err, &call) && errors.As(err, &status) && status == 403 && call.Provider.Category == execution.ErrorPermissionDenied && (call.Provider.Code == "403" || call.Provider.Code == "PERMISSION_DENIED")
 }
+
+// errIdentityMembershipSurvives stops concurrent membership readback at the
+// first surviving membership; it never leaves identityReadback.
+var errIdentityMembershipSurvives = errors.New("identity membership survives")
+
 func (a *action) identityReadback(ctx context.Context, request contracts.ActionRequest) (result contracts.ReadbackResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	proofs, err := a.identityAction(request)
@@ -286,14 +291,21 @@ func (a *action) identityReadback(ctx context.Context, request contracts.ActionR
 			return contracts.ReadbackResult{Exists: true, State: "deleting"}, nil
 		}
 		if a.kind.NativeType == identityGroupType {
-			for _, proof := range proofs {
-				exists, err := observe(identityMemberType, proof.ID, proof.Proof)
-				if err != nil {
-					return result, err
+			// Reads run concurrently; a surviving membership stops new reads like
+			// an error, and the first decisive membership in order wins, as a
+			// serial walk would report it.
+			err := forEachConcurrently(len(proofs), identityGroupConcurrency, func(index int) error {
+				exists, err := observe(identityMemberType, proofs[index].ID, proofs[index].Proof)
+				if err == nil && exists {
+					return errIdentityMembershipSurvives
 				}
-				if exists {
-					return contracts.ReadbackResult{Exists: true, State: "memberships_deleting"}, nil
-				}
+				return err
+			})
+			if errors.Is(err, errIdentityMembershipSurvives) {
+				return contracts.ReadbackResult{Exists: true, State: "memberships_deleting"}, nil
+			}
+			if err != nil {
+				return result, err
 			}
 		} else {
 			// Independent unlink must preserve the same containing group. The group

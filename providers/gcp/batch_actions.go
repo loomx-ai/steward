@@ -152,7 +152,35 @@ func (a *action) batchPreflight(ctx context.Context, request contracts.ActionReq
 		present[key] = true
 		return impact, nil
 	}
-	for _, child := range children {
+	// Every VM's auto-delete disks are read up front with bounded concurrency;
+	// the walk below consumes them in serial order, so the first failure in
+	// that order is still the one reported.
+	type diskRead struct {
+		disk instanceDisk
+		live map[string]any
+		err  error
+	}
+	autoDisks := make([][]*diskRead, len(children))
+	var diskReads []*diskRead
+	for index, child := range children {
+		if child.kind != instanceType {
+			continue
+		}
+		disks, _ := instanceDisks(a.client, child.data) // an error is reported in order below
+		for _, disk := range disks {
+			if disk.autoDelete {
+				read := &diskRead{disk: disk}
+				autoDisks[index] = append(autoDisks[index], read)
+				diskReads = append(diskReads, read)
+			}
+		}
+	}
+	_ = forEachConcurrently(len(diskReads), groupReadConcurrency, func(index int) error {
+		read := diskReads[index]
+		read.live, read.err = a.client.nativeGet(ctx, read.disk.kind, read.disk.id)
+		return read.err
+	})
+	for childIndex, child := range children {
 		controller := request.Asset.ID
 		if child.kind != instanceType && child.kind != batchTaskType && !child.retain {
 			for key, frozen := range impacts {
@@ -179,17 +207,13 @@ func (a *action) batchPreflight(ctx context.Context, request contracts.ActionReq
 		if child.kind != instanceType {
 			continue
 		}
-		disks, err := instanceDisks(a.client, child.data)
-		if err != nil {
+		if _, err := instanceDisks(a.client, child.data); err != nil {
 			return err
 		}
-		for _, disk := range disks {
-			if !disk.autoDelete {
-				continue
-			}
-			live, err := a.client.nativeGet(ctx, disk.kind, disk.id)
-			if err != nil {
-				return err
+		for _, read := range autoDisks[childIndex] {
+			disk, live := read.disk, read.live
+			if read.err != nil {
+				return read.err
 			}
 			if err := a.client.batchDiskUsers(live, child.id, true); err != nil {
 				return err
@@ -199,11 +223,26 @@ func (a *action) batchPreflight(ctx context.Context, request contracts.ActionReq
 			}
 		}
 	}
-	for key, impact := range impacts {
-		if present[key] {
-			continue
+	// Unlisted members are read concurrently in request order (batchPlan proved
+	// the keys unique); the first failure in that order is reported.
+	var absent []contracts.ActionImpact
+	for _, impact := range request.LifecycleImpacts {
+		if !present[groupImpactKey{impact.ControllerID, impact.Asset.Identity.NativeID}] {
+			absent = append(absent, impact)
 		}
-		live, err := a.client.nativeGet(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID)
+	}
+	lives := make([]map[string]any, len(absent))
+	readErrs := make([]error, len(absent))
+	_ = forEachConcurrently(len(absent), groupReadConcurrency, func(index int) error {
+		identity := absent[index].Asset.Identity
+		lives[index], readErrs[index] = a.client.nativeGet(ctx, identity.NativeType, identity.NativeID)
+		if isNotFound(readErrs[index]) && absent[index].Delete {
+			return nil
+		}
+		return readErrs[index]
+	})
+	for index, impact := range absent {
+		live, err := lives[index], readErrs[index]
 		if isNotFound(err) && impact.Delete {
 			continue
 		}
@@ -221,14 +260,27 @@ func (a *action) batchPreflight(ctx context.Context, request contracts.ActionReq
 }
 
 func (a *action) batchReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
-	impacts, err := a.batchPlan(request)
-	if err != nil {
+	if _, err := a.batchPlan(request); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
 	pending := false
 	retained := map[string]contracts.ActionImpact{}
-	for _, impact := range impacts {
-		live, err := a.client.nativeGet(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID)
+	// batchPlan proved the impacts unique, so walk them in request order. Every
+	// member can still fail the readback after pending is set, so all are read
+	// (concurrently) and the first failure in order is reported.
+	impacts := request.LifecycleImpacts
+	lives := make([]map[string]any, len(impacts))
+	readErrs := make([]error, len(impacts))
+	_ = forEachConcurrently(len(impacts), groupReadConcurrency, func(index int) error {
+		identity := impacts[index].Asset.Identity
+		lives[index], readErrs[index] = a.client.nativeGet(ctx, identity.NativeType, identity.NativeID)
+		if isNotFound(readErrs[index]) && impacts[index].Delete {
+			return nil
+		}
+		return readErrs[index]
+	})
+	for index, impact := range impacts {
+		live, err := lives[index], readErrs[index]
 		if isNotFound(err) && impact.Delete {
 			continue
 		}

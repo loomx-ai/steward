@@ -242,9 +242,17 @@ func (c *client) batchChildren(ctx context.Context, parent asset.Identity, data 
 	}
 	ownedDisks, attached, retained := map[string]serviceChild{}, map[string]bool{}, map[string]serviceChild{}
 	generation := map[string]string{}
+	// Members are read with bounded concurrency; the walk below still reports
+	// the first failing member in order, as a serial walk would.
+	lives := make([]map[string]any, len(members))
+	readErrs := make([]error, len(members))
+	_ = forEachConcurrently(len(members), groupReadConcurrency, func(index int) error {
+		lives[index], readErrs[index] = c.nativeGet(ctx, members[index].kind, members[index].id)
+		return readErrs[index]
+	})
 	for i := range members {
 		member := &members[i]
-		live, err := c.nativeGet(ctx, member.kind, member.id)
+		live, err := lives[i], readErrs[i]
 		if err != nil {
 			return nil, err
 		}

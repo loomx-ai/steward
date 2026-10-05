@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"slices"
 	"strings"
@@ -237,9 +238,18 @@ func (a *action) storagePoolReadback(ctx context.Context, request contracts.Acti
 	if reason := a.client.storagePoolProtection(request.Asset.Normalized, members); reason != "" {
 		return contracts.ReadbackResult{}, groupDenied(reason)
 	}
+	// A later disk read error still fails the readback after one disk is seen,
+	// so every disk is read (concurrently) and the first error in order wins.
+	readErrs := make([]error, len(members))
+	_ = forEachConcurrently(len(members), groupReadConcurrency, func(index int) error {
+		_, readErrs[index] = a.client.nativeGet(ctx, "compute.googleapis.com/Disk", members[index].ID)
+		if isNotFound(readErrs[index]) {
+			return nil
+		}
+		return readErrs[index]
+	})
 	exists := false
-	for _, member := range members {
-		_, err := a.client.nativeGet(ctx, "compute.googleapis.com/Disk", member.ID)
+	for _, err := range readErrs {
 		if err != nil && !isNotFound(err) {
 			return contracts.ReadbackResult{}, err
 		}
@@ -257,6 +267,10 @@ func (a *action) storagePoolReadback(ctx context.Context, request contracts.Acti
 	}
 	return contracts.ReadbackResult{Exists: true, State: text(live["state"])}, nil
 }
+
+// errStoragePoolDiskExists stops concurrent preflight disk reads at the first
+// surviving disk; it never leaves storagePoolPreflight.
+var errStoragePoolDiskExists = errors.New("storage pool disk exists")
 
 func (a *action) storagePoolPreflight(ctx context.Context, request contracts.ActionRequest) (contracts.PreflightResult, error) {
 	members, err := a.storagePoolActionIdentity(request)
@@ -288,14 +302,23 @@ func (a *action) storagePoolPreflight(ctx context.Context, request contracts.Act
 		if len(rows) != 0 {
 			return contracts.PreflightResult{Reason: "storage_pool_disks_still_exist"}, nil
 		}
-		for _, member := range members {
-			_, err := a.client.nativeGet(ctx, "compute.googleapis.com/Disk", member.ID)
+		// The first disk in order that still exists or fails to read decides;
+		// it also stops further reads.
+		err = forEachConcurrently(len(members), groupReadConcurrency, func(index int) error {
+			_, err := a.client.nativeGet(ctx, "compute.googleapis.com/Disk", members[index].ID)
 			if err == nil {
-				return contracts.PreflightResult{Reason: "storage_pool_disks_still_exist"}, nil
+				return errStoragePoolDiskExists
 			}
-			if !isNotFound(err) {
-				return contracts.PreflightResult{}, err
+			if isNotFound(err) {
+				return nil
 			}
+			return err
+		})
+		if errors.Is(err, errStoragePoolDiskExists) {
+			return contracts.PreflightResult{Reason: "storage_pool_disks_still_exist"}, nil
+		}
+		if err != nil {
+			return contracts.PreflightResult{}, err
 		}
 	}
 	again, err := a.readResource(ctx)

@@ -397,10 +397,16 @@ func (a *action) infraReadback(ctx context.Context, request contracts.ActionRequ
 }
 
 func (a *action) infraRetainedDescendants(ctx context.Context, request contracts.ActionRequest) error {
+	// Each descendant is checked independently with bounded concurrency; every
+	// outcome is an error, so the first failing descendant in order is reported.
+	var retained []contracts.ActionImpact
 	for _, impact := range request.LifecycleImpacts {
-		if impact.ControllerID == request.Asset.ID || isInfra(impact.Asset.Identity.NativeType) {
-			continue
+		if impact.ControllerID != request.Asset.ID && !isInfra(impact.Asset.Identity.NativeType) {
+			retained = append(retained, impact)
 		}
+	}
+	return forEachConcurrently(len(retained), groupReadConcurrency, func(index int) error {
+		impact := retained[index]
 		kind := impact.Asset.Identity.NativeType
 		live, err := a.client.nativeGet(ctx, kind, impact.Asset.Identity.NativeID)
 		if isNotFound(err) {
@@ -412,8 +418,8 @@ func (a *action) infraRetainedDescendants(ctx context.Context, request contracts
 		if _, present := live["error"]; present || infraPhysicalVisible(kind, live) != infraPhysicalVisible(kind, impact.Asset.Normalized) {
 			return groupDenied("infra_retained_descendant_changed")
 		}
-	}
-	return nil
+		return nil
+	})
 }
 
 func (a *action) infraPhase(request contracts.ActionRequest, stage, operation string) map[string]any {
