@@ -216,11 +216,8 @@ func (a *action) discoveryActionIdentity(request contracts.ActionRequest) error 
 		}
 		parent := request.Asset
 		if impact.ControllerID != parent.ID {
-			for _, candidate := range request.LifecycleImpacts {
-				if candidate.Asset.ID == impact.ControllerID {
-					parent = candidate.Asset
-					break
-				}
+			if candidate, ok := byID[impact.ControllerID]; ok {
+				parent = candidate.Asset
 			}
 		}
 		if parent.Identity.NativeType != parentKind || parent.Identity.NativeID != parentID {

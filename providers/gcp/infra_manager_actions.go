@@ -110,14 +110,15 @@ func (a *action) infraReviewedMembers(request contracts.ActionRequest, members [
 		}
 		seen[impact.Asset.ID] = true
 	}
+	byID := impactsByID(request)
 	for _, impact := range impacts {
-		if !infraDescendant(request, impact, physical) || isInfra(impact.Asset.Identity.NativeType) {
+		if !infraDescendant(byID, impact, physical) || isInfra(impact.Asset.Identity.NativeType) {
 			return nil, "", groupDenied("infra_extra_impact")
 		}
 	}
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		identity := prerequisite.Asset.Identity
-		if !prerequisite.Delete || prerequisite.Asset.ID == "" || seen[prerequisite.Asset.ID] || identity.Provider != a.identity.Provider || identity.ConnectionID != a.identity.ConnectionID || identity.Partition != a.identity.Partition || !infraDescendant(request, prerequisite, physical) {
+		if !prerequisite.Delete || prerequisite.Asset.ID == "" || seen[prerequisite.Asset.ID] || identity.Provider != a.identity.Provider || identity.ConnectionID != a.identity.ConnectionID || identity.Partition != a.identity.Partition || !infraDescendant(byID, prerequisite, physical) {
 			return nil, "", groupDenied("infra_prerequisite_changed")
 		}
 		seen[prerequisite.Asset.ID] = true
@@ -145,7 +146,9 @@ func (a *action) infraReviewedMembers(request contracts.ActionRequest, members [
 	return members, policy, nil
 }
 
-func infraDescendant(request contracts.ActionRequest, impact contracts.ActionImpact, roots map[asset.AssetID]bool) bool {
+// infraDescendant walks impact's controller chain to one of roots; byID is
+// impactsByID(request).
+func infraDescendant(byID map[asset.AssetID]contracts.ActionImpact, impact contracts.ActionImpact, roots map[asset.AssetID]bool) bool {
 	seen := map[asset.AssetID]bool{impact.Asset.ID: true}
 	for {
 		if roots[impact.ControllerID] {
@@ -155,28 +158,24 @@ func infraDescendant(request contracts.ActionRequest, impact contracts.ActionImp
 			return false
 		}
 		seen[impact.ControllerID] = true
-		found := false
-		for _, parent := range request.LifecycleImpacts {
-			if parent.Asset.ID == impact.ControllerID {
-				impact, found = parent, true
-				break
-			}
-		}
+		parent, found := byID[impact.ControllerID]
 		if !found {
 			return false
 		}
+		impact = parent
 	}
 }
 
 func infraChildRequest(request contracts.ActionRequest, root asset.Asset) contracts.ActionRequest {
 	child := contracts.ActionRequest{Asset: root, Action: "delete", IdempotencyKey: request.IdempotencyKey + "/" + string(root.ID)}
+	byID := impactsByID(request)
 	for _, impact := range request.LifecycleImpacts {
-		if infraDescendant(request, impact, map[asset.AssetID]bool{root.ID: true}) {
+		if infraDescendant(byID, impact, map[asset.AssetID]bool{root.ID: true}) {
 			child.LifecycleImpacts = append(child.LifecycleImpacts, impact)
 		}
 	}
 	for _, impact := range request.PrerequisiteDeletions {
-		if infraDescendant(request, impact, map[asset.AssetID]bool{root.ID: true}) {
+		if infraDescendant(byID, impact, map[asset.AssetID]bool{root.ID: true}) {
 			child.PrerequisiteDeletions = append(child.PrerequisiteDeletions, impact)
 		}
 	}

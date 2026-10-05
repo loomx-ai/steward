@@ -71,14 +71,15 @@ func (a *action) infraGroupActionIdentity(request contracts.ActionRequest) ([]in
 		}
 		seen[impact.Asset.ID] = true
 	}
+	byID := impactsByID(request)
 	for _, impact := range impacts {
-		if !infraDescendant(request, impact, controllers) || impact.Asset.Identity.NativeType == infraGroup || impact.Asset.Identity.NativeType == infraGroupRevision {
+		if !infraDescendant(byID, impact, controllers) || impact.Asset.Identity.NativeType == infraGroup || impact.Asset.Identity.NativeType == infraGroupRevision {
 			return nil, "", groupDenied("infra_group_extra_impact")
 		}
 	}
 	for _, impact := range request.PrerequisiteDeletions {
 		identity := impact.Asset.Identity
-		if !impact.Delete || impact.Asset.ID == "" || seen[impact.Asset.ID] || identity.Provider != a.identity.Provider || identity.ConnectionID != a.identity.ConnectionID || identity.Partition != a.identity.Partition || !infraDescendant(request, impact, controllers) {
+		if !impact.Delete || impact.Asset.ID == "" || seen[impact.Asset.ID] || identity.Provider != a.identity.Provider || identity.ConnectionID != a.identity.ConnectionID || identity.Partition != a.identity.Partition || !infraDescendant(byID, impact, controllers) {
 			return nil, "", groupDenied("infra_group_prerequisite_changed")
 		}
 		seen[impact.Asset.ID] = true
