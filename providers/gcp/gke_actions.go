@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -138,31 +139,60 @@ func (a *action) computeMembersReadback(ctx context.Context, request contracts.A
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
-	for _, impact := range impacts {
+	// Reads run concurrently in ID order; the first member that survives, changed
+	// or failed to read decides and stops further reads, as the serial walk did.
+	keys := sortedImpactKeys(impacts)
+	err = forEachConcurrently(len(keys), groupReadConcurrency, func(index int) error {
+		impact := impacts[keys[index]]
+		live, err := a.client.nativeGet(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID)
 		if !impact.Delete {
-			live, err := a.client.nativeGet(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID)
 			if isNotFound(err) {
-				return contracts.ReadbackResult{}, groupDenied(family + "_retained_member_missing")
+				return groupDenied(family + "_retained_member_missing")
 			}
 			if err != nil {
-				return contracts.ReadbackResult{}, err
+				return err
 			}
 			if text(live["id"]) != "" && text(live["id"]) != text(impact.Asset.Normalized["id"]) {
-				return contracts.ReadbackResult{}, groupDenied(family + "_retained_member_identity_changed")
+				return groupDenied(family + "_retained_member_identity_changed")
 			}
-			continue
+			return nil
 		}
-		_, err := a.client.nativeGet(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID)
 		if isNotFound(err) {
-			continue
+			return nil
 		}
 		if err != nil {
-			return contracts.ReadbackResult{}, err
+			return err
 		}
+		return errComputeMemberExists
+	})
+	if errors.Is(err, errComputeMemberExists) {
 		return contracts.ReadbackResult{Exists: true, State: "waiting_for_" + family + "_members"}, nil
 	}
-	return contracts.ReadbackResult{}, nil
+	return contracts.ReadbackResult{}, err
 }
+
+// impactsSurvive reads impacts concurrently; the first one in order that
+// still exists or fails to read decides and stops further reads.
+func (a *action) impactsSurvive(ctx context.Context, impacts []contracts.ActionImpact) (bool, error) {
+	err := forEachConcurrently(len(impacts), groupReadConcurrency, func(index int) error {
+		_, err := a.client.nativeGet(ctx, impacts[index].Asset.Identity.NativeType, impacts[index].Asset.Identity.NativeID)
+		if err == nil {
+			return errComputeMemberExists
+		}
+		if isNotFound(err) {
+			return nil
+		}
+		return err
+	})
+	if errors.Is(err, errComputeMemberExists) {
+		return true, nil
+	}
+	return false, err
+}
+
+// errComputeMemberExists stops concurrent member readback at the first
+// surviving member, like an error; it never escapes as a failure.
+var errComputeMemberExists = errors.New("compute member exists")
 
 func (a *action) gkeOperationURL(data map[string]any) (string, error) {
 	name := text(data["name"])

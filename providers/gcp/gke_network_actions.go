@@ -318,17 +318,18 @@ func (a *action) waitGKENetwork(ctx context.Context, request contracts.ActionReq
 		for _, resource := range snapshot.Resources {
 			networkIDs[resource.ID] = true
 		}
+		var nodes []contracts.ActionImpact
 		for _, impact := range request.LifecycleImpacts {
-			if !impact.Delete || networkIDs[impact.Asset.Identity.NativeID] {
-				continue
+			if impact.Delete && !networkIDs[impact.Asset.Identity.NativeID] {
+				nodes = append(nodes, impact)
 			}
-			_, readErr := a.client.nativeGet(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID)
-			if readErr == nil {
-				return contracts.WaitResult{State: "waiting_for_gke_nodes", RetryAfter: 2 * time.Second}, nil
-			}
-			if !isNotFound(readErr) {
-				return contracts.WaitResult{}, readErr
-			}
+		}
+		survives, readErr := a.impactsSurvive(ctx, nodes)
+		if readErr != nil {
+			return contracts.WaitResult{}, readErr
+		}
+		if survives {
+			return contracts.WaitResult{State: "waiting_for_gke_nodes", RetryAfter: 2 * time.Second}, nil
 		}
 		var pending bool
 		next, pending, err = a.cleanupGKENetwork(ctx, request, true)

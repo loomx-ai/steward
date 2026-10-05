@@ -175,16 +175,20 @@ func (a *action) dataprocPlan(request contracts.ActionRequest) (map[groupImpactK
 	return impacts, nil
 }
 
+// Reads run concurrently; the first surviving or unreadable job in request
+// order decides and stops further reads, as the serial walk did.
 func (a *action) dataprocPrerequisitesAbsent(ctx context.Context, request contracts.ActionRequest) error {
-	for _, prior := range request.PrerequisiteDeletions {
-		if _, err := a.client.nativeGet(ctx, dataprocJobType, prior.Asset.Identity.NativeID); !isNotFound(err) {
-			if err != nil {
-				return err
-			}
-			return groupDenied("dataproc_prerequisite_still_exists")
+	prior := request.PrerequisiteDeletions
+	return forEachConcurrently(len(prior), groupReadConcurrency, func(index int) error {
+		_, err := a.client.nativeGet(ctx, dataprocJobType, prior[index].Asset.Identity.NativeID)
+		if isNotFound(err) {
+			return nil
 		}
-	}
-	return nil
+		if err != nil {
+			return err
+		}
+		return groupDenied("dataproc_prerequisite_still_exists")
+	})
 }
 
 func (a *action) dataprocClusterPreflight(ctx context.Context, request contracts.ActionRequest, live map[string]any) error {
@@ -241,26 +245,36 @@ func (a *action) dataprocClusterPreflight(ctx context.Context, request contracts
 		}
 		present[key] = true
 	}
-	for key, impact := range impacts {
-		if present[key] {
-			continue
+	var unlisted []groupImpactKey
+	for _, key := range sortedImpactKeys(impacts) {
+		if !present[key] {
+			unlisted = append(unlisted, key)
 		}
+	}
+	if err := a.dataprocUnlistedMembers(ctx, impacts, unlisted); err != nil {
+		return err
+	}
+	return a.dataprocPrerequisitesAbsent(ctx, request)
+}
+
+// dataprocUnlistedMembers reads members the native listing omitted. The first
+// one in order that survives, changed or failed to read decides and stops
+// further reads.
+func (a *action) dataprocUnlistedMembers(ctx context.Context, impacts map[groupImpactKey]contracts.ActionImpact, unlisted []groupImpactKey) error {
+	return forEachConcurrently(len(unlisted), groupReadConcurrency, func(index int) error {
+		impact := impacts[unlisted[index]]
 		live, err := a.client.nativeGet(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID)
 		if isNotFound(err) && impact.Delete {
-			continue
+			return nil
 		}
 		if err != nil {
 			return contracts.DependencyReadError(err)
 		}
 		if !impact.Delete {
-			if err := dataprocSameMember(dataprocMember{kind: impact.Asset.Identity.NativeType, data: live}, impact.Asset.Normalized); err != nil {
-				return err
-			}
-			continue
+			return dataprocSameMember(dataprocMember{kind: impact.Asset.Identity.NativeType, data: live}, impact.Asset.Normalized)
 		}
 		return groupDenied("dataproc_member_membership_changed")
-	}
-	return a.dataprocPrerequisitesAbsent(ctx, request)
+	})
 }
 
 func (a *action) dataprocReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
@@ -274,38 +288,55 @@ func (a *action) dataprocReadback(ctx context.Context, request contracts.ActionR
 	pending := false
 	kept := map[string]contracts.ActionImpact{}
 	jobs := map[string]contracts.ActionImpact{}
-	for _, impact := range impacts {
+	// A pending member does not end the walk: a later member may still prove a
+	// recreation or change, so every member is read and the first error in ID
+	// order wins, as the serial walk reported it.
+	keys := sortedImpactKeys(impacts)
+	busy := make([]bool, len(keys))
+	err = forEachConcurrently(len(keys), groupReadConcurrency, func(index int) error {
+		impact := impacts[keys[index]]
 		kind, id := impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID
 		live, err := a.client.nativeGet(ctx, kind, id)
 		if isNotFound(err) && impact.Delete {
-			continue
+			return nil
 		}
 		if err != nil {
-			return contracts.ReadbackResult{}, contracts.DependencyReadError(err)
+			return contracts.DependencyReadError(err)
 		}
 		if isDataproc(kind) {
 			if err := a.client.dataprocIdentity(kind, id, live); err != nil {
-				return contracts.ReadbackResult{}, err
+				return err
 			}
 			if err := dataprocSameResource(kind, impact.Asset.Normalized, live); err != nil {
-				return contracts.ReadbackResult{}, err
+				return err
 			}
 		} else if text(live["id"]) != text(impact.Asset.Normalized["id"]) || a.client.canonicalName(text(live["selfLink"])) != id {
-			return contracts.ReadbackResult{}, groupDenied("dataproc_member_recreated")
+			return groupDenied("dataproc_member_recreated")
 		}
 		if impact.Delete {
-			pending = true
+			busy[index] = true
+		} else if kind == dataprocJobType {
+			terminal, err := dataprocTerminalJob(live)
+			if err != nil {
+				return err
+			}
+			busy[index] = !terminal
 		} else {
+			return dataprocSameMember(dataprocMember{kind: kind, data: live}, impact.Asset.Normalized)
+		}
+		return nil
+	})
+	if err != nil {
+		return contracts.ReadbackResult{}, err
+	}
+	for index, key := range keys {
+		impact := impacts[key]
+		pending = pending || busy[index]
+		if !impact.Delete {
+			id := impact.Asset.Identity.NativeID
 			kept[id] = impact
-			if kind == dataprocJobType {
+			if impact.Asset.Identity.NativeType == dataprocJobType {
 				jobs[id] = impact
-				terminal, err := dataprocTerminalJob(live)
-				if err != nil {
-					return contracts.ReadbackResult{}, err
-				}
-				pending = pending || !terminal
-			} else if err := dataprocSameMember(dataprocMember{kind: kind, data: live}, impact.Asset.Normalized); err != nil {
-				return contracts.ReadbackResult{}, err
 			}
 		}
 	}

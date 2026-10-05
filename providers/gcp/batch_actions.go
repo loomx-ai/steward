@@ -132,7 +132,7 @@ func (a *action) batchPreflight(ctx context.Context, request contracts.ActionReq
 		_, err := a.batchReadback(ctx, request)
 		return err
 	}
-	children, err := a.client.batchChildren(ctx, request.Asset.Identity, live)
+	children, autoDisks, err := a.client.batchChildrenDisks(ctx, request.Asset.Identity, live)
 	if err != nil {
 		return err
 	}
@@ -152,35 +152,7 @@ func (a *action) batchPreflight(ctx context.Context, request contracts.ActionReq
 		present[key] = true
 		return impact, nil
 	}
-	// Every VM's auto-delete disks are read up front with bounded concurrency;
-	// the walk below consumes them in serial order, so the first failure in
-	// that order is still the one reported.
-	type diskRead struct {
-		disk instanceDisk
-		live map[string]any
-		err  error
-	}
-	autoDisks := make([][]*diskRead, len(children))
-	var diskReads []*diskRead
-	for index, child := range children {
-		if child.kind != instanceType {
-			continue
-		}
-		disks, _ := instanceDisks(a.client, child.data) // an error is reported in order below
-		for _, disk := range disks {
-			if disk.autoDelete {
-				read := &diskRead{disk: disk}
-				autoDisks[index] = append(autoDisks[index], read)
-				diskReads = append(diskReads, read)
-			}
-		}
-	}
-	_ = forEachConcurrently(len(diskReads), groupReadConcurrency, func(index int) error {
-		read := diskReads[index]
-		read.live, read.err = a.client.nativeGet(ctx, read.disk.kind, read.disk.id)
-		return read.err
-	})
-	for childIndex, child := range children {
+	for _, child := range children {
 		controller := request.Asset.ID
 		if child.kind != instanceType && child.kind != batchTaskType && !child.retain {
 			for key, frozen := range impacts {
@@ -207,13 +179,19 @@ func (a *action) batchPreflight(ctx context.Context, request contracts.ActionReq
 		if child.kind != instanceType {
 			continue
 		}
-		if _, err := instanceDisks(a.client, child.data); err != nil {
+		disks, err := instanceDisks(a.client, child.data)
+		if err != nil {
 			return err
 		}
-		for _, read := range autoDisks[childIndex] {
-			disk, live := read.disk, read.live
-			if read.err != nil {
-				return read.err
+		for _, disk := range disks {
+			if !disk.autoDelete {
+				continue
+			}
+			// batchChildrenDisks read this disk live and validated it against
+			// this VM; reuse that read instead of fetching it again.
+			live := autoDisks[disk.id]
+			if live == nil {
+				return groupDenied("batch_disk_delete_policy_unverified")
 			}
 			if err := a.client.batchDiskUsers(live, child.id, true); err != nil {
 				return err

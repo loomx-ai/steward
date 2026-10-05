@@ -143,22 +143,29 @@ func (c *client) dataprocJobs(ctx context.Context, root asset.Asset, data map[st
 	if err != nil {
 		return nil, err
 	}
-	var result []dataprocMember
-	for id, record := range records {
+	// Jobs are read concurrently in ID order; the first failing job decides.
+	ids := slices.Sorted(maps.Keys(records))
+	result := make([]dataprocMember, len(ids))
+	err = forEachConcurrently(len(ids), groupReadConcurrency, func(index int) error {
+		id := ids[index]
 		live, err := c.nativeGet(ctx, dataprocJobType, id)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		if err = c.dataprocIdentity(dataprocJobType, id, live); err != nil {
-			return nil, err
+			return err
 		}
-		if err = dataprocSameResource(dataprocJobType, record, live); err != nil {
-			return nil, err
+		if err = dataprocSameResource(dataprocJobType, records[id], live); err != nil {
+			return err
 		}
 		if _, err = dataprocTerminalJob(live); err != nil {
-			return nil, err
+			return err
 		}
-		result = append(result, dataprocMember{kind: dataprocJobType, id: id, parent: root.Identity.NativeID, data: live, retain: true})
+		result[index] = dataprocMember{kind: dataprocJobType, id: id, parent: root.Identity.NativeID, data: live, retain: true}
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 	again, err := read()
 	if err != nil {

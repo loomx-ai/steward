@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -34,6 +35,22 @@ func groupImpacts(request contracts.ActionRequest) (map[groupImpactKey]contracts
 		result[key] = impact
 	}
 	return result, nil
+}
+
+// sortedImpactKeys orders impacts by native ID then controller, so concurrent
+// reads report the same first decisive member on every run.
+func sortedImpactKeys(impacts map[groupImpactKey]contracts.ActionImpact) []groupImpactKey {
+	keys := make([]groupImpactKey, 0, len(impacts))
+	for key := range impacts {
+		keys = append(keys, key)
+	}
+	slices.SortFunc(keys, func(a, b groupImpactKey) int {
+		if a.id != b.id {
+			return strings.Compare(a.id, b.id)
+		}
+		return strings.Compare(string(a.controller), string(b.controller))
+	})
+	return keys
 }
 
 func (a *action) plannedGroup(ctx context.Context, request contracts.ActionRequest, live map[string]any, pendingVM ...string) (managedGroup, string, error) {

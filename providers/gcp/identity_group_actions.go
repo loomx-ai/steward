@@ -131,39 +131,53 @@ func (a *action) identityPreflight(ctx context.Context, request contracts.Action
 		return contracts.PreflightResult{}, err
 	}
 	name, _ := identityName(a.kind.NativeType, a.identity.NativeID)
-	view, err := a.client.identityGroupView(ctx, identityGroupName(name))
-	if err != nil {
-		return contracts.PreflightResult{}, err
+	var group, member map[string]any
+	var err error
+	if a.kind.NativeType == identityMemberType {
+		// An unlink depends only on this membership and its group: one exact
+		// membership GET between two group reads replaces two full member lists.
+		group, err = a.client.identityRead(ctx, identityGroupType, identityGroupName(name))
+		if err != nil {
+			return contracts.PreflightResult{}, err
+		}
+		member, err = a.client.identityRead(ctx, identityMemberType, name)
+		if err != nil && !isNotFound(err) {
+			return contracts.PreflightResult{}, err
+		}
+		again, err := a.client.identityRead(ctx, identityGroupType, identityGroupName(name))
+		if err != nil {
+			return contracts.PreflightResult{}, err
+		}
+		if identityConfiguration(group) != identityConfiguration(again) {
+			return contracts.PreflightResult{}, groupDenied("identity_group_changed_during_membership_read")
+		}
+	} else {
+		view, err := a.client.identityGroupView(ctx, identityGroupName(name))
+		if err != nil {
+			return contracts.PreflightResult{}, err
+		}
+		group = view.Group
 	}
-	if identityGroupProtected(view.Group) {
+	if identityGroupProtected(group) {
 		return contracts.PreflightResult{Reason: "identity_group_locked_or_protected"}, nil
 	}
-	if identityGroupDynamic(view.Group) && object(object(view.Group["dynamicGroupMetadata"])["status"])["status"] != "UP_TO_DATE" {
+	if identityGroupDynamic(group) && object(object(group["dynamicGroupMetadata"])["status"])["status"] != "UP_TO_DATE" {
 		return contracts.PreflightResult{Reason: "identity_dynamic_memberships_not_ready"}, nil
 	}
 	if a.kind.NativeType == identityMemberType {
-		if identityGroupDynamic(view.Group) {
+		if identityGroupDynamic(group) {
 			return contracts.PreflightResult{Reason: "identity_dynamic_membership_managed"}, nil
 		}
-		if request.Asset.Normalized[identityParentProof] != view.Group[identityProof] {
+		if request.Asset.Normalized[identityParentProof] != identityConfiguration(group) {
 			return contracts.PreflightResult{}, groupDenied("identity_membership_parent_changed")
 		}
-		live := view.Members[name]
-		if live == nil {
-			// A list alone may be filtered; require the exact unique membership GET.
-			_, err := a.client.identityRead(ctx, identityMemberType, name)
-			if !isNotFound(err) {
-				if err == nil {
-					err = groupDenied("identity_membership_list_incomplete")
-				}
-				return contracts.PreflightResult{}, err
-			}
+		if member == nil {
 			return contracts.PreflightResult{Allowed: true, Absent: true}, nil
 		}
-		if request.Asset.Normalized[identityProof] != live[identityProof] {
+		if request.Asset.Normalized[identityProof] != identityConfiguration(member) {
 			return contracts.PreflightResult{}, groupDenied("identity_membership_configuration_changed")
 		}
-	} else if err := identitySame(request.Asset.Normalized, view.Group); err != nil {
+	} else if err := identitySame(request.Asset.Normalized, group); err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	return contracts.PreflightResult{Allowed: true}, nil
@@ -291,6 +305,12 @@ func (a *action) identityReadback(ctx context.Context, request contracts.ActionR
 			return contracts.ReadbackResult{Exists: true, State: "deleting"}, nil
 		}
 		if a.kind.NativeType == identityGroupType {
+			if pass > 0 {
+				// Membership names embed the group's unique ID, which cannot be
+				// recreated: once the group is absent no membership can return, so
+				// the second pass only re-proves the group's absence.
+				continue
+			}
 			// Reads run concurrently; a surviving membership stops new reads like
 			// an error, and the first decisive membership in order wins, as a
 			// serial walk would report it.

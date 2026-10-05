@@ -123,8 +123,9 @@ func TestIdentityGroupReadbackReadsMembershipsConcurrently(t *testing.T) {
 	if err != nil || !wait.Done {
 		t.Fatalf("wait %+v %v", wait, err)
 	}
-	// Two passes over every reviewed membership, never more than the bound.
-	probe.check(t, 2*len(request.LifecycleImpacts), identityGroupConcurrency)
+	// Memberships are read once: the second pass only re-reads the group, whose
+	// unique ID no membership can outlive or be re-added under.
+	probe.check(t, len(request.LifecycleImpacts), identityGroupConcurrency)
 }
 
 func TestIdentityGroupReadbackKeepsMembershipOrder(t *testing.T) {
@@ -360,4 +361,274 @@ func TestBatchReadbackAndChildrenReadConcurrently(t *testing.T) {
 	}
 	// Every member is read once even though the first already keeps it pending.
 	readback.check(t, len(request.LifecycleImpacts), groupReadConcurrency)
+}
+
+func deleteImpacts(count int, del bool) contracts.ActionRequest {
+	request := contracts.ActionRequest{Asset: asset.Asset{ID: "root", Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", Partition: "gcp"}}}
+	for i := range count {
+		name := fmt.Sprintf("vm-%02d", i)
+		request.LifecycleImpacts = append(request.LifecycleImpacts, contracts.ActionImpact{ControllerID: "root", Delete: del, Asset: asset.Asset{ID: asset.AssetID(name), Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", Partition: "gcp", NativeType: instanceType, NativeID: "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/instances/" + name}, Normalized: map[string]any{"id": name}}})
+	}
+	return request
+}
+
+// firstSurvivesSecondFails answers vm-00 (or job-00) with 200 only after vm-01
+// (job-01) failed; a serial walk reports the survivor.
+func firstSurvivesSecondFails(body string) roundTripFunc {
+	failed := make(chan struct{})
+	return func(req *http.Request) (*http.Response, error) {
+		switch {
+		case strings.HasSuffix(req.URL.Path, "-01"):
+			defer close(failed)
+			return apiResponse(req, 400, `{"error":{"code":400}}`), nil
+		case strings.HasSuffix(req.URL.Path, "-00"):
+			after(failed)
+			return apiResponse(req, 200, body), nil
+		}
+		return apiResponse(req, 404, `{"error":{"code":404}}`), nil
+	}
+}
+
+func notFound(req *http.Request) (*http.Response, error) {
+	return apiResponse(req, 404, `{"error":{"code":404}}`), nil
+}
+
+func TestComputeMembersReadbackReadsConcurrentlyInOrder(t *testing.T) {
+	const vm = "projects/sample-project/zones/us-central1-a/instances/web"
+	probe := newReadProbe(groupReadConcurrency, func(*http.Request) bool { return true })
+	probe.start()
+	a := protocolAction(t, instanceType, vm, probe.wrap(notFound))
+	read, err := a.computeMembersReadback(t.Context(), deleteImpacts(12, true), "gke")
+	if err != nil || read.Exists {
+		t.Fatal(read, err)
+	}
+	probe.check(t, 12, groupReadConcurrency)
+
+	a = protocolAction(t, instanceType, vm, firstSurvivesSecondFails(`{"id":"vm-00"}`))
+	read, err = a.computeMembersReadback(t.Context(), deleteImpacts(12, true), "gke")
+	if err != nil || !read.Exists || read.State != "waiting_for_gke_members" {
+		t.Fatal(read, err)
+	}
+	// A retained member that vanished decides before a later read error.
+	a = protocolAction(t, instanceType, vm, func(req *http.Request) (*http.Response, error) {
+		if strings.HasSuffix(req.URL.Path, "-00") {
+			return notFound(req)
+		}
+		return apiResponse(req, 200, fmt.Sprintf(`{"id":%q}`, last(req.URL.Path))), nil
+	})
+	if _, err := a.computeMembersReadback(t.Context(), deleteImpacts(12, false), "gke"); deniedCode(err) != "gke_retained_member_missing" {
+		t.Fatal(err)
+	}
+}
+
+func TestGKENodeWaitReadsConcurrentlyInOrder(t *testing.T) {
+	const vm = "projects/sample-project/zones/us-central1-a/instances/web"
+	probe := newReadProbe(groupReadConcurrency, func(*http.Request) bool { return true })
+	probe.start()
+	a := protocolAction(t, instanceType, vm, probe.wrap(notFound))
+	if survives, err := a.impactsSurvive(t.Context(), deleteImpacts(12, true).LifecycleImpacts); err != nil || survives {
+		t.Fatal(survives, err)
+	}
+	probe.check(t, 12, groupReadConcurrency)
+	a = protocolAction(t, instanceType, vm, firstSurvivesSecondFails(`{}`))
+	if survives, err := a.impactsSurvive(t.Context(), deleteImpacts(12, true).LifecycleImpacts); err != nil || !survives {
+		t.Fatal(survives, err)
+	}
+}
+
+func dataprocTestJobs(count int) []contracts.ActionImpact {
+	var jobs []contracts.ActionImpact
+	for i := range count {
+		jobs = append(jobs, contracts.ActionImpact{Delete: true, Asset: asset.Asset{Identity: asset.Identity{NativeType: dataprocJobType, NativeID: fmt.Sprintf("//dataproc.googleapis.com/projects/sample-project/regions/us-central1/jobs/job-%02d", i)}}})
+	}
+	return jobs
+}
+
+func TestDataprocPrerequisiteReadsConcurrentlyInOrder(t *testing.T) {
+	probe := newReadProbe(groupReadConcurrency, func(*http.Request) bool { return true })
+	probe.start()
+	a := protocolAction(t, dataprocClusterType, dpRoot, probe.wrap(notFound))
+	request := contracts.ActionRequest{PrerequisiteDeletions: dataprocTestJobs(12)}
+	if err := a.dataprocPrerequisitesAbsent(t.Context(), request); err != nil {
+		t.Fatal(err)
+	}
+	probe.check(t, 12, groupReadConcurrency)
+	a = protocolAction(t, dataprocClusterType, dpRoot, firstSurvivesSecondFails(`{}`))
+	if err := a.dataprocPrerequisitesAbsent(t.Context(), request); deniedCode(err) != "dataproc_prerequisite_still_exists" {
+		t.Fatal(err)
+	}
+}
+
+func TestDataprocJobsReadConcurrentlyInOrder(t *testing.T) {
+	root := asset.Asset{Identity: asset.Identity{NativeType: dataprocClusterType, NativeID: "//dataproc.googleapis.com/" + dpRoot}}
+	cluster := map[string]any{"clusterName": "analytics", "clusterUuid": "uuid-1"}
+	job := func(id, state string) map[string]any {
+		return map[string]any{"reference": map[string]any{"projectId": "sample-project", "jobId": id}, "jobUuid": "u-" + id, "placement": map[string]any{"clusterName": "analytics", "clusterUuid": "uuid-1"}, "status": map[string]any{"state": state}}
+	}
+	transport := func(get roundTripFunc) roundTripFunc {
+		return func(req *http.Request) (*http.Response, error) {
+			if strings.HasSuffix(req.URL.Path, "/jobs") {
+				var rows []any
+				for i := range 12 {
+					rows = append(rows, job(fmt.Sprintf("job-%02d", i), "DONE"))
+				}
+				raw, _ := json.Marshal(map[string]any{"jobs": rows})
+				return apiResponse(req, 200, string(raw)), nil
+			}
+			return get(req)
+		}
+	}
+	live := func(req *http.Request) (*http.Response, error) {
+		raw, _ := json.Marshal(job(last(req.URL.Path), "DONE"))
+		return apiResponse(req, 200, string(raw)), nil
+	}
+	probe := newReadProbe(groupReadConcurrency, func(req *http.Request) bool { return strings.Contains(req.URL.Path, "/jobs/") })
+	probe.start()
+	a := protocolAction(t, dataprocClusterType, dpRoot, transport(probe.wrap(live)))
+	jobs, err := a.client.dataprocJobs(t.Context(), root, cluster)
+	if err != nil || len(jobs) != 12 || jobs[0].id >= jobs[11].id {
+		t.Fatal(len(jobs), err)
+	}
+	probe.check(t, 12, groupReadConcurrency)
+	// job-00 has an unknown state but answers last; job-01 fails first.
+	raw, _ := json.Marshal(job("job-00", "UNKNOWN"))
+	ordered := firstSurvivesSecondFails(string(raw))
+	a = protocolAction(t, dataprocClusterType, dpRoot, transport(func(req *http.Request) (*http.Response, error) {
+		if strings.HasSuffix(req.URL.Path, "-00") || strings.HasSuffix(req.URL.Path, "-01") {
+			return ordered(req)
+		}
+		return live(req)
+	}))
+	if _, err := a.client.dataprocJobs(t.Context(), root, cluster); deniedCode(err) != "dataproc_job_state_unknown" {
+		t.Fatal(err)
+	}
+}
+
+func TestDataprocUnlistedMembersReadConcurrentlyInOrder(t *testing.T) {
+	impacts, err := groupImpacts(deleteImpacts(12, true))
+	if err != nil {
+		t.Fatal(err)
+	}
+	keys := sortedImpactKeys(impacts)
+	probe := newReadProbe(groupReadConcurrency, func(*http.Request) bool { return true })
+	probe.start()
+	a := protocolAction(t, dataprocClusterType, dpRoot, probe.wrap(notFound))
+	if err := a.dataprocUnlistedMembers(t.Context(), impacts, keys); err != nil {
+		t.Fatal(err)
+	}
+	probe.check(t, 12, groupReadConcurrency)
+	a = protocolAction(t, dataprocClusterType, dpRoot, firstSurvivesSecondFails(`{}`))
+	if err := a.dataprocUnlistedMembers(t.Context(), impacts, keys); deniedCode(err) != "dataproc_member_membership_changed" {
+		t.Fatal(err)
+	}
+}
+
+func TestDataprocReadbackReadsMembersConcurrently(t *testing.T) {
+	s := newDataprocScenario(t)
+	_, _, _, request := dataprocReviewed(t, s)
+	paths := map[string]bool{}
+	for _, impact := range request.LifecycleImpacts {
+		paths[impactPath(impact.Asset.Identity.NativeID)] = true
+	}
+	probe := newReadProbe(groupReadConcurrency, func(r *http.Request) bool {
+		return r.Method == "GET" && paths[strings.TrimPrefix(strings.TrimPrefix(r.URL.Path, "/compute/v1"), "/v1")]
+	})
+	r := protocolRuntime(t, probe.wrap(s.transport(t)))
+	driver, err := r.ResolveAction(context.Background(), "connection", request.Asset)
+	if err != nil {
+		t.Fatal(err)
+	}
+	delete(s.resources, dpRoot)
+	probe.start()
+	read, err := driver.Readback(context.Background(), request)
+	if err != nil || !read.Exists {
+		t.Fatal(read, err)
+	}
+	// Every member once, plus the retained job's re-read by the job listing.
+	probe.check(t, len(request.LifecycleImpacts)+1, groupReadConcurrency)
+}
+
+func TestIdentityMembershipPreflightReadsOnlyItsGroupAndMembership(t *testing.T) {
+	s := identityManyMembers()
+	r, values, _, _ := identityReviewed(t, s)
+	name := identityTestGroup + "/memberships/m-03"
+	value := batchAsset(values, name)
+	driver, err := r.ResolveAction(context.Background(), "connection", value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := contracts.ActionRequest{Asset: value, Action: "delete", IdempotencyKey: name}
+	for _, test := range []struct {
+		name   string
+		change func()
+		check  func(contracts.PreflightResult, error) bool
+	}{
+		{"unchanged", func() {}, func(c contracts.PreflightResult, err error) bool { return err == nil && c.Allowed && !c.Absent }},
+		// Another member's change does not concern this unlink.
+		{"other_member_changed", func() { s.members[identityTestGroup+"/memberships/m-04"]["deliverySetting"] = "NONE" }, func(c contracts.PreflightResult, err error) bool { return err == nil && c.Allowed }},
+		{"member_changed", func() { s.members[name]["deliverySetting"] = "NONE" }, func(_ contracts.PreflightResult, err error) bool {
+			return deniedCode(err) == "identity_membership_configuration_changed"
+		}},
+		{"member_removed", func() { delete(s.members, name) }, func(c contracts.PreflightResult, err error) bool { return err == nil && c.Allowed && c.Absent }},
+		// Changes accumulate; the group change goes last.
+		{"group_changed", func() { s.groups[identityTestGroup]["description"] = "changed" }, func(_ contracts.PreflightResult, err error) bool {
+			return deniedCode(err) == "identity_membership_parent_changed"
+		}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			test.change()
+			s.calls = nil
+			check, err := driver.Preflight(context.Background(), request)
+			if !test.check(check, err) {
+				t.Fatal(check, err)
+			}
+			want := []string{"GET https://cloudidentity.googleapis.com/v1/" + identityTestGroup, "GET https://cloudidentity.googleapis.com/v1/" + name, "GET https://cloudidentity.googleapis.com/v1/" + identityTestGroup}
+			if strings.Join(s.calls, "\n") != strings.Join(want, "\n") {
+				t.Fatalf("calls %q", s.calls)
+			}
+		})
+	}
+}
+
+func TestBatchPreflightReusesAutoDeleteDiskReads(t *testing.T) {
+	s, _, _, _, request := batchReviewed(t)
+	var mu sync.Mutex
+	reads := 0
+	inner := s.transport(t)
+	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == "GET" && strings.HasSuffix(req.URL.Path, "/"+batchBoot) {
+			mu.Lock()
+			reads++
+			mu.Unlock()
+		}
+		return inner(req)
+	})
+	driver, err := r.ResolveAction(context.Background(), "connection", request.Asset)
+	if err != nil {
+		t.Fatal(err)
+	}
+	check, err := driver.Preflight(context.Background(), request)
+	if err != nil || !check.Allowed {
+		t.Fatal(check, err)
+	}
+	if reads != 1 {
+		t.Fatalf("auto-delete boot disk read %d times", reads)
+	}
+}
+
+func TestStoragePoolReadbackSkipsDisksWhilePoolExists(t *testing.T) {
+	disks := 0
+	_, driver, request, _ := poolManyDisks(t, func(next roundTripFunc) roundTripFunc {
+		return func(req *http.Request) (*http.Response, error) {
+			if poolDiskGet(req) {
+				disks++
+				return apiResponse(req, 500, `{"error":{"code":500}}`), nil
+			}
+			return next(req)
+		}
+	})
+	read, err := driver.Readback(t.Context(), request)
+	if err != nil || !read.Exists || disks != 0 {
+		t.Fatal(read, err, disks)
+	}
 }

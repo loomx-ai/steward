@@ -219,26 +219,33 @@ func (c *client) batchExternalDisks(ctx context.Context, data map[string]any) (m
 }
 
 func (c *client) batchChildren(ctx context.Context, parent asset.Identity, data map[string]any) ([]serviceChild, error) {
+	result, _, err := c.batchChildrenDisks(ctx, parent, data)
+	return result, err
+}
+
+// batchChildrenDisks also returns the live, validated read of every VM
+// auto-delete disk by ID, so delete preflight need not read them again.
+func (c *client) batchChildrenDisks(ctx context.Context, parent asset.Identity, data map[string]any) ([]serviceChild, map[string]map[string]any, error) {
 	result, err := c.batchTasks(ctx, parent, data)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	// Obtain raw immutable configuration even when the caller has a sanitized
 	// inventory asset. Native dependencies are never inferred from redacted text.
 	live, err := c.nativeGet(ctx, batchJobType, parent.NativeID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if err := batchSameResource(batchJobType, data, live); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	external, err := c.batchExternalDisks(ctx, live)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	members, err := c.batchCompute(ctx, text(data["uid"]))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	ownedDisks, attached, retained := map[string]serviceChild{}, map[string]bool{}, map[string]serviceChild{}
 	generation := map[string]string{}
@@ -254,20 +261,20 @@ func (c *client) batchChildren(ctx context.Context, parent asset.Identity, data 
 		member := &members[i]
 		live, err := lives[i], readErrs[i]
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		if c.canonicalName(text(live["selfLink"])) != member.id || batchComputeConfiguration(member.kind, live) != batchComputeConfiguration(member.kind, member.data) {
-			return nil, groupDenied("batch_compute_changed")
+			return nil, nil, groupDenied("batch_compute_changed")
 		}
 		if err := c.batchComputeLabel(parent, data, live, member.kind); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		member.data = live
 		generation[member.id] = batchComputeConfiguration(member.kind, live)
 		if member.kind != instanceType {
 			if users := live["users"]; users != nil {
 				if _, valid := users.([]any); !valid {
-					return nil, groupDenied("batch_disk_users_invalid")
+					return nil, nil, groupDenied("batch_disk_users_invalid")
 				}
 			}
 			ownedDisks[member.id] = *member
@@ -278,12 +285,12 @@ func (c *client) batchChildren(ctx context.Context, parent asset.Identity, data 
 			continue
 		}
 		if err := c.batchAllocationMatches(live, member.data); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		result = append(result, member)
 		disks, err := instanceDisks(c, member.data)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		for _, disk := range disks {
 			// An owned disk was read live, identity-checked and compared with its
@@ -291,24 +298,24 @@ func (c *client) batchChildren(ctx context.Context, parent asset.Identity, data 
 			live := ownedDisks[disk.id].data
 			if live == nil {
 				if live, err = c.nativeGet(ctx, disk.kind, disk.id); err != nil {
-					return nil, err
+					return nil, nil, err
 				}
 			}
 			if c.canonicalName(text(live["selfLink"])) != disk.id || text(live["id"]) == "" {
-				return nil, groupDenied("batch_disk_identity_invalid")
+				return nil, nil, groupDenied("batch_disk_identity_invalid")
 			}
 			if err := c.batchDiskUsers(live, member.id, disk.autoDelete); err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			if disk.autoDelete {
 				owned, ok := ownedDisks[disk.id]
 				if !ok || external[disk.id] || attached[disk.id] || batchComputeConfiguration(disk.kind, owned.data) != batchComputeConfiguration(disk.kind, live) {
-					return nil, groupDenied("batch_disk_delete_policy_unverified")
+					return nil, nil, groupDenied("batch_disk_delete_policy_unverified")
 				}
 				attached[disk.id] = true
 			} else {
 				if _, owned := ownedDisks[disk.id]; owned {
-					return nil, groupDenied("batch_created_disk_retention_not_supported")
+					return nil, nil, groupDenied("batch_created_disk_retention_not_supported")
 				}
 				retained[disk.id] = serviceChild{kind: disk.kind, id: disk.id, data: live, retain: true}
 			}
@@ -324,7 +331,7 @@ func (c *client) batchChildren(ctx context.Context, parent asset.Identity, data 
 		// A disk can outlive a VM during provider teardown. Keep it as an explicit
 		// job impact; native Batch cleanup must prove it absent before success.
 		if external[id] || len(array(disk.data["users"])) > 0 {
-			return nil, groupDenied("batch_orphan_disk_ownership_unverified")
+			return nil, nil, groupDenied("batch_orphan_disk_ownership_unverified")
 		}
 		result = append(result, disk)
 	}
@@ -333,16 +340,16 @@ func (c *client) batchChildren(ctx context.Context, parent asset.Identity, data 
 	}
 	again, err := c.batchCompute(ctx, text(data["uid"]))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	for _, member := range again {
 		if generation[member.id] == "" || generation[member.id] != batchComputeConfiguration(member.kind, member.data) {
-			return nil, groupDenied("batch_compute_membership_changed")
+			return nil, nil, groupDenied("batch_compute_membership_changed")
 		}
 		delete(generation, member.id)
 	}
 	if len(generation) != 0 {
-		return nil, groupDenied("batch_compute_membership_changed")
+		return nil, nil, groupDenied("batch_compute_membership_changed")
 	}
 	expectedTasks := map[string]bool{}
 	for _, member := range result {
@@ -352,27 +359,31 @@ func (c *client) batchChildren(ctx context.Context, parent asset.Identity, data 
 	}
 	groups, err := c.batchTaskGroups(parent.NativeID, data)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	for _, group := range groups {
 		tasks, err := c.batchList(ctx, "batch.projects.locations.jobs.taskGroups.tasks.list", map[string]any{"parent": group, "pageSize": 100}, "tasks")
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		for _, task := range tasks {
 			id := c.canonicalName("//batch.googleapis.com/" + text(task["name"]))
 			if !expectedTasks[id] {
-				return nil, groupDenied("batch_task_membership_changed")
+				return nil, nil, groupDenied("batch_task_membership_changed")
 			}
 			delete(expectedTasks, id)
 		}
 	}
 	if len(expectedTasks) != 0 {
-		return nil, groupDenied("batch_task_membership_changed")
+		return nil, nil, groupDenied("batch_task_membership_changed")
 	}
 	if err := c.verifyBatchParent(ctx, productTarget{ParentType: batchJobType, ParentID: parent.NativeID, ParentUID: text(data["uid"]), ParentConfiguration: batchConfiguration(live)}); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	sort.Slice(result, func(i, j int) bool { return result[i].id < result[j].id })
-	return result, nil
+	autoDisks := map[string]map[string]any{}
+	for id := range attached {
+		autoDisks[id] = ownedDisks[id].data
+	}
+	return result, autoDisks, nil
 }

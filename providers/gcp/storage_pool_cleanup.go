@@ -238,6 +238,18 @@ func (a *action) storagePoolReadback(ctx context.Context, request contracts.Acti
 	if reason := a.client.storagePoolProtection(request.Asset.Normalized, members); reason != "" {
 		return contracts.ReadbackResult{}, groupDenied(reason)
 	}
+	// A live pool decides "not done" whatever its disks show, so disks are read
+	// only once the pool is gone.
+	live, err := a.readResource(ctx)
+	if err == nil {
+		if err = a.client.storagePoolSame(request.Asset, live); err != nil {
+			return contracts.ReadbackResult{}, err
+		}
+		return contracts.ReadbackResult{Exists: true, State: text(live["state"])}, nil
+	}
+	if !isNotFound(err) {
+		return contracts.ReadbackResult{}, err
+	}
 	// A later disk read error still fails the readback after one disk is seen,
 	// so every disk is read (concurrently) and the first error in order wins.
 	readErrs := make([]error, len(members))
@@ -255,17 +267,7 @@ func (a *action) storagePoolReadback(ctx context.Context, request contracts.Acti
 		}
 		exists = exists || err == nil
 	}
-	live, err := a.readResource(ctx)
-	if isNotFound(err) {
-		return contracts.ReadbackResult{Exists: exists, State: "verifying_storage_pool_disks"}, nil
-	}
-	if err != nil {
-		return contracts.ReadbackResult{}, err
-	}
-	if err = a.client.storagePoolSame(request.Asset, live); err != nil {
-		return contracts.ReadbackResult{}, err
-	}
-	return contracts.ReadbackResult{Exists: true, State: text(live["state"])}, nil
+	return contracts.ReadbackResult{Exists: exists, State: "verifying_storage_pool_disks"}, nil
 }
 
 // errStoragePoolDiskExists stops concurrent preflight disk reads at the first
