@@ -1,5 +1,10 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  focusManager,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { Asset, CloudConnection, Relationship } from "@/api/types";
@@ -19,6 +24,14 @@ vi.mock("@/connections/ActiveConnectionProvider", () => ({
 
 vi.mock("@/app/PageTitleContext", () => ({
   PageTitle: () => null,
+}));
+
+const canvasViews = new Set<unknown>();
+vi.mock("../panorama/TopologyCanvas", () => ({
+  TopologyCanvas: ({ view }: { view: unknown }) => {
+    canvasViews.add(view);
+    return <div data-testid="topology" />;
+  },
 }));
 
 function fixtureAsset(id: string): Asset {
@@ -88,14 +101,13 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-it("loads only direct relations and the parent on the overview tab", async () => {
-  render(
-    <MemoryRouter initialEntries={["/assets/vpc-1"]}>
-      <QueryClientProvider
-        client={
-          new QueryClient({ defaultOptions: { queries: { retry: false } } })
-        }
-      >
+function renderAt(entry: string) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  const tree = () => (
+    <MemoryRouter initialEntries={[entry]}>
+      <QueryClientProvider client={client}>
         <LocaleProvider>
           <TooltipProvider>
             <Routes>
@@ -104,8 +116,14 @@ it("loads only direct relations and the parent on the overview tab", async () =>
           </TooltipProvider>
         </LocaleProvider>
       </QueryClientProvider>
-    </MemoryRouter>,
+    </MemoryRouter>
   );
+  const { rerender } = render(tree());
+  return () => rerender(tree());
+}
+
+it("loads only direct relations and the parent on the overview tab", async () => {
+  renderAt("/assets/vpc-1");
 
   expect(await screen.findByText("2001")).toBeInTheDocument();
   await waitFor(() =>
@@ -116,4 +134,41 @@ it("loads only direct relations and the parent on the overview tab", async () =>
   expect(assetRequests.filter((path) => path.includes("/graph"))).toEqual([
     "/api/assets/vpc-1/graph?include=lifecycle&edges=direct&connection_id=connection-a",
   ]);
+});
+
+it("keeps the topology view stable and stops 3-hop refetches after leaving the relationships tab", async () => {
+  canvasViews.clear();
+  const rerender = renderAt("/assets/vpc-1?view=relationships");
+  const memberRequests = () =>
+    paths.filter(
+      (path) => path.startsWith("/api/assets?") && path.includes("asset_id=m-"),
+    ).length;
+
+  expect(await screen.findByTestId("topology")).toBeInTheDocument();
+  expect(memberRequests()).toBeGreaterThan(0);
+  let directLoads = 1;
+  const refocus = async () => {
+    const expected = ++directLoads;
+    act(() => {
+      focusManager.setFocused(false);
+      focusManager.setFocused(true);
+    });
+    await waitFor(() =>
+      expect(
+        paths.filter((path) => path.includes("edges=direct")),
+      ).toHaveLength(expected),
+    );
+  };
+
+  // Refetched, structurally equal data must not rebuild the canvas view.
+  await refocus();
+  rerender();
+  expect(screen.getByTestId("topology")).toBeInTheDocument();
+  expect(canvasViews.size).toBe(1);
+
+  await userEvent.click(screen.getByRole("tab", { name: /Overview/ }));
+  const before = memberRequests();
+  await refocus();
+  expect(memberRequests()).toBe(before);
+  focusManager.setFocused(undefined);
 });

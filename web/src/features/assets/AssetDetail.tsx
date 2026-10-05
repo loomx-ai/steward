@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from "react";
+import { lazy, Suspense, useMemo, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { LocateFixed } from "lucide-react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
@@ -55,7 +55,13 @@ import {
 } from "./assetRegions";
 import { DirtyAssetButton } from "./DirtyAssetButton";
 import { panoramaResourcePath } from "../panorama/route";
-import { AssetRelationshipPanorama } from "./AssetRelationshipPanorama";
+
+// The topology canvas is heavy; load it only when the relationships tab opens.
+const AssetRelationshipPanorama = lazy(() =>
+  import("./AssetRelationshipPanorama").then((module) => ({
+    default: module.AssetRelationshipPanorama,
+  })),
+);
 
 type DetailView = "overview" | "relationships";
 
@@ -119,12 +125,18 @@ export function AssetDetail() {
   const related = useQuery({
     queryKey: ["related-assets", connection.id, relatedIDs],
     queryFn: () => findAssets(connection.id, relatedIDs),
-    enabled: relatedIDs.length > 0,
+    // Cached neighborhood data outlives the tab; never refetch 3-hop assets
+    // from the overview.
+    enabled: selectedView === "relationships" && relatedIDs.length > 0,
   });
   const value = asset.data;
-  const kind = catalog.data
-    ?.flatMap((bundle) => bundle.kinds)
-    .find((item) => item.id === value?.resource_kind_id);
+  const resourceKinds = useMemo(
+    () => catalog.data?.flatMap((bundle) => bundle.kinds) ?? [],
+    [catalog.data],
+  );
+  const kind = resourceKinds.find(
+    (item) => item.id === value?.resource_kind_id,
+  );
   const kindName = assetResourceKindName(
     value?.identity.native_type,
     kind,
@@ -184,6 +196,15 @@ export function AssetDetail() {
   const supportingError = direct.error ?? neighborhood.error ?? related.error;
   const relationshipsPending =
     neighborhood.isPending || (relatedIDs.length > 0 && related.isPending);
+
+  const relationshipsLoading = (
+    <div
+      className="grid h-full min-h-48 place-items-center text-sm text-muted-foreground"
+      aria-busy="true"
+    >
+      {t("asset.relationshipsLoading")}
+    </div>
+  );
 
   const changeView = (view: string) => {
     if (view === "relationships") {
@@ -336,23 +357,18 @@ export function AssetDetail() {
                   className="min-h-0 flex-1 overflow-hidden"
                 >
                   {relationshipsPending ? (
-                    <div
-                      className="grid h-full min-h-48 place-items-center text-sm text-muted-foreground"
-                      aria-busy="true"
-                    >
-                      {t("asset.relationshipsLoading")}
-                    </div>
+                    relationshipsLoading
                   ) : (
-                    <AssetRelationshipPanorama
-                      key={value.id}
-                      focus={value}
-                      assets={related.data ?? []}
-                      relationships={neighborhood.data?.relationships ?? []}
-                      lifecycleBindings={neighborhood.data?.bindings ?? []}
-                      resourceKinds={
-                        catalog.data?.flatMap((bundle) => bundle.kinds) ?? []
-                      }
-                    />
+                    <Suspense fallback={relationshipsLoading}>
+                      <AssetRelationshipPanorama
+                        key={value.id}
+                        focus={value}
+                        assets={related.data ?? []}
+                        relationships={neighborhood.data?.relationships ?? []}
+                        lifecycleBindings={neighborhood.data?.bindings ?? []}
+                        resourceKinds={resourceKinds}
+                      />
+                    </Suspense>
                   )}
                 </TabsContent>
               </Tabs>

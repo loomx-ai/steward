@@ -108,6 +108,23 @@ export function buildAssetRelationshipTopologyView({
       ]),
     ]),
   ];
+  // Parent native IDs per member, built once instead of scanning every edge
+  // per resource.
+  const parentNativeIDsByID = new Map<string, Set<string>>();
+  for (const relationship of relationships) {
+    if (relationship.type !== "member_of") continue;
+    const parentNativeID = assetsByID
+      .get(relationship.target_asset_id)
+      ?.identity.native_id.trim();
+    if (!parentNativeID) continue;
+    const parents = parentNativeIDsByID.get(relationship.source_asset_id);
+    if (parents) parents.add(parentNativeID);
+    else
+      parentNativeIDsByID.set(
+        relationship.source_asset_id,
+        new Set([parentNativeID]),
+      );
+  }
 
   return {
     kind: "resource_graph",
@@ -122,8 +139,7 @@ export function buildAssetRelationshipTopologyView({
         ? topologyResource(
             asset,
             resourceKinds.get(asset.resource_kind_id),
-            relationships,
-            assetsByID,
+            parentNativeIDsByID.get(asset.id),
             locale,
           )
         : missingTopologyResource(id);
@@ -169,8 +185,7 @@ export function buildAssetRelationshipTopologyView({
 function topologyResource(
   asset: Asset,
   kind: ResourceKind | undefined,
-  relationships: readonly Relationship[],
-  assetsByID: ReadonlyMap<string, Asset>,
+  parentNativeIDs: ReadonlySet<string> | undefined,
   locale: string,
 ): TopologyResource {
   const selectable =
@@ -182,21 +197,7 @@ function topologyResource(
   if (location && location.toLowerCase() !== "global") {
     consoleLinkValues.regionId ??= location;
   }
-  const parentNativeIDs = new Set(
-    relationships.flatMap((relationship) => {
-      if (
-        relationship.type !== "member_of" ||
-        relationship.source_asset_id !== asset.id
-      ) {
-        return [];
-      }
-      const parentNativeID = assetsByID
-        .get(relationship.target_asset_id)
-        ?.identity.native_id.trim();
-      return parentNativeID ? [parentNativeID] : [];
-    }),
-  );
-  if (parentNativeIDs.size === 1) {
+  if (parentNativeIDs?.size === 1) {
     consoleLinkValues.parentId = [...parentNativeIDs][0];
   }
 
