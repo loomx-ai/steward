@@ -15,9 +15,16 @@ func (c *client) firewallPolicies(ctx context.Context, kind string, containers [
 	if kind == networkFirewallPolicyType {
 		return c.firewallList(ctx, "compute.networkFirewallPolicies.aggregatedList", map[string]any{"project": c.project, "includeAllScopes": true, "maxResults": 500}, "items.*.firewallPolicies")
 	}
+	// Containers are listed concurrently and checked in order.
+	lists := make([][]map[string]any, len(containers))
+	errs := make([]error, len(containers))
+	_ = forEachConcurrently(len(containers), groupReadConcurrency, func(index int) error {
+		lists[index], errs[index] = c.firewallList(ctx, "compute.firewallPolicies.list", map[string]any{"parentId": containers[index].Name, "maxResults": 500}, "items")
+		return errs[index]
+	})
 	var result []map[string]any
-	for _, parent := range containers {
-		rows, err := c.firewallList(ctx, "compute.firewallPolicies.list", map[string]any{"parentId": parent.Name, "maxResults": 500}, "items")
+	for index, parent := range containers {
+		rows, err := lists[index], errs[index]
 		if err != nil {
 			return nil, err
 		}
@@ -93,24 +100,39 @@ func (r *Runtime) listFirewall(ctx context.Context, c *client, request contracts
 		ids = append(ids, id)
 	}
 	slices.Sort(ids)
-	var proofs []string
+	var selected, regions []string
 	for _, id := range ids {
 		raw := map[string]any{"name": id, "assetType": parentKind, "resource": map[string]any{"data": listed[id]}}
 		_, region := assetLocation(raw)
 		if request.Scope.Kind == asset.ScopeGlobal && region != "global" || request.Scope.Kind == asset.ScopeRegion && region != request.Scope.NativeID && !(request.NetworkTarget != nil && region == "global") {
 			continue
 		}
+		selected, regions = append(selected, id), append(regions, region)
+	}
+	// Each policy's read-then-snapshot sequence runs in one goroutine and
+	// policies run concurrently; items are then built in ID order, so the first
+	// failing policy in order is reported as a serial walk would report it.
+	policies := make([]map[string]any, len(selected))
+	snapshots := make([]map[string]map[string]any, len(selected))
+	errs := make([]error, len(selected))
+	_ = forEachConcurrently(len(selected), groupReadConcurrency, func(index int) error {
+		id := selected[index]
 		policy, err := c.firewallReadPolicy(ctx, parentKind, id)
-		if err != nil {
-			return batch, err
+		if err == nil && firewallConfiguration(listed[id], false) != policy[firewallProof] {
+			err = groupDenied("firewall_policy_list_detail_changed")
 		}
-		if firewallConfiguration(listed[id], false) != policy[firewallProof] {
-			return batch, groupDenied("firewall_policy_list_detail_changed")
+		if err == nil {
+			snapshots[index], err = c.firewallSnapshot(ctx, parentKind, id, policy)
 		}
-		children, err := c.firewallSnapshot(ctx, parentKind, id, policy)
-		if err != nil {
-			return batch, err
+		policies[index], errs[index] = policy, err
+		return err
+	})
+	var proofs []string
+	for index, id := range selected {
+		if errs[index] != nil {
+			return batch, errs[index]
 		}
+		policy, children, region := policies[index], snapshots[index], regions[index]
 		proofs = append(proofs, id+"\n"+text(policy[firewallSnapshotKey]))
 		resources := children
 		if isFirewallPolicy(kind) {

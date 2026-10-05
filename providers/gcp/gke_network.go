@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -313,6 +314,23 @@ func (c *client) gkeNetwork(ctx context.Context, scan asset.ScanRunID, root asse
 		knownNodes[node.id] = true
 	}
 	resources := map[string]gkeNetworkResource{}
+	// The walk below stays serial (its order decides the first error), but
+	// its GETs are started ahead with bounded concurrency: every candidate
+	// frontend and NEG up front, and each resource's references on its visit.
+	ahead := newReadAhead(ctx, c)
+	defer ahead.close()
+	walked := func(kind, id string) bool {
+		switch kind {
+		case "compute.googleapis.com/Network", "compute.googleapis.com/Subnetwork", "compute.googleapis.com/Instance", "compute.googleapis.com/Disk", "compute.googleapis.com/RegionDisk":
+			return false
+		}
+		return !knownNodes[id] && gkeNetworkKind(kind)
+	}
+	prefetch := func(kind, id string) {
+		if _, seen := resources[id]; !seen && walked(kind, id) {
+			ahead.start(kind, id)
+		}
+	}
 	var walk func(string, string) error
 	walk = func(kind, id string) error {
 		switch kind {
@@ -328,7 +346,7 @@ func (c *client) gkeNetwork(ctx context.Context, scan asset.ScanRunID, root asse
 		if _, seen := resources[id]; seen {
 			return nil
 		}
-		data, err := c.nativeGet(ctx, kind, id)
+		data, err := ahead.get(kind, id)
 		if err != nil {
 			return err
 		}
@@ -365,7 +383,13 @@ func (c *client) gkeNetwork(ctx context.Context, scan asset.ScanRunID, root asse
 		if kind == "compute.googleapis.com/BackendBucket" {
 			return nil // Its user-owned storage bucket is not a GKE deletion impact.
 		}
-		for target, ids := range references(c, data) {
+		refs := references(c, data)
+		for target, ids := range refs {
+			for _, child := range ids {
+				prefetch(target, child)
+			}
+		}
+		for target, ids := range refs {
 			for _, child := range ids {
 				if err := walk(target, child); err != nil {
 					return err
@@ -373,6 +397,36 @@ func (c *client) gkeNetwork(ctx context.Context, scan asset.ScanRunID, root asse
 			}
 		}
 		return nil
+	}
+	// Start reading every frontend a live workload may match (internal subnets
+	// are checked by the walk) and every NEG its status names.
+	for _, workload := range result.Workloads {
+		if text(object(workload.data["metadata"])["deletionTimestamp"]) != "" {
+			continue
+		}
+		for _, rule := range append(slices.Clone(regional), global...) {
+			if network := c.canonicalName(text(rule["network"])); network != "" && network != networks[0] || !forwardingMatchesWorkload(rule, workload) {
+				continue
+			}
+			kind := "compute.googleapis.com/ForwardingRule"
+			if strings.Contains(text(rule["selfLink"]), "/global/") {
+				kind = "compute.googleapis.com/GlobalForwardingRule"
+			}
+			if id, err := c.computeID(text(rule["selfLink"]), kind); err == nil {
+				prefetch(kind, id)
+			}
+		}
+		var status struct {
+			Groups map[string]string `json:"network_endpoint_groups"`
+			Zones  []string          `json:"zones"`
+		}
+		if workload.Kind == "Service" && json.Unmarshal([]byte(text(object(object(workload.data["metadata"])["annotations"])["cloud.google.com/neg-status"])), &status) == nil {
+			for _, zone := range status.Zones {
+				for _, name := range status.Groups {
+					prefetch(negType, "//compute.googleapis.com/projects/"+c.project+"/zones/"+zone+"/networkEndpointGroups/"+name)
+				}
+			}
+		}
 	}
 	// Every workload is matched against the same internal frontends; read each
 	// frontend subnet's network once.
@@ -512,13 +566,17 @@ func (c *client) gkeNetworkAncillary(ctx, lists context.Context, root asset.Asse
 			}
 		}
 	}
+	// Templates are read concurrently and checked in node order; tags are a set,
+	// so only the first error depends on that order.
 	templates := map[string]bool{}
+	var templateIDs []string
+	var invalidTemplate error
 	for _, node := range nodes {
 		if node.kind == instanceType {
 			nativeNodes[node.id] = true
 			addTags(node.data)
 		}
-		if node.kind == managerType {
+		if node.kind == managerType && invalidTemplate == nil {
 			for _, version := range append([]any{node.data}, array(node.data["versions"])...) {
 				link := text(object(version)["instanceTemplate"])
 				if link == "" || templates[link] {
@@ -527,15 +585,25 @@ func (c *client) gkeNetworkAncillary(ctx, lists context.Context, root asset.Asse
 				templates[link] = true
 				id, err := c.computeID(link, "compute.googleapis.com/InstanceTemplate")
 				if err != nil {
-					return err
+					invalidTemplate = err
+					break
 				}
-				data, err := c.nativeGet(ctx, "compute.googleapis.com/InstanceTemplate", id)
-				if err != nil {
-					return err
-				}
-				addTags(object(data["properties"]))
+				templateIDs = append(templateIDs, id)
 			}
 		}
+	}
+	if err := readThenCheck(len(templateIDs), func(index int) (map[string]any, error) {
+		return c.nativeGet(ctx, "compute.googleapis.com/InstanceTemplate", templateIDs[index])
+	}, func(_ int, data map[string]any, err error) error {
+		if err == nil {
+			addTags(object(data["properties"]))
+		}
+		return err
+	}); err != nil {
+		return err
+	}
+	if invalidTemplate != nil {
+		return invalidTemplate
 	}
 	add := func(kind string, data map[string]any, deletes bool, phase string) error {
 		id, err := c.computeID(text(data["selfLink"]), kind)
@@ -839,4 +907,58 @@ func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.In
 		return nil, err
 	}
 	return items, nil
+}
+
+// readAhead starts native GETs before a serial walk needs them, with at most
+// groupReadConcurrency in flight, and reads each resource once. close cancels
+// reads the walk never needed and waits for them.
+type readAhead struct {
+	ctx    context.Context
+	cancel context.CancelFunc
+	client *client
+	slots  chan struct{}
+	wg     sync.WaitGroup
+	mu     sync.Mutex
+	reads  map[string]*pendingRead
+}
+
+type pendingRead struct {
+	done chan struct{}
+	data map[string]any
+	err  error
+}
+
+func newReadAhead(ctx context.Context, c *client) *readAhead {
+	ctx, cancel := context.WithCancel(ctx)
+	return &readAhead{ctx: ctx, cancel: cancel, client: c, slots: make(chan struct{}, groupReadConcurrency), reads: map[string]*pendingRead{}}
+}
+
+func (r *readAhead) start(kind, id string) *pendingRead {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if read := r.reads[id]; read != nil {
+		return read
+	}
+	read := &pendingRead{done: make(chan struct{})}
+	r.reads[id] = read
+	r.wg.Add(1)
+	go func() {
+		defer r.wg.Done()
+		defer close(read.done)
+		r.slots <- struct{}{}
+		defer func() { <-r.slots }()
+		read.data, read.err = r.client.nativeGet(r.ctx, kind, id)
+	}()
+	return read
+}
+
+func (r *readAhead) get(kind, id string) (map[string]any, error) {
+	read := r.start(kind, id)
+	<-read.done
+	return read.data, read.err
+}
+
+func (r *readAhead) close() {
+	r.cancel()
+	r.wg.Wait()
 }

@@ -24,33 +24,51 @@ func (c *client) storagePoolIdentity(id string, data map[string]any, scope strin
 	return nil
 }
 
-// Member summaries are observations of disks, not child delete actions. Disk
-// inventory remains authoritative for the disk kind and supplies its own edges.
-func (c *client) enrichStoragePool(ctx context.Context, item *contracts.InventoryItem, data map[string]any) error {
-	members, err := c.storagePoolDisks(ctx, item.NativeID)
+// storagePoolObservation is a pool's member reads, kept apart from the item so
+// inventory can read several pools at once.
+type storagePoolObservation struct {
+	members []map[string]any
+	planned []poolMember
+}
+
+func (c *client) storagePoolObserve(ctx context.Context, id string, data map[string]any) (storagePoolObservation, error) {
+	members, err := c.storagePoolDisks(ctx, id)
 	if err != nil {
-		return err
+		return storagePoolObservation{}, err
 	}
 	kind, _ := findType(storagePoolType)
-	endpoint, err := c.resourceURL(kind, item.NativeID)
+	endpoint, err := c.resourceURL(kind, id)
 	if err != nil {
-		return err
+		return storagePoolObservation{}, err
 	}
 	live, err := c.request(ctx, "GET", endpoint, nil)
 	if err != nil {
-		return err
+		return storagePoolObservation{}, err
 	}
 	zone := "zones/" + last(text(data["zone"]))
-	if err := c.storagePoolIdentity(item.NativeID, live, zone); err != nil {
-		return err
+	if err := c.storagePoolIdentity(id, live, zone); err != nil {
+		return storagePoolObservation{}, err
 	}
 	// Reusing a pool name while paginating must not attach the replacement's
 	// disks to the old creation. Mutable utilization need not be identical.
 	if text(data["id"]) == "" || text(data["creationTimestamp"]) == "" || text(data["id"]) != text(live["id"]) || text(data["creationTimestamp"]) != text(live["creationTimestamp"]) {
-		return groupDenied("storage_pool_creation_changed")
+		return storagePoolObservation{}, groupDenied("storage_pool_creation_changed")
 	}
-	rows := make([]any, 0, len(members))
-	for _, member := range members {
+	planned, err := c.storagePoolMembers(id, members)
+	if err != nil {
+		return storagePoolObservation{}, err
+	}
+	if storagePoolConfiguration(data) != storagePoolConfiguration(live) {
+		return storagePoolObservation{}, groupDenied("storage_pool_configuration_changed")
+	}
+	return storagePoolObservation{members, planned}, nil
+}
+
+// Member summaries are observations of disks, not child delete actions. Disk
+// inventory remains authoritative for the disk kind and supplies its own edges.
+func (c *client) applyStoragePool(item *contracts.InventoryItem, data map[string]any, observed storagePoolObservation) {
+	rows := make([]any, 0, len(observed.members))
+	for _, member := range observed.members {
 		rows = append(rows, safePayload(member))
 		id, _ := c.storagePoolDiskID(text(member["disk"]), last(text(data["zone"])))
 		// Shared pool summaries may name another project's disks. Keep those
@@ -59,23 +77,15 @@ func (c *client) enrichStoragePool(ctx context.Context, item *contracts.Inventor
 			item.NetworkReferences = append(item.NetworkReferences, id)
 		}
 	}
-	planned, err := c.storagePoolMembers(item.NativeID, members)
-	if err != nil {
-		return err
-	}
-	if storagePoolConfiguration(data) != storagePoolConfiguration(live) {
-		return groupDenied("storage_pool_configuration_changed")
-	}
-	encoded, _ := json.Marshal(planned)
+	encoded, _ := json.Marshal(observed.planned)
 	proof := storagePoolConfiguration(data)
 	item.Normalized[poolConfigurationKey] = proof
 	item.Normalized[poolMembersKey] = string(encoded)
 	item.Normalized[poolSnapshotKey] = infraManifestHash(proof, string(encoded))
-	actionable := c.storagePoolProtection(data, planned) == ""
+	actionable := c.storagePoolProtection(data, observed.planned) == ""
 	item.Actionable = &actionable
 	item.Normalized["storage_pool_disks"] = rows
 	item.Raw["storagePoolDisks"] = map[string]any{"items": rows}
-	return nil
 }
 
 func (c *client) storagePoolDisks(ctx context.Context, id string) ([]map[string]any, error) {

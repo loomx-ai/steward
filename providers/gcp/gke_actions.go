@@ -83,8 +83,9 @@ func (a *action) plannedGKE(ctx context.Context, request contracts.ActionRequest
 		if err != nil {
 			return "", err
 		}
-		for _, resource := range network.Resources {
-			data, err := a.client.nativeGet(ctx, resource.Kind, resource.ID)
+		datas, errs := a.client.readGKENetwork(ctx, network.Resources, nil)
+		for i, resource := range network.Resources {
+			data, err := datas[i], errs[i]
 			if isNotFound(err) && resource.Delete {
 				data = map[string]any{"id": resource.UID}
 			} else if err != nil {

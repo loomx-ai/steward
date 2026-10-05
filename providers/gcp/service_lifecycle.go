@@ -431,13 +431,20 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 		return err
 	}
 	visited := map[groupImpactKey]bool{}
-	var verify func(asset.Asset, map[string]any) error
-	verify = func(parent asset.Asset, data map[string]any) error {
-		children, err := a.client.serviceChildren(ctx, parent.Identity, data)
-		if err != nil {
-			return err
-		}
-		for _, child := range children {
+	var verify func(asset.Asset, []serviceChild) error
+	verify = func(parent asset.Asset, children []serviceChild) error {
+		// Every planned child's own children are listed concurrently up front
+		// and checked in child order, as the serial recursion did.
+		nested := make([][]serviceChild, len(children))
+		nestedErrs := make([]error, len(children))
+		_ = forEachConcurrently(len(children), groupReadConcurrency, func(index int) error {
+			child := children[index]
+			if impact, ok := impacts[groupImpactKey{parent.ID, child.id}]; ok && !child.direct {
+				nested[index], nestedErrs[index] = a.client.serviceChildren(ctx, impact.Asset.Identity, child.data)
+			}
+			return nil
+		})
+		for index, child := range children {
 			if child.direct {
 				return groupDenied("service_prerequisite_still_exists")
 			}
@@ -462,33 +469,55 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 			if protectedComputeLabels(child.data) || protectionReason(child.kind, child.data) != "" {
 				return groupDenied("service_child_protected")
 			}
-			if err := verify(impact.Asset, child.data); err != nil {
+			if nestedErrs[index] != nil {
+				return nestedErrs[index]
+			}
+			if err := verify(impact.Asset, nested[index]); err != nil {
 				return err
 			}
 		}
 		return nil
 	}
-	if err := verify(request.Asset, live); err != nil {
+	children, err := a.client.serviceChildren(ctx, request.Asset.Identity, live)
+	if err != nil {
+		return err
+	}
+	if err := verify(request.Asset, children); err != nil {
 		return err
 	}
 	// A removed child may have been deleted independently after planning. Prove
 	// its absence; a changed live membership may never silently drop an impact.
-	for key, impact := range impacts {
-		if visited[key] {
-			continue
+	// Valid removed children are read concurrently and checked in key order.
+	var removed []groupImpactKey
+	for _, key := range sortedImpactKeys(impacts) {
+		if !visited[key] {
+			removed = append(removed, key)
 		}
+	}
+	valid := func(impact contracts.ActionImpact) bool {
+		return impact.Delete && a.serviceImpactDescendant(request, impact)
+	}
+	readErrs := make([]error, len(removed))
+	_ = forEachConcurrently(len(removed), groupReadConcurrency, func(index int) error {
+		if impact := impacts[removed[index]]; valid(impact) {
+			kind, _ := findType(impact.Asset.Identity.NativeType)
+			endpoint, err := a.client.resourceURL(kind, impact.Asset.Identity.NativeID)
+			if err == nil {
+				_, err = a.client.request(ctx, "GET", endpoint, nil)
+			}
+			readErrs[index] = err
+		}
+		return nil
+	})
+	for index, key := range removed {
+		impact := impacts[key]
 		if !impact.Delete {
 			return groupDenied("service_child_retention_not_supported")
 		}
 		if !a.serviceImpactDescendant(request, impact) {
 			return groupDenied("service_child_scope_changed")
 		}
-		kind, _ := findType(impact.Asset.Identity.NativeType)
-		endpoint, err := a.client.resourceURL(kind, impact.Asset.Identity.NativeID)
-		if err != nil {
-			return err
-		}
-		if _, err = a.client.request(ctx, "GET", endpoint, nil); !isNotFound(err) {
+		if err := readErrs[index]; !isNotFound(err) {
 			if err != nil {
 				return err
 			}

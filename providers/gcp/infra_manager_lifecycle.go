@@ -63,27 +63,41 @@ func (c *client) infraList(ctx context.Context, kind, parent string, details boo
 		return nil, err
 	}
 	var records []infraRecord
+	var invalid error
 	seen := map[string]bool{}
 	for _, row := range rows {
 		id, err := c.infraID(kind, text(row["name"]))
 		if err != nil || !strings.HasPrefix(id, parent+"/") || seen[id] {
-			return nil, groupDenied("infra_child_list_invalid")
+			invalid = groupDenied("infra_child_list_invalid")
+			break
 		}
 		seen[id] = true
 		if err := c.infraIdentity(kind, id, row); err != nil {
-			return nil, err
-		}
-		if details {
-			live, err := c.infraRead(ctx, kind, id)
-			if err != nil {
-				return nil, err
-			}
-			if err := infraSame(row, live); err != nil {
-				return nil, err
-			}
-			row = live
+			invalid = err
+			break
 		}
 		records = append(records, infraRecord{kind, id, row})
+	}
+	if details {
+		// Rows validated up to the first invalid one are read concurrently and
+		// checked in list order, so the first error matches a serial walk.
+		if err := readThenCheck(len(records), func(index int) (map[string]any, error) {
+			return c.infraRead(ctx, kind, records[index].id)
+		}, func(index int, live map[string]any, err error) error {
+			if err != nil {
+				return err
+			}
+			if err := infraSame(records[index].data, live); err != nil {
+				return err
+			}
+			records[index].data = live
+			return nil
+		}); err != nil {
+			return nil, err
+		}
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	slices.SortFunc(records, func(a, b infraRecord) int { return strings.Compare(a.id, b.id) })
 	return records, nil
@@ -97,16 +111,35 @@ func (c *client) infraRecords(ctx context.Context, kind, parent string, details 
 			return nil, err
 		}
 		result = append(result, records...)
-		for _, record := range records {
-			children, err := c.infraRecords(ctx, record.kind, record.id, details)
-			if err != nil {
-				return nil, err
-			}
+		// Sibling subtrees are listed concurrently; the lowest failing sibling's
+		// error is returned, as the serial recursion reported it.
+		nested := make([][]infraRecord, len(records))
+		if err := forEachConcurrently(len(records), groupReadConcurrency, func(index int) (err error) {
+			nested[index], err = c.infraRecords(ctx, records[index].kind, records[index].id, details)
+			return err
+		}); err != nil {
+			return nil, err
+		}
+		for _, children := range nested {
 			result = append(result, children...)
 		}
 	}
 	slices.SortFunc(result, func(a, b infraRecord) int { return strings.Compare(a.id, b.id) })
 	return result, nil
+}
+
+// readAllStoringNotFound reads count items with groupReadConcurrency in flight
+// and stores every outcome. A NotFound is a result, not a failure, so it does
+// not stop later reads; callers walk the results in index order.
+func readAllStoringNotFound(count int, read func(int) (map[string]any, error)) ([]map[string]any, []error) {
+	data, errs := make([]map[string]any, count), make([]error, count)
+	_ = forEachConcurrently(count, groupReadConcurrency, func(index int) error {
+		if data[index], errs[index] = read(index); isNotFound(errs[index]) {
+			return nil
+		}
+		return errs[index]
+	})
+	return data, errs
 }
 
 func (c *client) infraSnapshot(ctx context.Context, kind, id string, data map[string]any) ([]infraMember, error) {
@@ -124,10 +157,29 @@ func (c *client) infraSnapshot(ctx context.Context, kind, id string, data map[st
 			return nil, err
 		}
 	}
+	// Physical members of the latest revision are read concurrently, then
+	// walked in record order so the first error matches a serial walk.
+	physicalRecord := func(record infraRecord) bool {
+		return record.kind == infraResource && strings.HasPrefix(record.id, latest+"/resources/") && latest != ""
+	}
+	type physicalRead struct {
+		member    infraMember
+		supported bool
+		err       error
+	}
+	reads := make([]physicalRead, len(records))
+	_ = forEachConcurrently(len(records), groupReadConcurrency, func(index int) error {
+		if !physicalRecord(records[index]) {
+			return nil
+		}
+		read := &reads[index]
+		read.member, read.supported, read.err = c.infraPhysicalMember(ctx, records[index].data)
+		return read.err
+	})
 	var members []infraMember
 	seen := map[string]bool{}
 	latestFound := latest == ""
-	for _, record := range records {
+	for index, record := range records {
 		member := infraMember{Kind: record.kind, ID: record.id, Proof: infraConfiguration(record.data)}
 		latestFound = latestFound || record.id == latest
 		if record.id == latest {
@@ -137,8 +189,8 @@ func (c *client) infraSnapshot(ctx context.Context, kind, id string, data map[st
 				data[referenceKey(kind)] = refs
 			}
 		}
-		if record.kind == infraResource && strings.HasPrefix(record.id, latest+"/resources/") && latest != "" {
-			physical, supported, err := c.infraPhysicalMember(ctx, record.data)
+		if physicalRecord(record) {
+			physical, supported, err := reads[index].member, reads[index].supported, reads[index].err
 			if err != nil {
 				return nil, err
 			}

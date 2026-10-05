@@ -259,24 +259,8 @@ func (a *action) infraPreflight(ctx context.Context, request contracts.ActionReq
 	if !slices.Equal(members, current) {
 		return contracts.PreflightResult{}, groupDenied("infra_reviewed_members_changed")
 	}
-	for _, impact := range request.LifecycleImpacts {
-		if impact.ControllerID != request.Asset.ID || isInfra(impact.Asset.Identity.NativeType) || policy == "ABANDON" {
-			continue
-		}
-		driver, err := a.infraChildDriver(impact.Asset)
-		if err != nil {
-			return contracts.PreflightResult{}, err
-		}
-		check, err := driver.Preflight(ctx, infraChildRequest(request, impact.Asset))
-		if err != nil {
-			return contracts.PreflightResult{}, err
-		}
-		if !check.Allowed || check.Absent {
-			return contracts.PreflightResult{}, groupDenied("infra_managed_resource_not_ready")
-		}
-		if err := driver.infraNativeDeleteReady(ctx, infraChildRequest(request, impact.Asset)); err != nil {
-			return contracts.PreflightResult{}, err
-		}
+	if err := a.infraManagedPreflight(ctx, request, policy); err != nil {
+		return contracts.PreflightResult{}, err
 	}
 	if policy == "ABANDON" {
 		if err := a.infraRetainedDescendants(ctx, request); err != nil {
@@ -313,55 +297,18 @@ func (a *action) infraReadback(ctx context.Context, request contracts.ActionRequ
 		}
 		read.Exists, read.State = true, text(root["state"])
 	}
-	for _, member := range members {
-		var live map[string]any
-		var err error
-		if isInfra(member.Kind) {
-			live, err = a.client.infraRead(ctx, member.Kind, member.ID)
-		} else {
-			live, err = a.client.infraPhysicalRead(ctx, member.Kind, member.ID)
-		}
-		if isNotFound(err) {
-			if !isInfra(member.Kind) && policy == "ABANDON" && !member.Absent {
-				return read, groupDenied("infra_retained_resource_missing")
-			}
-			continue
-		}
-		if err != nil {
-			return read, err
-		}
-		proof, expected := infraPhysicalConfiguration(live), member.Proof
-		if isInfra(member.Kind) {
-			proof = infraConfiguration(live)
-		} else if policy == "DELETE" && member.Incarnation != "" {
-			// Native deletion can remove attachments and child collections before
-			// the containing resource disappears. Keep checking its immutable ID
-			// during that transition; retained resources still require full config.
-			proof, expected = infraPhysicalIncarnation(member.Kind, live), member.Incarnation
-		}
-		if member.Absent || proof != expected {
-			return read, groupDenied("infra_member_recreated_or_changed")
-		}
-		if isInfra(member.Kind) || policy == "DELETE" {
-			read.Exists = true
-		}
+	exists, err := a.infraMembersExist(ctx, members, policy)
+	if err != nil {
+		return read, err
 	}
+	read.Exists = read.Exists || exists
 	// Native physical drivers also verify their transitive cascades; an absent
 	// deployment or resource record is never proof that a VM/disk/table is gone.
-	for _, impact := range request.LifecycleImpacts {
-		if impact.ControllerID != request.Asset.ID || isInfra(impact.Asset.Identity.NativeType) || policy == "ABANDON" {
-			continue
-		}
-		driver, err := a.infraChildDriver(impact.Asset)
-		if err != nil {
-			return read, err
-		}
-		child, err := driver.Readback(ctx, infraChildRequest(request, impact.Asset))
-		if err != nil {
-			return read, err
-		}
-		read.Exists = read.Exists || child.Exists
+	exists, err = a.infraManagedReadback(ctx, request, policy)
+	if err != nil {
+		return read, err
 	}
+	read.Exists = read.Exists || exists
 	if policy == "ABANDON" {
 		if err := a.infraRetainedDescendants(ctx, request); err != nil {
 			return read, err
@@ -394,6 +341,95 @@ func (a *action) infraReadback(ctx context.Context, request contracts.ActionRequ
 		read.Exists, read.State = true, text(again["state"])
 	}
 	return read, nil
+}
+
+// infraMembersExist reads the reviewed members concurrently and checks them in
+// manifest order, so the first error matches a serial walk.
+func (a *action) infraMembersExist(ctx context.Context, members []infraMember, policy string) (bool, error) {
+	lives, errs := readAllStoringNotFound(len(members), func(index int) (map[string]any, error) {
+		if isInfra(members[index].Kind) {
+			return a.client.infraRead(ctx, members[index].Kind, members[index].ID)
+		}
+		return a.client.infraPhysicalRead(ctx, members[index].Kind, members[index].ID)
+	})
+	exists := false
+	for index, member := range members {
+		live, err := lives[index], errs[index]
+		if isNotFound(err) {
+			if !isInfra(member.Kind) && policy == "ABANDON" && !member.Absent {
+				return false, groupDenied("infra_retained_resource_missing")
+			}
+			continue
+		}
+		if err != nil {
+			return false, err
+		}
+		proof, expected := infraPhysicalConfiguration(live), member.Proof
+		if isInfra(member.Kind) {
+			proof = infraConfiguration(live)
+		} else if policy == "DELETE" && member.Incarnation != "" {
+			// Native deletion can remove attachments and child collections before
+			// the containing resource disappears. Keep checking its immutable ID
+			// during that transition; retained resources still require full config.
+			proof, expected = infraPhysicalIncarnation(member.Kind, live), member.Incarnation
+		}
+		if member.Absent || proof != expected {
+			return false, groupDenied("infra_member_recreated_or_changed")
+		}
+		exists = exists || isInfra(member.Kind) || policy == "DELETE"
+	}
+	return exists, nil
+}
+
+// infraManagedPreflight preflights the managed resources concurrently; every
+// outcome is an error, so the first failing resource in impact order is
+// reported, as the serial walk did.
+func (a *action) infraManagedPreflight(ctx context.Context, request contracts.ActionRequest, policy string) error {
+	managed := a.infraManagedImpacts(request, policy)
+	return forEachConcurrently(len(managed), groupReadConcurrency, func(index int) error {
+		driver, err := a.infraChildDriver(managed[index].Asset)
+		if err != nil {
+			return err
+		}
+		child := infraChildRequest(request, managed[index].Asset)
+		check, err := driver.Preflight(ctx, child)
+		if err != nil {
+			return err
+		}
+		if !check.Allowed || check.Absent {
+			return groupDenied("infra_managed_resource_not_ready")
+		}
+		return driver.infraNativeDeleteReady(ctx, child)
+	})
+}
+
+// infraManagedReadback reads the managed resources back concurrently; the
+// first failing one in impact order is reported, as the serial walk did.
+func (a *action) infraManagedReadback(ctx context.Context, request contracts.ActionRequest, policy string) (bool, error) {
+	managed := a.infraManagedImpacts(request, policy)
+	exists := make([]bool, len(managed))
+	err := forEachConcurrently(len(managed), groupReadConcurrency, func(index int) error {
+		driver, err := a.infraChildDriver(managed[index].Asset)
+		if err != nil {
+			return err
+		}
+		child, err := driver.Readback(ctx, infraChildRequest(request, managed[index].Asset))
+		exists[index] = child.Exists
+		return err
+	})
+	return slices.Contains(exists, true), err
+}
+
+// infraManagedImpacts lists the root's direct physical resources whose own
+// drivers delete them; none are when the deployment abandons its resources.
+func (a *action) infraManagedImpacts(request contracts.ActionRequest, policy string) []contracts.ActionImpact {
+	var managed []contracts.ActionImpact
+	for _, impact := range request.LifecycleImpacts {
+		if impact.ControllerID == request.Asset.ID && !isInfra(impact.Asset.Identity.NativeType) && policy != "ABANDON" {
+			managed = append(managed, impact)
+		}
+	}
+	return managed
 }
 
 func (a *action) infraRetainedDescendants(ctx context.Context, request contracts.ActionRequest) error {

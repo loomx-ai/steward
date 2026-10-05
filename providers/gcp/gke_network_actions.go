@@ -189,11 +189,17 @@ func (a *action) cleanupGKENetwork(ctx context.Context, request contracts.Action
 		return contracts.ActionResult{}, false, err
 	}
 	live := map[string]gkeNetworkResource{}
-	for _, resource := range snapshot.Resources {
-		if !resource.Delete || (!afterCluster && resource.Phase != "workload") {
+	// Every step re-reads live state: the previous step's delete and native
+	// controllers may have changed it. Reads run concurrently, checks in order.
+	cleanup := func(resource gkeNetworkResource) bool {
+		return resource.Delete && (afterCluster || resource.Phase == "workload")
+	}
+	datas, errs := a.client.readGKENetwork(ctx, snapshot.Resources, cleanup)
+	for i, resource := range snapshot.Resources {
+		if !cleanup(resource) {
 			continue
 		}
-		data, err := a.client.nativeGet(ctx, resource.Kind, resource.ID)
+		data, err := datas[i], errs[i]
 		if isNotFound(err) {
 			continue
 		}

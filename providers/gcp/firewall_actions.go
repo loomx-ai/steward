@@ -259,31 +259,36 @@ func (a *action) firewallObserve(ctx context.Context, request contracts.ActionRe
 				return contracts.ReadbackResult{}, groupDenied("firewall_prerequisite_still_exists")
 			}
 		}
-		for _, target := range targets {
+		// Each target's GET-then-reverse-list sequence runs in one goroutine and
+		// targets run concurrently; the first decisive target in order wins.
+		found := make([]bool, len(targets))
+		if err := forEachConcurrently(len(targets), groupReadConcurrency, func(index int) error {
+			target := targets[index]
 			live, err := a.client.firewallAssociationGET(ctx, target.Identity.NativeType, target.Identity.NativeID)
 			if err != nil && !isNotFound(err) {
-				return contracts.ReadbackResult{}, err
+				return err
 			}
 			inline := rows[target.Identity.NativeID]
 			if err == nil {
 				if inline == nil || firewallConfiguration(live, false) != target.Normalized[firewallProof] {
-					return contracts.ReadbackResult{}, groupDenied("firewall_association_visibility_changed")
+					return groupDenied("firewall_association_visibility_changed")
 				}
 				if isFirewallPolicy(kind) {
-					return contracts.ReadbackResult{}, groupDenied("firewall_prerequisite_still_exists")
+					return groupDenied("firewall_prerequisite_still_exists")
 				}
-				exists = true
-			} else {
-				if inline != nil {
-					return contracts.ReadbackResult{}, groupDenied("firewall_association_visibility_changed")
-				}
-				if err := a.client.firewallReverseAbsent(ctx, target.Identity.NativeType, target.Normalized); err != nil {
-					return contracts.ReadbackResult{}, err
-				}
-				if !isFirewallPolicy(kind) {
-					exists = false
-				}
+				found[index] = true
+				return nil
 			}
+			if inline != nil {
+				return groupDenied("firewall_association_visibility_changed")
+			}
+			return a.client.firewallReverseAbsent(ctx, target.Identity.NativeType, target.Normalized)
+		}); err != nil {
+			return contracts.ReadbackResult{}, err
+		}
+		if !isFirewallPolicy(kind) {
+			// An association observes only itself.
+			exists = found[0]
 		}
 	}
 	return contracts.ReadbackResult{Exists: exists}, nil

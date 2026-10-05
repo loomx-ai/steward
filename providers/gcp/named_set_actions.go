@@ -85,13 +85,22 @@ func (a *action) namedSetUnreferenced(ctx context.Context) error {
 			if !ok {
 				return groupDenied("named_set_policy_list_invalid")
 			}
+			// Validate names up to the first invalid one, read those policies
+			// concurrently (the first failing one in order decides), then report
+			// the invalid name, as a serial walk would.
+			var names []string
+			var invalid error
 			for _, policy := range policies {
 				name := text(object(policy)["name"])
 				if !routePolicySegment.MatchString(name) || seenPolicies[name] {
-					return groupDenied("named_set_policy_list_invalid")
+					invalid = groupDenied("named_set_policy_list_invalid")
+					break
 				}
 				seenPolicies[name] = true
-				live, err := a.client.routePolicyRead(ctx, a.routerComponentParent()+"/routePolicies/"+name)
+				names = append(names, name)
+			}
+			if err := forEachConcurrently(len(names), groupReadConcurrency, func(index int) error {
+				live, err := a.client.routePolicyRead(ctx, a.routerComponentParent()+"/routePolicies/"+names[index])
 				if err != nil {
 					return err
 				}
@@ -102,6 +111,12 @@ func (a *action) namedSetUnreferenced(ctx context.Context) error {
 				if slices.Contains(refs, last(a.identity.NativeID)) {
 					return groupDenied("named_set_referenced_by_policy")
 				}
+				return nil
+			}); err != nil {
+				return err
+			}
+			if invalid != nil {
+				return invalid
 			}
 		}
 		next, present := data["nextPageToken"]

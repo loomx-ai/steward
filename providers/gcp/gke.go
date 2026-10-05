@@ -206,15 +206,50 @@ func (c *client) gkeMembers(ctx context.Context, root asset.Asset, live map[stri
 		members = append(members, member)
 		return nil
 	}
+	// Pools and their managed groups are read concurrently up front; the walk
+	// below checks them in pool and URL order, as a serial walk did.
+	poolReads, poolErrs := make([]map[string]any, len(pools)), make([]error, len(pools))
+	if root.Identity.NativeType == clusterType {
+		_ = forEachConcurrently(len(pools), groupReadConcurrency, func(i int) error {
+			if poolID, err := c.nodePoolID(clusterID, pools[i]); err == nil {
+				poolReads[i], poolErrs[i] = c.nativeGet(ctx, nodePoolType, poolID)
+			}
+			return nil
+		})
+	} else {
+		poolReads[0] = live
+	}
+	var groupIDs []string
+	queued := map[string]bool{}
+	for i := range pools {
+		if poolErrs[i] != nil {
+			continue
+		}
+		for _, raw := range array(poolReads[i]["instanceGroupUrls"]) {
+			if id, err := c.computeID(text(raw), managerType); err == nil && !queued[id] {
+				queued[id] = true
+				groupIDs = append(groupIDs, id)
+			}
+		}
+	}
+	groupReads := make([]gkeGroupRead, len(groupIDs))
+	_ = forEachConcurrently(len(groupIDs), groupReadConcurrency, func(i int) error {
+		groupReads[i] = c.readGKEGroup(ctx, groupIDs[i])
+		return nil
+	})
+	readGroups := map[string]gkeGroupRead{}
+	for i, id := range groupIDs {
+		readGroups[id] = groupReads[i]
+	}
 	groups := map[string]bool{}
-	for _, summary := range pools {
+	for index, summary := range pools {
 		poolID, err := c.nodePoolID(clusterID, summary)
 		if err != nil {
 			return nil, err
 		}
 		pool := live
 		if root.Identity.NativeType == clusterType {
-			pool, err = c.nativeGet(ctx, nodePoolType, poolID)
+			pool, err = poolReads[index], poolErrs[index]
 			if err != nil {
 				return nil, err
 			}
@@ -241,39 +276,16 @@ func (c *client) gkeMembers(ctx context.Context, root asset.Asset, live map[stri
 				return nil, fmt.Errorf("GKE instance group claimed by multiple node pools")
 			}
 			groups[id] = true
-			groupData, err := c.nativeGet(ctx, managerType, id)
-			if err != nil {
-				return nil, err
+			read, found := readGroups[id]
+			if !found {
+				read = c.readGKEGroup(ctx, id)
 			}
-			group, err := c.loadManagedGroup(ctx, id, groupData)
-			if err != nil {
-				return nil, err
+			if read.err != nil {
+				return nil, read.err
 			}
-			// GKE uses its own autoscaler. A foreign Compute autoscaler must be
-			// resolved explicitly before GKE can delete this group.
-			if group.autoscaler != "" {
-				return nil, groupDenied("gke_group_has_compute_autoscaler")
-			}
-			members = append(members, gkeMember{id: id, kind: managerType, parent: poolID, data: groupData, deletes: true})
-			ig, err := c.nativeGet(ctx, instanceGroupType, group.instanceGroup)
-			if err != nil {
-				return nil, err
-			}
-			members = append(members, gkeMember{id: group.instanceGroup, kind: instanceGroupType, parent: id, data: ig, deletes: true})
-			byKind := map[string][]string{}
-			for _, node := range group.nodes {
-				for _, resource := range node.resources {
-					byKind[resource.kind] = append(byKind[resource.kind], resource.id)
-				}
-			}
-			reads := map[string]map[string]any{}
-			for kind, ids := range byKind {
-				data, err := c.computeReads(ctx, kind, ids)
-				if err != nil {
-					return nil, err
-				}
-				maps.Copy(reads, data)
-			}
+			group := read.group
+			members = append(members, gkeMember{id: id, kind: managerType, parent: poolID, data: read.data, deletes: true})
+			members = append(members, gkeMember{id: group.instanceGroup, kind: instanceGroupType, parent: id, data: read.ig, deletes: true})
 			for _, node := range group.nodes {
 				members = append(members, gkeMember{id: node.id, kind: instanceType, parent: id, data: node.data, deletes: true})
 				for _, resource := range node.resources {
@@ -283,7 +295,7 @@ func (c *client) gkeMembers(ctx context.Context, root asset.Asset, live map[stri
 							resource.delete = true // GKE deletes node boot disks with the pool.
 						}
 					}
-					if err := add(gkeMember{id: resource.id, kind: resource.kind, parent: node.id, data: reads[resource.id], deletes: resource.delete, shared: resource.shared}); err != nil {
+					if err := add(gkeMember{id: resource.id, kind: resource.kind, parent: node.id, data: read.reads[resource.id], deletes: resource.delete, shared: resource.shared}); err != nil {
 						return nil, err
 					}
 				}
@@ -291,6 +303,62 @@ func (c *client) gkeMembers(ctx context.Context, root asset.Asset, live map[stri
 		}
 	}
 	return members, nil
+}
+
+// gkeGroupRead is one node pool managed group with its instance group and node
+// resources, or the first error reading them in the serial order.
+type gkeGroupRead struct {
+	data, ig map[string]any
+	group    managedGroup
+	reads    map[string]map[string]any
+	err      error
+}
+
+func (c *client) readGKEGroup(ctx context.Context, id string) (read gkeGroupRead) {
+	if read.data, read.err = c.nativeGet(ctx, managerType, id); read.err != nil {
+		return read
+	}
+	if read.group, read.err = c.loadManagedGroup(ctx, id, read.data); read.err != nil {
+		return read
+	}
+	// GKE uses its own autoscaler. A foreign Compute autoscaler must be
+	// resolved explicitly before GKE can delete this group.
+	if read.group.autoscaler != "" {
+		read.err = groupDenied("gke_group_has_compute_autoscaler")
+		return read
+	}
+	if read.ig, read.err = c.nativeGet(ctx, instanceGroupType, read.group.instanceGroup); read.err != nil {
+		return read
+	}
+	byKind := map[string][]string{}
+	for _, node := range read.group.nodes {
+		for _, resource := range node.resources {
+			byKind[resource.kind] = append(byKind[resource.kind], resource.id)
+		}
+	}
+	read.reads = map[string]map[string]any{}
+	for kind, ids := range byKind {
+		data, err := c.computeReads(ctx, kind, ids)
+		if err != nil {
+			read.err = err
+			return read
+		}
+		maps.Copy(read.reads, data)
+	}
+	return read
+}
+
+// readGKENetwork reads the planned network resources selected by want (all
+// when nil) concurrently; callers check the results in plan order.
+func (c *client) readGKENetwork(ctx context.Context, resources []gkeNetworkResource, want func(gkeNetworkResource) bool) ([]map[string]any, []error) {
+	data, errs := make([]map[string]any, len(resources)), make([]error, len(resources))
+	_ = forEachConcurrently(len(resources), groupReadConcurrency, func(i int) error {
+		if want == nil || want(resources[i]) {
+			data[i], errs[i] = c.nativeGet(ctx, resources[i].Kind, resources[i].ID)
+		}
+		return nil
+	})
+	return data, errs
 }
 
 func (h *computeGroups) contributeGKE(ctx context.Context, assets []asset.Asset) (governance.Contribution, map[string]bool, error) {
@@ -324,8 +392,9 @@ func (h *computeGroups) contributeGKE(ctx context.Context, assets []asset.Asset)
 				if err != nil {
 					return err
 				}
-				for _, resource := range network.Resources {
-					data, err := h.client.nativeGet(ctx, resource.Kind, resource.ID)
+				datas, errs := h.client.readGKENetwork(ctx, network.Resources, nil)
+				for i, resource := range network.Resources {
+					data, err := datas[i], errs[i]
 					if err != nil {
 						return err
 					}

@@ -129,8 +129,12 @@ func (a *action) discoveryReadback(ctx context.Context, request contracts.Action
 		return contracts.ReadbackResult{}, err
 	}
 	exists := false
-	for _, impact := range request.LifecycleImpacts {
-		live, err := a.client.discoveryRead(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID)
+	lives, errs := readAllStoringNotFound(len(request.LifecycleImpacts), func(index int) (map[string]any, error) {
+		identity := request.LifecycleImpacts[index].Asset.Identity
+		return a.client.discoveryRead(ctx, identity.NativeType, identity.NativeID)
+	})
+	for index, impact := range request.LifecycleImpacts {
+		live, err := lives[index], errs[index]
 		if isNotFound(err) {
 			continue
 		}

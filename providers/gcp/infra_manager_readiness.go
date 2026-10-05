@@ -60,18 +60,7 @@ func (a *action) infraNativeDeleteReady(ctx context.Context, request contracts.A
 		if len(snapshot.Workloads) != 0 {
 			return groupDenied("infra_gke_finalizers_required")
 		}
-		for _, resource := range snapshot.Resources {
-			if resource.Delete && resource.Phase != "cluster" {
-				_, err := a.client.nativeGet(ctx, resource.Kind, resource.ID)
-				if isNotFound(err) {
-					continue
-				}
-				if err != nil {
-					return err
-				}
-				return groupDenied("infra_gke_finalizers_required")
-			}
-		}
+		return a.gkeWorkloadNetworkAbsent(ctx, snapshot.Resources)
 	case tpuNodeType:
 		disks, err := a.client.tpuAttachments(live)
 		if err != nil {
@@ -86,4 +75,24 @@ func (a *action) infraNativeDeleteReady(ctx context.Context, request contracts.A
 		}
 	}
 	return nil
+}
+
+// gkeWorkloadNetworkAbsent proves every deleted workload-phase network
+// resource gone. Reads run concurrently; the first surviving or unreadable
+// resource in snapshot order decides, as the serial walk did.
+func (a *action) gkeWorkloadNetworkAbsent(ctx context.Context, resources []gkeNetworkResource) error {
+	return forEachConcurrently(len(resources), groupReadConcurrency, func(index int) error {
+		resource := resources[index]
+		if !resource.Delete || resource.Phase == "cluster" {
+			return nil
+		}
+		_, err := a.client.nativeGet(ctx, resource.Kind, resource.ID)
+		if isNotFound(err) {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		return groupDenied("infra_gke_finalizers_required")
+	})
 }

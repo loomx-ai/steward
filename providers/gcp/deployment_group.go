@@ -205,29 +205,40 @@ func (c *client) infraGroupSnapshot(ctx context.Context, id string, data map[str
 		}
 		current = append(current, previous...)
 	}
+	var deployments []string
 	seen := map[string]bool{}
 	for _, unit := range current {
 		if unit.Deployment == "" || seen[unit.Deployment] {
 			continue
 		}
 		seen[unit.Deployment] = true
-		member := infraMember{Kind: infraDeployment, ID: unit.Deployment}
+		deployments = append(deployments, unit.Deployment)
+	}
+	// Deployments are read and snapshotted concurrently; the first failing one
+	// in unit order is reported, as the serial walk did.
+	snapshots := make([]infraMember, len(deployments))
+	if err := forEachConcurrently(len(deployments), groupReadConcurrency, func(index int) error {
+		member := infraMember{Kind: infraDeployment, ID: deployments[index]}
 		live, err := c.infraRead(ctx, infraDeployment, member.ID)
 		if isNotFound(err) {
 			member.Absent = true
 		} else if err != nil {
-			return nil, err
+			return err
 		} else {
 			children, err := c.infraSnapshot(ctx, infraDeployment, member.ID, live)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			encoded, _ := json.Marshal(children)
 			member.Proof = infraConfiguration(live)
 			member.Snapshot = infraManifestHash(member.Proof, string(encoded))
 		}
-		members = append(members, member)
+		snapshots[index] = member
+		return nil
+	}); err != nil {
+		return nil, err
 	}
+	members = append(members, snapshots...)
 	if err := c.infraStableRecords(ctx, infraGroup, id, data, records); err != nil {
 		return nil, err
 	}

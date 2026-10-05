@@ -29,7 +29,24 @@ func (c *client) tpuQueueNodes(ctx context.Context, id string, data map[string]a
 		if err != nil {
 			return nil, err
 		}
-		for _, record := range records {
+		// Nodes of this queued resource are read concurrently up front and
+		// checked in list order below, as the serial walk did.
+		nodeIDs := make([]string, len(records))
+		for index, record := range records {
+			nodeID, err := c.tpuID(tpuNodeType, text(record["name"]))
+			queue, queueErr := c.tpuID(tpuQueueType, text(record["queuedResource"]))
+			if err == nil && queueErr == nil && queue == id {
+				nodeIDs[index] = nodeID
+			}
+		}
+		lives, readErrs := make([]map[string]any, len(records)), make([]error, len(records))
+		_ = forEachConcurrently(len(records), groupReadConcurrency, func(index int) error {
+			if nodeIDs[index] != "" {
+				lives[index], readErrs[index] = c.tpuRead(ctx, tpuNodeType, nodeIDs[index])
+			}
+			return nil
+		})
+		for index, record := range records {
 			nodeID, err := c.tpuID(tpuNodeType, text(record["name"]))
 			if err != nil || !strings.HasPrefix(nodeID, parent+"/nodes/") || seen[nodeID] {
 				return nil, groupDenied("tpu_node_list_invalid")
@@ -51,7 +68,10 @@ func (c *client) tpuQueueNodes(ctx context.Context, id string, data map[string]a
 				}
 				continue
 			}
-			live, err := c.tpuRead(ctx, tpuNodeType, nodeID)
+			live, err := lives[index], readErrs[index]
+			if nodeIDs[index] != nodeID {
+				live, err = c.tpuRead(ctx, tpuNodeType, nodeID)
+			}
 			if err != nil {
 				return nil, err
 			}
@@ -102,13 +122,19 @@ func (c *client) tpuNodeSnapshot(ctx context.Context, id string, data map[string
 	if err != nil {
 		return nil, nil, err
 	}
+	// Each node's disks are read concurrently; the first failing node in list
+	// order is reported, as the serial walk did.
+	disks := make([][]tpuDiskProof, len(nodes))
+	if err := forEachConcurrently(len(nodes), groupReadConcurrency, func(i int) error {
+		var err error
+		_, disks[i], err = c.tpuDisks(ctx, nodes[i].data)
+		return err
+	}); err != nil {
+		return nil, nil, err
+	}
 	var proofs []tpuNodeProof
-	for _, node := range nodes {
-		_, disks, err := c.tpuDisks(ctx, node.data)
-		if err != nil {
-			return nil, nil, err
-		}
-		encoded, _ := json.Marshal(disks)
+	for i, node := range nodes {
+		encoded, _ := json.Marshal(disks[i])
 		proofs = append(proofs, tpuNodeProof{node.id, text(node.data["id"]), tpuConfiguration(tpuNodeType, node.data, false), string(encoded)})
 	}
 	return nodes, proofs, nil
@@ -204,16 +230,18 @@ func (c *client) tpuVerifyDisks(ctx context.Context, planned map[string]any) err
 	if err != nil {
 		return err
 	}
-	for _, proof := range proofs {
-		live, err := c.nativeGet(ctx, proof.Kind, proof.ID)
+	return readThenCheck(len(proofs), func(index int) (map[string]any, error) {
+		return c.nativeGet(ctx, proofs[index].Kind, proofs[index].ID)
+	}, func(index int, live map[string]any, err error) error {
+		proof := proofs[index]
 		if err != nil {
 			return err
 		}
 		if c.canonicalName(text(live["selfLink"])) != proof.ID || text(live["id"]) != proof.UID || batchComputeConfiguration(proof.Kind, live) != proof.Configuration {
 			return groupDenied("tpu_retained_disk_changed")
 		}
-	}
-	return nil
+		return nil
+	})
 }
 
 func (c *client) tpuVerifyQueue(ctx context.Context, id string, planned map[string]any) error {
@@ -357,10 +385,12 @@ func (a *action) tpuValidateLive(ctx context.Context, request contracts.ActionRe
 	if err := a.servicePrerequisitesAbsent(ctx, request); err != nil {
 		return err
 	}
-	for _, prerequisite := range request.PrerequisiteDeletions {
-		if err := a.client.tpuVerifyDisks(ctx, prerequisite.Asset.Normalized); err != nil {
-			return err
-		}
+	// The first failing prerequisite in request order is reported.
+	prerequisites := request.PrerequisiteDeletions
+	if err := forEachConcurrently(len(prerequisites), groupReadConcurrency, func(i int) error {
+		return a.client.tpuVerifyDisks(ctx, prerequisites[i].Asset.Normalized)
+	}); err != nil {
+		return err
 	}
 	data := live
 	if data == nil {

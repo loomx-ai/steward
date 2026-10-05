@@ -124,13 +124,22 @@ func (a *action) routePolicyBGPMerge(ctx context.Context, request contracts.Acti
 		}
 	}
 	delete(removed, last(a.identity.NativeID))
+	names := make([]string, 0, len(removed))
 	for name := range removed {
-		if _, err := a.client.routePolicyRead(ctx, a.routerComponentParent()+"/routePolicies/"+name); !isNotFound(err) {
+		names = append(names, name)
+	}
+	slices.Sort(names)
+	// The first removed sibling in name order that survives or fails decides.
+	if err := forEachConcurrently(len(names), groupReadConcurrency, func(index int) error {
+		if _, err := a.client.routePolicyRead(ctx, a.routerComponentParent()+"/routePolicies/"+names[index]); !isNotFound(err) {
 			if err != nil {
-				return nil, false, err
+				return err
 			}
-			return nil, false, groupDenied("route_policy_removed_sibling_still_exists")
+			return groupDenied("route_policy_removed_sibling_still_exists")
 		}
+		return nil
+	}); err != nil {
+		return nil, false, err
 	}
 	if len(removed) != 0 {
 		latest, err := a.routerComponentParentData(ctx, request)

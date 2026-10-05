@@ -181,16 +181,21 @@ func (c *client) dataformFolderChildren(ctx context.Context, parent asset.Identi
 		return nil, err
 	}
 	seen := map[string]string{}
-	for i := range children {
-		child := &children[i]
-		child.data, err = c.dataformRead(ctx, child.kind, child.id, child.data)
+	if err := readThenCheck(len(children), func(i int) (map[string]any, error) {
+		return c.dataformRead(ctx, children[i].kind, children[i].id, children[i].data)
+	}, func(i int, data map[string]any, err error) error {
 		if err != nil {
-			return nil, err
+			return err
 		}
+		child := &children[i]
+		child.data = data
 		if err := c.dataformFolderRelation(parent, live, child.kind, child.id, child.data); err != nil {
-			return nil, err
+			return err
 		}
 		seen[child.id] = dataformConfiguration(child.kind, child.data)
+		return nil
+	}); err != nil {
+		return nil, err
 	}
 	again, err := c.dataformFolderEntries(ctx, parent)
 	if err != nil {
@@ -251,10 +256,9 @@ func dataformContainersHash(proofs []dataformContainerProof) string {
 	return fmt.Sprintf("%x", sha256.Sum256(payload))
 }
 
-func (c *client) enrichDataformContainer(ctx context.Context, item *contracts.InventoryItem, raw map[string]any) error {
-	proofs, err := c.dataformContainers(ctx, item.NativeType, item.NativeID, raw)
-	if err != nil || len(proofs) == 0 {
-		return err
+func applyDataformContainer(item *contracts.InventoryItem, proofs []dataformContainerProof) {
+	if len(proofs) == 0 {
+		return
 	}
 	parent := proofs[0]
 	item.Normalized["_dataform_container_name"] = parent.Name
@@ -262,7 +266,6 @@ func (c *client) enrichDataformContainer(ctx context.Context, item *contracts.In
 	item.Normalized[dataformContainerChain] = dataformContainersHash(proofs)
 	item.Normalized[referenceKey(parent.Kind)] = []any{parent.Name}
 	item.NetworkReferences = append(item.NetworkReferences, parent.Name)
-	return nil
 }
 
 func (a *action) verifyDataformContainer(ctx context.Context, request contracts.ActionRequest, live map[string]any) error {
@@ -315,28 +318,44 @@ func (c *client) dataformFolderForest(ctx context.Context, locations []string, i
 		}
 		return nil
 	}
+	// Seed entries are read concurrently, then added in list order; an invalid
+	// entry is reported after the reads of the entries a serial walk reached.
+	seed := func(entries []map[string]any, location string, valid func(serviceChild) bool, denial string) error {
+		var seeds []serviceChild
+		var invalid error
+		seen := map[string]bool{}
+		for _, entry := range entries {
+			node, err := c.dataformEntry(entry, location)
+			if err == nil && (!valid(node) || seen[node.id]) {
+				err = groupDenied(denial)
+			}
+			if err != nil {
+				invalid = err
+				break
+			}
+			seen[node.id] = true
+			seeds = append(seeds, node)
+		}
+		if err := readThenCheck(len(seeds), func(i int) (map[string]any, error) {
+			return c.dataformRead(ctx, seeds[i].kind, seeds[i].id, seeds[i].data)
+		}, func(i int, data map[string]any, err error) error {
+			if err != nil {
+				return err
+			}
+			seeds[i].data = data
+			return add(seeds[i])
+		}); err != nil {
+			return err
+		}
+		return invalid
+	}
 	for _, location := range locations {
 		entries, err := c.dataformQuery(ctx, "dataform.projects.locations.teamFolders.search", "location", location, "results")
 		if err != nil {
 			return nil, err
 		}
-		seen := map[string]bool{}
-		for _, entry := range entries {
-			node, err := c.dataformEntry(entry, location)
-			if err != nil {
-				return nil, err
-			}
-			if node.kind != dataformTeamFolderType || seen[node.id] {
-				return nil, groupDenied("invalid_dataform_team_search")
-			}
-			seen[node.id] = true
-			node.data, err = c.dataformRead(ctx, node.kind, node.id, node.data)
-			if err != nil {
-				return nil, err
-			}
-			if err := add(node); err != nil {
-				return nil, err
-			}
+		if err := seed(entries, location, func(node serviceChild) bool { return node.kind == dataformTeamFolderType }, "invalid_dataform_team_search"); err != nil {
+			return nil, err
 		}
 		if !includeUserFolders {
 			continue
@@ -345,38 +364,34 @@ func (c *client) dataformFolderForest(ctx context.Context, locations []string, i
 		if err != nil {
 			return nil, err
 		}
-		seen = map[string]bool{}
-		for _, entry := range entries {
-			node, err := c.dataformEntry(entry, location)
-			if err != nil {
-				return nil, err
-			}
-			if node.kind == dataformTeamFolderType || seen[node.id] {
-				return nil, groupDenied("invalid_dataform_user_root")
-			}
-			seen[node.id] = true
-			node.data, err = c.dataformRead(ctx, node.kind, node.id, node.data)
-			if err != nil {
-				return nil, err
-			}
-			if err := add(node); err != nil {
-				return nil, err
-			}
+		if err := seed(entries, location, func(node serviceChild) bool { return node.kind != dataformTeamFolderType }, "invalid_dataform_user_root"); err != nil {
+			return nil, err
 		}
 	}
 	if !includeUserFolders {
 		return nodes, nil
 	}
-	for i := 0; i < len(queue); i++ {
-		node := nodes[queue[i]]
-		parent := asset.Identity{Provider: asset.ProviderGCP, NativeType: node.kind, NativeID: node.id}
-		children, err := c.dataformFolderChildren(ctx, parent, node.data)
-		if err != nil {
-			return nil, err
-		}
-		for _, child := range children {
-			if err := add(child); err != nil {
-				return nil, err
+	// Each queued batch of folders is read concurrently and its children are
+	// added in queue order, so the queue and the first error match a serial walk.
+	for start := 0; start < len(queue); {
+		batch := slices.Clone(queue[start:])
+		start = len(queue)
+		children := make([][]serviceChild, len(batch))
+		errs := make([]error, len(batch))
+		_ = forEachConcurrently(len(batch), groupReadConcurrency, func(i int) error {
+			node := nodes[batch[i]]
+			parent := asset.Identity{Provider: asset.ProviderGCP, NativeType: node.kind, NativeID: node.id}
+			children[i], errs[i] = c.dataformFolderChildren(ctx, parent, node.data)
+			return errs[i]
+		})
+		for i := range batch {
+			if errs[i] != nil {
+				return nil, errs[i]
+			}
+			for _, child := range children[i] {
+				if err := add(child); err != nil {
+					return nil, err
+				}
 			}
 		}
 	}
@@ -432,20 +447,39 @@ func (r *Runtime) listDataformFolders(ctx context.Context, c *client, request co
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
-	items := []contracts.InventoryItem{}
+	// Container chains are read concurrently in ID order; an invalid item is
+	// reported after the reads of the items before it, as a serial walk would.
+	var listed []serviceChild
 	for _, node := range nodes {
-		if node.kind != request.ResourceKind.NativeType {
-			continue
+		if node.kind == request.ResourceKind.NativeType {
+			listed = append(listed, node)
 		}
+	}
+	sort.Slice(listed, func(i, j int) bool { return listed[i].id < listed[j].id })
+	items := []contracts.InventoryItem{}
+	var invalid error
+	for _, node := range listed {
 		item, err := r.inventoryItem(c, map[string]any{"name": node.id, "assetType": node.kind, "resource": map[string]any{"data": node.data}})
 		if err != nil {
-			return contracts.InventoryBatch{}, err
+			invalid = err
+			break
 		}
 		item.Normalized["_inventory_source"] = dataformInventorySource
-		if err := c.enrichDataformContainer(ctx, &item, node.data); err != nil {
-			return contracts.InventoryBatch{}, err
-		}
 		items = append(items, item)
+	}
+	containers := make([][]dataformContainerProof, len(items))
+	if err := forEachConcurrently(len(items), groupReadConcurrency, func(i int) error {
+		var err error
+		containers[i], err = c.dataformContainers(ctx, items[i].NativeType, items[i].NativeID, listed[i].data)
+		return err
+	}); err != nil {
+		return contracts.InventoryBatch{}, err
+	}
+	if invalid != nil {
+		return contracts.InventoryBatch{}, invalid
+	}
+	for i := range items {
+		applyDataformContainer(&items[i], containers[i])
 	}
 	sort.Slice(items, func(i, j int) bool { return items[i].NativeID < items[j].NativeID })
 	// Query timestamps and internal serving metadata may change between pages.

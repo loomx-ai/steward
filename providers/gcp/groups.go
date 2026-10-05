@@ -315,8 +315,18 @@ func (c *client) loadManagedGroup(ctx context.Context, id string, data map[strin
 	if err != nil {
 		return result, err
 	}
+	// Node resources (stateful IPs read their reservations or the region's
+	// addresses) are resolved concurrently and checked in member order below.
+	nodeResources, nodeErrs := make([][]groupResource, len(members)), make([]error, len(members))
+	_ = forEachConcurrently(len(members), groupReadConcurrency, func(index int) error {
+		nativeID, err := c.computeID(text(members[index]["instance"]), instanceType)
+		if vm := vms[nativeID]; err == nil && vm != nil {
+			nodeResources[index], nodeErrs[index] = c.managedNodeResources(ctx, managedNode{id: nativeID, data: vm, config: byName[last(nativeID)]}, members[index])
+		}
+		return nil
+	})
 	seen, names := map[string]bool{}, map[string]bool{}
-	for _, member := range members {
+	for index, member := range members {
 		nativeID, err := c.computeID(text(member["instance"]), instanceType)
 		if err != nil {
 			return result, err
@@ -343,7 +353,10 @@ func (c *client) loadManagedGroup(ctx context.Context, id string, data map[strin
 			return result, fmt.Errorf("managed VM identity mismatch")
 		}
 		node := managedNode{id: nativeID, data: vm, config: byName[last(nativeID)]}
-		node.resources, err = c.managedNodeResources(ctx, node, member)
+		node.resources, err = nodeResources[index], nodeErrs[index]
+		if node.resources == nil && err == nil {
+			node.resources, err = c.managedNodeResources(ctx, node, member)
+		}
 		if err != nil {
 			return result, err
 		}

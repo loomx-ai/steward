@@ -41,15 +41,17 @@ func (a *action) routerActionIdentity(request contracts.ActionRequest) error {
 }
 
 func (a *action) routerPrerequisitesAbsent(ctx context.Context, request contracts.ActionRequest) error {
-	for _, impact := range request.PrerequisiteDeletions {
-		if _, err := a.client.routerComponentRead(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID); !isNotFound(err) {
+	// The first prerequisite in order that survives or fails decides.
+	return forEachConcurrently(len(request.PrerequisiteDeletions), groupReadConcurrency, func(index int) error {
+		id := request.PrerequisiteDeletions[index].Asset.Identity
+		if _, err := a.client.routerComponentRead(ctx, id.NativeType, id.NativeID); !isNotFound(err) {
 			if err != nil {
 				return err
 			}
 			return groupDenied("router_prerequisite_still_exists")
 		}
-	}
-	return nil
+		return nil
+	})
 }
 
 func (a *action) routerReviewLive(ctx context.Context, request contracts.ActionRequest, live map[string]any) error {

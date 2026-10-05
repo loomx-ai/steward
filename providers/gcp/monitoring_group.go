@@ -114,15 +114,24 @@ func (c *client) monitoringMembers(ctx context.Context, id, start, end string) (
 	return values, nil
 }
 
-func (c *client) enrichMonitoringGroup(ctx context.Context, item *contracts.InventoryItem, data map[string]any) error {
+// monitoringGroupObservation is a group's member reads, kept apart from the
+// item so inventory can read several groups at once.
+type monitoringGroupObservation struct {
+	members    map[string]map[string]any
+	refs       map[string][]string
+	unmapped   map[string]int
+	start, end string
+}
+
+func (c *client) monitoringGroupObserve(ctx context.Context, id string, data map[string]any) (monitoringGroupObservation, error) {
 	// A fixed past minute keeps all pages and the repeated query on one interval.
 	// This is a time-bounded observation, never member ownership or cascade proof.
 	end := time.Now().UTC().Truncate(time.Second)
 	start := end.Add(-time.Minute)
 	startText, endText := start.Format(time.RFC3339), end.Format(time.RFC3339)
-	members, err := c.monitoringMembers(ctx, item.NativeID, startText, endText)
+	members, err := c.monitoringMembers(ctx, id, startText, endText)
 	if err != nil {
-		return err
+		return monitoringGroupObservation{}, err
 	}
 	refs := map[string][]string{}
 	unmapped := map[string]int{}
@@ -135,7 +144,7 @@ func (c *client) enrichMonitoringGroup(ctx context.Context, item *contracts.Inve
 		member := members[key]
 		targets, err := c.uptimeReferences("", map[string]any{"monitoredResource": member})
 		if err != nil {
-			return err
+			return monitoringGroupObservation{}, err
 		}
 		if len(targets) == 0 {
 			unmapped[text(member["type"])]++
@@ -145,32 +154,35 @@ func (c *client) enrichMonitoringGroup(ctx context.Context, item *contracts.Inve
 			refs[kind] = append(refs[kind], ids...)
 		}
 	}
-	again, err := c.monitoringMembers(ctx, item.NativeID, startText, endText)
+	again, err := c.monitoringMembers(ctx, id, startText, endText)
 	if err != nil {
-		return err
+		return monitoringGroupObservation{}, err
 	}
 	if firewallDigest(members) != firewallDigest(again) {
-		return groupDenied("monitoring_group_members_changed")
+		return monitoringGroupObservation{}, groupDenied("monitoring_group_members_changed")
 	}
-	live, err := c.monitoringGroupRead(ctx, item.NativeID)
+	live, err := c.monitoringGroupRead(ctx, id)
 	if err != nil {
-		return contracts.DependencyReadError(err)
+		return monitoringGroupObservation{}, contracts.DependencyReadError(err)
 	}
-	if c.monitoringGroupConfiguration(item.NativeID, data) != c.monitoringGroupConfiguration(item.NativeID, live) {
-		return groupDenied("monitoring_group_configuration_changed")
+	if c.monitoringGroupConfiguration(id, data) != c.monitoringGroupConfiguration(id, live) {
+		return monitoringGroupObservation{}, groupDenied("monitoring_group_configuration_changed")
 	}
-	for kind, ids := range refs {
+	return monitoringGroupObservation{members, refs, unmapped, startText, endText}, nil
+}
+
+func (o monitoringGroupObservation) apply(item *contracts.InventoryItem) {
+	for kind, ids := range o.refs {
 		slices.Sort(ids)
-		refs[kind] = slices.Compact(ids)
-		item.NetworkReferences = append(item.NetworkReferences, refs[kind]...)
+		o.refs[kind] = slices.Compact(ids)
+		item.NetworkReferences = append(item.NetworkReferences, o.refs[kind]...)
 	}
 	slices.Sort(item.NetworkReferences)
 	item.NetworkReferences = slices.Compact(item.NetworkReferences)
-	item.Normalized[monitoringGroupMembers] = safePayload(map[string]any{"references": refs})["references"]
-	item.Normalized[monitoringGroupUnmapped] = safePayload(map[string]any{"unmapped": unmapped})["unmapped"]
-	item.Normalized["_monitoring_group_member_configuration"] = firewallDigest(members)
-	item.Normalized["_monitoring_group_member_interval"] = map[string]any{"startTime": startText, "endTime": endText}
-	return nil
+	item.Normalized[monitoringGroupMembers] = safePayload(map[string]any{"references": o.refs})["references"]
+	item.Normalized[monitoringGroupUnmapped] = safePayload(map[string]any{"unmapped": o.unmapped})["unmapped"]
+	item.Normalized["_monitoring_group_member_configuration"] = firewallDigest(o.members)
+	item.Normalized["_monitoring_group_member_interval"] = map[string]any{"startTime": o.start, "endTime": o.end}
 }
 
 func redactMonitoringGroupPayload(data map[string]any) {

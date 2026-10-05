@@ -77,21 +77,26 @@ func (c *client) projectBillingBudgets(ctx context.Context) (map[string]map[stri
 			names = append(names, name)
 		}
 		slices.Sort(names)
-		for _, name := range names {
-			data, err := c.billingRead(ctx, "billingbudgets.billingAccounts.budgets.get", name)
+		if err := readThenCheck(len(names), func(index int) (map[string]any, error) {
+			return c.billingRead(ctx, "billingbudgets.billingAccounts.budgets.get", names[index])
+		}, func(index int, data map[string]any, err error) error {
+			name := names[index]
 			if err != nil {
-				return nil, nil, err
+				return err
 			}
 			if _, err := c.billingBudgetData(parent, data); err != nil {
-				return nil, nil, err
+				return err
 			}
 			if err := c.billingSingleProject(data); err != nil {
-				return nil, nil, err
+				return err
 			}
 			if firewallDigest(data) != firewallDigest(rows[name]) {
-				return nil, nil, groupDenied("billing_budget_changed")
+				return groupDenied("billing_budget_changed")
 			}
 			values["//billingbudgets.googleapis.com/"+name] = data
+			return nil
+		}); err != nil {
+			return nil, nil, err
 		}
 		again, err := c.billingBudgets(ctx, parent, "projects/"+c.project)
 		if err != nil {

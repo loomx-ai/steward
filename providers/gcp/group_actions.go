@@ -86,56 +86,66 @@ func (a *action) plannedGroup(ctx context.Context, request contracts.ActionReque
 	if ig.ControllerID != request.Asset.ID || ig.Asset.Identity.NativeType != instanceGroupType || !ig.Delete {
 		return group, "managed_instance_group_missing_from_plan", nil
 	}
-	if err := a.checkGroupResource(ctx, ig, true); err != nil {
+	// The pure walk runs first and collects every resource re-read up to its
+	// first refusal. The re-reads then run concurrently, and the first failing
+	// one in walk order wins over the refusal, as a serial walk would report it.
+	type groupCheck struct {
+		impact  contracts.ActionImpact
+		deletes bool
+	}
+	checks := []groupCheck{{ig, true}}
+	reason := func() string {
+		present := map[groupImpactKey]bool{{request.Asset.ID, group.instanceGroup}: true}
+		for _, node := range group.nodes {
+			vm := impacts[groupImpactKey{request.Asset.ID, node.id}]
+			if vm.ControllerID != request.Asset.ID || vm.Asset.Identity.NativeType != instanceType || text(vm.Asset.Normalized["id"]) != text(node.data["id"]) {
+				return "managed_vm_missing_or_changed"
+			}
+			present[groupImpactKey{request.Asset.ID, node.id}] = true
+			for _, resource := range node.resources {
+				impact := impacts[groupImpactKey{vm.Asset.ID, resource.id}]
+				if impact.ControllerID != vm.Asset.ID || impact.Asset.Identity.NativeType != resource.kind {
+					return "managed_resource_missing_from_plan"
+				}
+				if impact.Delete && (!vm.Delete || !resource.delete || resource.shared) {
+					return "managed_resource_deletion_policy_changed"
+				}
+				present[groupImpactKey{vm.Asset.ID, resource.id}] = true
+				// Re-read reservations/disks before their controller can delete them.
+				// This also verifies the incarnation frozen in the reviewed plan.
+				checks = append(checks, groupCheck{impact, vm.Delete && impact.Delete})
+			}
+			if vm.Delete && protectedComputeLabels(node.data) {
+				return "managed_vm_protected"
+			}
+		}
+		for _, key := range sortedImpactKeys(impacts) {
+			impact := impacts[key]
+			if present[key] {
+				continue
+			}
+			if impact.Asset.Identity.NativeType == instanceType && impact.ControllerID == request.Asset.ID && !impact.Delete {
+				// A retained VM was abandoned by an earlier, persisted preparation.
+				checks = append(checks, groupCheck{impact, false})
+				continue
+			}
+			retainedParent := false
+			for _, vm := range impacts {
+				retainedParent = retainedParent || (vm.Asset.ID == impact.ControllerID && vm.Asset.Identity.NativeType == instanceType && vm.ControllerID == request.Asset.ID && !vm.Delete && !impact.Delete)
+			}
+			if retainedParent {
+				continue
+			}
+			return "managed_group_members_changed"
+		}
+		return ""
+	}()
+	if err := forEachConcurrently(len(checks), groupReadConcurrency, func(index int) error {
+		return a.checkGroupResource(ctx, checks[index].impact, checks[index].deletes)
+	}); err != nil {
 		return group, "", err
 	}
-	present := map[groupImpactKey]bool{{request.Asset.ID, group.instanceGroup}: true}
-	for _, node := range group.nodes {
-		vm := impacts[groupImpactKey{request.Asset.ID, node.id}]
-		if vm.ControllerID != request.Asset.ID || vm.Asset.Identity.NativeType != instanceType || text(vm.Asset.Normalized["id"]) != text(node.data["id"]) {
-			return group, "managed_vm_missing_or_changed", nil
-		}
-		present[groupImpactKey{request.Asset.ID, node.id}] = true
-		for _, resource := range node.resources {
-			impact := impacts[groupImpactKey{vm.Asset.ID, resource.id}]
-			if impact.ControllerID != vm.Asset.ID || impact.Asset.Identity.NativeType != resource.kind {
-				return group, "managed_resource_missing_from_plan", nil
-			}
-			if impact.Delete && (!vm.Delete || !resource.delete || resource.shared) {
-				return group, "managed_resource_deletion_policy_changed", nil
-			}
-			present[groupImpactKey{vm.Asset.ID, resource.id}] = true
-			// Re-read reservations/disks before their controller can delete them.
-			// This also verifies the incarnation frozen in the reviewed plan.
-			if err := a.checkGroupResource(ctx, impact, vm.Delete && impact.Delete); err != nil {
-				return group, "", err
-			}
-		}
-		if vm.Delete && protectedComputeLabels(node.data) {
-			return group, "managed_vm_protected", nil
-		}
-	}
-	for key, impact := range impacts {
-		if present[key] {
-			continue
-		}
-		if impact.Asset.Identity.NativeType == instanceType && impact.ControllerID == request.Asset.ID && !impact.Delete {
-			// A retained VM was abandoned by an earlier, persisted preparation.
-			if err := a.checkGroupResource(ctx, impact, false); err != nil {
-				return group, "", err
-			}
-			continue
-		}
-		retainedParent := false
-		for _, vm := range impacts {
-			retainedParent = retainedParent || (vm.Asset.ID == impact.ControllerID && vm.Asset.Identity.NativeType == instanceType && vm.ControllerID == request.Asset.ID && !vm.Delete && !impact.Delete)
-		}
-		if retainedParent {
-			continue
-		}
-		return group, "managed_group_members_changed", nil
-	}
-	return group, "", nil
+	return group, reason, nil
 }
 
 func protectedComputeLabels(data map[string]any) bool {

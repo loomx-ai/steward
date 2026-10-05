@@ -325,16 +325,22 @@ func (c *client) tpuDisks(ctx context.Context, data map[string]any) ([]serviceCh
 	}
 	var children []serviceChild
 	var proofs []tpuDiskProof
-	for _, disk := range attachments {
-		live, err := c.nativeGet(ctx, disk.Kind, disk.ID)
+	err = readThenCheck(len(attachments), func(index int) (map[string]any, error) {
+		return c.nativeGet(ctx, attachments[index].Kind, attachments[index].ID)
+	}, func(index int, live map[string]any, err error) error {
+		disk := attachments[index]
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
 		if c.canonicalName(text(live["selfLink"])) != disk.ID || text(live["id"]) == "" {
-			return nil, nil, groupDenied("tpu_data_disk_identity_changed")
+			return groupDenied("tpu_data_disk_identity_changed")
 		}
 		children = append(children, serviceChild{kind: disk.Kind, id: disk.ID, data: live, retain: true})
 		proofs = append(proofs, tpuDiskProof{disk.Kind, disk.ID, text(live["id"]), batchComputeConfiguration(disk.Kind, live)})
+		return nil
+	})
+	if err != nil {
+		return nil, nil, err
 	}
 	return children, proofs, nil
 }

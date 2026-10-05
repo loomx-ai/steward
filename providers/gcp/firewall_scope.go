@@ -96,19 +96,37 @@ func (c *client) firewallContainers(ctx context.Context) ([]firewallContainer, e
 		if err != nil {
 			return nil, err
 		}
+		// Validate rows up to the first invalid one, reconcile those with GET
+		// concurrently (the first failing row in order decides), then report the
+		// invalid row, as a serial walk would.
+		var values []firewallContainer
+		var invalid error
 		for _, row := range rows {
 			value, err := firewallContainerValue(text(row["name"]), row)
 			if err != nil || value.Parent != parent.Name || seen[value.Name] || depths[parent.Name] >= 63 {
-				return nil, groupDenied("firewall_folder_tree_invalid")
+				invalid = groupDenied("firewall_folder_tree_invalid")
+				break
 			}
-			live, err := c.firewallContainer(ctx, value.Name)
+			seen[value.Name] = true
+			values = append(values, value)
+		}
+		if err := forEachConcurrently(len(values), groupReadConcurrency, func(index int) error {
+			live, err := c.firewallContainer(ctx, values[index].Name)
 			if err != nil {
-				return nil, err
+				return err
 			}
-			if value != live {
-				return nil, groupDenied("firewall_folder_changed")
+			if values[index] != live {
+				return groupDenied("firewall_folder_changed")
 			}
-			seen[value.Name], depths[value.Name] = true, depths[parent.Name]+1
+			return nil
+		}); err != nil {
+			return nil, err
+		}
+		if invalid != nil {
+			return nil, invalid
+		}
+		for _, value := range values {
+			depths[value.Name] = depths[parent.Name] + 1
 			result = append(result, value)
 		}
 	}

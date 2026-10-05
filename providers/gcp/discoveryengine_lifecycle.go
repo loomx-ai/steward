@@ -56,25 +56,42 @@ func (c *client) discoveryChildren(ctx context.Context, parent asset.Identity, p
 				return nil, err
 			}
 			generation := map[string]string{}
+			// Validate identities in order up to the first invalid record, read
+			// those children concurrently, then check them in order: the first
+			// error is the one a serial walk would report.
+			var ids []string
+			var invalid error
+			prefix := parent.NativeID + "/" + childKind.Collection + "/"
 			for _, record := range records {
 				id, err := c.discoveryID(childType, text(record["name"]))
 				if err != nil {
-					return nil, err
+					invalid = err
+					break
 				}
-				prefix := parent.NativeID + "/" + childKind.Collection + "/"
 				if !strings.HasPrefix(id, prefix) || strings.Contains(strings.TrimPrefix(id, prefix), "/") || seen[id] {
-					return nil, groupDenied("discoveryengine_child_identity_invalid")
+					invalid = groupDenied("discoveryengine_child_identity_invalid")
+					break
 				}
 				seen[id] = true
-				live, err := c.discoveryRead(ctx, childType, id)
+				ids = append(ids, id)
+			}
+			if err := readThenCheck(len(ids), func(index int) (map[string]any, error) {
+				return c.discoveryRead(ctx, childType, ids[index])
+			}, func(index int, live map[string]any, err error) error {
 				if err != nil {
-					return nil, err
+					return err
 				}
-				if err := discoverySameResource(childType, record, live); err != nil {
-					return nil, err
+				if err := discoverySameResource(childType, records[index], live); err != nil {
+					return err
 				}
-				generation[id] = discoveryConfiguration(record)
-				result = append(result, serviceChild{kind: childType, id: id, data: live, direct: slices.Contains(rule.directChildren, childType)})
+				generation[ids[index]] = discoveryConfiguration(records[index])
+				result = append(result, serviceChild{kind: childType, id: ids[index], data: live, direct: slices.Contains(rule.directChildren, childType)})
+				return nil
+			}); err != nil {
+				return nil, err
+			}
+			if invalid != nil {
+				return nil, invalid
 			}
 			rechecks = append(rechecks, func() error {
 				again, err := c.nativeList(ctx, operation, parameters, childKind.Collection)
@@ -128,32 +145,45 @@ func (c *client) discoveryDataStoreUnused(ctx context.Context, id string) error 
 	if err != nil {
 		return err
 	}
+	// Engines validated up to the first invalid one are read concurrently and
+	// checked in list order, so the first error matches a serial walk.
 	seen := map[string]bool{}
+	var ids []string
+	var invalid error
 	for _, data := range engines {
 		engine, err := c.discoveryID(discoveryEngineType, text(data["name"]))
 		if err != nil {
-			return err
+			invalid = err
+			break
 		}
 		if !strings.HasPrefix(engine, parent+"/engines/") || seen[engine] {
-			return groupDenied("discoveryengine_engine_list_invalid")
+			invalid = groupDenied("discoveryengine_engine_list_invalid")
+			break
 		}
 		seen[engine] = true
-		live, err := c.discoveryRead(ctx, discoveryEngineType, engine)
+		ids = append(ids, engine)
+	}
+	if err := readThenCheck(len(ids), func(index int) (map[string]any, error) {
+		return c.discoveryRead(ctx, discoveryEngineType, ids[index])
+	}, func(index int, live map[string]any, err error) error {
 		if err != nil {
 			return err
 		}
-		if err := discoverySameResource(discoveryEngineType, data, live); err != nil {
+		if err := discoverySameResource(discoveryEngineType, engines[index], live); err != nil {
 			return err
 		}
-		refs, err := c.discoveryReferences(discoveryEngineType, engine, live)
+		refs, err := c.discoveryReferences(discoveryEngineType, ids[index], live)
 		if err != nil {
 			return err
 		}
 		if slices.Contains(refs[discoveryDataStoreType], id) {
 			return groupDenied("discoveryengine_datastore_in_use")
 		}
+		return nil
+	}); err != nil {
+		return err
 	}
-	return nil
+	return invalid
 }
 
 func (a *action) discoveryActionIdentity(request contracts.ActionRequest) error {

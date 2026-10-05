@@ -269,6 +269,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	operation, _ := metadata.catalog.Operation(target.API.Operation)
 	seenIDs := map[string]bool{}
 	prefetched := r.prefetchProductReads(ctx, c, nativeType, kind, operation, parameters, identityPath, target.ParentID, records)
+	enriched := r.prefetchProductEnrichments(ctx, c, request, nativeType, kind, operation, parameters, identityPath, records)
 	natHubs := map[string]cloudNatHubCheck{}
 	for index, record := range records {
 		if resourceSoftDeleted(nativeType, record.Data) {
@@ -471,14 +472,23 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				if err := tpuSameResource(nativeType, record.Data, live); err != nil {
 					return contracts.InventoryBatch{}, err
 				}
-				live, err = c.tpuInventoryData(ctx, nativeType, id, live)
+				if read, ok := enriched[index]; ok && read.id == id {
+					live, err = read.data, read.err
+				} else {
+					live, err = c.tpuInventoryData(ctx, nativeType, id, live)
+				}
 				if err != nil {
 					return contracts.InventoryBatch{}, err
 				}
 			}
 
 			if isInfraController(nativeType) {
-				members, err := c.infraSnapshot(ctx, nativeType, id, live)
+				var members []infraMember
+				if read, ok := enriched[index]; ok && read.id == id {
+					live, members, err = read.data, read.members, read.err
+				} else {
+					members, err = c.infraSnapshot(ctx, nativeType, id, live)
+				}
 				if err != nil {
 					return contracts.InventoryBatch{}, err
 				}
@@ -508,23 +518,39 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if !productScopeMatches(request, item) {
 			continue
 		}
+		// A record's one prefetched enrichment leaves the other fields empty,
+		// as the serial reads of its kind return nothing for them.
+		read, prefetchedEnrichment := enriched[index]
+		prefetchedEnrichment = prefetchedEnrichment && read.id == id
 		if nativeType == monitoringGroupType {
-			if err := c.enrichMonitoringGroup(ctx, &item, record.Data); err != nil {
-				return contracts.InventoryBatch{}, err
+			if !prefetchedEnrichment {
+				read.group, read.err = c.monitoringGroupObserve(ctx, item.NativeID, record.Data)
 			}
+			if read.err != nil {
+				return contracts.InventoryBatch{}, read.err
+			}
+			read.group.apply(&item)
 		}
 		if nativeType == storagePoolType {
-			if err := c.enrichStoragePool(ctx, &item, record.Data); err != nil {
-				return contracts.InventoryBatch{}, err
+			if !prefetchedEnrichment {
+				read.pool, read.err = c.storagePoolObserve(ctx, item.NativeID, record.Data)
 			}
+			if read.err != nil {
+				return contracts.InventoryBatch{}, read.err
+			}
+			c.applyStoragePool(&item, record.Data, read.pool)
 		}
 		item.Normalized["_inventory_source"] = productInventorySource
 		if nativeType == securityBillingType || nativeType == securityServiceType {
 			item.Normalized["_inventory_source"] = request.Source
 		}
-		if err := c.enrichDataformContainer(ctx, &item, record.Data); err != nil {
-			return contracts.InventoryBatch{}, err
+		if !prefetchedEnrichment {
+			read.containers, read.err = c.dataformContainers(ctx, item.NativeType, item.NativeID, record.Data)
 		}
+		if read.err != nil {
+			return contracts.InventoryBatch{}, read.err
+		}
+		applyDataformContainer(&item, read.containers)
 		if target.ParentID != "" {
 			if nativeType == cloudNatType {
 				item.Normalized[cloudNatRouterID] = result.Data["id"]
@@ -729,6 +755,128 @@ func (r *Runtime) prefetchProductReads(ctx context.Context, c *client, nativeTyp
 		}
 	}
 	return result
+}
+
+// productEnrichment is one record's enrichment reads: TPU inventory data, an
+// Infrastructure Manager controller snapshot (data is its record's copy with
+// the snapshot's references), Monitoring group members, Storage Pool disks or
+// Dataform container chain.
+type productEnrichment struct {
+	id         string
+	data       map[string]any
+	members    []infraMember
+	group      monitoringGroupObservation
+	pool       storagePoolObservation
+	containers []dataformContainerProof
+	err        error
+}
+
+// prefetchProductEnrichments makes, eight at a time, the per-record
+// enrichment reads of the records the list loop reaches, with the inputs the
+// loop would pass. The loop consumes each result in record order where it
+// read serially before; a record without one is read there as before.
+func (r *Runtime) prefetchProductEnrichments(ctx context.Context, c *client, request contracts.InventoryRequest, nativeType string, kind resourceType, operation catalog.Operation, parameters map[string]any, identityPath string, records []productRecord) map[int]productEnrichment {
+	if nativeType != tpuQueueType && nativeType != tpuNodeType && !isInfraController(nativeType) && nativeType != monitoringGroupType && nativeType != storagePoolType && nativeType != dataformRepositoryType && nativeType != dataformFolderType {
+		return nil
+	}
+	type pending struct {
+		index                int
+		id, itemKind, itemID string
+	}
+	var reads []pending
+	seen := map[string]bool{}
+	for index, record := range records {
+		id, item, skip, ok := r.productEnrichable(c, request, nativeType, kind, operation, parameters, identityPath, record, seen)
+		if !ok {
+			break // The list loop rejects this record and reads nothing more.
+		}
+		if !skip {
+			reads = append(reads, pending{index, id, item.NativeType, item.NativeID})
+		}
+	}
+	results := make([]productEnrichment, len(reads))
+	// A failed read is kept for its record; later reads are not started.
+	_ = forEachConcurrently(len(reads), productReadConcurrency, func(i int) error {
+		read, result := reads[i], &results[i]
+		data := records[read.index].Data
+		result.id = read.id
+		switch {
+		case isTPU(nativeType):
+			result.data, result.err = c.tpuInventoryData(ctx, nativeType, read.id, data)
+		case isInfraController(nativeType):
+			// The snapshot adds the latest revision's references to its input.
+			result.data = cloneParameters(data)
+			result.members, result.err = c.infraSnapshot(ctx, nativeType, read.id, result.data)
+		case nativeType == monitoringGroupType:
+			result.group, result.err = c.monitoringGroupObserve(ctx, read.itemID, data)
+		case nativeType == storagePoolType:
+			result.pool, result.err = c.storagePoolObserve(ctx, read.itemID, data)
+		default:
+			result.containers, result.err = c.dataformContainers(ctx, read.itemKind, read.itemID, data)
+		}
+		return result.err
+	})
+	enriched := make(map[int]productEnrichment, len(reads))
+	for i, result := range results {
+		if result.id != "" {
+			enriched[reads[i].index] = result
+		}
+	}
+	return enriched
+}
+
+// productEnrichable repeats the list loop's checks before an enrichment read
+// of the prefetched kinds. skip reports a record the loop passes over or
+// enriches without a read; !ok one the loop rejects.
+func (r *Runtime) productEnrichable(c *client, request contracts.InventoryRequest, nativeType string, kind resourceType, operation catalog.Operation, parameters map[string]any, identityPath string, record productRecord, seen map[string]bool) (id string, item contracts.InventoryItem, skip, ok bool) {
+	if resourceSoftDeleted(nativeType, record.Data) {
+		return "", item, true, true
+	}
+	id, err := c.productIdentity(kind, operation, parameters, identityPath, record)
+	if err != nil {
+		return id, item, false, false
+	}
+	if nativeType == storagePoolType && c.storagePoolIdentity(id, record.Data, record.Location) != nil {
+		return id, item, false, false
+	}
+	if isInfra(nativeType) && (c.infraIdentity(nativeType, id, record.Data) != nil || !strings.HasPrefix(id, c.canonicalName("//"+infraHost+"/"+text(parameters["parent"]))+"/")) {
+		return id, item, false, false
+	}
+	if isTPU(nativeType) && (c.tpuIdentity(nativeType, id, record.Data) != nil || !strings.HasPrefix(id, c.canonicalName("//"+tpuHost+"/"+text(parameters["parent"]))+"/"+kind.Collection+"/")) {
+		return id, item, false, false
+	}
+	if _, err := c.resourceURL(kind, id); err != nil {
+		other := strings.HasPrefix(nativeType, "compute.googleapis.com/") && c.otherProductKind(kind, id)
+		return id, item, other, other
+	}
+	if seen[id] {
+		return id, item, false, false
+	}
+	seen[id] = true
+	if nativeType == monitoringGroupType && c.monitoringGroupData(id, record.Data) != nil {
+		return id, item, false, false
+	}
+	// These kinds keep the listed object as their live observation.
+	if isDataform(nativeType) || isInfra(nativeType) {
+		if c.canonicalName("//"+strings.Split(nativeType, "/")[0]+"/"+text(record.Data["name"])) != id {
+			return id, item, false, false
+		}
+	}
+	if (isInfra(nativeType) && infraSame(record.Data, record.Data) != nil) || dataformSameResource(nativeType, record.Data, record.Data) != nil || tpuSameResource(nativeType, record.Data, record.Data) != nil {
+		return id, item, false, false
+	}
+	if isTPU(nativeType) || isInfraController(nativeType) {
+		return id, item, false, true // Read before the item is built.
+	}
+	location := record.Location
+	if location == "" {
+		location = last(text(record.Data["location"]))
+	}
+	item, err = r.inventoryItem(c, map[string]any{"name": id, "assetType": nativeType, "resource": map[string]any{"data": record.Data, "location": location}})
+	if err != nil {
+		return id, item, false, false
+	}
+	return id, item, !productScopeMatches(request, item), true
 }
 
 // productReadAllowed repeats the list loop's checks that precede its read,

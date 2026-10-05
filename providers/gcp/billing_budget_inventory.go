@@ -106,25 +106,48 @@ func (r *Runtime) listBillingBudgets(ctx context.Context, c *client, request con
 	}
 	slices.Sort(ids)
 	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: true}
-	for _, id := range ids {
-		name, parent, err := billingBudgetName(id)
+	// Each budget's fenced reads (parent, budget, parent again) run in their
+	// serial order, budgets concurrently; the checks below run in ID order.
+	type fencedRead struct {
+		account, again       map[string]any
+		accountErr, againErr error
+		live                 contracts.InvocationResult
+		readErr              error
+	}
+	reads := make([]fencedRead, len(ids))
+	_ = forEachConcurrently(len(ids), groupReadConcurrency, func(index int) error {
+		read := &reads[index]
+		name, parent, err := billingBudgetName(ids[index])
+		if err != nil {
+			return nil
+		}
+		project := projectReviews[ids[index]]
+		if read.account, read.accountErr = c.billingBudgetParent(ctx, parent, project); read.accountErr != nil {
+			return nil
+		}
+		read.live, read.readErr = c.billingReadResult(ctx, "billingbudgets.billingAccounts.budgets.get", name)
+		read.again, read.againErr = c.billingBudgetParent(ctx, parent, project)
+		return nil
+	})
+	for index, id := range ids {
+		_, parent, err := billingBudgetName(id)
 		if err != nil {
 			return failed, err
 		}
 		project := projectReviews[id]
-		account, err := c.billingBudgetParent(ctx, parent, project)
+		account, err := reads[index].account, reads[index].accountErr
 		if err != nil {
 			return failed, err
 		}
 		if project && firewallDigest(account) != firewallDigest(projectInfo) {
 			return failed, groupDenied("billing_project_configuration_changed")
 		}
-		live, readErr := c.billingReadResult(ctx, "billingbudgets.billingAccounts.budgets.get", name)
+		live, readErr := reads[index].live, reads[index].readErr
 		absent := known[id] && values[id] == nil && isNotFound(readErr)
 		if readErr != nil && !absent {
 			return failed, contracts.DependencyReadError(readErr)
 		}
-		again, err := c.billingBudgetParent(ctx, parent, project)
+		again, err := reads[index].again, reads[index].againErr
 		if err != nil {
 			return failed, err
 		}

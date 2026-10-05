@@ -280,6 +280,35 @@ func (c *client) batchChildrenDisks(ctx context.Context, parent asset.Identity, 
 			ownedDisks[member.id] = *member
 		}
 	}
+	// Disks outside the job's compute set are read concurrently, once each
+	// (shared external disks are attached to many VMs), and checked in order.
+	type diskRead struct {
+		data map[string]any
+		err  error
+	}
+	var foreign []instanceDisk
+	queued := map[string]bool{}
+	for _, member := range members {
+		if member.kind != instanceType {
+			continue
+		}
+		disks, _ := instanceDisks(c, member.data)
+		for _, disk := range disks {
+			if ownedDisks[disk.id].data == nil && !queued[disk.id] {
+				queued[disk.id] = true
+				foreign = append(foreign, disk)
+			}
+		}
+	}
+	foreignReads := make([]diskRead, len(foreign))
+	_ = forEachConcurrently(len(foreign), groupReadConcurrency, func(index int) error {
+		foreignReads[index].data, foreignReads[index].err = c.nativeGet(ctx, foreign[index].kind, foreign[index].id)
+		return nil
+	})
+	readDisks := map[string]diskRead{}
+	for index, disk := range foreign {
+		readDisks[disk.id] = foreignReads[index]
+	}
 	for _, member := range members {
 		if member.kind != instanceType {
 			continue
@@ -297,7 +326,11 @@ func (c *client) batchChildrenDisks(ctx context.Context, parent asset.Identity, 
 			// list row above; read only disks outside the job's compute set.
 			live := ownedDisks[disk.id].data
 			if live == nil {
-				if live, err = c.nativeGet(ctx, disk.kind, disk.id); err != nil {
+				read, found := readDisks[disk.id]
+				if !found {
+					read.data, read.err = c.nativeGet(ctx, disk.kind, disk.id)
+				}
+				if live, err = read.data, read.err; err != nil {
 					return nil, nil, err
 				}
 			}

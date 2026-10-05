@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -37,7 +38,9 @@ func newLoggingRoutingScenario(t *testing.T) *loggingRoutingScenario {
 	s.sinks["projects/sample-project"] = []map[string]any{loggingSinkFixture("projects/sample-project", "forward", "logging.googleapis.com/projects/foreign-project")}
 	base := s.r.transport
 	s.r = protocolRuntime(t, base.RoundTrip)
-	s.r.transport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
+	// Reads may run concurrently; the fixture's call log and counters are not.
+	var mu sync.Mutex
+	s.r.transport = serialTransport(&mu, func(req *http.Request) (*http.Response, error) {
 		if req.Method != "GET" {
 			return base.RoundTrip(req)
 		}

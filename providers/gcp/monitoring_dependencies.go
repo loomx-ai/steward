@@ -400,14 +400,19 @@ func (a *action) monitoringIncoming(ctx context.Context, request contracts.Actio
 	if a.kind.NativeType != uptimeType && a.kind.NativeType != notificationChannelType && a.kind.NativeType != monitoringGroupType && a.kind.NativeType != alertPolicyType {
 		return nil
 	}
-	for _, p := range request.PrerequisiteDeletions {
-		_, err := a.client.monitoringRead(ctx, p.Asset.Identity.NativeType, p.Asset.Identity.NativeID)
+	// The first prerequisite in order that survives or fails decides.
+	if err := forEachConcurrently(len(request.PrerequisiteDeletions), groupReadConcurrency, func(index int) error {
+		id := request.PrerequisiteDeletions[index].Asset.Identity
+		_, err := a.client.monitoringRead(ctx, id.NativeType, id.NativeID)
 		if !isNotFound(err) {
 			if err != nil {
 				return contracts.DependencyReadError(err)
 			}
 			return groupDenied("monitoring_prerequisite_still_exists")
 		}
+		return nil
+	}); err != nil {
+		return err
 	}
 	if a.kind.NativeType == alertPolicyType {
 		return a.monitoringDashboardPolicyIncoming(ctx)

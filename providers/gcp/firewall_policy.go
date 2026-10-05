@@ -325,20 +325,34 @@ func (c *client) firewallSnapshot(ctx context.Context, kind, id string, policy m
 	if err != nil {
 		return nil, err
 	}
-	var members []firewallMember
-	for childID, listed := range rows {
+	childIDs := make([]string, 0, len(rows))
+	for childID := range rows {
+		childIDs = append(childIDs, childID)
+	}
+	slices.Sort(childIDs)
+	// Each association's GET-then-target sequence runs in one goroutine and
+	// associations run concurrently; the first failing one in ID order wins.
+	lives := make([]map[string]any, len(childIDs))
+	targetProofs := make([]string, len(childIDs))
+	if err := forEachConcurrently(len(childIDs), groupReadConcurrency, func(index int) error {
+		childID := childIDs[index]
 		live, err := c.firewallAssociationGET(ctx, firewallChildType(kind), childID)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		actual, err := c.firewallAssociationValue(firewallChildType(kind), id, policy, live)
-		if err != nil || actual != childID || firewallConfiguration(listed, false) != firewallConfiguration(live, false) {
-			return nil, groupDenied("firewall_association_list_changed")
+		if err != nil || actual != childID || firewallConfiguration(rows[childID], false) != firewallConfiguration(live, false) {
+			return groupDenied("firewall_association_list_changed")
 		}
-		targetProof, err := c.firewallTarget(ctx, firewallChildType(kind), live)
-		if err != nil {
-			return nil, err
-		}
+		lives[index] = live
+		targetProofs[index], err = c.firewallTarget(ctx, firewallChildType(kind), live)
+		return err
+	}); err != nil {
+		return nil, err
+	}
+	var members []firewallMember
+	for index, childID := range childIDs {
+		live, targetProof := lives[index], targetProofs[index]
 		live[firewallContainingPolicy], live[firewallParentProof], live[firewallParentFullProof] = id, policy[firewallBaseProof], policy[firewallProof]
 		live[firewallScope], live[firewallOwnerProof], live[firewallOwnerName] = policy[firewallScope], policy[firewallOwnerProof], policy[firewallOwnerName]
 		live[firewallTargetProof] = targetProof

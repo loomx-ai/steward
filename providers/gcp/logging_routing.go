@@ -186,25 +186,31 @@ func (c *client) loggingRouting(ctx context.Context) (loggingRouting, error) {
 			ids = append(ids, id)
 		}
 		slices.Sort(ids)
-		for _, id := range ids {
-			live, err := c.loggingSinkRead(ctx, parent, id)
+		// Sinks are read concurrently and checked in ID order.
+		if err := readThenCheck(len(ids), func(index int) (map[string]any, error) {
+			return c.loggingSinkRead(ctx, parent, ids[index])
+		}, func(index int, live map[string]any, err error) error {
+			id := ids[index]
 			if err != nil {
-				return result, err
+				return err
 			}
 			if firewallDigest(live) != firewallDigest(listed[id]) {
-				return result, groupDenied("logging_sink_changed")
+				return groupDenied("logging_sink_changed")
 			}
 			result.Sinks[id] = live
 			if parent != parents[0] && live["includeChildren"] != true {
-				continue
+				return nil
 			}
 			project, err := loggingDestinationProject(text(live["destination"]))
 			if err != nil {
-				return result, err
+				return err
 			}
 			if project != "" {
 				result.Projects[project] = append(result.Projects[project], live)
 			}
+			return nil
+		}); err != nil {
+			return result, err
 		}
 		again, err := c.loggingSinkList(ctx, parent)
 		if err != nil {

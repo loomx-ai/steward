@@ -37,57 +37,16 @@ func (a *action) infraGroupObserve(ctx context.Context, request contracts.Action
 		}
 		read.Exists, read.State = includeMetadata, text(root["state"])
 	}
-	for _, member := range members {
-		if member.Kind == infraGroupRevision || member.Absent {
-			live, err := a.client.infraRead(ctx, member.Kind, member.ID)
-			if isNotFound(err) {
-				continue
-			}
-			if err != nil {
-				return nil, read, err
-			}
-			if member.Absent || infraConfiguration(live) != member.Proof {
-				return nil, read, groupDenied("infra_group_member_recreated_or_changed")
-			}
-			read.Exists = read.Exists || includeMetadata
-		}
+	found, err := a.infraGroupMetadataExists(ctx, members)
+	if err != nil {
+		return nil, read, err
 	}
-	for _, impact := range request.LifecycleImpacts {
-		if impact.ControllerID != request.Asset.ID || impact.Asset.Identity.NativeType != infraDeployment {
-			continue
-		}
-		driver, err := a.infraChildDriver(impact.Asset)
-		if err != nil {
-			return nil, read, err
-		}
-		child := infraGroupChildRequest(request, impact.Asset)
-		if policy == "DETACH" {
-			live, err := a.client.infraRead(ctx, infraDeployment, impact.Asset.Identity.NativeID)
-			if err != nil {
-				return nil, read, contracts.DependencyReadError(err)
-			}
-			if err := infraSame(impact.Asset.Normalized, live); err != nil {
-				return nil, read, err
-			}
-			current, err := a.client.infraSnapshot(ctx, infraDeployment, impact.Asset.Identity.NativeID, live)
-			if err != nil {
-				return nil, read, err
-			}
-			encoded, _ := json.Marshal(current)
-			if infraManifestHash(infraConfiguration(live), string(encoded)) != impact.Asset.Normalized[infraSnapshotKey] {
-				return nil, read, groupDenied("infra_group_retained_deployment_changed")
-			}
-			if err := driver.infraRetainedDescendants(ctx, child); err != nil {
-				return nil, read, err
-			}
-		} else {
-			childRead, err := driver.Readback(ctx, child)
-			if err != nil {
-				return nil, read, err
-			}
-			read.Exists = read.Exists || childRead.Exists
-		}
+	read.Exists = read.Exists || includeMetadata && found
+	exists, err := a.infraGroupDeploymentsObserved(ctx, request, policy)
+	if err != nil {
+		return nil, read, err
 	}
+	read.Exists = read.Exists || exists
 	revisions, err := a.infraGroupObservedRevisions(ctx, request, members, policy != "DETACH")
 	if err != nil {
 		return nil, read, err
@@ -113,6 +72,78 @@ func (a *action) infraGroupObserve(ctx context.Context, request contracts.Action
 		root = nil
 	}
 	return root, read, nil
+}
+
+// infraGroupMetadataExists reads revision and absent members concurrently and
+// checks them in manifest order, so the first error matches a serial walk.
+func (a *action) infraGroupMetadataExists(ctx context.Context, members []infraMember) (bool, error) {
+	var metadata []infraMember
+	for _, member := range members {
+		if member.Kind == infraGroupRevision || member.Absent {
+			metadata = append(metadata, member)
+		}
+	}
+	lives, errs := readAllStoringNotFound(len(metadata), func(index int) (map[string]any, error) {
+		return a.client.infraRead(ctx, metadata[index].Kind, metadata[index].ID)
+	})
+	found := false
+	for index, member := range metadata {
+		live, err := lives[index], errs[index]
+		if isNotFound(err) {
+			continue
+		}
+		if err != nil {
+			return false, err
+		}
+		if member.Absent || infraConfiguration(live) != member.Proof {
+			return false, groupDenied("infra_group_member_recreated_or_changed")
+		}
+		found = true
+	}
+	return found, nil
+}
+
+// infraGroupDeploymentsObserved observes each deployment independently and
+// concurrently; the first failing deployment in impact order is reported, as
+// the serial walk did.
+func (a *action) infraGroupDeploymentsObserved(ctx context.Context, request contracts.ActionRequest, policy string) (bool, error) {
+	var deployments []contracts.ActionImpact
+	for _, impact := range request.LifecycleImpacts {
+		if impact.ControllerID == request.Asset.ID && impact.Asset.Identity.NativeType == infraDeployment {
+			deployments = append(deployments, impact)
+		}
+	}
+	exists := make([]bool, len(deployments))
+	err := forEachConcurrently(len(deployments), groupReadConcurrency, func(index int) error {
+		impact := deployments[index]
+		driver, err := a.infraChildDriver(impact.Asset)
+		if err != nil {
+			return err
+		}
+		child := infraGroupChildRequest(request, impact.Asset)
+		if policy != "DETACH" {
+			childRead, err := driver.Readback(ctx, child)
+			exists[index] = childRead.Exists
+			return err
+		}
+		live, err := a.client.infraRead(ctx, infraDeployment, impact.Asset.Identity.NativeID)
+		if err != nil {
+			return contracts.DependencyReadError(err)
+		}
+		if err := infraSame(impact.Asset.Normalized, live); err != nil {
+			return err
+		}
+		current, err := a.client.infraSnapshot(ctx, infraDeployment, impact.Asset.Identity.NativeID, live)
+		if err != nil {
+			return err
+		}
+		encoded, _ := json.Marshal(current)
+		if infraManifestHash(infraConfiguration(live), string(encoded)) != impact.Asset.Normalized[infraSnapshotKey] {
+			return groupDenied("infra_group_retained_deployment_changed")
+		}
+		return driver.infraRetainedDescendants(ctx, child)
+	})
+	return slices.Contains(exists, true), err
 }
 
 func (a *action) infraGroupObservedRevisions(ctx context.Context, request contracts.ActionRequest, members []infraMember, deprovision bool) (bool, error) {

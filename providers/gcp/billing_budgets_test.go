@@ -7,6 +7,7 @@ import (
 	"maps"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -301,7 +302,8 @@ func TestBillingBudgetAllAccountsAndPages(t *testing.T) {
 		}
 	}
 	calls := 0
-	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+	var mu sync.Mutex // Budget reads run concurrently.
+	r := protocolRuntime(t, serialTransport(&mu, func(req *http.Request) (*http.Response, error) {
 		calls++
 		if req.Method != "GET" {
 			t.Fatal("billing mutation")
@@ -339,7 +341,7 @@ func TestBillingBudgetAllAccountsAndPages(t *testing.T) {
 		}
 		b, _ := json.Marshal(data)
 		return apiResponse(req, 200, string(b)), nil
-	})
+	}))
 	c, err := r.resolve(t.Context(), "connection")
 	if err != nil {
 		t.Fatal(err)

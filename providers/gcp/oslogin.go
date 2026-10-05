@@ -163,22 +163,33 @@ func (r *Runtime) listOSLoginKeys(ctx context.Context, c *client, request contra
 	// returns 404; a key visible to the direct read is kept.
 	ids := make([]string, 0, len(known))
 	for id := range known {
-		ids = append(ids, id)
+		if !listed[id] {
+			ids = append(ids, id)
+		}
 	}
 	slices.Sort(ids)
-	for _, id := range ids {
+	// Every read runs concurrently and is stored; results are applied in ID
+	// order, so the first failure in order wins. An add can mark a later key
+	// listed, which then skips it as the serial walk did.
+	data := make([]map[string]any, len(ids))
+	errs := make([]error, len(ids))
+	_ = forEachConcurrently(len(ids), groupReadConcurrency, func(index int) error {
+		result, err := c.osLoginCall(ctx, "oslogin.users.sshPublicKeys.get", known[ids[index]])
+		data[index], errs[index] = result.Data, err
+		return nil
+	})
+	for index, id := range ids {
 		if listed[id] {
 			continue
 		}
-		result, err := c.osLoginCall(ctx, "oslogin.users.sshPublicKeys.get", known[id])
-		if isNotFound(err) {
+		if isNotFound(errs[index]) {
 			batch.AbsentNativeIDs = append(batch.AbsentNativeIDs, id)
 			continue
 		}
-		if err != nil {
-			return failed, err
+		if errs[index] != nil {
+			return failed, errs[index]
 		}
-		if err := add(known[id], result.Data); err != nil {
+		if err := add(known[id], data[index]); err != nil {
 			return failed, err
 		}
 	}

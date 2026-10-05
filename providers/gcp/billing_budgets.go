@@ -183,19 +183,23 @@ func (c *client) visibleBillingBudgetsFrom(ctx context.Context, accounts map[str
 			names = append(names, name)
 		}
 		slices.Sort(names)
-		for _, name := range names {
-			budget, err := c.billingRead(ctx, "billingbudgets.billingAccounts.budgets.get", name)
+		if err := readThenCheck(len(names), func(index int) (map[string]any, error) {
+			return c.billingRead(ctx, "billingbudgets.billingAccounts.budgets.get", names[index])
+		}, func(index int, budget map[string]any, err error) error {
+			name := names[index]
 			if err != nil {
-				return nil, err
+				return err
 			}
-			_, err = c.billingBudgetData(account, budget)
-			if err != nil {
-				return nil, err
+			if _, err = c.billingBudgetData(account, budget); err != nil {
+				return err
 			}
 			if firewallDigest(budgets[name]) != firewallDigest(budget) {
-				return nil, groupDenied("billing_budget_changed")
+				return groupDenied("billing_budget_changed")
 			}
 			result["//billingbudgets.googleapis.com/"+name] = budget
+			return nil
+		}); err != nil {
+			return nil, err
 		}
 		again, err := c.billingBudgets(ctx, account)
 		if err != nil {

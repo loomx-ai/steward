@@ -342,8 +342,36 @@ func (c *client) dataprocMembers(ctx context.Context, root asset.Asset, cluster 
 	}
 	managedSets := map[string]map[string]string{}
 	managedConfig := map[string]string{}
+	// prefetched holds filtered-list reads of VM disks and addresses, one list
+	// per zone or region and kind. Each is consumed once; anything absent (or a
+	// failed prefetch) is read with its own GET at its place in the walk.
+	prefetched := map[string]map[string]any{}
+	prefetch := func(byKind map[string][]string) {
+		for kind, ids := range byKind {
+			if reads, err := c.computeReads(ctx, kind, ids); err == nil {
+				maps.Copy(prefetched, reads)
+			}
+		}
+	}
+	prefetchDisks := func(vms []map[string]any) {
+		byKind := map[string][]string{}
+		for _, vm := range vms {
+			disks, _ := instanceDisks(c, vm)
+			for _, disk := range disks {
+				byKind[disk.kind] = append(byKind[disk.kind], disk.id)
+			}
+		}
+		prefetch(byKind)
+	}
+	read := func(kind, id string) (map[string]any, error) {
+		if live, ok := prefetched[id]; ok {
+			delete(prefetched, id)
+			return live, nil
+		}
+		return c.nativeGet(ctx, kind, id)
+	}
 	addDisk := func(parent, kind, id string, retain bool) error {
-		live, err := c.nativeGet(ctx, kind, id)
+		live, err := read(kind, id)
 		if err != nil {
 			return err
 		}
@@ -386,7 +414,7 @@ func (c *client) dataprocMembers(ctx context.Context, root asset.Asset, cluster 
 					}
 					continue
 				}
-				live, err := c.nativeGet(ctx, resource.kind, resource.id)
+				live, err := read(resource.kind, resource.id)
 				if err != nil {
 					return err
 				}
@@ -542,6 +570,13 @@ func (c *client) dataprocMembers(ctx context.Context, root asset.Asset, cluster 
 				return nil, groupDenied("dataproc_template_missing")
 			}
 			declaredNames := len(names) > 0
+			byKind := map[string][]string{}
+			for _, node := range manager.nodes {
+				for _, resource := range node.resources {
+					byKind[resource.kind] = append(byKind[resource.kind], resource.id)
+				}
+			}
+			prefetch(byKind)
 			for _, node := range manager.nodes {
 				if declaredNames {
 					uid, ok := names[last(node.id)]
@@ -576,6 +611,7 @@ func (c *client) dataprocMembers(ctx context.Context, root asset.Asset, cluster 
 				vms[i], readErrs[i] = c.nativeGet(ctx, instanceType, ids[i])
 				return nil
 			})
+			prefetchDisks(vms)
 			for i, id := range ids {
 				uid, vm, err := names[ordered[i]], vms[i], readErrs[i]
 				if isNotFound(err) {
@@ -608,6 +644,13 @@ func (c *client) dataprocMembers(ctx context.Context, root asset.Asset, cluster 
 		}
 		return nil
 	})
+	var orphanVMs []map[string]any
+	for i, candidate := range candidates {
+		if candidate.kind == instanceType && orphanErrs[i] == nil {
+			orphanVMs = append(orphanVMs, orphans[i])
+		}
+	}
+	prefetchDisks(orphanVMs)
 	for i, candidate := range candidates {
 		if seen[candidate.id] {
 			continue
