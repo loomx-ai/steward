@@ -43,7 +43,15 @@ type client struct {
 	identityParent string
 	fingerprint    [32]byte
 	cache          *clientCache
+	// slots caps this client's in-flight Google API round trips. Inventory
+	// fan-outs nest (GKE roots x groups x Compute reads, Infra Manager products
+	// x deployments x revisions x resources), so per-level limits multiply into
+	// hundreds of requests and exhaust per-minute quota; only leaf requests hold
+	// a slot, so nesting cannot deadlock.
+	slots chan struct{}
 }
+
+const clientRequestSlots = 32
 
 func newClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {
 	invalid := func() (*client, error) {
@@ -60,7 +68,7 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 		if !projectPattern.MatchString(v["project_id"]) || (v["firewall_policy_parent"] != "" && !firewallContainerName(v["firewall_policy_parent"])) || (v["identity_group_parent"] != "" && !identityParentValid(v["identity_group_parent"])) {
 			return invalid()
 		}
-		return &client{project: v["project_id"], email: v["service_account_email"], firewallParent: v["firewall_policy_parent"], identityParent: v["identity_group_parent"], fingerprint: sha256.Sum256([]byte(credential.Dynamic.Key)), http: &http.Client{Transport: &workloadidentity.Transport{Base: transport, Credential: credential.Dynamic}, Timeout: 60 * time.Second, CheckRedirect: noRedirect}}, nil
+		return &client{project: v["project_id"], email: v["service_account_email"], firewallParent: v["firewall_policy_parent"], identityParent: v["identity_group_parent"], fingerprint: sha256.Sum256([]byte(credential.Dynamic.Key)), slots: make(chan struct{}, clientRequestSlots), http: &http.Client{Transport: &workloadidentity.Transport{Base: transport, Credential: credential.Dynamic}, Timeout: 60 * time.Second, CheckRedirect: noRedirect}}, nil
 	}
 	if credential.ExpiresAt != nil && !credential.ExpiresAt.After(time.Now()) {
 		return invalid()
@@ -120,7 +128,7 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	// The JWT package owns signing and token refresh. Credentials cannot choose a
 	// token endpoint, credential file, executable, impersonation URL, or universe.
 	config := jwt.Config{Email: key.Email, PrivateKey: []byte(key.PrivateKey), PrivateKeyID: key.PrivateKeyID, TokenURL: tokenURL, Scopes: []string{"https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/userinfo.email"}}
-	return &client{project: project, email: key.Email, firewallParent: firewallParent, identityParent: identityParent, fingerprint: sha256.Sum256([]byte(project + "\x00" + raw + "\x00" + firewallParent + "\x00" + identityParent)), http: &http.Client{
+	return &client{project: project, email: key.Email, firewallParent: firewallParent, slots: make(chan struct{}, clientRequestSlots), identityParent: identityParent, fingerprint: sha256.Sum256([]byte(project + "\x00" + raw + "\x00" + firewallParent + "\x00" + identityParent)), http: &http.Client{
 		Transport: &tokenTransport{base: transport, source: config.TokenSource}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
 	}}, nil
 }
@@ -167,6 +175,7 @@ func oauthClient(credential contracts.Credential, transport http.RoundTripper) (
 		email:          email,
 		firewallParent: firewallParent,
 		identityParent: identityParent,
+		slots:          make(chan struct{}, clientRequestSlots),
 		fingerprint:    sha256.Sum256([]byte(project + "\x00" + email + "\x00" + refreshToken + "\x00" + firewallParent + "\x00" + identityParent)),
 		http: &http.Client{
 			Transport: &tokenTransport{base: transport, source: source}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
@@ -282,15 +291,15 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 	}
 	if scan, ok := ctx.Value(sharedReadScan{}).(asset.ScanRunID); ok && method == http.MethodGet && c.cache != nil {
 		return c.cache.reads.get(ctx, string(scan)+"\x00"+c.project+"\x00"+u.String(), func(ctx context.Context) (contracts.InvocationResult, error) {
-			return requestJSON(ctx, c.http, method, u, body, sanitize)
+			return requestJSON(ctx, c.http, c.slots, method, u, body, sanitize)
 		})
 	}
 	if ctx.Value(inflightReads{}) != nil && method == http.MethodGet && c.cache != nil {
 		return c.cache.inflight.get(ctx, c.project+"\x00"+u.String(), func(ctx context.Context) (contracts.InvocationResult, error) {
-			return requestJSON(ctx, c.http, method, u, body, sanitize)
+			return requestJSON(ctx, c.http, c.slots, method, u, body, sanitize)
 		})
 	}
-	return requestJSON(ctx, c.http, method, u, body, sanitize)
+	return requestJSON(ctx, c.http, c.slots, method, u, body, sanitize)
 }
 
 // Read retries absorb short throttling and transient gateway failures so one
@@ -303,7 +312,9 @@ const (
 
 var readRetryBase, readRetryBudget = 500 * time.Millisecond, 30 * time.Second
 
-func requestJSON(ctx context.Context, httpClient *http.Client, method string, u *url.URL, body []byte, sanitize func(map[string]any) map[string]any) (_ contracts.InvocationResult, failure error) {
+// slots, when non-nil, bounds concurrent round trips; a slot is held only for
+// one attempt, never across retry backoff.
+func requestJSON(ctx context.Context, httpClient *http.Client, slots chan struct{}, method string, u *url.URL, body []byte, sanitize func(map[string]any) map[string]any) (_ contracts.InvocationResult, failure error) {
 	if method != http.MethodGet {
 		contracts.NoteWrite(ctx)
 	} else {
@@ -317,7 +328,17 @@ func requestJSON(ctx context.Context, httpClient *http.Client, method string, u 
 	}
 	waited := time.Duration(0)
 	for attempt := 1; ; attempt++ {
+		if slots != nil {
+			select {
+			case slots <- struct{}{}:
+			case <-ctx.Done():
+				return contracts.InvocationResult{}, ctx.Err()
+			}
+		}
 		result, err := requestJSONOnce(ctx, httpClient, method, u, body, sanitize)
+		if slots != nil {
+			<-slots
+		}
 		var call *contracts.ProviderCallError
 		if err == nil || method != http.MethodGet || attempt == readAttempts || !errors.As(err, &call) || !retryableRead(call) {
 			return result, err

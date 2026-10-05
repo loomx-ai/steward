@@ -315,7 +315,7 @@ func (a *action) infraReadback(ctx context.Context, request contracts.ActionRequ
 		}
 	}
 	if isNotFound(rootErr) {
-		remaining, err := a.client.infraRecords(ctx, a.kind.NativeType, a.identity.NativeID, false)
+		remaining, err := a.client.infraRecords(ctx, a.kind.NativeType, a.identity.NativeID, nil)
 		if err != nil && !isNotFound(err) {
 			return read, err
 		}

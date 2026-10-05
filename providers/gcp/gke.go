@@ -118,16 +118,20 @@ func (c *client) computeReads(ctx context.Context, kind string, ids []string) (m
 		}
 	}
 	reads := make([]map[string]any, len(missing))
-	if err := forEachConcurrently(len(missing), groupReadConcurrency, func(index int) (err error) {
+	read := make([]bool, len(missing))
+	err = forEachConcurrently(len(missing), groupReadConcurrency, func(index int) (err error) {
 		reads[index], err = c.nativeGet(ctx, kind, missing[index])
+		read[index] = err == nil
 		return err
-	}); err != nil {
-		return nil, err
-	}
+	})
 	for index, id := range missing {
-		result[id] = reads[index]
+		if read[index] {
+			result[id] = reads[index]
+		}
 	}
-	return result, nil
+	// On error the result still holds every successful read, for callers
+	// that use it as a prefetch and re-read the rest in their own order.
+	return result, err
 }
 
 // computeReadChunk bounds the names one filtered list carries in its URL.

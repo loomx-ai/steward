@@ -257,34 +257,34 @@ func TestReadsRetryThrottlingButMutationsDoNot(t *testing.T) {
 	}))
 	defer server.Close()
 	u, _ := url.Parse(server.URL + "/v1/items")
-	result, err := requestJSON(context.Background(), server.Client(), http.MethodGet, u, nil, safePayload)
+	result, err := requestJSON(context.Background(), server.Client(), nil, http.MethodGet, u, nil, safePayload)
 	if err != nil || result.Data["name"] != "ok" || calls.Load() != 3 {
 		t.Fatalf("read retry: data=%v err=%v calls=%d", result.Data, err, calls.Load())
 	}
 	set(statuses, retryAfter)
-	if _, err := requestJSON(context.Background(), server.Client(), http.MethodPost, u, []byte(`{}`), safePayload); err == nil || calls.Load() != 1 {
+	if _, err := requestJSON(context.Background(), server.Client(), nil, http.MethodPost, u, []byte(`{}`), safePayload); err == nil || calls.Load() != 1 {
 		t.Fatalf("mutation retried: err=%v calls=%d", err, calls.Load())
 	}
 	// Persistent throttling gives up after the attempt limit; a non-retryable
 	// status, a cancelled wait and a Retry-After beyond the budget stop at once.
 	set([]int{429}, "0")
-	if _, err := requestJSON(context.Background(), server.Client(), http.MethodGet, u, nil, safePayload); err == nil || calls.Load() != readAttempts {
+	if _, err := requestJSON(context.Background(), server.Client(), nil, http.MethodGet, u, nil, safePayload); err == nil || calls.Load() != readAttempts {
 		t.Fatalf("throttled read: err=%v calls=%d", err, calls.Load())
 	}
 	set([]int{404}, "0")
-	if _, err := requestJSON(context.Background(), server.Client(), http.MethodGet, u, nil, safePayload); !isNotFound(err) || calls.Load() != 1 {
+	if _, err := requestJSON(context.Background(), server.Client(), nil, http.MethodGet, u, nil, safePayload); !isNotFound(err) || calls.Load() != 1 {
 		t.Fatalf("not found retried: err=%v calls=%d", err, calls.Load())
 	}
 	set([]int{503}, "0")
 	readRetryBase = 10 * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	defer cancel()
-	if _, err := requestJSON(ctx, server.Client(), http.MethodGet, u, nil, safePayload); !errors.Is(err, context.DeadlineExceeded) || calls.Load() != 1 {
+	if _, err := requestJSON(ctx, server.Client(), nil, http.MethodGet, u, nil, safePayload); !errors.Is(err, context.DeadlineExceeded) || calls.Load() != 1 {
 		t.Fatalf("cancelled retry wait: err=%v calls=%d", err, calls.Load())
 	}
 	readRetryBase = time.Millisecond
 	set([]int{503}, "60")
-	if _, err := requestJSON(context.Background(), server.Client(), http.MethodGet, u, nil, safePayload); err == nil || calls.Load() != 1 {
+	if _, err := requestJSON(context.Background(), server.Client(), nil, http.MethodGet, u, nil, safePayload); err == nil || calls.Load() != 1 {
 		t.Fatalf("retry wait beyond budget: err=%v calls=%d", err, calls.Load())
 	}
 }
@@ -328,4 +328,33 @@ func serialTransport(mu *sync.Mutex, handler roundTripFunc) roundTripFunc {
 		defer mu.Unlock()
 		return handler(request)
 	}
+}
+
+// Nested inventory fan-outs multiply their per-level limits (8x8x8 here); the
+// client's request slots keep the leaf HTTP round trips at clientRequestSlots.
+func TestClientCapsInFlightRequestsUnderNestedFanOut(t *testing.T) {
+	credential, _ := testCredential(t)
+	probe := newReadProbe(clientRequestSlots, func(request *http.Request) bool { return request.URL.String() != tokenURL })
+	c, err := newClient(credential, probe.wrap(func(request *http.Request) (*http.Response, error) {
+		if request.URL.String() == tokenURL {
+			return apiResponse(request, 200, `{"access_token":"test-token","token_type":"Bearer","expires_in":3600}`), nil
+		}
+		return apiResponse(request, 200, `{}`), nil
+	}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	probe.start()
+	err = forEachConcurrently(8, groupReadConcurrency, func(a int) error {
+		return forEachConcurrently(8, groupReadConcurrency, func(b int) error {
+			return forEachConcurrently(8, groupReadConcurrency, func(d int) error {
+				_, err := c.request(context.Background(), "GET", fmt.Sprintf("https://compute.googleapis.com/compute/v1/projects/sample-project/zones/z%d-%d-%d", a, b, d), nil)
+				return err
+			})
+		})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	probe.check(t, 512, clientRequestSlots)
 }

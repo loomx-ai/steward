@@ -304,7 +304,17 @@ func (c *client) dataformFolderForest(ctx context.Context, locations []string, i
 		if err != nil {
 			return err
 		}
-		if parent.NativeID != "" {
+		if known, exists := nodes[parent.NativeID]; exists && parent.NativeID != "" {
+			// A known parent was read in this walk and is re-read against that
+			// data before and after its contents query (dataformFolderChildren),
+			// so a fresh GET here would only repeat the same configuration check.
+			if err := c.dataformFolderRelation(parent, known.data, node.kind, node.id, node.data); err != nil {
+				return err
+			}
+			if known.kind != parent.NativeType {
+				return groupDenied("dataform_resource_type_changed")
+			}
+		} else if parent.NativeID != "" {
 			raw, err := c.dataformRead(ctx, parent.NativeType, parent.NativeID, nil)
 			if err != nil {
 				return err
@@ -349,22 +359,29 @@ func (c *client) dataformFolderForest(ctx context.Context, locations []string, i
 		}
 		return invalid
 	}
-	for _, location := range locations {
-		entries, err := c.dataformQuery(ctx, "dataform.projects.locations.teamFolders.search", "location", location, "results")
-		if err != nil {
-			return nil, err
+	// Every location's seed queries run concurrently; seeding then walks them
+	// in location order, so the first error matches a serial walk.
+	queries := []struct{ operation, items string }{{"dataform.projects.locations.teamFolders.search", "results"}}
+	if includeUserFolders {
+		queries = append(queries, struct{ operation, items string }{"dataform.projects.locations.queryUserRootContents", "entries"})
+	}
+	results := make([][]map[string]any, len(locations)*len(queries))
+	errs := make([]error, len(results))
+	_ = forEachConcurrently(len(results), groupReadConcurrency, func(i int) error {
+		query := queries[i%len(queries)]
+		results[i], errs[i] = c.dataformQuery(ctx, query.operation, "location", locations[i/len(queries)], query.items)
+		return errs[i]
+	})
+	for i := range results {
+		if errs[i] != nil {
+			return nil, errs[i]
 		}
-		if err := seed(entries, location, func(node serviceChild) bool { return node.kind == dataformTeamFolderType }, "invalid_dataform_team_search"); err != nil {
-			return nil, err
+		location := locations[i/len(queries)]
+		valid, denial := func(node serviceChild) bool { return node.kind == dataformTeamFolderType }, "invalid_dataform_team_search"
+		if i%len(queries) == 1 {
+			valid, denial = func(node serviceChild) bool { return node.kind != dataformTeamFolderType }, "invalid_dataform_user_root"
 		}
-		if !includeUserFolders {
-			continue
-		}
-		entries, err = c.dataformQuery(ctx, "dataform.projects.locations.queryUserRootContents", "location", location, "entries")
-		if err != nil {
-			return nil, err
-		}
-		if err := seed(entries, location, func(node serviceChild) bool { return node.kind != dataformTeamFolderType }, "invalid_dataform_user_root"); err != nil {
+		if err := seed(results[i], location, valid, denial); err != nil {
 			return nil, err
 		}
 	}

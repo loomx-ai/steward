@@ -204,6 +204,7 @@ func (a *action) discoveryActionIdentity(request contracts.ActionRequest) error 
 		return err
 	}
 	seenAssets := map[asset.AssetID]bool{request.Asset.ID: true}
+	byID := impactsByID(request)
 	for _, impact := range request.LifecycleImpacts {
 		if seenAssets[impact.Asset.ID] {
 			return groupDenied("discoveryengine_duplicate_impact")
@@ -225,7 +226,7 @@ func (a *action) discoveryActionIdentity(request contracts.ActionRequest) error 
 		if parent.Identity.NativeType != parentKind || parent.Identity.NativeID != parentID {
 			return groupDenied("discoveryengine_impact_parent_changed")
 		}
-		if !impact.Delete || !a.serviceImpactDescendant(request, impact) || !isDiscovery(impact.Asset.Identity.NativeType) || text(impact.Asset.Normalized[discoveryProof]) == "" {
+		if !impact.Delete || !a.serviceImpactDescendant(request, byID, impact) || !isDiscovery(impact.Asset.Identity.NativeType) || text(impact.Asset.Normalized[discoveryProof]) == "" {
 			return groupDenied("discoveryengine_impact_invalid")
 		}
 	}

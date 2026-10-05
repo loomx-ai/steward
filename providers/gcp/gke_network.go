@@ -398,13 +398,14 @@ func (c *client) gkeNetwork(ctx context.Context, scan asset.ScanRunID, root asse
 		}
 		return nil
 	}
+	frontends := append(slices.Clone(regional), global...)
 	// Start reading every frontend a live workload may match (internal subnets
 	// are checked by the walk) and every NEG its status names.
 	for _, workload := range result.Workloads {
 		if text(object(workload.data["metadata"])["deletionTimestamp"]) != "" {
 			continue
 		}
-		for _, rule := range append(slices.Clone(regional), global...) {
+		for _, rule := range frontends {
 			if network := c.canonicalName(text(rule["network"])); network != "" && network != networks[0] || !forwardingMatchesWorkload(rule, workload) {
 				continue
 			}
@@ -436,7 +437,7 @@ func (c *client) gkeNetwork(ctx context.Context, scan asset.ScanRunID, root asse
 			continue
 		}
 		matched := false
-		for _, rule := range append(slices.Clone(regional), global...) {
+		for _, rule := range frontends {
 			network := c.canonicalName(text(rule["network"]))
 			if network != "" && network != networks[0] {
 				continue

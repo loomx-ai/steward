@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -503,5 +504,48 @@ func TestDataformFolderInventoryReadsContainersConcurrentlyInOrder(t *testing.T)
 	r = protocolRuntime(t, firstLateSecondFails(phase(dataformNested), phase(dataformTeam), renamed(next, "name", dataformUS+"/folders/moved"), next))
 	if _, err := listAll(t, r, folderRequest(r, dataformFolderType, "project")); deniedCode(err) != "dataform_identity_changed" {
 		t.Fatal(err)
+	}
+}
+
+func TestDataformFolderForestQueriesLocationsConcurrently(t *testing.T) {
+	seedQuery := func(r *http.Request) bool {
+		return r.Method == "GET" && (strings.HasSuffix(r.URL.Path, "/teamFolders:search") || strings.HasSuffix(r.URL.Path, ":queryUserRootContents"))
+	}
+	s := newDataformFolderScenario(t)
+	var locations []string
+	for i := range manyReads {
+		location := fmt.Sprintf("projects/sample-project/locations/l-%02d", i)
+		locations = append(locations, location)
+		s.seeds[location+"/teamFolders:search"] = []string{}
+		s.seeds[location+":queryUserRootContents"] = []string{}
+	}
+	probe := newReadProbe(groupReadConcurrency, seedQuery)
+	c := scenarioClient(t, probe.wrap(s.transport(t)))
+	probe.start()
+	if _, err := c.dataformFolderForest(t.Context(), locations, true); err != nil {
+		t.Fatal(err)
+	}
+	// Two queries per location, two pages each.
+	probe.check(t, 4*manyReads, groupReadConcurrency)
+}
+
+// A child found in a folder's contents was already checked against a fresh
+// read of that folder; adding it must not GET the folder again.
+func TestDataformFolderForestReusesKnownParent(t *testing.T) {
+	s := dataformManyFolders(t, "folders/c-", dataformPersonal)
+	var gets atomic.Int32
+	next := s.transport(t)
+	c := scenarioClient(t, func(req *http.Request) (*http.Response, error) {
+		if req.Method == "GET" && req.URL.Path == "/v1/"+dataformPersonal {
+			gets.Add(1)
+		}
+		return next(req)
+	})
+	if _, err := c.dataformFolderForest(t.Context(), []string{dataformUS, dataformEU}, true); err != nil {
+		t.Fatal(err)
+	}
+	// Seed read, then the contents walk's read before and after its queries.
+	if gets.Load() != 3 {
+		t.Fatalf("personal folder GETs = %d, want 3", gets.Load())
 	}
 }

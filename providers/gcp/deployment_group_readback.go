@@ -147,7 +147,7 @@ func (a *action) infraGroupDeploymentsObserved(ctx context.Context, request cont
 }
 
 func (a *action) infraGroupObservedRevisions(ctx context.Context, request contracts.ActionRequest, members []infraMember, deprovision bool) (bool, error) {
-	records, err := a.client.infraRecords(ctx, infraGroup, a.identity.NativeID, true)
+	records, err := a.client.infraRecords(ctx, infraGroup, a.identity.NativeID, infraAllDetails)
 	if isNotFound(err) {
 		// A collection 404 is expected only once its containing group is absent.
 		_, rootErr := a.client.infraRead(ctx, infraGroup, a.identity.NativeID)
@@ -207,7 +207,7 @@ func (a *action) infraGroupObservedRevisions(ctx context.Context, request contra
 			}
 		}
 	}
-	again, err := a.client.infraRecords(ctx, infraGroup, a.identity.NativeID, false)
+	again, err := a.client.infraRecords(ctx, infraGroup, a.identity.NativeID, nil)
 	if isNotFound(err) {
 		_, rootErr := a.client.infraRead(ctx, infraGroup, a.identity.NativeID)
 		if isNotFound(rootErr) {

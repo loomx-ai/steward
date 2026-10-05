@@ -346,7 +346,7 @@ func TestGKEBootDiskPolicyOverridesComputeAutoDelete(t *testing.T) {
 
 func TestComputeReadsListEachZoneOnceAndReadMissingResources(t *testing.T) {
 	const zone = "/compute/v1/projects/sample-project/zones/us-central1-a/instances"
-	lists, gets := 0, []string{}
+	lists, gets, missingGone := 0, []string{}, false
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		switch {
 		case req.URL.Path == zone:
@@ -359,6 +359,9 @@ func TestComputeReadsListEachZoneOnceAndReadMissingResources(t *testing.T) {
 			return apiResponse(req, 200, `{"items":[{"name":"node-a","id":"1","selfLink":"`+link+`node-a"},{"name":"node-b","id":"2","selfLink":"`+link+`node-b"},{"name":"other","id":"9","selfLink":"`+link+`other"}]}`), nil
 		case strings.HasPrefix(req.URL.Path, zone+"/"):
 			gets = append(gets, last(req.URL.Path))
+			if missingGone {
+				return apiResponse(req, 404, `{}`), nil
+			}
 			return apiResponse(req, 200, `{"name":"node-c","id":"3"}`), nil
 		}
 		t.Fatalf("unexpected request %s", req.URL)
@@ -375,5 +378,12 @@ func TestComputeReadsListEachZoneOnceAndReadMissingResources(t *testing.T) {
 	}
 	if lists != 1 || len(gets) != 1 || gets[0] != "node-c" {
 		t.Fatalf("lists=%d gets=%v", lists, gets)
+	}
+	// A failed GET still returns the successful reads, so a prefetching caller
+	// keeps them and re-reads only the failure in its own order.
+	missingGone = true
+	reads, err = c.computeReads(t.Context(), instanceType, []string{id + "node-a", id + "node-b", id + "node-c"})
+	if !isNotFound(err) || len(reads) != 2 || reads[id+"node-a"]["id"] != "1" || reads[id+"node-b"]["id"] != "2" {
+		t.Fatalf("reads=%v err=%v", reads, err)
 	}
 }

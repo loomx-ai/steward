@@ -343,14 +343,13 @@ func (c *client) dataprocMembers(ctx context.Context, root asset.Asset, cluster 
 	managedSets := map[string]map[string]string{}
 	managedConfig := map[string]string{}
 	// prefetched holds filtered-list reads of VM disks and addresses, one list
-	// per zone or region and kind. Each is consumed once; anything absent (or a
-	// failed prefetch) is read with its own GET at its place in the walk.
+	// per zone or region and kind. Each is consumed once; anything absent (a
+	// failed read included) is read with its own GET at its place in the walk.
 	prefetched := map[string]map[string]any{}
 	prefetch := func(byKind map[string][]string) {
 		for kind, ids := range byKind {
-			if reads, err := c.computeReads(ctx, kind, ids); err == nil {
-				maps.Copy(prefetched, reads)
-			}
+			reads, _ := c.computeReads(ctx, kind, ids)
+			maps.Copy(prefetched, reads)
 		}
 	}
 	prefetchDisks := func(vms []map[string]any) {

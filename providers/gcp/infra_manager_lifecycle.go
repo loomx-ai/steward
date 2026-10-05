@@ -103,10 +103,16 @@ func (c *client) infraList(ctx context.Context, kind, parent string, details boo
 	return records, nil
 }
 
-func (c *client) infraRecords(ctx context.Context, kind, parent string, details bool) ([]infraRecord, error) {
+// infraAllDetails re-reads every listed record; a nil details reads none.
+func infraAllDetails(string, string) bool { return true }
+
+// infraRecords lists kind's subtree under parent. details reports which child
+// lists also re-read each row with a GET (for state that is volatile and so
+// outside infraConfiguration); the reconciling relist covers configuration.
+func (c *client) infraRecords(ctx context.Context, kind, parent string, details func(child, parent string) bool) ([]infraRecord, error) {
 	var result []infraRecord
 	for _, child := range infraChildKinds(kind) {
-		records, err := c.infraList(ctx, child, parent, details)
+		records, err := c.infraList(ctx, child, parent, details != nil && details(child, parent))
 		if err != nil {
 			return nil, err
 		}
@@ -146,16 +152,22 @@ func (c *client) infraSnapshot(ctx context.Context, kind, id string, data map[st
 	if kind == infraGroup {
 		return c.infraGroupSnapshot(ctx, id, data)
 	}
-	records, err := c.infraRecords(ctx, kind, id, true)
+	latest, latestErr := "", error(nil)
+	if kind == infraDeployment && text(data["latestRevision"]) != "" {
+		latest, latestErr = c.infraID(infraRevision, text(data["latestRevision"]))
+	}
+	// A superseded revision's resources are consumed only as configuration
+	// proofs, which infraStableRecords re-lists and compares after the
+	// dependency reads; only the latest revision's state decides ownership.
+	// Every other record (revisions included) is still re-read.
+	records, err := c.infraRecords(ctx, kind, id, func(child, parent string) bool {
+		return child != infraResource || latestErr != nil || latest == "" || parent == latest
+	})
 	if err != nil {
 		return nil, err
 	}
-	latest := ""
-	if kind == infraDeployment && text(data["latestRevision"]) != "" {
-		latest, err = c.infraID(infraRevision, text(data["latestRevision"]))
-		if err != nil {
-			return nil, err
-		}
+	if latestErr != nil {
+		return nil, latestErr
 	}
 	// Physical members of the latest revision are read concurrently, then
 	// walked in record order so the first error matches a serial walk.
@@ -218,7 +230,7 @@ func (c *client) infraSnapshot(ctx context.Context, kind, id string, data map[st
 // Reconcile all collections after native dependency reads. New revisions and
 // resource changes during detail reads must restart discovery.
 func (c *client) infraStableRecords(ctx context.Context, kind, id string, data map[string]any, records []infraRecord) error {
-	again, err := c.infraRecords(ctx, kind, id, false)
+	again, err := c.infraRecords(ctx, kind, id, nil)
 	if err != nil {
 		return err
 	}

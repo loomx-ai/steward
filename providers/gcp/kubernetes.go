@@ -144,7 +144,7 @@ func (k *kubernetesClient) request(ctx context.Context, method, path string, que
 		}
 	}
 	u.RawQuery = query.Encode()
-	return requestJSON(ctx, k.http, method, u, body, kubernetesLog)
+	return requestJSON(ctx, k.http, nil, method, u, body, kubernetesLog)
 }
 
 type kubernetesCollection struct{ api, resource, kind string }

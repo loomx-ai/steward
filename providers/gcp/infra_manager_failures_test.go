@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -476,5 +477,30 @@ func TestInfraManagerRejectsChangedOperationAndRecoveryState(t *testing.T) {
 				t.Fatal("deployment failure leaked private text")
 			}
 		})
+	}
+}
+
+// A superseded revision's resources are proven by their list rows (re-listed
+// by infraStableRecords); only the latest revision's resources and every
+// revision are re-read one by one.
+func TestInfraManagerSnapshotReadsOnlyLatestRevisionResources(t *testing.T) {
+	s := newInfraScenario(t)
+	gets := map[string]int{}
+	var mu sync.Mutex
+	s.handle = func(req *http.Request) (*http.Response, bool) {
+		if req.Method == "GET" {
+			mu.Lock()
+			gets[strings.TrimPrefix(req.URL.Path, "/v1/")]++
+			mu.Unlock()
+		}
+		return nil, false
+	}
+	r := protocolRuntime(t, s.transport(t))
+	if _, err := r.List(context.Background(), productRequest(r, infraDeployment, "us-central1")); err != nil {
+		t.Fatal(err)
+	}
+	old := infraTestDeployment + "/revisions/r-0"
+	if gets[old+"/resources/old-network"] != 0 || gets[old] == 0 || gets[infraTestRevision] == 0 || gets[infraTestRevision+"/resources/network"] == 0 {
+		t.Fatalf("detail reads: %v", gets)
 	}
 }

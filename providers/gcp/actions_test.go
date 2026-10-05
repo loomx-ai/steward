@@ -198,7 +198,7 @@ func TestExecuteMarksOnlyReadFailuresBeforeTheDelete(t *testing.T) {
 	// Outside a cleanup Execute nothing is marked.
 	_, err := requestJSON(context.Background(), &http.Client{Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
 		return apiResponse(request, 429, `{}`), nil
-	})}, http.MethodGet, &url.URL{Scheme: "https", Host: "run.googleapis.com", Path: "/v2/x"}, nil, safePayload)
+	})}, nil, http.MethodGet, &url.URL{Scheme: "https", Host: "run.googleapis.com", Path: "/v2/x"}, nil, safePayload)
 	if err == nil || contracts.BeforeMutation(err) {
 		t.Fatalf("unscoped read marked: %v", err)
 	}

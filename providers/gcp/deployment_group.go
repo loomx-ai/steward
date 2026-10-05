@@ -158,7 +158,7 @@ func (c *client) infraGroupSame(planned, live map[string]any, clearing bool) err
 }
 
 func (c *client) infraGroupSnapshot(ctx context.Context, id string, data map[string]any) ([]infraMember, error) {
-	records, err := c.infraRecords(ctx, infraGroup, id, true)
+	records, err := c.infraRecords(ctx, infraGroup, id, infraAllDetails)
 	if err != nil {
 		return nil, err
 	}

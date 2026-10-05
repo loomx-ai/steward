@@ -494,8 +494,9 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 			removed = append(removed, key)
 		}
 	}
+	byID := impactsByID(request)
 	valid := func(impact contracts.ActionImpact) bool {
-		return impact.Delete && a.serviceImpactDescendant(request, impact)
+		return impact.Delete && a.serviceImpactDescendant(request, byID, impact)
 	}
 	readErrs := make([]error, len(removed))
 	_ = forEachConcurrently(len(removed), groupReadConcurrency, func(index int) error {
@@ -514,7 +515,7 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 		if !impact.Delete {
 			return groupDenied("service_child_retention_not_supported")
 		}
-		if !a.serviceImpactDescendant(request, impact) {
+		if !a.serviceImpactDescendant(request, byID, impact) {
 			return groupDenied("service_child_scope_changed")
 		}
 		if err := readErrs[index]; !isNotFound(err) {
@@ -527,7 +528,21 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 	return nil
 }
 
-func (a *action) serviceImpactDescendant(request contracts.ActionRequest, impact contracts.ActionImpact) bool {
+// impactsByID indexes request.LifecycleImpacts by asset ID, keeping the first
+// impact for a repeated ID as a list scan would.
+func impactsByID(request contracts.ActionRequest) map[asset.AssetID]contracts.ActionImpact {
+	index := make(map[asset.AssetID]contracts.ActionImpact, len(request.LifecycleImpacts))
+	for _, impact := range request.LifecycleImpacts {
+		if _, seen := index[impact.Asset.ID]; !seen {
+			index[impact.Asset.ID] = impact
+		}
+	}
+	return index
+}
+
+// serviceImpactDescendant walks impact's controller chain up to the request
+// asset; byID is impactsByID(request).
+func (a *action) serviceImpactDescendant(request contracts.ActionRequest, byID map[asset.AssetID]contracts.ActionImpact, impact contracts.ActionImpact) bool {
 	current := impact
 	seen := map[asset.AssetID]bool{}
 	for {
@@ -537,17 +552,11 @@ func (a *action) serviceImpactDescendant(request contracts.ActionRequest, impact
 		seen[current.Asset.ID] = true
 		parent := request.Asset
 		if current.ControllerID != request.Asset.ID {
-			found := false
-			for _, candidate := range request.LifecycleImpacts {
-				if candidate.Asset.ID == current.ControllerID {
-					parent = candidate.Asset
-					found = true
-					break
-				}
-			}
+			candidate, found := byID[current.ControllerID]
 			if !found {
 				return false
 			}
+			parent = candidate.Asset
 		}
 		rule, known := serviceCascadeRules[parent.Identity.NativeType]
 		if !known || !slices.Contains(rule.children, current.Asset.Identity.NativeType) || slices.Contains(rule.directChildren, current.Asset.Identity.NativeType) || !strings.HasPrefix(current.Asset.Identity.NativeID, parent.Identity.NativeID+"/") {
@@ -556,12 +565,7 @@ func (a *action) serviceImpactDescendant(request contracts.ActionRequest, impact
 		if parent.ID == request.Asset.ID {
 			return true
 		}
-		for _, candidate := range request.LifecycleImpacts {
-			if candidate.Asset.ID == parent.ID {
-				current = candidate
-				break
-			}
-		}
+		current = byID[parent.ID]
 	}
 }
 
@@ -579,8 +583,9 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 	if err := a.servicePrerequisitesAbsent(ctx, request); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
+	byID := impactsByID(request)
 	for _, impact := range request.LifecycleImpacts {
-		if !impact.Delete || !a.serviceImpactDescendant(request, impact) {
+		if !impact.Delete || !a.serviceImpactDescendant(request, byID, impact) {
 			return contracts.ReadbackResult{}, groupDenied("service_child_scope_changed")
 		}
 		kind, _ := findType(impact.Asset.Identity.NativeType)

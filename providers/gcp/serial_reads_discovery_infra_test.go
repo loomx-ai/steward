@@ -158,7 +158,7 @@ func TestInfraRecordsListsSiblingSubtreesConcurrentlyInOrder(t *testing.T) {
 	probe := newReadProbe(groupReadConcurrency, infraGetSuffix("/resources"))
 	a, _ := infraManyAction(t, infraDeployment, infraTestDeployment, probe.wrap)
 	probe.start()
-	records, err := a.client.infraRecords(t.Context(), infraDeployment, infraTestID(infraTestDeployment), false)
+	records, err := a.client.infraRecords(t.Context(), infraDeployment, infraTestID(infraTestDeployment), nil)
 	if err != nil || len(records) != 24 {
 		t.Fatal(len(records), err)
 	}
@@ -166,7 +166,7 @@ func TestInfraRecordsListsSiblingSubtreesConcurrentlyInOrder(t *testing.T) {
 	a, _ = infraManyAction(t, infraDeployment, infraTestDeployment, func(next roundTripFunc) roundTripFunc {
 		return infraLateFirst(infraGetSuffix("r-00/resources"), infraGetSuffix("r-01/resources"), 200, `{"resources":[{"name":"invalid"}]}`, next)
 	})
-	if _, err := a.client.infraRecords(t.Context(), infraDeployment, infraTestID(infraTestDeployment), false); deniedCode(err) != "infra_child_list_invalid" {
+	if _, err := a.client.infraRecords(t.Context(), infraDeployment, infraTestID(infraTestDeployment), nil); deniedCode(err) != "infra_child_list_invalid" {
 		t.Fatal(err)
 	}
 }
