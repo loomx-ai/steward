@@ -195,7 +195,7 @@ func TestCosmosRecordedNativeDeletionAndResumedReadback(t *testing.T) {
 				t.Fatal(err)
 			}
 			var logs []execution.JobLogEntry
-			ctx := execution.WithJobLogSink(context.Background(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+			ctx := execution.WithJobLogSink(context.Background(), lockedLogSink(&logs))
 			result, err := driver.Execute(ctx, request)
 			if err != nil || !deleted {
 				t.Fatal("native deletion", err)

@@ -257,7 +257,7 @@ func TestRedisPrivatePersistenceConfigurationIsRedactedAndBound(t *testing.T) {
 		t.Fatal("Redis persistence secret stored in plan")
 	}
 	var logs []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(context.Background(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	ctx := execution.WithJobLogSink(context.Background(), lockedLogSink(&logs))
 	c, _ := r.resolve(ctx, "connection")
 	if _, err := c.redisResource(ctx, fresh.Identity.NativeID); err != nil {
 		t.Fatal(err)

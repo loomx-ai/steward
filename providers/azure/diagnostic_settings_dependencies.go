@@ -49,19 +49,27 @@ func (c *client) diagnosticIncomingObservation(ctx context.Context, targets, kno
 	if err != nil {
 		return nil, err
 	}
+	byID := map[string][]int{} // Target positions by native ID; kinds compare below.
+	for i, target := range targets {
+		byID[target.Identity.NativeID] = append(byID[target.Identity.NativeID], i)
+	}
 	for _, id := range slices.Sorted(maps.Keys(settings)) {
 		raw := settings[id]
 		refs, err := diagnosticReferences(id, raw)
 		if err != nil {
 			return nil, err
 		}
-		var state *diagnosticContextState
-		for _, target := range targets {
-			linked := false
-			for kind, ids := range refs {
-				linked = linked || strings.EqualFold(kind, target.Identity.NativeType) && slices.Contains(ids, target.Identity.NativeID)
+		linked := map[int]bool{}
+		for kind, ids := range refs {
+			for _, reference := range ids {
+				for _, i := range byID[reference] {
+					linked[i] = linked[i] || strings.EqualFold(kind, targets[i].Identity.NativeType)
+				}
 			}
-			if !linked {
+		}
+		var state *diagnosticContextState
+		for i, target := range targets {
+			if !linked[i] {
 				continue
 			}
 			if state == nil {

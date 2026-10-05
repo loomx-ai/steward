@@ -8,9 +8,11 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/execution"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
@@ -19,7 +21,22 @@ type credentialFunc func(context.Context, asset.ConnectionID) (contracts.Credent
 func (f credentialFunc) Resolve(ctx context.Context, id asset.ConnectionID) (contracts.Credential, error) {
 	return f(ctx, id)
 }
+
+// protocolRuntime serves product one request at a time: fixtures keep plain
+// maps, and delete checks read concurrently.
 func protocolRuntime(t *testing.T, product roundTripFunc) *Runtime {
+	t.Helper()
+	var mu sync.Mutex
+	return concurrentProtocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		mu.Lock()
+		defer mu.Unlock()
+		return product(req)
+	})
+}
+
+// concurrentProtocolRuntime lets product see overlapping requests, for a
+// fixture that guards its own state.
+func concurrentProtocolRuntime(t *testing.T, product roundTripFunc) *Runtime {
 	t.Helper()
 	r, err := NewRuntime(credentialFunc(func(_ context.Context, id asset.ConnectionID) (contracts.Credential, error) {
 		if id != "connection" {
@@ -257,4 +274,14 @@ func TestOfficialResponseFixturesMapResourceProperties(t *testing.T) {
 			}
 		})
 	}
+}
+
+// lockedLogSink appends to logs; requests made concurrently log concurrently.
+func lockedLogSink(logs *[]execution.JobLogEntry) execution.JobLogSink {
+	var mu sync.Mutex
+	return execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) {
+		mu.Lock()
+		defer mu.Unlock()
+		*logs = append(*logs, entry)
+	})
 }

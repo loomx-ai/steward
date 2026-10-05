@@ -1,7 +1,6 @@
 package azure
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"os"
@@ -128,7 +127,7 @@ func TestAzureLocalAKSNetworkConsumers(t *testing.T) {
 					}
 				}
 				logs := []execution.JobLogEntry{}
-				ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, e execution.JobLogEntry) { logs = append(logs, e) }))
+				ctx := execution.WithJobLogSink(t.Context(), lockedLogSink(&logs))
 				driver, err := f.runtime.ResolveAction(ctx, "connection", request.Asset)
 				if err == nil {
 					_, err = driver.Preflight(ctx, request)

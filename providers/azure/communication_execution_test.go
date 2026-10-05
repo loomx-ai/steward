@@ -26,7 +26,7 @@ func TestCommunicationRegisteredWorkersAndDurableRelease(t *testing.T) {
 	f := newCommunicationFixture(t)
 	f.override = func(req *http.Request) (*http.Response, bool) { return fleetGraphEmptyIndexes(t, req) }
 	var logs []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	ctx := execution.WithJobLogSink(t.Context(), lockedLogSink(&logs))
 	path := filepath.Join(t.TempDir(), "communication.db")
 	repository, err := sqlite.Open(path, "../../migrations")
 	if err != nil {

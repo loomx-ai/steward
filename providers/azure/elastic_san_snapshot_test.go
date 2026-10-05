@@ -261,7 +261,7 @@ func testElasticSanChildSQLiteCleanupRestart(t *testing.T, kind string) {
 	f := newElasticSanCleanupFixture(t)
 	f.kind = kind
 	logs := []execution.JobLogEntry{}
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	ctx := execution.WithJobLogSink(t.Context(), lockedLogSink(&logs))
 	repo, registry, path := azureNativeWorkerRepository(t, f.runtime)
 	values := azureNativeWorkerScan(t, f.runtime, elasticSanSource, repo, registry, []string{kind, elasticSanVolumeType, elasticSanGroupType, elasticSanType}, false, true)
 	var snapshot asset.Asset

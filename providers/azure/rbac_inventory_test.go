@@ -57,7 +57,7 @@ func newRBACFixture(t *testing.T) *rbacFixture {
 	}
 	f.scopes[group] = map[string]any{"id": group, "type": groupType, "name": "test", "location": "westus", "properties": map[string]any{"provisioningState": "Succeeded"}}
 	f.scopes[sourceID] = source
-	f.runtime = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+	f.runtime = concurrentProtocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if f.before != nil {
 			f.before(req)
 		}

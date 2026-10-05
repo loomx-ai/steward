@@ -20,7 +20,7 @@ import (
 func testFleetMeshCleanupWorkers(t *testing.T, h *fleetMeshCleanupFixture, repository *sqlite.Repositories, registry *providerruntime.Registry, values []asset.Asset) {
 	t.Helper()
 	var logs []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	ctx := execution.WithJobLogSink(t.Context(), lockedLogSink(&logs))
 	planner := cleanup.NewService(repository, registry)
 	mesh := fleetAssetByKind(t, values, fleetMeshType)
 	namespace := fleetAssetByKind(t, values, fleetNamespaceType)

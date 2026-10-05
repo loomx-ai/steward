@@ -561,3 +561,221 @@ func TestRBACTargetIndexMatchesPerTargetWalk(t *testing.T) {
 		t.Fatal("fixtures did not exercise both outcomes", failures)
 	}
 }
+
+// Linked rows' details are read concurrently, once each, and the first failure
+// in row order is the one returned, as the serial walk did.
+func TestRBACIncomingLinkedDetailsReadConcurrentlyInOrder(t *testing.T) {
+	for _, fail := range []bool{false, true} {
+		f, _, target, _ := rbacStorageTarget(t)
+		var linked []string
+		for i := range 20 {
+			raw := rbacTestBody(t, rbacAssignmentType, target.Identity.NativeID, fmt.Sprintf("eeeeeeee-0000-0000-0000-%012d", i))
+			id := strings.ToLower(text(raw["id"]))
+			f.resources[id], linked = raw, append(linked, id)
+		}
+		slices.Sort(linked)
+		var mu sync.Mutex
+		inFlight, peak := 0, 0
+		f.before = func(req *http.Request) {
+			if req.Method != "GET" || !slices.Contains(linked, strings.ToLower(req.URL.Path)) {
+				return
+			}
+			mu.Lock()
+			inFlight++
+			peak = max(peak, inFlight)
+			mu.Unlock()
+			time.Sleep(5 * time.Millisecond)
+			mu.Lock()
+			inFlight--
+			mu.Unlock()
+		}
+		if fail {
+			base := f.override
+			f.override = func(req *http.Request) (*http.Response, bool) {
+				switch strings.ToLower(req.URL.Path) {
+				case linked[3]:
+					return jsonResponse(403, map[string]any{"error": map[string]any{"code": "FirstDenied", "message": "first"}}, nil), true
+				case linked[12]:
+					return jsonResponse(403, map[string]any{"error": map[string]any{"code": "LaterDenied", "message": "later"}}, nil), true
+				}
+				return base(req)
+			}
+		}
+		c, err := f.runtime.resolve(t.Context(), "connection")
+		if err != nil {
+			t.Fatal(err)
+		}
+		clear(f.calls)
+		incoming, err := c.rbacIncomingObservation(t.Context(), []asset.Asset{target}, nil)
+		if fail {
+			if err == nil || !strings.Contains(err.Error(), "FirstDenied") || len(incoming) != 0 {
+				t.Fatal("first failing linked row was not the reported error", err)
+			}
+			continue
+		}
+		if err != nil || len(incoming[target.Identity.NativeID]) != len(linked)+1 {
+			t.Fatal("linked assignments were not observed", len(incoming[target.Identity.NativeID]), err)
+		}
+		for _, id := range linked {
+			if got := f.calls["GET "+id]; got != 1 {
+				t.Fatal("linked assignment not read exactly once", id, got)
+			}
+		}
+		if peak < 2 || peak > detailReadConcurrency {
+			t.Fatal("linked assignment details were not read concurrently within the bound", peak)
+		}
+	}
+}
+
+// monitorLinked answers what the per-target walk over monitorReferenceMatches
+// did: the same linked targets before the same stopping target, with an error
+// that walk could stop at (its reference kinds come in map order).
+func TestMonitorTargetIndexMatchesPerTargetWalk(t *testing.T) {
+	c := directClient(nil)
+	group := "/subscriptions/" + testSubscription + "/resourcegroups/ids/providers/"
+	principals := []string{"00000000-0000-0000-0000-000000000000", "00000000-0000-0000-0000-000000000001"}
+	customers := []string{"cccccccc-0000-4000-8000-000000000000", "cccccccc-0000-4000-8000-000000000001"}
+	identity := func(name, principal string, proved bool) asset.Asset {
+		wire := "/subscriptions/" + testSubscription + "/resourceGroups/ids/providers/Microsoft.ManagedIdentity/userAssignedIdentities/" + name
+		id, _, _ := parseID(wire)
+		value := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, NativeID: id, NativeType: rbacUserIdentityType}, Normalized: map[string]any{}}
+		if proved {
+			raw := map[string]any{"id": wire, "properties": map[string]any{"principalId": principal, "tenantId": testTenant, "clientId": rbacTestClientID}}
+			if err := c.rbacIdentityInventory(id, rbacUserIdentityType, raw, value.Normalized); err != nil {
+				t.Fatal(err)
+			}
+		}
+		return value
+	}
+	workspace := func(name, customer string, proved bool) asset.Asset {
+		id := strings.ToLower(group + insightsWorkspaceType + "/" + name)
+		value := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, NativeID: id, NativeType: insightsWorkspaceType}, Location: "westus", Normalized: map[string]any{"customerId": customer, "_monitor_private_link_target_configuration": "configuration"}}
+		value.Normalized[monitorReceiverTargetProof] = c.monitorReceiverTargetBinding(id, insightsWorkspaceType, "westus", customer, "configuration")
+		if !proved {
+			value.Normalized[monitorReceiverTargetProof] = "forged"
+		}
+		return value
+	}
+	hub := func(namespace, name string) asset.Asset {
+		id := strings.ToLower(group + eventHubNamespaceType + "/" + namespace)
+		kind := eventHubNamespaceType
+		if name != "" {
+			id, kind = id+"/eventhubs/"+name, eventHubType
+		}
+		return asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, NativeID: id, NativeType: kind}}
+	}
+	type outcome struct {
+		linked []int
+		stop   int
+		err    string
+	}
+	old := func(targets []asset.Asset, kinds []string, refs map[string][]string) outcome {
+		var linked []int
+		for i, target := range targets {
+			matched := false
+			for _, kind := range kinds {
+				for _, reference := range refs[kind] {
+					matches, err := c.monitorReferenceMatches(target, kind, reference)
+					if err != nil {
+						return outcome{linked, i, err.Error()}
+					}
+					matched = matched || matches
+				}
+			}
+			if matched {
+				linked = append(linked, i)
+			}
+		}
+		return outcome{linked, len(targets), ""}
+	}
+	var orders func([]string) [][]string
+	orders = func(kinds []string) [][]string {
+		if len(kinds) <= 1 {
+			return [][]string{kinds}
+		}
+		var all [][]string
+		for i := range kinds {
+			rest := append(slices.Clone(kinds[:i]), kinds[i+1:]...)
+			for _, order := range orders(rest) {
+				all = append(all, append([]string{kinds[i]}, order...))
+			}
+		}
+		return all
+	}
+	random := rand.New(rand.NewPCG(3, 4))
+	failures, matches := 0, 0
+	for trial := range 5000 {
+		var targets []asset.Asset
+		for i := range 1 + random.IntN(6) {
+			switch random.IntN(7) {
+			case 0:
+				targets = append(targets, identity(fmt.Sprintf("bad%d", i), "", false))
+			case 1:
+				targets = append(targets, identity(fmt.Sprintf("id%d", i), principals[random.IntN(2)], true))
+			case 2:
+				targets = append(targets, workspace(fmt.Sprintf("ws%d", i), customers[random.IntN(2)], random.IntN(3) != 0))
+			case 3:
+				targets = append(targets, hub(fmt.Sprintf("ns%d", random.IntN(2)), ""))
+			case 4:
+				targets = append(targets, hub(fmt.Sprintf("ns%d", random.IntN(2)), fmt.Sprintf("hub%d", random.IntN(2))))
+			default:
+				targets = append(targets, asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, NativeID: strings.ToLower(group + storageType + fmt.Sprintf("/st%d", i)), NativeType: storageType}})
+			}
+		}
+		refs := map[string][]string{}
+		for range random.IntN(5) {
+			switch random.IntN(7) {
+			case 0:
+				refs[rbacPrincipalType] = append(refs[rbacPrincipalType], "principal-id:INVALID")
+			case 1:
+				refs[rbacPrincipalType] = append(refs[rbacPrincipalType], rbacPrincipalSelector(testTenant, principals[random.IntN(2)]))
+			case 2:
+				selector := "workspace-id:" + customers[random.IntN(2)]
+				if random.IntN(2) == 0 {
+					selector = "workspace-id:" + testSubscription + "|" + customers[random.IntN(2)]
+				}
+				refs[insightsWorkspaceType] = append(refs[insightsWorkspaceType], selector)
+			case 3:
+				refs[eventHubNamespaceType] = append(refs[eventHubNamespaceType], fmt.Sprintf("eventhub-namespace:%s/ns%d", testSubscription, random.IntN(2)))
+			case 4:
+				refs[eventHubType] = append(refs[eventHubType], fmt.Sprintf("eventhub:%s/ns%d/hub%d", testSubscription, random.IntN(2), random.IntN(2)))
+			default:
+				target := targets[random.IntN(len(targets))]
+				kind := target.Identity.NativeType
+				if random.IntN(2) == 0 {
+					kind = strings.ToUpper(kind)
+				}
+				refs[kind] = append(refs[kind], target.Identity.NativeID)
+			}
+		}
+		linked, stop, err := c.monitorLinked(targets, c.monitorTargetIndex(targets), refs)
+		var reached []int
+		for _, i := range linked {
+			if i < stop {
+				reached = append(reached, i)
+			}
+		}
+		got := outcome{reached, stop, fmt.Sprint(err)}
+		if err == nil {
+			got.err = ""
+		}
+		agreed := false
+		for _, kinds := range orders(slices.Sorted(maps.Keys(refs))) {
+			want := old(targets, kinds, refs)
+			if want.stop != got.stop || !slices.Equal(want.linked, got.linked) {
+				t.Fatal("target index disagrees with the per-target walk", trial, want, got)
+			}
+			agreed = agreed || want.err == got.err
+		}
+		if !agreed {
+			t.Fatal("target index stopped at an error the per-target walk could not", trial, got)
+		}
+		if got.err != "" {
+			failures++
+		}
+		matches += len(got.linked)
+	}
+	if failures == 0 || failures == 5000 || matches == 0 {
+		t.Fatal("randomized trials did not cover both outcomes", failures, matches)
+	}
+}

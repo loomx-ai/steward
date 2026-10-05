@@ -114,23 +114,45 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 				}
 			}
 		}
-		for _, id := range slices.Sorted(maps.Keys(rows)) {
-			raw := rows[id]
-			refs, err := c.rbacReferences(kind, id, raw)
-			if err != nil {
-				return nil, err
+		// Match every row's list fields in order, up to the first that fails;
+		// read the rows that need detail concurrently; then process in order,
+		// so results and the first error are the serial walk's.
+		ids := slices.Sorted(maps.Keys(rows))
+		type listedRow struct {
+			refs   map[string][]string
+			linked []int
+		}
+		var listed []listedRow
+		var listErr error
+		var detail []string
+		for _, id := range ids {
+			refs, err := c.rbacReferences(kind, id, rows[id])
+			var linked []int
+			if err == nil {
+				linked, err = index.linked(refs)
 			}
-			linked, err := index.linked(refs)
 			if err != nil {
-				return nil, err
+				listErr = err
+				break
 			}
+			listed = append(listed, listedRow{refs, linked})
+			if !read[id] && (recorded[id] || len(linked) > 0) {
+				detail = append(detail, id)
+			}
+		}
+		details, detailErrs := readConcurrently(len(detail), func(i int) (map[string]any, error) { return c.rbacDetail(ctx, kind, rows[detail[i]]) })
+		next := 0
+		for n, row := range listed {
+			id, raw, refs, linked := ids[n], rows[ids[n]], row.refs, row.linked
+			var err error
 			if !read[id] {
 				if !recorded[id] && len(linked) == 0 {
 					continue
 				}
-				if raw, err = c.rbacDetail(ctx, kind, raw); err != nil {
+				if raw, err = details[next], detailErrs[next]; err != nil {
 					return nil, err
 				}
+				next++
 				if refs, err = c.rbacReferences(kind, id, raw); err != nil {
 					return nil, err
 				}
@@ -159,6 +181,9 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 				incoming[target.Identity.NativeID] = append(incoming[target.Identity.NativeID], monitorIncomingSource{resource: serviceChild{id: id, kind: kind, data: raw}, references: refs, group: state})
 			}
 		}
+		if listErr != nil {
+			return nil, listErr
+		}
 	}
 	return incoming, nil
 }
@@ -172,8 +197,8 @@ func rbacCustomRole(raw map[string]any) bool {
 type rbacTargets struct {
 	count             int
 	byID, byPrincipal map[string][]int
-	firstBad          bool  // targets[0] is an identity target without a valid proof
-	bad               error // the first such target's proof error
+	badAt             int   // the first identity target without a valid proof
+	bad               error // its proof error; nil if every proof is valid
 }
 
 func (c *client) rbacTargetIndex(targets []asset.Asset) *rbacTargets {
@@ -186,9 +211,8 @@ func (c *client) rbacTargetIndex(targets []asset.Asset) *rbacTargets {
 		}
 		metadata, err := c.rbacRecordedIdentity(target)
 		if err != nil {
-			index.firstBad = index.firstBad || i == 0
 			if index.bad == nil {
-				index.bad = err
+				index.badAt, index.bad = i, err
 			}
 			continue
 		}
@@ -204,7 +228,7 @@ func (c *client) rbacTargetIndex(targets []asset.Asset) *rbacTargets {
 func (x *rbacTargets) linked(refs map[string][]string) ([]int, error) {
 	if principals := refs[rbacPrincipalType]; len(principals) > 0 && x.count > 0 {
 		invalid := slices.IndexFunc(principals, func(reference string) bool { return !validRBACPrincipalSelector(rbacPrincipalType, reference) })
-		if x.firstBad && invalid != 0 {
+		if x.bad != nil && x.badAt == 0 && invalid != 0 {
 			return nil, x.bad
 		}
 		if invalid >= 0 {

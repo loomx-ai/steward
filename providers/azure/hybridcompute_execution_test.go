@@ -28,7 +28,7 @@ func testHybridComputeRegisteredExecutionRecovery(t *testing.T, selection string
 	machine := selection == "machine"
 	license := selection == "license"
 	logs := []execution.JobLogEntry{}
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	ctx := execution.WithJobLogSink(t.Context(), lockedLogSink(&logs))
 	f := newHybridCleanupFixture(t)
 	steps := 3
 	if license {

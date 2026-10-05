@@ -115,7 +115,7 @@ func TestSearchRecordedDeletionAndNativeFinalAbsence(t *testing.T) {
 				return nil, false
 			}
 			var logs []execution.JobLogEntry
-			ctx := execution.WithJobLogSink(context.Background(), execution.JobLogSinkFunc(func(_ context.Context, e execution.JobLogEntry) { logs = append(logs, e) }))
+			ctx := execution.WithJobLogSink(context.Background(), lockedLogSink(&logs))
 			result, err := driver.Execute(ctx, request)
 			if err != nil || !deleted || result.ProviderOperationID != endpoint {
 				t.Fatal("recorded Search DELETE failed", err)

@@ -6,6 +6,7 @@ import (
 	"maps"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -39,7 +40,10 @@ func newSynapseTransportFixture(t *testing.T) *synapseTransportFixture {
 	if err != nil {
 		t.Fatal(err)
 	}
+	var mu sync.Mutex // Delete checks read concurrently; the fixture state is unguarded.
 	f.runtime.transport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		mu.Lock()
+		defer mu.Unlock()
 		path := strings.ToLower(req.URL.Path)
 		f.reads[path]++
 		if req.URL.Host == "login.microsoftonline.com" {

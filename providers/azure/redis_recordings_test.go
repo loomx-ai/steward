@@ -160,7 +160,7 @@ func TestRedisRecordedDeletesSignedPollingAndRestart(t *testing.T) {
 				return nil, false
 			}
 			var logs []execution.JobLogEntry
-			ctx := execution.WithJobLogSink(context.Background(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+			ctx := execution.WithJobLogSink(context.Background(), lockedLogSink(&logs))
 			result, err := driver.Execute(ctx, request)
 			if err != nil || writes != 1 || result.ProviderOperationID != endpoint {
 				t.Fatal("recorded Redis DELETE failed", err, writes)

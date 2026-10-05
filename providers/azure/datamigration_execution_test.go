@@ -108,7 +108,7 @@ func TestDataMigrationRegisteredExecutionAndRecovery(t *testing.T) {
 	}
 	ctx := t.Context()
 	logs := []execution.JobLogEntry{}
-	ctx = execution.WithJobLogSink(ctx, execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	ctx = execution.WithJobLogSink(ctx, lockedLogSink(&logs))
 	planner := cleanup.NewService(repository, registry)
 	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: selectors, CreatedBy: "operator"})
 	if err != nil || task.Task.Status != plan.StatusReady || len(task.Steps) != 12 {

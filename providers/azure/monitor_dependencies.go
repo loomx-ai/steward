@@ -120,6 +120,7 @@ func (c *client) monitorIncomingObservation(ctx context.Context, targets []asset
 	}
 	checkedGroups := map[string]bool{}
 	indexes := map[string]map[string]map[string]any{}
+	index := c.monitorTargetIndex(targets)
 	for _, kind := range slices.Sorted(maps.Keys(kinds)) {
 		if budget, _ := monitorBudgetKind(kind); budget != "" {
 			if err := loadGroups(); err != nil {
@@ -148,39 +149,35 @@ func (c *client) monitorIncomingObservation(ctx context.Context, targets []asset
 			if err != nil {
 				return nil, err
 			}
-			for _, target := range targets {
-				linked := false
-				for typ, ids := range refs {
-					for _, reference := range ids {
-						matches, err := c.monitorReferenceMatches(target, typ, reference)
-						if err != nil {
+			linked, stop, matchErr := c.monitorLinked(targets, index, refs)
+			for _, i := range linked {
+				if i >= stop {
+					break
+				}
+				target := targets[i]
+				if scope != c.root() {
+					if err := loadGroups(); err != nil {
+						return nil, err
+					}
+					if groups[scope] != nil && !checkedGroups[scope] {
+						group, err := c.insightsGroup(ctx, scope, groups[scope])
+						if err != nil && !isNotFound(err) {
 							return nil, err
 						}
-						linked = linked || matches
+						// A native source can outlive its group during deletion.
+						// Keep its references as blockers; group absence alone
+						// cannot grant ownership to a newly indexed source.
+						groups[scope], checkedGroups[scope] = group, true
 					}
 				}
-				if linked {
-					if scope != c.root() {
-						if err := loadGroups(); err != nil {
-							return nil, err
-						}
-						if groups[scope] != nil && !checkedGroups[scope] {
-							group, err := c.insightsGroup(ctx, scope, groups[scope])
-							if err != nil && !isNotFound(err) {
-								return nil, err
-							}
-							// A native source can outlive its group during deletion.
-							// Keep its references as blockers; group absence alone
-							// cannot grant ownership to a newly indexed source.
-							groups[scope], checkedGroups[scope] = group, true
-						}
-					}
-					group := groups[scope]
-					if scope == c.root() {
-						group = map[string]any{}
-					}
-					incoming[target.Identity.NativeID] = append(incoming[target.Identity.NativeID], monitorIncomingSource{resource: serviceChild{id: id, kind: kind, data: values[id]}, references: refs, group: group})
+				group := groups[scope]
+				if scope == c.root() {
+					group = map[string]any{}
 				}
+				incoming[target.Identity.NativeID] = append(incoming[target.Identity.NativeID], monitorIncomingSource{resource: serviceChild{id: id, kind: kind, data: values[id]}, references: refs, group: group})
+			}
+			if matchErr != nil {
+				return nil, matchErr
 			}
 		}
 	}
@@ -194,6 +191,74 @@ func (c *client) monitorIncomingObservation(ctx context.Context, targets []asset
 		}
 	}
 	return incoming, nil
+}
+
+// monitorTargets indexes one observation's targets so a row's references are
+// matched without walking every target per reference.
+type monitorTargets struct {
+	byID       map[string][]int
+	principals *rbacTargets
+}
+
+func (c *client) monitorTargetIndex(targets []asset.Asset) *monitorTargets {
+	index := &monitorTargets{byID: map[string][]int{}, principals: c.rbacTargetIndex(targets)}
+	for i, target := range targets {
+		index.byID[target.Identity.NativeID] = append(index.byID[target.Identity.NativeID], i)
+	}
+	return index
+}
+
+// monitorLinked answers what the walk "for each target, for each reference,
+// monitorReferenceMatches" did: the targets it linked, in order, and the
+// position and error it stopped at (len(targets) and nil if none). Targets at
+// or after stop are not reached by that walk.
+func (c *client) monitorLinked(targets []asset.Asset, index *monitorTargets, refs map[string][]string) (linked []int, stop int, err error) {
+	stop = len(targets)
+	fail := func(i int, e error) {
+		if i < stop {
+			stop, err = i, e
+		}
+	}
+	seen := map[int]bool{}
+	for typ, ids := range refs {
+		for _, reference := range ids {
+			if typ == rbacPrincipalType {
+				// rbacPrincipalMatches rejects a malformed selector for every
+				// target, then fails on an identity target without a proof.
+				if !validRBACPrincipalSelector(rbacPrincipalType, reference) {
+					fail(0, serviceDenied("invalid_rbac_principal_reference"))
+				} else if index.principals.bad != nil {
+					fail(index.principals.badAt, index.principals.bad)
+				}
+				for _, i := range index.principals.byPrincipal[reference] {
+					seen[i] = true
+				}
+				continue
+			}
+			for _, i := range index.byID[reference] {
+				seen[i] = seen[i] || strings.EqualFold(typ, targets[i].Identity.NativeType)
+			}
+			if !monitorReceiverSelector(typ, reference) {
+				continue // Only an exact identity can match.
+			}
+			for i, target := range targets { // Receiver selectors are rare.
+				if reference == target.Identity.NativeID {
+					continue // Matched exactly above.
+				}
+				matches, e := c.monitorReferenceMatches(target, typ, reference)
+				if e != nil {
+					fail(i, e)
+				}
+				seen[i] = seen[i] || matches && e == nil
+			}
+		}
+	}
+	for _, i := range slices.Sorted(maps.Keys(seen)) {
+		if seen[i] {
+			linked = append(linked, i)
+		}
+	}
+	return linked, stop, err
 }
 
 func (c *client) monitorIncomingTargets(ctx context.Context, targets []asset.Asset, known ...asset.Asset) (map[string][]monitorIncomingSource, error) {

@@ -653,7 +653,7 @@ func TestGrafanaSignedOperationAuthorityFailuresAndLogging(t *testing.T) {
 		})
 	}
 	var entries []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(context.Background(), execution.JobLogSinkFunc(func(_ context.Context, e execution.JobLogEntry) { entries = append(entries, e) }))
+	ctx := execution.WithJobLogSink(context.Background(), lockedLogSink(&entries))
 	s.handle = func(req *http.Request) (*http.Response, bool) {
 		if strings.Contains(req.URL.Path, "/operationStatuses/") {
 			return jsonResponse(200, responseBody, nil), true

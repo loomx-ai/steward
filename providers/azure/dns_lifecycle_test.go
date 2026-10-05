@@ -159,7 +159,7 @@ func (s *dnsScenario) add(raw map[string]any, version string) {
 }
 func (s *dnsScenario) runtime(t *testing.T) *Runtime {
 	t.Helper()
-	return protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+	return concurrentProtocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if s.before != nil {
 			s.before(req)
 		}

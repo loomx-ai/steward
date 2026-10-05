@@ -85,7 +85,7 @@ func newKeyVaultFixture(t *testing.T) *keyVaultFixture {
 		f.certs[strings.ToLower(name)] = body
 	}
 	delete(f.certs["listcert02"], "kid")
-	f.runtime = protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
+	f.runtime = concurrentProtocolRuntime(t, func(q *http.Request) (*http.Response, error) {
 		if q.Method != "GET" {
 			t.Fatal("inventory issued mutation", q.Method, q.URL)
 		}

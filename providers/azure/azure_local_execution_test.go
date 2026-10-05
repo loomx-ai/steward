@@ -20,7 +20,7 @@ func TestAzureLocalRegisteredGuestCleanupRecovery(t *testing.T) {
 	f := newLocalCleanupFixture(t)
 	f.hold = true
 	logs := []execution.JobLogEntry{}
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, e execution.JobLogEntry) { logs = append(logs, e) }))
+	ctx := execution.WithJobLogSink(t.Context(), lockedLogSink(&logs))
 	repo, registry, path := azureNativeWorkerRepository(t, f.runtime)
 	values := azureNativeWorkerScan(t, f.runtime, azureLocalSource, repo, registry, []string{azureLocalAgentType, azureLocalVMType, azureLocalIdentityType}, false, true)
 	var guest asset.Asset

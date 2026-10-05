@@ -48,7 +48,7 @@ func newGraphFixture(t *testing.T) *graphFixture {
 		map[string]any{"@odata.type": "#microsoft.graph.group", "id": graphTestNested},
 		map[string]any{"@odata.type": "#microsoft.graph.device", "id": "b1c5b3c4-2f5e-4a4c-9d1f-6a0f8a2c7e11"},
 	}
-	f.runtime = protocolRuntime(t, func(q *http.Request) (*http.Response, error) {
+	f.runtime = concurrentProtocolRuntime(t, func(q *http.Request) (*http.Response, error) {
 		if q.Method != "GET" {
 			t.Fatal("directory inventory issued a mutation", q.Method, q.URL)
 		}

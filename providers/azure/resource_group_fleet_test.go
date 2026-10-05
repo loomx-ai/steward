@@ -1,7 +1,6 @@
 package azure
 
 import (
-	"context"
 	"encoding/json"
 	"maps"
 	"net/http"
@@ -96,7 +95,7 @@ func TestResourceGroupFleetNativeLifecycle(t *testing.T) {
 func resourceGroupFleetNativeLifecycle(t *testing.T, h *fleetHubFixture, running bool) {
 	t.Helper()
 	var logs []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	ctx := execution.WithJobLogSink(t.Context(), lockedLogSink(&logs))
 	for _, raw := range h.fleetFixture.resources {
 		if raw["type"] == fleetRunType {
 			state := "Completed"

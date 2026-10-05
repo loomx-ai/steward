@@ -795,7 +795,7 @@ func TestCDNSensitiveRuleConditionsAndActionsAreNotPersisted(t *testing.T) {
 		t.Fatal("source response mutated")
 	}
 	var logs []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(context.Background(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	ctx := execution.WithJobLogSink(context.Background(), lockedLogSink(&logs))
 	c, _ := r.resolve(ctx, "connection")
 	kind, _ := findType(afdRuleType)
 	endpoint, _ := c.resourceURL(kind, rule.Identity.NativeID)

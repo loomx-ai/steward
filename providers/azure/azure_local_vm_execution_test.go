@@ -52,7 +52,7 @@ func azureLocalWorkerRecovery(t *testing.T, registration bool, rootKind ...strin
 	}
 	f.holdVM, f.holdMeta, f.holdDisk = true, true, true
 	logs := []execution.JobLogEntry{}
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	ctx := execution.WithJobLogSink(t.Context(), lockedLogSink(&logs))
 	repository, registry, path := azureNativeWorkerRepository(t, f.runtime)
 	azureNativeWorkerScan(t, f.runtime, azureLocalSource, repository, registry, []string{azureLocalVMType, azureLocalAgentType, azureLocalIdentityType, azureLocalNICType, azureLocalDiskType, azureLocalNetworkType, azureLocalStorageType, azureLocalImageType, azureLocalMarketplaceType}, false, true)
 	values := azureNativeWorkerScan(t, f.runtime, hybridComputeSource, repository, registry, []string{hybridMachineType, hybridExtensionType, hybridCommandType, hybridProfileType, hybridLicenseType}, false, true)
