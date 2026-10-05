@@ -327,9 +327,10 @@ func TestRBACInventoryLaterPagesReuseScanSnapshot(t *testing.T) {
 	if len(uncached) < 2 || rebuilt == 0 || reused != 0 {
 		t.Fatal("later pages rebuilt the scan snapshot", len(uncached), rebuilt, reused)
 	}
-	// RBAC builds NetworkReferences in map order on every observation.
 	for _, item := range slices.Concat(uncached, cached) {
-		slices.Sort(item.NetworkReferences)
+		if len(item.NetworkReferences) < 2 || !slices.IsSorted(item.NetworkReferences) {
+			t.Fatal("RBAC network references are missing or not in a stable order", item.NetworkReferences)
+		}
 	}
 	want, _ := json.Marshal(uncached)
 	got, _ := json.Marshal(cached)

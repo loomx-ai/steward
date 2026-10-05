@@ -172,6 +172,7 @@ func (r *Runtime) rbacInventoryItem(ctx context.Context, c *client, kind string,
 		normalized[referenceKey(typ)] = ids
 		network = append(network, ids...)
 	}
+	slices.Sort(network)
 	recorded := monitorReferenceProjection(refs)
 	normalized["_rbac_references"] = recorded
 	normalized[rbacReferencesProof] = c.rbacReferenceBinding(id, kind, wire, configuration, context, recorded)
