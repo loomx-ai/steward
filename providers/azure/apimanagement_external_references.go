@@ -9,6 +9,8 @@ import (
 const (
 	apimVaultType    = "Microsoft.KeyVault/vaults"
 	apimIdentityType = "Microsoft.ManagedIdentity/userAssignedIdentities"
+	// apimExternalScanRoot names the scan's indexes shared by every service.
+	apimExternalScanRoot = "\x00external"
 )
 
 // The URL is evidence of a vault dependency, never a destination to fetch.
@@ -33,6 +35,13 @@ func apimVaultOrigin(value string) (string, error) {
 func (c *client) apimExternalReference(ctx context.Context, kind, selector string, indexes *apimIndexes) (string, error) {
 	if kind == apimIdentityType && !uuidPattern.MatchString(selector) {
 		return "", serviceDenied("invalid_apim_identity_client_id")
+	}
+	// An inventory scan lists each subscription-wide index once for all its
+	// API Management services; reviews and cleanup use their own indexes.
+	if scan, err := apimScanShared(ctx, apimExternalScanRoot); err != nil {
+		return "", err
+	} else if scan != nil {
+		indexes = scan
 	}
 	values, err := indexes.load(ctx, kind, func() ([]serviceChild, error) {
 		rows, err := c.subscriptionReferenceIndex(ctx, kind)

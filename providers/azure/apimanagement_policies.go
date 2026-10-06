@@ -89,11 +89,20 @@ func withAPIMScanIndexes(ctx context.Context, shared func(root string) (*apimInd
 // apimScanIndexes returns the scan's shared indexes for id's service, or nil
 // (a fresh index per call) outside a scan.
 func apimScanIndexes(ctx context.Context, id string) (*apimIndexes, error) {
-	shared, _ := ctx.Value(apimScanIndexesKey{}).(func(string) (*apimIndexes, error))
-	if shared == nil || apimRootID(id) == "" {
+	if apimRootID(id) == "" {
 		return nil, nil
 	}
-	return shared(apimRootID(id))
+	return apimScanShared(ctx, apimRootID(id))
+}
+
+// apimScanShared returns the scan's shared indexes named root, or nil outside
+// a scan.
+func apimScanShared(ctx context.Context, root string) (*apimIndexes, error) {
+	shared, _ := ctx.Value(apimScanIndexesKey{}).(func(string) (*apimIndexes, error))
+	if shared == nil {
+		return nil, nil
+	}
+	return shared(root)
 }
 
 func (c *client) apimReferenceCollection(ctx context.Context, owner, name string, indexes *apimIndexes) ([]serviceChild, error) {

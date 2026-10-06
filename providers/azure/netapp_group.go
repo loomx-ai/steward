@@ -41,7 +41,7 @@ func (r *Runtime) netappGroupInventory(ctx context.Context, c *client, req contr
 		return serviceDenied("netapp_group_region_changed")
 	}
 	known := object(object(req.KnownNativeMetadata[id][netappGroupReview])["members"])
-	members, complete, err := c.netappAssignmentConsumers(ctx, id, netappGroupType, region, raw, known)
+	members, complete, err := c.netappAssignmentConsumers(withMemoRound(ctx, "netapp-consumers-1"), id, netappGroupType, region, raw, known)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (r *Runtime) netappGroupInventory(ctx context.Context, c *client, req contr
 		hints = map[string]any{}
 	}
 	maps.Copy(hints, members)
-	after, complete, err := c.netappAssignmentConsumers(ctx, id, netappGroupType, region, raw, hints)
+	after, complete, err := c.netappAssignmentConsumers(withMemoRound(ctx, "netapp-consumers-2"), id, netappGroupType, region, raw, hints)
 	if err != nil {
 		return err
 	}

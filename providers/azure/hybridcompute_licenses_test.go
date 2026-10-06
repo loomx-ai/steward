@@ -338,3 +338,39 @@ func TestHybridComputeLicenseNativeIdentityAndInventory(t *testing.T) {
 		})
 	}
 }
+
+// Contribute runs under one memo; each of the license's two passes must still
+// read the profile index and profiles itself, so a change between passes is
+// caught instead of compared against the first pass's memoized reads.
+func TestHybridComputeLicenseContributePassesReadIndependently(t *testing.T) {
+	f, request := licenseRequestFixture(t)
+	values := []asset.Asset{request.Asset, request.PrerequisiteDeletions[0].Asset}
+	license := request.Asset.Identity.NativeID
+	profile := values[1].Identity.NativeID
+	calls, change := map[string]int{}, false
+	previous := f.override
+	f.override = func(req *http.Request) (*http.Response, bool) {
+		path := strings.ToLower(req.URL.Path)
+		if req.Method == "GET" {
+			calls[path]++
+			if path == license && calls[path] == 2 && change {
+				object(f.values[profile]["properties"])["changedBetweenPasses"] = true
+			}
+		}
+		return previous(req)
+	}
+	cascades := &serviceCascades{client: f.client, connectionID: "connection"}
+	contribution := governance.Contribution{}
+	if err := cascades.contributeHybridComputeLicenses(withReadMemo(t.Context()), values, &contribution); err != nil || len(contribution.Relationships) != 1 {
+		t.Fatal("license contribution", err)
+	}
+	if calls[license] != 2 || calls[profile] != 2 || calls[strings.ToLower(resourceID(hybridMachineType, "machine"))+"/licenseprofiles"] != 2 {
+		t.Fatal("a pass reused the other pass's reads", calls[license], calls[profile])
+	}
+	clear(calls)
+	change = true
+	err := cascades.contributeHybridComputeLicenses(withReadMemo(t.Context()), values, &governance.Contribution{})
+	if err == nil || !strings.Contains(err.Error(), "hybrid_compute_license_assignments_changed_during_walk") {
+		t.Fatal("change between passes was not detected", err)
+	}
+}

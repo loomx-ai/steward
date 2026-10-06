@@ -47,8 +47,11 @@ func (c *synapseDataClient) artifactReview(ctx context.Context, target synapseDa
 	if err = c.artifactOwner(w, d, id); err != nil {
 		return nil, err
 	}
+	// One inventory pass shares the opening group read, pipeline walk, pool
+	// index and each pool's Spark work across a workspace's artifacts (keyed
+	// by the hints they follow); the closing re-reads stay live per artifact.
 	groupID := strings.Join(strings.Split(w.id, "/")[:5], "/")
-	group, err := c.arm.request(ctx, "GET", apiURL(groupID, resourcesVersion))
+	group, err := memoized(ctx, "synapse-artifact-group:"+groupID, func() (response, error) { return c.arm.request(ctx, "GET", apiURL(groupID, resourcesVersion)) })
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +67,9 @@ func (c *synapseDataClient) artifactReview(ctx context.Context, target synapseDa
 		return nil, err
 	}
 	blocked = blocked || locked(id, locks) || locked(w.id, locks)
-	pipelines, err := c.synapseWork(ctx, synapseDataTarget{workspace: w}, object(known["pipelines"]), []synapseDataDefinition{synapsePipelineDefinition})
+	pipelines, err := memoized(ctx, "synapse-artifact-pipelines:"+w.id+"|"+c.arm.privateConfiguration(object(known["pipelines"])), func() (synapseSparkWork, error) {
+		return c.synapseWork(ctx, synapseDataTarget{workspace: w}, object(known["pipelines"]), []synapseDataDefinition{synapsePipelineDefinition})
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -79,14 +84,19 @@ func (c *synapseDataClient) artifactReview(ctx context.Context, target synapseDa
 	if err != nil {
 		return nil, err
 	}
-	targets, err := c.arm.synapseDataTargets(ctx, w, synapseDataKind(synapseBatchType), hints)
+	targets, err := memoized(ctx, "synapse-artifact-pools:"+w.id+"|"+c.arm.privateConfiguration(object(known["pools"])), func() ([]synapseDataTarget, error) {
+		return c.arm.synapseDataTargets(ctx, w, synapseDataKind(synapseBatchType), hints)
+	})
 	if err != nil {
 		return nil, err
 	}
 	pools := map[string]any{}
 	for _, current := range targets {
 		poolID := strings.ToLower(text(current.pool["id"]))
-		work, err := c.synapseWork(ctx, current, object(object(object(known["pools"])[poolID])["work"]), []synapseDataDefinition{synapseDataKind(synapseBatchType), synapseDataKind(synapseSessionType)})
+		poolKnown := object(object(object(known["pools"])[poolID])["work"])
+		work, err := memoized(ctx, "synapse-artifact-work:"+poolID+"|"+c.arm.privateConfiguration(poolKnown), func() (synapseSparkWork, error) {
+			return c.synapseWork(ctx, current, poolKnown, []synapseDataDefinition{synapseDataKind(synapseBatchType), synapseDataKind(synapseSessionType)})
+		})
 		if err != nil {
 			return nil, err
 		}

@@ -171,6 +171,8 @@ func (c *client) workbookIndex(ctx context.Context, kind string, known []string,
 }
 
 func (r *Runtime) workbookInventorySnapshot(ctx context.Context, c *client, request contracts.InventoryRequest) ([]contracts.InventoryItem, []string, string, error) {
+	// Each pass of the stability check shares its own reads and none with the other.
+	ctx = withPassMemo(ctx)
 	kind := insightsWorkbookKind(request.ResourceKind.NativeType)
 	groups, err := c.insightsGroups(ctx)
 	if err != nil {

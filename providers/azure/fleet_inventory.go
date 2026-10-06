@@ -234,6 +234,8 @@ func (r *Runtime) fleetInventoryItem(c *client, kind string, raw, parent, group 
 }
 
 func (r *Runtime) fleetInventorySnapshot(ctx context.Context, c *client, request contracts.InventoryRequest) ([]contracts.InventoryItem, []string, map[string]any, string, error) {
+	// Each pass of the stability check shares its own reads and none with the other.
+	ctx = withPassMemo(ctx)
 	kind := fleetKind(request.ResourceKind.NativeType).kind
 	roots, provenance, err := c.fleetIndex(ctx, fleetType, c.root())
 	if err != nil {

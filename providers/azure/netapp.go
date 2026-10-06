@@ -245,6 +245,8 @@ func netappReferences(id, kind string, raw map[string]any) (map[string][]string,
 }
 
 func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.InventoryRequest) ([]contracts.InventoryItem, []string, map[string]any, string, error) {
+	// Each pass of the stability check shares its own reads and none with the other.
+	ctx = withPassMemo(ctx)
 	kind := netappKind(req.ResourceKind.NativeType).kind
 	known := map[string]bool{}
 	hints := map[string]map[string]bool{}

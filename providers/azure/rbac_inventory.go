@@ -193,6 +193,8 @@ func (r *Runtime) rbacInventoryItem(ctx context.Context, c *client, kind string,
 }
 
 func (r *Runtime) rbacInventorySnapshot(ctx context.Context, c *client, request contracts.InventoryRequest) ([]contracts.InventoryItem, map[string]any, string, error) {
+	// Each pass of the stability check shares its own reads and none with the other.
+	ctx = withPassMemo(ctx)
 	kind := rbacResourceKind(request.ResourceKind.NativeType)
 	rows, requestID, err := c.rbacIndex(ctx, kind, c.root())
 	if err != nil {

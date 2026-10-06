@@ -134,11 +134,11 @@ func (s *serviceCascades) contributeCommunication(ctx context.Context, assets []
 	if len(selected) == 0 {
 		return nil
 	}
-	trees, items, err := s.communicationGraphSnapshot(ctx, selected)
+	trees, items, err := s.communicationGraphSnapshot(withPassMemo(ctx), selected)
 	if err != nil {
 		return err
 	}
-	_, after, err := s.communicationGraphSnapshot(ctx, selected)
+	_, after, err := s.communicationGraphSnapshot(withPassMemo(ctx), selected)
 	if err != nil {
 		return err
 	}

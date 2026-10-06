@@ -174,7 +174,10 @@ func domainChildSnapshot(kind string, raw map[string]any) map[string]any {
 // names also receive their own GET so an omitted list row cannot hide a survivor.
 func (c *client) domainChildren(ctx context.Context, parent asset.Identity, raw map[string]any, known map[string]any) ([]serviceChild, error) {
 	ctx = context.WithValue(ctx, domainReadContextKey{}, true)
-	observe := func() ([]serviceChild, string, error) {
+	// Within one round of an inventory pass or contribution every domain
+	// shares the web site index, site reads and binding listings (see
+	// withMemoRound); the domain's own reads and cleanup reads stay live.
+	observe := func(ctx context.Context) ([]serviceChild, string, error) {
 		children, err := c.nativeServiceChildren(ctx, parent, raw, []string{domainOwnershipType})
 		if err != nil {
 			return nil, "", err
@@ -191,7 +194,9 @@ func (c *client) domainChildren(ctx context.Context, parent asset.Identity, raw 
 			if kind == appSlotType {
 				kinds = []string{appSlotBindingType}
 			}
-			entries, err := c.nativeServiceChildren(ctx, asset.Identity{NativeID: id, NativeType: kind}, site, kinds)
+			entries, err := memoized(ctx, "domain-site-children:"+id+"|"+strings.Join(kinds, ","), func() ([]serviceChild, error) {
+				return c.nativeServiceChildren(ctx, asset.Identity{NativeID: id, NativeType: kind}, site, kinds)
+			})
 			if err != nil {
 				return err
 			}
@@ -213,7 +218,7 @@ func (c *client) domainChildren(ctx context.Context, parent asset.Identity, raw 
 			}
 			return nil
 		}
-		sites, err := c.subscriptionReferenceIndex(ctx, appSiteType)
+		sites, err := memoized(ctx, "domain-sites", func() ([]map[string]any, error) { return c.subscriptionReferenceIndex(ctx, appSiteType) })
 		if err != nil {
 			return nil, "", err
 		}
@@ -233,7 +238,7 @@ func (c *client) domainChildren(ctx context.Context, parent asset.Identity, raw 
 		}
 		walked, errs := readConcurrently(len(endpoints), func(i int) (siteResult, error) {
 			id, _, _ := parseID(text(sites[i]["id"]))
-			current, err := c.readResource(ctx, endpoints[i])
+			current, err := memoized(ctx, "domain-site:"+endpoints[i], func() (response, error) { return c.readResource(ctx, endpoints[i]) })
 			if err != nil {
 				return siteResult{}, err
 			}
@@ -294,11 +299,11 @@ func (c *client) domainChildren(ctx context.Context, parent asset.Identity, raw 
 		slices.SortFunc(children, func(a, b serviceChild) int { return strings.Compare(a.id, b.id) })
 		return children, c.privateConfiguration(observed), nil
 	}
-	first, before, err := observe()
+	first, before, err := observe(withMemoRound(ctx, "domain-children-1"))
 	if err != nil {
 		return nil, err
 	}
-	second, after, err := observe()
+	second, after, err := observe(withMemoRound(ctx, "domain-children-2"))
 	if err != nil {
 		return nil, err
 	}

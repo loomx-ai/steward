@@ -243,6 +243,8 @@ func (c *client) recoveryServicesCollection(ctx context.Context, path, kind stri
 }
 
 func (r *Runtime) recoveryServicesSnapshot(ctx context.Context, c *client, req contracts.InventoryRequest, kind string) ([]contracts.InventoryItem, []string, error) {
+	// Each pass of the stability check shares its own reads and none with the other.
+	ctx = withPassMemo(ctx)
 	known := map[string]bool{}
 	for _, value := range req.KnownNativeIDs {
 		id, err := c.recoveryServicesIdentity(value, kind)

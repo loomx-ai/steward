@@ -77,7 +77,7 @@ func (c *client) contributeResourceGroups(ctx context.Context, connection asset.
 		known := bucket.known
 		var previous map[string]map[string]any
 		for pass := 0; pass < 2; pass++ {
-			current, err := c.resourceGroupGraphMembers(ctx, group, known)
+			current, err := c.resourceGroupGraphMembers(withPassMemo(ctx), group, known)
 			if err != nil {
 				return out, err
 			}

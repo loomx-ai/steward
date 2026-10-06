@@ -185,6 +185,8 @@ func (r *Runtime) diagnosticInventoryItem(c *client, raw map[string]any, locks [
 }
 
 func (r *Runtime) diagnosticInventorySnapshot(ctx context.Context, c *client, request contracts.InventoryRequest) ([]contracts.InventoryItem, map[string]any, string, error) {
+	// Each pass of the stability check shares its own reads and none with the other.
+	ctx = withPassMemo(ctx)
 	known := slices.Clone(request.KnownNativeIDs)
 	for id := range request.KnownNativeMetadata {
 		if !slices.Contains(known, id) {

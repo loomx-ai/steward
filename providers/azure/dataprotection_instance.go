@@ -28,7 +28,11 @@ func (c *client) protectionInstanceProof(id string, connection asset.ConnectionI
 }
 func (c *client) protectionRetainedInstances(ctx context.Context, id string, known map[string]any) (map[string]any, error) {
 	vault := redisParentID(id)
-	rows, err := c.dataProtectionCollection(ctx, vault+"/deletedbackupinstances", dataProtectionDeletedInstance)
+	// Within one round of an inventory pass every instance of a vault shares
+	// the listing and each GET (see withMemoRound); cleanup reads stay live.
+	rows, err := memoized(ctx, "dp-deleted-instances:"+vault, func() (map[string]map[string]any, error) {
+		return c.dataProtectionCollection(ctx, vault+"/deletedbackupinstances", dataProtectionDeletedInstance)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +50,7 @@ func (c *client) protectionRetainedInstances(ctx context.Context, id string, kno
 	result := map[string]any{}
 	keys := slices.Sorted(maps.Keys(ids))
 	reads, errs := readConcurrently(len(keys), func(i int) (response, error) {
-		return c.dataProtectionRead(ctx, keys[i], dataProtectionDeletedInstance)
+		return memoized(ctx, "dp-read:"+dataProtectionDeletedInstance+"|"+keys[i], func() (response, error) { return c.dataProtectionRead(ctx, keys[i], dataProtectionDeletedInstance) })
 	})
 	for i, key := range keys {
 		own, err := reads[i], errs[i]
@@ -79,11 +83,11 @@ func (c *client) protectionInstanceReview(ctx context.Context, id string, known 
 	if err != nil {
 		return nil, contracts.DependencyReadError(err)
 	}
-	retained, err := c.protectionRetainedInstances(ctx, id, known)
+	retained, err := c.protectionRetainedInstances(withMemoRound(ctx, "dp-retained-1"), id, known)
 	if err != nil {
 		return nil, err
 	}
-	later, err := c.protectionRetainedInstances(ctx, id, retained)
+	later, err := c.protectionRetainedInstances(withMemoRound(ctx, "dp-retained-2"), id, retained)
 	if err != nil {
 		return nil, err
 	}

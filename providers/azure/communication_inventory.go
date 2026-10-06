@@ -585,6 +585,8 @@ func (c *client) communicationKnown(request contracts.InventoryRequest) (map[str
 }
 
 func (r *Runtime) communicationInventorySnapshot(ctx context.Context, c *client, request contracts.InventoryRequest) ([]contracts.InventoryItem, []string, map[string]any, error) {
+	// Each pass of the stability check shares its own reads and none with the other.
+	ctx = withPassMemo(ctx)
 	kind := request.ResourceKind.NativeType
 	hints, historical, err := c.communicationKnown(request)
 	if err != nil {

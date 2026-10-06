@@ -533,6 +533,27 @@ func memoized[T any](ctx context.Context, key string, read func() (T, error)) (T
 	return result, err
 }
 
+// withPassMemo gives one pass of a stability check a fresh memo of its own
+// when ctx carries one; without a memo (cleanup actions) every read stays live.
+func withPassMemo(ctx context.Context) context.Context {
+	if ctx.Value(readMemoContextKey{}) == nil {
+		return ctx
+	}
+	return withReadMemo(ctx)
+}
+
+// withMemoRound gives one round of a two-read stability check its own memo,
+// shared by every item of the pass in that round and never by the other
+// round, so the two rounds compare independent reads. Without a memo (cleanup
+// actions) ctx is returned unchanged and every read stays live.
+func withMemoRound(ctx context.Context, round string) context.Context {
+	if ctx.Value(readMemoContextKey{}) == nil {
+		return ctx
+	}
+	memo, _ := memoized(ctx, "round:"+round, func() (*readMemo, error) { return &readMemo{values: map[string]any{}}, nil })
+	return context.WithValue(ctx, readMemoContextKey{}, memo)
+}
+
 // inventoryNIC reads a VM's NIC. An inventory page lists each resource group's
 // NICs once instead of reading every VM's NIC on its own; a NIC missing from
 // that list is still read directly.

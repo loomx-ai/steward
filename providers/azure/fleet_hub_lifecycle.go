@@ -70,6 +70,7 @@ func (c *client) contributeFleetHub(ctx context.Context, parent asset.Asset, ass
 	}
 	var resources map[string]map[string]any
 	for range 2 {
+		ctx := withPassMemo(ctx) // each pass reads anew, sharing nothing with the other
 		groups, err := c.insightsGroups(ctx)
 		if err != nil {
 			return result, err

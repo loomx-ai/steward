@@ -151,7 +151,10 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 			}
 		}
 	}
-	rows, err := c.netappIndex(ctx, netappPoolType, account)
+	// Within one round of an inventory pass every assignment of an account
+	// shares the pool and volume listings and reads (see withMemoRound); the
+	// closing pool re-reads and cleanup reads stay live.
+	rows, err := memoized(ctx, "netapp-index:"+netappPoolType+"|"+account, func() ([]any, error) { return c.netappIndex(ctx, netappPoolType, account) })
 	if err != nil {
 		return nil, false, contracts.DependencyReadError(err)
 	}
@@ -166,7 +169,7 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 	parents := map[string]any{}
 	stablePools := map[string]string{}
 	for _, pool := range slices.Sorted(maps.Keys(pools)) {
-		own, err := c.netappRead(ctx, pool, netappPoolType)
+		own, err := memoized(ctx, "netapp-read:"+pool, func() (response, error) { return c.netappRead(ctx, pool, netappPoolType) })
 		if isNotFound(err) && !pools[pool] {
 			// A removed known pool does not make a volume record absent. Confirm
 			// each former consumer's own 404 solely to reconcile its association.
@@ -193,7 +196,7 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 		}
 		parents[pool] = c.privateConfiguration(own.data)
 		stablePools[pool] = c.privateConfiguration(netappPoolSnapshot(own.data))
-		rows, err := c.netappIndex(ctx, netappVolumeType, pool)
+		rows, err := memoized(ctx, "netapp-index:"+netappVolumeType+"|"+pool, func() ([]any, error) { return c.netappIndex(ctx, netappVolumeType, pool) })
 		if err != nil {
 			return nil, false, contracts.DependencyReadError(err)
 		}
@@ -217,13 +220,14 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 	}
 	ordered := slices.Sorted(maps.Keys(volumes))
 	reads, errs := readConcurrently(len(ordered), func(i int) (volumeRead, error) {
-		own, err := c.netappRead(ctx, ordered[i], netappVolumeType)
+		own, err := memoized(ctx, "netapp-read:"+ordered[i], func() (response, error) { return c.netappRead(ctx, ordered[i], netappVolumeType) })
 		out := volumeRead{own: own}
 		if err != nil || kind != netappVaultType {
 			return out, err
 		}
 		if assignments, err := netappAssignments(own.data); err == nil && assignments[kind] == id && assignments[netappBackupPolicyType] != "" {
-			out.policy, out.policyErr = c.netappRead(ctx, assignments[netappBackupPolicyType], netappBackupPolicyType)
+			policy := assignments[netappBackupPolicyType]
+			out.policy, out.policyErr = memoized(ctx, "netapp-read:"+policy, func() (response, error) { return c.netappRead(ctx, policy, netappBackupPolicyType) })
 		}
 		return out, nil
 	})
@@ -313,11 +317,11 @@ func (r *Runtime) netappAssignmentInventory(ctx context.Context, c *client, req 
 	if region != item.Location {
 		return serviceDenied("netapp_assignment_region_changed")
 	}
-	first, complete, err := c.netappAssignmentConsumers(ctx, id, kind, region, raw, known)
+	first, complete, err := c.netappAssignmentConsumers(withMemoRound(ctx, "netapp-consumers-1"), id, kind, region, raw, known)
 	if err != nil {
 		return err
 	}
-	second, laterComplete, err := c.netappAssignmentConsumers(ctx, id, kind, region, raw, first)
+	second, laterComplete, err := c.netappAssignmentConsumers(withMemoRound(ctx, "netapp-consumers-2"), id, kind, region, raw, first)
 	if err != nil {
 		return err
 	}

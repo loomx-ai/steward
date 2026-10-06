@@ -363,6 +363,8 @@ func (r *Runtime) dataFactoryItems(ctx context.Context, c *client, connection as
 }
 
 func (r *Runtime) dataFactoryInventorySnapshot(ctx context.Context, c *client, request contracts.InventoryRequest) ([]contracts.InventoryItem, []string, map[string]any, error) {
+	// Each pass of the stability check shares its own reads and none with the other.
+	ctx = withPassMemo(ctx)
 	hints, err := c.dataFactoryKnown(request)
 	if err != nil {
 		return nil, nil, nil, err

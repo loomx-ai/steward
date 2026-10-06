@@ -42,7 +42,12 @@ func (c *client) recoveryContainerConsumers(ctx context.Context, id string, know
 		}
 		candidates[hint] = true
 	}
-	listed, err := c.recoveryServicesCollection(ctx, recoveryServicesVaultID(id)+"/backupprotecteditems", recoveryServicesItem)
+	// Within one round of an inventory pass every container of a vault shares
+	// this vault-wide listing (see withMemoRound); cleanup reads stay live.
+	vault := recoveryServicesVaultID(id)
+	listed, err := memoized(ctx, "recovery-protected-items:"+vault, func() (map[string]map[string]any, error) {
+		return c.recoveryServicesCollection(ctx, vault+"/backupprotecteditems", recoveryServicesItem)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +102,7 @@ func (c *client) recoveryContainerReviewFor(ctx context.Context, id string, know
 	if err != nil && !absent {
 		return nil, false, err
 	}
-	consumers, err := c.recoveryContainerConsumers(ctx, id, known)
+	consumers, err := c.recoveryContainerConsumers(withMemoRound(ctx, "recovery-consumers-1"), id, known)
 	if err != nil {
 		return nil, false, err
 	}
@@ -106,7 +111,7 @@ func (c *client) recoveryContainerReviewFor(ctx context.Context, id string, know
 		hints = map[string]any{}
 	}
 	maps.Copy(hints, consumers)
-	later, err := c.recoveryContainerConsumers(ctx, id, hints)
+	later, err := c.recoveryContainerConsumers(withMemoRound(ctx, "recovery-consumers-2"), id, hints)
 	if err != nil {
 		return nil, false, err
 	}

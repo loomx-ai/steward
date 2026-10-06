@@ -74,11 +74,11 @@ func (s *serviceCascades) contributeDataFactory(ctx context.Context, assets []as
 	if len(selected) == 0 {
 		return nil
 	}
-	trees, items, before, err := s.dataFactoryGraphSnapshot(ctx, selected)
+	trees, items, before, err := s.dataFactoryGraphSnapshot(withPassMemo(ctx), selected)
 	if err != nil {
 		return err
 	}
-	_, _, after, err := s.dataFactoryGraphSnapshot(ctx, selected)
+	_, _, after, err := s.dataFactoryGraphSnapshot(withPassMemo(ctx), selected)
 	if err != nil {
 		return err
 	}

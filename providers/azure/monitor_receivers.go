@@ -224,12 +224,15 @@ func (c *client) monitorReceiverIndex(ctx context.Context, kind string) (values 
 	return second, nil
 }
 
+// One inventory pass or contribution reads each receiver index once for all
+// its action groups (memoized); cleanup reads it live per call.
 func (c *client) monitorReferences(ctx context.Context, kind, id string, raw map[string]any) (refs map[string][]string, err error) {
-	return c.monitorReferencesWithIndexes(ctx, kind, id, raw, map[string]map[string]map[string]any{})
+	return c.monitorReferencesWithIndexes(ctx, kind, id, raw, nil)
 }
 
 // The caller owns this cache for one complete native observation only. A batch
-// incoming-reference walk rechecks every used index before returning.
+// incoming-reference walk rechecks every used index before returning. A nil
+// cache reads each index through the context's memo instead.
 func (c *client) monitorReferencesWithIndexes(ctx context.Context, kind, id string, raw map[string]any, indexes map[string]map[string]map[string]any) (refs map[string][]string, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	refs, err = monitorResourceReferences(kind, id, raw)
@@ -254,6 +257,9 @@ func (c *client) monitorReferencesWithIndexes(ctx context.Context, kind, id stri
 		}
 	}
 	index := func(kind string) (map[string]map[string]any, error) {
+		if indexes == nil {
+			return memoized(ctx, "monitor-receiver-index:"+kind, func() (map[string]map[string]any, error) { return c.monitorReceiverIndex(ctx, kind) })
+		}
 		if rows, ok := indexes[kind]; ok {
 			return rows, nil
 		}

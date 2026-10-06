@@ -47,6 +47,9 @@ func (s *serviceCascades) contributeHybridComputeLicenses(ctx context.Context, v
 		var assignments map[string]map[string]any
 		before := ""
 		for range 2 {
+			// Each pass shares reads among its own lookups only, never with
+			// the other pass or the rest of the contribution.
+			ctx := withPassMemo(ctx)
 			res, err := s.client.hybridComputeRead(ctx, license.Identity.NativeID, hybridLicenseType)
 			if err != nil && !isNotFound(err) {
 				return err

@@ -65,7 +65,8 @@ func (c *client) monitorWorkspaceResources(ctx context.Context, parent asset.Ass
 	if err != nil {
 		return nil, nil, err
 	}
-	second, err := c.managedGroupResources(ctx, parent.Identity.NativeID, group)
+	// The second walk must not reuse the first walk's memoized indexes.
+	second, err := c.managedGroupResources(withPassMemo(ctx), parent.Identity.NativeID, group)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -34,7 +34,11 @@ func (c *client) protectionPolicyConsumers(ctx context.Context, policy string, k
 		ids[id] = kind
 	}
 	for _, kind := range []string{dataProtectionInstance, dataProtectionDeletedInstance} {
-		rows, err := c.dataProtectionCollection(ctx, vault+"/"+strings.ToLower(last(kind)), kind)
+		// Within one round of an inventory pass every policy of a vault shares
+		// the listings and each GET (see withMemoRound); cleanup reads stay live.
+		rows, err := memoized(ctx, "dp-collection:"+vault+"/"+strings.ToLower(last(kind)), func() (map[string]map[string]any, error) {
+			return c.dataProtectionCollection(ctx, vault+"/"+strings.ToLower(last(kind)), kind)
+		})
 		if err != nil {
 			return nil, err
 		}
@@ -45,7 +49,9 @@ func (c *client) protectionPolicyConsumers(ctx context.Context, policy string, k
 	}
 	consumers := map[string]any{}
 	ordered := slices.Sorted(maps.Keys(ids))
-	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.dataProtectionRead(ctx, ordered[i], ids[ordered[i]]) })
+	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) {
+		return memoized(ctx, "dp-read:"+ids[ordered[i]]+"|"+ordered[i], func() (response, error) { return c.dataProtectionRead(ctx, ordered[i], ids[ordered[i]]) })
+	})
 	for i, id := range ordered {
 		own, err := reads[i], errs[i]
 		if isNotFound(err) && listed[id] == nil {
@@ -94,7 +100,7 @@ func (c *client) protectionPolicyReview(ctx context.Context, id string, known ma
 	if err != nil && !absent {
 		return nil, false, err
 	}
-	consumers, err := c.protectionPolicyConsumers(ctx, id, known)
+	consumers, err := c.protectionPolicyConsumers(withMemoRound(ctx, "dp-consumers-1"), id, known)
 	if err != nil {
 		return nil, false, err
 	}
@@ -103,7 +109,7 @@ func (c *client) protectionPolicyReview(ctx context.Context, id string, known ma
 		hints = map[string]any{}
 	}
 	maps.Copy(hints, consumers)
-	later, err := c.protectionPolicyConsumers(ctx, id, hints)
+	later, err := c.protectionPolicyConsumers(withMemoRound(ctx, "dp-consumers-2"), id, hints)
 	if err != nil {
 		return nil, false, err
 	}

@@ -112,7 +112,8 @@ func (r *Runtime) netappVaultInventory(ctx context.Context, c *client, req contr
 	if err != nil {
 		return err
 	}
-	consumers, complete, err := c.netappAssignmentConsumers(ctx, item.NativeID, netappVaultType, region, root.data, object(assignment["consumers"]))
+	// A third, independent read: it must not reuse the rounds it rechecks.
+	consumers, complete, err := c.netappAssignmentConsumers(withMemoRound(ctx, "netapp-consumers-3"), item.NativeID, netappVaultType, region, root.data, object(assignment["consumers"]))
 	if err != nil {
 		return err
 	}

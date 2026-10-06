@@ -333,7 +333,8 @@ func (c *client) workbookInventory(ctx context.Context, id, kind string, raw, no
 	if !nativeConfigurationContains(insightsWorkbookSnapshot(raw, false), insightsWorkbookSnapshot(record.raw, false)) {
 		return serviceDenied("workbook_inventory_changed")
 	}
-	group, err := c.workbookGroup(ctx, id)
+	// One pass reads each resource group once for all its workbooks.
+	group, err := memoized(ctx, "monitor-group:"+strings.Join(strings.Split(id, "/")[:5], "/"), func() (map[string]any, error) { return c.workbookGroup(ctx, id) })
 	if err != nil {
 		return err
 	}
