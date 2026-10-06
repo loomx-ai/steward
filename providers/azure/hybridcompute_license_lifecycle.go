@@ -4,6 +4,7 @@ import (
 	"context"
 	"maps"
 	"slices"
+	"strconv"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -46,10 +47,11 @@ func (s *serviceCascades) contributeHybridComputeLicenses(ctx context.Context, v
 		}
 		var assignments map[string]map[string]any
 		before := ""
-		for range 2 {
-			// Each pass shares reads among its own lookups only, never with
-			// the other pass or the rest of the contribution.
-			ctx := withPassMemo(ctx)
+		for pass := range 2 {
+			// Each pass shares reads with the same pass of the other licenses
+			// only, never with the other pass, so the two passes compare
+			// independent reads while the machine index is read once per pass.
+			ctx := withMemoRound(ctx, "hybrid-license-"+strconv.Itoa(pass))
 			res, err := s.client.hybridComputeRead(ctx, license.Identity.NativeID, hybridLicenseType)
 			if err != nil && !isNotFound(err) {
 				return err

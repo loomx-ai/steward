@@ -229,6 +229,10 @@ func (c *client) apimIncomingWalk(ctx context.Context, rootID string, kinds []st
 		slices.SortFunc(children, func(a, b serviceChild) int { return strings.Compare(a.id, b.id) })
 		return children, nil
 	}
+	// Each walk gets its own pass memo, so the second compares fresh reads
+	// instead of collections memoized by the first.
+	outer := ctx
+	ctx = withPassMemo(outer)
 	first, err := collectAll()
 	if err != nil {
 		return nil, err
@@ -236,6 +240,7 @@ func (c *client) apimIncomingWalk(ctx context.Context, rootID string, kinds []st
 	firstReferences := c.privateConfiguration(map[string]any{"references": resolved})
 	firstLinks := linkConfiguration
 	resolved, indexes = map[string][]string{}, &apimIndexes{}
+	ctx = withPassMemo(outer)
 	second, err := collectAll()
 	if err != nil {
 		return nil, err
